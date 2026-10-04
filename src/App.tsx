@@ -14,6 +14,7 @@ import { NewItemDialog } from './ui/dialogs/NewItemDialog';
 import { ExportDialog } from './ui/dialogs/ExportDialog';
 import { SettingsDialog } from './ui/dialogs/SettingsDialog';
 import { MoveItemDialog } from './ui/dialogs/MoveItemDialog';
+import { filesFromDataTransfer } from './ui/files';
 
 function DialogHost() {
   const dialog = useStore((s) => s.dialog);
@@ -25,8 +26,9 @@ function DialogHost() {
     case 'prompt':
       return <PromptDialog dialog={dialog} />;
     case 'projects':
+      return <ProjectsDialog initialTab="open" />;
     case 'newProject':
-      return <ProjectsDialog />;
+      return <ProjectsDialog initialTab="new" />;
     default:
       break;
   }
@@ -62,6 +64,39 @@ function useShortcuts() {
     };
     window.addEventListener('keydown', onKey);
     return () => window.removeEventListener('keydown', onKey);
+  }, []);
+}
+
+/** Dateien, die irgendwo im Fenster abgelegt werden, öffnen den „Neues Item“-Dialog statt den Browser wegzunavigieren. */
+function useWindowDrop() {
+  useEffect(() => {
+    const onDragOver = (e: DragEvent) => {
+      if (e.dataTransfer?.types.includes('Files')) e.preventDefault();
+    };
+    const onDrop = async (e: DragEvent) => {
+      if (!e.dataTransfer?.types.includes('Files')) return;
+      e.preventDefault();
+      const { project, dialog, selection, openDialog, toast } = useStore.getState();
+      if (!project || dialog) return;
+      const folderId =
+        selection?.kind === 'folder'
+          ? selection.id
+          : selection?.kind === 'item'
+            ? project.items[selection.id]?.folderId
+            : project.rootFolderIds[0];
+      if (!folderId || !project.folders[folderId]) {
+        toast('warning', 'Lege zuerst einen Ordner an – darin werden die Items erstellt.');
+        return;
+      }
+      const files = await filesFromDataTransfer(e.dataTransfer);
+      if (files.length) openDialog({ type: 'newItem', folderId, files });
+    };
+    window.addEventListener('dragover', onDragOver);
+    window.addEventListener('drop', onDrop);
+    return () => {
+      window.removeEventListener('dragover', onDragOver);
+      window.removeEventListener('drop', onDrop);
+    };
   }, []);
 }
 
@@ -102,6 +137,7 @@ export default function App() {
   const rightPanel = useStore((s) => s.rightPanel);
   const plan = usePlan();
   useShortcuts();
+  useWindowDrop();
 
   return (
     <div className="app">

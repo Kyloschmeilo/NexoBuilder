@@ -128,7 +128,8 @@ const COLOR = /^\s*(\d{1,3})\s*,\s*(\d{1,3})\s*,\s*(\d{1,3})\s*$/;
 const RANGE = /^-?\d+(\.\d+)?(\.\.-?\d+(\.\d+)?)?$/;
 
 export function validateTextFormat(format: TextField['format'], value: string): string | null {
-  if (!value) return null;
+  // "@model" = Modell des Items (wird beim Export ersetzt)
+  if (!value || value === '@model') return null;
   switch (format) {
     case 'duration':
       return DURATION.test(value.trim()) ? null : 'Erwartet eine Dauer wie 20t, 1.5s, 2m';

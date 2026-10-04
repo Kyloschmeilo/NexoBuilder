@@ -171,7 +171,7 @@ export function ExportDialog() {
           <div className="row" style={{ marginBottom: 8 }}>
             <div className="field-label">Prüfung</div>
             {counts.error > 0 && <span className="badge danger">{counts.error} Fehler</span>}
-            {counts.warning > 0 && <span className="badge warning">{counts.warning} Warnungen</span>}
+            {counts.warning > 0 && <span className="badge warning">{counts.warning} {counts.warning === 1 ? 'Warnung' : 'Warnungen'}</span>}
             {counts.error === 0 && counts.warning === 0 && <span className="badge success">Alles in Ordnung</span>}
             <span className="spacer" />
             {counts.info > 0 && (

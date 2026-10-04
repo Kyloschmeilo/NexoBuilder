@@ -83,7 +83,7 @@ export function ItemEditor({ itemId, plan }: { itemId: string; plan: ExportPlan 
               </span>
               <span className="badge mono">{String(item.config.material ?? 'PAPER')}</span>
               {errors > 0 && <span className="badge danger">{errors} Fehler</span>}
-              {warnings > 0 && <span className="badge warning">{warnings} Warnungen</span>}
+              {warnings > 0 && <span className="badge warning">{warnings} {warnings === 1 ? 'Warnung' : 'Warnungen'}</span>}
               {errors === 0 && warnings === 0 && <span className="badge success">Bereit</span>}
             </div>
           </div>

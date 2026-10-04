@@ -86,7 +86,7 @@ export function TopBar({ plan }: { plan: ExportPlan | null }) {
               label="Neues Projekt"
               onClick={() => {
                 setMenuOpen(false);
-                open({ type: 'projects' });
+                open({ type: 'newProject' });
               }}
             />
             <div className="menu-sep" />
@@ -121,7 +121,7 @@ export function TopBar({ plan }: { plan: ExportPlan | null }) {
             </>
           ) : counts.warning > 0 ? (
             <>
-              <TriangleAlert size={16} style={{ color: 'var(--warning)' }} /> {counts.warning} Warnungen
+              <TriangleAlert size={16} style={{ color: 'var(--warning)' }} /> {counts.warning} {counts.warning === 1 ? 'Warnung' : 'Warnungen'}
             </>
           ) : (
             <>

@@ -16,7 +16,7 @@ import { analyseElements, isVanillaReference } from '../model/javaModel';
 import { parseTexturePlaceholder } from '../model/common';
 import { validateTexture } from '../model/textures';
 import { getPath } from '../nexo/configPath';
-import { buildItemConfig } from '../nexo/itemConfig';
+import { buildItemConfig, slotForMaterial } from '../nexo/itemConfig';
 import { validateTextFormat, type Field } from '../nexo/fields';
 import { ASSET_TOKEN_PREFIX, PROPERTIES } from '../nexo/schema';
 import { itemsToYaml } from '../nexo/yaml';
@@ -476,6 +476,16 @@ function validateItemConfig(
     }
     if (!item.model && (block.model === undefined || block.model === '@model')) {
       add('warning', 'Der Block hat kein Modell. Bitte ein Modell importieren oder im Feld „Modell“ einen Pfad angeben.');
+    }
+  }
+
+  if (getArmorSetId(item) && typeof material === 'string' && !slotForMaterial(material)) {
+    const equippable = getPath(cfg, ['Components', 'equippable']);
+    if (!isPlainObject(equippable) || !equippable.slot) {
+      add(
+        'warning',
+        `Das Material ${material} legt keinen Rüstungs-Slot fest. Es wird HEAD verwendet – sonst bitte die Komponente „Ausrüstbar“ mit dem passenden Slot hinzufügen.`,
+      );
     }
   }
 

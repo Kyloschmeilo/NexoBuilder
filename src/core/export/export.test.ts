@@ -221,7 +221,8 @@ describe('planExport', () => {
       custom_variation: 12,
       hardness: 3,
     });
-    expect(plan.issues.filter((i) => i.level === 'error')).toEqual([]);
+    // "@model" darf nicht als ungültiger Schlüssel gemeldet werden
+    expect(plan.issues.filter((i) => i.level !== 'info')).toEqual([]);
   });
 
   it('erzeugt Equipment-Modelle für Rüstungs-Texturen', () => {

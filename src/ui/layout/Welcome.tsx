@@ -179,9 +179,9 @@ export function Welcome() {
   );
 }
 
-export function ProjectsDialog() {
+export function ProjectsDialog({ initialTab = 'open' }: { initialTab?: 'open' | 'new' }) {
   const close = useStore((s) => s.closeDialog);
-  const [tab, setTab] = useState<'open' | 'new'>('open');
+  const [tab, setTab] = useState<'open' | 'new'>(initialTab);
   return (
     <Modal title="Projekte" icon={<FolderOpen size={20} />} onClose={close}>
       <div className="tabs">
