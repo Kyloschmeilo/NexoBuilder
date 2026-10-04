@@ -36,7 +36,7 @@ export function listExportPaths(project: Project, plan: ExportPlan, mode: Export
   const packName = project.settings.packName;
   const paths: string[] = [];
   if (mode === 'pack') return [...plan.packFiles.keys()].sort();
-  if (mode === 'full' || mode === 'items') paths.push(...plan.itemFiles.keys(), ...plan.recipeFiles.keys());
+  if (mode === 'full' || mode === 'items') paths.push(...plan.itemFiles.keys(), ...plan.recipeFiles.keys(), ...plan.glyphFiles.keys());
   if (mode === 'full') {
     if (project.settings.externalPackAsZip) {
       paths.push(`pack/external_packs/${packName}.zip`);
@@ -55,7 +55,7 @@ export async function buildExportZip(project: Project, plan: ExportPlan, mode: E
   if (mode === 'pack') {
     addFiles(zip, plan.packFiles);
   } else {
-    addFiles(zip, new Map([...plan.itemFiles, ...plan.recipeFiles]));
+    addFiles(zip, new Map([...plan.itemFiles, ...plan.recipeFiles, ...plan.glyphFiles]));
     if (mode === 'full') {
       if (project.settings.externalPackAsZip) {
         const inner = new JSZip();
@@ -89,6 +89,7 @@ export function installGuide(project: Project, plan: ExportPlan): string {
     '',
     '   items/...                 -> die Item-Konfigurationen',
     ...(plan.recipeFiles.size > 0 ? ['   recipes/...               -> die Crafting-Rezepte'] : []),
+    ...(plan.glyphFiles.size > 0 ? ['   glyphs/...                -> die Glyphen (Nutzung: <glyph:id>)'] : []),
     `   ${packLocation.padEnd(25)} -> der Resourcepack (wird von Nexo automatisch eingebunden)`,
     '',
     '2. Im Spiel oder in der Konsole ausführen:',

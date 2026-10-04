@@ -4,7 +4,8 @@ import { createFolder, createItem, insertFolder, insertItem, uniqueNexoId, type 
 import { getDescendantFolderIds } from '../core/project/tree';
 import { deletePath, setPath } from '../core/nexo/configPath';
 import { PROPERTY_BY_ID } from '../core/nexo/schema';
-import { deepClone, uid } from '../core/util';
+import { deepClone, slugify, uid } from '../core/util';
+import { createGlyph, type Glyph, type GlyphFile, type GlyphKind } from '../core/nexo/glyphs';
 import { useStore } from './store';
 
 const mutate = (recipe: (draft: Project) => void, key?: string) => useStore.getState().mutate(recipe, key);
@@ -44,9 +45,13 @@ export function deleteFolder(folderId: string) {
     for (const id of ids) delete draft.folders[id];
   });
   const { selection } = useStore.getState();
-  if (selection && (selection.kind === 'folder' ? ids.includes(selection.id) : !useStore.getState().project?.items[selection.id])) {
-    useStore.getState().select(null);
-  }
+  const gone =
+    selection?.kind === 'folder'
+      ? ids.includes(selection.id)
+      : selection?.kind === 'item'
+        ? !useStore.getState().project?.items[selection.id]
+        : false;
+  if (gone) useStore.getState().select(null);
 }
 
 /** Verschiebt einen Ordner in einen anderen Ordner (oder in die oberste Ebene). */
@@ -174,4 +179,37 @@ export function duplicateItem(itemId: string): string | null {
 
 export function updateProjectSettings(recipe: (project: Project) => void) {
   mutate(recipe, 'settings');
+}
+
+/* ------------------------------------------------------------------ Glyphen */
+
+function uniqueGlyphId(project: Project, wanted: string): string {
+  const base = slugify(wanted, 'glyph');
+  const taken = new Set((project.glyphs ?? []).map((g) => g.glyphId));
+  if (!taken.has(base)) return base;
+  let n = 2;
+  while (taken.has(`${base}_${n}`)) n++;
+  return `${base}_${n}`;
+}
+
+export function addGlyph(name: string, file: GlyphFile | null, kind: GlyphKind): string {
+  const id = uid('g_');
+  mutate((draft) => {
+    draft.glyphs = draft.glyphs ?? [];
+    draft.glyphs.push(createGlyph(id, uniqueGlyphId(draft, name), file, kind));
+  });
+  return id;
+}
+
+export function updateGlyph(glyphId: string, recipe: (glyph: Glyph) => void, historyKey?: string) {
+  mutate((draft) => {
+    const glyph = draft.glyphs?.find((g) => g.id === glyphId);
+    if (glyph) recipe(glyph);
+  }, historyKey ? `glyph:${glyphId}:${historyKey}` : undefined);
+}
+
+export function deleteGlyph(glyphId: string) {
+  mutate((draft) => {
+    draft.glyphs = (draft.glyphs ?? []).filter((g) => g.id !== glyphId);
+  });
 }

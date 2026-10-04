@@ -15,6 +15,7 @@ import { pickFiles, readAsDataUrl, readDroppedFiles } from '../files';
 import { createDrafts } from '../importer';
 import { ModelPreview } from '../preview/ModelPreview';
 import { PropertiesPanel } from './PropertiesPanel';
+import { VariantsSection } from './VariantsSection';
 
 const ITEM_PARENTS = [
   { value: 'minecraft:item/generated', label: '2D-Item (item/generated)' },
@@ -215,6 +216,8 @@ export function ModelTab({ item, plan }: { item: Item; plan: ExportPlan | null }
           />
         ))}
       </div>
+
+      <VariantsSection item={item} />
 
       <PropertiesPanel item={item} groups={['appearance']} title="Aussehen" emptyText="Keine Aussehens-Optionen." />
     </div>

@@ -21,6 +21,12 @@ export function RightPanel({ plan }: { plan: ExportPlan | null }) {
     const entry = plan?.items.find((p) => p.item.id === item.id);
     title = entry?.yamlFile ?? title;
     issues = plan ? issuesForItem(plan.issues, item.id) : [];
+  } else if (selection?.kind === 'glyphs') {
+    const entry = plan ? [...plan.glyphFiles.entries()][0] : undefined;
+    if (entry) {
+      title = entry[0];
+      text = entry[1];
+    }
   } else if (selection?.kind === 'folder' && project.folders[selection.id]) {
     const folder = project.folders[selection.id];
     const first = folder.itemIds.map((id) => plan?.items.find((p) => p.item.id === id)).find(Boolean);

@@ -12,6 +12,7 @@ import {
   Pencil,
   Plus,
   Search,
+  Smile,
   Trash2,
 } from 'lucide-react';
 import type { Folder, Item, Project } from '../../core/types';
@@ -160,7 +161,32 @@ export function Sidebar({ plan }: { plan: ExportPlan | null }) {
           ))
         )}
       </div>
+      <GlyphsEntry plan={plan} />
     </aside>
+  );
+}
+
+function GlyphsEntry({ plan }: { plan: ExportPlan | null }) {
+  const count = useStore((s) => s.project?.glyphs?.length ?? 0);
+  const selected = useStore((s) => s.selection?.kind === 'glyphs');
+  const glyphIssues = plan?.issues.filter((i) => i.glyphId && i.level !== 'info') ?? [];
+  const state = glyphIssues.some((i) => i.level === 'error') ? 'error' : glyphIssues.length ? 'warning' : null;
+  return (
+    <div style={{ borderTop: '1px solid var(--border)', padding: '6px 6px 8px' }}>
+      <div
+        className={`tree-row ${selected ? 'selected' : ''}`}
+        style={{ paddingLeft: 8 }}
+        onClick={() => useStore.getState().select({ kind: 'glyphs' })}
+        title="Glyphen (Emojis, GUI-Texturen) für Chat, Lore und Titel"
+      >
+        <span className="tree-icon" style={{ color: '#ffd166' }}>
+          <Smile size={16} />
+        </span>
+        <span className="tree-label">Glyphen</span>
+        {state && <span className={`status-dot ${state}`} />}
+        <span className="tree-badge">{count}</span>
+      </div>
+    </div>
   );
 }
 

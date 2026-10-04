@@ -4,3 +4,4 @@ dist-single
 *.local
 .DS_Store
 coverage
+release

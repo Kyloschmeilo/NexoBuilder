@@ -31,8 +31,8 @@ export function GeneralTab({ item }: { item: Item }) {
           </div>
         </div>
         <div className="card-body">
-          <div style={{ display: 'grid', gridTemplateColumns: 'minmax(0, 1fr) minmax(220px, 300px)', gap: 18 }}>
-            <div className="field-grid">
+          <div className="general-grid">
+            <div className="field-grid general-fields">
               <label className="field wide">
                 <span className="field-label">Anzeigename (itemname, MiniMessage)</span>
                 <input
@@ -73,7 +73,7 @@ export function GeneralTab({ item }: { item: Item }) {
                 <FolderSelect value={item.folderId} onChange={(folderId) => moveItem(item.id, folderId)} />
               </label>
             </div>
-            <div className="col" style={{ gap: 6 }}>
+            <div className="col general-preview" style={{ gap: 6 }}>
               <span className="field-label">Tooltip-Vorschau</span>
               <ItemTooltip name={item.displayName || item.nexoId} lore={lore} />
               <span className="field-help">Ohne eigene Farbe zeigt Minecraft die Lore lila und kursiv an.</span>

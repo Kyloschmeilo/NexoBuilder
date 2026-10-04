@@ -613,10 +613,10 @@ a {
 
 .tabs {
   display: flex;
+  flex-wrap: wrap;
   gap: 2px;
   border-bottom: 1px solid var(--border);
   margin-bottom: 18px;
-  overflow-x: auto;
 }
 .tab {
   border: 0;
@@ -1311,9 +1311,26 @@ a {
   white-space: nowrap;
 }
 
-@media (max-width: 1250px) {
+.general-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 18px;
+}
+.general-grid > .general-fields {
+  flex: 1 1 380px;
+  min-width: 0;
+}
+.general-grid > .general-preview {
+  flex: 1 1 220px;
+  max-width: 340px;
+}
+
+@media (max-width: 1450px) {
   .rightpanel {
     width: 340px;
+  }
+  .editor {
+    padding: 18px 18px 50px;
   }
 }
 @media (max-width: 1050px) {

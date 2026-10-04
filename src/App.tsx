@@ -7,6 +7,7 @@ import { TopBar } from './ui/layout/TopBar';
 import { promptNewFolder, Sidebar } from './ui/layout/Sidebar';
 import { RightPanel } from './ui/layout/RightPanel';
 import { FolderView } from './ui/layout/FolderView';
+import { GlyphsView } from './ui/glyphs/GlyphsView';
 import { ProjectsDialog, Welcome } from './ui/layout/Welcome';
 import { ItemEditor } from './ui/item/ItemEditor';
 import { ConfirmDialog, PromptDialog, Toasts } from './ui/common/Dialogs';
@@ -77,7 +78,7 @@ function useWindowDrop() {
       if (!e.dataTransfer?.types.includes('Files')) return;
       e.preventDefault();
       const { project, dialog, selection, openDialog, toast } = useStore.getState();
-      if (!project || dialog) return;
+      if (!project || dialog || selection?.kind === 'glyphs') return;
       const folderId =
         selection?.kind === 'folder'
           ? selection.id
@@ -108,6 +109,8 @@ function MainArea({ plan }: { plan: ExportPlan | null }) {
     content = <ItemEditor itemId={selection.id} plan={plan} />;
   } else if (selection?.kind === 'folder' && project.folders[selection.id]) {
     content = <FolderView folderId={selection.id} plan={plan} />;
+  } else if (selection?.kind === 'glyphs') {
+    content = <GlyphsView plan={plan} />;
   } else {
     const hasFolders = project.rootFolderIds.length > 0;
     content = (

@@ -286,3 +286,48 @@ describe('buildExportZip', () => {
     expect([...files.keys()].every((p) => p === 'pack.mcmeta' || p.startsWith('assets/'))).toBe(true);
   });
 });
+
+describe('Varianten-Modelle', () => {
+  it('exportiert Spann-Stufen eines Bogens und setzt Pack.pulling_models', () => {
+    const project = createProject('Bögen', 'boegen', '26.3');
+    const folder = createFolder('Fernkampf', null);
+    insertFolder(project, folder);
+    const png = (name: string) => createTextureModel('handheld', { layer0: name }, [{ name, dataUrl: PNG16 }]);
+    const bow = createItem({ displayName: 'Langbogen', nexoId: 'longbow', folderId: folder.id, material: 'BOW', model: png('bow.png') });
+    bow.variants = { pulling_models: [png('bow_0.png'), png('bow_1.png'), png('bow_2.png')] };
+    insertItem(project, bow);
+    const plan = planExport(project);
+    const yaml = parse(plan.itemFiles.get('items/fernkampf/fernkampf.yml')!, { version: '1.1' });
+    expect(yaml.longbow.Pack).toEqual({
+      model: 'boegen:item/fernkampf/longbow',
+      pulling_models: [
+        'boegen:item/fernkampf/longbow-pulling_0',
+        'boegen:item/fernkampf/longbow-pulling_1',
+        'boegen:item/fernkampf/longbow-pulling_2',
+      ],
+    });
+    expect(plan.packFiles.has('assets/boegen/models/item/fernkampf/longbow-pulling_2.json')).toBe(true);
+    expect(plan.packFiles.has('assets/boegen/textures/item/fernkampf/longbow-pulling_1/bow_1.png')).toBe(true);
+    const model = JSON.parse(plan.packFiles.get('assets/boegen/models/item/fernkampf/longbow-pulling_0.json') as string);
+    expect(model.textures.layer0).toBe('boegen:item/fernkampf/longbow-pulling_0/bow_0');
+    expect(plan.issues.filter((i) => i.level !== 'info')).toEqual([]);
+  });
+
+  it('warnt bei unpassendem Material und fehlendem Hauptmodell', () => {
+    const project = createProject('Test', 'test', '26.3');
+    const folder = createFolder('A', null);
+    insertFolder(project, folder);
+    const model = createTextureModel('generated', { layer0: 'a.png' }, [{ name: 'a.png', dataUrl: PNG16 }]);
+    const shield = createItem({ displayName: 'Schild', nexoId: 'shield', folderId: folder.id, material: 'PAPER', model });
+    shield.variants = { blocking_model: [model] };
+    const noModel = createItem({ displayName: 'Ohne', nexoId: 'ohne', folderId: folder.id, model: null });
+    noModel.variants = { cast_model: [model] };
+    insertItem(project, shield);
+    insertItem(project, noModel);
+    const plan = planExport(project);
+    expect(plan.issues.some((i) => i.itemId === shield.id && i.level === 'warning' && i.message.includes('SHIELD'))).toBe(true);
+    expect(plan.issues.some((i) => i.itemId === noModel.id && i.level === 'error' && i.message.includes('Hauptmodell'))).toBe(true);
+    const yaml = parse(plan.itemFiles.get('items/a/a.yml')!, { version: '1.1' });
+    expect(yaml.shield.Pack.blocking_model).toBe('test:item/a/shield-blocking');
+  });
+});

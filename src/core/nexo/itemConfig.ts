@@ -43,6 +43,8 @@ export interface BuildContext {
   modelKey: string | null;
   /** Equipment-Asset für Rüstungen (namespace:set) */
   armorAssetId?: string | null;
+  /** Modell-Schlüssel der Varianten (z.B. pulling_models → [...]) */
+  variantKeys?: Record<string, string | string[] | undefined>;
 }
 
 export interface BuildResult {
@@ -83,7 +85,8 @@ export function buildItemConfig(ctx: BuildContext): BuildResult {
 
   if (modelKey) {
     const pack = isPlainObject(resolved.Pack) ? resolved.Pack : {};
-    resolved.Pack = { model: modelKey, ...pack };
+    const variants = Object.fromEntries(Object.entries(ctx.variantKeys ?? {}).filter(([, v]) => v !== undefined && v.length > 0));
+    resolved.Pack = { model: modelKey, ...variants, ...pack };
     const usesCmd = isPlainObject(resolved.Pack) && resolved.Pack.custom_model_data !== undefined;
     if (project.settings.useItemModel && !usesCmd) {
       const components = isPlainObject(resolved.Components) ? resolved.Components : {};

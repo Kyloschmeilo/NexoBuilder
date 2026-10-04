@@ -104,6 +104,7 @@ export function migrateProject(raw: unknown): Project {
   project.folders = isPlainObject(project.folders) ? project.folders : {};
   project.items = isPlainObject(project.items) ? project.items : {};
   project.rootFolderIds = Array.isArray(project.rootFolderIds) ? project.rootFolderIds : [];
+  project.glyphs = Array.isArray(project.glyphs) ? project.glyphs : [];
   for (const folder of Object.values(project.folders)) {
     folder.folderIds = Array.isArray(folder.folderIds) ? folder.folderIds : [];
     folder.itemIds = Array.isArray(folder.itemIds) ? folder.itemIds.filter((id) => project.items[id]) : [];

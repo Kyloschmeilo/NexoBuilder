@@ -2,7 +2,7 @@
 
 **Aus Blockbench-Modellen fertige [Nexo](https://docs.nexomc.com/)-Items machen – inklusive Resourcepack.**
 
-NexoBuilder ist eine Web-App (läuft komplett im Browser, auch offline per Doppelklick).
+NexoBuilder gibt es als **Windows-Programm (.exe)** und als Web-App (läuft komplett im Browser, auch offline per Doppelklick).
 Du legst Ordner an, ziehst deine Modelle hinein, stellst die Nexo-Eigenschaften per Formular ein
 und exportierst alles als ZIP, das du direkt in `plugins/Nexo/` entpackst.
 
@@ -31,11 +31,16 @@ und exportierst alles als ZIP, das du direkt in `plugins/Nexo/` entpackst.
   - Für alles andere: zusätzliches YAML pro Item
 - **Rezepte** – Werkbank (mit/ohne Form), Ofen, Schmelzofen, Räucherofen, Lagerfeuer und Steinsäge
   → `recipes/<typ>/<projekt>.yml`
+- **Varianten-Modelle** – Bogen/Armbrust (Spann-Stufen, geladen, Feuerwerk), Schild (blocken), Angel (ausgeworfen),
+  Beschädigungs-Stufen, gefärbt und kombinierte Modelle (`Pack.pulling_models`, `Pack.blocking_model` …)
+- **Glyphen** – Emojis und GUI-Texturen (PNG, animierte GIFs, Multi-Bitmap, Referenz-Glyphen) mit Chat-Vorschau
+  → `glyphs/<projekt>.yml`, verwendbar überall mit `<glyph:id>`
 - **Prüfung vor dem Export** – doppelte IDs, ungültige Werte, Modelle außerhalb des erlaubten Bereichs,
   fehlende Texturen, Versionskonflikte usw.
 - **Export als ZIP**
   - `items/<ordner>/<ordner>.yml` (oder eine Datei pro Item)
   - `recipes/<typ>/<projekt>.yml` (falls Rezepte angelegt wurden)
+  - `glyphs/<projekt>.yml` (falls Glyphen angelegt wurden)
   - `pack/external_packs/<packname>/` (oder als `.zip`) mit `pack.mcmeta`, Modellen und Texturen
   - Alternativ nur der Resourcepack oder nur die Item-Configs
 - **Automatisches Speichern** im Browser, Rückgängig/Wiederholen (Strg+Z / Strg+Y),
@@ -43,7 +48,24 @@ und exportierst alles als ZIP, das du direkt in `plugins/Nexo/` entpackst.
 
 ## Benutzung
 
-### Variante A: Einzelne HTML-Datei (ohne Installation)
+### Windows-Programm (.exe)
+
+- **Installer:** `NexoBuilder-Setup-<version>.exe` – installiert NexoBuilder mit Startmenü- und Desktop-Verknüpfung.
+- **Portable:** `NexoBuilder-<version>-portable.exe` – ohne Installation direkt starten.
+
+Beide werden bei jedem Push automatisch gebaut: **GitHub → Actions → Build → Artefakt „NexoBuilder-Windows“**.
+Selbst bauen (Windows, oder Linux mit Wine):
+
+```bash
+npm install
+npm run dist:win     # Ergebnis in release/
+```
+
+Das Programm ist nicht digital signiert – Windows SmartScreen zeigt deshalb beim ersten Start eventuell
+„Der Computer wurde durch Windows geschützt“. Über **Weitere Informationen → Trotzdem ausführen** startet es.
+Projekte werden automatisch gespeichert (im App-Datenordner, siehe *Hilfe → Über NexoBuilder*).
+
+### Einzelne HTML-Datei (ohne Installation)
 
 Fertig gebaut gibt es die Datei bei jedem Push unter **GitHub → Actions → Build → Artefakt „NexoBuilder“**
 (`NexoBuilder.html`). Oder selbst bauen:
@@ -56,7 +78,7 @@ npm run build:single
 Danach `dist-single/index.html` (bzw. `NexoBuilder.html`) per Doppelklick im Browser (Chrome, Edge oder Firefox) öffnen.
 Die Datei kann beliebig kopiert werden und funktioniert offline.
 
-### Variante B: Entwicklungsserver
+### Entwicklungsserver
 
 ```bash
 npm install
@@ -106,6 +128,8 @@ rubin_schwert:
 npm test          # Unit-Tests (Konverter, YAML, Export)
 npm run typecheck # TypeScript
 npm run build     # Produktions-Build nach dist/
+npm run app       # Desktop-Programm (Electron) lokal starten
+npm run icon      # App-Icon (build/icon.png) neu erzeugen
 ```
 
 Aufbau:
@@ -114,3 +138,4 @@ Aufbau:
 - `src/core/nexo` – Eigenschafts-Schema, YAML-Erzeugung
 - `src/core/export` – Export-Planung, Prüfungen, ZIP
 - `src/ui` – Oberfläche (React), 3D-Vorschau (three.js)
+- `electron/` – Desktop-Programm (Electron), Konfiguration in `electron-builder.yml`

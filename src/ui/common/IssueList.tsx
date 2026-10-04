@@ -11,11 +11,12 @@ const ICONS = {
 interface IssueListProps {
   issues: Array<Issue | ProjectIssue>;
   onOpenItem?: (itemId: string) => void;
+  onOpenGlyphs?: () => void;
   empty?: string;
   hideInfo?: boolean;
 }
 
-export function IssueList({ issues, onOpenItem, empty, hideInfo }: IssueListProps) {
+export function IssueList({ issues, onOpenItem, onOpenGlyphs, empty, hideInfo }: IssueListProps) {
   const order = { error: 0, warning: 1, info: 2 };
   const visible = issues.filter((i) => !hideInfo || i.level !== 'info').sort((a, b) => order[a.level] - order[b.level]);
   if (visible.length === 0) return empty ? <div className="faint small">{empty}</div> : null;
@@ -28,6 +29,11 @@ export function IssueList({ issues, onOpenItem, empty, hideInfo }: IssueListProp
           {onOpenItem && 'itemId' in issue && issue.itemId && (
             <button className="link" onClick={() => onOpenItem(issue.itemId!)}>
               Zum Item
+            </button>
+          )}
+          {onOpenGlyphs && 'glyphId' in issue && issue.glyphId && (
+            <button className="link" onClick={onOpenGlyphs}>
+              Zu den Glyphen
             </button>
           )}
         </div>

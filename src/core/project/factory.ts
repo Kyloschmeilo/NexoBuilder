@@ -29,6 +29,7 @@ export function createProject(name: string, namespace?: string, minecraftVersion
     folders: {},
     items: {},
     rootFolderIds: [],
+    glyphs: [],
     createdAt: now,
     updatedAt: now,
   };

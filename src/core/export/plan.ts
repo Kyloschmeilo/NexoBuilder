@@ -10,7 +10,7 @@
  * Texturen liegen bewusst unter textures/item bzw. textures/block: Nur diese Ordner landen
  * automatisch im Item- bzw. Block-Atlas von Minecraft (auch ab 1.21.11 mit getrennten Atlanten).
  */
-import type { ConfigObject, Issue, IssueLevel, Item, JavaModelJson, ModelTexture, Project } from '../types';
+import type { ConfigObject, ImportedModel, Issue, IssueLevel, Item, JavaModelJson, ModelTexture, Project } from '../types';
 import { buildPackMcmeta, getMcVersion } from '../minecraft/versions';
 import { analyseElements, isVanillaReference } from '../model/javaModel';
 import { parseTexturePlaceholder } from '../model/common';
@@ -21,6 +21,8 @@ import { validateTextFormat, type Field } from '../nexo/fields';
 import { ASSET_TOKEN_PREFIX, PROPERTIES } from '../nexo/schema';
 import { itemsToYaml } from '../nexo/yaml';
 import { buildRecipeFiles, recipeKeys, validateRecipe } from '../nexo/recipes';
+import { VARIANTS, variantPathSuffix, type VariantSlot } from '../nexo/variants';
+import { buildGlyphFile, glyphFilePath, glyphTexturePath, validateGlyphs } from '../nexo/glyphs';
 import { getFolderChain, getFolderSlugs, getItemsInTreeOrder, isBlockItem } from '../project/tree';
 import {
   compareVersions,
@@ -35,6 +37,8 @@ import {
 export interface ProjectIssue extends Issue {
   itemId?: string;
   folderId?: string;
+  /** interne ID eines Glyphs */
+  glyphId?: string;
 }
 
 export type ExportMode = 'full' | 'pack' | 'items';
@@ -59,6 +63,8 @@ export interface ExportPlan {
   itemFiles: Map<string, string>;
   /** Rezept-Dateien relativ zum Nexo-Plugin-Ordner (recipes/<typ>/…) */
   recipeFiles: Map<string, string>;
+  /** Glyph-Dateien relativ zum Nexo-Plugin-Ordner (glyphs/…) */
+  glyphFiles: Map<string, string>;
   issues: ProjectIssue[];
 }
 
@@ -84,7 +90,7 @@ export interface PlanOptions {
 export function planExport(project: Project, options: PlanOptions = {}): ExportPlan {
   const includeBinaries = options.includeBinaries ?? true;
   const issues: ProjectIssue[] = [];
-  const packFiles = new Map<string, FileContent>();
+  const packFiles = new TrackingMap<string, FileContent>();
   const itemFiles = new Map<string, string>();
   const ns = project.namespace;
   const targetVersion = project.settings.minecraftVersion;
@@ -126,33 +132,70 @@ export function planExport(project: Project, options: PlanOptions = {}): ExportP
     let modelKey: string | null = null;
     let modelFile: string | null = null;
     let modelJson: JavaModelJson | null = null;
-    if (item.model) {
-      const modelPath = modelPathFor(project, item);
-      modelKey = `${ns}:${modelPath}`;
-      modelFile = `assets/${ns}/models/${modelPath}.json`;
+    const writeModel = (model: ImportedModel, modelPath: string, what: string) => {
+      const file = `assets/${ns}/models/${modelPath}.json`;
       const textureRefs = new Map<string, string>();
       const usedNames = new Set<string>();
-      for (const texture of item.model.textures) {
+      const prefix = what ? `${what}: ` : '';
+      for (const texture of model.textures) {
         let name = slugify(texture.name, 'texture');
         let n = 2;
         while (usedNames.has(name)) name = `${slugify(texture.name, 'texture')}_${n++}`;
         usedNames.add(name);
         const texPath = `${modelPath}/${name}`;
         textureRefs.set(texture.id, `${ns}:${texPath}`);
-        for (const issue of validateTexture(texture, 'Textur')) add(issue.level, issue.message);
+        for (const issue of validateTexture(texture, `${prefix}Textur`)) add(issue.level, issue.message);
         if (texture.dataUrl) addTextureFile(packFiles, `assets/${ns}/textures/${texPath}.png`, texture, includeBinaries);
       }
-      modelJson = resolveModelTextures(item.model.json, textureRefs);
-      validateModel(modelJson, targetVersion, add, new Set(textureRefs.values()));
-      packFiles.set(modelFile, json(modelJson));
+      const resolved = resolveModelTextures(model.json, textureRefs);
+      validateModel(resolved, targetVersion, (level, message) => add(level, prefix + message), new Set(textureRefs.values()));
+      packFiles.set(file, json(resolved));
+      return { key: `${ns}:${modelPath}`, file, json: resolved };
+    };
+    if (item.model) {
+      const written = writeModel(item.model, modelPathFor(project, item), '');
+      modelKey = written.key;
+      modelFile = written.file;
+      modelJson = written.json;
     } else {
       add('info', 'Kein Modell – das Item nutzt das Aussehen des Basis-Materials.');
+    }
+
+    // Varianten-Modelle (Bogen, Schild, Angel …). Der Bindestrich im Pfad kann in Item-IDs
+    // und Ordnernamen nicht vorkommen – so gibt es keine Überschneidungen mit anderen Items.
+    const variantKeys: Partial<Record<VariantSlot, string | string[]>> = {};
+    for (const def of VARIANTS) {
+      const models = item.variants?.[def.slot];
+      if (models === undefined) continue;
+      if (!item.model) {
+        add('error', `„${def.label}“ benötigt ein Hauptmodell. Bitte zuerst ein Modell für das Item importieren.`);
+        continue;
+      }
+      if (models.length === 0) {
+        add('warning', `„${def.label}“ ist hinzugefügt, enthält aber noch kein Modell.`);
+        continue;
+      }
+      const keys = models.map((m, i) => {
+        const suffix = variantPathSuffix(def, i);
+        return writeModel(m, `${modelPathFor(project, item)}-${suffix}`, `${def.label} (${suffix})`).key;
+      });
+      variantKeys[def.slot] = def.multiple ? keys : keys[0];
+      const material = String(item.config.material ?? 'PAPER').toUpperCase();
+      if (def.materials && !def.materials.includes(material)) {
+        const blocksAttacks = def.slot === 'blocking_model' && getPath(item.config, ['Components', 'blocks_attacks']) !== undefined;
+        if (!blocksAttacks) {
+          add(
+            'warning',
+            `„${def.label}“ funktioniert nur mit dem Material ${def.materials.join(' oder ')} (aktuell ${material}).`,
+          );
+        }
+      }
     }
 
     // Konfiguration
     const armorSetId = getArmorSetId(item);
     const armorAssetId = armorSetId && armorSets.get(armorSetId)?.hasTextures ? `${ns}:${armorSetId}` : null;
-    const built = buildItemConfig({ project, item, modelKey, armorAssetId });
+    const built = buildItemConfig({ project, item, modelKey, armorAssetId, variantKeys });
     if (built.rawYamlError) add('error', `Fehler im zusätzlichen YAML: ${built.rawYamlError}`);
     validateItemConfig(item, built.config, targetVersion, add, usedVariations);
     const keys = recipeKeys(item);
@@ -188,10 +231,32 @@ export function planExport(project: Project, options: PlanOptions = {}): ExportP
 
   const recipeFiles = buildRecipeFiles(project, items);
 
-  return { items: plans, packFiles, itemFiles, recipeFiles, issues };
+  /* ------------------------------------------------------------ Glyphen */
+  const glyphFiles = new Map<string, string>();
+  issues.push(...validateGlyphs(project));
+  for (const glyph of project.glyphs ?? []) {
+    const path = glyphTexturePath(project, glyph);
+    if (path && glyph.file) packFiles.set(path, includeBinaries ? dataUrlToBytes(glyph.file.dataUrl) : new Uint8Array(0));
+  }
+  const glyphYaml = buildGlyphFile(project);
+  if (glyphYaml) glyphFiles.set(glyphFilePath(project), glyphYaml);
+  for (const path of packFiles.duplicates) {
+    issues.push({ level: 'error', message: `Die Datei „${path}“ würde im Pack mehrfach erzeugt. Bitte Item-IDs bzw. Set-IDs eindeutig machen.` });
+  }
+
+  return { items: plans, packFiles, itemFiles, recipeFiles, glyphFiles, issues };
 }
 
 /* ====================================================================== Dateien & Pfade */
+
+/** Map, die mehrfach geschriebene Pfade merkt (Sicherheitsnetz gegen Überschreiben). */
+class TrackingMap<K, V> extends Map<K, V> {
+  readonly duplicates = new Set<K>();
+  override set(key: K, value: V): this {
+    if (this.has(key)) this.duplicates.add(key);
+    return super.set(key, value);
+  }
+}
 
 function json(value: unknown): string {
   return JSON.stringify(value, null, 2) + '\n';

@@ -7,6 +7,8 @@
  */
 
 import type { Recipe } from './nexo/recipes';
+import type { VariantSlot } from './nexo/variants';
+import type { Glyph } from './nexo/glyphs';
 
 export type DataUrl = string;
 
@@ -136,6 +138,8 @@ export interface Item {
   assets: Record<string, ModelTexture>;
   /** Crafting-Rezepte, deren Ergebnis dieses Item ist */
   recipes: Recipe[];
+  /** Zusätzliche Modelle für Zustände (Pack.pulling_models, Pack.blocking_model …) */
+  variants?: Partial<Record<VariantSlot, ImportedModel[]>>;
   createdAt: number;
   updatedAt: number;
 }
@@ -168,6 +172,8 @@ export interface Project {
   folders: Record<string, Folder>;
   items: Record<string, Item>;
   rootFolderIds: string[];
+  /** Glyphen (plugins/Nexo/glyphs) */
+  glyphs: Glyph[];
   createdAt: number;
   updatedAt: number;
 }

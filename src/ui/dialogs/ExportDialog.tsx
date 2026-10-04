@@ -25,8 +25,8 @@ const MODES: Array<{ id: ExportMode; title: string; desc: string; icon: ReactNod
   },
   {
     id: 'items',
-    title: 'Nur Item-Configs',
-    desc: 'Nur die YAML-Dateien für plugins/Nexo/items.',
+    title: 'Nur Configs',
+    desc: 'Nur die YAML-Dateien (items/, recipes/, glyphs/) ohne Resourcepack.',
     icon: <ScrollText size={16} />,
   },
 ];
@@ -60,6 +60,7 @@ export function ExportDialog() {
   const counts = plan ? countIssues(plan.issues) : { error: 0, warning: 0, info: 0 };
   const paths = useMemo(() => (plan ? listExportPaths(project, plan, mode) : []), [plan, project, mode]);
   const itemCount = Object.keys(project.items).length;
+  const glyphCount = project.glyphs?.length ?? 0;
 
   const doExport = async () => {
     setBusy(true);
@@ -92,13 +93,13 @@ export function ExportDialog() {
       footer={
         <>
           <span className="left">
-            {itemCount} Item(s) · Namespace <span className="mono">{project.namespace}</span> · Minecraft{' '}
+            {itemCount} Item(s){glyphCount > 0 ? ` · ${glyphCount} Glyph(en)` : ''} · Namespace <span className="mono">{project.namespace}</span> · Minecraft{' '}
             {getMcVersion(project.settings.minecraftVersion).label}
           </span>
           <button className="btn" onClick={close}>
             Abbrechen
           </button>
-          <button className="btn primary" disabled={busy || itemCount === 0} onClick={confirmAndExport}>
+          <button className="btn primary" disabled={busy || itemCount + glyphCount === 0} onClick={confirmAndExport}>
             <Download size={16} /> {busy ? 'Wird erstellt …' : 'ZIP herunterladen'}
           </button>
         </>
@@ -188,6 +189,10 @@ export function ExportDialog() {
             onOpenItem={(itemId) => {
               close();
               select({ kind: 'item', id: itemId });
+            }}
+            onOpenGlyphs={() => {
+              close();
+              select({ kind: 'glyphs' });
             }}
           />
         </div>
