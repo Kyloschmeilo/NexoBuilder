@@ -155,6 +155,7 @@ export function duplicateItem(itemId: string): string | null {
   if (!project || !original) return null;
   const copy: Item = deepClone(original);
   copy.id = uid('i_');
+  copy.recipes = (copy.recipes ?? []).map((r) => ({ ...r, id: uid('r_') }));
   copy.displayName = original.displayName ? `${original.displayName} (Kopie)` : '';
   copy.createdAt = Date.now();
   copy.updatedAt = Date.now();

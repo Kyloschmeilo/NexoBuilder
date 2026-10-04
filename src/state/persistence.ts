@@ -112,6 +112,7 @@ export function migrateProject(raw: unknown): Project {
     item.config = isPlainObject(item.config) ? item.config : {};
     item.rawYaml = typeof item.rawYaml === 'string' ? item.rawYaml : '';
     item.assets = isPlainObject(item.assets) ? item.assets : {};
+    item.recipes = Array.isArray(item.recipes) ? item.recipes : [];
     item.model = item.model ?? null;
     item.displayName = typeof item.displayName === 'string' ? item.displayName : '';
   }

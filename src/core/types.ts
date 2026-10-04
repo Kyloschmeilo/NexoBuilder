@@ -6,6 +6,8 @@
  * Resourcepack (pack/external_packs/<name>) geschrieben wird.
  */
 
+import type { Recipe } from './nexo/recipes';
+
 export type DataUrl = string;
 
 /** Minecraft-Java-Blockmodell (assets/<ns>/models/...json) */
@@ -132,6 +134,8 @@ export interface Item {
   rawYaml: string;
   /** Zusätzlich hochgeladene Texturen (z.B. Rüstungs-Layer), referenziert als "@asset:<id>" */
   assets: Record<string, ModelTexture>;
+  /** Crafting-Rezepte, deren Ergebnis dieses Item ist */
+  recipes: Recipe[];
   createdAt: number;
   updatedAt: number;
 }

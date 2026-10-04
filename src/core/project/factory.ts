@@ -57,6 +57,7 @@ export function createItem(input: NewItemInput): Item {
     config: { material: input.material ?? 'PAPER' },
     rawYaml: '',
     assets: {},
+    recipes: [],
     createdAt: now,
     updatedAt: now,
   };

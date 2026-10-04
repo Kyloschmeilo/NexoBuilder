@@ -20,6 +20,7 @@ import { buildItemConfig } from '../nexo/itemConfig';
 import { validateTextFormat, type Field } from '../nexo/fields';
 import { ASSET_TOKEN_PREFIX, PROPERTIES } from '../nexo/schema';
 import { itemsToYaml } from '../nexo/yaml';
+import { buildRecipeFiles, recipeKeys, validateRecipe } from '../nexo/recipes';
 import { getFolderChain, getFolderSlugs, getItemsInTreeOrder, isBlockItem } from '../project/tree';
 import {
   compareVersions,
@@ -56,6 +57,8 @@ export interface ExportPlan {
   packFiles: Map<string, FileContent>;
   /** Dateien relativ zum Nexo-Plugin-Ordner (items/…) */
   itemFiles: Map<string, string>;
+  /** Rezept-Dateien relativ zum Nexo-Plugin-Ordner (recipes/<typ>/…) */
+  recipeFiles: Map<string, string>;
   issues: ProjectIssue[];
 }
 
@@ -152,6 +155,10 @@ export function planExport(project: Project, options: PlanOptions = {}): ExportP
     const built = buildItemConfig({ project, item, modelKey, armorAssetId });
     if (built.rawYamlError) add('error', `Fehler im zusätzlichen YAML: ${built.rawYamlError}`);
     validateItemConfig(item, built.config, targetVersion, add, usedVariations);
+    const keys = recipeKeys(item);
+    for (const recipe of item.recipes ?? []) {
+      for (const issue of validateRecipe(recipe, project, keys.get(recipe.id) ?? recipe.type)) add(issue.level, issue.message);
+    }
 
     const yamlFile = yamlFileFor(project, item, folderSlugs);
     plans.push({ item, folderSlugs, modelKey, modelFile, modelJson, config: built.config, yamlFile });
@@ -179,7 +186,9 @@ export function planExport(project: Project, options: PlanOptions = {}): ExportP
     }
   }
 
-  return { items: plans, packFiles, itemFiles, issues };
+  const recipeFiles = buildRecipeFiles(project, items);
+
+  return { items: plans, packFiles, itemFiles, recipeFiles, issues };
 }
 
 /* ====================================================================== Dateien & Pfade */

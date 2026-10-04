@@ -132,6 +132,9 @@ const DISPLAY_SLOTS = [
   'on_shelf',
 ];
 
+/** Elementtypen ohne eigene Geometrie */
+const NON_GEOMETRY_TYPES = new Set(['generated_item_mesh', 'locator', 'null_object', 'bounding_box', 'armature', 'armature_bone']);
+
 const COORD_MIN = -16;
 const COORD_MAX = 32;
 
@@ -204,11 +207,12 @@ export function convertBBModel(text: string, fileName: string, extraFiles: Dropp
 
   for (const el of ordered) {
     const type = el.type ?? 'cube';
+    // Nicht exportierte Elemente und reine Hilfsobjekte (Locator, Platzhalter für 2D-Items …) still überspringen
+    if (el.export === false || NON_GEOMETRY_TYPES.has(type)) continue;
     if (type !== 'cube') {
-      if (type !== 'texture_mesh' && type !== 'locator' && type !== 'null_object') skippedNonCubes++;
+      skippedNonCubes++;
       continue;
     }
-    if (el.export === false) continue;
     if (!Array.isArray(el.from) || !Array.isArray(el.to)) continue;
 
     const inflate = typeof el.inflate === 'number' ? el.inflate : 0;

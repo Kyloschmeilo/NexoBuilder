@@ -29,10 +29,13 @@ und exportierst alles als ZIP, das du direkt in `plugins/Nexo/` entpackst.
     (NoteBlock/StringBlock/ChorusBlock), Rucksack, Befehle, Custom-Aktionen, Rüstungs-Effekte, Ernten, Schmelzen …
   - Rüstungs-Texturen (getragen) → erzeugt Equipment-Modelle im Pack
   - Für alles andere: zusätzliches YAML pro Item
+- **Rezepte** – Werkbank (mit/ohne Form), Ofen, Schmelzofen, Räucherofen, Lagerfeuer und Steinsäge
+  → `recipes/<typ>/<projekt>.yml`
 - **Prüfung vor dem Export** – doppelte IDs, ungültige Werte, Modelle außerhalb des erlaubten Bereichs,
   fehlende Texturen, Versionskonflikte usw.
 - **Export als ZIP**
   - `items/<ordner>/<ordner>.yml` (oder eine Datei pro Item)
+  - `recipes/<typ>/<projekt>.yml` (falls Rezepte angelegt wurden)
   - `pack/external_packs/<packname>/` (oder als `.zip`) mit `pack.mcmeta`, Modellen und Texturen
   - Alternativ nur der Resourcepack oder nur die Item-Configs
 - **Automatisches Speichern** im Browser, Rückgängig/Wiederholen (Strg+Z / Strg+Y),
@@ -42,12 +45,15 @@ und exportierst alles als ZIP, das du direkt in `plugins/Nexo/` entpackst.
 
 ### Variante A: Einzelne HTML-Datei (ohne Installation)
 
+Fertig gebaut gibt es die Datei bei jedem Push unter **GitHub → Actions → Build → Artefakt „NexoBuilder“**
+(`NexoBuilder.html`). Oder selbst bauen:
+
 ```bash
 npm install
 npm run build:single
 ```
 
-Danach `dist-single/index.html` per Doppelklick im Browser (Chrome, Edge oder Firefox) öffnen.
+Danach `dist-single/index.html` (bzw. `NexoBuilder.html`) per Doppelklick im Browser (Chrome, Edge oder Firefox) öffnen.
 Die Datei kann beliebig kopiert werden und funktioniert offline.
 
 ### Variante B: Entwicklungsserver

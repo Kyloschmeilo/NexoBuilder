@@ -16,6 +16,7 @@ import { GeneralTab } from './GeneralTab';
 import { ModelTab } from './ModelTab';
 import { countActiveProperties, PropertiesPanel } from './PropertiesPanel';
 import { YamlTab } from './YamlTab';
+import { RecipesTab } from './RecipesTab';
 
 const TABS: Array<{ id: EditorTab; label: string }> = [
   { id: 'general', label: 'Allgemein' },
@@ -23,6 +24,7 @@ const TABS: Array<{ id: EditorTab; label: string }> = [
   { id: 'attributes', label: 'Attribute' },
   { id: 'components', label: 'Komponenten' },
   { id: 'mechanics', label: 'Mechaniken' },
+  { id: 'recipes', label: 'Rezepte' },
   { id: 'yaml', label: 'YAML' },
 ];
 
@@ -60,6 +62,7 @@ export function ItemEditor({ itemId, plan }: { itemId: string; plan: ExportPlan 
     attributes: countActiveProperties(item, 'attributes'),
     components: countActiveProperties(item, 'components'),
     mechanics: countActiveProperties(item, 'mechanics'),
+    recipes: item.recipes?.length ?? 0,
   };
 
   return (
@@ -113,6 +116,7 @@ export function ItemEditor({ itemId, plan }: { itemId: string; plan: ExportPlan 
           <PropertiesPanel item={item} groups={['components']} title="Komponenten" emptyText="Keine Komponenten." />
         )}
         {activeTab === 'mechanics' && <PropertiesPanel item={item} groups={['mechanics']} title="Mechaniken" emptyText="Keine Mechaniken." />}
+        {activeTab === 'recipes' && <RecipesTab item={item} />}
         {activeTab === 'yaml' && <YamlTab item={item} plan={plan} />}
       </div>
     </FieldContext.Provider>

@@ -221,10 +221,12 @@ describe('convertBBModel', () => {
   });
 
   it('exportiert reine Textur-Modelle (item/generated) mit allen Texturen', () => {
+    const placeholder = { type: 'generated_item_mesh', uuid: 'gen', name: 'layer0', export: false };
     const result = convertBBModel(
-      bbmodel({ parent: 'item/generated', elements: [], outliner: [], textures: [texture({ id: 'layer0' })] }),
+      bbmodel({ parent: 'item/generated', elements: [placeholder], outliner: ['gen'], textures: [texture({ id: 'layer0' })] }),
       'x',
     );
+    expect(result.issues.filter((i) => i.level !== 'info')).toEqual([]);
     expect(result.json.textures).toEqual({ layer0: '$tex:t0' });
     expect(result.json.elements).toBeUndefined();
     expect(result.issues.filter((i) => i.level === 'error')).toHaveLength(0);

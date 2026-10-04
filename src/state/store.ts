@@ -39,7 +39,7 @@ export interface Toast {
   message: string;
 }
 
-export type EditorTab = 'general' | 'model' | 'attributes' | 'components' | 'mechanics' | 'yaml';
+export type EditorTab = 'general' | 'model' | 'attributes' | 'components' | 'mechanics' | 'recipes' | 'yaml';
 
 export type SaveStatus = 'idle' | 'saving' | 'saved' | 'error';
 
