@@ -1,0 +1,45 @@
+{
+  "name": "nexobuilder",
+  "private": true,
+  "version": "1.0.0",
+  "description": "Erstellt aus Blockbench-Modellen (.bbmodel), Java-Modellen (JSON + PNG) oder Texturen fertige Nexo-Items inklusive Resourcepack (external pack).",
+  "author": {
+    "name": "Kyloschmeilo"
+  },
+  "homepage": "https://github.com/Kyloschmeilo/NexoBuilder",
+  "type": "module",
+  "main": "electron/main.cjs",
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc -b && vite build",
+    "build:single": "tsc -b && vite build --mode single",
+    "preview": "vite preview",
+    "typecheck": "tsc -b",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "app": "npm run build:single && electron .",
+    "dist:win": "npm run build:single && electron-builder --win --x64 --publish never",
+    "icon": "node scripts/make-icon.mjs"
+  },
+  "devDependencies": {
+    "@types/node": "^22.0.0",
+    "@types/react": "^19.3.0",
+    "@types/react-dom": "^19.3.0",
+    "@types/three": "^0.186.0",
+    "@vitejs/plugin-react": "^6.1.1",
+    "electron": "^44.5.1",
+    "electron-builder": "^26.15.3",
+    "idb-keyval": "^6.3.0",
+    "immer": "^11.1.21",
+    "jszip": "^3.10.2",
+    "lucide-react": "^1.52.0",
+    "react": "^19.3.0",
+    "react-dom": "^19.3.0",
+    "three": "^0.186.1",
+    "typescript": "~6.0.3",
+    "vite": "^8.3.2",
+    "vitest": "^5.0.3",
+    "yaml": "^2.9.1",
+    "zustand": "^5.0.15"
+  }
+}

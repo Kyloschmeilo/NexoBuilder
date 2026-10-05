@@ -1,0 +1,72 @@
+name: Build
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - run: npm run typecheck
+      - run: npm test
+      - run: npm run build:single
+      - run: cp dist-single/index.html NexoBuilder.html
+      - uses: actions/upload-artifact@v4
+        with:
+          name: NexoBuilder
+          path: NexoBuilder.html
+
+  windows:
+    name: Windows-Programm (.exe)
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - run: npm run dist:win
+        env:
+          CSC_IDENTITY_AUTO_DISCOVERY: 'false'
+      - uses: actions/upload-artifact@v4
+        with:
+          name: NexoBuilder-Windows
+          path: release/*.exe
+      - name: Installer still installieren
+        shell: pwsh
+        run: |
+          $setup = Get-ChildItem release/NexoBuilder-Setup-*.exe | Select-Object -First 1
+          Start-Process -FilePath $setup.FullName -ArgumentList '/S' -Wait
+          $exe = "$env:LOCALAPPDATA\Programs\NexoBuilder\NexoBuilder.exe"
+          if (-not (Test-Path $exe)) { throw "Installation fehlgeschlagen: $exe fehlt" }
+          "NEXO_EXE=$exe" >> $env:GITHUB_ENV
+      - name: Installiertes Programm testen
+        shell: pwsh
+        run: |
+          npm install --no-save playwright-core
+          node scripts/test-windows-exe.cjs "$env:NEXO_EXE" exe-test
+      - name: Portable-Version starten
+        shell: pwsh
+        run: |
+          $portable = Get-ChildItem release/*-portable.exe | Select-Object -First 1
+          Start-Process -FilePath $portable.FullName
+          Start-Sleep -Seconds 25
+          $running = Get-Process NexoBuilder -ErrorAction SilentlyContinue | Where-Object { $_.MainWindowTitle -eq 'NexoBuilder' }
+          Get-Process NexoBuilder -ErrorAction SilentlyContinue | Stop-Process -Force
+          if (-not $running) { throw 'Portable-Version hat kein Fenster geöffnet' }
+          'Portable-Version startet und zeigt das Fenster.'
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: Windows-Test
+          path: |
+            exe-test/*.png
+            exe-test/downloads/*.zip
