@@ -53,7 +53,8 @@ und exportierst alles als ZIP, das du direkt in `plugins/Nexo/` entpackst.
 - **Installer:** `NexoBuilder-Setup-<version>.exe` – installiert NexoBuilder mit Startmenü- und Desktop-Verknüpfung.
 - **Portable:** `NexoBuilder-<version>-portable.exe` – ohne Installation direkt starten.
 
-Beide werden bei jedem Push automatisch gebaut: **GitHub → Actions → Build → Artefakt „NexoBuilder-Windows“**.
+**Download:** auf GitHub unter **[Releases](https://github.com/Kyloschmeilo/NexoBuilder/releases/latest)**.
+Zwischenstände werden zusätzlich bei jedem Push gebaut: **GitHub → Actions → Build → Artefakt „NexoBuilder-Windows“**.
 Selbst bauen (Windows, oder Linux mit Wine):
 
 ```bash
@@ -67,7 +68,7 @@ Projekte werden automatisch gespeichert (im App-Datenordner, siehe *Hilfe → Ü
 
 ### Einzelne HTML-Datei (ohne Installation)
 
-Fertig gebaut gibt es die Datei bei jedem Push unter **GitHub → Actions → Build → Artefakt „NexoBuilder“**
+Fertig gebaut gibt es die Datei unter **[Releases](https://github.com/Kyloschmeilo/NexoBuilder/releases/latest)** und bei jedem Push unter **GitHub → Actions → Build → Artefakt „NexoBuilder“**
 (`NexoBuilder.html`). Oder selbst bauen:
 
 ```bash
@@ -131,6 +132,10 @@ npm run build     # Produktions-Build nach dist/
 npm run app       # Desktop-Programm (Electron) lokal starten
 npm run icon      # App-Icon (build/icon.png) neu erzeugen
 ```
+
+Neue Version veröffentlichen: Version in `package.json` erhöhen, in `CHANGELOG.md` einen Abschnitt
+`## <version>` ergänzen und einen Tag `v<version>` pushen (z.B. `git tag v1.0.1 && git push origin v1.0.1`).
+GitHub Actions baut und testet dann die exe und erstellt den Release mit Installer, Portable-exe und HTML-Datei.
 
 Aufbau:
 
