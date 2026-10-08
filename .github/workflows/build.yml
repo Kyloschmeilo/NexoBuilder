@@ -3,6 +3,13 @@ name: Build
 on:
   push:
   pull_request:
+  # Release per Knopfdruck: Actions → Build → „Run workflow“
+  workflow_dispatch:
+    inputs:
+      release:
+        description: 'GitHub-Release für die Version aus package.json erstellen'
+        type: boolean
+        default: true
 
 jobs:
   build:
@@ -73,8 +80,8 @@ jobs:
 
   release:
     name: GitHub-Release
-    # Nur bei Versions-Tags (z.B. v1.0.0) und nur, wenn Build und Windows-Test erfolgreich waren
-    if: startsWith(github.ref, 'refs/tags/v')
+    # Bei Versions-Tags (z.B. v1.0.0) oder per „Run workflow“ – und nur, wenn Build und Windows-Test erfolgreich waren
+    if: startsWith(github.ref, 'refs/tags/v') || (github.event_name == 'workflow_dispatch' && inputs.release)
     needs: [build, windows]
     runs-on: ubuntu-latest
     permissions:
@@ -84,10 +91,11 @@ jobs:
       - name: Version und Changelog prüfen
         run: |
           version=$(node -p "require('./package.json').version")
-          if [ "v$version" != "$GITHUB_REF_NAME" ]; then
+          if [ "$GITHUB_REF_TYPE" = "tag" ] && [ "v$version" != "$GITHUB_REF_NAME" ]; then
             echo "Tag $GITHUB_REF_NAME passt nicht zur Version $version in package.json"
             exit 1
           fi
+          echo "TAG=v$version" >> "$GITHUB_ENV"
           awk -v v="$version" '/^## /{p = ($2 == v); next} p' CHANGELOG.md > release-notes.md
           if [ ! -s release-notes.md ]; then
             echo "CHANGELOG.md hat keinen Abschnitt „## $version“"
@@ -106,5 +114,10 @@ jobs:
           GH_TOKEN: ${{ github.token }}
         run: |
           ls -la dist-release
-          gh release create "$GITHUB_REF_NAME" dist-release/*.exe dist-release/NexoBuilder.html \
-            --title "NexoBuilder $GITHUB_REF_NAME" --notes-file release-notes.md --verify-tag
+          if gh release view "$TAG" >/dev/null 2>&1; then
+            echo "Release $TAG gibt es schon – für einen neuen Release die Version in package.json erhöhen"
+            exit 1
+          fi
+          # Legt den Tag an, falls es ihn noch nicht gibt (Release per „Run workflow“)
+          gh release create "$TAG" dist-release/*.exe dist-release/NexoBuilder.html \
+            --target "$GITHUB_SHA" --title "NexoBuilder $TAG" --notes-file release-notes.md

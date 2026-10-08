@@ -134,8 +134,9 @@ npm run icon      # App-Icon (build/icon.png) neu erzeugen
 ```
 
 Neue Version veröffentlichen: Version in `package.json` erhöhen, in `CHANGELOG.md` einen Abschnitt
-`## <version>` ergänzen und einen Tag `v<version>` pushen (z.B. `git tag v1.0.1 && git push origin v1.0.1`).
-GitHub Actions baut und testet dann die exe und erstellt den Release mit Installer, Portable-exe und HTML-Datei.
+`## <version>` ergänzen und dann auf GitHub unter **Actions → Build → Run workflow** starten
+(oder einen Tag `v<version>` pushen). GitHub Actions baut und testet die exe und erstellt den Release
+`v<version>` mit Installer, Portable-exe und HTML-Datei.
 
 Aufbau:
 
