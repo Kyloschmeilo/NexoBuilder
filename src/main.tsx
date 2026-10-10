@@ -4,6 +4,7 @@ import App from './App';
 import './styles.css';
 import { useStore } from './state/store';
 import { getLastProjectId, loadProject, startAutosave } from './state/persistence';
+import { startShareController } from './state/share';
 
 async function boot() {
   try {
@@ -16,6 +17,7 @@ async function boot() {
     console.warn('Letztes Projekt konnte nicht geladen werden', err);
   }
   startAutosave();
+  startShareController();
   createRoot(document.getElementById('root')!).render(
     <StrictMode>
       <App />

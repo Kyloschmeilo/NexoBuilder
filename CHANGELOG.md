@@ -1,5 +1,26 @@
 # Changelog
 
+## 1.1.0
+
+### Neu: Projekte teilen
+
+Gemeinsam an einem Projekt arbeiten – Änderungen kommen automatisch bei allen an, in beide Richtungen.
+
+- **Teilen** (oben in der Leiste): das Projekt in einen gemeinsamen Ordner legen, z.B. in OneDrive, Google Drive oder Dropbox.
+- **Geteiltes Projekt öffnen** (Startseite oder Projektmenü): ein geteiltes Projekt von Freunden öffnen.
+- Jedes Item, jeder Ordner und jede Glyphe ist eine eigene Datei. Gleichzeitige Arbeit an verschiedenen Items geht nicht verloren;
+  bei gleichzeitigen Änderungen am selben Item gilt die zuletzt gespeicherte.
+- Meldung, wer was geändert hat. „Rückgängig“ nimmt nur eigene Änderungen zurück.
+- Offline weiterarbeiten: Änderungen werden beim nächsten Start in beide Richtungen nachgeholt.
+
+Teilen gibt es im Windows-Programm (nicht in der HTML-Version).
+
+### Download
+
+- **`NexoBuilder-Setup-1.1.0.exe`**: Installer mit Startmenü- und Desktop-Verknüpfung.
+- **`NexoBuilder-1.1.0-portable.exe`**: ohne Installation direkt starten.
+- **`NexoBuilder.html`**: die App als einzelne Datei für den Browser (ohne Teilen).
+
 ## 1.0.0
 
 Erste Version von NexoBuilder: fertige [Nexo](https://docs.nexomc.com/)-Items mit Resourcepack aus

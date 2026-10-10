@@ -15,6 +15,7 @@ export type DialogState =
   | { type: 'newProject' }
   | { type: 'projects' }
   | { type: 'moveItem'; itemId: string }
+  | { type: 'share' }
   | {
       type: 'confirm';
       title: string;
@@ -62,6 +63,11 @@ interface AppState {
   mutate: (recipe: (draft: Project) => void, historyKey?: string) => void;
   undo: () => void;
   redo: () => void;
+  /**
+   * Änderungen anderer (geteiltes Projekt) übernehmen. Wird auch auf den Verlauf angewendet,
+   * damit „Rückgängig“ nur eigene Änderungen zurücknimmt und nie die der anderen.
+   */
+  applyRemote: (transform: (project: Project) => Project) => void;
   select: (selection: Selection) => void;
   setExpanded: (folderId: string, open: boolean) => void;
   openDialog: (dialog: DialogState) => void;
@@ -134,6 +140,13 @@ export const useStore = create<AppState>((set, get) => ({
     if (!project || future.length === 0) return;
     const [next, ...rest] = future;
     set({ project: next, past: [...past, project], future: rest, historyKey: null });
+    fixSelection();
+  },
+
+  applyRemote: (transform) => {
+    const { project, past, future } = get();
+    if (!project) return;
+    set({ project: transform(project), past: past.map(transform), future: future.map(transform), historyKey: null });
     fixSelection();
   },
 

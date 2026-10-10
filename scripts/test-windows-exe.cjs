@@ -2,6 +2,8 @@
  * Automatischer Test des installierten Windows-Programms (läuft in GitHub Actions auf Windows).
  * Startet NexoBuilder.exe, legt Projekt, Ordner und Item an, exportiert das Pack,
  * prüft den Inhalt der ZIP und ob das Projekt nach einem Neustart noch da ist.
+ * Danach wird das Projekt über einen Ordner geteilt und ein zweites Programm (eigene Daten)
+ * öffnet es – Änderungen müssen in beide Richtungen ankommen.
  *
  * Aufruf: node scripts/test-windows-exe.cjs <Pfad zur NexoBuilder.exe> <Ausgabeordner> [App-Ordner]
  * (App-Ordner nur beim Test mit dem nackten Electron aus node_modules)
@@ -17,6 +19,8 @@ const out = path.resolve(process.argv[3] ?? 'exe-test');
 const appDir = process.argv[4];
 const downloads = path.join(out, 'downloads');
 const userData = path.join(out, 'userdata');
+const userData2 = path.join(out, 'userdata-2');
+const shareDir = path.join(out, 'geteilt');
 fs.mkdirSync(downloads, { recursive: true });
 
 /** 16x16-PNG (rot/gelb kariert) als Test-Textur */
@@ -68,13 +72,21 @@ function makePng() {
 const errors = [];
 // Rechner ohne Grafikkarte (z.B. CI) können kein WebGL – dann fehlt nur die 3D-Vorschau
 const webglErrors = [];
-const launch = () =>
+const launch = (dataDir = userData) =>
   electron.launch({
     executablePath: exe,
-    args: [...(appDir ? [appDir] : []), `--user-data-dir=${userData}`],
-    env: { ...process.env, NEXOBUILDER_DOWNLOAD_DIR: downloads },
+    args: [...(appDir ? [appDir] : []), `--user-data-dir=${dataDir}`],
+    env: { ...process.env, NEXOBUILDER_DOWNLOAD_DIR: downloads, NEXOBUILDER_TEST_SHARE_DIR: shareDir },
     timeout: 60000,
   });
+
+function watchConsole(win) {
+  win.on('pageerror', (e) => errors.push('pageerror ' + e.message));
+  win.on('console', (m) => {
+    if (m.type() !== 'error') return;
+    (/WebGL/.test(m.text()) ? webglErrors : errors).push(m.text());
+  });
+}
 
 async function step(name, fn) {
   try {
@@ -92,11 +104,7 @@ async function step(name, fn) {
 
   let app = await launch();
   let win = await app.firstWindow();
-  win.on('pageerror', (e) => errors.push('pageerror ' + e.message));
-  win.on('console', (m) => {
-    if (m.type() !== 'error') return;
-    (/WebGL/.test(m.text()) ? webglErrors : errors).push(m.text());
-  });
+  watchConsole(win);
   await win.waitForLoadState('domcontentloaded');
 
   await step('Fenster geöffnet', async () => {
@@ -153,9 +161,41 @@ async function step(name, fn) {
   await step('Projekt nach Neustart noch da', async () => {
     app = await launch();
     win = await app.firstWindow();
+    watchConsole(win);
     await win.locator('.tree-row', { hasText: 'Feuerschwert' }).waitFor({ timeout: 20000 });
-    await app.close();
   });
+
+  const nameInput = (w) => w.getByPlaceholder('z.B. <gradient:#ff5555:#ffaa00>Feuerschwert');
+  let app2;
+  let win2;
+  await step('Projekt über einen Ordner teilen', async () => {
+    await win.locator('.topbar .share-chip').click();
+    await win.locator('.modal input[placeholder="z.B. Kylo"]').fill('Anna');
+    await win.getByRole('button', { name: 'Ordner wählen und teilen' }).click();
+    await win.locator('.modal .badge', { hasText: 'Aktuell' }).waitFor({ timeout: 20000 });
+    await win.getByRole('button', { name: 'Fertig' }).click();
+    if (!fs.existsSync(path.join(shareDir, 'project.json'))) throw new Error('project.json fehlt im geteilten Ordner');
+  });
+  await step('Zweites Programm öffnet das geteilte Projekt', async () => {
+    app2 = await launch(userData2);
+    win2 = await app2.firstWindow();
+    watchConsole(win2);
+    await win2.getByRole('button', { name: 'Geteiltes Projekt öffnen' }).click();
+    await win2.locator('.tree-row', { hasText: 'Feuerschwert' }).waitFor({ timeout: 20000 });
+  });
+  await step('Änderung im zweiten Programm kommt im ersten an', async () => {
+    await win2.locator('.tree-row', { hasText: 'Feuerschwert' }).click();
+    await nameInput(win2).fill('Eisschwert');
+    await win.locator('.tree-row', { hasText: 'Eisschwert' }).waitFor({ timeout: 20000 });
+  });
+  await step('Änderung im ersten Programm kommt im zweiten an', async () => {
+    await win.locator('.tree-row', { hasText: 'Eisschwert' }).click();
+    await nameInput(win).fill('Donnerschwert');
+    await win2.locator('.tree-row', { hasText: 'Donnerschwert' }).waitFor({ timeout: 20000 });
+    await win2.screenshot({ path: path.join(out, 'nexobuilder-windows-geteilt.png') });
+  });
+  await app2.close();
+  await app.close();
 
   console.log(webglErrors.length ? 'Hinweis: 3D-Vorschau ohne WebGL (keine Grafikkarte)' : 'OK   3D-Vorschau (WebGL)');
   if (errors.length) {
