@@ -15,6 +15,7 @@ import { NewItemDialog } from './ui/dialogs/NewItemDialog';
 import { ExportDialog } from './ui/dialogs/ExportDialog';
 import { SettingsDialog } from './ui/dialogs/SettingsDialog';
 import { MoveItemDialog } from './ui/dialogs/MoveItemDialog';
+import { ShareDialog } from './ui/dialogs/ShareDialog';
 import { filesFromDataTransfer } from './ui/files';
 
 function DialogHost() {
@@ -43,6 +44,8 @@ function DialogHost() {
       return <SettingsDialog />;
     case 'moveItem':
       return <MoveItemDialog itemId={dialog.itemId} />;
+    case 'share':
+      return <ShareDialog />;
   }
 }
 

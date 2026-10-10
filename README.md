@@ -45,6 +45,8 @@ und exportierst alles als ZIP, das du direkt in `plugins/Nexo/` entpackst.
   - Alternativ nur der Resourcepack oder nur die Item-Configs
 - **Automatisches Speichern** im Browser, Rückgängig/Wiederholen (Strg+Z / Strg+Y),
   Projektdateien zum Sichern und Weitergeben.
+- **Projekte teilen** (Windows-Programm) – über einen gemeinsamen Ordner in OneDrive, Google Drive oder Dropbox
+  gemeinsam an einem Projekt arbeiten; Änderungen kommen nach wenigen Sekunden bei allen an, in beide Richtungen.
 
 ## Benutzung
 
@@ -53,7 +55,8 @@ und exportierst alles als ZIP, das du direkt in `plugins/Nexo/` entpackst.
 - **Installer:** `NexoBuilder-Setup-<version>.exe` – installiert NexoBuilder mit Startmenü- und Desktop-Verknüpfung.
 - **Portable:** `NexoBuilder-<version>-portable.exe` – ohne Installation direkt starten.
 
-Beide werden bei jedem Push automatisch gebaut: **GitHub → Actions → Build → Artefakt „NexoBuilder-Windows“**.
+**Download:** auf GitHub unter **[Releases](https://github.com/Kyloschmeilo/NexoBuilder/releases/latest)**.
+Zwischenstände werden zusätzlich bei jedem Push gebaut: **GitHub → Actions → Build → Artefakt „NexoBuilder-Windows“**.
 Selbst bauen (Windows, oder Linux mit Wine):
 
 ```bash
@@ -67,7 +70,7 @@ Projekte werden automatisch gespeichert (im App-Datenordner, siehe *Hilfe → Ü
 
 ### Einzelne HTML-Datei (ohne Installation)
 
-Fertig gebaut gibt es die Datei bei jedem Push unter **GitHub → Actions → Build → Artefakt „NexoBuilder“**
+Fertig gebaut gibt es die Datei unter **[Releases](https://github.com/Kyloschmeilo/NexoBuilder/releases/latest)** und bei jedem Push unter **GitHub → Actions → Build → Artefakt „NexoBuilder“**
 (`NexoBuilder.html`). Oder selbst bauen:
 
 ```bash
@@ -86,6 +89,27 @@ npm run dev
 ```
 
 und <http://localhost:5173> öffnen.
+
+### Projekte teilen und gemeinsam bearbeiten
+
+Funktioniert im Windows-Programm. Ihr braucht einen Ordner, den ihr gemeinsam nutzt – z.B. in **OneDrive**,
+**Google Drive** oder **Dropbox** (Ordner anlegen und für die anderen freigeben).
+
+1. Projekt öffnen → oben auf **Teilen** klicken → Namen eintragen → **Ordner wählen und teilen** → den gemeinsamen Ordner wählen.
+   Liegen darin schon andere Dateien, legt NexoBuilder einen Unterordner mit dem Projektnamen an.
+2. Die anderen klicken auf der Startseite (oder im Projektmenü) auf **Geteiltes Projekt öffnen** und wählen denselben Ordner.
+3. Ab jetzt kommen Änderungen automatisch bei allen an – meist nach wenigen Sekunden, je nachdem wie schnell der
+   Cloud-Dienst die Dateien überträgt. Oben zeigt ein Punkt den Zustand: grün = aktuell, gelb = überträgt bzw. Ordner
+   gerade nicht erreichbar (Änderungen werden nachgeholt), rot = Fehler.
+
+Gut zu wissen:
+
+- Jedes Item, jeder Ordner und jede Glyphe ist eine eigene Datei. Arbeiten mehrere gleichzeitig an verschiedenen Items,
+  bleibt alles erhalten. Ändern zwei Personen gleichzeitig **dasselbe** Item, gilt die zuletzt gespeicherte Änderung.
+- **Rückgängig** nimmt nur deine eigenen Änderungen zurück, nie die der anderen.
+- Wer offline arbeitet, bekommt die Änderungen der anderen beim nächsten Start – und die eigenen werden dann übertragen.
+- **Teilen beenden** trennt nur die Verbindung; deine Kopie und der Ordner bleiben erhalten.
+- Die Dateien im geteilten Ordner bitte nicht von Hand ändern.
 
 ### Installation der exportierten Items auf dem Server
 
@@ -132,10 +156,17 @@ npm run app       # Desktop-Programm (Electron) lokal starten
 npm run icon      # App-Icon (build/icon.png) neu erzeugen
 ```
 
+Neue Version veröffentlichen: Version in `package.json` erhöhen, in `CHANGELOG.md` einen Abschnitt
+`## <version>` ergänzen und dann auf GitHub unter **Actions → Build → Run workflow** starten
+(oder einen Tag `v<version>` pushen). GitHub Actions baut und testet die exe und erstellt den Release
+`v<version>` mit Installer, Portable-exe und HTML-Datei.
+
 Aufbau:
 
 - `src/core/model` – Import von `.bbmodel`, Java-JSON und PNG
 - `src/core/nexo` – Eigenschafts-Schema, YAML-Erzeugung
 - `src/core/export` – Export-Planung, Prüfungen, ZIP
+- `src/core/sync` – Abgleich geteilter Projekte (Dateiformat, Zusammenführen, Konflikte)
 - `src/ui` – Oberfläche (React), 3D-Vorschau (three.js)
-- `electron/` – Desktop-Programm (Electron), Konfiguration in `electron-builder.yml`
+- `electron/` – Desktop-Programm (Electron), Konfiguration in `electron-builder.yml`;
+  `share.cjs` regelt den Zugriff auf geteilte Ordner (nur selbst gewählte Ordner, nur Projektdateien)

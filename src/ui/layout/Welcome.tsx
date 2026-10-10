@@ -1,11 +1,12 @@
 import { useEffect, useState } from 'react';
-import { FolderOpen, FolderPlus, Package, Trash2, Upload } from 'lucide-react';
+import { FolderOpen, FolderPlus, FolderSync, Package, Trash2, Upload } from 'lucide-react';
 import { DEFAULT_MC_VERSION, MC_VERSIONS } from '../../core/minecraft/versions';
 import { NAMESPACE_PATTERN, slugify } from '../../core/util';
-import { isStorageAvailable, listProjects, type ProjectSummary } from '../../state/persistence';
+import { isStorageAvailable, listProjects, listSharedProjectIds, type ProjectSummary } from '../../state/persistence';
+import { isShareAvailable } from '../../state/share';
 import { useStore } from '../../state/store';
 import { Modal } from '../common/Modal';
-import { openProjectFile, openStoredProject, removeStoredProject, startNewProject } from '../projectActions';
+import { openProjectFile, openSharedProjectFromFolder, openStoredProject, removeStoredProject, startNewProject } from '../projectActions';
 
 export function NewProjectForm({ onDone }: { onDone?: () => void }) {
   const [name, setName] = useState('');
@@ -67,8 +68,12 @@ export function NewProjectForm({ onDone }: { onDone?: () => void }) {
 
 export function ProjectList({ onOpened }: { onOpened?: () => void }) {
   const [projects, setProjects] = useState<ProjectSummary[] | null>(null);
+  const [sharedIds, setSharedIds] = useState<Set<string>>(new Set());
   const currentId = useStore((s) => s.project?.id);
-  const refresh = () => void listProjects().then(setProjects).catch(() => setProjects([]));
+  const refresh = () => {
+    void listProjects().then(setProjects).catch(() => setProjects([]));
+    void listSharedProjectIds().then(setSharedIds).catch(() => undefined);
+  };
   useEffect(refresh, []);
   if (!isStorageAvailable()) {
     return <div className="faint small">Projekte können in diesem Browser nicht gespeichert werden. Bitte Projektdateien verwenden.</div>;
@@ -89,7 +94,8 @@ export function ProjectList({ onOpened }: { onOpened?: () => void }) {
           <Package size={18} className="faint" />
           <div className="pr-main">
             <div style={{ fontWeight: 600 }}>
-              {p.name} {p.id === currentId && <span className="badge accent">geöffnet</span>}
+              {p.name} {p.id === currentId && <span className="badge accent">geöffnet</span>}{' '}
+              {sharedIds.has(p.id) && <span className="badge success">geteilt</span>}
             </div>
             <div className="pr-meta">
               {p.itemCount} Item(s) · <span className="mono">{p.namespace}</span> · zuletzt {new Date(p.updatedAt).toLocaleString('de-DE')}
@@ -143,6 +149,11 @@ export function Welcome() {
           <div className="card mb-0">
             <div className="card-header">
               <h3 className="grow">Gespeicherte Projekte</h3>
+              {isShareAvailable() && (
+                <button className="btn small" onClick={() => void openSharedProjectFromFolder()}>
+                  <FolderSync size={14} /> Geteiltes Projekt öffnen
+                </button>
+              )}
               <button className="btn small" onClick={() => void openProjectFile()}>
                 <Upload size={14} /> Projektdatei öffnen
               </button>
@@ -195,16 +206,27 @@ export function ProjectsDialog({ initialTab = 'open' }: { initialTab?: 'open' | 
       {tab === 'open' ? (
         <div className="col">
           <ProjectList onOpened={close} />
-          <button
-            className="btn"
-            style={{ alignSelf: 'flex-start' }}
-            onClick={async () => {
-              await openProjectFile();
-              close();
-            }}
-          >
-            <Upload size={14} /> Projektdatei öffnen
-          </button>
+          <div className="row" style={{ gap: 8 }}>
+            <button
+              className="btn"
+              onClick={async () => {
+                await openProjectFile();
+                close();
+              }}
+            >
+              <Upload size={14} /> Projektdatei öffnen
+            </button>
+            {isShareAvailable() && (
+              <button
+                className="btn"
+                onClick={async () => {
+                  if (await openSharedProjectFromFolder()) close();
+                }}
+              >
+                <FolderSync size={14} /> Geteiltes Projekt öffnen
+              </button>
+            )}
+          </div>
         </div>
       ) : (
         <NewProjectForm onDone={close} />

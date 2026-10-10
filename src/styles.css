@@ -1325,6 +1325,60 @@ a {
   max-width: 340px;
 }
 
+/* Geteilte Projekte */
+.share-status {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+.share-path {
+  font-family: var(--mono);
+  font-size: 12px;
+  padding: 7px 10px;
+  border-radius: var(--radius-sm);
+  background: var(--bg-input);
+  border: 1px solid var(--border);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.share-steps {
+  margin: 0;
+  padding-left: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  color: var(--text-dim);
+}
+.share-steps b {
+  color: var(--text);
+}
+.share-chip .share-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--text-faint);
+  flex: none;
+}
+.share-chip .share-dot.success {
+  background: var(--success);
+}
+.share-chip .share-dot.warning {
+  background: var(--warning);
+}
+.share-chip .share-dot.danger {
+  background: var(--danger);
+}
+.spin {
+  animation: spin 0.9s linear infinite;
+}
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
 @media (max-width: 1450px) {
   .rightpanel {
     width: 340px;

@@ -5,6 +5,7 @@ import {
   CircleCheck,
   Download,
   FolderOpen,
+  FolderSync,
   FilePlus2,
   PanelRight,
   PanelRightClose,
@@ -14,13 +15,39 @@ import {
   TriangleAlert,
   Undo2,
   Upload,
+  Users,
   X,
 } from 'lucide-react';
 import type { ExportPlan } from '../../core/export/plan';
 import { countIssues } from '../../core/export/plan';
 import { useStore } from '../../state/store';
 import { MenuItem, Popover } from '../common/Popover';
-import { closeProject, openProjectFile, saveProjectFile } from '../projectActions';
+import { closeProject, openProjectFile, openSharedProjectFromFolder, saveProjectFile } from '../projectActions';
+import { isShareAvailable, useShareStore } from '../../state/share';
+import { SHARE_STATUS_TEXT, shareStatusClass } from '../dialogs/ShareDialog';
+
+function ShareChip() {
+  const projectId = useStore((s) => s.project?.id);
+  const share = useShareStore();
+  const shared = share.projectId === projectId && share.status !== 'off';
+  return (
+    <button
+      className="btn ghost share-chip"
+      title={shared ? `Geteilt über ${share.folder} – ${SHARE_STATUS_TEXT[share.status]}` : 'Projekt mit anderen teilen'}
+      onClick={() => useStore.getState().openDialog({ type: 'share' })}
+    >
+      {shared ? (
+        <>
+          <span className={`share-dot ${shareStatusClass(share.status)}`} /> Geteilt
+        </>
+      ) : (
+        <>
+          <Users size={15} /> Teilen
+        </>
+      )}
+    </button>
+  );
+}
 
 export function TopBar({ plan }: { plan: ExportPlan | null }) {
   const project = useStore((s) => s.project);
@@ -55,6 +82,15 @@ export function TopBar({ plan }: { plan: ExportPlan | null }) {
                 open({ type: 'settings' });
               }}
             />
+            <MenuItem
+              icon={<Users size={15} />}
+              label="Projekt teilen …"
+              description="Mit anderen gemeinsam bearbeiten"
+              onClick={() => {
+                setMenuOpen(false);
+                open({ type: 'share' });
+              }}
+            />
             <div className="menu-sep" />
             <MenuItem
               icon={<Save size={15} />}
@@ -81,6 +117,16 @@ export function TopBar({ plan }: { plan: ExportPlan | null }) {
                 open({ type: 'projects' });
               }}
             />
+            {isShareAvailable() && (
+              <MenuItem
+                icon={<FolderSync size={15} />}
+                label="Geteiltes Projekt öffnen …"
+                onClick={() => {
+                  setMenuOpen(false);
+                  void openSharedProjectFromFolder();
+                }}
+              />
+            )}
             <MenuItem
               icon={<FilePlus2 size={15} />}
               label="Neues Projekt"
@@ -110,6 +156,7 @@ export function TopBar({ plan }: { plan: ExportPlan | null }) {
           <span className="faint small nowrap" title="Projekte werden automatisch im Browser gespeichert">
             {saveStatus === 'saving' ? 'Speichert …' : saveStatus === 'saved' ? 'Gespeichert' : saveStatus === 'error' ? 'Nicht gespeichert!' : ''}
           </span>
+          <ShareChip />
         </>
       )}
       <span className="topbar-spacer" />

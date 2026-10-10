@@ -1,7 +1,7 @@
 {
   "name": "nexobuilder",
   "private": true,
-  "version": "1.0.0",
+  "version": "1.1.0",
   "description": "Erstellt aus Blockbench-Modellen (.bbmodel), Java-Modellen (JSON + PNG) oder Texturen fertige Nexo-Items inklusive Resourcepack (external pack).",
   "author": {
     "name": "Kyloschmeilo"

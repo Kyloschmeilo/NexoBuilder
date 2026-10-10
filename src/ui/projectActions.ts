@@ -12,6 +12,7 @@ import {
   serializeProject,
 } from '../state/persistence';
 import { useStore } from '../state/store';
+import { openSharedProject } from '../state/share';
 import { downloadBytes, pickFiles, readAsText } from './files';
 
 export function startNewProject(name: string, namespace: string, minecraftVersion: string) {
@@ -64,5 +65,18 @@ export async function openProjectFile() {
     useStore.getState().toast('success', `Projekt „${project.name}“ geöffnet.`);
   } catch (err) {
     useStore.getState().toast('error', (err as Error).message);
+  }
+}
+
+/** Öffnet ein geteiltes Projekt aus einem Ordner (OneDrive, Google Drive, Dropbox …). */
+export async function openSharedProjectFromFolder(): Promise<boolean> {
+  try {
+    const name = await openSharedProject();
+    if (!name) return false;
+    useStore.getState().toast('success', `Geteiltes Projekt „${name}“ geöffnet. Änderungen werden jetzt automatisch abgeglichen.`);
+    return true;
+  } catch (err) {
+    useStore.getState().toast('error', (err as Error).message);
+    return false;
   }
 }

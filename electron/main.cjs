@@ -5,6 +5,7 @@
  */
 const { app, BrowserWindow, Menu, dialog, session, shell } = require('electron');
 const path = require('node:path');
+const { registerShareHandlers } = require('./share.cjs');
 
 const APP_NAME = 'NexoBuilder';
 const INDEX_HTML = path.join(__dirname, '..', 'dist-single', 'index.html');
@@ -41,6 +42,7 @@ function createWindow() {
       nodeIntegration: false,
       sandbox: true,
       spellcheck: false,
+      preload: path.join(__dirname, 'preload.cjs'),
     },
   });
 
@@ -115,6 +117,7 @@ app.on('second-instance', () => {
 
 app.whenReady().then(() => {
   buildMenu();
+  registerShareHandlers();
 
   // Exporte (ZIP) und Projektdateien über einen „Speichern unter“-Dialog sichern
   session.defaultSession.on('will-download', (_event, item) => {
