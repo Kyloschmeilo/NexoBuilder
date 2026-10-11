@@ -7,7 +7,7 @@
  */
 import { create } from 'zustand';
 import { planExport } from '../core/export/plan';
-import { nexoFolderFiles, patchNexoSettings } from '../core/testserver/files';
+import { nexoFolderFiles, nexoGiveCommand, patchNexoSettings } from '../core/testserver/files';
 import { desktopTestServer, type TestServerConfig, type TestServerLogLine, type TestServerState, type TestServerSyncResult } from './desktop';
 import { useStore } from './store';
 
@@ -200,6 +200,6 @@ export async function giveInTestServer(nexoId: string, amount = 1): Promise<stri
   // Erst die neuesten Dateien übertragen, damit das Item sicher existiert (Nexo lädt im Hintergrund neu)
   const result = await syncProject(true);
   if (result?.reloaded) await new Promise((resolve) => window.setTimeout(resolve, 2500));
-  await api().command(`nexo give ${player} ${nexoId} ${amount}`);
+  await api().command(nexoGiveCommand(nexoId, amount, player));
   return player;
 }

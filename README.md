@@ -143,7 +143,7 @@ Der Server liegt im App-Datenordner unter `testserver/server` (Knopf **Ordner**)
 
 1. Export-ZIP („Für den Nexo-Ordner“) in `plugins/Nexo/` entpacken.
 2. `/nexo reload all` ausführen (oder Server neu starten).
-3. Items mit `/nexo give <spieler> <item_id> [anzahl]` (z.B. `/nexo give @s ruby_sword`) oder über `/nexo inventory` holen.
+3. Items mit `/nexo give <item_id> [anzahl] [spieler]` (z.B. `/nexo give ruby_sword 1 Steve`) oder über `/nexo inventory` holen.
 
 ## Was wird erzeugt?
 

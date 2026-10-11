@@ -107,7 +107,7 @@ function Console() {
           className="input mono"
           value={command}
           disabled={status !== 'running'}
-          placeholder={status === 'running' ? 'z.B. nexo give @a ruby_sword  ·  gamemode creative Kylo' : 'Server läuft nicht'}
+          placeholder={status === 'running' ? 'z.B. nexo give ruby_sword 1 Kylo  ·  gamemode creative Kylo' : 'Server läuft nicht'}
           onChange={(e) => setCommand(e.target.value)}
           onKeyDown={(e) => {
             if (e.key === 'Enter') send();

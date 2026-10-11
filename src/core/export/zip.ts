@@ -97,7 +97,7 @@ export function installGuide(project: Project, plan: ExportPlan): string {
     '   (lädt Items, Rezepte und den Resourcepack neu – alternativ den Server neu starten)',
     '',
     '3. Items erhalten:',
-    '      /nexo give <spieler> <item_id> [anzahl]   (z.B. /nexo give @s ruby_sword)',
+    '      /nexo give <item_id> [anzahl] [spieler]   (z.B. /nexo give ruby_sword 1 Steve)',
     '   oder über das Nexo-Inventar:  /nexo inventory',
     '',
     `Namespace des Resourcepacks: ${project.namespace}`,
