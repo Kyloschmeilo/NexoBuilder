@@ -76,6 +76,7 @@ jobs:
           name: Windows-Test
           path: |
             exe-test/*.png
+            exe-test/*.txt
             exe-test/downloads/*.zip
 
   release:

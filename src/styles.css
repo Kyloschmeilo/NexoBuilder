@@ -1325,6 +1325,47 @@ a {
   max-width: 340px;
 }
 
+/* Testserver */
+.server-console {
+  height: 340px;
+  overflow: auto;
+  padding: 10px 12px;
+  background: #0c0d12;
+  border-top: 1px solid var(--border);
+  border-bottom: 1px solid var(--border);
+  font-family: var(--mono);
+  font-size: 11.5px;
+  line-height: 1.5;
+}
+.console-line {
+  white-space: pre-wrap;
+  word-break: break-word;
+  color: #c9cbd8;
+}
+.console-line.err {
+  color: #ff9aa4;
+}
+.console-line.info {
+  color: #9db8ff;
+}
+.console-input {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 12px;
+}
+.console-input .input {
+  flex: 1;
+}
+.hint progress {
+  height: 8px;
+  accent-color: var(--accent);
+  align-self: center;
+}
+.status-dot.success {
+  background: var(--success);
+}
+
 /* Geteilte Projekte */
 .share-status {
   display: flex;

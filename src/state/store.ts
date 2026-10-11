@@ -6,7 +6,12 @@ import { create } from 'zustand';
 import { produce } from 'immer';
 import type { Project } from '../core/types';
 
-export type Selection = { kind: 'item'; id: string } | { kind: 'folder'; id: string } | { kind: 'glyphs' } | null;
+export type Selection =
+  | { kind: 'item'; id: string }
+  | { kind: 'folder'; id: string }
+  | { kind: 'glyphs' }
+  | { kind: 'testserver' }
+  | null;
 
 export type DialogState =
   | { type: 'newItem'; folderId: string; files?: File[] }
@@ -170,7 +175,7 @@ function fixSelection() {
   const { selection, project } = useStore.getState();
   if (!selection || !project) return;
   const exists =
-    selection.kind === 'glyphs' ? true : selection.kind === 'item' ? !!project.items[selection.id] : !!project.folders[selection.id];
+    selection.kind === 'glyphs' || selection.kind === 'testserver' ? true : selection.kind === 'item' ? !!project.items[selection.id] : !!project.folders[selection.id];
   if (!exists) useStore.setState({ selection: null });
 }
 

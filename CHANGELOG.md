@@ -1,5 +1,32 @@
 # Changelog
 
+## 1.2.0
+
+### Neu: Lokaler Testserver
+
+Ein Minecraft-Server (Paper) mit Nexo direkt auf deinem PC, der sich automatisch aktualisiert.
+
+- Bereich **Testserver** links unten: Nexo-JAR auswählen, Minecraft-Version wählen, EULA akzeptieren, starten.
+- Paper und – falls nötig – Java werden beim ersten Start automatisch heruntergeladen.
+- Jede Änderung im Projekt landet nach wenigen Sekunden im Spiel (`nexo reload all`, neues Resourcepack wird automatisch geschickt).
+- **Im Testserver geben** im Item-Editor legt das Item direkt in dein Inventar.
+- Konsole mit Befehlseingabe; dein Minecraft-Name bekommt OP-Rechte.
+- Nexo wird automatisch so eingestellt, dass das Resourcepack lokal ausgeliefert wird.
+- Beim Schließen von NexoBuilder wird der Server sauber gestoppt.
+
+Den Testserver gibt es im Windows-Programm. Die Nexo-JAR bringst du selbst mit – sie wird nur lokal verwendet.
+
+### Korrigiert
+
+- Die mitgelieferte Anleitung nennt jetzt die richtige Befehlsform `/nexo give <spieler> <item_id> [anzahl]`
+  und `/nexo reload all`.
+
+### Download
+
+- **`NexoBuilder-Setup-1.2.0.exe`**: Installer mit Startmenü- und Desktop-Verknüpfung.
+- **`NexoBuilder-1.2.0-portable.exe`**: ohne Installation direkt starten.
+- **`NexoBuilder.html`**: die App als einzelne Datei für den Browser (ohne Teilen und Testserver).
+
 ## 1.1.0
 
 ### Neu: Projekte teilen

@@ -182,7 +182,7 @@ export function Welcome() {
           <div className="step">
             <div className="step-num">4</div>
             <b>Exportieren</b>
-            ZIP in plugins/Nexo entpacken und /nexo reload ausführen.
+            ZIP in plugins/Nexo entpacken und /nexo reload all ausführen.
           </div>
         </div>
       </div>

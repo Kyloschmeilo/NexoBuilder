@@ -47,6 +47,8 @@ und exportierst alles als ZIP, das du direkt in `plugins/Nexo/` entpackst.
   Projektdateien zum Sichern und Weitergeben.
 - **Projekte teilen** (Windows-Programm) – über einen gemeinsamen Ordner in OneDrive, Google Drive oder Dropbox
   gemeinsam an einem Projekt arbeiten; Änderungen kommen nach wenigen Sekunden bei allen an, in beide Richtungen.
+- **Lokaler Testserver** (Windows-Programm) – ein Paper-Server mit Nexo auf deinem PC, der sich automatisch
+  aktualisiert: Änderungen im Projekt sind nach wenigen Sekunden im Spiel, inklusive neuem Resourcepack.
 
 ## Benutzung
 
@@ -111,11 +113,35 @@ Gut zu wissen:
 - **Teilen beenden** trennt nur die Verbindung; deine Kopie und der Ordner bleiben erhalten.
 - Die Dateien im geteilten Ordner bitte nicht von Hand ändern.
 
+### Lokaler Testserver
+
+Im Windows-Programm gibt es links unten den Bereich **Testserver**. Damit läuft ein Minecraft-Server (Paper) mit Nexo
+direkt auf deinem PC – und alles, was du in NexoBuilder änderst, ist nach wenigen Sekunden im Spiel.
+
+1. **Testserver** öffnen → **JAR auswählen …** → deine Nexo-JAR wählen (die gekaufte Datei, z.B. von Polymart).
+   Sie wird nur in den lokalen Testserver kopiert und nirgendwohin hochgeladen.
+2. Minecraft-Version wählen (Standard: die Version des Projekts), deinen **Minecraft-Namen** eintragen und die
+   **Minecraft-EULA** akzeptieren.
+3. **Server starten**. Beim ersten Mal lädt NexoBuilder Paper und – falls nötig – Java herunter (einige Minuten).
+4. In Minecraft (gleiche Version) → **Mehrspieler → Direktverbindung → `localhost`**. Das Resourcepack kommt automatisch.
+
+Danach:
+
+- Jede Änderung (neues Item, anderes Modell, Eigenschaften, Rezepte, Glyphen …) wird automatisch nach `plugins/Nexo`
+  übertragen und mit `nexo reload all` geladen; Nexo schickt das neue Pack an alle Spieler.
+- Im Item-Editor legt **Im Testserver geben** das Item direkt in dein Inventar.
+- Die **Konsole** zeigt die Server-Ausgabe; dort kannst du Befehle eingeben (ohne `/`).
+- Dein Name bekommt beim Start OP-Rechte. Die Welt ist flach, im Kreativmodus und friedlich.
+- Beim Schließen von NexoBuilder wird der Server sauber gestoppt (die Welt wird gespeichert).
+
+NexoBuilder stellt Nexo im Testserver so ein, dass das Resourcepack vom eigenen PC kommt (`Pack.server.type: SELFHOST`,
+Adresse `127.0.0.1`, Port 8082). Der Server liegt im App-Datenordner unter `testserver/server` (Knopf **Ordner**).
+
 ### Installation der exportierten Items auf dem Server
 
 1. Export-ZIP („Für den Nexo-Ordner“) in `plugins/Nexo/` entpacken.
-2. `/nexo reload` ausführen (oder Server neu starten).
-3. Items mit `/nexo give <item_id>` oder über `/nexo inventory` holen.
+2. `/nexo reload all` ausführen (oder Server neu starten).
+3. Items mit `/nexo give <spieler> <item_id> [anzahl]` (z.B. `/nexo give @s ruby_sword`) oder über `/nexo inventory` holen.
 
 ## Was wird erzeugt?
 
@@ -167,6 +193,8 @@ Aufbau:
 - `src/core/nexo` – Eigenschafts-Schema, YAML-Erzeugung
 - `src/core/export` – Export-Planung, Prüfungen, ZIP
 - `src/core/sync` – Abgleich geteilter Projekte (Dateiformat, Zusammenführen, Konflikte)
+- `src/core/testserver` – Dateien und Nexo-Einstellungen für den lokalen Testserver
 - `src/ui` – Oberfläche (React), 3D-Vorschau (three.js)
 - `electron/` – Desktop-Programm (Electron), Konfiguration in `electron-builder.yml`;
-  `share.cjs` regelt den Zugriff auf geteilte Ordner (nur selbst gewählte Ordner, nur Projektdateien)
+  `share.cjs` regelt den Zugriff auf geteilte Ordner (nur selbst gewählte Ordner, nur Projektdateien),
+  `testserver.cjs` lädt Paper/Java herunter und steuert den lokalen Testserver

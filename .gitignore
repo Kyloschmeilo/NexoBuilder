@@ -5,3 +5,6 @@ dist-single
 .DS_Store
 coverage
 release
+
+# Plugin-Dateien (z.B. die gekaufte Nexo-JAR) nie einchecken
+*.jar
