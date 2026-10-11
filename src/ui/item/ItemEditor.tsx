@@ -1,4 +1,4 @@
-import { Box, Copy, FolderInput, Trash2 } from 'lucide-react';
+import { Box, Copy, FolderInput, Gift, Trash2 } from 'lucide-react';
 import type { ExportPlan } from '../../core/export/plan';
 import { issuesForItem } from '../../core/export/plan';
 import { getFolderPathLabel } from '../../core/project/tree';
@@ -17,6 +17,26 @@ import { ModelTab } from './ModelTab';
 import { countActiveProperties, PropertiesPanel } from './PropertiesPanel';
 import { YamlTab } from './YamlTab';
 import { RecipesTab } from './RecipesTab';
+import { giveInTestServer, useTestServerStore } from '../../state/testserver';
+
+/** „Im Testserver geben“ – nur sichtbar, wenn der lokale Testserver läuft */
+function GiveButton({ nexoId }: { nexoId: string }) {
+  const running = useTestServerStore((s) => s.state?.status === 'running');
+  if (!running) return null;
+  return (
+    <button
+      className="btn small"
+      title="Das Item im lokalen Testserver in dein Inventar legen"
+      onClick={() =>
+        void giveInTestServer(nexoId)
+          .then((player) => useStore.getState().toast('success', `„${nexoId}“ an ${player} gegeben – du musst dafür auf dem Testserver sein.`))
+          .catch((err: Error) => useStore.getState().toast('error', err.message))
+      }
+    >
+      <Gift size={14} /> Im Testserver geben
+    </button>
+  );
+}
 
 const TABS: Array<{ id: EditorTab; label: string }> = [
   { id: 'general', label: 'Allgemein' },
@@ -87,6 +107,7 @@ export function ItemEditor({ itemId, plan }: { itemId: string; plan: ExportPlan 
               {errors === 0 && warnings === 0 && <span className="badge success">Bereit</span>}
             </div>
           </div>
+          <GiveButton nexoId={item.nexoId} />
           <button className="btn small" onClick={() => duplicateItem(item.id)} title="Duplizieren">
             <Copy size={14} /> Duplizieren
           </button>

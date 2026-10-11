@@ -4,6 +4,9 @@
  * prüft den Inhalt der ZIP und ob das Projekt nach einem Neustart noch da ist.
  * Danach wird das Projekt über einen Ordner geteilt und ein zweites Programm (eigene Daten)
  * öffnet es – Änderungen müssen in beide Richtungen ankommen.
+ * Zum Schluss startet der lokale Testserver: Paper und Java werden echt heruntergeladen,
+ * der Server startet, das Projekt landet in plugins/Nexo, ein Befehl läuft, der Server stoppt.
+ * (Ohne Nexo – das Plugin ist kostenpflichtig und liegt hier nicht vor.)
  *
  * Aufruf: node scripts/test-windows-exe.cjs <Pfad zur NexoBuilder.exe> <Ausgabeordner> [App-Ordner]
  * (App-Ordner nur beim Test mit dem nackten Electron aus node_modules)
@@ -21,6 +24,7 @@ const downloads = path.join(out, 'downloads');
 const userData = path.join(out, 'userdata');
 const userData2 = path.join(out, 'userdata-2');
 const shareDir = path.join(out, 'geteilt');
+const testServerDir = path.join(out, 'testserver');
 fs.mkdirSync(downloads, { recursive: true });
 
 /** 16x16-PNG (rot/gelb kariert) als Test-Textur */
@@ -76,7 +80,14 @@ const launch = (dataDir = userData) =>
   electron.launch({
     executablePath: exe,
     args: [...(appDir ? [appDir] : []), `--user-data-dir=${dataDir}`],
-    env: { ...process.env, NEXOBUILDER_DOWNLOAD_DIR: downloads, NEXOBUILDER_TEST_SHARE_DIR: shareDir },
+    env: {
+      ...process.env,
+      NEXOBUILDER_DOWNLOAD_DIR: downloads,
+      NEXOBUILDER_TEST_SHARE_DIR: shareDir,
+      NEXOBUILDER_TESTSERVER_DIR: testServerDir,
+      // Java immer selbst herunterladen, damit auch dieser Weg getestet wird
+      ...(process.env.KEEP_SYSTEM_JAVA ? {} : { NEXOBUILDER_TEST_IGNORE_SYSTEM_JAVA: '1' }),
+    },
     timeout: 60000,
   });
 
@@ -195,6 +206,48 @@ async function step(name, fn) {
     await win2.screenshot({ path: path.join(out, 'nexobuilder-windows-geteilt.png') });
   });
   await app2.close();
+
+  const serverConsole = () => win.locator('.server-console');
+  try {
+    await step('Testserver einrichten', async () => {
+      await win.locator('.tree-row', { hasText: 'Testserver' }).click();
+      await win.getByRole('heading', { name: 'Testserver' }).waitFor();
+      // Versionsliste von PaperMC geladen und Version gewählt
+      await win.waitForFunction(() => {
+        const select = document.querySelector('.editor select');
+        return !!(select && select.value);
+      }, null, { timeout: 60000 });
+      console.log('     Version:', await win.locator('.editor select').first().inputValue());
+      await win.getByPlaceholder('z.B. Kylo').fill('NexoTest');
+      await win.getByPlaceholder('z.B. Kylo').blur();
+      await win.locator('label.toggle-row', { hasText: 'Minecraft-EULA' }).locator('input').check();
+    });
+    await step('Testserver: Paper und Java herunterladen und starten', async () => {
+      await win.getByRole('button', { name: 'Server starten' }).click();
+      await win.locator('.editor-meta .badge', { hasText: /Läuft|Fehler/ }).waitFor({ timeout: 8 * 60000 });
+      if ((await win.locator('.editor-meta .badge', { hasText: 'Fehler' }).count()) > 0) throw new Error('Server meldet einen Fehler');
+      console.log('     ' + (await win.locator('.editor-meta .badge.mono').innerText()));
+      await win.screenshot({ path: path.join(out, 'nexobuilder-windows-testserver.png') });
+    });
+    await step('Testserver: Projekt liegt in plugins/Nexo', async () => {
+      const nexo = path.join(testServerDir, 'server', 'plugins', 'Nexo');
+      const yml = path.join(nexo, 'items', 'waffen', 'waffen.yml');
+      if (!fs.existsSync(yml) || !/donnerschwert|feuerschwert/i.test(fs.readFileSync(yml, 'utf8'))) throw new Error('Item-Datei fehlt');
+      if (!/SELFHOST/.test(fs.readFileSync(path.join(nexo, 'settings.yml'), 'utf8'))) throw new Error('settings.yml fehlt');
+    });
+    await step('Testserver: Befehl in der Konsole', async () => {
+      const input = win.locator('.console-input input');
+      await input.fill('say NexoBuilder-Konsolentest');
+      await input.press('Enter');
+      await win.locator('.server-console .console-line:not(.info)', { hasText: 'NexoBuilder-Konsolentest' }).first().waitFor({ timeout: 60000 });
+    });
+    await step('Testserver stoppen', async () => {
+      await win.getByRole('button', { name: 'Stoppen' }).click();
+      await win.locator('.editor-meta .badge', { hasText: 'Gestoppt' }).waitFor({ timeout: 2 * 60000 });
+    });
+  } finally {
+    if ((await serverConsole().count()) > 0) fs.writeFileSync(path.join(out, 'testserver-konsole.txt'), await serverConsole().innerText());
+  }
   await app.close();
 
   console.log(webglErrors.length ? 'Hinweis: 3D-Vorschau ohne WebGL (keine Grafikkarte)' : 'OK   3D-Vorschau (WebGL)');

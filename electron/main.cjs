@@ -6,6 +6,7 @@
 const { app, BrowserWindow, Menu, dialog, session, shell } = require('electron');
 const path = require('node:path');
 const { registerShareHandlers } = require('./share.cjs');
+const { isTestServerRunning, registerTestServerHandlers, stopTestServer } = require('./testserver.cjs');
 
 const APP_NAME = 'NexoBuilder';
 const INDEX_HTML = path.join(__dirname, '..', 'dist-single', 'index.html');
@@ -118,6 +119,7 @@ app.on('second-instance', () => {
 app.whenReady().then(() => {
   buildMenu();
   registerShareHandlers();
+  registerTestServerHandlers();
 
   // Exporte (ZIP) und Projektdateien über einen „Speichern unter“-Dialog sichern
   session.defaultSession.on('will-download', (_event, item) => {
@@ -136,6 +138,15 @@ app.whenReady().then(() => {
   app.on('activate', () => {
     if (BrowserWindow.getAllWindows().length === 0) createWindow();
   });
+});
+
+// Läuft der Testserver noch, wird er vor dem Beenden sauber gestoppt (Welt speichern)
+let quitting = false;
+app.on('before-quit', (event) => {
+  if (quitting || !isTestServerRunning()) return;
+  event.preventDefault();
+  quitting = true;
+  void stopTestServer().finally(() => app.quit());
 });
 
 app.on('window-all-closed', () => {

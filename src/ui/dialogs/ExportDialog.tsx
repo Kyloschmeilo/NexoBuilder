@@ -199,7 +199,7 @@ export function ExportDialog() {
 
         {mode === 'full' && (
           <div className="hint">
-            Installation: ZIP in <span className="mono">&nbsp;plugins/Nexo/&nbsp;</span> entpacken, dann <span className="mono">&nbsp;/nexo reload&nbsp;</span>{' '}
+            Installation: ZIP in <span className="mono">&nbsp;plugins/Nexo/&nbsp;</span> entpacken, dann <span className="mono">&nbsp;/nexo reload all&nbsp;</span>{' '}
             ausführen. Eine Anleitung liegt als ANLEITUNG.txt bei.
           </div>
         )}

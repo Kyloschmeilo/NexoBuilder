@@ -1,6 +1,6 @@
 /**
  * Brücke zwischen Oberfläche und Desktop-Programm. Die Oberfläche bekommt nur diese wenigen
- * Funktionen für geteilte Ordner – keinen allgemeinen Dateizugriff.
+ * Funktionen (geteilte Ordner, lokaler Testserver) – keinen allgemeinen Dateizugriff.
  */
 const { contextBridge, ipcRenderer } = require('electron');
 
@@ -20,6 +20,24 @@ contextBridge.exposeInMainWorld('nexoDesktop', {
       const listener = (_event, folder) => callback(folder);
       ipcRenderer.on('share:changed', listener);
       return () => ipcRenderer.removeListener('share:changed', listener);
+    },
+  },
+  testServer: {
+    getState: () => ipcRenderer.invoke('testserver:get-state'),
+    setConfig: (patch) => ipcRenderer.invoke('testserver:set-config', patch),
+    versions: () => ipcRenderer.invoke('testserver:versions'),
+    chooseNexoJar: () => ipcRenderer.invoke('testserver:choose-nexo-jar'),
+    start: () => ipcRenderer.invoke('testserver:start'),
+    stop: () => ipcRenderer.invoke('testserver:stop'),
+    command: (command) => ipcRenderer.invoke('testserver:command', command),
+    sync: (files, options) => ipcRenderer.invoke('testserver:sync', files, options),
+    readSettings: () => ipcRenderer.invoke('testserver:read-settings'),
+    openFolder: () => ipcRenderer.invoke('testserver:open-folder'),
+    clearLog: () => ipcRenderer.invoke('testserver:clear-log'),
+    onEvent: (callback) => {
+      const listener = (_event, data) => callback(data);
+      ipcRenderer.on('testserver:event', listener);
+      return () => ipcRenderer.removeListener('testserver:event', listener);
     },
   },
 });

@@ -12,6 +12,7 @@ import {
   Pencil,
   Plus,
   Search,
+  Server,
   Smile,
   Trash2,
 } from 'lucide-react';
@@ -20,6 +21,8 @@ import type { ExportPlan } from '../../core/export/plan';
 import { getDescendantFolderIds } from '../../core/project/tree';
 import { addFolder, deleteFolder, deleteItem, duplicateItem, moveFolder, moveItem, renameFolder } from '../../state/actions';
 import { useStore } from '../../state/store';
+import { isTestServerAvailable, useTestServerStore } from '../../state/testserver';
+import { TEST_SERVER_STATUS } from '../testserver/TestServerView';
 import { MenuItem, Popover } from '../common/Popover';
 import { stripMiniMessage } from '../common/MiniMessage';
 import { filesFromDataTransfer } from '../files';
@@ -162,7 +165,31 @@ export function Sidebar({ plan }: { plan: ExportPlan | null }) {
         )}
       </div>
       <GlyphsEntry plan={plan} />
+      {isTestServerAvailable() && <TestServerEntry />}
     </aside>
+  );
+}
+
+function TestServerEntry() {
+  const selected = useStore((s) => s.selection?.kind === 'testserver');
+  const status = useTestServerStore((s) => s.state?.status ?? 'stopped');
+  const info = TEST_SERVER_STATUS[status];
+  return (
+    <div style={{ padding: '0 6px 8px' }}>
+      <div
+        className={`tree-row ${selected ? 'selected' : ''}`}
+        style={{ paddingLeft: 8 }}
+        onClick={() => useStore.getState().select({ kind: 'testserver' })}
+        title="Lokaler Minecraft-Testserver mit Nexo – aktualisiert sich automatisch"
+      >
+        <span className="tree-icon" style={{ color: 'var(--success)' }}>
+          <Server size={16} />
+        </span>
+        <span className="tree-label">Testserver</span>
+        {status !== 'stopped' && <span className={`status-dot ${info.tone === 'danger' ? 'error' : info.tone}`} />}
+        <span className="tree-badge">{info.label}</span>
+      </div>
+    </div>
   );
 }
 
