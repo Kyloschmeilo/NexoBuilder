@@ -1,5 +1,28 @@
 # Changelog
 
+## 1.2.1
+
+### Korrigiert: Resourcepack im Testserver
+
+- Das Resourcepack kam im Testserver nicht an („Failed to build and send the finished ResourcePack“). Ursache: NexoBuilder hat
+  `nexo reload all` geschickt, während Nexo noch das Pack gebaut hat – zwei Erstellungen liefen gleichzeitig und scheiterten.
+  Jetzt wartet NexoBuilder, bis Nexo mit dem Pack fertig ist; mehrere Änderungen in der Zeit ergeben genau ein Neuladen.
+- `settings.yml` wird nur noch geändert, wenn wirklich ein Wert fehlt – dass Nexo die Datei umformatiert, löst kein Neuladen mehr aus.
+- Pack-Verschleierung im Testserver aus (`Pack.obfuscation.type: NONE`): schneller, und der Zwischenspeicher, der dabei
+  kaputtgehen konnte („invalid CEN header“), wird beim Start gelöscht.
+
+### Neu
+
+- Anzeige, was Nexo gerade mit dem Resourcepack macht (wird erstellt / bereit / Fehler), mit **Nexo neu laden** und **Pack erneut senden**.
+- Von Nexo empfohlene Paper-Einstellungen werden gesetzt (Notenblock-, Stolperdraht- und Chorus-Updates aus) – wirkt ab dem zweiten Start.
+- Neue Testserver-Welten sind flach ohne die Fehlermeldung „No key layers“.
+
+### Download
+
+- **`NexoBuilder-Setup-1.2.1.exe`**: Installer mit Startmenü- und Desktop-Verknüpfung.
+- **`NexoBuilder-1.2.1-portable.exe`**: ohne Installation direkt starten.
+- **`NexoBuilder.html`**: die App als einzelne Datei für den Browser (ohne Teilen und Testserver).
+
 ## 1.2.0
 
 ### Neu: Lokaler Testserver

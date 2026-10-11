@@ -36,7 +36,11 @@ describe('Testserver: Nexo-Einstellungen', () => {
   it('legt eine neue settings.yml mit lokalem Pack-Server an', () => {
     const text = patchNexoSettings(null, { packPort: 8082 });
     expect(parse(text)).toEqual({
-      Pack: { server: { type: 'SELFHOST', selfhost: { port: 8082, public_address: '127.0.0.1' } }, dispatch: { send_on_reload: true } },
+      Pack: {
+        server: { type: 'SELFHOST', selfhost: { port: 8082, public_address: '127.0.0.1' } },
+        dispatch: { send_on_reload: true },
+        obfuscation: { type: 'NONE' },
+      },
     });
   });
 
@@ -65,6 +69,30 @@ describe('Testserver: Nexo-Einstellungen', () => {
     expect(data.Pack.dispatch).toEqual({ send_on_reload: true, mandatory: true });
     // Zweiter Durchlauf ändert nichts mehr
     expect(patchNexoSettings(text, { packPort: 8090 })).toBe(text);
+  });
+
+  it('lässt eine von Nexo umformatierte Datei unverändert, wenn alle Werte schon stimmen', () => {
+    // So schreibt Nexo die Datei nach dem Start (andere Einrückung, Anführungszeichen, Kommentare)
+    const nexoFormatted = [
+      'Plugin:',
+      '    language: english',
+      'Pack:',
+      '    generation:',
+      '        generate_pack: true',
+      '    obfuscation:',
+      "        type: 'none'",
+      '        cache: true',
+      '    server:',
+      "        type: 'SELFHOST'",
+      '        selfhost:',
+      "            port: '8082'",
+      "            public_address: '127.0.0.1'",
+      '    dispatch:',
+      '        send_pre_join: true',
+      '        send_on_reload: true',
+      '',
+    ].join('\n');
+    expect(patchNexoSettings(nexoFormatted, { packPort: 8082 })).toBe(nexoFormatted);
   });
 
   it('ersetzt eine kaputte Datei durch die nötigen Werte', () => {

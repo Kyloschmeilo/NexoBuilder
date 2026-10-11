@@ -11,6 +11,7 @@ import {
   isTestServerAvailable,
   loadPaperVersions,
   openTestServerFolder,
+  reloadNexo,
   restartTestServer,
   sendTestServerCommand,
   setTestServerConfig,
@@ -277,6 +278,49 @@ function Setup({ config, locked }: { config: TestServerConfig; locked: boolean }
   );
 }
 
+const PACK_TEXT = {
+  idle: { label: 'Resourcepack: noch nicht erstellt', tone: '' },
+  building: { label: 'Resourcepack wird erstellt …', tone: 'warning' },
+  ready: { label: 'Resourcepack bereit', tone: 'success' },
+  failed: { label: 'Resourcepack fehlgeschlagen', tone: 'danger' },
+} as const;
+
+/** Was Nexo gerade mit dem Resourcepack macht (aus der Server-Ausgabe) */
+function PackStatus() {
+  const state = useTestServerStore((s) => s.state)!;
+  const { busy, run } = useAction();
+  const pack = state.pack ?? { status: 'idle', message: null, at: null };
+  const info = PACK_TEXT[pack.status];
+  const player = state.config.playerName;
+  return (
+    <div className="card-body row" style={{ gap: 10, flexWrap: 'wrap', borderTop: '1px solid var(--border)' }}>
+      <span className={`badge ${info.tone}`}>
+        {pack.status === 'building' && <LoaderCircle size={12} className="spin" />}
+        {info.label}
+      </span>
+      <span className="grow faint small mono" style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }} title={pack.message ?? ''}>
+        {pack.status === 'failed' ? pack.message : pack.status === 'ready' ? pack.message : ''}
+      </span>
+      <button
+        className="btn small"
+        disabled={busy || pack.status === 'building'}
+        title="Nexo neu laden und das Resourcepack neu erstellen"
+        onClick={() => void run(reloadNexo)}
+      >
+        <RefreshCw size={14} /> Nexo neu laden
+      </button>
+      <button
+        className="btn small"
+        disabled={busy || pack.status !== 'ready' || !player}
+        title={player ? `Das Resourcepack erneut an ${player} schicken` : 'Bitte unten deinen Minecraft-Namen eintragen'}
+        onClick={() => void run(() => sendTestServerCommand(`nexo pack ${player}`))}
+      >
+        <Upload size={14} /> Pack erneut senden
+      </button>
+    </div>
+  );
+}
+
 function SyncCard({ plan }: { plan: ExportPlan | null }) {
   const state = useTestServerStore((s) => s.state)!;
   const { syncing, lastResult, lastCheck, syncError } = useTestServerStore();
@@ -415,6 +459,7 @@ export function TestServerView({ plan }: { plan: ExportPlan | null }) {
             <FolderOpen size={14} /> Ordner
           </button>
         </div>
+        {running && state.config.nexoJar && <PackStatus />}
       </div>
 
       <SyncCard plan={plan} />

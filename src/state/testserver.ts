@@ -152,6 +152,11 @@ export async function sendTestServerCommand(command: string) {
   return api().command(command);
 }
 
+/** „nexo reload all“ – wartet, falls Nexo gerade noch das Resourcepack baut */
+export async function reloadNexo() {
+  return api().reload();
+}
+
 export async function clearTestServerLog() {
   await api().clearLog();
   useTestServerStore.setState({ log: [] });

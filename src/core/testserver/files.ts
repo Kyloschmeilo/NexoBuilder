@@ -39,12 +39,16 @@ export function settingsOverrides(options: NexoServerSettings): Array<[string[],
     [['Pack', 'server', 'selfhost', 'public_address'], '127.0.0.1'],
     // Nach /nexo reload das neue Pack sofort an alle Spieler schicken
     [['Pack', 'dispatch', 'send_on_reload'], true],
+    // Zum Testen unnötig, macht das Erstellen langsamer und nutzt einen Zwischenspeicher, der kaputtgehen kann
+    [['Pack', 'obfuscation', 'type'], 'NONE'],
   ];
 }
 
 /**
  * Setzt die nötigen Einstellungen in settings.yml. Alles andere (auch Kommentare) bleibt erhalten.
  * Gibt es die Datei noch nicht, entsteht eine kleine Datei – Nexo ergänzt den Rest beim Start.
+ * Stimmen alle Werte schon, kommt die Datei unverändert zurück (Nexo formatiert sie selbst um –
+ * das darf nicht als Änderung zählen, sonst würde Nexo ständig neu geladen).
  */
 export function patchNexoSettings(current: string | null, options: NexoServerSettings): string {
   const doc = current?.trim() ? parseDocument(current, { version: '1.1' }) : new Document({}, { version: '1.1' });
@@ -53,8 +57,10 @@ export function patchNexoSettings(current: string | null, options: NexoServerSet
     return patchNexoSettings(null, options);
   }
   if (!current?.trim()) doc.commentBefore = ' Von NexoBuilder angelegt – Nexo ergänzt die übrigen Einstellungen beim Start.';
+  let changed = !current?.trim();
   for (const [path, value] of settingsOverrides(options)) {
-    if (doc.getIn(path) === value) continue;
+    if (sameSetting(doc.getIn(path), value)) continue;
+    changed = true;
     // Fehlende oder falsche Zwischenebenen als normale Abschnitte anlegen
     for (let i = 1; i < path.length; i++) {
       const prefix = path.slice(0, i);
@@ -62,6 +68,15 @@ export function patchNexoSettings(current: string | null, options: NexoServerSet
     }
     doc.setIn(path, value);
   }
-  const text = doc.toString({ lineWidth: 0 });
-  return current !== null && text === current ? current : text;
+  if (!changed && current !== null) return current;
+  return doc.toString({ lineWidth: 0 });
+}
+
+/** Nexo schreibt Werte teils anders (z.B. Zahl als Text, Enum klein) – inhaltlich gleich ist gleich. */
+function sameSetting(actual: unknown, wanted: unknown): boolean {
+  if (actual === wanted) return true;
+  if (typeof wanted === 'number') return Number(actual) === wanted;
+  if (typeof wanted === 'string' && typeof actual === 'string') return actual.trim().toUpperCase() === wanted.toUpperCase();
+  if (typeof wanted === 'boolean') return String(actual).toLowerCase() === String(wanted);
+  return false;
 }

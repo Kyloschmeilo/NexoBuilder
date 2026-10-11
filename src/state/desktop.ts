@@ -48,6 +48,8 @@ export interface TestServerState {
   installed: { paperVersion: string; paperBuild: number; javaPath: string; javaVersion: number } | null;
   startedAt: number | null;
   lastSync: number | null;
+  /** Zustand des Nexo-Resourcepacks (aus der Server-Ausgabe gelesen) */
+  pack: { status: 'idle' | 'building' | 'ready' | 'failed'; message: string | null; at: number | null };
   serverDir: string;
   /** Adresse für Minecraft (Direktverbindung) */
   address: string;
@@ -78,6 +80,8 @@ export interface DesktopTestServerApi {
   start(): Promise<TestServerState>;
   stop(): Promise<TestServerState>;
   command(command: string): Promise<boolean>;
+  /** „nexo reload all“ – wartet automatisch, solange Nexo noch das Pack baut */
+  reload(): Promise<boolean>;
   sync(
     files: Array<{ path: string; data: string | Uint8Array }>,
     options: { reload: boolean; settings?: string },

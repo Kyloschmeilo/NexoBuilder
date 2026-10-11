@@ -135,7 +135,9 @@ Danach:
 - Beim Schließen von NexoBuilder wird der Server sauber gestoppt (die Welt wird gespeichert).
 
 NexoBuilder stellt Nexo im Testserver so ein, dass das Resourcepack vom eigenen PC kommt (`Pack.server.type: SELFHOST`,
-Adresse `127.0.0.1`, Port 8082). Der Server liegt im App-Datenordner unter `testserver/server` (Knopf **Ordner**).
+Adresse `127.0.0.1`, Port 8082, ohne Verschleierung). Neu geladen wird erst, wenn Nexo mit dem vorherigen Pack fertig ist;
+der Stand des Packs (wird erstellt / bereit / Fehler) steht im Testserver-Bereich, dort gibt es auch **Pack erneut senden**.
+Der Server liegt im App-Datenordner unter `testserver/server` (Knopf **Ordner**).
 
 ### Installation der exportierten Items auf dem Server
 
