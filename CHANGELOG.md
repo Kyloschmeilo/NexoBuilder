@@ -1,5 +1,19 @@
 # Changelog
 
+## 1.2.2
+
+### Korrigiert
+
+- **Im Testserver geben** und die mitgelieferte Anleitung nutzen jetzt die richtige Reihenfolge von Nexo 1.29:
+  `/nexo give <item_id> [anzahl] [spieler]`, z.B. `/nexo give ruby_sword 1 Steve`. In 1.2.0 und 1.2.1 standen Spieler
+  und Item vertauscht – der Knopf hat deshalb kein Item gegeben.
+
+### Download
+
+- **`NexoBuilder-Setup-1.2.2.exe`**: Installer mit Startmenü- und Desktop-Verknüpfung.
+- **`NexoBuilder-1.2.2-portable.exe`**: ohne Installation direkt starten.
+- **`NexoBuilder.html`**: die App als einzelne Datei für den Browser (ohne Teilen und Testserver).
+
 ## 1.2.1
 
 ### Korrigiert: Resourcepack im Testserver
@@ -41,8 +55,7 @@ Den Testserver gibt es im Windows-Programm. Die Nexo-JAR bringst du selbst mit �
 
 ### Korrigiert
 
-- Die mitgelieferte Anleitung nennt jetzt die richtige Befehlsform `/nexo give <spieler> <item_id> [anzahl]`
-  und `/nexo reload all`.
+- Die mitgelieferte Anleitung nennt jetzt `/nexo reload all`.
 
 ### Download
 

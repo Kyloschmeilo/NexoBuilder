@@ -80,3 +80,8 @@ function sameSetting(actual: unknown, wanted: unknown): boolean {
   if (typeof wanted === 'boolean') return String(actual).toLowerCase() === String(wanted);
   return false;
 }
+
+/** Nexo 1.29: „nexo give <item> <anzahl> <spieler>“ (so im Plugin registriert – nicht wie im Hilfetext) */
+export function nexoGiveCommand(nexoId: string, amount: number, player: string): string {
+  return `nexo give ${nexoId} ${Math.max(1, Math.floor(amount))} ${player}`;
+}

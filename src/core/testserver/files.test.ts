@@ -2,7 +2,7 @@ import { describe, expect, it } from 'vitest';
 import { parse } from 'yaml';
 import { createFolder, createItem, createProject, insertFolder, insertItem } from '../project/factory';
 import { planExport } from '../export/plan';
-import { nexoFolderFiles, patchNexoSettings } from './files';
+import { nexoFolderFiles, nexoGiveCommand, patchNexoSettings } from './files';
 import { createTextureModel } from '../model/textureModel';
 import { makePngDataUrl } from '../../test/png';
 
@@ -98,5 +98,12 @@ describe('Testserver: Nexo-Einstellungen', () => {
   it('ersetzt eine kaputte Datei durch die nötigen Werte', () => {
     const text = patchNexoSettings('Pack: [kaputt', { packPort: 8082 });
     expect(parse(text).Pack.server.type).toBe('SELFHOST');
+  });
+});
+
+describe('Testserver: Befehle', () => {
+  it('gibt Items in der Reihenfolge von Nexo 1.29: give <item> <anzahl> <spieler>', () => {
+    expect(nexoGiveCommand('purpel_block', 1, 'Kyloschmeilo')).toBe('nexo give purpel_block 1 Kyloschmeilo');
+    expect(nexoGiveCommand('ruby', 0, 'Steve')).toBe('nexo give ruby 1 Steve');
   });
 });
