@@ -121,9 +121,29 @@ export function startTestServerController() {
 
 /* ------------------------------------------------------------------ Aktionen */
 
-export async function setTestServerConfig(patch: Partial<TestServerConfig>) {
-  const state = await api().setConfig(patch);
-  useTestServerStore.setState({ state });
+let configSaving: Promise<unknown> = Promise.resolve();
+let configSeq = 0;
+
+/**
+ * Einstellung ändern: sofort anzeigen (sonst springen Häkchen und Auswahl kurz zurück) und der Reihe nach speichern.
+ * Starten wartet, bis alles gespeichert ist – sonst sähe der Server z.B. die EULA-Zustimmung noch nicht.
+ */
+export function setTestServerConfig(patch: Partial<TestServerConfig>): Promise<void> {
+  const before = useTestServerStore.getState().state;
+  if (before) useTestServerStore.setState({ state: { ...before, config: { ...before.config, ...patch } } });
+  const seq = ++configSeq;
+  const run = configSaving.then(async () => {
+    try {
+      const state = await api().setConfig(patch);
+      // Nur die Antwort auf die letzte Änderung übernehmen, damit Zwischenstände nichts zurücksetzen
+      if (seq === configSeq) useTestServerStore.setState({ state });
+    } catch (err) {
+      if (seq === configSeq) void api().getState().then(({ log: _log, ...state }) => useTestServerStore.setState({ state }));
+      throw err;
+    }
+  });
+  configSaving = run.catch(() => undefined);
+  return run;
 }
 
 export async function chooseNexoJar() {
@@ -131,6 +151,7 @@ export async function chooseNexoJar() {
 }
 
 export async function startTestServer() {
+  await configSaving;
   // Dateien liegen schon bereit, bevor Nexo zum ersten Mal startet
   const result = await syncProject(false);
   if (!result && useTestServerStore.getState().syncError) throw new Error(useTestServerStore.getState().syncError!);
@@ -150,6 +171,11 @@ export async function restartTestServer() {
 
 export async function sendTestServerCommand(command: string) {
   return api().command(command);
+}
+
+/** „nexo reload all“ – wartet, falls Nexo gerade noch das Resourcepack baut */
+export async function reloadNexo() {
+  return api().reload();
 }
 
 export async function clearTestServerLog() {

@@ -30,6 +30,7 @@ contextBridge.exposeInMainWorld('nexoDesktop', {
     start: () => ipcRenderer.invoke('testserver:start'),
     stop: () => ipcRenderer.invoke('testserver:stop'),
     command: (command) => ipcRenderer.invoke('testserver:command', command),
+    reload: () => ipcRenderer.invoke('testserver:reload'),
     sync: (files, options) => ipcRenderer.invoke('testserver:sync', files, options),
     readSettings: () => ipcRenderer.invoke('testserver:read-settings'),
     openFolder: () => ipcRenderer.invoke('testserver:open-folder'),

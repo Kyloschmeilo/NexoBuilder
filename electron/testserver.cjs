@@ -56,6 +56,8 @@ const state = {
   installed: null, // { paperVersion, paperBuild, javaPath, javaVersion }
   startedAt: null,
   lastSync: null,
+  // Resourcepack von Nexo: idle | building | ready | failed
+  pack: { status: 'idle', message: null, at: null },
 };
 let log = [];
 let pendingLines = [];
@@ -73,6 +75,7 @@ function publicState() {
     installed: state.installed,
     startedAt: state.startedAt,
     lastSync: state.lastSync,
+    pack: state.pack,
     serverDir: serverDir(),
     address: state.config.port === 25565 ? 'localhost' : `localhost:${state.config.port}`,
   };
@@ -411,6 +414,7 @@ const DEFAULT_PROPERTIES = [
   'gamemode=creative',
   'difficulty=peaceful',
   'level-type=minecraft\\:flat',
+  'generator-settings={"biome"\\:"minecraft\\:plains","layers"\\:[{"block"\\:"minecraft\\:bedrock","height"\\:1},{"block"\\:"minecraft\\:dirt","height"\\:2},{"block"\\:"minecraft\\:grass_block","height"\\:1}]}',
   'generate-structures=false',
   'spawn-protection=0',
   'max-players=8',
@@ -434,6 +438,21 @@ async function prepareServerFiles() {
     : `${props.trimEnd()}\nserver-port=${state.config.port}\n`;
   await fsp.writeFile(propsPath, props);
 
+  // Von Nexo empfohlen (sonst Fehler bei eigenen Blöcken aus Notenblöcken, Stolperdraht, Chorus)
+  const paperGlobal = path.join(serverDir(), 'config', 'paper-global.yml');
+  if (fs.existsSync(paperGlobal)) {
+    const text = await fsp.readFile(paperGlobal, 'utf8');
+    const patched = text.replace(/^(\s+disable-(?:noteblock|tripwire|chorus-plant)-updates:)\s*false\s*$/gm, '$1 true');
+    if (patched !== text) {
+      await fsp.writeFile(paperGlobal, patched);
+      info('Paper-Einstellungen für Nexo angepasst (Notenblock-, Stolperdraht- und Chorus-Updates aus).');
+    }
+  }
+  // Zwischenspeicher des verschleierten Packs – kann nach Abbrüchen beschädigt sein
+  for (const cache of [path.join(nexoDir(), 'pack', '.deobfCachedPacks'), path.join(nexoDir(), '.deobfCachedPacks')]) {
+    await fsp.rm(cache, { recursive: true, force: true });
+  }
+
   // Nexo-Plugin: genau die ausgewählte Version in plugins/
   const pluginsDir = path.join(serverDir(), 'plugins');
   const wanted = state.config.nexoJar?.file ?? null;
@@ -449,8 +468,61 @@ async function prepareServerFiles() {
 
 /* ------------------------------------------------------------------ Starten / Stoppen */
 
+/* ------------------------------------------------------------------ Nexo-Resourcepack beobachten */
+
+// Nexo baut das Pack im Hintergrund. Ein „nexo reload“ währenddessen startet eine zweite Erstellung
+// parallel – beide scheitern dann (z.B. „items.json already exists“). Deshalb wird gewartet.
+const PACK_BUILD_TIMEOUT_MS = 3 * 60_000;
+let reloadPending = false;
+let packTimer = null;
+
+function setPack(status, message = null) {
+  clearTimeout(packTimer);
+  packTimer = null;
+  if (status === 'building') {
+    packTimer = setTimeout(() => {
+      info('Nexo hat sich nicht zurückgemeldet – das Resourcepack gilt als fertig.');
+      setPack('idle');
+    }, PACK_BUILD_TIMEOUT_MS);
+  }
+  setState({ pack: { status, message, at: Date.now() } });
+  if (status !== 'building' && reloadPending && state.status === 'running') {
+    reloadPending = false;
+    setTimeout(() => requestReload(), 1000);
+  }
+}
+
+/** Lädt Nexo neu – oder merkt es vor, solange Nexo noch das Resourcepack baut. */
+function requestReload() {
+  if (state.status !== 'running' || !proc) return false;
+  if (state.pack.status === 'building') {
+    if (!reloadPending) info('Nexo erstellt gerade das Resourcepack – neu geladen wird, sobald es fertig ist.');
+    reloadPending = true;
+    return false;
+  }
+  const sent = sendCommand('nexo reload all');
+  if (sent && state.config.nexoJar) setPack('building', 'Nexo lädt neu und erstellt das Resourcepack …');
+  return sent;
+}
+
+function watchNexoPack(line) {
+  if (!/Nexo/.test(line)) return;
+  if (/Generating resourcepack/i.test(line)) {
+    if (state.pack.status !== 'building') setPack('building', 'Nexo erstellt das Resourcepack …');
+    return;
+  }
+  const uploaded = /Resourcepack uploaded and will be dispatched with publicAddress\s*(\S*)|ResourcePack uploaded:\s*(\S*)/i.exec(line);
+  if (uploaded) {
+    setPack('ready', uploaded[1] || uploaded[2] || null);
+    return;
+  }
+  const failed = /Failed to build and send the finished ResourcePack:\s*(.*)|Upload failed:\s*(.*)|could not be uploaded(.*)/i.exec(line);
+  if (failed) setPack('failed', (failed[1] || failed[2] || failed[3] || '').trim() || 'Unbekannter Fehler');
+}
+
 function handleLine(line) {
   pushLog(line);
+  watchNexoPack(line);
   if (state.status === 'starting' && /Done \([\d.,]+s\)! For help/.test(line)) {
     setState({ status: 'running', message: null, startedAt: Date.now() });
     if (state.config.playerName) sendCommand(`op ${state.config.playerName}`);
@@ -488,7 +560,11 @@ async function start() {
     await prepareServerFiles();
 
     info(`Starte Paper ${paper.version} mit Java ${java.version} (${state.config.ramGb} GB RAM) …`);
+    reloadPending = false;
     setState({ status: 'starting', message: 'Server startet …' });
+    // Nexo baut beim Start das Pack – bis dahin kein Reload
+    if (state.config.nexoJar) setPack('building', 'Nexo erstellt beim Start das Resourcepack …');
+    else setPack('idle');
     const args = ['-Xms512M', `-Xmx${state.config.ramGb}G`, '-Dfile.encoding=UTF-8', '-jar', paper.jar, '--nogui'];
     const child = spawn(java.path, args, { cwd: serverDir(), windowsHide: true, stdio: ['pipe', 'pipe', 'pipe'] });
     proc = child;
@@ -503,6 +579,8 @@ async function start() {
       const expected = stopRequested;
       stopRequested = false;
       info(`Server beendet${code !== null ? ` (Code ${code})` : ''}.`);
+      reloadPending = false;
+      setPack('idle');
       if (expected || code === 0) setState({ status: 'stopped', message: null, startedAt: null, progress: null });
       else setState({ status: 'error', message: state.message || `Der Server wurde unerwartet beendet (Code ${code}). Details in der Konsole.`, startedAt: null });
     });
@@ -638,7 +716,7 @@ async function syncFiles(files, options = {}) {
   const changed = written > 0 || deleted > 0 || settingsChanged;
   let reloaded = false;
   if (changed && options.reload && state.status === 'running') {
-    reloaded = sendCommand('nexo reload all');
+    reloaded = requestReload() || reloadPending;
   }
   if (changed) info(`Projekt übertragen: ${written} geschrieben, ${deleted} entfernt${settingsChanged ? ', Einstellungen angepasst' : ''}.`);
   state.lastSync = Date.now();
@@ -676,7 +754,15 @@ function registerTestServerHandlers() {
   handle('testserver:choose-nexo-jar', (event) => chooseNexoJar(BrowserWindow.fromWebContents(event.sender)));
   handle('testserver:start', () => start());
   handle('testserver:stop', () => stop().then(() => publicState()));
-  handle('testserver:command', (_event, command) => sendCommand(command));
+  handle('testserver:command', (_event, command) => {
+    const sent = sendCommand(command);
+    // Auch ein von Hand eingegebener Reload baut das Pack neu
+    if (sent && state.config.nexoJar && /^\/?(nexo|n)\s+(reload|rl)\b/i.test(String(command).trim())) {
+      setPack('building', 'Nexo lädt neu und erstellt das Resourcepack …');
+    }
+    return sent;
+  });
+  handle('testserver:reload', () => requestReload());
   handle('testserver:sync', (_event, files, options) => syncFiles(files, options));
   handle('testserver:read-settings', () => readNexoSettings());
   handle('testserver:open-folder', async () => {
