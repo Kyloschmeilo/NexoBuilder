@@ -2,6 +2,8 @@ import { useMemo, useRef, useState, type DragEvent, type MouseEvent } from 'reac
 import {
   Box,
   ChevronDown,
+  ClipboardCopy,
+  ClipboardPaste,
   ChevronRight,
   Copy,
   EllipsisVertical,
@@ -22,6 +24,8 @@ import { getDescendantFolderIds } from '../../core/project/tree';
 import { addFolder, deleteFolder, deleteItem, duplicateItem, moveFolder, moveItem, renameFolder } from '../../state/actions';
 import { useStore } from '../../state/store';
 import { isTestServerAvailable, useTestServerStore } from '../../state/testserver';
+import { clipboardLabel, copyItemProperties, openPasteDialog, useItemClipboard } from '../../state/clipboard';
+import { itemIdsInFolder } from '../../core/export/selection';
 import { TEST_SERVER_STATUS } from '../testserver/TestServerView';
 import { MenuItem, Popover } from '../common/Popover';
 import { stripMiniMessage } from '../common/MiniMessage';
@@ -118,7 +122,7 @@ export function Sidebar({ plan }: { plan: ExportPlan | null }) {
       </div>
       <div className="sidebar-search">
         <div className="row" style={{ position: 'relative' }}>
-          <Search size={14} style={{ position: 'absolute', left: 9, color: 'var(--text-faint)' }} />
+          <Search size={14} style={{ position: 'absolute', left: 9, color: 'var(--ink-faint)' }} />
           <input
             className="input"
             style={{ paddingLeft: 28, minHeight: 30 }}
@@ -182,7 +186,7 @@ function TestServerEntry() {
         onClick={() => useStore.getState().select({ kind: 'testserver' })}
         title="Lokaler Minecraft-Testserver mit Nexo – aktualisiert sich automatisch"
       >
-        <span className="tree-icon" style={{ color: 'var(--success)' }}>
+        <span className="tree-icon" style={{ color: 'var(--accent)' }}>
           <Server size={16} />
         </span>
         <span className="tree-label">Testserver</span>
@@ -206,7 +210,7 @@ function GlyphsEntry({ plan }: { plan: ExportPlan | null }) {
         onClick={() => useStore.getState().select({ kind: 'glyphs' })}
         title="Glyphen (Emojis, GUI-Texturen) für Chat, Lore und Titel"
       >
-        <span className="tree-icon" style={{ color: '#ffd166' }}>
+        <span className="tree-icon">
           <Smile size={16} />
         </span>
         <span className="tree-label">Glyphen</span>
@@ -235,6 +239,7 @@ function FolderNode({ project, folderId, depth, status, matches }: NodeProps & {
   const [dropActive, setDropActive] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
   const menuAnchor = useRef<HTMLButtonElement>(null);
+  const clip = useItemClipboard((s) => s.clip);
   if (!folder) return null;
   if (matches && !folderHasMatch(project, folderId, matches)) return null;
   const open = matches ? true : expanded;
@@ -296,7 +301,7 @@ function FolderNode({ project, folderId, depth, status, matches }: NodeProps & {
         title={folder.name}
       >
         <span className="tree-chevron">{open ? <ChevronDown size={14} /> : <ChevronRight size={14} />}</span>
-        <span className="tree-icon" style={{ color: '#f5c46a' }}>
+        <span className="tree-icon">
           {open ? <FolderOpen size={16} /> : <FolderIcon size={16} />}
         </span>
         <span className="tree-label">{folder.name}</span>
@@ -317,7 +322,7 @@ function FolderNode({ project, folderId, depth, status, matches }: NodeProps & {
           </button>
         </span>
       </div>
-      <Popover anchor={menuAnchor.current} open={menuOpen} onClose={() => setMenuOpen(false)} align="right" width={230}>
+      <Popover anchor={menuAnchor.current} open={menuOpen} onClose={() => setMenuOpen(false)} align="right" width={270}>
         <MenuItem
           icon={<Plus size={15} />}
           label="Neues Item"
@@ -340,6 +345,16 @@ function FolderNode({ project, folderId, depth, status, matches }: NodeProps & {
           onClick={() => {
             setMenuOpen(false);
             promptRename(folder);
+          }}
+        />
+        <MenuItem
+          icon={<ClipboardPaste size={15} />}
+          label="Eigenschaften einfügen …"
+          description={clip ? `von „${clipboardLabel(clip)}“ in alle Items des Ordners` : 'Zuerst bei einem Item kopieren'}
+          disabled={!clip || count === 0}
+          onClick={() => {
+            setMenuOpen(false);
+            openPasteDialog(itemIdsInFolder(project, folderId));
           }}
         />
         <div className="menu-sep" />
@@ -385,6 +400,7 @@ function ItemNode({ project, itemId, depth, status }: NodeProps & { itemId: stri
   const [menuOpen, setMenuOpen] = useState(false);
   const menuAnchor = useRef<HTMLButtonElement>(null);
   const thumb = useThumbnail(item?.model ?? null);
+  const clip = useItemClipboard((s) => s.clip);
   if (!item) return null;
   const state = status.get(itemId);
   return (
@@ -438,7 +454,7 @@ function ItemNode({ project, itemId, depth, status }: NodeProps & { itemId: stri
           </button>
         </span>
       </div>
-      <Popover anchor={menuAnchor.current} open={menuOpen} onClose={() => setMenuOpen(false)} align="right" width={220}>
+      <Popover anchor={menuAnchor.current} open={menuOpen} onClose={() => setMenuOpen(false)} align="right" width={270}>
         <MenuItem
           icon={<Copy size={15} />}
           label="Duplizieren"
@@ -453,6 +469,26 @@ function ItemNode({ project, itemId, depth, status }: NodeProps & { itemId: stri
           onClick={() => {
             setMenuOpen(false);
             useStore.getState().openDialog({ type: 'moveItem', itemId });
+          }}
+        />
+        <div className="menu-sep" />
+        <MenuItem
+          icon={<ClipboardCopy size={15} />}
+          label="Eigenschaften kopieren"
+          description="Alles außer Name, ID und Modell"
+          onClick={() => {
+            setMenuOpen(false);
+            copyItemProperties(itemId);
+          }}
+        />
+        <MenuItem
+          icon={<ClipboardPaste size={15} />}
+          label="Eigenschaften einfügen …"
+          description={clip ? `von „${clipboardLabel(clip)}“` : 'Zuerst bei einem Item kopieren'}
+          disabled={!clip || clip.sourceItemId === itemId}
+          onClick={() => {
+            setMenuOpen(false);
+            openPasteDialog([itemId]);
           }}
         />
         <div className="menu-sep" />

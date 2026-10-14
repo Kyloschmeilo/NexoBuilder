@@ -20,7 +20,7 @@ export function FolderView({ folderId, plan }: { folderId: string; plan: ExportP
   return (
     <div className="editor">
       <div className="editor-header">
-        <div className="editor-thumb" style={{ color: '#f5c46a' }}>
+        <div className="editor-thumb">
           <FolderOpen size={30} />
         </div>
         <div className="editor-title">
@@ -102,7 +102,7 @@ export function FolderView({ folderId, plan }: { folderId: string; plan: ExportP
           <div className="row wrap">
             {folder.folderIds.map((id) => (
               <button key={id} className="btn" onClick={() => useStore.getState().select({ kind: 'folder', id })}>
-                <FolderOpen size={15} style={{ color: '#f5c46a' }} /> {project.folders[id]?.name}
+                <FolderOpen size={15} className="faint" /> {project.folders[id]?.name}
               </button>
             ))}
           </div>
@@ -123,7 +123,7 @@ function ItemTile({ item, plan }: { item: Item; plan: ExportPlan | null }) {
       style={{ textAlign: 'left', cursor: 'pointer', padding: 12, display: 'flex', gap: 10, alignItems: 'center', color: 'inherit' }}
       onClick={() => useStore.getState().select({ kind: 'item', id: item.id })}
     >
-      <div className="editor-thumb" style={{ width: 48, height: 48, borderRadius: 9 }}>
+      <div className="editor-thumb" style={{ width: 48, height: 48 }}>
         {thumb ? <img src={thumb} alt="" style={{ width: 36, height: 36 }} /> : <Box size={20} className="faint" />}
       </div>
       <div style={{ minWidth: 0, flex: 1 }}>

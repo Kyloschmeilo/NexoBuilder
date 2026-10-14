@@ -136,8 +136,8 @@ export function RecipesTab({ item }: { item: Item }) {
         );
       })}
       <div className="hint">
-        Rezepte werden nach <span className="mono">&nbsp;plugins/Nexo/recipes/&lt;typ&gt;/&nbsp;</span> exportiert und mit{' '}
-        <span className="mono">&nbsp;/nexo reload all&nbsp;</span> geladen.
+        Rezepte werden nach <code className="code-inline">plugins/Nexo/recipes/&lt;typ&gt;/</code> exportiert und mit{' '}
+        <code className="code-inline">/nexo reload all</code> geladen.
       </div>
     </div>
   );

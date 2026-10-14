@@ -198,7 +198,7 @@ export function ColorInput({ value, onChange }: { value: string | undefined; onC
       type="color"
       value={hex}
       title="Farbe wählen"
-      style={{ width: 38, height: 32, padding: 2, border: '1px solid var(--border)', borderRadius: 5, background: 'var(--bg-input)' }}
+      style={{ width: 40, height: 36, padding: 2, border: '1px solid var(--border-control)', borderRadius: 'var(--radius-md)', background: 'var(--surface-0)' }}
       onChange={(e) => {
         const h = e.target.value;
         const rgb = [1, 3, 5].map((i) => parseInt(h.slice(i, i + 2), 16));

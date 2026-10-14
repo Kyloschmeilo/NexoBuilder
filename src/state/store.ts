@@ -21,6 +21,7 @@ export type DialogState =
   | { type: 'projects' }
   | { type: 'moveItem'; itemId: string }
   | { type: 'share' }
+  | { type: 'pasteConfig'; targetItemIds: string[] }
   | {
       type: 'confirm';
       title: string;

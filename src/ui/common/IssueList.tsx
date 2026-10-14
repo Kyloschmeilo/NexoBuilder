@@ -14,9 +14,11 @@ interface IssueListProps {
   onOpenGlyphs?: () => void;
   empty?: string;
   hideInfo?: boolean;
+  /** Ob „Zum Item“/„Zu den Glyphen“ für diese Meldung angeboten wird (z.B. nur fürs geöffnete Projekt) */
+  canOpen?: (issue: Issue | ProjectIssue) => boolean;
 }
 
-export function IssueList({ issues, onOpenItem, onOpenGlyphs, empty, hideInfo }: IssueListProps) {
+export function IssueList({ issues, onOpenItem, onOpenGlyphs, empty, hideInfo, canOpen = () => true }: IssueListProps) {
   const order = { error: 0, warning: 1, info: 2 };
   const visible = issues.filter((i) => !hideInfo || i.level !== 'info').sort((a, b) => order[a.level] - order[b.level]);
   if (visible.length === 0) return empty ? <div className="faint small">{empty}</div> : null;
@@ -26,12 +28,12 @@ export function IssueList({ issues, onOpenItem, onOpenGlyphs, empty, hideInfo }:
         <div key={i} className={`issue ${issue.level}`}>
           {ICONS[issue.level]}
           <span className="issue-text">{issue.message}</span>
-          {onOpenItem && 'itemId' in issue && issue.itemId && (
+          {onOpenItem && canOpen(issue) && 'itemId' in issue && issue.itemId && (
             <button className="link" onClick={() => onOpenItem(issue.itemId!)}>
               Zum Item
             </button>
           )}
-          {onOpenGlyphs && 'glyphId' in issue && issue.glyphId && (
+          {onOpenGlyphs && canOpen(issue) && 'glyphId' in issue && issue.glyphId && (
             <button className="link" onClick={onOpenGlyphs}>
               Zu den Glyphen
             </button>
