@@ -147,7 +147,7 @@ function AddPropertyButton({ item, groups }: { item: Item; groups: PropertyGroup
       </button>
       <Popover anchor={anchor.current} open={open} onClose={() => setOpen(false)} align="right" width={420}>
         <div className="row" style={{ position: 'relative', padding: 4 }}>
-          <Search size={14} style={{ position: 'absolute', left: 13, color: 'var(--text-faint)' }} />
+          <Search size={14} style={{ position: 'absolute', left: 13, color: 'var(--ink-faint)' }} />
           <input
             className="input"
             style={{ paddingLeft: 28 }}

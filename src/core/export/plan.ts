@@ -39,6 +39,8 @@ export interface ProjectIssue extends Issue {
   folderId?: string;
   /** interne ID eines Glyphs */
   glyphId?: string;
+  /** Projekt, aus dem die Meldung stammt (nur beim Export mehrerer Projekte gesetzt) */
+  projectId?: string;
 }
 
 export type ExportMode = 'full' | 'pack' | 'items';

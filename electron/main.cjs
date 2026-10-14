@@ -35,7 +35,7 @@ function createWindow() {
     minHeight: 640,
     title: APP_NAME,
     icon: ICON,
-    backgroundColor: '#15161c',
+    backgroundColor: '#0a1110',
     show: false,
     autoHideMenuBar: false,
     webPreferences: {

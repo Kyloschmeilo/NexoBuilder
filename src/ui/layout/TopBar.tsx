@@ -164,15 +164,15 @@ export function TopBar({ plan }: { plan: ExportPlan | null }) {
         <button className="btn ghost" title="Prüfung anzeigen" onClick={() => open({ type: 'export' })}>
           {counts.error > 0 ? (
             <>
-              <CircleAlert size={16} style={{ color: 'var(--danger)' }} /> {counts.error} Fehler
+              <CircleAlert size={16} style={{ color: 'var(--ember)' }} /> {counts.error} Fehler
             </>
           ) : counts.warning > 0 ? (
             <>
-              <TriangleAlert size={16} style={{ color: 'var(--warning)' }} /> {counts.warning} {counts.warning === 1 ? 'Warnung' : 'Warnungen'}
+              <TriangleAlert size={16} style={{ color: 'var(--gold)' }} /> {counts.warning} {counts.warning === 1 ? 'Warnung' : 'Warnungen'}
             </>
           ) : (
             <>
-              <CircleCheck size={16} style={{ color: 'var(--success)' }} /> Alles ok
+              <CircleCheck size={16} style={{ color: 'var(--accent)' }} /> Alles ok
             </>
           )}
         </button>

@@ -24,10 +24,10 @@ import { CopyButton } from '../common/YamlView';
 
 export const TEST_SERVER_STATUS: Record<TestServerStatus, { label: string; tone: string }> = {
   stopped: { label: 'Gestoppt', tone: '' },
-  preparing: { label: 'Wird vorbereitet', tone: 'warning' },
-  starting: { label: 'Startet', tone: 'warning' },
+  preparing: { label: 'Wird vorbereitet', tone: 'busy' },
+  starting: { label: 'Startet', tone: 'busy' },
   running: { label: 'Läuft', tone: 'success' },
-  stopping: { label: 'Stoppt', tone: 'warning' },
+  stopping: { label: 'Stoppt', tone: 'busy' },
   error: { label: 'Fehler', tone: 'danger' },
 };
 
@@ -280,7 +280,7 @@ function Setup({ config, locked }: { config: TestServerConfig; locked: boolean }
 
 const PACK_TEXT = {
   idle: { label: 'Resourcepack: noch nicht erstellt', tone: '' },
-  building: { label: 'Resourcepack wird erstellt …', tone: 'warning' },
+  building: { label: 'Resourcepack wird erstellt …', tone: 'busy' },
   ready: { label: 'Resourcepack bereit', tone: 'success' },
   failed: { label: 'Resourcepack fehlgeschlagen', tone: 'danger' },
 } as const;
@@ -397,7 +397,7 @@ export function TestServerView({ plan }: { plan: ExportPlan | null }) {
   return (
     <div className="editor">
       <div className="editor-header">
-        <div className="editor-thumb" style={{ color: 'var(--success)' }}>
+        <div className="editor-thumb" style={{ color: 'var(--accent)' }}>
           <Server size={30} />
         </div>
         <div className="editor-title">

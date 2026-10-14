@@ -1,5 +1,42 @@
 # Changelog
 
+## 1.3.0
+
+### Neu: nur bestimmte Projekte und Inhalte exportieren
+
+- Im Export-Dialog gibt es jetzt eine **Auswahl**: Ordner, einzelne Items und Glyphen an- oder abwählen.
+  Abgewählte Ordner fallen samt Inhalt weg, alles andere behält seine Pfade.
+- **Mehrere Projekte in ein ZIP**: weitere gespeicherte Projekte anhaken und auch darin Ordner/Items auswählen.
+  Jedes Projekt bekommt seinen eigenen Ordner `items/<projekt>/` und seinen eigenen Resourcepack unter
+  `pack/external_packs/<packname>/`; die `ANLEITUNG.txt` listet alle Projekte. Doppelte Item-IDs, Glyph-IDs, Pack-Namen
+  oder Dateien zwischen den Projekten werden vor dem Export gemeldet.
+
+### Neu: Eigenschaften kopieren und einfügen
+
+- **Kopieren** (im Item-Kopf oder im Item-Menü) merkt sich die komplette Konfiguration eines Items.
+- **Einfügen …** überträgt sie auf ein oder mehrere Items – im Item-Menü, im Ordner-Menü für alle Items des Ordners
+  oder im Item-Kopf. Im Dialog lässt sich wählen, was übernommen wird (Material, Allgemein, Aussehen, Attribute,
+  Komponenten, Mechaniken, sonstige Werte, zusätzliches YAML, Rezepte) und ob vorhandene Werte **ersetzt** oder nur
+  **ergänzt** werden.
+- Nie kopiert werden Anzeigename, Item-ID, Modell und Varianten, Ordner und `custom_model_data`. Eigene Blöcke bekommen
+  automatisch eine freie Variation, Rüstungs-Texturen werden mitkopiert.
+- Funktioniert auch projektübergreifend (Projekt wechseln und dort einfügen). Ein Strg+Z macht das Einfügen in allen
+  Items auf einmal rückgängig.
+
+### Neues Aussehen
+
+- Die ganze Oberfläche nutzt jetzt das CastCrafter-Design: dunkler Waldgrün-Hintergrund, Smaragdgrün als einzige
+  Signalfarbe, Gold für Warnungen und Glut-Orange für Fehler (immer mit Zeichen ★ / ■), flache Flächen ohne Verläufe.
+- Schriften Chakra Petch (Überschriften, Knöpfe), Hanken Grotesk (Text) und Martian Mono (IDs, Pfade, Zahlen) –
+  fest eingebaut, funktionieren also auch offline.
+- Neues, flaches App-Icon und Favicon.
+
+### Download
+
+- **`NexoBuilder-Setup-1.3.0.exe`**: Installer mit Startmenü- und Desktop-Verknüpfung.
+- **`NexoBuilder-1.3.0-portable.exe`**: ohne Installation direkt starten.
+- **`NexoBuilder.html`**: die App als einzelne Datei für den Browser (ohne Teilen und Testserver).
+
 ## 1.2.2
 
 ### Korrigiert

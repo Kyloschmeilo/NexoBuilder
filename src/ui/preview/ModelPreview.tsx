@@ -61,12 +61,12 @@ export function ModelPreview({ model, height = 340, showToolbar = true }: ModelP
     const extras: Array<{ dispose: () => void }> = [];
     if (!displayTransform && preview.kind === 'elements') {
       // Bodenraster und Block-Umriss (ein Block = 16 Pixel)
-      const grid = new THREE.GridHelper(16, 16, 0x4a4d66, 0x2f3142);
+      const grid = new THREE.GridHelper(16, 16, 0x54766a, 0x1f302a);
       grid.position.y = -8;
       scene.add(grid);
       const outline = new THREE.LineSegments(
         new THREE.EdgesGeometry(new THREE.BoxGeometry(16, 16, 16)),
-        new THREE.LineBasicMaterial({ color: 0x3b3e55, transparent: true, opacity: 0.6 }),
+        new THREE.LineBasicMaterial({ color: 0x54766a, transparent: true, opacity: 0.6 }),
       );
       scene.add(outline);
       extras.push(grid.geometry, grid.material as THREE.Material, outline.geometry, outline.material as THREE.Material);

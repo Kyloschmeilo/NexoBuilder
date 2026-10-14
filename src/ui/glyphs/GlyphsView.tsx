@@ -31,7 +31,7 @@ export function GlyphsView({ plan }: { plan: ExportPlan | null }) {
   return (
     <div className="editor">
       <div className="editor-header">
-        <div className="editor-thumb" style={{ color: '#ffd166' }}>
+        <div className="editor-thumb">
           <Smile size={30} />
         </div>
         <div className="editor-title">
@@ -53,7 +53,7 @@ export function GlyphsView({ plan }: { plan: ExportPlan | null }) {
       </div>
       <div className="hint">
         Glyphen sind eigene Zeichen für Chat, Lore, Item-Namen, Titel und GUIs. Verwendung überall mit{' '}
-        <span className="mono">&nbsp;&lt;glyph:id&gt;&nbsp;</span>, z.B. in der Lore eines Items.
+        <code className="code-inline">&lt;glyph:id&gt;</code>, z.B. in der Lore eines Items.
       </div>
       <DropZone
         onFiles={async (files) => {

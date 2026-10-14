@@ -12,6 +12,10 @@ und exportierst alles als ZIP, das du direkt in `plugins/Nexo/` entpackst.
 
 - **Ordner & Items** – Ordner (auch verschachtelt) werden zu Unterordnern in `plugins/Nexo/items`.
   Items per Drag & Drop verschieben, duplizieren, suchen.
+- **Eigenschaften kopieren & einfügen** – die komplette Konfiguration eines Items (Material, Lore, Attribute,
+  Komponenten, Mechaniken, zusätzliches YAML, auf Wunsch Rezepte) in andere Items übernehmen – auch in einen ganzen
+  Ordner oder in Items eines anderen Projekts. Name, Item-ID, Modell, Varianten, Ordner und `custom_model_data`
+  bleiben beim Ziel. Wahlweise **ersetzen** oder nur **ergänzen**; ein Strg+Z macht alles rückgängig.
 - **Modell-Import per Drag & Drop**
   - `.bbmodel` (Blockbench-Projekt, Format „Java Block/Item“) – Umrechnung wie Blockbenchs eigener Java-Export
     (UVs, Rotationen inkl. freier Rotation ab 1.21.11, Inflate, Display-Einstellungen, animierte Texturen).
@@ -43,6 +47,9 @@ und exportierst alles als ZIP, das du direkt in `plugins/Nexo/` entpackst.
   - `glyphs/<projekt>.yml` (falls Glyphen angelegt wurden)
   - `pack/external_packs/<packname>/` (oder als `.zip`) mit `pack.mcmeta`, Modellen und Texturen
   - Alternativ nur der Resourcepack oder nur die Item-Configs
+  - **Auswahl**: nur bestimmte Ordner, Items und Glyphen exportieren – und mehrere gespeicherte Projekte zusammen
+    in ein ZIP packen (jedes Projekt bekommt `items/<projekt>/` und einen eigenen Resourcepack; doppelte Item-IDs,
+    Pack-Namen oder Dateien zwischen den Projekten werden gemeldet)
 - **Automatisches Speichern** im Browser, Rückgängig/Wiederholen (Strg+Z / Strg+Y),
   Projektdateien zum Sichern und Weitergeben.
 - **Projekte teilen** (Windows-Programm) – über einen gemeinsamen Ordner in OneDrive, Google Drive oder Dropbox
@@ -192,11 +199,12 @@ Neue Version veröffentlichen: Version in `package.json` erhöhen, in `CHANGELOG
 Aufbau:
 
 - `src/core/model` – Import von `.bbmodel`, Java-JSON und PNG
-- `src/core/nexo` – Eigenschafts-Schema, YAML-Erzeugung
-- `src/core/export` – Export-Planung, Prüfungen, ZIP
+- `src/core/nexo` – Eigenschafts-Schema, YAML-Erzeugung, Eigenschaften kopieren/einfügen (`copyConfig.ts`)
+- `src/core/export` – Export-Planung, Prüfungen, Auswahl und mehrere Projekte (`selection.ts`), ZIP
 - `src/core/sync` – Abgleich geteilter Projekte (Dateiformat, Zusammenführen, Konflikte)
 - `src/core/testserver` – Dateien und Nexo-Einstellungen für den lokalen Testserver
-- `src/ui` – Oberfläche (React), 3D-Vorschau (three.js)
+- `src/ui` – Oberfläche (React), 3D-Vorschau (three.js); Aussehen nach dem CastCrafter-Design in `src/styles.css`
+  (Farben als CSS-Variablen, Schriften Chakra Petch / Hanken Grotesk / Martian Mono lokal eingebunden über `src/fonts.css`)
 - `electron/` – Desktop-Programm (Electron), Konfiguration in `electron-builder.yml`;
   `share.cjs` regelt den Zugriff auf geteilte Ordner (nur selbst gewählte Ordner, nur Projektdateien),
   `testserver.cjs` lädt Paper/Java herunter und steuert den lokalen Testserver

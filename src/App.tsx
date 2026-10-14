@@ -17,6 +17,7 @@ import { ExportDialog } from './ui/dialogs/ExportDialog';
 import { SettingsDialog } from './ui/dialogs/SettingsDialog';
 import { MoveItemDialog } from './ui/dialogs/MoveItemDialog';
 import { ShareDialog } from './ui/dialogs/ShareDialog';
+import { PasteConfigDialog } from './ui/dialogs/PasteConfigDialog';
 import { filesFromDataTransfer } from './ui/files';
 
 function DialogHost() {
@@ -47,6 +48,8 @@ function DialogHost() {
       return <MoveItemDialog itemId={dialog.itemId} />;
     case 'share':
       return <ShareDialog />;
+    case 'pasteConfig':
+      return <PasteConfigDialog targetItemIds={dialog.targetItemIds} />;
   }
 }
 

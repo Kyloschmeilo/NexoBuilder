@@ -9,7 +9,7 @@ const SIZE = 512;
 const SS = 4; // Supersampling für glatte Kanten
 const scale = SIZE / 32;
 
-// Logo-Form aus dem Favicon (32×32): abgerundetes Quadrat + „N“
+// Logo-Form aus dem Favicon (32×32): leicht abgerundetes Quadrat + „N“ (CastCrafter: flach, ohne Verlauf)
 const N = [
   [9, 23], [9, 9], [12.2, 9], [19.6, 18.4], [19.6, 9], [23, 9], [23, 23], [19.9, 23], [12.4, 13.5], [12.4, 23],
 ].map(([x, y]) => [x * scale, y * scale]);
@@ -25,14 +25,14 @@ function inPolygon(x, y, poly) {
 }
 
 function inRoundedRect(x, y) {
-  const r = 7 * scale;
+  const r = 4.5 * scale;
   const cx = Math.min(Math.max(x, r), SIZE - r);
   const cy = Math.min(Math.max(y, r), SIZE - r);
   return (x - cx) ** 2 + (y - cy) ** 2 <= r * r;
 }
 
-const from = [0x7c, 0x5c, 0xff];
-const to = [0x4f, 0xc3, 0xff];
+const ACCENT = [0x1f, 0xbf, 0x7a];
+const ON_ACCENT = [0x04, 0x13, 0x0c];
 const raw = Buffer.alloc(SIZE * (SIZE * 4 + 1));
 for (let y = 0; y < SIZE; y++) {
   raw[y * (SIZE * 4 + 1)] = 0;
@@ -50,10 +50,8 @@ for (let y = 0; y < SIZE; y++) {
       }
     }
     const samples = SS * SS;
-    const t = (x + y) / (2 * SIZE);
-    const base = from.map((c, i) => c + (to[i] - c) * t);
     const f = bg ? fg / bg : 0;
-    const color = base.map((c) => Math.round(c * (1 - f) + 255 * f));
+    const color = ACCENT.map((c, i) => Math.round(c * (1 - f) + ON_ACCENT[i] * f));
     const o = y * (SIZE * 4 + 1) + 1 + x * 4;
     raw[o] = color[0];
     raw[o + 1] = color[1];

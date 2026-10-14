@@ -1,4 +1,4 @@
-import { Box, Copy, FolderInput, Gift, Trash2 } from 'lucide-react';
+import { Box, ClipboardCopy, ClipboardPaste, Copy, FolderInput, Gift, Trash2 } from 'lucide-react';
 import type { ExportPlan } from '../../core/export/plan';
 import { issuesForItem } from '../../core/export/plan';
 import { getFolderPathLabel } from '../../core/project/tree';
@@ -18,6 +18,7 @@ import { countActiveProperties, PropertiesPanel } from './PropertiesPanel';
 import { YamlTab } from './YamlTab';
 import { RecipesTab } from './RecipesTab';
 import { giveInTestServer, useTestServerStore } from '../../state/testserver';
+import { clipboardLabel, copyItemProperties, openPasteDialog, useItemClipboard } from '../../state/clipboard';
 
 /** „Im Testserver geben“ – nur sichtbar, wenn der lokale Testserver läuft */
 function GiveButton({ nexoId }: { nexoId: string }) {
@@ -54,6 +55,7 @@ export function ItemEditor({ itemId, plan }: { itemId: string; plan: ExportPlan 
   const activeTab = useStore((s) => s.activeTab);
   const setTab = useStore((s) => s.setActiveTab);
   const thumb = useThumbnail(item?.model ?? null);
+  const clip = useItemClipboard((s) => s.clip);
   if (!item) return null;
 
   const issues = plan ? issuesForItem(plan.issues, item.id) : [];
@@ -88,7 +90,7 @@ export function ItemEditor({ itemId, plan }: { itemId: string; plan: ExportPlan 
   return (
     <FieldContext.Provider value={fieldContext}>
       <div className="editor">
-        <div className="editor-header">
+        <div className="editor-header item-header">
           <div className="editor-thumb">{thumb ? <img src={thumb} alt="" /> : <Box size={26} className="faint" />}</div>
           <div className="editor-title">
             <h1>
@@ -107,16 +109,33 @@ export function ItemEditor({ itemId, plan }: { itemId: string; plan: ExportPlan 
               {errors === 0 && warnings === 0 && <span className="badge success">Bereit</span>}
             </div>
           </div>
-          <GiveButton nexoId={item.nexoId} />
-          <button className="btn small" onClick={() => duplicateItem(item.id)} title="Duplizieren">
-            <Copy size={14} /> Duplizieren
-          </button>
-          <button className="btn small" onClick={() => useStore.getState().openDialog({ type: 'moveItem', itemId: item.id })} title="Verschieben">
-            <FolderInput size={14} />
-          </button>
-          <button className="btn small danger" onClick={() => confirmDeleteItem(item)} title="Löschen">
-            <Trash2 size={14} />
-          </button>
+          <div className="editor-actions">
+            <GiveButton nexoId={item.nexoId} />
+            <button
+              className="btn small"
+              onClick={() => copyItemProperties(item.id)}
+              title="Alle Eigenschaften kopieren – außer Name, Item-ID, Modell und Ordner"
+            >
+              <ClipboardCopy size={14} /> Kopieren
+            </button>
+            <button
+              className="btn small"
+              disabled={!clip || clip.sourceItemId === item.id}
+              onClick={() => openPasteDialog([item.id])}
+              title={clip ? `Eigenschaften von „${clipboardLabel(clip)}“ einfügen` : 'Zuerst bei einem anderen Item „Kopieren“ wählen'}
+            >
+              <ClipboardPaste size={14} /> Einfügen
+            </button>
+            <button className="btn small" onClick={() => duplicateItem(item.id)} title="Duplizieren">
+              <Copy size={14} /> Duplizieren
+            </button>
+            <button className="btn small" onClick={() => useStore.getState().openDialog({ type: 'moveItem', itemId: item.id })} title="Verschieben">
+              <FolderInput size={14} />
+            </button>
+            <button className="btn small danger" onClick={() => confirmDeleteItem(item)} title="Löschen">
+              <Trash2 size={14} />
+            </button>
+          </div>
         </div>
 
         <div className="tabs" role="tablist">

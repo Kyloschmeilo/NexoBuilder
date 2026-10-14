@@ -129,7 +129,7 @@ export function Welcome() {
     <div className="main">
       <div className="welcome">
         <div className="welcome-hero">
-          <div className="brand-logo" style={{ width: 54, height: 54, fontSize: 28, borderRadius: 14, margin: '0 auto' }}>
+          <div className="brand-logo large">
             N
           </div>
           <h1>NexoBuilder</h1>

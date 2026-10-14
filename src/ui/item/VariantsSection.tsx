@@ -196,7 +196,7 @@ function VariantEntry({ model, label, index, count, multiple, onMove, onReplace,
         <span className="mono small">{label}</span>
         <span className="faint small" style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
           {model.fileName}
-          {errors > 0 && <span style={{ color: 'var(--danger)' }}> · {errors} Fehler</span>}
+          {errors > 0 && <span style={{ color: 'var(--ember)' }}> · {errors} Fehler</span>}
         </span>
       </div>
       {multiple && (
