@@ -3,10 +3,10 @@ import { X } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 import type { ObjectField } from '@resourcepackbuilder/core/nexo/fields';
 import { isPlainObject } from '@resourcepackbuilder/core/object';
-import { CollapsibleSection, IconButton } from '@resourcepackbuilder/ui';
+import { AutoGrid, CollapsibleSection, IconButton } from '@resourcepackbuilder/ui';
 import { FieldDescription } from '@resourcepackbuilder/ui/components/field';
 import { useSchemaText } from '../../useSchemaText';
-import { FieldGrid, FieldRenderer } from '../FieldRenderer';
+import { FieldRenderer } from '../FieldRenderer';
 import { MinVersionBadge, useFieldTitle } from '../FieldShell';
 import type { EditorProps } from '../types';
 import { countSetValues, isWideField, objectOrUndefined, unknownEntries, withKey, withUnknownEntries } from '../values';
@@ -28,7 +28,7 @@ export function ObjectFields({
   return (
     <div className="flex flex-col gap-3">
       {simple.length > 0 && (
-        <FieldGrid>
+        <AutoGrid>
           {simple.map((f) => (
             <FieldRenderer
               key={f.key}
@@ -38,7 +38,7 @@ export function ObjectFields({
               onChange={(v) => onChange(withKey(object, f.key, v))}
             />
           ))}
-        </FieldGrid>
+        </AutoGrid>
       )}
       {wide.map((f) =>
         // "*" edits all keys no other field claims

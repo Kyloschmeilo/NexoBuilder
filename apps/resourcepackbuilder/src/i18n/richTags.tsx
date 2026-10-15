@@ -1,5 +1,5 @@
 import type { ReactNode } from 'react';
-import { InlineCode } from '../components/Hint';
+import { InlineCode } from '../components/InlineCode';
 
 /** Inline markup for `t.rich` messages used across the app. */
 export const richTags = {

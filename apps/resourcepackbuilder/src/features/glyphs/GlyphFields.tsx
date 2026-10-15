@@ -2,10 +2,11 @@ import { useTranslations } from 'next-intl';
 import { CHAT_TEXT_HEIGHT, type Glyph } from '@resourcepackbuilder/core/nexo/glyphs/model';
 import { normalizeTypedId } from '@resourcepackbuilder/core/minecraft/resourceLocation';
 import { Input } from '@resourcepackbuilder/ui/components/input';
+import { AutoGrid } from '@resourcepackbuilder/ui';
 import { updateGlyph } from '../../commands/media';
 import { NumberInput, TextInput } from '../../components/editor';
-import { CheckRow } from '../../components/CheckRow';
-import { FormField, FormGrid } from '../../components/FormField';
+import { CheckboxField } from '../../components/CheckboxField';
+import { FormField } from '../../components/FormField';
 import { NexoKey } from '../media/NexoKey';
 import { isMultiBitmap } from './glyphTag';
 
@@ -20,7 +21,7 @@ export function GlyphFields({ glyph, glyphs }: { glyph: Glyph; glyphs: Glyph[] }
 
   return (
     <>
-      <FormGrid>
+      <AutoGrid>
         <FormField label={<NexoKey>ID</NexoKey>} help={t('idHelp')}>
           <Input
             className="font-mono"
@@ -102,19 +103,19 @@ export function GlyphFields({ glyph, glyphs }: { glyph: Glyph; glyphs: Glyph[] }
             onChange={(e) => update((g) => (g.placeholders = e.target.value.split(',').map((p) => p.trim())), 'placeholders')}
           />
         </FormField>
-      </FormGrid>
+      </AutoGrid>
       <div className="flex flex-wrap gap-x-5 gap-y-2">
-        <CheckRow
+        <CheckboxField
           checked={glyph.isEmoji}
           onChange={(checked) => update((g) => (g.isEmoji = checked))}
           label={<NexoKey>Is Emoji</NexoKey>}
-          hint={t('isEmojiHint')}
+          description={t('isEmojiHint')}
         />
-        <CheckRow
+        <CheckboxField
           checked={glyph.tabcomplete}
           onChange={(checked) => update((g) => (g.tabcomplete = checked))}
           label={<NexoKey>Tab Complete</NexoKey>}
-          hint={t('tabCompleteHint')}
+          description={t('tabCompleteHint')}
         />
       </div>
     </>

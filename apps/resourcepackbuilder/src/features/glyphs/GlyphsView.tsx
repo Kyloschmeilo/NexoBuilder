@@ -4,7 +4,7 @@ import { glyphFilePath } from '@resourcepackbuilder/core/nexo/glyphs/files';
 import { Button } from '@resourcepackbuilder/ui/components/button';
 import { Tip } from '@resourcepackbuilder/ui';
 import { addGlyph } from '../../commands/media';
-import { InlineCode } from '../../components/Hint';
+import { richTags } from '../../i18n/richTags';
 import { usePlan } from '../../store/PlanProvider';
 import { useOpenProject } from '../../store/project';
 import { MediaPage } from '../media/MediaPage';
@@ -32,7 +32,7 @@ export function GlyphsView() {
           </Button>
         </Tip>
       }
-      hint={t.rich('hint', { tag: '<glyph:id>', code: (chunks) => <InlineCode>{chunks}</InlineCode> })}
+      hint={t.rich('hint', { ...richTags, tag: '<glyph:id>' })}
       drop={{
         accept: GLYPH_ACCEPT,
         formats: GLYPH_FORMATS,

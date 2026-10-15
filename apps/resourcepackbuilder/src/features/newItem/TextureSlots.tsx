@@ -13,6 +13,7 @@ import {
 import { runDraft, type ImportDraft } from '@resourcepackbuilder/core/model/drafts';
 import { Field, FieldDescription, FieldLabel } from '@resourcepackbuilder/ui/components/field';
 import { NativeSelect, NativeSelectOption } from '@resourcepackbuilder/ui/components/native-select';
+import { AutoGrid } from '@resourcepackbuilder/ui';
 import { useSchemaText } from '../../components/useSchemaText';
 
 /** The slots to fill: the template's own, or one layer per PNG for multi-layer items. */
@@ -57,7 +58,7 @@ export function TextureSlots({ draft, template, pngs, onChange }: TextureSlotsPr
         <FieldDescription>{schemaText(template.description)}</FieldDescription>
       </Field>
       {showSlots && (
-        <div className="grid grid-cols-[repeat(auto-fit,minmax(min(100%,12rem),1fr))] gap-4">
+        <AutoGrid min="12rem" fit>
           {slotsOf(template, pngs.length).map((slot) => (
             <Field key={slot}>
               <FieldLabel htmlFor={`${id}-${slot}`} className="font-mono">
@@ -78,7 +79,7 @@ export function TextureSlots({ draft, template, pngs, onChange }: TextureSlotsPr
               </NativeSelect>
             </Field>
           ))}
-        </div>
+        </AutoGrid>
       )}
     </div>
   );

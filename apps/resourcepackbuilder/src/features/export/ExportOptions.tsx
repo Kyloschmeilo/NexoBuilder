@@ -4,9 +4,9 @@ import { useTranslations } from 'next-intl';
 import type { ExportMode } from '@resourcepackbuilder/core/export/types';
 import type { ProjectSettings } from '@resourcepackbuilder/core/project/types';
 import { CollapsibleSection } from '@resourcepackbuilder/ui';
-import { Checkbox } from '@resourcepackbuilder/ui/components/checkbox';
-import { Field, FieldContent, FieldDescription, FieldLabel } from '@resourcepackbuilder/ui/components/field';
+import { Field, FieldLabel } from '@resourcepackbuilder/ui/components/field';
 import { NativeSelect, NativeSelectOption } from '@resourcepackbuilder/ui/components/native-select';
+import { CheckboxField } from '../../components/CheckboxField';
 import { updateProjectSettings } from '../../commands/settings';
 import { useOpenProject } from '../../store/project';
 
@@ -28,34 +28,24 @@ export function ExportOptions({ mode, hasSeveralProjects }: { mode: ExportMode; 
   return (
     <CollapsibleSection title={t('options', { name: project.name })}>
       <div className="flex flex-col gap-3">
-        <Field orientation="horizontal" data-disabled={isZipOptionOff}>
-          <Checkbox
-            id={`${id}-zip`}
-            checked={settings.externalPackAsZip}
-            disabled={isZipOptionOff}
-            onCheckedChange={(checked) => updateProjectSettings((p) => (p.settings.externalPackAsZip = checked))}
-          />
-          <FieldContent>
-            <FieldLabel htmlFor={`${id}-zip`}>{t('externalPackAsZip')}</FieldLabel>
-            <FieldDescription className="text-xs">{t('externalPackAsZipHelp', { packName: settings.packName })}</FieldDescription>
-          </FieldContent>
-        </Field>
-        <Field orientation="horizontal" data-disabled={isFolderOptionOff}>
-          <Checkbox
-            id={`${id}-folder`}
-            checked={settings.itemsInProjectFolder || hasSeveralProjects}
-            disabled={isFolderOptionOff}
-            onCheckedChange={(checked) => updateProjectSettings((p) => (p.settings.itemsInProjectFolder = checked))}
-          />
-          <FieldContent>
-            <FieldLabel htmlFor={`${id}-folder`}>{t('itemsInProjectFolder')}</FieldLabel>
-            <FieldDescription className="text-xs">
-              {hasSeveralProjects
-                ? t('itemsInProjectFolderSeveral')
-                : t('itemsInProjectFolderHelp', { project: `<${t('projectPlaceholder')}>` })}
-            </FieldDescription>
-          </FieldContent>
-        </Field>
+        <CheckboxField
+          checked={settings.externalPackAsZip}
+          disabled={isZipOptionOff}
+          onChange={(checked) => updateProjectSettings((p) => (p.settings.externalPackAsZip = checked))}
+          label={t('externalPackAsZip')}
+          description={t('externalPackAsZipHelp', { packName: settings.packName })}
+        />
+        <CheckboxField
+          checked={settings.itemsInProjectFolder || hasSeveralProjects}
+          disabled={isFolderOptionOff}
+          onChange={(checked) => updateProjectSettings((p) => (p.settings.itemsInProjectFolder = checked))}
+          label={t('itemsInProjectFolder')}
+          description={
+            hasSeveralProjects
+              ? t('itemsInProjectFolderSeveral')
+              : t('itemsInProjectFolderHelp', { project: `<${t('projectPlaceholder')}>` })
+          }
+        />
         <Field className="max-w-md" data-disabled={mode === 'pack'}>
           <FieldLabel htmlFor={`${id}-yaml`}>{t('yamlFiles')}</FieldLabel>
           <NativeSelect

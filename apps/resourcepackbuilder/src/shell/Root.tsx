@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import { useTranslations } from 'next-intl';
+import { Empty, EmptyDescription, EmptyHeader, EmptyMedia, EmptyTitle } from '@resourcepackbuilder/ui/components/empty';
 import { Spinner } from '@resourcepackbuilder/ui/components/spinner';
 import { TooltipProvider } from '@resourcepackbuilder/ui/components/tooltip';
 import { BrandMark } from '../components/BrandMark';
@@ -24,13 +25,15 @@ function Booting() {
 function BootFailed({ error }: { error: unknown }) {
   const t = useTranslations('layout.boot');
   return (
-    <div role="alert" className="grid h-screen place-items-center bg-background p-8 text-center text-foreground">
-      <div className="flex max-w-md flex-col items-center gap-3">
-        <BrandMark size="lg" />
-        <h1 className="font-heading text-xl font-semibold tracking-wide uppercase">{t('failedTitle')}</h1>
-        <p className="text-sm text-muted-foreground">{error instanceof Error ? error.message : String(error)}</p>
-      </div>
-    </div>
+    <Empty role="alert" className="h-screen bg-background p-8">
+      <EmptyHeader className="max-w-md">
+        <EmptyMedia>
+          <BrandMark size="lg" />
+        </EmptyMedia>
+        <EmptyTitle className="font-heading text-xl tracking-wide uppercase">{t('failedTitle')}</EmptyTitle>
+        <EmptyDescription>{error instanceof Error ? error.message : String(error)}</EmptyDescription>
+      </EmptyHeader>
+    </Empty>
   );
 }
 

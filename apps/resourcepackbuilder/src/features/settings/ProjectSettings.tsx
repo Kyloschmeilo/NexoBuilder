@@ -3,10 +3,10 @@ import { useId } from 'react';
 import { useTranslations } from 'next-intl';
 import { MC_VERSIONS } from '@resourcepackbuilder/core/minecraft/versions';
 import { PACK_NAME_PATTERN } from '@resourcepackbuilder/core/minecraft/resourceLocation';
-import { Checkbox } from '@resourcepackbuilder/ui/components/checkbox';
-import { Field, FieldContent, FieldDescription, FieldError, FieldLabel } from '@resourcepackbuilder/ui/components/field';
+import { Field, FieldDescription, FieldError, FieldLabel } from '@resourcepackbuilder/ui/components/field';
 import { Input } from '@resourcepackbuilder/ui/components/input';
 import { NativeSelect, NativeSelectOption } from '@resourcepackbuilder/ui/components/native-select';
+import { CheckboxField } from '../../components/CheckboxField';
 import { updateProjectSettings } from '../../commands/settings';
 import { richTags } from '../../i18n/richTags';
 import { useOpenProject } from '../../store/project';
@@ -85,19 +85,12 @@ export function ProjectSettings() {
 
       <PackIconField packIcon={settings.packIcon} />
 
-      <Field orientation="horizontal">
-        <Checkbox
-          id={`${id}-item-model`}
-          checked={settings.useItemModel}
-          onCheckedChange={(checked) => updateProjectSettings((p) => (p.settings.useItemModel = checked))}
-        />
-        <FieldContent>
-          <FieldLabel htmlFor={`${id}-item-model`}>{t('useItemModel')}</FieldLabel>
-          <FieldDescription>
-            {t.rich('useItemModelHelp', { ...richTags, component: 'Components.item_model: nexo:<item_id>' })}
-          </FieldDescription>
-        </FieldContent>
-      </Field>
+      <CheckboxField
+        checked={settings.useItemModel}
+        onChange={(checked) => updateProjectSettings((p) => (p.settings.useItemModel = checked))}
+        label={t('useItemModel')}
+        description={t.rich('useItemModelHelp', { ...richTags, component: 'Components.item_model: nexo:<item_id>' })}
+      />
     </div>
   );
 }

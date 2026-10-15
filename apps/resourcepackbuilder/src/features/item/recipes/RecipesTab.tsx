@@ -6,6 +6,7 @@ import { recipeKeys } from '@resourcepackbuilder/core/nexo/recipes/files';
 import { Alert, AlertDescription } from '@resourcepackbuilder/ui/components/alert';
 import { Button } from '@resourcepackbuilder/ui/components/button';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@resourcepackbuilder/ui/components/dropdown-menu';
+import { richTags } from '../../../i18n/richTags';
 import { addRecipe } from '../../../commands/items';
 import { EditorSection } from '../EditorSection';
 import { RecipeCard } from './RecipeCard';
@@ -51,9 +52,9 @@ export function RecipesTab({ item }: { item: Item }) {
       <Alert variant="info">
         <AlertDescription>
           {t.rich('recipes.exportHint', {
+            ...richTags,
             path: `plugins/Nexo/recipes/<${t('recipes.typePlaceholder')}>/`,
             command: RELOAD_COMMAND,
-            code: (chunks) => <code className="rounded-sm bg-muted px-1 py-0.5 font-mono text-xs text-foreground">{chunks}</code>,
           })}
         </AlertDescription>
       </Alert>

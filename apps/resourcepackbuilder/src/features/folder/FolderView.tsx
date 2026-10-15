@@ -6,7 +6,7 @@ import { folderYamlFile } from '@resourcepackbuilder/core/export/paths';
 import { countIssues, issuesFor } from '@resourcepackbuilder/core/issues';
 import { itemLabel } from '@resourcepackbuilder/core/project/labels';
 import { getFolderPathLabel } from '@resourcepackbuilder/core/project/tree';
-import { DropZone, IconButton, PageHeader, PageShell, SectionLabel, Tip } from '@resourcepackbuilder/ui';
+import { AutoGrid, DropZone, IconButton, PageHeader, PageShell, SectionLabel, Tip } from '@resourcepackbuilder/ui';
 import { Badge } from '@resourcepackbuilder/ui/components/badge';
 import { Button } from '@resourcepackbuilder/ui/components/button';
 import { useThumbnail } from '@resourcepackbuilder/preview';
@@ -71,11 +71,11 @@ export function FolderView({ folderId }: { folderId: string }) {
 
       {items.length > 0 && (
         <FolderSection title={t('itemsHeading')}>
-          <div className="grid grid-cols-[repeat(auto-fill,minmax(min(190px,100%),1fr))] gap-2.5">
+          <AutoGrid min="190px" className="gap-2.5">
             {items.map((item) => (
               <ItemTile key={item.id} item={item} />
             ))}
-          </div>
+          </AutoGrid>
         </FolderSection>
       )}
       {folder.folderIds.length > 0 && (

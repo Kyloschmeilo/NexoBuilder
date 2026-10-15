@@ -7,9 +7,9 @@ import { Checkbox } from '@resourcepackbuilder/ui/components/checkbox';
 import { Field, FieldContent, FieldDescription, FieldLabel } from '@resourcepackbuilder/ui/components/field';
 import { Input } from '@resourcepackbuilder/ui/components/input';
 import { NativeSelect, NativeSelectOption } from '@resourcepackbuilder/ui/components/native-select';
-import { StatusBadge } from '@resourcepackbuilder/ui';
+import { AutoGrid, StatusBadge } from '@resourcepackbuilder/ui';
 import { useDraft } from '../../components/editor/useDraft';
-import { FormField, FormGrid, FormHelp } from '../../components/FormField';
+import { FormField, FormHelp } from '../../components/FormField';
 import type { TestServerConfig } from '../../platform/desktopApi';
 import { notify } from '../../shell/notify';
 import { useBusyAction, useSetConfig, useTestServer } from './useTestServer';
@@ -36,7 +36,7 @@ export function ServerSetup({ config, isLocked }: { config: TestServerConfig; is
         <CardDescription className="text-xs">{isLocked ? t('lockedDescription') : t('description')}</CardDescription>
       </CardHeader>
       <CardContent className="flex flex-col gap-4 py-4">
-        <FormGrid className="grid-cols-[repeat(auto-fit,minmax(min(100%,15rem),1fr))]">
+        <AutoGrid min="15rem" fit>
           <NexoJarField config={config} />
           <VersionSelect paperVersion={config.paperVersion} isLocked={isLocked} />
           <PlayerNameField playerName={config.playerName} />
@@ -65,7 +65,7 @@ export function ServerSetup({ config, isLocked }: { config: TestServerConfig; is
               onChange={(e) => setConfig({ port: Number(e.target.value) })}
             />
           </FormField>
-        </FormGrid>
+        </AutoGrid>
         <EulaField isAccepted={config.eulaAccepted} />
       </CardContent>
     </Card>

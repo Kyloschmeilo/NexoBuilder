@@ -7,6 +7,7 @@ import { Button } from '@resourcepackbuilder/ui/components/button';
 import { Field, FieldLabel } from '@resourcepackbuilder/ui/components/field';
 import { Input } from '@resourcepackbuilder/ui/components/input';
 import { NativeSelect, NativeSelectOption } from '@resourcepackbuilder/ui/components/native-select';
+import { AutoGrid } from '@resourcepackbuilder/ui';
 import { NamespaceProblemText, useNamespaceProblem } from './NamespaceProblem';
 import { useProjectActions } from './useProjectActions';
 
@@ -52,7 +53,7 @@ export function NewProjectForm({ onDone }: { onDone?: () => void }) {
           onChange={(e) => setName(e.target.value)}
         />
       </Field>
-      <div className="grid grid-cols-[repeat(auto-fit,minmax(min(12rem,100%),1fr))] gap-3">
+      <AutoGrid min="12rem" fit className="gap-3">
         <Field data-invalid={isInvalid || undefined}>
           <FieldLabel htmlFor={`${id}-namespace`}>{t('namespace')}</FieldLabel>
           <Input
@@ -74,7 +75,7 @@ export function NewProjectForm({ onDone }: { onDone?: () => void }) {
             ))}
           </NativeSelect>
         </Field>
-      </div>
+      </AutoGrid>
       <Button type="submit" size="lg" disabled={isInvalid}>
         <FolderPlus /> {t('create')}
       </Button>

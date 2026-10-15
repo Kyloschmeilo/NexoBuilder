@@ -7,11 +7,11 @@ import { MAX_PAINTING_BLOCKS, paintingFrameSize, paintingKey, type Painting } fr
 import { Badge } from '@resourcepackbuilder/ui/components/badge';
 import { Button } from '@resourcepackbuilder/ui/components/button';
 import { Input } from '@resourcepackbuilder/ui/components/input';
-import { IconButton, pickFiles } from '@resourcepackbuilder/ui';
+import { AutoGrid, IconButton, pickFiles } from '@resourcepackbuilder/ui';
 import { addPaintingItem, deletePainting, updatePainting } from '../../commands/media';
 import { NumberInput } from '../../components/editor';
-import { CheckRow } from '../../components/CheckRow';
-import { FormField, FormGrid } from '../../components/FormField';
+import { CheckboxField } from '../../components/CheckboxField';
+import { FormField } from '../../components/FormField';
 import { IssueList } from '../../components/IssueList';
 import { notify } from '../../shell/notify';
 import { useOpenProject } from '../../store/project';
@@ -74,7 +74,7 @@ export function PaintingCard({ painting, plan }: { painting: Painting; plan: Exp
         </>
       }
     >
-      <FormGrid>
+      <AutoGrid>
         <FormField label={<NexoKey>ID</NexoKey>} help={t('idHelp')}>
           <Input
             className="font-mono"
@@ -116,19 +116,19 @@ export function PaintingCard({ painting, plan }: { painting: Painting; plan: Exp
             />
           </FormField>
         )}
-      </FormGrid>
+      </AutoGrid>
       <div className="flex flex-wrap gap-x-5 gap-y-2">
-        <CheckRow
+        <CheckboxField
           checked={painting.randomPlace}
           onChange={(checked) => update((p) => (p.randomPlace = checked))}
           label={<NexoKey>Random Place</NexoKey>}
-          hint={t('randomPlaceHint')}
+          description={t('randomPlaceHint')}
         />
-        <CheckRow
+        <CheckboxField
           checked={painting.animated}
           onChange={(checked) => update((p) => (p.animated = checked))}
           label={<NexoKey>Animated</NexoKey>}
-          hint={t('animatedHint')}
+          description={t('animatedHint')}
         />
       </div>
       <div className="flex flex-wrap items-center gap-2">

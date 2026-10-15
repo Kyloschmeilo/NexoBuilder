@@ -3,6 +3,7 @@ import { useTranslations } from 'next-intl';
 import { Button } from '@resourcepackbuilder/ui/components/button';
 import { Card } from '@resourcepackbuilder/ui/components/card';
 import { CopyButton, Tip } from '@resourcepackbuilder/ui';
+import { richTags } from '../../i18n/richTags';
 import type { TestServerState } from '../../platform/desktopApi';
 import { PackStatus } from './PackStatus';
 import { useTestServer } from './useTestServer';
@@ -19,11 +20,7 @@ export function ConnectCard({ server }: { server: TestServerState }) {
         <Plug className="size-5 flex-none text-muted-foreground" />
         <div className="min-w-0 flex-[1_1_12rem]">
           <div className="font-semibold break-words">
-            {t.rich('connect', {
-              version: config.paperVersion ?? '',
-              address: server.address,
-              mono: (chunks) => <span className="font-mono">{chunks}</span>,
-            })}
+            {t.rich('connect', { ...richTags, version: config.paperVersion ?? '', address: server.address })}
           </div>
           <div className="text-xs text-muted-foreground">{t('connectHint')}</div>
         </div>

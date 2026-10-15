@@ -2,7 +2,7 @@
 import { Music } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 import { addSound } from '../../commands/media';
-import { InlineCode } from '../../components/Hint';
+import { richTags } from '../../i18n/richTags';
 import { usePlan } from '../../store/PlanProvider';
 import { useOpenProject } from '../../store/project';
 import { MediaPage } from '../media/MediaPage';
@@ -22,7 +22,7 @@ export function SoundsView() {
       title={t('title')}
       count={t('count', { count: sounds.length })}
       configPath="plugins/Nexo/sounds.yml"
-      hint={t.rich('hint', { code: (chunks) => <InlineCode>{chunks}</InlineCode> })}
+      hint={t.rich('hint', richTags)}
       drop={{
         accept: SOUND_ACCEPT,
         formats: SOUND_FORMATS,

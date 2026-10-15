@@ -1,4 +1,4 @@
-export { FieldGrid, FieldRenderer } from './FieldRenderer';
+export { FieldRenderer } from './FieldRenderer';
 export { FieldContext, type FieldContextValue } from './fieldContext';
 export type { Choice, LiteralChoice } from './inputs/choices';
 export { NumberInput } from './inputs/NumberInput';

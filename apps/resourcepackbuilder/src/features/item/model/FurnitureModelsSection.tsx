@@ -15,6 +15,7 @@ import {
 import { isPlainObject } from '@resourcepackbuilder/core/object';
 import { Button } from '@resourcepackbuilder/ui/components/button';
 import { Card, CardContent } from '@resourcepackbuilder/ui/components/card';
+import { AutoGrid } from '@resourcepackbuilder/ui';
 import { addFurnitureState } from '../../../commands/items';
 import { prompt } from '../../../store/dialogs';
 import { EditorSection } from '../EditorSection';
@@ -32,7 +33,9 @@ function SlotGroup({ title, description, children }: { title: string; descriptio
         <div className="font-heading text-xs font-semibold tracking-[0.14em] text-muted-foreground uppercase">{title}</div>
         <div className="text-xs text-muted-foreground">{description}</div>
       </div>
-      <div className="grid grid-cols-[repeat(auto-fill,minmax(min(100%,10rem),1fr))] gap-2">{children}</div>
+      <AutoGrid min="10rem" className="gap-2">
+        {children}
+      </AutoGrid>
     </div>
   );
 }

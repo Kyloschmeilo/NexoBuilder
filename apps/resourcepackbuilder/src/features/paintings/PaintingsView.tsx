@@ -2,7 +2,7 @@
 import { Frame } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 import { addPainting } from '../../commands/media';
-import { InlineCode } from '../../components/Hint';
+import { richTags } from '../../i18n/richTags';
 import { usePlan } from '../../store/PlanProvider';
 import { useOpenProject } from '../../store/project';
 import { MediaPage } from '../media/MediaPage';
@@ -22,7 +22,7 @@ export function PaintingsView() {
       title={t('title')}
       count={t('count', { count: paintings.length })}
       configPath="plugins/Nexo/paintings.yml"
-      hint={t.rich('hint', { code: (chunks) => <InlineCode>{chunks}</InlineCode> })}
+      hint={t.rich('hint', richTags)}
       drop={{
         accept: PAINTING_ACCEPT,
         formats: PAINTING_FORMATS,

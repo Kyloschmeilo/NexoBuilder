@@ -1,7 +1,7 @@
 import type { ReactNode } from 'react';
+import { Alert, AlertDescription } from '@resourcepackbuilder/ui/components/alert';
 import { Badge } from '@resourcepackbuilder/ui/components/badge';
 import { DropZone, PageHeader, PageShell } from '@resourcepackbuilder/ui';
-import { Hint } from '../../components/Hint';
 
 interface MediaPageProps {
   icon: ReactNode;
@@ -40,9 +40,9 @@ export function MediaPage({ icon, title, count, configPath, actions, hint, drop,
         }
         actions={actions}
       />
-      <Hint>
-        <div>{hint}</div>
-      </Hint>
+      <Alert variant="info">
+        <AlertDescription>{hint}</AlertDescription>
+      </Alert>
       <DropZone onFiles={drop.onFiles} accept={drop.accept} title={drop.title} subtitle={drop.subtitle} formats={drop.formats} compact />
       {children.length > 0 && <div className="mt-2 flex flex-col gap-4">{children}</div>}
     </PageShell>

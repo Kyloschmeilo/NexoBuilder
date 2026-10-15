@@ -3,8 +3,7 @@
  * unchanged in the config object; "not set" is undefined. Human-readable strings of the schema are
  * `schema` message keys and are translated by the editors.
  */
-import type { ComponentType, ReactNode } from 'react';
-import { cn } from 'cn';
+import type { ComponentType } from 'react';
 import type { Field } from '@resourcepackbuilder/core/nexo/fields';
 import { BooleanEditor } from './editors/BooleanEditor';
 import { MapEditor } from './editors/MapEditor';
@@ -51,9 +50,4 @@ interface FieldRendererProps extends EditorProps {
 export function FieldRenderer({ siblings, ...props }: FieldRendererProps) {
   if (!isFieldVisible(props.field, siblings)) return null;
   return <Editor {...props} />;
-}
-
-/** Responsive grid of form fields; wide fields (`col-span-full`) span all columns. */
-export function FieldGrid({ children, className }: { children: ReactNode; className?: string }) {
-  return <div className={cn('grid grid-cols-[repeat(auto-fill,minmax(min(100%,14rem),1fr))] gap-4', className)}>{children}</div>;
 }

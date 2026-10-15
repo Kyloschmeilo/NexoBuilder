@@ -1,11 +1,11 @@
 import { Server, TriangleAlert } from 'lucide-react';
 import { useFormatter, useTranslations } from 'next-intl';
+import { Alert, AlertDescription } from '@resourcepackbuilder/ui/components/alert';
 import { Badge } from '@resourcepackbuilder/ui/components/badge';
 import { Empty, EmptyHeader, EmptyMedia, EmptyTitle } from '@resourcepackbuilder/ui/components/empty';
 import { Progress } from '@resourcepackbuilder/ui/components/progress';
 import { Spinner } from '@resourcepackbuilder/ui/components/spinner';
 import { PageHeader, PageShell, StatusBadge } from '@resourcepackbuilder/ui';
-import { Hint } from '../../components/Hint';
 import type { TestServerState } from '../../platform/desktopApi';
 import { useServices } from '../../services/servicesContext';
 import { useTestServerStore } from '../../store/testServer';
@@ -25,10 +25,10 @@ export function TestServerView() {
   if (!isAvailable) {
     return (
       <PageShell>
-        <Hint warning>
-          <TriangleAlert className="size-4" />
-          <span>{t('desktopOnly')}</span>
-        </Hint>
+        <Alert variant="warning">
+          <TriangleAlert />
+          <AlertDescription>{t('desktopOnly')}</AlertDescription>
+        </Alert>
       </PageShell>
     );
   }
@@ -81,17 +81,19 @@ function TestServerPage({ server }: { server: TestServerState }) {
 
       {/* server.message comes from the desktop process, which already writes it in the app's language */}
       {server.message && (
-        <Hint warning={server.status === 'error'}>
+        <Alert variant={server.status === 'error' ? 'warning' : 'info'}>
           {isWorking && <Spinner />}
-          <span>{server.message}</span>
-          {server.progress !== null && <Progress className="flex-1 self-center" value={server.progress} />}
-        </Hint>
+          <AlertDescription className="flex items-center gap-3">
+            <span>{server.message}</span>
+            {server.progress !== null && <Progress className="flex-1" value={server.progress} />}
+          </AlertDescription>
+        </Alert>
       )}
       {!config.nexoJar && (
-        <Hint warning>
-          <TriangleAlert className="size-4" />
-          <span>{t('noNexo')}</span>
-        </Hint>
+        <Alert variant="warning">
+          <TriangleAlert />
+          <AlertDescription>{t('noNexo')}</AlertDescription>
+        </Alert>
       )}
 
       <ConnectCard server={server} />

@@ -1,11 +1,11 @@
 import { RefreshCw, TriangleAlert } from 'lucide-react';
 import { useFormatter, useTranslations } from 'next-intl';
 import { countIssues } from '@resourcepackbuilder/core/issues';
+import { Alert, AlertDescription } from '@resourcepackbuilder/ui/components/alert';
 import { Button } from '@resourcepackbuilder/ui/components/button';
 import { Card, CardAction, CardContent, CardDescription, CardHeader, CardTitle } from '@resourcepackbuilder/ui/components/card';
 import { Spinner } from '@resourcepackbuilder/ui/components/spinner';
-import { CheckRow } from '../../components/CheckRow';
-import { Hint } from '../../components/Hint';
+import { CheckboxField } from '../../components/CheckboxField';
 import { useErrorMessage } from '../../i18n/errors';
 import type { TestServerState } from '../../platform/desktopApi';
 import { usePlan } from '../../store/PlanProvider';
@@ -40,7 +40,7 @@ export function SyncCard({ server }: { server: TestServerState }) {
         </CardAction>
       </CardHeader>
       <CardContent className="flex flex-col gap-2 py-4">
-        <CheckRow
+        <CheckboxField
           checked={server.config.autoUpdate}
           onChange={(checked) => setConfig({ autoUpdate: checked })}
           label={t('auto')}
@@ -48,16 +48,16 @@ export function SyncCard({ server }: { server: TestServerState }) {
         />
         {summary && <div className="text-xs text-muted-foreground">{summary}</div>}
         {syncError !== null && (
-          <Hint warning>
-            <TriangleAlert className="size-4" />
-            <span>{t('failed', { error: errorMessage(syncError) })}</span>
-          </Hint>
+          <Alert variant="warning">
+            <TriangleAlert />
+            <AlertDescription>{t('failed', { error: errorMessage(syncError) })}</AlertDescription>
+          </Alert>
         )}
         {errorCount > 0 && (
-          <Hint warning>
-            <TriangleAlert className="size-4" />
-            <span>{t('projectErrors', { count: errorCount })}</span>
-          </Hint>
+          <Alert variant="warning">
+            <TriangleAlert />
+            <AlertDescription>{t('projectErrors', { count: errorCount })}</AlertDescription>
+          </Alert>
         )}
       </CardContent>
     </Card>

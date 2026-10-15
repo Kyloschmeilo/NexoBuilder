@@ -3,9 +3,10 @@ import { useTranslations } from 'next-intl';
 import type { JukeboxSong, Sound } from '@resourcepackbuilder/core/nexo/sounds/model';
 import { Button } from '@resourcepackbuilder/ui/components/button';
 import { Input } from '@resourcepackbuilder/ui/components/input';
+import { AutoGrid } from '@resourcepackbuilder/ui';
 import { addMusicDiscItem, updateJukeboxSong } from '../../commands/media';
 import { NumberInput } from '../../components/editor';
-import { FormField, FormGrid } from '../../components/FormField';
+import { FormField } from '../../components/FormField';
 import { notify } from '../../shell/notify';
 import { useOpenProject } from '../../store/project';
 import { NexoKey } from '../media/NexoKey';
@@ -27,7 +28,7 @@ export function JukeboxFields({ sound, song }: { sound: Sound; song: JukeboxSong
 
   return (
     <div className="flex flex-col gap-2.5 rounded-lg border border-border p-3">
-      <FormGrid>
+      <AutoGrid>
         <FormField label={<NexoKey>Duration</NexoKey>} help={t('durationHelp')}>
           <Input
             className="font-mono"
@@ -52,7 +53,7 @@ export function JukeboxFields({ sound, song }: { sound: Sound; song: JukeboxSong
         <FormField label={<NexoKey>Range</NexoKey>} help={t('rangeHelp')}>
           <NumberInput value={song.range} integer min={1} onChange={(v) => update((s) => (s.range = v ?? null), 'range')} />
         </FormField>
-      </FormGrid>
+      </AutoGrid>
       <div className="flex flex-wrap items-center gap-2">
         <Button variant="outline" size="sm" onClick={createDisc}>
           <Disc3 /> {t('createDisc')}

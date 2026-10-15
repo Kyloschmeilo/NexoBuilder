@@ -6,6 +6,7 @@ import { DEFAULT_MATERIAL, normalizeTypedMaterial } from '@resourcepackbuilder/c
 import { normalizeTypedId } from '@resourcepackbuilder/core/minecraft/resourceLocation';
 import { Field, FieldError, FieldLabel } from '@resourcepackbuilder/ui/components/field';
 import { Input } from '@resourcepackbuilder/ui/components/input';
+import { AutoGrid } from '@resourcepackbuilder/ui';
 import { TextInput } from '../../components/editor';
 import type { ItemMeta, MetaPatch } from './newItemState';
 import type { IdError } from './useNewItems';
@@ -20,7 +21,7 @@ export function ItemMetaFields({ meta, idError, onChange }: ItemMetaFieldsProps)
   const t = useTranslations('dialogs.newItem');
   const id = useId();
   return (
-    <div className="grid grid-cols-[repeat(auto-fit,minmax(min(100%,14rem),1fr))] gap-4">
+    <AutoGrid fit>
       <Field>
         <FieldLabel htmlFor={`${id}-name`}>{t('displayName')}</FieldLabel>
         <Input
@@ -54,6 +55,6 @@ export function ItemMetaFields({ meta, idError, onChange }: ItemMetaFieldsProps)
           onChange={(value) => onChange({ material: normalizeTypedMaterial(value ?? '') })}
         />
       </Field>
-    </div>
+    </AutoGrid>
   );
 }

@@ -5,10 +5,11 @@ import { normalizeTypedId, SOUND_ID_CHARS } from '@resourcepackbuilder/core/mine
 import { soundKey, type Sound } from '@resourcepackbuilder/core/nexo/sounds/model';
 import { Badge } from '@resourcepackbuilder/ui/components/badge';
 import { Input } from '@resourcepackbuilder/ui/components/input';
+import { AutoGrid } from '@resourcepackbuilder/ui';
 import { deleteSound, setSoundJukebox, updateSound } from '../../commands/media';
 import { NumberInput } from '../../components/editor';
-import { CheckRow } from '../../components/CheckRow';
-import { FormField, FormGrid } from '../../components/FormField';
+import { CheckboxField } from '../../components/CheckboxField';
+import { FormField } from '../../components/FormField';
 import { IssueList } from '../../components/IssueList';
 import { useOpenProject } from '../../store/project';
 import { MediaCard } from '../media/MediaCard';
@@ -32,7 +33,7 @@ export function SoundCard({ sound, plan }: { sound: Sound; plan: ExportPlan | nu
       deleteLabel={t('delete')}
       onDelete={() => deleteSound(sound.id)}
     >
-      <FormGrid>
+      <AutoGrid>
         <FormField label={<NexoKey>ID</NexoKey>} help={t('idHelp')}>
           <Input
             className="font-mono"
@@ -49,20 +50,20 @@ export function SoundCard({ sound, plan }: { sound: Sound; plan: ExportPlan | nu
         <FormField label={<NexoKey>Attenuation Distance</NexoKey>} help={t('distanceHelp')}>
           <NumberInput value={sound.distance} integer min={1} onChange={(v) => update((s) => (s.distance = v ?? null), 'distance')} />
         </FormField>
-      </FormGrid>
+      </AutoGrid>
       <SoundFileList sound={sound} />
       <div className="flex flex-wrap gap-x-5 gap-y-2">
-        <CheckRow
+        <CheckboxField
           checked={sound.stream}
           onChange={(checked) => update((s) => (s.stream = checked))}
           label={<NexoKey>Stream</NexoKey>}
-          hint={t('streamHint')}
+          description={t('streamHint')}
         />
-        <CheckRow
+        <CheckboxField
           checked={sound.jukebox !== null}
           onChange={(checked) => setSoundJukebox(sound.id, checked)}
           label={<NexoKey>Jukebox Playable</NexoKey>}
-          hint={t('jukeboxHint')}
+          description={t('jukeboxHint')}
         />
       </div>
       {sound.jukebox && <JukeboxFields sound={sound} song={sound.jukebox} />}

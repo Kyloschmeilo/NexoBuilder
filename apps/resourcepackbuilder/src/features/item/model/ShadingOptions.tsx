@@ -3,12 +3,12 @@ import { useTranslations } from 'next-intl';
 import type { ImportedModel } from '@resourcepackbuilder/core/model/types';
 import { Checkbox } from '@resourcepackbuilder/ui/components/checkbox';
 import { Field, FieldContent, FieldDescription, FieldLabel } from '@resourcepackbuilder/ui/components/field';
+import { CheckboxField } from '../../../components/CheckboxField';
 import { updateItemModel } from '../../../commands/items';
 
 /** ambientocclusion (whole model) and shade (per cube) – like in Blockbench. */
 export function ShadingOptions({ itemId, model }: { itemId: string; model: ImportedModel }) {
   const t = useTranslations('item');
-  const aoId = useId();
   const shadeId = useId();
   const elements = model.json.elements ?? [];
   const unshaded = elements.filter((el) => el.shade === false).length;
@@ -30,13 +30,12 @@ export function ShadingOptions({ itemId, model }: { itemId: string; model: Impor
 
   return (
     <div className="flex flex-col gap-3 py-1">
-      <Field orientation="horizontal" className="gap-2.5">
-        <Checkbox id={aoId} checked={model.json.ambientocclusion !== false} onCheckedChange={setAmbientOcclusion} />
-        <FieldContent>
-          <FieldLabel htmlFor={aoId}>{t('model.ambientOcclusion')}</FieldLabel>
-          <FieldDescription className="text-xs">{t('model.ambientOcclusionHelp')}</FieldDescription>
-        </FieldContent>
-      </Field>
+      <CheckboxField
+        checked={model.json.ambientocclusion !== false}
+        onChange={setAmbientOcclusion}
+        label={t('model.ambientOcclusion')}
+        description={t('model.ambientOcclusionHelp')}
+      />
       {elements.length > 0 && (
         <Field orientation="horizontal" className="gap-2.5" data-disabled={usesOverride || undefined}>
           <Checkbox
