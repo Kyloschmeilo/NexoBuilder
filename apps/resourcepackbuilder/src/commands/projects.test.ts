@@ -8,7 +8,7 @@ import { createEvents } from '../services/events';
 import type { ProjectRepository, ShareConfig } from '../services/projectRepository';
 import type { SharedFolderProject, ShareSync } from '../services/shareSync';
 import { getProject, setProject } from '../store/project';
-import { openSharedProject } from './project';
+import { openSharedProject } from './projects';
 
 const FOLDER = 'C:/Shared/Pack';
 const SYNC_STATE: SyncState = { clock: 1, versions: {}, files: {} };

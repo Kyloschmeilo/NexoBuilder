@@ -10,7 +10,7 @@ import {
   openSharedProject,
   openStoredProject,
   saveProjectFile,
-} from '../../commands/project';
+} from '../../commands/projects';
 import { useErrorMessage } from '../../i18n/errors';
 import { useServices } from '../../services/servicesContext';
 import { confirm } from '../../store/dialogs';
