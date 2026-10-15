@@ -1,5 +1,8 @@
 import { useEffect, useState } from 'react';
+import { TooltipProvider } from '@resourcepackbuilder/ui/components/tooltip';
 import App from './App';
+import { I18nProvider } from './i18n/I18nProvider';
+import { ThemeProvider } from './theme/ThemeProvider';
 import { useStore } from './state/store';
 import { getLastProjectId, loadProject, startAutosave } from './state/persistence';
 import { startShareController } from './state/share';
@@ -28,5 +31,11 @@ export default function Boot() {
   useEffect(() => {
     void (booting ??= boot()).then(() => setReady(true));
   }, []);
-  return ready ? <App /> : null;
+  return (
+    <ThemeProvider>
+      <I18nProvider>
+        <TooltipProvider>{ready ? <App /> : null}</TooltipProvider>
+      </I18nProvider>
+    </ThemeProvider>
+  );
 }

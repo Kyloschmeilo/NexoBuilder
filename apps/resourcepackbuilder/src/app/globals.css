@@ -1,0 +1,4 @@
+@import 'tailwindcss';
+@import '@resourcepackbuilder/ui/fonts.css';
+@import '@resourcepackbuilder/ui/styles.css';
+@import '@resourcepackbuilder/preview/styles.css';

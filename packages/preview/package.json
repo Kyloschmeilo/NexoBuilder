@@ -5,7 +5,8 @@
   "description": "3D-Vorschau und Vorschaubilder für Minecraft-Modelle (three.js).",
   "type": "module",
   "exports": {
-    ".": "./src/index.ts"
+    ".": "./src/index.ts",
+    "./styles.css": "./src/styles.css"
   },
   "scripts": {
     "typecheck": "tsc -b"
@@ -13,7 +14,9 @@
   "dependencies": {
     "@resourcepackbuilder/core": "*",
     "lucide-react": "^1.52.0",
-    "three": "^0.186.1"
+    "next-intl": "^4.14.9",
+    "three": "^0.186.1",
+    "@resourcepackbuilder/i18n": "*"
   },
   "devDependencies": {
     "@resourcepackbuilder/config": "*",

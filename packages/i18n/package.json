@@ -1,0 +1,20 @@
+{
+  "name": "@resourcepackbuilder/i18n",
+  "private": true,
+  "version": "0.0.0",
+  "description": "English and German message catalogues, supported locales and the catalogue parity check.",
+  "type": "module",
+  "exports": {
+    ".": "./src/index.ts"
+  },
+  "scripts": {
+    "typecheck": "tsc -b",
+    "test": "vitest run"
+  },
+  "devDependencies": {
+    "@resourcepackbuilder/config": "*"
+  },
+  "dependencies": {
+    "next-intl": "^4.14.9"
+  }
+}
