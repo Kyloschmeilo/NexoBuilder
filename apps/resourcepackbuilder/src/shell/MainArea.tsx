@@ -29,7 +29,7 @@ function NothingSelected() {
   const hasFolders = project.rootFolderIds.length > 0;
   return (
     <Empty className="h-full p-8">
-      <EmptyHeader className="max-w-[460px]">
+      <EmptyHeader className="max-w-md">
         <EmptyMedia>
           {hasFolders ? (
             <MousePointerClick className="size-9 text-muted-foreground" />
@@ -37,7 +37,7 @@ function NothingSelected() {
             <FolderPlus className="size-9 text-muted-foreground" />
           )}
         </EmptyMedia>
-        <EmptyTitle className="font-heading text-xl tracking-[0.04em] uppercase">
+        <EmptyTitle className="font-heading text-xl tracking-wide uppercase">
           {hasFolders ? t('pickTitle') : t('startTitle')}
         </EmptyTitle>
         <EmptyDescription>{hasFolders ? t('pickDescription') : t('startDescription')}</EmptyDescription>

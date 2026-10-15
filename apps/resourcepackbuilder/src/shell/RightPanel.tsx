@@ -1,54 +1,66 @@
+import { useMemo } from 'react';
 import { Code } from 'lucide-react';
 import { useTranslations } from 'next-intl';
+import type { ExportPlan } from '@resourcepackbuilder/core/export/types';
 import { issuesFor, type Issue } from '@resourcepackbuilder/core/issues';
-import { CopyButton } from '@resourcepackbuilder/ui';
+import type { Project } from '@resourcepackbuilder/core/project/types';
+import { CopyButton, Tip } from '@resourcepackbuilder/ui';
 import { ScrollArea } from '@resourcepackbuilder/ui/components/scroll-area';
 import { IssueList } from '../components/IssueList';
 import { YamlView } from '../components/YamlView';
 import { itemYamlPreview } from '../features/item/YamlTab';
 import { usePlan } from '../store/PlanProvider';
 import { useOpenProject } from '../store/project';
-import { useUiStore } from '../store/ui';
+import { useUiStore, type Selection } from '../store/ui';
 
-/** Right panel: live YAML of the selected item or the folder file. */
+interface Preview {
+  /** File the text belongs to; null when there is nothing to show */
+  file: string | null;
+  text: string;
+  /** Issues of the selected item */
+  issues: Issue[];
+}
+
+const NOTHING: Preview = { file: null, text: '', issues: [] };
+
+/** What the panel shows for a selection: the item's YAML, the folder's file, or the glyph file. */
+function previewFor(project: Project, plan: ExportPlan | null, selection: Selection): Preview {
+  if (!plan || !selection) return NOTHING;
+  switch (selection.kind) {
+    case 'item': {
+      const item = project.items[selection.id];
+      if (!item) return NOTHING;
+      const entry = plan.items.find((p) => p.item.id === item.id);
+      return { file: entry?.yamlFile ?? null, text: itemYamlPreview(plan, item), issues: issuesFor(plan.issues, selection) };
+    }
+    case 'folder': {
+      const itemIds = new Set(project.folders[selection.id]?.itemIds);
+      const entry = plan.items.find((p) => itemIds.has(p.item.id));
+      return entry ? { file: entry.yamlFile, text: plan.itemFiles.get(entry.yamlFile) ?? '', issues: [] } : NOTHING;
+    }
+    case 'view': {
+      const [glyphFile] = selection.view === 'glyphs' ? plan.glyphFiles : [];
+      return glyphFile ? { file: glyphFile[0], text: glyphFile[1], issues: [] } : NOTHING;
+    }
+  }
+}
+
+/** Right panel: live YAML of the selected item, the folder's file or the glyph file, with the item's checks. */
 export function RightPanel() {
   const t = useTranslations('layout.rightPanel');
   const project = useOpenProject();
   const plan = usePlan();
   const selection = useUiStore((s) => s.selection);
-
-  let title = t('title');
-  let text = '';
-  let issues: Issue[] | null = null;
-
-  if (selection?.kind === 'item' && project.items[selection.id]) {
-    const item = project.items[selection.id];
-    text = itemYamlPreview(plan, item);
-    const entry = plan?.items.find((p) => p.item.id === item.id);
-    title = entry?.yamlFile ?? title;
-    issues = plan ? issuesFor(plan.issues, { kind: 'item', id: item.id }) : [];
-  } else if (selection?.kind === 'view' && selection.view === 'glyphs') {
-    const entry = plan ? [...plan.glyphFiles.entries()][0] : undefined;
-    if (entry) {
-      title = entry[0];
-      text = entry[1];
-    }
-  } else if (selection?.kind === 'folder' && project.folders[selection.id]) {
-    const folder = project.folders[selection.id];
-    const first = folder.itemIds.map((id) => plan?.items.find((p) => p.item.id === id)).find((entry) => entry !== undefined);
-    if (first) {
-      title = first.yamlFile;
-      text = plan?.itemFiles.get(first.yamlFile) ?? '';
-    }
-  }
+  const { file, text, issues } = useMemo(() => previewFor(project, plan, selection), [project, plan, selection]);
+  const title = file ?? t('title');
 
   return (
-    <aside className="flex min-h-0 w-[400px] flex-col border-l border-sidebar-border bg-sidebar text-sidebar-foreground">
-      <div className="flex items-center gap-2 border-b border-sidebar-border px-4 py-3 font-heading text-[13px] leading-4 font-semibold tracking-[0.08em] uppercase">
+    <aside className="flex min-h-0 w-100 flex-col border-l border-sidebar-border bg-sidebar text-sidebar-foreground">
+      <div className="flex items-center gap-2 border-b border-sidebar-border px-4 py-3">
         <Code className="size-4 shrink-0" />
-        <span className="min-w-0 flex-1 truncate font-mono text-xs tracking-normal normal-case" title={title}>
-          {title}
-        </span>
+        <Tip label={title}>
+          <h2 className="min-w-0 flex-1 truncate font-mono text-xs">{title}</h2>
+        </Tip>
         {text && <CopyButton text={text} />}
       </div>
       <ScrollArea className="min-h-0 flex-1">
@@ -59,9 +71,9 @@ export function RightPanel() {
         ) : (
           <div className="p-8 text-center text-xs text-muted-foreground">{t('empty')}</div>
         )}
-        {issues && issues.length > 0 && (
+        {issues.length > 0 && (
           <div className="px-2.5 pb-3.5">
-            <div className="mt-1.5 mb-2 text-xs font-medium text-muted-foreground">{t('checks')}</div>
+            <h3 className="mt-1.5 mb-2 text-xs font-medium text-muted-foreground">{t('checks')}</h3>
             <IssueList issues={issues} />
           </div>
         )}

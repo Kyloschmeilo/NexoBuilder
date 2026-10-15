@@ -10,57 +10,62 @@ import { Input } from '@resourcepackbuilder/ui/components/input';
 import { NativeSelect, NativeSelectOption } from '@resourcepackbuilder/ui/components/native-select';
 import { useProjectActions } from './useProjectActions';
 
+/** Slug used when even the default project name gives none. */
+const FALLBACK_NAMESPACE = 'my_pack';
+
+/** Name, namespace and Minecraft version of a new project; the namespace follows the name until edited. */
 export function NewProjectForm({ onDone }: { onDone?: () => void }) {
   const t = useTranslations('layout.projectForm');
   const id = useId();
+  const actions = useProjectActions();
   const [name, setName] = useState('');
-  const [namespace, setNamespace] = useState('');
-  const [nsEdited, setNsEdited] = useState(false);
+  const [editedNamespace, setEditedNamespace] = useState<string | null>(null);
   const [version, setVersion] = useState(DEFAULT_MC_VERSION);
   const defaultName = t('defaultName');
-  const defaultSlug = slugify(defaultName, 'my_pack');
-  const ns = nsEdited ? namespace : slugify(name || defaultName, defaultSlug);
-  const actions = useProjectActions();
-  const nsProblem = namespaceError(ns);
-  const nsError = nsProblem === 'invalid' ? t('namespaceInvalid') : nsProblem === 'minecraft' ? t('namespaceMinecraft') : null;
+  const namespace = editedNamespace ?? slugify(name || defaultName, slugify(defaultName, FALLBACK_NAMESPACE));
+  const problem = namespaceError(namespace);
+  const namespaceMessage = problem === 'invalid' ? t('namespaceInvalid') : problem === 'minecraft' ? t('namespaceMinecraft') : null;
+
   const submit = async () => {
-    if (nsError) return;
-    await actions.create(name || defaultName, ns, version);
+    if (namespaceMessage) return;
+    await actions.create(name || defaultName, namespace, version);
     onDone?.();
   };
+
   return (
-    <div className="flex flex-col gap-3">
+    <form
+      className="flex flex-col gap-3"
+      onSubmit={(e) => {
+        e.preventDefault();
+        void submit();
+      }}
+    >
       <Field>
         <FieldLabel htmlFor={`${id}-name`}>{t('name')}</FieldLabel>
         <Input
           id={`${id}-name`}
+          data-testid="new-project-name"
           autoFocus
           placeholder={t('namePlaceholder')}
           value={name}
           onChange={(e) => setName(e.target.value)}
-          onKeyDown={(e) => {
-            if (e.key === 'Enter') void submit();
-          }}
         />
       </Field>
-      <div className="grid grid-cols-2 gap-3">
-        <Field data-invalid={!!nsError || undefined}>
-          <FieldLabel htmlFor={`${id}-ns`}>{t('namespace')}</FieldLabel>
+      <div className="grid grid-cols-[repeat(auto-fit,minmax(min(12rem,100%),1fr))] gap-3">
+        <Field data-invalid={!!namespaceMessage || undefined}>
+          <FieldLabel htmlFor={`${id}-namespace`}>{t('namespace')}</FieldLabel>
           <Input
-            id={`${id}-ns`}
+            id={`${id}-namespace`}
             className="font-mono"
-            aria-invalid={!!nsError || undefined}
-            value={ns}
-            onChange={(e) => {
-              setNsEdited(true);
-              setNamespace(e.target.value.toLowerCase());
-            }}
+            aria-invalid={!!namespaceMessage || undefined}
+            value={namespace}
+            onChange={(e) => setEditedNamespace(e.target.value.toLowerCase())}
           />
-          {nsError && <FieldError>{nsError}</FieldError>}
+          {namespaceMessage && <FieldError>{namespaceMessage}</FieldError>}
         </Field>
         <Field>
           <FieldLabel htmlFor={`${id}-version`}>{t('version')}</FieldLabel>
-          <NativeSelect id={`${id}-version`} value={version} onChange={(e) => setVersion(e.target.value)}>
+          <NativeSelect id={`${id}-version`} className="w-full" value={version} onChange={(e) => setVersion(e.target.value)}>
             {MC_VERSIONS.map((v) => (
               <NativeSelectOption key={v.id} value={v.id}>
                 {v.label}
@@ -69,9 +74,9 @@ export function NewProjectForm({ onDone }: { onDone?: () => void }) {
           </NativeSelect>
         </Field>
       </div>
-      <Button size="lg" disabled={!!nsError} onClick={() => void submit()}>
+      <Button type="submit" size="lg" disabled={!!namespaceMessage}>
         <FolderPlus /> {t('create')}
       </Button>
-    </div>
+    </form>
   );
 }

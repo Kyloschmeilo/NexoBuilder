@@ -1,13 +1,11 @@
 import { useProjectStore } from '../store/project';
 import { useDialogStore, type FeatureDialogId, type FeatureDialogProps } from '../store/dialogs';
-import { DIALOGS } from './dialogRegistry';
+import { DIALOGS, isDialogShown } from './dialogRegistry';
 import { ConfirmDialog } from './ConfirmDialog';
 import { PromptDialog } from './PromptDialog';
 
 function FeatureDialog<K extends FeatureDialogId>({ id, props }: { id: K; props: FeatureDialogProps[K] }) {
-  const hasProject = useProjectStore((s) => s.project !== null);
-  const { component: Dialog, requiresProject } = DIALOGS[id];
-  if (requiresProject && !hasProject) return null;
+  const { component: Dialog } = DIALOGS[id];
   return <Dialog {...props} />;
 }
 
@@ -15,9 +13,10 @@ function FeatureDialog<K extends FeatureDialogId>({ id, props }: { id: K; props:
 export function DialogHost() {
   const feature = useDialogStore((s) => s.feature);
   const questions = useDialogStore((s) => s.questions);
+  const projectId = useProjectStore((s) => s.project?.id ?? null);
   return (
     <>
-      {feature && <FeatureDialog key={feature.id} id={feature.id} props={feature.props} />}
+      {feature && isDialogShown(feature, projectId) && <FeatureDialog key={feature.id} id={feature.id} props={feature.props} />}
       {questions.map((question) =>
         question.kind === 'confirm' ? (
           <ConfirmDialog key={question.id} question={question} />

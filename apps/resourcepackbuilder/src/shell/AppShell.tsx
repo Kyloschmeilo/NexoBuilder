@@ -1,4 +1,3 @@
-import { cn } from 'cn';
 import { Welcome } from '../features/projects/Welcome';
 import { PlanProvider } from '../store/PlanProvider';
 import { useProjectStore } from '../store/project';
@@ -6,7 +5,7 @@ import { useUiStore } from '../store/ui';
 import { DialogHost } from './DialogHost';
 import { MainArea } from './MainArea';
 import { RightPanel } from './RightPanel';
-import { Sidebar } from './Sidebar';
+import { Sidebar } from './sidebar/Sidebar';
 import { Toasts } from './Toasts';
 import { TopBar } from './TopBar';
 import { useServiceNotices } from './useServiceNotices';
@@ -23,12 +22,10 @@ export function AppShell() {
 
   return (
     <PlanProvider>
-      <div className="grid h-screen grid-rows-[56px_minmax(0,1fr)] overflow-hidden bg-background text-foreground">
+      <div className="grid h-screen grid-rows-[auto_minmax(0,1fr)] overflow-hidden bg-background text-foreground">
         <TopBar />
         {hasProject ? (
-          <div
-            className={cn('grid min-h-0', isRightPanelOpen ? 'grid-cols-[300px_minmax(0,1fr)_auto]' : 'grid-cols-[290px_minmax(0,1fr)]')}
-          >
+          <div className="grid min-h-0 grid-cols-[290px_minmax(0,1fr)_auto]">
             <Sidebar />
             <MainArea />
             {isRightPanelOpen && <RightPanel />}

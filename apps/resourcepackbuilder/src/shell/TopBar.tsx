@@ -18,8 +18,9 @@ import {
   X,
 } from 'lucide-react';
 import { useTranslations } from 'next-intl';
+import { cn } from 'cn';
 import { countIssues } from '@resourcepackbuilder/core/issues';
-import { StatusDot, Tip, type Tone } from '@resourcepackbuilder/ui';
+import { StatusDot, Tip } from '@resourcepackbuilder/ui';
 import { Button } from '@resourcepackbuilder/ui/components/button';
 import { Kbd } from '@resourcepackbuilder/ui/components/kbd';
 import {
@@ -31,39 +32,68 @@ import {
   DropdownMenuRadioItem,
   DropdownMenuTrigger,
 } from '@resourcepackbuilder/ui/components/dropdown-menu';
+import { BrandMark } from '../components/BrandMark';
 import { MenuEntries, type MenuEntry } from '../components/MenuEntries';
 import { useProjectActions } from '../features/projects/useProjectActions';
+import { SHARE_STATUS_TONE, useShareStatusText } from '../features/share/shareStatus';
 import { openDialog } from '../store/dialogs';
 import { usePlan } from '../store/PlanProvider';
 import { redo, undo, useProjectStore } from '../store/project';
 import { useSaveStore } from '../store/save';
-import { useShareStore, type ShareStatus } from '../store/share';
+import { isProjectShared, useShareStore } from '../store/share';
 import { setRightPanelOpen, useUiStore } from '../store/ui';
 import { THEME_CHOICES, THEME_ICONS } from '../theme/choices';
 import { useTheme } from '../theme/ThemeProvider';
 import { isThemeChoice } from '../theme/theme';
 
-function shareTone(status: ShareStatus): Tone {
-  return status === 'synced' ? 'success' : status === 'error' ? 'error' : status === 'off' ? 'neutral' : 'warning';
-}
-
-function ShareChip() {
-  const t = useTranslations('layout.topBar');
+/** Opens the share dialog; shows the share status while the open project is shared. */
+function ShareButton() {
+  const t = useTranslations('layout.topBar.share');
+  const statusText = useShareStatusText();
   const projectId = useProjectStore((s) => s.project?.id);
   const share = useShareStore();
-  const shared = share.projectId === projectId && share.status !== 'off';
+  const isShared = isProjectShared(share, projectId);
   return (
-    <Tip label={shared ? t('share.sharedHint', { folder: share.folder ?? '', status: t(`shareStatus.${share.status}`) }) : t('share.hint')}>
-      <Button variant="ghost" onClick={() => openDialog({ id: 'share', props: {} })}>
-        {shared ? (
-          <>
-            <StatusDot tone={shareTone(share.status)} /> {t('share.shared')}
-          </>
-        ) : (
-          <>
-            <Users /> {t('share.button')}
-          </>
-        )}
+    <Tip label={isShared ? t('sharedHint', { folder: share.folder ?? '', status: statusText(share.status) }) : t('hint')}>
+      <Button variant="ghost" data-testid="share-button" onClick={() => openDialog({ id: 'share', props: {} })}>
+        {isShared ? <StatusDot tone={SHARE_STATUS_TONE[share.status]} /> : <Users />}
+        <span className="hidden @3xl/top:inline">{isShared ? t('shared') : t('button')}</span>
+      </Button>
+    </Tip>
+  );
+}
+
+const SAVE_STATUS_CLASS = { saving: 'text-muted-foreground', saved: 'text-muted-foreground', error: 'text-destructive' } as const;
+
+/** "Saving…", "Saved" or "Not saved!" next to the project menu. */
+function SaveStatus() {
+  const t = useTranslations('layout.topBar.saveStatus');
+  const status = useSaveStore((s) => s.status);
+  if (status === 'idle') return null;
+  return (
+    <Tip label={t('hint')}>
+      <span className={cn('hidden text-xs whitespace-nowrap @2xl/top:inline', SAVE_STATUS_CLASS[status])}>{t(status)}</span>
+    </Tip>
+  );
+}
+
+/** Issue summary of the open project; opens the export dialog with the full list. */
+function ChecksButton({ onClick }: { onClick: () => void }) {
+  const t = useTranslations('layout.topBar.checks');
+  const plan = usePlan();
+  if (!plan) return null;
+  const counts = countIssues(plan.issues);
+  const [icon, label] =
+    counts.error > 0
+      ? [<CircleAlert key="icon" className="text-destructive" />, t('errors', { count: counts.error })]
+      : counts.warning > 0
+        ? [<TriangleAlert key="icon" className="text-warning" />, t('warnings', { count: counts.warning })]
+        : [<CircleCheck key="icon" className="text-success" />, t('ok')];
+  return (
+    <Tip label={t('hint')}>
+      <Button variant="ghost" aria-label={label} onClick={onClick}>
+        {icon}
+        <span className="hidden @2xl/top:inline">{label}</span>
       </Button>
     </Tip>
   );
@@ -140,7 +170,7 @@ function ProjectMenu({ name }: { name: string }) {
   ];
   return (
     <DropdownMenu>
-      <DropdownMenuTrigger render={<Button variant="ghost" className="max-w-[280px]" />}>
+      <DropdownMenuTrigger render={<Button variant="ghost" className="max-w-70 min-w-0 shrink" />}>
         <span className="truncate">{name || t('untitled')}</span>
         <ChevronDown className="size-3.5" />
       </DropdownMenuTrigger>
@@ -156,24 +186,20 @@ export function TopBar() {
   const project = useProjectStore((s) => s.project);
   const canUndo = useProjectStore((s) => s.past.length > 0);
   const canRedo = useProjectStore((s) => s.future.length > 0);
-  const saveStatus = useSaveStore((s) => s.status);
   const isRightPanelOpen = useUiStore((s) => s.isRightPanelOpen);
-  const plan = usePlan();
-  const counts = plan ? countIssues(plan.issues) : null;
   const openExport = () => openDialog({ id: 'export', props: {} });
+  const previewLabel = isRightPanelOpen ? t('preview.hide') : t('preview.show');
 
   return (
-    <header className="flex min-w-0 items-center gap-3 border-b border-border bg-background px-4">
-      <div className="flex items-center gap-2.5 font-heading text-[17px] leading-5 font-bold tracking-[0.04em] whitespace-nowrap text-foreground uppercase">
-        <div className="grid size-7 place-items-center rounded-sm bg-primary font-heading text-[17px] leading-none font-bold text-primary-foreground">
-          R
-        </div>
-        ResourcepackBuilder
+    <header className="@container/top flex h-14 min-w-0 items-center gap-2 border-b border-border bg-background px-4 @4xl/top:gap-3">
+      <div className="flex shrink-0 items-center gap-2.5 font-heading text-lg leading-5 font-bold tracking-wide whitespace-nowrap text-foreground uppercase">
+        <BrandMark />
+        <span className={cn(project && 'hidden @6xl/top:inline')}>ResourcepackBuilder</span>
       </div>
       {project && (
         <>
           <ProjectMenu name={project.name} />
-          <div className="flex items-center gap-0.5">
+          <div className="flex shrink-0 items-center gap-0.5">
             <Tip
               label={
                 <>
@@ -197,54 +223,21 @@ export function TopBar() {
               </Button>
             </Tip>
           </div>
-          {saveStatus !== 'idle' && (
-            <Tip label={t('saveStatus.hint')}>
-              <span
-                className={
-                  saveStatus === 'error' ? 'text-xs whitespace-nowrap text-destructive' : 'text-xs whitespace-nowrap text-muted-foreground'
-                }
-              >
-                {saveStatus === 'saving' ? t('saveStatus.saving') : saveStatus === 'saved' ? t('saveStatus.saved') : t('saveStatus.error')}
-              </span>
-            </Tip>
-          )}
-          <ShareChip />
+          <SaveStatus />
+          <ShareButton />
         </>
       )}
       <span className="flex-1" />
-      {project && counts && (
-        <Tip label={t('checks.hint')}>
-          <Button variant="ghost" onClick={openExport}>
-            {counts.error > 0 ? (
-              <>
-                <CircleAlert className="text-destructive" /> {t('checks.errors', { count: counts.error })}
-              </>
-            ) : counts.warning > 0 ? (
-              <>
-                <TriangleAlert className="text-warning" /> {t('checks.warnings', { count: counts.warning })}
-              </>
-            ) : (
-              <>
-                <CircleCheck className="text-success" /> {t('checks.ok')}
-              </>
-            )}
-          </Button>
-        </Tip>
-      )}
+      {project && <ChecksButton onClick={openExport} />}
       <ThemeMenu />
       {project && (
         <>
-          <Tip label={isRightPanelOpen ? t('preview.hide') : t('preview.show')}>
-            <Button
-              variant="ghost"
-              size="icon"
-              aria-label={isRightPanelOpen ? t('preview.hide') : t('preview.show')}
-              onClick={() => setRightPanelOpen(!isRightPanelOpen)}
-            >
+          <Tip label={previewLabel}>
+            <Button variant="ghost" size="icon" aria-label={previewLabel} onClick={() => setRightPanelOpen(!isRightPanelOpen)}>
               {isRightPanelOpen ? <PanelRightClose /> : <PanelRight />}
             </Button>
           </Tip>
-          <Button onClick={openExport}>
+          <Button className="shrink-0" onClick={openExport}>
             <Download /> {t('export')}
           </Button>
         </>

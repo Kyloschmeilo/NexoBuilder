@@ -1,35 +1,47 @@
 import { useEffect } from 'react';
 import { useTranslations } from 'next-intl';
+import type { Project } from '@resourcepackbuilder/core/project/types';
 import { filesFromDataTransfer } from '@resourcepackbuilder/ui';
-import { isAnyDialogOpen, openDialog } from '../store/dialogs';
+import { openDialog } from '../store/dialogs';
 import { toast } from '../store/notifications';
 import { getProject } from '../store/project';
-import { useUiStore } from '../store/ui';
+import { useUiStore, type Selection } from '../store/ui';
+import { isAnyDialogShown } from './dialogRegistry';
+
+/** The folder new items from a window drop go to: the selected folder, the selected item's folder, or the first folder. */
+function dropFolderId(project: Project, selection: Selection): string | undefined {
+  switch (selection?.kind) {
+    case 'folder':
+      return selection.id;
+    case 'item':
+      return project.items[selection.id]?.folderId;
+    default:
+      return project.rootFolderIds[0];
+  }
+}
+
+function carriesFiles(e: DragEvent): boolean {
+  return e.dataTransfer?.types.includes('Files') ?? false;
+}
 
 /**
- * Files dropped anywhere in the window (and not wasHandled by a drop zone) open the "New item" dialog for the selected
- * folder, instead of letting the browser navigate away.
+ * Files dropped anywhere in the window (and not already taken by a drop target) open the "New item" dialog for the
+ * selected folder, instead of letting the browser navigate away.
  */
 export function useWindowDrop(): void {
   const t = useTranslations('layout.main');
   useEffect(() => {
-    const carriesFiles = (e: DragEvent) => e.dataTransfer?.types.includes('Files') ?? false;
     const handleDragOver = (e: DragEvent) => {
       if (carriesFiles(e)) e.preventDefault();
     };
     const handleDrop = async (e: DragEvent) => {
       if (!carriesFiles(e) || !e.dataTransfer) return;
-      const wasHandled = e.defaultPrevented;
+      const isTaken = e.defaultPrevented;
       e.preventDefault();
       const project = getProject();
       const { selection } = useUiStore.getState();
-      if (wasHandled || !project || isAnyDialogOpen() || selection?.kind === 'view') return;
-      const folderId =
-        selection?.kind === 'folder'
-          ? selection.id
-          : selection?.kind === 'item'
-            ? project.items[selection.id]?.folderId
-            : project.rootFolderIds[0];
+      if (isTaken || !project || isAnyDialogShown() || selection?.kind === 'view') return;
+      const folderId = dropFolderId(project, selection);
       if (!folderId || !project.folders[folderId]) {
         toast('warning', t('dropNeedsFolder'));
         return;

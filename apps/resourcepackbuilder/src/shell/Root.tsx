@@ -1,6 +1,8 @@
 import { useEffect, useState } from 'react';
 import { useTranslations } from 'next-intl';
+import { Spinner } from '@resourcepackbuilder/ui/components/spinner';
 import { TooltipProvider } from '@resourcepackbuilder/ui/components/tooltip';
+import { BrandMark } from '../components/BrandMark';
 import { I18nProvider } from '../i18n/I18nProvider';
 import { bootstrap, type AppServices } from '../services/bootstrap';
 import { ServicesContext } from '../services/servicesContext';
@@ -9,13 +11,24 @@ import { AppShell } from './AppShell';
 
 type BootState = { kind: 'booting' } | { kind: 'ready'; services: AppServices } | { kind: 'failed'; error: unknown };
 
+/** Shown while the services start (usually only for a moment). */
+function Booting() {
+  const t = useTranslations('layout.boot');
+  return (
+    <div className="grid h-screen place-items-center bg-background text-muted-foreground">
+      <Spinner className="size-6" aria-label={t('starting')} />
+    </div>
+  );
+}
+
 function BootFailed({ error }: { error: unknown }) {
   const t = useTranslations('layout.boot');
   return (
     <div role="alert" className="grid h-screen place-items-center bg-background p-8 text-center text-foreground">
-      <div className="max-w-md">
+      <div className="flex max-w-md flex-col items-center gap-3">
+        <BrandMark size="lg" />
         <h1 className="font-heading text-xl font-semibold tracking-wide uppercase">{t('failedTitle')}</h1>
-        <p className="mt-2 text-sm text-muted-foreground">{error instanceof Error ? error.message : String(error)}</p>
+        <p className="text-sm text-muted-foreground">{error instanceof Error ? error.message : String(error)}</p>
       </div>
     </div>
   );
@@ -48,6 +61,7 @@ export default function Root() {
     <ThemeProvider>
       <I18nProvider>
         <TooltipProvider>
+          {boot.kind === 'booting' && <Booting />}
           {boot.kind === 'ready' && (
             <ServicesContext.Provider value={boot.services}>
               <AppShell />

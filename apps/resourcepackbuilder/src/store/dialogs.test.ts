@@ -1,5 +1,7 @@
 import { afterEach, describe, expect, it } from 'vitest';
-import { closeDialog, confirm, isAnyDialogOpen, openDialog, prompt, useDialogStore } from './dialogs';
+import { createProject } from '@resourcepackbuilder/core/project/factory';
+import { setProject } from './project';
+import { closeDialog, confirm, openDialog, prompt, useDialogStore } from './dialogs';
 
 const questions = () => useDialogStore.getState().questions;
 
@@ -19,6 +21,7 @@ const confirmOptions = { title: 'Delete?', message: 'Really?', confirmLabel: 'De
 
 afterEach(() => {
   useDialogStore.setState({ questions: [], feature: null });
+  setProject(null);
 });
 
 describe('confirm', () => {
@@ -64,9 +67,15 @@ describe('feature dialogs', () => {
   it('opens one at a time and closes', () => {
     openDialog({ id: 'moveItem', props: { itemId: 'i_1' } });
     openDialog({ id: 'export', props: {} });
-    expect(useDialogStore.getState().feature).toEqual({ id: 'export', props: {} });
-    expect(isAnyDialogOpen()).toBe(true);
+    expect(useDialogStore.getState().feature).toEqual({ id: 'export', props: {}, projectId: null });
     closeDialog();
-    expect(isAnyDialogOpen()).toBe(false);
+    expect(useDialogStore.getState().feature).toBeNull();
+  });
+
+  it('remembers the project it was opened for', () => {
+    const project = createProject('Test', 'test');
+    setProject(project);
+    openDialog({ id: 'settings', props: {} });
+    expect(useDialogStore.getState().feature?.projectId).toBe(project.id);
   });
 });

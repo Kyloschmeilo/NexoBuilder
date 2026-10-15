@@ -30,14 +30,6 @@
       "sharedHint": "Shared via {folder} – {status}",
       "hint": "Share the project with others"
     },
-    "shareStatus": {
-      "off": "Not shared",
-      "connecting": "Connecting…",
-      "synced": "Up to date",
-      "syncing": "Syncing…",
-      "offline": "Folder not reachable",
-      "error": "Error"
-    },
     "checks": {
       "hint": "Show check results",
       "errors": "{count, plural, one {# error} other {# errors}}",
@@ -119,7 +111,6 @@
     "deleteTitle": "Delete folder?",
     "deleteContents": "The folder “{name}” contains {items, plural, one {# item} other {# items}}{subfolders, plural, =0 {} one { and # subfolder} other { and # subfolders}}. Everything will be deleted.",
     "deleteEmpty": "The folder “{name}” will be deleted.",
-    "deleteAll": "“{name}” will be deleted with all its items and subfolders.",
     "undoHint": "You can undo this with Ctrl+Z."
   },
   "item": {
@@ -208,6 +199,7 @@
     "newTab": "New project"
   },
   "boot": {
-    "failedTitle": "ResourcepackBuilder could not start"
+    "failedTitle": "ResourcepackBuilder could not start",
+    "starting": "Starting…"
   }
 }

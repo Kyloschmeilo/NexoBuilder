@@ -4,6 +4,7 @@
  * them from its registry. At most one feature dialog is open at a time.
  */
 import { create } from 'zustand';
+import { getProject } from './project';
 
 export interface ConfirmOptions {
   title: string;
@@ -41,9 +42,12 @@ export type FeatureDialogId = keyof FeatureDialogProps;
 
 export type OpenFeatureDialog = { [K in FeatureDialogId]: { id: K; props: FeatureDialogProps[K] } }[FeatureDialogId];
 
+/** An open feature dialog with the id of the project that was open when it was opened. */
+export type OpenedFeatureDialog = OpenFeatureDialog & { projectId: string | null };
+
 interface DialogState {
   questions: Question[];
-  feature: OpenFeatureDialog | null;
+  feature: OpenedFeatureDialog | null;
   nextId: number;
 }
 
@@ -74,15 +78,9 @@ export function prompt(options: PromptOptions): Promise<string | null> {
 
 /** Opens a feature dialog, e.g. `openDialog({ id: 'moveItem', props: { itemId } })`; replaces an open one. */
 export function openDialog(dialog: OpenFeatureDialog): void {
-  useDialogStore.setState({ feature: dialog });
+  useDialogStore.setState({ feature: { ...dialog, projectId: getProject()?.id ?? null } });
 }
 
 export function closeDialog(): void {
   useDialogStore.setState({ feature: null });
-}
-
-/** Whether any dialog or question is open (window-level shortcuts and drops then stay out of the way). */
-export function isAnyDialogOpen(): boolean {
-  const { questions, feature } = useDialogStore.getState();
-  return feature !== null || questions.length > 0;
 }

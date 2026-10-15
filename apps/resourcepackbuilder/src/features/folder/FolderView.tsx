@@ -1,127 +1,117 @@
+import type { ReactNode } from 'react';
 import { Box, FolderOpen, FolderPlus, Pencil, Plus, Trash2 } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 import type { Item } from '@resourcepackbuilder/core/project/types';
-import type { ExportPlan } from '@resourcepackbuilder/core/export/types';
 import { folderYamlFile } from '@resourcepackbuilder/core/export/paths';
-import { issuesFor } from '@resourcepackbuilder/core/issues';
+import { countIssues, issuesFor } from '@resourcepackbuilder/core/issues';
 import { itemLabel } from '@resourcepackbuilder/core/project/labels';
 import { getFolderPathLabel } from '@resourcepackbuilder/core/project/tree';
-import { DropZone, Tip } from '@resourcepackbuilder/ui';
+import { DropZone, IconButton, PageHeader, PageShell, SectionLabel, Tip } from '@resourcepackbuilder/ui';
 import { Badge } from '@resourcepackbuilder/ui/components/badge';
 import { Button } from '@resourcepackbuilder/ui/components/button';
 import { useThumbnail } from '@resourcepackbuilder/preview';
-import { deleteFolder } from '../../commands/folders';
-import { confirm, openDialog } from '../../store/dialogs';
+import { openDialog } from '../../store/dialogs';
 import { usePlan } from '../../store/PlanProvider';
 import { useOpenProject } from '../../store/project';
 import { select } from '../../store/ui';
+import { NEW_ITEM_ACCEPT, NEW_ITEM_FORMATS } from '../newItem/accept';
 import { useFolderActions } from './useFolderActions';
-
-const sectionTitle = 'mt-6 mb-3 font-heading text-xs font-semibold tracking-[0.14em] text-muted-foreground uppercase';
 
 export function FolderView({ folderId }: { folderId: string }) {
   const t = useTranslations('layout.folderView');
-  const tFolder = useTranslations('layout.folder');
   const tCommon = useTranslations('common');
   const project = useOpenProject();
-  const plan = usePlan();
   const folders = useFolderActions();
   const folder = project.folders[folderId];
   if (!folder) return null;
   const items = folder.itemIds.map((id) => project.items[id]).filter((item) => item !== undefined);
-  const yamlPath = folderYamlFile(project, folderId);
-
-  const confirmDelete = async () => {
-    const confirmed = await confirm({
-      title: tFolder('deleteTitle'),
-      message: `${tFolder('deleteAll', { name: folder.name })}\n\n${tFolder('undoHint')}`,
-      confirmLabel: tCommon('delete'),
-      destructive: true,
-    });
-    if (confirmed) deleteFolder(folderId);
-  };
 
   return (
-    <div className="mx-auto max-w-[1120px] px-8 pt-6 pb-16">
-      <div className="mb-5 flex items-center gap-4">
-        <div className="grid size-16 shrink-0 place-items-center overflow-hidden rounded-sm border border-border bg-muted text-muted-foreground">
-          <FolderOpen className="size-7.5" />
-        </div>
-        <div className="min-w-[200px] flex-1">
-          <h1 className="m-0 truncate font-heading text-[28px] leading-8 font-semibold">{folder.name}</h1>
-          <div className="mt-2 flex flex-wrap gap-2">
+    <PageShell>
+      <PageHeader
+        icon={<FolderOpen className="size-7" />}
+        title={folder.name}
+        meta={
+          <>
             <Badge variant="outline">{getFolderPathLabel(project, folderId)}</Badge>
-            <Badge variant="outline" className="font-mono" title={t('targetHint')}>
-              plugins/Nexo/{yamlPath}
-            </Badge>
+            <Tip label={t('targetHint')}>
+              <Badge variant="outline" className="max-w-full font-mono">
+                <span className="truncate">plugins/Nexo/{folderYamlFile(project, folderId)}</span>
+              </Badge>
+            </Tip>
             <Badge variant="outline">{t('itemCount', { count: items.length })}</Badge>
-          </div>
-        </div>
-        <Button onClick={() => openDialog({ id: 'newItem', props: { folderId } })}>
-          <Plus /> {t('newItem')}
-        </Button>
-        <Tip label={t('newSubfolder')}>
-          <Button variant="outline" size="icon" aria-label={t('newSubfolder')} onClick={() => void folders.create(folderId)}>
-            <FolderPlus />
-          </Button>
-        </Tip>
-        <Tip label={tCommon('rename')}>
-          <Button variant="outline" size="icon" aria-label={tCommon('rename')} onClick={() => void folders.rename(folder)}>
-            <Pencil />
-          </Button>
-        </Tip>
-        <Tip label={t('delete')}>
-          <Button variant="destructive" size="icon" aria-label={t('delete')} onClick={() => void confirmDelete()}>
-            <Trash2 />
-          </Button>
-        </Tip>
-      </div>
+          </>
+        }
+        actions={
+          <>
+            <Button onClick={() => openDialog({ id: 'newItem', props: { folderId } })}>
+              <Plus /> {t('newItem')}
+            </Button>
+            <IconButton label={t('newSubfolder')} variant="outline" size="icon" onClick={() => void folders.create(folderId)}>
+              <FolderPlus />
+            </IconButton>
+            <IconButton label={tCommon('rename')} variant="outline" size="icon" onClick={() => void folders.rename(folder)}>
+              <Pencil />
+            </IconButton>
+            <IconButton label={t('delete')} variant="destructive" size="icon" onClick={() => void folders.remove(folder)}>
+              <Trash2 />
+            </IconButton>
+          </>
+        }
+      />
 
       <DropZone
         onFiles={(files) => openDialog({ id: 'newItem', props: { folderId, files } })}
-        accept=".bbmodel,.json,.png,.mcmeta"
+        accept={NEW_ITEM_ACCEPT}
         title={t('dropTitle')}
         subtitle={t('dropSubtitle')}
-        formats={['.bbmodel', '.json + .png', '.png']}
+        formats={NEW_ITEM_FORMATS}
         compact
       />
 
       {items.length > 0 && (
-        <>
-          <div className={sectionTitle}>{t('itemsHeading')}</div>
-          <div className="grid grid-cols-[repeat(auto-fill,minmax(190px,1fr))] gap-2.5">
+        <FolderSection title={t('itemsHeading')}>
+          <div className="grid grid-cols-[repeat(auto-fill,minmax(min(190px,100%),1fr))] gap-2.5">
             {items.map((item) => (
-              <ItemTile key={item.id} item={item} plan={plan} />
+              <ItemTile key={item.id} item={item} />
             ))}
           </div>
-        </>
+        </FolderSection>
       )}
       {folder.folderIds.length > 0 && (
-        <>
-          <div className={sectionTitle}>{t('subfoldersHeading')}</div>
+        <FolderSection title={t('subfoldersHeading')}>
           <div className="flex flex-wrap gap-2">
             {folder.folderIds.map((id) => (
-              <Button key={id} variant="outline" onClick={() => select({ kind: 'folder', id })}>
-                <FolderOpen className="text-muted-foreground" /> {project.folders[id]?.name}
+              <Button key={id} variant="outline" className="max-w-full" onClick={() => select({ kind: 'folder', id })}>
+                <FolderOpen className="text-muted-foreground" />
+                <span className="truncate">{project.folders[id]?.name}</span>
               </Button>
             ))}
           </div>
-        </>
+        </FolderSection>
       )}
-    </div>
+    </PageShell>
   );
 }
 
-function ItemTile({ item, plan }: { item: Item; plan: ExportPlan | null }) {
+function FolderSection({ title, children }: { title: string; children: ReactNode }) {
+  return (
+    <section className="mt-2 flex flex-col gap-2">
+      <SectionLabel>{title}</SectionLabel>
+      {children}
+    </section>
+  );
+}
+
+function ItemTile({ item }: { item: Item }) {
   const t = useTranslations('layout.folderView');
+  const plan = usePlan();
   const thumb = useThumbnail(item.model);
-  const issues = plan ? issuesFor(plan.issues, { kind: 'item', id: item.id }) : [];
-  const errors = issues.filter((i) => i.level === 'error').length;
-  const warnings = issues.filter((i) => i.level === 'warning').length;
+  const counts = countIssues(plan ? issuesFor(plan.issues, { kind: 'item', id: item.id }) : []);
   return (
     <button
       type="button"
-      className="flex cursor-pointer items-center gap-2.5 rounded-lg border border-border bg-card p-3 text-left text-card-foreground transition-colors outline-none hover:bg-muted focus-visible:ring-3 focus-visible:ring-ring/50"
+      className="flex min-w-0 cursor-pointer items-center gap-2.5 rounded-lg border border-border bg-card p-3 text-left text-card-foreground transition-colors outline-none hover:bg-muted focus-visible:ring-3 focus-visible:ring-ring/50"
       onClick={() => select({ kind: 'item', id: item.id })}
     >
       <div className="grid size-12 shrink-0 place-items-center overflow-hidden rounded-sm border border-border bg-muted">
@@ -134,10 +124,10 @@ function ItemTile({ item, plan }: { item: Item; plan: ExportPlan | null }) {
       <div className="min-w-0 flex-1">
         <div className="truncate font-semibold">{itemLabel(item)}</div>
         <div className="truncate font-mono text-xs text-muted-foreground">{item.nexoId}</div>
-        {(errors > 0 || warnings > 0) && (
+        {(counts.error > 0 || counts.warning > 0) && (
           <div className="mt-1 flex items-center gap-1">
-            {errors > 0 && <Badge variant="destructive">{t('errors', { count: errors })}</Badge>}
-            {warnings > 0 && <Badge className="bg-warning/15 text-warning">{warnings}</Badge>}
+            {counts.error > 0 && <Badge variant="destructive">{t('errors', { count: counts.error })}</Badge>}
+            {counts.warning > 0 && <Badge variant="warning">{counts.warning}</Badge>}
           </div>
         )}
       </div>
