@@ -1,15 +1,15 @@
 import { describe, expect, it } from 'vitest';
-import argumentMismatchDe from './fixtures/parity-argument-mismatch/de.json' with { type: 'json' };
-import argumentMismatchEn from './fixtures/parity-argument-mismatch/en.json' with { type: 'json' };
-import missingKeyDe from './fixtures/parity-missing-key/de.json' with { type: 'json' };
-import missingKeyEn from './fixtures/parity-missing-key/en.json' with { type: 'json' };
-import okDe from './fixtures/parity-ok/de.json' with { type: 'json' };
-import okEn from './fixtures/parity-ok/en.json' with { type: 'json' };
+import argumentMismatchDe from './fixtures/argumentMismatch/de.json' with { type: 'json' };
+import argumentMismatchEn from './fixtures/argumentMismatch/en.json' with { type: 'json' };
+import missingKeyDe from './fixtures/missingKey/de.json' with { type: 'json' };
+import missingKeyEn from './fixtures/missingKey/en.json' with { type: 'json' };
+import matchingDe from './fixtures/matching/de.json' with { type: 'json' };
+import matchingEn from './fixtures/matching/en.json' with { type: 'json' };
 import { messageParityErrors } from './parity';
 
 describe('messageParityErrors', () => {
   it('reports no errors for catalogues with the same keys and ICU arguments', () => {
-    expect(messageParityErrors(okEn, okDe)).toEqual([]);
+    expect(messageParityErrors(matchingEn, matchingDe)).toEqual([]);
   });
 
   it('reports a missing key when a German key was removed', () => {
