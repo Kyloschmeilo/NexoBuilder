@@ -6,6 +6,8 @@ import { deletePath, setPath } from '../core/nexo/configPath';
 import { PROPERTY_BY_ID } from '../core/nexo/schema';
 import { deepClone, slugify, uid } from '../core/util';
 import { createGlyph, type Glyph, type GlyphFile, type GlyphKind } from '../core/nexo/glyphs';
+import { createSound, type Sound, type SoundFile } from '../core/nexo/sounds';
+import { createPainting, type Painting, type PaintingFile } from '../core/nexo/paintings';
 import { useStore } from './store';
 
 const mutate = (recipe: (draft: Project) => void, key?: string) => useStore.getState().mutate(recipe, key);
@@ -212,4 +214,89 @@ export function deleteGlyph(glyphId: string) {
   mutate((draft) => {
     draft.glyphs = (draft.glyphs ?? []).filter((g) => g.id !== glyphId);
   });
+}
+
+/* ------------------------------------------------------------------ Sounds */
+
+function uniqueListId(taken: Set<string>, wanted: string, pattern: RegExp, fallback: string): string {
+  const base = wanted.toLowerCase().replace(pattern, '_').replace(/^_+|_+$/g, '') || fallback;
+  if (!taken.has(base)) return base;
+  let n = 2;
+  while (taken.has(`${base}_${n}`)) n++;
+  return `${base}_${n}`;
+}
+
+export function addSound(name: string, files: SoundFile[]): string {
+  const id = uid('s_');
+  mutate((draft) => {
+    draft.sounds = draft.sounds ?? [];
+    const soundId = uniqueListId(new Set(draft.sounds.map((s) => s.soundId)), name, /[^a-z0-9_.-]+/g, 'sound');
+    draft.sounds.push(createSound(id, soundId, files));
+  });
+  return id;
+}
+
+export function updateSound(soundId: string, recipe: (sound: Sound) => void, historyKey?: string) {
+  mutate((draft) => {
+    const sound = draft.sounds?.find((s) => s.id === soundId);
+    if (sound) recipe(sound);
+  }, historyKey ? `sound:${soundId}:${historyKey}` : undefined);
+}
+
+export function deleteSound(soundId: string) {
+  mutate((draft) => {
+    draft.sounds = (draft.sounds ?? []).filter((s) => s.id !== soundId);
+  });
+}
+
+/* ------------------------------------------------------------------ Gemälde */
+
+export function addPainting(name: string, file: PaintingFile | null): string {
+  const id = uid('p_');
+  mutate((draft) => {
+    draft.paintings = draft.paintings ?? [];
+    const paintingId = uniqueListId(new Set(draft.paintings.map((p) => p.paintingId)), slugify(name, 'gemaelde'), /[^a-z0-9_]+/g, 'gemaelde');
+    draft.paintings.push(createPainting(id, paintingId, file));
+  });
+  return id;
+}
+
+export function updatePainting(paintingId: string, recipe: (painting: Painting) => void, historyKey?: string) {
+  mutate((draft) => {
+    const painting = draft.paintings?.find((p) => p.id === paintingId);
+    if (painting) recipe(painting);
+  }, historyKey ? `painting:${paintingId}:${historyKey}` : undefined);
+}
+
+export function deletePainting(paintingId: string) {
+  mutate((draft) => {
+    draft.paintings = (draft.paintings ?? []).filter((p) => p.id !== paintingId);
+  });
+}
+
+/** Legt ein Item an, das dieses Gemälde aufhängt (Material PAINTING + painting_variant). */
+export function addPaintingItem(painting: Painting): string | null {
+  const project = useStore.getState().project;
+  if (!project) return null;
+  let folderId = project.rootFolderIds[0];
+  if (!folderId) folderId = addFolder('Gemälde', null);
+  const itemId = addItem({ displayName: painting.title || painting.paintingId, nexoId: painting.paintingId, folderId, material: 'PAINTING', model: null });
+  updateItem(itemId, (item) => {
+    item.config.Components = { painting_variant: `${project.namespace}:${painting.paintingId}` };
+  });
+  return itemId;
+}
+
+/** Legt ein Item an, das diesen Sound als Musik-CD in der Jukebox abspielt. */
+export function addMusicDiscItem(sound: Sound): string | null {
+  const project = useStore.getState().project;
+  if (!project) return null;
+  let folderId = project.rootFolderIds[0];
+  if (!folderId) folderId = addFolder('Musik', null);
+  const nexoId = `${sound.soundId.replace(/[^a-z0-9_]+/g, '_')}_disc`;
+  const itemId = addItem({ displayName: sound.jukebox?.description || sound.soundId, nexoId, folderId, material: 'PAPER', model: null });
+  updateItem(itemId, (item) => {
+    item.config.Components = { max_stack_size: 1, jukebox_playable: { song_key: `${project.namespace}:${sound.soundId}` } };
+  });
+  return itemId;
 }

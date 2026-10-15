@@ -5,7 +5,7 @@
 import { createContext, useContext, useEffect, useId, useState, type ReactNode } from 'react';
 import { ChevronRight, Copy, ImageUp, Plus, Trash2, X } from 'lucide-react';
 import type { Field, MapField, ObjectField, ObjectListField, StringListField, TextureField } from '../../core/nexo/fields';
-import { validateTextFormat } from '../../core/nexo/fields';
+import { fieldName, validateTextFormat } from '../../core/nexo/fields';
 import type { ModelTexture } from '../../core/types';
 import { compareVersions, isPlainObject } from '../../core/util';
 import { parseYaml, toYaml } from '../../core/nexo/yaml';
@@ -54,8 +54,8 @@ export function FieldRenderer({ field, value, onChange, siblings, root, hideLabe
   const versionTooLow = field.minVersion && compareVersions(ctx.minecraftVersion, field.minVersion) < 0;
 
   const label = !hideLabel && field.label ? (
-    <span className="field-label">
-      {field.label}
+    <span className="field-label" title={field.label}>
+      {fieldName(field)}
       {field.minVersion && <span className={`badge ${versionTooLow ? 'warning' : ''}`}>ab {field.minVersion}</span>}
     </span>
   ) : null;
@@ -169,8 +169,8 @@ export function FieldRenderer({ field, value, onChange, siblings, root, hideLabe
       return (
         <label className="toggle-row">
           <input type="checkbox" checked={isPlainObject(value) || value === true} onChange={(e) => onChange(e.target.checked ? {} : undefined)} />
-          <span>
-            {field.label}
+          <span title={field.label}>
+            {fieldName(field)}
             {field.help && <div className="tr-desc">{field.help}</div>}
           </span>
         </label>
@@ -277,9 +277,9 @@ function ObjectSection({
   const [open, setOpen] = useState(count > 0);
   return (
     <details className="subsection" open={open} onToggle={(e) => setOpen((e.target as HTMLDetailsElement).open)}>
-      <summary>
+      <summary title={field.label}>
         <ChevronRight size={14} className="chev" />
-        {field.label}
+        {fieldName(field)}
         {field.minVersion && <span className={`badge ${versionTooLow ? 'warning' : ''}`}>ab {field.minVersion}</span>}
         {count > 0 && <span className="count">{count} gesetzt</span>}
         {count > 0 && (

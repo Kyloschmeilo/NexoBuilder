@@ -111,6 +111,10 @@ function labelOf(kind: EntityKind, data: EntityData | undefined): string {
       return stripFormatting(String(d.displayName ?? '')) || String(d.nexoId ?? '');
     case 'glyph':
       return String(d.glyphId ?? '');
+    case 'sound':
+      return String(d.soundId ?? '');
+    case 'painting':
+      return String(d.paintingId ?? '');
   }
 }
 

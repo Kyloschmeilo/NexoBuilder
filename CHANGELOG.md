@@ -1,5 +1,48 @@
 # Changelog
 
+## 1.4.0
+
+### Neu: Furniture
+
+- **Connectable**: Gleiche Möbel verbinden sich nebeneinander, z.B. Stühle zu einem Sofa. Die Modelle Straight, Left, Right,
+  Inner und Outer lädst du im Tab „Model & Pack“ hoch. NexoBuilder erzeugt daraus das passende ItemModel. Das ist der von
+  Nexo empfohlene Weg und braucht keine fünf zusätzlichen Items.
+- **States**: per Klick durchschaltbare Zustände, z.B. ein Fernseher mit Kanälen. Jeder State kann ein eigenes Modell haben,
+  dazu `next_after`, `reset_after` und Conditions. Die Typen FURNITURE, CUSTOM_MODEL_DATA und ModelEngine werden auch unterstützt.
+- **Placements** mit eigenen Modellen für Floor, Wall und Roof.
+- **Lights**: ein eigenes Modell für eingeschaltetes Licht (`toggled_item_model`).
+- **Text Entities**: schwebender Text, auch mit Glyphs, an der Möbel.
+
+### Neu: weitere Modelle und Ausrüstung
+
+- **GUI Model**: ein anderes Modell im Inventar, z.B. ein flaches Icon, während in der Hand das 3D-Modell zu sehen ist.
+- **Throwing Model** und die Mechanic **Trident**: Damage, Sounds und Aussehen im Flug.
+- **CustomArmor** kann jetzt auch **Elytra**, **Wolf/Horse/Llama/Nautilus Armor**, **Harness** (Happy Ghast) und **Saddles** für
+  alle Reittiere. Slot, `allowed_entity_types` und bei Elytren der Glider werden automatisch gesetzt.
+- **Custom Block**: **Directional** (wie Holzstämme), **Log Strip**, **Sapling** und **Stackable** mit eigenen Modellen je Stufe.
+- Neue Mechanic **Repair** und die Option **Exclude From Commands**.
+- **Shade** und **Ambient Occlusion** lassen sich im Modell nachträglich ein- und ausschalten.
+
+### Neu: Sounds und Paintings
+
+- **Sounds**: OGG-Dateien hochladen und anhören. Volume, Pitch, Stream und Attenuation Distance einstellen; mehrere Dateien
+  werden zufällig abgespielt. Mit **Jukebox Playable** wird ein Sound zur Musik-CD, das passende Item legt NexoBuilder per Klick an.
+- **Paintings**: eigene Gemälde (auch animiert) mit Title, Author und Größe. Das Item zum Aufhängen entsteht per Klick.
+- Exportiert wird nach `plugins/Nexo/sounds.yml` bzw. `paintings.yml`, die Dateien landen im Resourcepack. Beides funktioniert
+  auch beim Teilen, im Testserver und beim Export mehrerer Projekte.
+
+### Geändert
+
+- Alle Features heißen jetzt wie in der Nexo- und Minecraft-Doku: Components, Mechanics, Furniture, Custom Block,
+  Max Stack Size, Equippable, Pulling Models usw. Auch die Felder in den Formularen zeigen den Originalnamen. Die deutsche
+  Erklärung erscheint, wenn man mit der Maus darüberfährt. Erklärungen und Bedienung bleiben deutsch.
+
+### Download
+
+- **`NexoBuilder-Setup-1.4.0.exe`**: Installer mit Startmenü- und Desktop-Verknüpfung.
+- **`NexoBuilder-1.4.0-portable.exe`**: ohne Installation direkt starten.
+- **`NexoBuilder.html`**: die App als einzelne Datei für den Browser (ohne Teilen und Testserver).
+
 ## 1.3.0
 
 ### Neu: nur bestimmte Projekte und Inhalte exportieren

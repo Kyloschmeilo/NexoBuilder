@@ -13,21 +13,36 @@ import { planExport, type ExportPlan, type PlanOptions, type ProjectIssue } from
 export interface ExportSelection {
   excludedItemIds: string[];
   excludedGlyphIds: string[];
+  excludedSoundIds?: string[];
+  excludedPaintingIds?: string[];
 }
 
 export const SELECT_ALL: ExportSelection = { excludedItemIds: [], excludedGlyphIds: [] };
 
 export function isEverythingSelected(selection: ExportSelection | undefined): boolean {
-  return !selection || (selection.excludedItemIds.length === 0 && selection.excludedGlyphIds.length === 0);
+  return (
+    !selection ||
+    (selection.excludedItemIds.length === 0 &&
+      selection.excludedGlyphIds.length === 0 &&
+      !selection.excludedSoundIds?.length &&
+      !selection.excludedPaintingIds?.length)
+  );
 }
 
 /** Anzahl der ausgewählten Items und Glyphen. */
-export function countSelected(project: Project, selection: ExportSelection | undefined): { items: number; glyphs: number } {
+export function countSelected(
+  project: Project,
+  selection: ExportSelection | undefined,
+): { items: number; glyphs: number; sounds: number; paintings: number } {
   const excludedItems = new Set(selection?.excludedItemIds ?? []);
   const excludedGlyphs = new Set(selection?.excludedGlyphIds ?? []);
+  const excludedSounds = new Set(selection?.excludedSoundIds ?? []);
+  const excludedPaintings = new Set(selection?.excludedPaintingIds ?? []);
   return {
     items: Object.keys(project.items).filter((id) => !excludedItems.has(id)).length,
     glyphs: (project.glyphs ?? []).filter((g) => !excludedGlyphs.has(g.id)).length,
+    sounds: (project.sounds ?? []).filter((g) => !excludedSounds.has(g.id)).length,
+    paintings: (project.paintings ?? []).filter((g) => !excludedPaintings.has(g.id)).length,
   };
 }
 
@@ -39,6 +54,8 @@ export function selectFromProject(project: Project, selection: ExportSelection |
   if (isEverythingSelected(selection)) return project;
   const excludedItems = new Set(selection!.excludedItemIds);
   const excludedGlyphs = new Set(selection!.excludedGlyphIds);
+  const excludedSounds = new Set(selection!.excludedSoundIds ?? []);
+  const excludedPaintings = new Set(selection!.excludedPaintingIds ?? []);
 
   const items: Project['items'] = {};
   for (const [id, item] of Object.entries(project.items)) {
@@ -75,6 +92,8 @@ export function selectFromProject(project: Project, selection: ExportSelection |
     folders,
     rootFolderIds: project.rootFolderIds.filter((id) => keep.get(id)),
     glyphs: (project.glyphs ?? []).filter((g) => !excludedGlyphs.has(g.id)),
+    sounds: (project.sounds ?? []).filter((g) => !excludedSounds.has(g.id)),
+    paintings: (project.paintings ?? []).filter((g) => !excludedPaintings.has(g.id)),
   };
 }
 
@@ -139,6 +158,8 @@ function crossProjectIssues(projects: PlannedProject[]): ProjectIssue[] {
   const packNames = new Map<string, number>();
   const nexoIds = new Map<string, number>();
   const glyphIds = new Map<string, number>();
+  const soundIds = new Map<string, number>();
+  const paintingIds = new Map<string, number>();
   const pluginFiles = new Map<string, number>();
   const assetFiles = new Map<string, number>();
   const reportedAssets = new Set<string>();
@@ -158,6 +179,15 @@ function crossProjectIssues(projects: PlannedProject[]): ProjectIssue[] {
     for (const glyph of project.glyphs ?? []) {
       const other = firstOwner(glyphIds, glyph.glyphId, index);
       if (other) error(`Den Glyph „${glyph.glyphId}“ gibt es in „${other}“ und in „${name}“. Glyph-IDs müssen eindeutig sein.`);
+    }
+    for (const entry of plan.soundEntries) {
+      const id = String(entry.id);
+      const other = firstOwner(soundIds, id, index);
+      if (other) error(`Den Sound „${id}“ gibt es in „${other}“ und in „${name}“. Sound-IDs müssen eindeutig sein.`);
+    }
+    for (const id of Object.keys(plan.paintingEntries)) {
+      const other = firstOwner(paintingIds, id, index);
+      if (other) error(`Das Gemälde „${id}“ gibt es in „${other}“ und in „${name}“. Gemälde-IDs müssen eindeutig sein.`);
     }
     for (const path of [...plan.itemFiles.keys(), ...plan.recipeFiles.keys(), ...plan.glyphFiles.keys()]) {
       const other = firstOwner(pluginFiles, path, index);
@@ -210,6 +240,17 @@ export function setItemsSelected(selection: ExportSelection, itemIds: string[], 
     else excluded.add(id);
   }
   return { ...selection, excludedItemIds: [...excluded] };
+}
+
+export type ListSelectionKey = 'excludedGlyphIds' | 'excludedSoundIds' | 'excludedPaintingIds';
+
+export function setListSelected(selection: ExportSelection, key: ListSelectionKey, ids: string[], selected: boolean): ExportSelection {
+  const excluded = new Set(selection[key] ?? []);
+  for (const id of ids) {
+    if (selected) excluded.delete(id);
+    else excluded.add(id);
+  }
+  return { ...selection, [key]: [...excluded] };
 }
 
 export function setGlyphsSelected(selection: ExportSelection, glyphIds: string[], selected: boolean): ExportSelection {

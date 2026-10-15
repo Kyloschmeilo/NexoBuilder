@@ -19,10 +19,14 @@ import { getPath } from '../nexo/configPath';
 import { buildItemConfig, slotForMaterial } from '../nexo/itemConfig';
 import { validateTextFormat, type Field } from '../nexo/fields';
 import { ASSET_TOKEN_PREFIX, PROPERTIES } from '../nexo/schema';
+import { ARMOR_LAYERS, type ArmorGroup } from '../nexo/armor';
 import { itemsToYaml } from '../nexo/yaml';
 import { buildRecipeFiles, recipeKeys, validateRecipe } from '../nexo/recipes';
 import { VARIANTS, variantPathSuffix, type VariantSlot } from '../nexo/variants';
+import { planExtraModels } from './extraModels';
 import { buildGlyphFile, glyphFilePath, glyphTexturePath, validateGlyphs } from '../nexo/glyphs';
+import { soundFilePath, soundToYaml, validateSounds } from '../nexo/sounds';
+import { paintingKey, paintingMcmeta, paintingTexturePath, paintingToYaml, validatePaintings } from '../nexo/paintings';
 import { getFolderChain, getFolderSlugs, getItemsInTreeOrder, isBlockItem } from '../project/tree';
 import {
   compareVersions,
@@ -39,6 +43,9 @@ export interface ProjectIssue extends Issue {
   folderId?: string;
   /** interne ID eines Glyphs */
   glyphId?: string;
+  /** interne ID eines Sounds bzw. Gemäldes */
+  soundId?: string;
+  paintingId?: string;
   /** Projekt, aus dem die Meldung stammt (nur beim Export mehrerer Projekte gesetzt) */
   projectId?: string;
 }
@@ -67,6 +74,10 @@ export interface ExportPlan {
   recipeFiles: Map<string, string>;
   /** Glyph-Dateien relativ zum Nexo-Plugin-Ordner (glyphs/…) */
   glyphFiles: Map<string, string>;
+  /** Einträge für plugins/Nexo/sounds.yml */
+  soundEntries: Array<Record<string, unknown>>;
+  /** Einträge für plugins/Nexo/paintings.yml (Schlüssel = namespace:id) */
+  paintingEntries: Record<string, Record<string, unknown>>;
   issues: ProjectIssue[];
 }
 
@@ -104,18 +115,12 @@ export function planExport(project: Project, options: PlanOptions = {}): ExportP
   validateItemIds(items, issues);
 
   /* ------------------------------------------------------------ Rüstungen */
-  const armorSets = collectArmorSets(items, issues);
+  const armorSets = collectArmorSets(items, issues, targetVersion);
   for (const set of armorSets.values()) {
     const layers: Record<string, Array<{ texture: string }>> = {};
-    if (set.layer1) {
-      const path = `assets/${ns}/textures/entity/equipment/humanoid/${set.id}.png`;
-      addTextureFile(packFiles, path, set.layer1, includeBinaries);
-      layers.humanoid = [{ texture: `${ns}:${set.id}` }];
-    }
-    if (set.layer2) {
-      const path = `assets/${ns}/textures/entity/equipment/humanoid_leggings/${set.id}.png`;
-      addTextureFile(packFiles, path, set.layer2, includeBinaries);
-      layers.humanoid_leggings = [{ texture: `${ns}:${set.id}` }];
+    for (const [equipment, texture] of set.textures) {
+      addTextureFile(packFiles, `assets/${ns}/textures/entity/equipment/${equipment}/${set.id}.png`, texture, includeBinaries);
+      layers[equipment] = [{ texture: `${ns}:${set.id}` }];
     }
     if (Object.keys(layers).length > 0) {
       packFiles.set(`assets/${ns}/equipment/${set.id}.json`, json({ layers }));
@@ -167,6 +172,7 @@ export function planExport(project: Project, options: PlanOptions = {}): ExportP
     // und Ordnernamen nicht vorkommen – so gibt es keine Überschneidungen mit anderen Items.
     const variantKeys: Partial<Record<VariantSlot, string | string[]>> = {};
     for (const def of VARIANTS) {
+      if (def.kind !== 'pack') continue;
       const models = item.variants?.[def.slot];
       if (models === undefined) continue;
       if (!item.model) {
@@ -194,12 +200,25 @@ export function planExport(project: Project, options: PlanOptions = {}): ExportP
       }
     }
 
+    // Modelle für Inventar-Symbol, Möbel-Funktionen und Stapel-Stufen
+    const extras = planExtraModels({ project, item, ns, modelKey, modelPath: modelPathFor(project, item), folderSlugs, writeModel, packFiles, add, variantKeys });
+
     // Konfiguration
     const armorSetId = getArmorSetId(item);
-    const armorAssetId = armorSetId && armorSets.get(armorSetId)?.hasTextures ? `${ns}:${armorSetId}` : null;
-    const built = buildItemConfig({ project, item, modelKey, armorAssetId, variantKeys });
+    const armorSet = armorSetId ? armorSets.get(armorSetId) : undefined;
+    const armor = armorSet?.hasTextures ? { assetId: `${ns}:${armorSet.id}`, slot: armorSet.slot, entities: armorSet.entities, glider: armorSet.glider } : null;
+    const built = buildItemConfig({
+      project,
+      item,
+      modelKey,
+      armorAssetId: armor?.assetId ?? null,
+      armor,
+      variantKeys,
+      itemModel: extras.itemModel,
+      extraConfig: extras.config,
+    });
     if (built.rawYamlError) add('error', `Fehler im zusätzlichen YAML: ${built.rawYamlError}`);
-    validateItemConfig(item, built.config, targetVersion, add, usedVariations);
+    validateItemConfig(item, built.config, targetVersion, add, usedVariations, armor?.slot ?? null);
     const keys = recipeKeys(item);
     for (const recipe of item.recipes ?? []) {
       for (const issue of validateRecipe(recipe, project, keys.get(recipe.id) ?? recipe.type)) add(issue.level, issue.message);
@@ -242,11 +261,29 @@ export function planExport(project: Project, options: PlanOptions = {}): ExportP
   }
   const glyphYaml = buildGlyphFile(project);
   if (glyphYaml) glyphFiles.set(glyphFilePath(project), glyphYaml);
+
+  /* ------------------------------------------------------------ Sounds & Gemälde */
+  issues.push(...validateSounds(project), ...validatePaintings(project));
+  for (const sound of project.sounds ?? []) {
+    sound.files.forEach((file, i) => {
+      packFiles.set(`assets/${ns}/sounds/${soundFilePath(sound, i)}.ogg`, includeBinaries ? dataUrlToBytes(file.dataUrl) : new Uint8Array(0));
+    });
+  }
+  for (const painting of project.paintings ?? []) {
+    if (!painting.file) continue;
+    const path = paintingTexturePath(project, painting);
+    packFiles.set(path, includeBinaries ? dataUrlToBytes(painting.file.dataUrl) : new Uint8Array(0));
+    const mcmeta = paintingMcmeta(painting);
+    if (mcmeta) packFiles.set(`${path}.mcmeta`, json(mcmeta));
+  }
+  const soundEntries = (project.sounds ?? []).map((sound) => soundToYaml(project, sound));
+  const paintingEntries = Object.fromEntries((project.paintings ?? []).map((p) => [paintingKey(project, p), paintingToYaml(project, p)]));
+
   for (const path of packFiles.duplicates) {
     issues.push({ level: 'error', message: `Die Datei „${path}“ würde im Pack mehrfach erzeugt. Bitte Item-IDs bzw. Set-IDs eindeutig machen.` });
   }
 
-  return { items: plans, packFiles, itemFiles, recipeFiles, glyphFiles, issues };
+  return { items: plans, packFiles, itemFiles, recipeFiles, glyphFiles, soundEntries, paintingEntries, issues };
 }
 
 /* ====================================================================== Dateien & Pfade */
@@ -299,8 +336,14 @@ export function resolveModelTextures(model: JavaModelJson, refs: Map<string, str
 
 interface ArmorSet {
   id: string;
-  layer1?: ModelTexture;
-  layer2?: ModelTexture;
+  /** Layer-Typ (humanoid, wings, wolf_body …) → Textur */
+  textures: Map<string, ModelTexture>;
+  groups: Set<ArmorGroup>;
+  /** Slot aus den Layern (null = Spieler-Rüstung, Slot kommt vom Material) */
+  slot: string | null;
+  entities: string[];
+  /** Elytra-Flügel: Item braucht die Gleiter-Komponente */
+  glider: boolean;
   hasTextures: boolean;
   items: Item[];
 }
@@ -317,7 +360,7 @@ function resolveAsset(item: Item, value: unknown): ModelTexture | undefined {
   return item.assets?.[value.slice(ASSET_TOKEN_PREFIX.length)];
 }
 
-function collectArmorSets(items: Item[], issues: ProjectIssue[]): Map<string, ArmorSet> {
+function collectArmorSets(items: Item[], issues: ProjectIssue[], targetVersion: string): Map<string, ArmorSet> {
   const sets = new Map<string, ArmorSet>();
   for (const item of items) {
     const armor = item.config.$armor;
@@ -336,34 +379,51 @@ function collectArmorSets(items: Item[], issues: ProjectIssue[]): Map<string, Ar
       });
       continue;
     }
-    const set = sets.get(setId) ?? { id: setId, hasTextures: false, items: [] };
+    const set: ArmorSet = sets.get(setId) ?? {
+      id: setId,
+      textures: new Map(),
+      groups: new Set(),
+      slot: null,
+      entities: [],
+      glider: false,
+      hasTextures: false,
+      items: [],
+    };
     set.items.push(item);
-    const a = armor as Record<string, unknown>;
-    for (const layer of ['layer1', 'layer2'] as const) {
-      const tex = resolveAsset(item, a[layer]);
+    for (const layer of ARMOR_LAYERS) {
+      const tex = resolveAsset(item, getPath(armor as ConfigObject, layer.path));
       if (!tex) continue;
-      for (const issue of validateTexture(tex, `${label} Rüstungs-${layer}`)) {
+      for (const issue of validateTexture(tex, `${label} ${layer.label}`)) {
         issues.push({ ...issue, itemId: item.id });
       }
-      if (tex.width && tex.height && tex.width !== tex.height * 2) {
+      if (layer.minVersion && compareVersions(targetVersion, layer.minVersion) < 0) {
         issues.push({
-          level: 'warning',
-          message: `${label}: Die Rüstungs-Textur ${layer} sollte doppelt so breit wie hoch sein (z.B. 64×32), ist aber ${tex.width}×${tex.height}.`,
+          level: 'error',
+          message: `${label}: „${layer.label}“ gibt es erst ab Minecraft ${layer.minVersion} – das Projekt ist auf ${targetVersion} eingestellt.`,
           itemId: item.id,
         });
       }
-      const existing = set[layer];
+      if (layer.group === 'player' && tex.width && tex.height && tex.width !== tex.height * 2) {
+        issues.push({
+          level: 'warning',
+          message: `${label}: Die Rüstungs-Textur ${layer.label} sollte doppelt so breit wie hoch sein (z.B. 64×32), ist aber ${tex.width}×${tex.height}.`,
+          itemId: item.id,
+        });
+      }
+      const existing = set.textures.get(layer.equipment);
       if (existing && existing.dataUrl !== tex.dataUrl) {
         issues.push({
           level: 'warning',
-          message: `${label}: Für das Rüstungsset „${setId}“ wurde ${layer} mehrfach mit unterschiedlichen Texturen hochgeladen. Es wird die erste verwendet.`,
+          message: `${label}: Für das Set „${setId}“ wurde „${layer.label}“ mehrfach mit unterschiedlichen Texturen hochgeladen. Es wird die erste verwendet.`,
           itemId: item.id,
         });
       } else if (!existing && tex.dataUrl) {
-        set[layer] = tex;
+        set.textures.set(layer.equipment, tex);
+        set.groups.add(layer.group);
+        for (const entity of layer.entities ?? []) if (!set.entities.includes(entity)) set.entities.push(entity);
       }
     }
-    set.hasTextures = !!(set.layer1 || set.layer2);
+    set.hasTextures = set.textures.size > 0;
     sets.set(setId, set);
   }
   for (const set of sets.values()) {
@@ -371,10 +431,26 @@ function collectArmorSets(items: Item[], issues: ProjectIssue[]): Map<string, Ar
       for (const item of set.items) {
         issues.push({
           level: 'error',
-          message: `„${item.displayName || item.nexoId}“: Für das Rüstungsset „${set.id}“ wurde bei keinem Item eine Layer-Textur hochgeladen.`,
+          message: `„${item.displayName || item.nexoId}“: Für das Set „${set.id}“ wurde bei keinem Item eine Textur hochgeladen.`,
           itemId: item.id,
         });
       }
+      continue;
+    }
+    if (set.groups.has('elytra') && set.groups.has('player')) {
+      issues.push({
+        level: 'warning',
+        message: `Das Set „${set.id}“ enthält Elytra-Flügel und Spieler-Rüstung – die Flügel würden dann auch auf dem Brustpanzer erscheinen. Elytren brauchen eine eigene Set-ID.`,
+      });
+    }
+    if (!set.groups.has('player')) {
+      set.slot = set.groups.has('elytra') ? 'CHEST' : set.groups.has('mob') ? 'BODY' : set.groups.has('saddle') ? 'SADDLE' : null;
+      if (set.groups.has('mob') && set.groups.has('saddle')) {
+        issues.push({ level: 'warning', message: `Das Set „${set.id}“ mischt Tier-Rüstung und Sattel – dafür bitte zwei Set-IDs verwenden.` });
+      }
+      // Nur die Tiere des gewählten Slots
+      set.entities = ARMOR_LAYERS.filter((l) => l.slot === set.slot && set.textures.has(l.equipment)).flatMap((l) => l.entities ?? []);
+      set.glider = set.groups.has('elytra');
     }
   }
   return sets;
@@ -501,6 +577,7 @@ function validateItemConfig(
   targetVersion: string,
   add: (l: IssueLevel, m: string) => void,
   usedVariations: Map<string, Item>,
+  armorSlot: string | null,
 ) {
   const material = config.material;
   if (typeof material !== 'string' || !/^[A-Z0-9_]+$/.test(material)) {
@@ -546,12 +623,12 @@ function validateItemConfig(
     }
   }
 
-  if (getArmorSetId(item) && typeof material === 'string' && !slotForMaterial(material)) {
+  if (getArmorSetId(item) && armorSlot === null && typeof material === 'string' && !slotForMaterial(material)) {
     const equippable = getPath(cfg, ['Components', 'equippable']);
     if (!isPlainObject(equippable) || !equippable.slot) {
       add(
         'warning',
-        `Das Material ${material} legt keinen Rüstungs-Slot fest. Es wird HEAD verwendet – sonst bitte die Komponente „Ausrüstbar“ mit dem passenden Slot hinzufügen.`,
+        `Das Material ${material} legt keinen Rüstungs-Slot fest. Es wird HEAD verwendet – sonst bitte die Component „Equippable“ mit dem passenden Slot hinzufügen.`,
       );
     }
   }

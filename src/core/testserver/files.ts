@@ -5,6 +5,7 @@
 import { Document, isMap, parseDocument } from 'yaml';
 import type { Project } from '../types';
 import type { ExportPlan, FileContent } from '../export/plan';
+import { buildRootFiles } from '../export/rootFiles';
 
 export interface ServerFile {
   /** Pfad relativ zu plugins/Nexo */
@@ -22,6 +23,7 @@ export function nexoFolderFiles(project: Project, plan: ExportPlan): ServerFile[
     for (const [path, data] of map) files.push({ path, data });
   }
   for (const [path, data] of plan.packFiles) files.push({ path: `pack/external_packs/${packName}/${path}`, data });
+  for (const [path, data] of buildRootFiles([plan])) files.push({ path, data });
   return files.sort((a, b) => (a.path < b.path ? -1 : a.path > b.path ? 1 : 0));
 }
 

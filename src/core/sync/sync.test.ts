@@ -3,6 +3,8 @@ import { produce } from 'immer';
 import type { Project } from '../types';
 import { createFolder, createItem, createProject, insertFolder, insertItem } from '../project/factory';
 import { createGlyph } from '../nexo/glyphs';
+import { createSound } from '../nexo/sounds';
+import { createPainting } from '../nexo/paintings';
 import { readShareFolder, SyncEngine, ShareFolderError, type SyncFileInfo, type SyncFs, type SyncState } from './engine';
 import { RECOVERY_FOLDER_ID } from './merge';
 import { PROJECT_FILE } from './format';
@@ -166,6 +168,34 @@ describe('Geteilte Projekte', () => {
     expect(firstFolder(ben.project).folderIds).toEqual([sub.id]);
     expect(ben.project.glyphs.map((g) => g.id)).toEqual(['g_herz', 'g_stern']);
     expect(content(ben.project)).toBe(content(anna.project));
+  });
+
+  it('Sounds und Gemälde werden als eigene Dateien geteilt – samt Reihenfolge und Löschen', async () => {
+    const { folder, clock, anna, ben } = await setup();
+    clock.t += 10;
+    anna.edit((d) => {
+      d.sounds.push(createSound('s_ding', 'ding', [{ name: 'ding.ogg', dataUrl: 'data:audio/ogg;base64,T2dnUw==', size: 4 }]));
+      d.sounds.push(createSound('s_dong', 'dong', []));
+      d.paintings.push(createPainting('p_bild', 'bild', null));
+    });
+    await anna.sync();
+    expect(folder.files.has('sounds/s_ding.json')).toBe(true);
+    expect(folder.files.has('paintings/p_bild.json')).toBe(true);
+    await ben.sync();
+    expect(ben.project.sounds.map((s) => s.soundId)).toEqual(['ding', 'dong']);
+    expect(ben.project.paintings.map((p) => p.paintingId)).toEqual(['bild']);
+    expect(ben.applied).toContain('Anna:sound:ding');
+
+    clock.t += 10;
+    ben.edit((d) => {
+      d.sounds.reverse();
+      d.paintings = [];
+    });
+    await ben.sync();
+    await anna.sync();
+    expect(anna.project.sounds.map((s) => s.soundId)).toEqual(['dong', 'ding']);
+    expect(anna.project.paintings).toEqual([]);
+    expect(content(anna.project)).toBe(content(ben.project));
   });
 
   it('Löschen kommt bei den anderen an (Grabstein-Datei)', async () => {

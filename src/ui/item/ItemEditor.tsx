@@ -40,12 +40,12 @@ function GiveButton({ nexoId }: { nexoId: string }) {
 }
 
 const TABS: Array<{ id: EditorTab; label: string }> = [
-  { id: 'general', label: 'Allgemein' },
-  { id: 'model', label: 'Modell & Aussehen' },
-  { id: 'attributes', label: 'Attribute' },
-  { id: 'components', label: 'Komponenten' },
-  { id: 'mechanics', label: 'Mechaniken' },
-  { id: 'recipes', label: 'Rezepte' },
+  { id: 'general', label: 'General' },
+  { id: 'model', label: 'Model & Pack' },
+  { id: 'attributes', label: 'Attributes' },
+  { id: 'components', label: 'Components' },
+  { id: 'mechanics', label: 'Mechanics' },
+  { id: 'recipes', label: 'Recipes' },
   { id: 'yaml', label: 'YAML' },
 ];
 
@@ -150,12 +150,12 @@ export function ItemEditor({ itemId, plan }: { itemId: string; plan: ExportPlan 
         {activeTab === 'general' && <GeneralTab item={item} />}
         {activeTab === 'model' && <ModelTab item={item} plan={plan} />}
         {activeTab === 'attributes' && (
-          <PropertiesPanel item={item} groups={['attributes']} title="Attribute & Verzauberungen" emptyText="Keine Attribute oder Verzauberungen." />
+          <PropertiesPanel item={item} groups={['attributes']} title="AttributeModifiers & Enchantments" emptyText="Noch keine AttributeModifiers oder Enchantments." />
         )}
         {activeTab === 'components' && (
-          <PropertiesPanel item={item} groups={['components']} title="Komponenten" emptyText="Keine Komponenten." />
+          <PropertiesPanel item={item} groups={['components']} title="Components" emptyText="Noch keine Components." />
         )}
-        {activeTab === 'mechanics' && <PropertiesPanel item={item} groups={['mechanics']} title="Mechaniken" emptyText="Keine Mechaniken." />}
+        {activeTab === 'mechanics' && <PropertiesPanel item={item} groups={['mechanics']} title="Mechanics" emptyText="Noch keine Mechanics." />}
         {activeTab === 'recipes' && <RecipesTab item={item} />}
         {activeTab === 'yaml' && <YamlTab item={item} plan={plan} />}
       </div>

@@ -10,10 +10,11 @@ import { pickFiles, readDroppedFiles } from '../files';
 import { createDrafts } from '../importer';
 import { useThumbnail } from '../preview/thumbnail';
 
-const ACCEPT = '.bbmodel,.json,.png,.mcmeta';
+export const MODEL_ACCEPT = '.bbmodel,.json,.png,.mcmeta';
+const ACCEPT = MODEL_ACCEPT;
 
 /** Liest Modelle aus Dateien – jede Datei (bzw. jedes .bbmodel) wird ein eigenes Modell. */
-async function importModels(files: File[]): Promise<ImportedModel[]> {
+export async function importModels(files: File[]): Promise<ImportedModel[]> {
   const toast = useStore.getState().toast;
   const sorted = [...files].sort((a, b) => a.name.localeCompare(b.name, 'de', { numeric: true }));
   const drafts = createDrafts(await readDroppedFiles(sorted), 'separate');
@@ -31,14 +32,14 @@ export function VariantsSection({ item }: { item: Item }) {
   return (
     <div>
       <div className="section-title">
-        <span>Varianten-Modelle</span>
+        <span>Special Item Appearance</span>
         <span className="spacer" />
         <AddVariantButton item={item} />
       </div>
       {active.length === 0 && (
         <div className="card">
           <div className="card-body faint small" style={{ textAlign: 'center', padding: 22 }}>
-            Für Bögen, Armbrüste, Schilde, Angeln, Beschädigungs-Stufen oder gefärbte Items: weitere Modelle für bestimmte Zustände über{' '}
+            Pulling, Charged, Blocking, Cast, Throwing, Damaged, Dyeable, Composite oder ein eigenes GUI Model: weitere Modelle über{' '}
             <strong>„Hinzufügen“</strong>.
           </div>
         </div>
@@ -78,7 +79,7 @@ function AddVariantButton({ item }: { item: Item }) {
   );
 }
 
-function VariantCard({ item, def }: { item: Item; def: VariantDef }) {
+export function VariantCard({ item, def, removable = true }: { item: Item; def: VariantDef; removable?: boolean }) {
   const models = item.variants?.[def.slot] ?? [];
   const material = String(item.config.material ?? 'PAPER').toUpperCase();
   const wrongMaterial = def.materials && !def.materials.includes(material);
@@ -98,25 +99,31 @@ function VariantCard({ item, def }: { item: Item; def: VariantDef }) {
         <div className="card-title-group">
           <div className="row">
             <h3>{def.label}</h3>
-            <span className="badge mono" title="Pfad im YAML">
-              Pack.{def.slot}
-            </span>
+            {def.kind === 'pack' && (
+              <span className="badge mono" title="Pfad im YAML">
+                Pack.{def.slot}
+              </span>
+            )}
+            {def.kind === 'definition' && <span className="badge mono">eigenes ItemModel</span>}
+            {def.kind === 'block' && <span className="badge mono">custom_block.stackable</span>}
           </div>
           <div className="desc">{def.description}</div>
         </div>
-        <button
-          className="btn ghost icon small danger"
-          title="Variante entfernen"
-          onClick={() =>
-            updateItem(item.id, (d) => {
-              const next = { ...(d.variants ?? {}) };
-              delete next[def.slot];
-              d.variants = next;
-            })
-          }
-        >
-          <Trash2 size={15} />
-        </button>
+        {removable && (
+          <button
+            className="btn ghost icon small danger"
+            title="Variante entfernen"
+            onClick={() =>
+              updateItem(item.id, (d) => {
+                const next = { ...(d.variants ?? {}) };
+                delete next[def.slot];
+                d.variants = next;
+              })
+            }
+          >
+            <Trash2 size={15} />
+          </button>
+        )}
       </div>
       <div className="card-body">
         {wrongMaterial && (

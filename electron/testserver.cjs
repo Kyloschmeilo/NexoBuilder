@@ -627,7 +627,8 @@ function isRunning() {
 
 /* ------------------------------------------------------------------ Projektdateien abgleichen */
 
-const SYNC_PATH = /^(items|recipes|glyphs|pack\/external_packs)\/.+$/;
+// sounds.yml/paintings.yml: davon gibt es in plugins/Nexo nur jeweils eine Datei
+const SYNC_PATH = /^((items|recipes|glyphs|pack\/external_packs)\/.+|sounds\.yml|paintings\.yml)$/;
 const SAFE_SEGMENT = /^[A-Za-z0-9_.+-]+$/;
 
 function syncTarget(rel) {

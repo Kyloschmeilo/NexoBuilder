@@ -118,8 +118,9 @@ export function ExportDialog() {
   const paths = useMemo(() => listMultiExportPaths(multi, mode), [multi, mode]);
   const itemCount = multi.projects.reduce((n, p) => n + p.plan.items.length, 0);
   const glyphCount = multi.projects.reduce((n, p) => n + (p.project.glyphs?.length ?? 0), 0);
+  const mediaCount = multi.projects.reduce((n, p) => n + (p.project.sounds?.length ?? 0) + (p.project.paintings?.length ?? 0), 0);
   const several = multi.projects.length > 1;
-  const empty = itemCount + glyphCount === 0;
+  const empty = itemCount + glyphCount + mediaCount === 0;
 
   const doExport = async () => {
     setBusy(true);
@@ -226,7 +227,12 @@ export function ExportDialog() {
                   if (!target) return;
                   setSelections((prev) => ({
                     ...prev,
-                    [target.id]: { excludedItemIds: Object.keys(target.items), excludedGlyphIds: (target.glyphs ?? []).map((g) => g.id) },
+                    [target.id]: {
+                      excludedItemIds: Object.keys(target.items),
+                      excludedGlyphIds: (target.glyphs ?? []).map((g) => g.id),
+                      excludedSoundIds: (target.sounds ?? []).map((g) => g.id),
+                      excludedPaintingIds: (target.paintings ?? []).map((g) => g.id),
+                    },
                   }));
                 }}
               >

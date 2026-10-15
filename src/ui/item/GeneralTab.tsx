@@ -81,7 +81,7 @@ export function GeneralTab({ item }: { item: Item }) {
           </div>
         </div>
       </div>
-      <PropertiesPanel item={item} groups={['general']} title="Allgemeine Eigenschaften" emptyText="Keine allgemeinen Eigenschaften (z.B. Lore)." />
+      <PropertiesPanel item={item} groups={['general']} title="General" emptyText="Noch nichts hinzugefügt (z.B. Lore)." />
     </div>
   );
 }

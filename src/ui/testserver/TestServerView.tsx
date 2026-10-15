@@ -332,7 +332,7 @@ function SyncCard({ plan }: { plan: ExportPlan | null }) {
       <div className="card-header">
         <div className="card-title-group">
           <h3>Projekt übertragen</h3>
-          <div className="desc">Items, Rezepte, Glyphen und Resourcepack nach plugins/Nexo – danach „nexo reload all“</div>
+          <div className="desc">Items, Recipes, Glyphs, Sounds, Paintings und Resourcepack nach plugins/Nexo – danach „nexo reload all“</div>
         </div>
         <button className="btn small" disabled={!running || syncing} onClick={() => void syncProject(true)}>
           {syncing ? <LoaderCircle size={14} className="spin" /> : <RefreshCw size={14} />} Jetzt übertragen

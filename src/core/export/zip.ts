@@ -3,6 +3,7 @@ import JSZip from 'jszip';
 import type { Project } from '../types';
 import type { ExportMode, ExportPlan, FileContent } from './plan';
 import type { MultiExportPlan, PlannedProject } from './selection';
+import { buildRootFiles, PAINTINGS_FILE, SOUNDS_FILE } from './rootFiles';
 
 export interface ExportResult {
   fileName: string;
@@ -73,6 +74,7 @@ export function listMultiExportPaths(multi: MultiExportPlan, mode: ExportMode): 
       else for (const p of plan.packFiles.keys()) paths.add(`pack/external_packs/${project.settings.packName}/${p}`);
     }
   }
+  if (mode !== 'pack') for (const p of buildRootFiles(multi.projects.map((e) => e.plan)).keys()) paths.add(p);
   if (mode === 'full' && multi.projects.length > 0) paths.add('ANLEITUNG.txt');
   return [...paths].sort();
 }
@@ -101,6 +103,7 @@ export async function buildMultiExportZip(multi: MultiExportPlan, mode: ExportMo
       }
     }
   }
+  if (mode !== 'pack') addFiles(zip, buildRootFiles(multi.projects.map((e) => e.plan)));
   if (mode === 'full' && multi.projects.length > 0) {
     const guide =
       multi.projects.length === 1 ? installGuide(multi.projects[0].project, multi.projects[0].plan) : multiInstallGuide(multi);
@@ -109,6 +112,18 @@ export async function buildMultiExportZip(multi: MultiExportPlan, mode: ExportMo
 
   const data = await generate(zip);
   return { fileName: multiExportFileName(multi, mode), data, paths: listMultiExportPaths(multi, mode) };
+}
+
+/** Hinweis auf sounds.yml/paintings.yml – davon gibt es auf dem Server nur jeweils eine Datei */
+function rootFileLines(plans: ExportPlan[]): string[] {
+  const lines: string[] = [];
+  const files = buildRootFiles(plans);
+  if (files.has(SOUNDS_FILE)) lines.push('   sounds.yml                -> die Sounds (OGG-Dateien liegen im Resourcepack)');
+  if (files.has(PAINTINGS_FILE)) lines.push('   paintings.yml             -> die Paintings (danach den Server neu starten)');
+  if (lines.length > 0) {
+    lines.push('   ACHTUNG: sounds.yml/paintings.yml ersetzen vorhandene Dateien – eigene Einträge vorher sichern und übernehmen.');
+  }
+  return lines;
 }
 
 const USAGE = [
@@ -135,7 +150,8 @@ export function installGuide(project: Project, plan: ExportPlan): string {
     '',
     '   items/...                 -> die Item-Konfigurationen',
     ...(plan.recipeFiles.size > 0 ? ['   recipes/...               -> die Crafting-Rezepte'] : []),
-    ...(plan.glyphFiles.size > 0 ? ['   glyphs/...                -> die Glyphen (Nutzung: <glyph:id>)'] : []),
+    ...(plan.glyphFiles.size > 0 ? ['   glyphs/...                -> die Glyphs (Nutzung: <glyph:id>)'] : []),
+    ...rootFileLines([plan]),
     `   ${location.padEnd(25)} -> der Resourcepack (wird von Nexo automatisch eingebunden)`,
     '',
     ...USAGE,
@@ -162,9 +178,11 @@ export function multiInstallGuide(multi: MultiExportPlan): string {
     '   Jedes Projekt hat einen eigenen Ordner unter items/ und einen eigenen Resourcepack:',
     '',
   ];
+  const extra = rootFileLines(multi.projects.map((p) => p.plan));
   for (const { project } of multi.projects) {
     lines.push(`   ${project.name}: ${packLocation(project)}`);
   }
+  if (extra.length > 0) lines.push('', ...extra);
   lines.push('', ...USAGE, '');
   for (const { project, plan } of multi.projects) {
     const title = `Projekt "${project.name}"`;

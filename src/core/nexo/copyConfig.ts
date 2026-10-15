@@ -15,10 +15,10 @@ export const COPY_CATEGORIES: Array<{ id: CopyCategory; label: string; descripti
   { id: 'material', label: 'Material', description: 'Basis-Material (z.B. DIAMOND_SWORD)', defaultOn: true },
   ...PROPERTY_GROUPS.map((g) => ({ id: g.id as CopyCategory, label: g.label, description: g.description, defaultOn: true })),
   { id: 'other', label: 'Sonstige Werte', description: 'Werte ohne eigenes Formular (z.B. aus importierten Configs)', defaultOn: true },
-  { id: 'rawYaml', label: 'Zusätzliches YAML', description: 'Der Inhalt des YAML-Tabs', defaultOn: true },
+  { id: 'rawYaml', label: 'Zusätzliches YAML (YAML-Tab)', description: 'Der Inhalt des YAML-Tabs', defaultOn: true },
   {
     id: 'recipes',
-    label: 'Rezepte',
+    label: 'Recipes',
     description: 'Crafting-Rezepte – Achtung: gleiche Rezepte für mehrere Items stören sich im Spiel',
     defaultOn: false,
   },

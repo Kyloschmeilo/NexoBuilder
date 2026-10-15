@@ -1,13 +1,14 @@
 /** Auswahl im Export-Dialog: welche Projekte und darin welche Ordner, Items und Glyphen exportiert werden. */
-import { useEffect, useRef, useState } from 'react';
-import { ChevronDown, ChevronRight, Folder as FolderIcon, LoaderCircle, Smile } from 'lucide-react';
+import { useEffect, useRef, useState, type ReactNode } from 'react';
+import { ChevronDown, ChevronRight, Folder as FolderIcon, Frame, LoaderCircle, Music, Smile } from 'lucide-react';
 import type { Project } from '../../core/types';
 import {
   countSelected,
   itemIdsInFolder,
   selectionState,
-  setGlyphsSelected,
   setItemsSelected,
+  setListSelected,
+  type ListSelectionKey,
   SELECT_ALL,
   type ExportSelection,
 } from '../../core/export/selection';
@@ -47,7 +48,7 @@ interface TreeProps {
 export function SelectionTree({ project, selection, onChange, itemsOnly }: TreeProps) {
   const itemCount = Object.keys(project.items).length;
   const [open, setOpen] = useState<Set<string>>(() => new Set(itemCount <= 40 ? Object.keys(project.folders) : project.rootFolderIds));
-  const glyphs = itemsOnly ? [] : (project.glyphs ?? []);
+  const glyphs = project.glyphs ?? [];
 
   const toggleOpen = (id: string) =>
     setOpen((prev) => {
@@ -104,43 +105,76 @@ export function SelectionTree({ project, selection, onChange, itemsOnly }: TreeP
   };
 
   const guard = new Set<string>();
-  const glyphIds = glyphs.map((g) => g.id);
-  const glyphState = selectionState(glyphIds, selection.excludedGlyphIds);
-  const glyphsOpen = open.has('$glyphs');
-  const excludedGlyphs = new Set(selection.excludedGlyphIds);
+  const lists: Array<{ key: ListSelectionKey; open: string; label: string; icon: ReactNode; entries: Array<{ id: string; label: string }> }> = itemsOnly
+    ? []
+    : [
+        {
+          key: 'excludedGlyphIds',
+          open: '$glyphs',
+          label: 'Glyphs',
+          icon: <Smile size={15} className="faint" />,
+          entries: glyphs.map((g) => ({ id: g.id, label: `<glyph:${g.glyphId}>` })),
+        },
+        {
+          key: 'excludedSoundIds',
+          open: '$sounds',
+          label: 'Sounds',
+          icon: <Music size={15} className="faint" />,
+          entries: (project.sounds ?? []).map((s) => ({ id: s.id, label: s.soundId })),
+        },
+        {
+          key: 'excludedPaintingIds',
+          open: '$paintings',
+          label: 'Paintings',
+          icon: <Frame size={15} className="faint" />,
+          entries: (project.paintings ?? []).map((p) => ({ id: p.id, label: p.paintingId })),
+        },
+      ];
+  const isEmpty = itemCount === 0 && lists.every((l) => l.entries.length === 0);
 
   return (
     <div className="select-tree">
       {project.rootFolderIds.map((id) => renderFolder(id, 0, guard))}
-      {glyphs.length > 0 && (
-        <div>
-          <div className="select-row" style={{ paddingLeft: 4 }} onClick={() => toggleOpen('$glyphs')}>
-            <span className="tree-chevron">{glyphsOpen ? <ChevronDown size={14} /> : <ChevronRight size={14} />}</span>
-            <Check state={glyphState} label="Glyphen" onChange={(checked) => onChange(setGlyphsSelected(selection, glyphIds, checked))} />
-            <Smile size={15} className="faint" />
-            <span className="select-label">Glyphen</span>
-            <span className="select-count mono">
-              {glyphIds.filter((id) => !excludedGlyphs.has(id)).length}/{glyphIds.length}
-            </span>
-          </div>
-          {glyphsOpen &&
-            glyphs.map((glyph) => {
-              const checked = !excludedGlyphs.has(glyph.id);
-              return (
-                <label key={glyph.id} className="select-row" style={{ paddingLeft: 40 }}>
-                  <input
-                    type="checkbox"
-                    className="check"
-                    checked={checked}
-                    onChange={() => onChange(setGlyphsSelected(selection, [glyph.id], !checked))}
-                  />
-                  <span className="select-label mono">{`<glyph:${glyph.glyphId}>`}</span>
-                </label>
-              );
-            })}
-        </div>
-      )}
-      {itemCount === 0 && glyphs.length === 0 && <div className="faint small" style={{ padding: '6px 8px' }}>{itemsOnly ? 'Keine Items.' : 'Das Projekt ist leer.'}</div>}
+      {lists
+        .filter((list) => list.entries.length > 0)
+        .map((list) => {
+          const ids = list.entries.map((e) => e.id);
+          const excluded = new Set(selection[list.key] ?? []);
+          const isOpen = open.has(list.open);
+          return (
+            <div key={list.key}>
+              <div className="select-row" style={{ paddingLeft: 4 }} onClick={() => toggleOpen(list.open)}>
+                <span className="tree-chevron">{isOpen ? <ChevronDown size={14} /> : <ChevronRight size={14} />}</span>
+                <Check
+                  state={selectionState(ids, selection[list.key] ?? [])}
+                  label={list.label}
+                  onChange={(checked) => onChange(setListSelected(selection, list.key, ids, checked))}
+                />
+                {list.icon}
+                <span className="select-label">{list.label}</span>
+                <span className="select-count mono">
+                  {ids.filter((id) => !excluded.has(id)).length}/{ids.length}
+                </span>
+              </div>
+              {isOpen &&
+                list.entries.map((entry) => {
+                  const checked = !excluded.has(entry.id);
+                  return (
+                    <label key={entry.id} className="select-row" style={{ paddingLeft: 40 }}>
+                      <input
+                        type="checkbox"
+                        className="check"
+                        checked={checked}
+                        onChange={() => onChange(setListSelected(selection, list.key, [entry.id], !checked))}
+                      />
+                      <span className="select-label mono">{entry.label}</span>
+                    </label>
+                  );
+                })}
+            </div>
+          );
+        })}
+      {isEmpty && <div className="faint small" style={{ padding: '6px 8px' }}>{itemsOnly ? 'Keine Items.' : 'Das Projekt ist leer.'}</div>}
     </div>
   );
 }
@@ -190,7 +224,9 @@ export function ProjectPicker({ choices, included, selections, expanded, onToggl
                 {isIncluded && !project ? (
                   <LoaderCircle size={13} className="spin" />
                 ) : isIncluded && counts ? (
-                  `${counts.items}/${total} Items${counts.glyphs ? ` · ${counts.glyphs} Glyphen` : ''}`
+                  `${counts.items}/${total} Items${counts.glyphs ? ` · ${counts.glyphs} Glyphs` : ''}${counts.sounds ? ` · ${counts.sounds} Sounds` : ''}${
+                    counts.paintings ? ` · ${counts.paintings} Paintings` : ''
+                  }`
                 ) : (
                   `${total} Items`
                 )}
