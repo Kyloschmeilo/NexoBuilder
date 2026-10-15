@@ -12,11 +12,17 @@ export function buildRootFiles(plans: Array<Pick<ExportPlan, 'soundEntries' | 'p
   const files = new Map<string, string>();
   const sounds = plans.flatMap((p) => p.soundEntries);
   if (sounds.length > 0) {
-    files.set(SOUNDS_FILE, yamlHeader('replaces an existing sounds.yml. Please add your own entries from there here.') + toYaml({ sounds }));
+    files.set(
+      SOUNDS_FILE,
+      yamlHeader('replaces an existing sounds.yml. Please add your own entries from there here.') + toYaml({ sounds }),
+    );
   }
   const paintings: Record<string, Record<string, unknown>> = Object.assign({}, ...plans.map((p) => p.paintingEntries));
   if (Object.keys(paintings).length > 0) {
-    files.set(PAINTINGS_FILE, yamlHeader('replaces an existing paintings.yml. New paintings need a server restart.') + toYaml({ paintings }));
+    files.set(
+      PAINTINGS_FILE,
+      yamlHeader('replaces an existing paintings.yml. New paintings need a server restart.') + toYaml({ paintings }),
+    );
   }
   return files;
 }

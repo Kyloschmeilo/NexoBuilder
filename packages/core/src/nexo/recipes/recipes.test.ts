@@ -30,7 +30,11 @@ describe('recipes', () => {
     const { item } = setup();
     const recipe = createRecipe('shaped', 'r1');
     recipe.grid = ['', 'A', '', '', 'A', '', '', 'B', ''];
-    recipe.ingredients = { A: { source: 'minecraft', id: 'diamond' }, B: { source: 'tag', id: 'planks' }, C: { source: 'minecraft', id: 'STONE' } };
+    recipe.ingredients = {
+      A: { source: 'minecraft', id: 'diamond' },
+      B: { source: 'tag', id: 'planks' },
+      C: { source: 'minecraft', id: 'STONE' },
+    };
     recipe.resultAmount = 2;
     expect(recipeToYaml(recipe, item)).toEqual({
       result: { nexo_item: 'ruby_sword', amount: 2 },

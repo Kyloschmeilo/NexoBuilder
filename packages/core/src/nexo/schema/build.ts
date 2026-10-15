@@ -105,14 +105,22 @@ export const field = {
   yaml: (options: SpecOptions<'yaml'> = {}): SpecFor<'yaml'> => ({ type: 'yaml', ...options }),
   presence: (options: SpecOptions<'presence'> = {}): SpecFor<'presence'> => ({ type: 'presence', ...options }),
   texture: (options: SpecOptions<'texture'> = {}): SpecFor<'texture'> => ({ type: 'texture', ...options }),
-  select: (options: Option[] | string[], rest: SpecOptions<'select', 'options'> = {}): SpecFor<'select'> => ({ type: 'select', options, ...rest }),
+  select: (options: Option[] | string[], rest: SpecOptions<'select', 'options'> = {}): SpecFor<'select'> => ({
+    type: 'select',
+    options,
+    ...rest,
+  }),
   multiSelect: (options: Option[] | string[], rest: SpecOptions<'multiSelect', 'options'> = {}): SpecFor<'multiSelect'> => ({
     type: 'multiSelect',
     options,
     ...rest,
   }),
   object: (fields: FieldSpecs, rest: SpecOptions<'object', 'fields'> = {}): SpecFor<'object'> => ({ type: 'object', fields, ...rest }),
-  objectList: (fields: FieldSpecs, rest: SpecOptions<'objectList', 'fields'> = {}): SpecFor<'objectList'> => ({ type: 'objectList', fields, ...rest }),
+  objectList: (fields: FieldSpecs, rest: SpecOptions<'objectList', 'fields'> = {}): SpecFor<'objectList'> => ({
+    type: 'objectList',
+    fields,
+    ...rest,
+  }),
   map: (value: FieldSpec, rest: SpecOptions<'map', 'value'> = {}): SpecFor<'map'> => ({ type: 'map', value, ...rest }),
 };
 
@@ -130,7 +138,9 @@ function resolveOptions(options: Option[] | string[], scope: string): Option[] {
 }
 
 function resolveFields(specs: FieldSpecs, scope: string): Field[] {
-  return Object.entries(specs).map(([key, spec]) => resolveField(spec, key, `${scope}.fields.${key === '*' ? 'entries' : keySegment(key)}`));
+  return Object.entries(specs).map(([key, spec]) =>
+    resolveField(spec, key, `${scope}.fields.${key === '*' ? 'entries' : keySegment(key)}`),
+  );
 }
 
 /**

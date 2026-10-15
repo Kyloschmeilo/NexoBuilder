@@ -48,7 +48,15 @@ export function collectArmorSets(items: Item[], targetVersion: string, issues: I
       report('error', 'plan.armorSetIdInvalid', { set: setId });
       continue;
     }
-    const set: ArmorSet = sets.get(setId) ?? { id: setId, textures: new Map(), groups: new Set(), slot: null, entities: [], glider: false, items: [] };
+    const set: ArmorSet = sets.get(setId) ?? {
+      id: setId,
+      textures: new Map(),
+      groups: new Set(),
+      slot: null,
+      entities: [],
+      glider: false,
+      items: [],
+    };
     sets.set(setId, set);
     set.items.push(item);
     for (const layer of ARMOR_LAYERS) {
@@ -80,7 +88,13 @@ export function collectArmorSets(items: Item[], targetVersion: string, issues: I
 function finishSet(set: ArmorSet, issues: Issue[]): void {
   if (set.textures.size === 0) {
     for (const item of set.items) {
-      issues.push({ level: 'error', code: 'plan.armorSetWithoutTexture', args: { set: set.id }, target: itemTarget(item), context: [itemFrame(item)] });
+      issues.push({
+        level: 'error',
+        code: 'plan.armorSetWithoutTexture',
+        args: { set: set.id },
+        target: itemTarget(item),
+        context: [itemFrame(item)],
+      });
     }
     return;
   }

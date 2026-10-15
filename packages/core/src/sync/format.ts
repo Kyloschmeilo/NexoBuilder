@@ -78,7 +78,13 @@ function listOf(project: Project, kind: ListKind): ReadonlyArray<ListEntry> {
 }
 
 const DIRS = { folder: 'folders', item: 'items', glyph: 'glyphs', sound: 'sounds', painting: 'paintings' } as const;
-const KIND_BY_DIR: Record<string, Exclude<EntityKind, 'project'>> = { folders: 'folder', items: 'item', glyphs: 'glyph', sounds: 'sound', paintings: 'painting' };
+const KIND_BY_DIR: Record<string, Exclude<EntityKind, 'project'>> = {
+  folders: 'folder',
+  items: 'item',
+  glyphs: 'glyph',
+  sounds: 'sound',
+  paintings: 'painting',
+};
 
 /** Allowed IDs for file names (everything ResourcepackBuilder generates itself). */
 const ENTITY_ID_PATTERN = /^[A-Za-z0-9_-]{1,64}$/;
@@ -277,7 +283,8 @@ function withData(head: EnvelopeHead, kind: EntityKind, data: unknown): Envelope
     case 'folder':
       return isFolder(data) ? { ...head, kind, data } : null;
     case 'item': {
-      const item = typeof data.nexoId === 'string' && typeof data.folderId === 'string' && isPlainObject(data.config) ? migrateItem(data) : null;
+      const item =
+        typeof data.nexoId === 'string' && typeof data.folderId === 'string' && isPlainObject(data.config) ? migrateItem(data) : null;
       return item ? { ...head, kind, data: item } : null;
     }
     case 'glyph':

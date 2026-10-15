@@ -33,7 +33,12 @@ describe('import drafts', () => {
   it('combines PNGs with a common name into one block model', () => {
     const drafts = createDrafts([png('log_end.png'), png('log_side.png')]);
     expect(drafts).toHaveLength(1);
-    expect(drafts[0]).toMatchObject({ kind: 'png', name: 'Log', template: 'cube_column', assignment: { end: 'log_end.png', side: 'log_side.png' } });
+    expect(drafts[0]).toMatchObject({
+      kind: 'png',
+      name: 'Log',
+      template: 'cube_column',
+      assignment: { end: 'log_end.png', side: 'log_side.png' },
+    });
   });
 
   it('keeps unrelated PNGs separate unless asked to combine them', () => {
@@ -49,6 +54,8 @@ describe('import drafts', () => {
   });
 
   it('lists files no importer can use', () => {
-    expect(unsupportedFiles([png('a.png'), { name: 'a.png.mcmeta', text: '{}' }, { name: 'notes.txt', text: '' }]).map((f) => f.name)).toEqual(['notes.txt']);
+    expect(
+      unsupportedFiles([png('a.png'), { name: 'a.png.mcmeta', text: '{}' }, { name: 'notes.txt', text: '' }]).map((f) => f.name),
+    ).toEqual(['notes.txt']);
   });
 });

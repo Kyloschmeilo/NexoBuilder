@@ -1,7 +1,12 @@
 import { useMemo } from 'react';
 import { useTranslations } from 'next-intl';
 import type { Project } from '@resourcepackbuilder/core/project/types';
-import { INGREDIENT_SOURCES, MAX_INGREDIENT_AMOUNT, type IngredientSource, type RecipeIngredient } from '@resourcepackbuilder/core/nexo/recipes/model';
+import {
+  INGREDIENT_SOURCES,
+  MAX_INGREDIENT_AMOUNT,
+  type IngredientSource,
+  type RecipeIngredient,
+} from '@resourcepackbuilder/core/nexo/recipes/model';
 import { CRAFTING_MATERIALS, ITEM_TAGS } from '@resourcepackbuilder/core/nexo/options';
 import { itemLabel } from '@resourcepackbuilder/core/project/labels';
 import { NativeSelect, NativeSelectOption } from '@resourcepackbuilder/ui/components/native-select';

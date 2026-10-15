@@ -96,9 +96,9 @@ function generate(zip: JSZip): Promise<Uint8Array> {
 }
 
 function exportFileName(multi: MultiExportPlan, mode: ExportMode): string {
-  const base = multi.projects.length === 1 ? exportPackName(multi.projects[0].project) : `resourcepackbuilder_${multi.projects.length}_projects`;
+  const base =
+    multi.projects.length === 1 ? exportPackName(multi.projects[0].project) : `resourcepackbuilder_${multi.projects.length}_projects`;
   if (mode === 'pack') return multi.projects.length === 1 ? `${base}.zip` : `${base}_packs.zip`;
   if (mode === 'items') return `${base}_items.zip`;
   return `${base}_nexo.zip`;
 }
-

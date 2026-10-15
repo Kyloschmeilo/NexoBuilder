@@ -9,7 +9,13 @@ import { uid } from '../project/ids';
 import { fileBaseName, prettyNameFromFile } from '../text';
 import { convertBBModel } from './bbmodel';
 import { convertJavaModel } from './javaModel';
-import { createTextureModel, DEFAULT_TEXTURE_TEMPLATE, getTextureTemplate, suggestSlotAssignment, type TextureTemplateId } from './textureModel';
+import {
+  createTextureModel,
+  DEFAULT_TEXTURE_TEMPLATE,
+  getTextureTemplate,
+  suggestSlotAssignment,
+  type TextureTemplateId,
+} from './textureModel';
 import { normalizeTextureName } from './textures';
 import type { ImportedModel, ImportFile, ModelSource } from './types';
 
@@ -95,7 +101,8 @@ export function runDraft(input: DraftInput): ImportDraft {
   try {
     draft.model = convert(draft);
   } catch (err) {
-    draft.error = err instanceof CoreError ? err : new CoreError('model.conversionFailed', { error: err instanceof Error ? err.message : String(err) });
+    draft.error =
+      err instanceof CoreError ? err : new CoreError('model.conversionFailed', { error: err instanceof Error ? err.message : String(err) });
   }
   return draft;
 }
@@ -105,7 +112,11 @@ function convert(draft: ImportDraft): ImportedModel {
     case 'bbmodel': {
       const bb = draft.files.find(isBBModelFile);
       if (!bb) throw new CoreError('model.noBlockbenchModel', { file: draft.name });
-      return convertBBModel(bb.text ?? '', bb.name, draft.files.filter((f) => f !== bb));
+      return convertBBModel(
+        bb.text ?? '',
+        bb.name,
+        draft.files.filter((f) => f !== bb),
+      );
     }
     case 'json':
       return convertJavaModel(draft.files);

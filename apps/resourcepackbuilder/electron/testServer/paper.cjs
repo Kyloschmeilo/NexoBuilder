@@ -65,7 +65,10 @@ async function ensurePaper(version) {
     // the estimate is good enough
   }
 
-  const name = typeof serverDownload.name === 'string' && /^[\w.-]+\.jar$/.test(serverDownload.name) ? serverDownload.name : `paper-${version}-${build}.jar`;
+  const name =
+    typeof serverDownload.name === 'string' && /^[\w.-]+\.jar$/.test(serverDownload.name)
+      ? serverDownload.name
+      : `paper-${version}-${build}.jar`;
   const jarPath = path.join(downloadsDir(), name);
   if (!fs.existsSync(jarPath)) {
     logInfo(t('testServer.downloadingPaper', { version, build }));

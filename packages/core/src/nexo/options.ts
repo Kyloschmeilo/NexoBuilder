@@ -232,11 +232,7 @@ export const ATTRIBUTES = plainOptions([
   'WAYPOINT_TRANSMIT_RANGE',
 ]);
 
-export const ATTRIBUTE_OPERATIONS = labeled('attributeOperations', [
-  'ADD_NUMBER',
-  'ADD_SCALAR',
-  'MULTIPLY_SCALAR_1',
-]);
+export const ATTRIBUTE_OPERATIONS = labeled('attributeOperations', ['ADD_NUMBER', 'ADD_SCALAR', 'MULTIPLY_SCALAR_1']);
 
 /** EquipmentSlotGroup */
 export const ATTRIBUTE_SLOTS = labeled('attributeSlots', [
@@ -356,7 +352,20 @@ export const POTION_EFFECTS = plainOptions([
   'wither',
 ]);
 
-export const CONSUME_ANIMATIONS = plainOptions(['EAT', 'DRINK', 'NONE', 'BLOCK', 'BOW', 'SPEAR', 'TRIDENT', 'CROSSBOW', 'SPYGLASS', 'TOOT_HORN', 'BRUSH', 'BUNDLE']);
+export const CONSUME_ANIMATIONS = plainOptions([
+  'EAT',
+  'DRINK',
+  'NONE',
+  'BLOCK',
+  'BOW',
+  'SPEAR',
+  'TRIDENT',
+  'CROSSBOW',
+  'SPYGLASS',
+  'TOOT_HORN',
+  'BRUSH',
+  'BUNDLE',
+]);
 
 export const SWING_ANIMATIONS = plainOptions(['WHACK', 'STAB', 'NONE']);
 
@@ -387,28 +396,14 @@ export const DISPLAY_TRANSFORMS = plainOptions([
   'FIRSTPERSON_RIGHTHAND',
 ]);
 
-export const TRACKING_ROTATIONS = labeled('trackingRotations', [
-  'FIXED',
-  'VERTICAL',
-  'HORIZONTAL',
-  'CENTER',
-]);
+export const TRACKING_ROTATIONS = labeled('trackingRotations', ['FIXED', 'VERTICAL', 'HORIZONTAL', 'CENTER']);
 
 export const TOOL_TIERS = plainOptions(['WOODEN', 'STONE', 'IRON', 'GOLDEN', 'DIAMOND', 'NETHERITE']);
 export const TOOL_TYPES = plainOptions(['PICKAXE', 'AXE', 'SHOVEL', 'HOE', 'SWORD']);
 
-export const STORAGE_TYPES = labeled('storageTypes', [
-  'STORAGE',
-  'PERSONAL',
-  'ENDERCHEST',
-  'DISPOSAL',
-]);
+export const STORAGE_TYPES = labeled('storageTypes', ['STORAGE', 'PERSONAL', 'ENDERCHEST', 'DISPOSAL']);
 
-export const CUSTOM_BLOCK_TYPES = labeled('customBlockTypes', [
-  'NOTEBLOCK',
-  'STRINGBLOCK',
-  'CHORUSBLOCK',
-]);
+export const CUSTOM_BLOCK_TYPES = labeled('customBlockTypes', ['NOTEBLOCK', 'STRINGBLOCK', 'CHORUSBLOCK']);
 
 export const BLOCKLOCKER_TYPES = plainOptions(['CONTAINER', 'DOOR', 'ATTACHABLE']);
 

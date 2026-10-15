@@ -213,10 +213,14 @@ async function step(name, fn) {
       await win.locator('.tree-row', { hasText: 'Testserver' }).click();
       await win.getByRole('heading', { name: 'Testserver' }).waitFor();
       // Version list loaded from PaperMC and a version selected
-      await win.waitForFunction(() => {
-        const select = document.querySelector('.editor select');
-        return !!(select && select.value);
-      }, null, { timeout: 60000 });
+      await win.waitForFunction(
+        () => {
+          const select = document.querySelector('.editor select');
+          return !!(select && select.value);
+        },
+        null,
+        { timeout: 60000 },
+      );
       console.log('     Version:', await win.locator('.editor select').first().inputValue());
       await win.getByPlaceholder('z.B. Kylo').fill('NexoTest');
       await win.getByPlaceholder('z.B. Kylo').blur();
@@ -239,7 +243,10 @@ async function step(name, fn) {
       const input = win.locator('.console-input input');
       await input.fill('say ResourcepackBuilder-console-test');
       await input.press('Enter');
-      await win.locator('.server-console .console-line:not(.info)', { hasText: 'ResourcepackBuilder-console-test' }).first().waitFor({ timeout: 60000 });
+      await win
+        .locator('.server-console .console-line:not(.info)', { hasText: 'ResourcepackBuilder-console-test' })
+        .first()
+        .waitFor({ timeout: 60000 });
     });
     await step('Stop test server', async () => {
       await win.getByRole('button', { name: 'Stoppen' }).click();

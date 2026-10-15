@@ -30,7 +30,9 @@ const USAGE = [
 
 /** Guide for the export; `rootFiles` are the shared sounds.yml/paintings.yml of the archive. */
 export function installGuide(multi: MultiExportPlan, rootFiles: Map<string, string>): string {
-  return multi.projects.length === 1 ? singleGuide(multi.projects[0].project, multi.projects[0].plan, rootFiles) : multiGuide(multi, rootFiles);
+  return multi.projects.length === 1
+    ? singleGuide(multi.projects[0].project, multi.projects[0].plan, rootFiles)
+    : multiGuide(multi, rootFiles);
 }
 
 function singleGuide(project: Project, plan: ExportPlan, rootFiles: Map<string, string>): string {

@@ -27,7 +27,12 @@ export function readTextureEntries(textures: BBTexture[], extraFiles: ImportFile
       issues.push({ level: 'error', code: 'model.textureNotPng', args: { name: displayName } });
     }
     if (!dataUrl) {
-      const match = findPngByName(extraFiles, tex.name, tex.path && fileBaseName(tex.path), tex.relative_path && fileBaseName(tex.relative_path));
+      const match = findPngByName(
+        extraFiles,
+        tex.name,
+        tex.path && fileBaseName(tex.path),
+        tex.relative_path && fileBaseName(tex.relative_path),
+      );
       dataUrl = match?.dataUrl;
     }
     return { tex, index, displayName, key: keys[index], dataUrl };

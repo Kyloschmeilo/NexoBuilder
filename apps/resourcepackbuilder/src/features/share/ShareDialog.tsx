@@ -146,7 +146,9 @@ function SharedProject({ shareSync }: { shareSync: ShareSync }) {
         <FieldTitle>{t('sharedFolder')}</FieldTitle>
         <div className="flex items-center gap-2">
           <Tip label={share.folder}>
-            <code className="min-w-0 flex-1 truncate rounded-md border border-border bg-muted px-2 py-1.5 font-mono text-xs">{share.folder}</code>
+            <code className="min-w-0 flex-1 truncate rounded-md border border-border bg-muted px-2 py-1.5 font-mono text-xs">
+              {share.folder}
+            </code>
           </Tip>
           <Button variant="outline" size="sm" onClick={shareSync.openFolder}>
             <FolderOpen /> {t('openFolder')}

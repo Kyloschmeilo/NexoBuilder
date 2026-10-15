@@ -104,7 +104,8 @@ async function checkFolder(folder) {
  * @param {unknown} relativePath
  */
 async function filePath(folder, relativePath) {
-  if (typeof relativePath !== 'string' || !FILE_PATTERN.test(relativePath)) throw new Error(t('share.invalidFile', { file: String(relativePath) }));
+  if (typeof relativePath !== 'string' || !FILE_PATTERN.test(relativePath))
+    throw new Error(t('share.invalidFile', { file: String(relativePath) }));
   const dir = await checkFolder(folder);
   const target = path.join(dir, ...relativePath.split('/'));
   // An entity folder could be a link pointing outside the shared folder

@@ -93,7 +93,9 @@ describe('Export of multiple projects', () => {
     const result = await buildMultiExportZip(multi, 'full');
     expect(result.fileName).toBe('resourcepackbuilder_2_projects_nexo.zip');
     const zip = await JSZip.loadAsync(result.data);
-    const files = Object.keys(zip.files).filter((f) => !zip.files[f].dir).sort();
+    const files = Object.keys(zip.files)
+      .filter((f) => !zip.files[f].dir)
+      .sort();
     expect(files).toEqual(paths);
     const guide = await zip.file(INSTALL_GUIDE_FILE)!.async('string');
     expect(guide).toContain('Project "Waffen Pack"');

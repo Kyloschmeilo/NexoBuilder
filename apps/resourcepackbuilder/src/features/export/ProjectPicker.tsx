@@ -70,7 +70,9 @@ export function ProjectPicker({
                   {t('open')}
                 </Badge>
               )}
-              <span className={COUNT_CLASS}>{isIncluded && !project ? <Spinner className="size-3.5" /> : selectionSummary(choice, selection, isIncluded)}</span>
+              <span className={COUNT_CLASS}>
+                {isIncluded && !project ? <Spinner className="size-3.5" /> : selectionSummary(choice, selection, isIncluded)}
+              </span>
             </GroupRow>
             {isExpanded && project && (
               <SelectionTree project={project} selection={selection} onChange={(next) => onSelectionChange(summary.id, next)} />

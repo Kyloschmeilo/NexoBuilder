@@ -10,15 +10,7 @@ import { createTexture, findMcmetaFor } from './textures';
 import type { ImportedModel, ImportFile, JavaModelJson, ModelTexture } from './types';
 
 export type TextureTemplateId =
-  | 'generated'
-  | 'handheld'
-  | 'handheld_rod'
-  | 'cube_all'
-  | 'cube_column'
-  | 'cube_bottom_top'
-  | 'orientable'
-  | 'cube'
-  | 'cross';
+  'generated' | 'handheld' | 'handheld_rod' | 'cube_all' | 'cube_column' | 'cube_bottom_top' | 'orientable' | 'cube' | 'cross';
 
 export interface TextureTemplate {
   id: TextureTemplateId;
@@ -163,11 +155,7 @@ export function suggestSlotAssignment(template: TextureTemplate, pngs: ImportFil
   return result;
 }
 
-export function createTextureModel(
-  templateId: TextureTemplateId,
-  assignment: Record<string, string>,
-  files: ImportFile[],
-): ImportedModel {
+export function createTextureModel(templateId: TextureTemplateId, assignment: Record<string, string>, files: ImportFile[]): ImportedModel {
   const template = getTextureTemplate(templateId);
   const pngs = files.filter((f) => isPngDataUrl(f.dataUrl));
   if (pngs.length === 0) throw new CoreError('model.noPngDropped');

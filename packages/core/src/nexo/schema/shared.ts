@@ -46,7 +46,10 @@ export const potionEffect = {
 export const consumeEffectsField = (label: string) =>
   field.object(
     {
-      APPLY_EFFECTS: field.map(potionEffect.consumable, { keyOptions: POTION_EFFECTS, newValue: () => ({ duration: '10s', amplifier: 0 }) }),
+      APPLY_EFFECTS: field.map(potionEffect.consumable, {
+        keyOptions: POTION_EFFECTS,
+        newValue: () => ({ duration: '10s', amplifier: 0 }),
+      }),
       REMOVE_EFFECTS: field.stringList({ suggestions: POTION_EFFECTS, placeholder: true }),
       CLEAR_ALL_EFFECTS: field.presence(),
       TELEPORT_RANDOMLY: field.object({ diameter: field.number({ min: 0, step: 1, placeholder: true }) }),

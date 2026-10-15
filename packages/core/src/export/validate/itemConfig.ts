@@ -39,7 +39,8 @@ export function validateItemConfig(itemExport: ItemExport, { config, usedVariati
     if (value === undefined) continue;
     const frame = propertyFrame(def.label);
     const support = versionSupport(targetVersion, def);
-    if (support === 'tooOld') report('warning', 'plan.propertyNeedsVersion', { version: def.minVersion ?? '', target: targetVersion }, [frame]);
+    if (support === 'tooOld')
+      report('warning', 'plan.propertyNeedsVersion', { version: def.minVersion ?? '', target: targetVersion }, [frame]);
     if (support === 'removed') report('warning', 'plan.propertyRemoved', { version: def.maxVersion ?? '' }, [frame]);
     for (const conflict of def.conflicts ?? []) {
       const other = PROPERTIES.find((p) => p.id === conflict);

@@ -1,4 +1,14 @@
-import { ChevronDown, ChevronRight, ClipboardPaste, Folder as FolderIcon, FolderOpen, FolderPlus, Pencil, Plus, Trash2 } from 'lucide-react';
+import {
+  ChevronDown,
+  ChevronRight,
+  ClipboardPaste,
+  Folder as FolderIcon,
+  FolderOpen,
+  FolderPlus,
+  Pencil,
+  Plus,
+  Trash2,
+} from 'lucide-react';
 import { useTranslations } from 'next-intl';
 import { cn } from 'cn';
 import { itemIdsInFolder } from '@resourcepackbuilder/core/project/tree';
@@ -13,7 +23,15 @@ import { clipboardLabel, useClipboardStore } from '../../store/clipboard';
 import { openDialog } from '../../store/dialogs';
 import { select, setExpanded, useUiStore } from '../../store/ui';
 import { ItemNode } from './ItemNode';
-import { FOLDER_ICON_PADDING_PX, FOLDER_PADDING_PX, INDENT_PX, ROW_BADGE_CLASS, ROW_BUTTON_CLASS, ROW_ICON_CLASS, ROW_LABEL_CLASS } from './rowStyles';
+import {
+  FOLDER_ICON_PADDING_PX,
+  FOLDER_PADDING_PX,
+  INDENT_PX,
+  ROW_BADGE_CLASS,
+  ROW_BUTTON_CLASS,
+  ROW_ICON_CLASS,
+  ROW_LABEL_CLASS,
+} from './rowStyles';
 import type { SidebarTree } from './treeIndex';
 import { activateOnKey, TreeRow } from './TreeRow';
 import { DRAG_FILES, DRAG_FOLDER, DRAG_ITEM, useDropTarget } from './useDropTarget';

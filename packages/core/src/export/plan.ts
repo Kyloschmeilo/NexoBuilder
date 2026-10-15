@@ -34,11 +34,19 @@ export function planExport(project: Project, options: PlanOptions = {}): ExportP
   writeArmorSets(writer, project, armorSets);
 
   const usedVariations = new Map<string, Item>();
-  const plans = items.map((item) => planItem(project, item, writer, issues, { armor: itemArmor(item, project, armorSets), usedVariations }));
+  const plans = items.map((item) =>
+    planItem(project, item, writer, issues, { armor: itemArmor(item, project, armorSets), usedVariations }),
+  );
 
   const itemFiles = new Map<string, string>();
   for (const [file, list] of groupBy(plans, (p) => p.yamlFile)) {
-    itemFiles.set(file, itemsToYaml(list.map((p) => ({ id: p.item.nexoId, config: p.config })), `project "${project.name}"`));
+    itemFiles.set(
+      file,
+      itemsToYaml(
+        list.map((p) => ({ id: p.item.nexoId, config: p.config })),
+        `project "${project.name}"`,
+      ),
+    );
   }
 
   writer.json('pack.mcmeta', buildPackMcmeta(project.settings.minecraftVersion, project.settings.packDescription || project.name));

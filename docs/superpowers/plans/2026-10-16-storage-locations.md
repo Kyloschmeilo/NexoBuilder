@@ -7,6 +7,7 @@ landed, so file names are final. Branch `ammo-rework`; each workstream commits i
 ## Phase A (parallel)
 
 ### S1 – `packages/s3` (owns `packages/s3/**`, root lockfile changes for its deps)
+
 1. Package scaffold (TS, vitest, lint, typecheck scripts, turbo), deps `@aws-sdk/client-s3`, `@aws-sdk/lib-storage`,
    dev `aws-sdk-client-mock`, `esbuild`.
 2. API per spec (client factory with endpoint/region/forcePathStyle/credentials, list (paginated), get text/bytes,
@@ -15,14 +16,15 @@ landed, so file names are final. Branch `ammo-rework`; each workstream commits i
 3. Tests with client mock; `build` script → `dist/s3.cjs` self-contained bundle; README section.
 
 ### S2 – core (owns `packages/core/src/storage/**` (new) and `exportFileMap` in `packages/core/src/export/**`)
+
 1. `StorageLocation`, `RemoteRef`, `ExportDestination` types + validation (bucket names, prefixes, key templates
    `{project}`/`{namespace}`, folder paths non-empty) + tests.
 2. `exportFileMap(plan, options)` returning `{ path, bytes, contentType }[]`; zip built from it (tests prove identical
    zip contents).
 3. Issue/error codes for storage in `issues.json` (en + de).
 
-### S3 – Electron + contract (owns `apps/resourcepackbuilder/electron/**`, `src/platform/desktopApi.ts`,
-`electron-builder.yml`, app `package.json` scripts, `packages/i18n/src/messages/*/desktop.json`)
+### S3 – Electron + contract (owns `apps/resourcepackbuilder/electron/**`, `src/platform/desktopApi.ts`, `electron-builder.yml`, app `package.json` scripts, `packages/i18n/src/messages/*/desktop.json`)
+
 1. Contract additions from the spec (types written first so S4 can start against them).
 2. `storage/connections.cjs` (safeStorage, JSON store, no plaintext fallback), `storage/folderBackend.cjs` (from
    `share.cjs`), `storage/s3Backend.cjs` (SyncFs + inspect over the S1 bundle — until S1 lands, code against its
@@ -32,8 +34,8 @@ landed, so file names are final. Branch `ammo-rework`; each workstream commits i
    electron-builder includes it; turbo `build`/`dist:win` depend on `@resourcepackbuilder/s3#build`.
 4. Tests for path/key confinement and the connections store (fake safeStorage); checkJs green.
 
-## Phase B – app (S4, after A; owns `apps/resourcepackbuilder/src/**`, `packages/i18n/src/messages/*/storage.json` +
-registration)
+## Phase B – app (S4, after A; owns `apps/resourcepackbuilder/src/**`, `packages/i18n/src/messages/*/storage.json` + registration)
+
 1. Repository: location + export destinations + last destination per project; `ShareConfig` migration.
 2. `storageSync` service generalising `shareSync` (backend per location, watch vs poll with focus-aware interval,
    backoff, status); remove the share-specific service/store/naming where superseded.
@@ -44,6 +46,7 @@ registration)
 4. `storage` namespace (en + de). Tests per spec. Typecheck/lint/tests/build green.
 
 ## Phase C – coordinator
+
 Integration fixes, full test/lint run, Electron smoke test (connections store, folder project, folder export; S3
 against MinIO if Docker is available, otherwise document the manual test), browser walkthrough of the new settings/
 dialogs in en/de light/dark, README + CHANGELOG, commit.

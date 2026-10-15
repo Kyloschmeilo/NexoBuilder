@@ -1,4 +1,12 @@
-import { CONSUME_ANIMATIONS, DAMAGE_TYPE_TAGS, EQUIPPABLE_SLOTS, MATERIALS, plainOptions, SWING_ANIMATIONS, VANILLA_COMPONENTS } from '../options';
+import {
+  CONSUME_ANIMATIONS,
+  DAMAGE_TYPE_TAGS,
+  EQUIPPABLE_SLOTS,
+  MATERIALS,
+  plainOptions,
+  SWING_ANIMATIONS,
+  VANILLA_COMPONENTS,
+} from '../options';
 import { field, properties } from './build';
 import { consumeEffectsField, soundField } from './shared';
 

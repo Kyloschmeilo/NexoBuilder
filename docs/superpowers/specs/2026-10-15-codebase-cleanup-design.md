@@ -16,7 +16,7 @@ The vendored shadcn components stay complete (the user asked for all of them) ev
 Five read-only audits (app state/shell, app views, ui/preview/i18n packages, core export/model/sync, core nexo +
 Electron + repo config) found, in short:
 
-- **App shell:** one god store mixing project/history with UI state; dialogs stored as data *with callbacks*;
+- **App shell:** one god store mixing project/history with UI state; dialogs stored as data _with callbacks_;
   `DialogHost` is a two-stage switch without exhaustiveness; `MainArea` is an if/else chain on selection kinds that are
   listed in three places; controllers (autosave, share, test server) are started from a component via a module latch;
   module-level mutable singletons everywhere; `plan` prop-drilled into every view; ~18 `useStore(s => s.project)!`.
@@ -42,13 +42,13 @@ Electron + repo config) found, in short:
 
 ### Packages
 
-| Package | Owns | Depends on |
-|---|---|---|
-| `core` | Domain model, Nexo schema, import (models, importer drafts), export plan/zip, sync, test-server files, MiniMessage parser, issue/error types. No DOM, no React. | – |
-| `i18n` | Catalogues (incl. new `desktop` namespace), locales, `Messages`/key types, parity check (subpath). | – |
-| `ui` | Vendored shadcn components, theme (`styles.css`, fonts) and **generic** shared components (Tip, IconButton, SectionLabel, StatusDot/StatusBadge + `Tone`, Thumb, DropZone, CopyButton, CollapsibleSection, PageHeader…). No `core` dependency, no app catalogue namespaces except `ui`/`common`. | i18n (types) |
-| `preview` | three.js preview + thumbnails; exports only `ModelPreview`, `useThumbnail`. Geometry helpers that are pure move to core. | core, ui |
-| `config` | Shared tsconfig bases (incl. a `node`/`electron` base that is actually used). | – |
+| Package   | Owns                                                                                                                                                                                                                                                                                             | Depends on   |
+| --------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ | ------------ |
+| `core`    | Domain model, Nexo schema, import (models, importer drafts), export plan/zip, sync, test-server files, MiniMessage parser, issue/error types. No DOM, no React.                                                                                                                                  | –            |
+| `i18n`    | Catalogues (incl. new `desktop` namespace), locales, `Messages`/key types, parity check (subpath).                                                                                                                                                                                               | –            |
+| `ui`      | Vendored shadcn components, theme (`styles.css`, fonts) and **generic** shared components (Tip, IconButton, SectionLabel, StatusDot/StatusBadge + `Tone`, Thumb, DropZone, CopyButton, CollapsibleSection, PageHeader…). No `core` dependency, no app catalogue namespaces except `ui`/`common`. | i18n (types) |
+| `preview` | three.js preview + thumbnails; exports only `ModelPreview`, `useThumbnail`. Geometry helpers that are pure move to core.                                                                                                                                                                         | core, ui     |
+| `config`  | Shared tsconfig bases (incl. a `node`/`electron` base that is actually used).                                                                                                                                                                                                                    | –            |
 
 Nexo-aware React components (FieldRenderer + editors, IssueList, MiniMessage view, YamlView) move from `ui` into the
 app (`src/components/`), since only the app uses them.

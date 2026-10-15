@@ -3,7 +3,12 @@ import { useMemo, useState } from 'react';
 import { useTranslations } from 'next-intl';
 import { ClipboardPaste } from 'lucide-react';
 import { selectFromProject } from '@resourcepackbuilder/core/export/selection';
-import { COPY_CATEGORIES, summarizeClipboard, type CopyCategory, type ItemConfigClipboard } from '@resourcepackbuilder/core/nexo/copyConfig';
+import {
+  COPY_CATEGORIES,
+  summarizeClipboard,
+  type CopyCategory,
+  type ItemConfigClipboard,
+} from '@resourcepackbuilder/core/nexo/copyConfig';
 import { SectionLabel } from '@resourcepackbuilder/ui';
 import { Button } from '@resourcepackbuilder/ui/components/button';
 import { pasteItemProperties } from '../../commands/clipboard';

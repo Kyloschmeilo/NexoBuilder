@@ -187,7 +187,8 @@ describe('message key derivation', () => {
 
   it('derives option, variant and armor layer labels from their values', () => {
     for (const option of options.ATTRIBUTE_SLOTS) expect(option.label).toBe(`options.attributeSlots.${keySegment(option.value)}.label`);
-    for (const def of [...VARIANTS, ...FURNITURE_MODEL_SLOTS, STACK_MODELS]) expect(def.label).toBe(`variants.${keySegment(def.slot)}.label`);
+    for (const def of [...VARIANTS, ...FURNITURE_MODEL_SLOTS, STACK_MODELS])
+      expect(def.label).toBe(`variants.${keySegment(def.slot)}.label`);
     for (const layer of ARMOR_LAYERS) expect(layer.label).toBe(`armor.layers.${keySegment(layer.key)}`);
   });
 });

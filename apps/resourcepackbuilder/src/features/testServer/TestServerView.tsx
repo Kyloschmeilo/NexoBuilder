@@ -70,7 +70,9 @@ function TestServerPage({ server }: { server: TestServerState }) {
               </Badge>
             )}
             {server.status === 'running' && server.startedAt !== null && (
-              <Badge variant="secondary">{t('since', { time: format.dateTime(new Date(server.startedAt), { timeStyle: 'medium' }) })}</Badge>
+              <Badge variant="secondary">
+                {t('since', { time: format.dateTime(new Date(server.startedAt), { timeStyle: 'medium' }) })}
+              </Badge>
             )}
           </>
         }

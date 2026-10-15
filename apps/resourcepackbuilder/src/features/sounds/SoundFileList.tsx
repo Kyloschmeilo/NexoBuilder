@@ -24,7 +24,11 @@ export function SoundFileList({ sound }: { sound: Sound }) {
 
   const addFiles = async () => {
     const entries = await readFiles(await pickFiles(SOUND_ACCEPT));
-    if (entries.length) addSoundFiles(sound.id, entries.map((entry) => entry.file));
+    if (entries.length)
+      addSoundFiles(
+        sound.id,
+        entries.map((entry) => entry.file),
+      );
   };
 
   return (

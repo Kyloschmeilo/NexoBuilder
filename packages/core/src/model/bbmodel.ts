@@ -24,7 +24,16 @@ import { createTexture, findMcmetaFor } from './textures';
 import type { ImportedModel, ImportFile, JavaModelJson, ModelTexture } from './types';
 
 /** Formats whose origin is in the center (Blockbench: centered_grid). */
-const CENTERED_FORMATS = new Set(['free', 'bedrock', 'bedrock_block', 'bedrock_old', 'modded_entity', 'optifine_entity', 'optifine_part', 'skin']);
+const CENTERED_FORMATS = new Set([
+  'free',
+  'bedrock',
+  'bedrock_block',
+  'bedrock_old',
+  'modded_entity',
+  'optifine_entity',
+  'optifine_part',
+  'skin',
+]);
 /** Formats with their own UV size per texture (Blockbench: per_texture_uv_size). */
 const PER_TEXTURE_UV_FORMATS = new Set(['free', 'optifine_entity', 'optifine_part', 'image']);
 
@@ -66,9 +75,12 @@ export function convertBBModel(text: string, fileName: string, extraFiles: Impor
     usesShadeOverride: !!javaVersion && compareVersions(javaVersion, SHADE_OVERRIDE_SINCE) >= 0,
   });
   const { elements } = converted;
-  if (converted.skippedNonCubes > 0) issues.push({ level: 'warning', code: 'model.skippedNonCubes', args: { count: converted.skippedNonCubes } });
-  if (converted.facesWithoutTexture > 0) issues.push({ level: 'warning', code: 'model.facesWithoutTexture', args: { count: converted.facesWithoutTexture } });
-  if (converted.invalidUvRotations > 0) issues.push({ level: 'error', code: 'model.invalidUvRotation', args: { count: converted.invalidUvRotations } });
+  if (converted.skippedNonCubes > 0)
+    issues.push({ level: 'warning', code: 'model.skippedNonCubes', args: { count: converted.skippedNonCubes } });
+  if (converted.facesWithoutTexture > 0)
+    issues.push({ level: 'warning', code: 'model.facesWithoutTexture', args: { count: converted.facesWithoutTexture } });
+  if (converted.invalidUvRotations > 0)
+    issues.push({ level: 'error', code: 'model.invalidUvRotation', args: { count: converted.invalidUvRotations } });
   if (!isJava && hasRotatedGroups(model.outliner)) issues.push({ level: 'warning', code: 'model.rotatedGroups' });
 
   /* ------------------------------------------------------------ Textures */

@@ -108,11 +108,19 @@ export function validateTexture(texture: ModelTexture): Issue[] {
       });
     }
   } else if (texture.width !== texture.height && texture.height % texture.width === 0 && texture.height > texture.width) {
-    issues.push({ level: 'info', code: 'texture.maybeAnimation', args: { name: texture.name, width: texture.width, height: texture.height } });
+    issues.push({
+      level: 'info',
+      code: 'texture.maybeAnimation',
+      args: { name: texture.name, width: texture.width, height: texture.height },
+    });
   }
   const isPowerOfTwo = (n: number) => n > 0 && (n & (n - 1)) === 0;
   if (!isPowerOfTwo(texture.width) || !isPowerOfTwo(texture.height)) {
-    issues.push({ level: 'info', code: 'texture.notPowerOfTwo', args: { name: texture.name, width: texture.width, height: texture.height } });
+    issues.push({
+      level: 'info',
+      code: 'texture.notPowerOfTwo',
+      args: { name: texture.name, width: texture.width, height: texture.height },
+    });
   }
   return issues;
 }

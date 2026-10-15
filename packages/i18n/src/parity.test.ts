@@ -31,8 +31,6 @@ describe('messageParityErrors', () => {
   it('reports an argument missing inside a plural branch', () => {
     const english = { locked: '{count, plural, other {Locked {when}}}' };
     const german = { locked: '{count, plural, other {Gesperrt}}' };
-    expect(messageParityErrors(english, german)).toEqual([
-      { path: 'locked', reason: 'argument_mismatch' },
-    ]);
+    expect(messageParityErrors(english, german)).toEqual([{ path: 'locked', reason: 'argument_mismatch' }]);
   });
 });

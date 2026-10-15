@@ -70,10 +70,12 @@ export function getRecipeTypeInfo(type: RecipeType): RecipeTypeInfo {
 }
 
 /** `label` is a message key in the `schema` namespace. */
-export const INGREDIENT_SOURCES: Array<{ value: IngredientSource; label: string }> = (['minecraft', 'nexo', 'tag'] as const).map((value) => ({
-  value,
-  label: `recipes.sources.${value}`,
-}));
+export const INGREDIENT_SOURCES: Array<{ value: IngredientSource; label: string }> = (['minecraft', 'nexo', 'tag'] as const).map(
+  (value) => ({
+    value,
+    label: `recipes.sources.${value}`,
+  }),
+);
 
 export const INGREDIENT_LETTERS = 'ABCDEFGHI'.split('');
 

@@ -94,11 +94,20 @@ describe('sounds and paintings', () => {
     expect(multi.issues.filter((i) => i.level === 'error' && !i.projectId)).toEqual([]);
     const zip = await JSZip.loadAsync((await buildMultiExportZip(multi, 'full')).data);
     const sounds = parse(await zip.file('sounds.yml')!.async('string')).sounds as Array<{ id: string }>;
-    expect(sounds.map((s) => s.id)).toEqual(['klang:block.glocke.ding', 'klang:music.lied', 'andere:block.glocke.ding', 'andere:music.lied']);
+    expect(sounds.map((s) => s.id)).toEqual([
+      'klang:block.glocke.ding',
+      'klang:music.lied',
+      'andere:block.glocke.ding',
+      'andere:music.lied',
+    ]);
 
     const same = planMultiExport([{ project: a }, { project: mediaProject('Kopie', 'klang') }]);
-    expect(same.issues.some((i) => issueCodes(i).includes('selection.soundIdClash') && JSON.stringify(i).includes('klang:music.lied'))).toBe(true);
-    expect(same.issues.some((i) => issueCodes(i).includes('selection.paintingIdClash') && JSON.stringify(i).includes('klang:sonne'))).toBe(true);
+    expect(
+      same.issues.some((i) => issueCodes(i).includes('selection.soundIdClash') && JSON.stringify(i).includes('klang:music.lied')),
+    ).toBe(true);
+    expect(same.issues.some((i) => issueCodes(i).includes('selection.paintingIdClash') && JSON.stringify(i).includes('klang:sonne'))).toBe(
+      true,
+    );
   });
 
   it('also transfers sounds.yml and paintings.yml to the test server', () => {
@@ -111,7 +120,9 @@ describe('sounds and paintings', () => {
 
   it('leaves deselected sounds and paintings out of the export', () => {
     const project = mediaProject();
-    const multi = planMultiExport([{ project, selection: { excludedItemIds: [], excludedGlyphIds: [], excludedSoundIds: ['s2'], excludedPaintingIds: ['p1', 'p2'] } }]);
+    const multi = planMultiExport([
+      { project, selection: { excludedItemIds: [], excludedGlyphIds: [], excludedSoundIds: ['s2'], excludedPaintingIds: ['p1', 'p2'] } },
+    ]);
     expect(multi.projects[0].plan.soundEntries.map((s) => s.id)).toEqual(['klang:block.glocke.ding']);
     expect(multi.projects[0].plan.paintingEntries).toEqual({});
   });

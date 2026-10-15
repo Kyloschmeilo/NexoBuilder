@@ -6,17 +6,17 @@ Date: 2026-10-16 · Branch: `ammo-rework` · Builds on the cleanup (spec `2026-1
 
 The user decides where a project lives and where an exported pack goes:
 
-- **Project storage location** (per project, changeable): *Local (this device)*, *Folder on disk*, *Shared folder*
-  (synced by Google Drive / OneDrive / Dropbox / Nextcloud …), *S3* (any S3-compatible service, collaborative).
-- **Export destinations** (per project, remembered): *Download ZIP* (today), *Local folder* (write files directly,
-  e.g. a server's `plugins/Nexo`), *S3* (pack ZIP and/or unpacked files, optional public URL).
+- **Project storage location** (per project, changeable): _Local (this device)_, _Folder on disk_, _Shared folder_
+  (synced by Google Drive / OneDrive / Dropbox / Nextcloud …), _S3_ (any S3-compatible service, collaborative).
+- **Export destinations** (per project, remembered): _Download ZIP_ (today), _Local folder_ (write files directly,
+  e.g. a server's `plugins/Nexo`), _S3_ (pack ZIP and/or unpacked files, optional public URL).
 - **S3 connections** are named accounts in app settings; secrets are encrypted with the OS keychain and never leave the
   Electron main process.
 - A new package `@resourcepackbuilder/s3` wraps `@aws-sdk/client-s3`.
 
 Decisions taken with the user: storage applies to both projects and exports; S3 projects are collaborative like shared
 folders; custom endpoints (R2, MinIO, B2, Wasabi …) are supported; secrets via Electron `safeStorage`; local = internal
-app storage *and* an extra "folder on disk" option; projects can be moved between locations, existing projects stay
+app storage _and_ an extra "folder on disk" option; projects can be moved between locations, existing projects stay
 local; "shared" keeps using a synced folder (no cloud APIs); several named S3 connections; export destinations are
 stored per project and remembered.
 
@@ -30,8 +30,8 @@ Non-goals: Google Drive/OneDrive APIs or OAuth; S3 in the browser dev build; wri
 ```ts
 type StorageLocation =
   | { kind: 'local' }
-  | { kind: 'folder'; path: string }                                   // single user, file watcher
-  | { kind: 'sharedFolder'; path: string; userName: string }           // collaborative, file watcher
+  | { kind: 'folder'; path: string } // single user, file watcher
+  | { kind: 'sharedFolder'; path: string; userName: string } // collaborative, file watcher
   | { kind: 's3'; connectionId: string; bucket: string; prefix: string; userName: string }; // collaborative, polling
 ```
 
@@ -50,8 +50,8 @@ type StorageLocation =
 
 Project settings → "Storage": shows the current location and **Move to…** (local, folder, shared folder, S3).
 Moving = flush autosave → write a full copy (all envelopes) to the target → switch the location → reconnect. The old
-location is left untouched (the dialog says so). Moving to *local* = today's "stop sharing". Moving to a target that
-already contains a *different* project is refused; a target with the *same* project id asks before replacing (same
+location is left untouched (the dialog says so). Moving to _local_ = today's "stop sharing". Moving to a target that
+already contains a _different_ project is refused; a target with the _same_ project id asks before replacing (same
 rule as `openSharedProject` today).
 
 ### Opening a project from a location
@@ -65,9 +65,17 @@ project may not silently replace an unrelated local one).
 ```ts
 type ExportDestination =
   | { id: string; kind: 'download' }
-  | { id: string; kind: 'folder'; path: string; clean: boolean }  // clean = remove files we wrote last time that are gone now
-  | { id: string; kind: 's3'; connectionId: string; bucket: string; zipKey?: string; filesPrefix?: string;
-      publicRead: boolean; publicUrlBase?: string };
+  | { id: string; kind: 'folder'; path: string; clean: boolean } // clean = remove files we wrote last time that are gone now
+  | {
+      id: string;
+      kind: 's3';
+      connectionId: string;
+      bucket: string;
+      zipKey?: string;
+      filesPrefix?: string;
+      publicRead: boolean;
+      publicUrlBase?: string;
+    };
 ```
 
 - Stored in the project repository per project (device-local, like the location), plus the last used destination.
@@ -84,12 +92,19 @@ type ExportDestination =
 ### S3 connections (app settings, device-local)
 
 ```ts
-interface S3ConnectionInfo {           // what the renderer sees
-  id: string; name: string; endpoint?: string; region: string; forcePathStyle: boolean;
-  accessKeyId: string; hasSecret: boolean;
+interface S3ConnectionInfo {
+  // what the renderer sees
+  id: string;
+  name: string;
+  endpoint?: string;
+  region: string;
+  forcePathStyle: boolean;
+  accessKeyId: string;
+  hasSecret: boolean;
 }
 interface S3ConnectionInput extends Omit<S3ConnectionInfo, 'id' | 'hasSecret'> {
-  id?: string; secretAccessKey?: string;   // omitted on edit = keep the stored secret
+  id?: string;
+  secretAccessKey?: string; // omitted on edit = keep the stored secret
 }
 ```
 
@@ -104,13 +119,13 @@ interface S3ConnectionInput extends Omit<S3ConnectionInfo, 'id' | 'hasSecret'> {
 
 ## Packages and layers
 
-| Layer | Responsibility |
-|---|---|
+| Layer                          | Responsibility                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 |
+| ------------------------------ | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | `packages/s3` (new, Node-only) | Thin typed wrapper over `@aws-sdk/client-s3` (+ `@aws-sdk/lib-storage` for multipart): `createS3Client(config)`, `listObjects(prefix)` (paginated), `getObjectText/Bytes`, `putObject(key, body, { contentType, publicRead })`, `uploadLarge`, `headObject`, `deleteObject(s)`, `testConnection(bucket?)`, `objectUrl(key)`, typed `S3Error` with a stable `code` (`invalidCredentials`, `accessDenied`, `noSuchBucket`, `unreachable`, `aclNotSupported`, `unknown`). Unit tests with `aws-sdk-client-mock`. Builds a self-contained CJS bundle (esbuild, platform node) that Electron loads. |
-| `packages/core` | `StorageLocation`, `ExportDestination` types + validation (key templates, prefixes), `exportFileMap(plan)` used by zip and destinations alike (one source of truth), sync format unchanged, `SyncFs` unchanged. |
-| Electron main | `storage/connections.cjs` (safeStorage store), `storage/s3Backend.cjs` (SyncFs + inspect over the S3 bundle), existing folder backend generalised (`storage/folderBackend.cjs`, today's `share.cjs`), `exportTargets.cjs` (folder write, S3 upload), IPC channels below, all with the existing sender guard. |
-| App | Repository stores location + destinations; `storageSync` service (generalised `shareSync`) picks the backend per location; projects dialog "Open from…"; settings "Storage" (location + move) and "Storage accounts"; export dialog destinations. Browser build: only `local` + `download` (other options hidden). |
-| i18n | New `storage` namespace (en + de): locations, move/open flows, connections, test results, error codes, export destinations. |
+| `packages/core`                | `StorageLocation`, `ExportDestination` types + validation (key templates, prefixes), `exportFileMap(plan)` used by zip and destinations alike (one source of truth), sync format unchanged, `SyncFs` unchanged.                                                                                                                                                                                                                                                                                                                                                                                |
+| Electron main                  | `storage/connections.cjs` (safeStorage store), `storage/s3Backend.cjs` (SyncFs + inspect over the S3 bundle), existing folder backend generalised (`storage/folderBackend.cjs`, today's `share.cjs`), `exportTargets.cjs` (folder write, S3 upload), IPC channels below, all with the existing sender guard.                                                                                                                                                                                                                                                                                   |
+| App                            | Repository stores location + destinations; `storageSync` service (generalised `shareSync`) picks the backend per location; projects dialog "Open from…"; settings "Storage" (location + move) and "Storage accounts"; export dialog destinations. Browser build: only `local` + `download` (other options hidden).                                                                                                                                                                                                                                                                             |
+| i18n                           | New `storage` namespace (en + de): locations, move/open flows, connections, test results, error codes, export destinations.                                                                                                                                                                                                                                                                                                                                                                                                                                                                    |
 
 ### IPC contract additions (`src/platform/desktopApi.ts`)
 

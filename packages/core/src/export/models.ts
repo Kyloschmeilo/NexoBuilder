@@ -15,7 +15,13 @@ import { validateModel } from './validate/model';
  * Writes the model to models/<modelPath>.json and its textures to textures/<modelPath>/<name>.png.
  * Issues of the textures and of the model are passed to `report`.
  */
-export function writeModel(writer: PackWriter, project: Project, model: ImportedModel, modelPath: string, report: (issue: Issue) => void): WrittenModel {
+export function writeModel(
+  writer: PackWriter,
+  project: Project,
+  model: ImportedModel,
+  modelPath: string,
+  report: (issue: Issue) => void,
+): WrittenModel {
   const ns = project.namespace;
   const textureRefs = new Map<string, string>();
   const usedNames = new Set<string>();

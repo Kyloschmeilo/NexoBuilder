@@ -119,7 +119,12 @@ describe('Shared projects', () => {
   it('writes a project as individual files and reads it back completely', async () => {
     const { folder, anna, ben } = await setup();
     expect([...folder.files.keys()].sort()).toEqual(
-      [PROJECT_FILE, `folders/${firstFolder(anna.project).id}.json`, `items/${firstItem(anna.project).id}.json`, 'glyphs/g_herz.json'].sort(),
+      [
+        PROJECT_FILE,
+        `folders/${firstFolder(anna.project).id}.json`,
+        `items/${firstItem(anna.project).id}.json`,
+        'glyphs/g_herz.json',
+      ].sort(),
     );
     expect(content(ben.project)).toBe(content(anna.project));
     // Nothing to do when connecting
@@ -416,4 +421,3 @@ describe('Shared projects', () => {
     expect(README_FILE).toBe('README.txt');
   });
 });
-

@@ -196,7 +196,9 @@ describe('convertBBModel', () => {
     const el = result.json.elements![0];
     expect(el.from).toEqual([4, 0, 4]);
     expect(el.to).toEqual([12, 8, 12]);
-    expect(result.issues.some((i) => i.level === 'warning' && i.code === 'model.nonJavaFormat' && i.args?.format === 'Generic Model')).toBe(true);
+    expect(result.issues.some((i) => i.level === 'warning' && i.code === 'model.nonJavaFormat' && i.args?.format === 'Generic Model')).toBe(
+      true,
+    );
   });
 
   it('takes over display settings, parent and GUI light', () => {

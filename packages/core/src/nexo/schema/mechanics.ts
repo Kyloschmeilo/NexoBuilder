@@ -104,7 +104,10 @@ export const MECHANIC_PROPERTIES = properties('mechanics', {
         conditions: field.stringList({ placeholder: true }),
         actions: field.stringList({ placeholder: true }),
       }),
-      { keyPlaceholder: true, newValue: () => ({ event: 'CLICK:right:all', one_usage: false, actions: ['[message] <green>Hello <player>!'] }) },
+      {
+        keyPlaceholder: true,
+        newValue: () => ({ event: 'CLICK:right:all', one_usage: false, actions: ['[message] <green>Hello <player>!'] }),
+      },
     ),
     defaultValue: () => ({
       rightclick: { event: 'CLICK:right:all', one_usage: false, actions: ['[message] <green>Hello <player>!'] },

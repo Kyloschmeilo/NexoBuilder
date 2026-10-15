@@ -38,7 +38,9 @@ export function mapKeyFrame(key: string): IssueContext {
 /** A variant slot, or with `suffix` (the end of its path) one model of it. */
 export function variantFrame(def: VariantDef, suffix?: string): IssueContext {
   const variant = labelArg(def.label, def.params);
-  return suffix === undefined ? { code: 'context.variant', args: { variant } } : { code: 'context.variantModel', args: { variant, suffix } };
+  return suffix === undefined
+    ? { code: 'context.variant', args: { variant } }
+    : { code: 'context.variantModel', args: { variant, suffix } };
 }
 
 /** An armor layer; `label` is a message key in the `schema` namespace. */

@@ -100,7 +100,11 @@ export function ModelPreview({ model, height = 340, showToolbar = true }: ModelP
   return (
     <div className="relative overflow-hidden rounded-lg border border-border bg-background" style={{ height }}>
       <div ref={attachStage} className="absolute inset-0 [&>canvas]:block [&>canvas]:size-full" />
-      {note && <div className="absolute inset-0 grid place-items-center bg-background p-5 text-center text-[13px] text-muted-foreground">{note}</div>}
+      {note && (
+        <div className="absolute inset-0 grid place-items-center bg-background p-5 text-center text-[13px] text-muted-foreground">
+          {note}
+        </div>
+      )}
       {showToolbar && !note && (
         <div className="pointer-events-none absolute inset-x-2 top-2 flex items-center gap-1.5 [&>*]:pointer-events-auto">
           <NativeSelect

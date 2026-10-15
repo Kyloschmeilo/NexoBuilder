@@ -149,7 +149,8 @@ function cleanConfigPatch(patch) {
   /** @type {Record<string, unknown>} */
   const source = { ...patch };
   if ('paperVersion' in source) {
-    next.paperVersion = typeof source.paperVersion === 'string' && /^[0-9A-Za-z._-]{1,32}$/.test(source.paperVersion) ? source.paperVersion : null;
+    next.paperVersion =
+      typeof source.paperVersion === 'string' && /^[0-9A-Za-z._-]{1,32}$/.test(source.paperVersion) ? source.paperVersion : null;
   }
   if ('ramGb' in source) next.ramGb = clampInt(source.ramGb, 1, 16, DEFAULT_CONFIG.ramGb);
   if ('port' in source) next.port = clampInt(source.port, 1024, 65535, DEFAULT_CONFIG.port);

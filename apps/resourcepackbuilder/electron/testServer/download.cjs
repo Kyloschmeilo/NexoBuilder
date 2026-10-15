@@ -27,7 +27,9 @@ async function fetchJson(url) {
   }
   if (!response.ok) {
     throw new Error(
-      typeof data?.message === 'string' ? `${data.message} (${response.status})` : t('testServer.requestFailed', { status: response.status, url }),
+      typeof data?.message === 'string'
+        ? `${data.message} (${response.status})`
+        : t('testServer.requestFailed', { status: response.status, url }),
     );
   }
   return data;

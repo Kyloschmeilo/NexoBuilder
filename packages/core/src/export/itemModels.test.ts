@@ -8,14 +8,17 @@ import type { ImportedModel } from '../model/types';
 import type { Project } from '../project/types';
 
 const PNG16 = makePngDataUrl(16, 16);
-const model = (name: string): ImportedModel => createTextureModel('generated', { layer0: `${name}.png` }, [{ name: `${name}.png`, dataUrl: PNG16 }]);
+const model = (name: string): ImportedModel =>
+  createTextureModel('generated', { layer0: `${name}.png` }, [{ name: `${name}.png`, dataUrl: PNG16 }]);
 
 function furnitureProject(): Project {
   const project = createProject('Möbel', 'moebel', '1.21.11');
   const folder = createFolder('Sofas', null);
   insertFolder(project, folder);
   const sofa = createItem({ displayName: 'Sofa', nexoId: 'sofa', folderId: folder.id, model: model('sofa') });
-  sofa.config.Mechanics = { furniture: { hitbox: { barriers: ['0,0,0'] }, states: { an: {}, kaputt: { type: 'CUSTOM_MODEL_DATA', value: '5' } } } };
+  sofa.config.Mechanics = {
+    furniture: { hitbox: { barriers: ['0,0,0'] }, states: { an: {}, kaputt: { type: 'CUSTOM_MODEL_DATA', value: '5' } } },
+  };
   sofa.variants = {
     connect_straight: [model('straight')],
     connect_left: [model('left')],
@@ -69,7 +72,9 @@ describe('Additional models', () => {
   it('keeps values the user set themselves', () => {
     const project = furnitureProject();
     const sofa = Object.values(project.items)[0];
-    (sofa.config.Mechanics as Record<string, Record<string, unknown>>).furniture.placements = { wall: { item_model: 'eigenes:modell', properties: { translation: '0,0.3,-0.3' } } };
+    (sofa.config.Mechanics as Record<string, Record<string, unknown>>).furniture.placements = {
+      wall: { item_model: 'eigenes:modell', properties: { translation: '0,0.3,-0.3' } },
+    };
     const yaml = parse(planExport(project).itemFiles.get('items/sofas/sofas.yml')!).sofa;
     expect(yaml.Mechanics.furniture.placements.wall).toEqual({ item_model: 'eigenes:modell', properties: { translation: '0,0.3,-0.3' } });
   });
@@ -95,7 +100,10 @@ describe('Additional models', () => {
     insertItem(project, flower);
     const plan = planExport(project);
     const yaml = parse(plan.itemFiles.get('items/pflanzen/pflanzen.yml')!).blume;
-    expect(yaml.Mechanics.custom_block.stackable).toEqual([{ model: 'bl:block/pflanzen/blume-stack_1' }, { model: 'bl:block/pflanzen/blume-stack_2' }]);
+    expect(yaml.Mechanics.custom_block.stackable).toEqual([
+      { model: 'bl:block/pflanzen/blume-stack_1' },
+      { model: 'bl:block/pflanzen/blume-stack_2' },
+    ]);
     expect(plan.packFiles.has('assets/bl/models/block/pflanzen/blume-stack_2.json')).toBe(true);
   });
 
@@ -103,7 +111,13 @@ describe('Additional models', () => {
     const project = createProject('Waffen', 'wf', '1.21.11');
     const folder = createFolder('Dreizacke', null);
     insertFolder(project, folder);
-    const trident = createItem({ displayName: 'Dreizack', nexoId: 'dreizack', folderId: folder.id, material: 'TRIDENT', model: model('d') });
+    const trident = createItem({
+      displayName: 'Dreizack',
+      nexoId: 'dreizack',
+      folderId: folder.id,
+      material: 'TRIDENT',
+      model: model('d'),
+    });
     trident.variants = { throwing_model: [model('wurf')] };
     insertItem(project, trident);
     const yaml = parse(planExport(project).itemFiles.get('items/dreizacke/dreizacke.yml')!).dreizack;

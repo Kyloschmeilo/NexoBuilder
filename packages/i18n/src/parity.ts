@@ -86,10 +86,7 @@ function sameMembers(a: Set<string>, b: Set<string>): boolean {
  * @param target the target catalogue
  * @returns every mismatch found, empty when the catalogues are in parity
  */
-export function messageParityErrors(
-  source: Record<string, unknown>,
-  target: Record<string, unknown>,
-): readonly MessageParityError[] {
+export function messageParityErrors(source: Record<string, unknown>, target: Record<string, unknown>): readonly MessageParityError[] {
   const sourceMessages = flattenMessages(source);
   const targetMessages = flattenMessages(target);
   const errors: MessageParityError[] = [];

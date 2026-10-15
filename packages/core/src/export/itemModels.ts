@@ -5,7 +5,17 @@
  */
 import { compareVersions, FEATURE_VERSIONS } from '../minecraft/versions';
 import { getPath } from '../nexo/configPath';
-import { CONNECT_SLOTS, FURNITURE_MODEL_SLOTS, PLACEMENT_SLOTS, STACK_MODELS, stateDef, VARIANTS, type StateSlot, type VariantDef, type VariantSlot } from '../nexo/variants';
+import {
+  CONNECT_SLOTS,
+  FURNITURE_MODEL_SLOTS,
+  PLACEMENT_SLOTS,
+  STACK_MODELS,
+  stateDef,
+  VARIANTS,
+  type StateSlot,
+  type VariantDef,
+  type VariantSlot,
+} from '../nexo/variants';
 import { isPlainObject } from '../object';
 import { variantFrame } from './frames';
 import { itemModelDefinitionFile } from './paths';
@@ -59,7 +69,12 @@ export function writeItemModels(itemExport: ItemExport, modelKey: string | null,
   const stateSlots = Object.keys(variants)
     .filter((s): s is StateSlot => s.startsWith('state:'))
     .filter(has);
-  const furnitureSlots = [...CONNECT_SLOTS.map((c) => c.slot), ...PLACEMENT_SLOTS.map((p) => p.slot), 'light_on' as const, ...stateSlots].filter(has);
+  const furnitureSlots = [
+    ...CONNECT_SLOTS.map((c) => c.slot),
+    ...PLACEMENT_SLOTS.map((p) => p.slot),
+    'light_on' as const,
+    ...stateSlots,
+  ].filter(has);
   if (furnitureSlots.length === 0 && !has('gui_model') && !has('stack_models')) return result;
   if (!modelKey) {
     report('error', 'plan.extraModelsNeedMainModel');
@@ -77,7 +92,8 @@ export function writeItemModels(itemExport: ItemExport, modelKey: string | null,
       return key ? [{ state: c.state, key }] : [];
     });
     if (connect.length > 0) {
-      if (!atLeast(FEATURE_VERSIONS.itemModelDefinitions)) report('error', 'plan.connectableNeedsVersion', { version: FEATURE_VERSIONS.itemModelDefinitions });
+      if (!atLeast(FEATURE_VERSIONS.itemModelDefinitions))
+        report('error', 'plan.connectableNeedsVersion', { version: FEATURE_VERSIONS.itemModelDefinitions });
       if (connect.length < CONNECT_SLOTS.length) {
         report('info', 'plan.connectableIncomplete', { missing: CONNECT_SLOTS.length - connect.length, total: CONNECT_SLOTS.length });
       }
@@ -103,7 +119,8 @@ export function writeItemModels(itemExport: ItemExport, modelKey: string | null,
     };
   }
   if (main) {
-    if (!atLeast(FEATURE_VERSIONS.itemModelDefinitions)) report('error', 'plan.guiModelNeedsVersion', { version: FEATURE_VERSIONS.itemModelDefinitions });
+    if (!atLeast(FEATURE_VERSIONS.itemModelDefinitions))
+      report('error', 'plan.guiModelNeedsVersion', { version: FEATURE_VERSIONS.itemModelDefinitions });
     if (packVariants.length > 0) report('warning', 'plan.guiModelDisablesVariants', { variants: packVariants.join(', ') });
     const oversized = getPath(item.config, ['Pack', 'oversized_in_gui']) === true ? { oversized_in_gui: true } : {};
     result.itemModel = writeDefinition(definitionBase, main, oversized);
@@ -116,13 +133,16 @@ export function writeItemModels(itemExport: ItemExport, modelKey: string | null,
       const key = writeSlot(slot, suffix);
       if (!key) return null;
       if (!atLeast(FEATURE_VERSIONS.furnitureItemModels)) {
-        report('error', 'plan.furnitureModelsNeedVersion', { version: FEATURE_VERSIONS.furnitureItemModels }, [variantFrame(defOf(slot), suffix)]);
+        report('error', 'plan.furnitureModelsNeedVersion', { version: FEATURE_VERSIONS.furnitureItemModels }, [
+          variantFrame(defOf(slot), suffix),
+        ]);
       }
       return writeDefinition(`${definitionBase}-${suffix}`, modelRef(key));
     };
     for (const { slot, placement } of PLACEMENT_SLOTS) {
       const itemModel = has(slot) ? furnitureModel(slot, `placement_${placement}`) : null;
-      if (itemModel) result.config.push({ path: ['Mechanics', 'furniture', 'placements', placement, 'item_model'], value: itemModel, ifMissing: true });
+      if (itemModel)
+        result.config.push({ path: ['Mechanics', 'furniture', 'placements', placement, 'item_model'], value: itemModel, ifMissing: true });
     }
     const lightModel = has('light_on') ? furnitureModel('light_on', 'light_on') : null;
     if (lightModel) {

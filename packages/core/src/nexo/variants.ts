@@ -68,7 +68,12 @@ interface VariantOptions extends Partial<Pick<VariantDef, 'multiple' | 'firstInd
 }
 
 /** A variant whose messages live at `variants.<camel(slot)>` */
-function variant(slot: Exclude<VariantSlot, StateSlot>, kind: VariantKind, suffix: string, { hint, ...options }: VariantOptions = {}): VariantDef {
+function variant(
+  slot: Exclude<VariantSlot, StateSlot>,
+  kind: VariantKind,
+  suffix: string,
+  { hint, ...options }: VariantOptions = {},
+): VariantDef {
   const scope = `variants.${keySegment(slot)}`;
   return {
     slot,

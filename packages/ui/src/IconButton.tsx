@@ -14,7 +14,16 @@ interface IconButtonProps extends Omit<ComponentProps<typeof Button>, 'children'
 }
 
 /** Icon-only button with its label as tooltip; ghost and small unless `variant`/`size` say otherwise. */
-export function IconButton({ label, tone = 'default', side, variant = 'ghost', size = 'icon-sm', className, children, ...props }: IconButtonProps) {
+export function IconButton({
+  label,
+  tone = 'default',
+  side,
+  variant = 'ghost',
+  size = 'icon-sm',
+  className,
+  children,
+  ...props
+}: IconButtonProps) {
   return (
     <Tip label={label} side={side}>
       <Button

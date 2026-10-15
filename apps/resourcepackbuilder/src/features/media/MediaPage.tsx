@@ -43,14 +43,7 @@ export function MediaPage({ icon, title, count, configPath, actions, hint, drop,
       <Hint>
         <div>{hint}</div>
       </Hint>
-      <DropZone
-        onFiles={drop.onFiles}
-        accept={drop.accept}
-        title={drop.title}
-        subtitle={drop.subtitle}
-        formats={drop.formats}
-        compact
-      />
+      <DropZone onFiles={drop.onFiles} accept={drop.accept} title={drop.title} subtitle={drop.subtitle} formats={drop.formats} compact />
       {children.length > 0 && <div className="mt-2 flex flex-col gap-4">{children}</div>}
     </PageShell>
   );

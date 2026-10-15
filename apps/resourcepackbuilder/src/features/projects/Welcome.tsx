@@ -55,7 +55,9 @@ export function Welcome() {
               <span className="mb-2 inline-grid size-6 place-items-center rounded-sm border border-primary bg-primary/10 font-heading text-xs font-bold text-primary">
                 {i + 1}
               </span>
-              <b className="mb-1 block font-heading text-sm font-semibold tracking-wider text-foreground uppercase">{t(`steps.${step}.title`)}</b>
+              <b className="mb-1 block font-heading text-sm font-semibold tracking-wider text-foreground uppercase">
+                {t(`steps.${step}.title`)}
+              </b>
               {t(`steps.${step}.text`)}
             </li>
           ))}

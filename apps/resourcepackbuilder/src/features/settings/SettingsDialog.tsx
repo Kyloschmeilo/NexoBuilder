@@ -8,7 +8,17 @@ import { closeDialog } from '../../store/dialogs';
 import { DeviceSettings } from './DeviceSettings';
 import { ProjectSettings } from './ProjectSettings';
 
-function SettingsGroup({ title, description, className, children }: { title: string; description: string; className?: string; children: ReactNode }) {
+function SettingsGroup({
+  title,
+  description,
+  className,
+  children,
+}: {
+  title: string;
+  description: string;
+  className?: string;
+  children: ReactNode;
+}) {
   return (
     <FieldSet className={className}>
       <div>

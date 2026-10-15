@@ -11,7 +11,10 @@ function run(...actions: NewItemAction[]): NewItemState {
 
 describe('newItemReducer', () => {
   it('lets the ID follow the display name until it is edited', () => {
-    let state = run({ type: 'withoutModelChanged', isWithoutModel: true }, { type: 'metaChanged', sourceKey: null, patch: { displayName: '<red>Ruby Sword' } });
+    let state = run(
+      { type: 'withoutModelChanged', isWithoutModel: true },
+      { type: 'metaChanged', sourceKey: null, patch: { displayName: '<red>Ruby Sword' } },
+    );
     expect(state.plainMeta.nexoId).toBe('ruby_sword');
     state = newItemReducer(state, { type: 'metaChanged', sourceKey: null, patch: { nexoId: 'gem_blade' } });
     state = newItemReducer(state, { type: 'metaChanged', sourceKey: null, patch: { displayName: 'Other' } });

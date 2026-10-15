@@ -23,7 +23,9 @@ export function writeMedia(writer: PackWriter, project: Project, issues: Issue[]
   }
   for (const sound of project.sounds) {
     const report = reportFor({ kind: 'sound', id: sound.id });
-    sound.files.forEach((file, i) => writer.binary(`assets/${project.namespace}/sounds/${soundFilePath(sound, i)}.ogg`, file.dataUrl, { report }));
+    sound.files.forEach((file, i) =>
+      writer.binary(`assets/${project.namespace}/sounds/${soundFilePath(sound, i)}.ogg`, file.dataUrl, { report }),
+    );
   }
   for (const painting of project.paintings) {
     if (!painting.file) continue;

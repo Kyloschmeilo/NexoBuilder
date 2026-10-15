@@ -18,7 +18,10 @@ function validateIngredient(ingredient: RecipeIngredient | null | undefined, con
   if (ingredient.source === 'nexo' && !Object.values(project.items).some((i) => i.nexoId === id)) {
     add('info', 'recipe.nexoItemNotInProject', { id });
   }
-  if (ingredient.amount !== undefined && (!Number.isInteger(ingredient.amount) || ingredient.amount < 1 || ingredient.amount > MAX_INGREDIENT_AMOUNT)) {
+  if (
+    ingredient.amount !== undefined &&
+    (!Number.isInteger(ingredient.amount) || ingredient.amount < 1 || ingredient.amount > MAX_INGREDIENT_AMOUNT)
+  ) {
     add('error', 'recipe.amountRange');
   }
 }

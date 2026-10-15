@@ -22,14 +22,7 @@ interface ParsedJson {
 }
 
 /** Parent models Minecraft uses for 2D items (no elements needed here). */
-const ITEM_PARENTS = [
-  'item/generated',
-  'item/handheld',
-  'item/handheld_rod',
-  'item/handheld_mace',
-  'builtin/generated',
-  'builtin/entity',
-];
+const ITEM_PARENTS = ['item/generated', 'item/handheld', 'item/handheld_rod', 'item/handheld_mace', 'builtin/generated', 'builtin/entity'];
 
 function stripMinecraftNamespace(ref: string): string {
   return ref.startsWith('minecraft:') ? ref.slice('minecraft:'.length) : ref;
@@ -201,7 +194,11 @@ function mergeParents(main: ParsedJson, all: ParsedJson[], issues: Issue[]): Jav
 
 /** The entries of `source` that `existing` does not define. */
 function withoutKeys<T>(source: Record<string, T>, existing: Record<string, T> | undefined): Record<string, T> {
-  return Object.fromEntries(Object.entries(source).filter(([key]) => existing?.[key] === undefined).map(([key, value]) => [key, deepClone(value)]));
+  return Object.fromEntries(
+    Object.entries(source)
+      .filter(([key]) => existing?.[key] === undefined)
+      .map(([key, value]) => [key, deepClone(value)]),
+  );
 }
 
 /** Matches a texture reference ("ns:item/foo") to a dropped PNG. */

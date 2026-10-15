@@ -11,7 +11,13 @@ export function PaintingPreview({ painting, file, frames }: { painting: Painting
     <svg viewBox={`0 0 ${width} ${height}`} className="size-full" aria-hidden>
       {/* The nested viewport clips the frames below the first one */}
       <svg width={width} height={height}>
-        <image href={file.dataUrl} width={width} height={height * frames} preserveAspectRatio="none" className="[image-rendering:pixelated]" />
+        <image
+          href={file.dataUrl}
+          width={width}
+          height={height * frames}
+          preserveAspectRatio="none"
+          className="[image-rendering:pixelated]"
+        />
       </svg>
       <rect width={width} height={height} fill="none" strokeWidth={2} vectorEffect="non-scaling-stroke" className="stroke-input" />
     </svg>

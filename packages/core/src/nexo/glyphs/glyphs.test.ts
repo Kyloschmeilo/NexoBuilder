@@ -8,7 +8,8 @@ import { createGlyph, glyphFileFromDataUrl, readGifInfo } from './model';
 import { validateGlyphs } from './validate';
 
 // Minimal GIF (1×1) with width/height in the header
-const GIF_9x11 = 'data:image/gif;base64,' + Buffer.from([0x47, 0x49, 0x46, 0x38, 0x39, 0x61, 9, 0, 11, 0, 0, 0, 0, 0x3b]).toString('base64');
+const GIF_9x11 =
+  'data:image/gif;base64,' + Buffer.from([0x47, 0x49, 0x46, 0x38, 0x39, 0x61, 9, 0, 11, 0, 0, 0, 0, 0x3b]).toString('base64');
 
 describe('glyphs', () => {
   it('reads PNG and GIF sizes', () => {

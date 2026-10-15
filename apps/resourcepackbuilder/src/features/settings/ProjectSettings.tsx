@@ -66,7 +66,9 @@ export function ProjectSettings() {
             onChange={(e) => updateProjectSettings((p) => (p.settings.packName = e.target.value))}
           />
           {isPackNameValid ? (
-            <FieldDescription className="font-mono text-xs break-all">plugins/Nexo/pack/external_packs/{settings.packName}</FieldDescription>
+            <FieldDescription className="font-mono text-xs break-all">
+              plugins/Nexo/pack/external_packs/{settings.packName}
+            </FieldDescription>
           ) : (
             <FieldError>{t('packNameInvalid')}</FieldError>
           )}
@@ -91,7 +93,9 @@ export function ProjectSettings() {
         />
         <FieldContent>
           <FieldLabel htmlFor={`${id}-item-model`}>{t('useItemModel')}</FieldLabel>
-          <FieldDescription>{t.rich('useItemModelHelp', { ...richTags, component: 'Components.item_model: nexo:<item_id>' })}</FieldDescription>
+          <FieldDescription>
+            {t.rich('useItemModelHelp', { ...richTags, component: 'Components.item_model: nexo:<item_id>' })}
+          </FieldDescription>
         </FieldContent>
       </Field>
     </div>

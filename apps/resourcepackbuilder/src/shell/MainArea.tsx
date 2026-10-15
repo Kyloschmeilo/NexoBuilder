@@ -37,9 +37,7 @@ function NothingSelected() {
             <FolderPlus className="size-9 text-muted-foreground" />
           )}
         </EmptyMedia>
-        <EmptyTitle className="font-heading text-xl tracking-wide uppercase">
-          {hasFolders ? t('pickTitle') : t('startTitle')}
-        </EmptyTitle>
+        <EmptyTitle className="font-heading text-xl tracking-wide uppercase">{hasFolders ? t('pickTitle') : t('startTitle')}</EmptyTitle>
         <EmptyDescription>{hasFolders ? t('pickDescription') : t('startDescription')}</EmptyDescription>
       </EmptyHeader>
       {!hasFolders && (

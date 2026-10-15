@@ -73,14 +73,20 @@ afterEach(() => {
 
 describe('loadPaperVersions', () => {
   it('stores the versions newest first and defaults to the project version', async () => {
-    const sync = await startService(fakeApi(() => Promise.resolve(['1.21.4', '1.21.10', '1.20.6'])), '1.21.4');
+    const sync = await startService(
+      fakeApi(() => Promise.resolve(['1.21.4', '1.21.10', '1.20.6'])),
+      '1.21.4',
+    );
     await sync.loadPaperVersions();
     expect(state().paperVersions).toEqual(['1.21.10', '1.21.4', '1.20.6']);
     expect(state().server?.config.paperVersion).toBe('1.21.4');
   });
 
   it('defaults to the newest version when Paper does not support the project version', async () => {
-    const sync = await startService(fakeApi(() => Promise.resolve(['1.21.4', '1.21.10'])), '1.99');
+    const sync = await startService(
+      fakeApi(() => Promise.resolve(['1.21.4', '1.21.10'])),
+      '1.99',
+    );
     await sync.loadPaperVersions();
     expect(state().server?.config.paperVersion).toBe('1.21.10');
   });

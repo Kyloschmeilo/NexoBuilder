@@ -23,7 +23,11 @@ export function Tip({ label, side, children }: TipProps) {
   const isTriggerDisabled = isValidElement(children) && isDisabled(children);
   return (
     <Tooltip>
-      {isTriggerDisabled ? <TooltipTrigger render={<span className="inline-flex" />}>{children}</TooltipTrigger> : <TooltipTrigger render={children} />}
+      {isTriggerDisabled ? (
+        <TooltipTrigger render={<span className="inline-flex" />}>{children}</TooltipTrigger>
+      ) : (
+        <TooltipTrigger render={children} />
+      )}
       <TooltipContent side={side}>{label}</TooltipContent>
     </Tooltip>
   );

@@ -8,7 +8,12 @@ import { cn } from 'cn';
 export function PageShell({ children, className }: { children: ReactNode; className?: string }) {
   return (
     <div className="@container/page w-full">
-      <div className={cn('mx-auto flex w-full max-w-[1120px] flex-col gap-4 px-5 pt-5 pb-12 @3xl/page:px-8 @3xl/page:pt-6 @3xl/page:pb-16', className)}>
+      <div
+        className={cn(
+          'mx-auto flex w-full max-w-[1120px] flex-col gap-4 px-5 pt-5 pb-12 @3xl/page:px-8 @3xl/page:pt-6 @3xl/page:pb-16',
+          className,
+        )}
+      >
         {children}
       </div>
     </div>

@@ -30,7 +30,13 @@ export interface ConvertedElements {
 }
 
 export function convertElements(elements: BBElement[], outliner: unknown[] | undefined, options: ElementOptions): ConvertedElements {
-  const result: ConvertedElements = { elements: [], usedTextures: new Set(), skippedNonCubes: 0, facesWithoutTexture: 0, invalidUvRotations: 0 };
+  const result: ConvertedElements = {
+    elements: [],
+    usedTextures: new Set(),
+    skippedNonCubes: 0,
+    facesWithoutTexture: 0,
+    invalidUvRotations: 0,
+  };
   for (const el of orderElements(elements, outliner)) {
     const type = el.type ?? 'cube';
     // Silently skip non-exported elements and pure helper objects (locators, placeholders for 2D items …)
@@ -52,8 +58,16 @@ function convertCube(el: BBElement, options: ElementOptions, stats: ConvertedEle
   const [fx, fy, fz] = vec3(el.from);
   const [tx, ty, tz] = vec3(el.to);
   const [ox, oy, oz] = vec3(el.origin ?? [0, 0, 0]);
-  const from: [number, number, number] = [roundNumber(fx - inflate + offset[0]), roundNumber(fy - inflate + offset[1]), roundNumber(fz - inflate + offset[2])];
-  const to: [number, number, number] = [roundNumber(tx + inflate + offset[0]), roundNumber(ty + inflate + offset[1]), roundNumber(tz + inflate + offset[2])];
+  const from: [number, number, number] = [
+    roundNumber(fx - inflate + offset[0]),
+    roundNumber(fy - inflate + offset[1]),
+    roundNumber(fz - inflate + offset[2]),
+  ];
+  const to: [number, number, number] = [
+    roundNumber(tx + inflate + offset[0]),
+    roundNumber(ty + inflate + offset[1]),
+    roundNumber(tz + inflate + offset[2]),
+  ];
   const origin: [number, number, number] = [roundNumber(ox + offset[0]), roundNumber(oy + offset[1]), roundNumber(oz + offset[2])];
 
   return {
@@ -107,7 +121,10 @@ function convertFaces(el: BBElement, options: ElementOptions, stats: ConvertedEl
       if (rawUv) {
         const uv =
           options.perTextureUv && texture
-            ? { width: positiveNumber(texture.tex.uv_width, options.uv.width), height: positiveNumber(texture.tex.uv_height, options.uv.height) }
+            ? {
+                width: positiveNumber(texture.tex.uv_width, options.uv.width),
+                height: positiveNumber(texture.tex.uv_height, options.uv.height),
+              }
             : options.uv;
         const [u1, v1, u2, v2] = rawUv.map((n, i) => roundNumber((n * 16) / (i % 2 ? uv.height : uv.width)));
         out.uv = [u1, v1, u2, v2];

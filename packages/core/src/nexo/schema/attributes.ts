@@ -22,7 +22,11 @@ export const ATTRIBUTE_PROPERTIES = properties('attributes', {
     defaultValue: () => [{ attribute: 'ATTACK_DAMAGE', amount: 5, operation: 'ADD_NUMBER', slot: 'MAINHAND' }],
   },
   Enchantments: {
-    field: field.map(field.number({ integer: true, min: 1, max: 255 }), { keyOptions: ENCHANTMENTS, keyPlaceholder: true, newValue: () => 1 }),
+    field: field.map(field.number({ integer: true, min: 1, max: 255 }), {
+      keyOptions: ENCHANTMENTS,
+      keyPlaceholder: true,
+      newValue: () => 1,
+    }),
     defaultValue: () => ({ sharpness: 1 }),
   },
 });

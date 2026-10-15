@@ -30,7 +30,13 @@ export function ObjectFields({
       {simple.length > 0 && (
         <FieldGrid>
           {simple.map((f) => (
-            <FieldRenderer key={f.key} field={f} value={object[f.key]} siblings={object} onChange={(v) => onChange(withKey(object, f.key, v))} />
+            <FieldRenderer
+              key={f.key}
+              field={f}
+              value={object[f.key]}
+              siblings={object}
+              onChange={(v) => onChange(withKey(object, f.key, v))}
+            />
           ))}
         </FieldGrid>
       )}
@@ -45,7 +51,13 @@ export function ObjectFields({
             onChange={(rest) => onChange(withUnknownEntries(object, known, rest))}
           />
         ) : (
-          <FieldRenderer key={f.key} field={f} value={object[f.key]} siblings={object} onChange={(v) => onChange(withKey(object, f.key, v))} />
+          <FieldRenderer
+            key={f.key}
+            field={f}
+            value={object[f.key]}
+            siblings={object}
+            onChange={(v) => onChange(withKey(object, f.key, v))}
+          />
         ),
       )}
     </div>

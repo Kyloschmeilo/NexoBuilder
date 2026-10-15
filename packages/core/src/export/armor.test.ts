@@ -45,7 +45,11 @@ describe('Worn textures', () => {
     const plan = planExport(p);
     expect(plan.packFiles.has('assets/aus/textures/entity/equipment/llama_body/bunt.png')).toBe(true);
     const yaml = yamlOf(p);
-    expect(yaml.teppich.Components.equippable).toEqual({ slot: 'BODY', asset_id: 'aus:bunt', allowed_entity_types: ['LLAMA', 'TRADER_LLAMA'] });
+    expect(yaml.teppich.Components.equippable).toEqual({
+      slot: 'BODY',
+      asset_id: 'aus:bunt',
+      allowed_entity_types: ['LLAMA', 'TRADER_LLAMA'],
+    });
     expect(yaml.wolfspanzer.Components.equippable).toEqual({ slot: 'BODY', asset_id: 'aus:wolf', allowed_entity_types: ['WOLF'] });
     expect(yaml.teppich.Components.glider).toBeUndefined();
   });
@@ -56,13 +60,19 @@ describe('Worn textures', () => {
     const plan = planExport(p);
     const equipment = JSON.parse(plan.packFiles.get('assets/aus/equipment/leder.json') as string);
     expect(Object.keys(equipment.layers).sort()).toEqual(['horse_saddle', 'pig_saddle']);
-    expect(yamlOf(p).sattel.Components.equippable).toEqual({ slot: 'SADDLE', asset_id: 'aus:leder', allowed_entity_types: ['PIG', 'HORSE'] });
+    expect(yamlOf(p).sattel.Components.equippable).toEqual({
+      slot: 'SADDLE',
+      asset_id: 'aus:leder',
+      allowed_entity_types: ['PIG', 'HORSE'],
+    });
   });
 
   it('reports layers that do not exist yet in the target version', () => {
     const { project: p, add } = project('1.21.4');
     add('geschirr', 'PAPER', { set: 'ghast', mob: { harness: '@asset:tex' } });
-    expect(planExport(p).issues.some((i) => i.level === 'error' && i.code === 'plan.armorLayerNeedsVersion' && i.args?.version === '1.21.6')).toBe(true);
+    expect(
+      planExport(p).issues.some((i) => i.level === 'error' && i.code === 'plan.armorLayerNeedsVersion' && i.args?.version === '1.21.6'),
+    ).toBe(true);
   });
 
   it('leaves player armor as before', () => {

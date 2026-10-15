@@ -121,9 +121,13 @@ export function summarizeClipboard(clip: ItemConfigClipboard): CategorySummary[]
     let entries: SummaryEntry[];
     if (id === 'material') entries = typeof config.material === 'string' ? [text(config.material)] : [];
     else if (id === 'other') entries = [...otherKeys(config), ...otherNestedPaths(config).map((p) => p.join('.'))].map(text);
-    else if (id === 'rawYaml') entries = clip.rawYaml.trim() ? [{ key: 'copy.rawYamlLines', params: { count: clip.rawYaml.trim().split('\n').length } }] : [];
+    else if (id === 'rawYaml')
+      entries = clip.rawYaml.trim() ? [{ key: 'copy.rawYamlLines', params: { count: clip.rawYaml.trim().split('\n').length } }] : [];
     else if (id === 'recipes') entries = clip.recipes.map((r) => ({ key: getRecipeTypeInfo(r.type).label }));
-    else entries = copyableProperties(id).filter((p) => isPropertyActive(clip, p)).map((p) => ({ key: p.label }));
+    else
+      entries = copyableProperties(id)
+        .filter((p) => isPropertyActive(clip, p))
+        .map((p) => ({ key: p.label }));
     return { id, entries };
   });
 }
@@ -171,7 +175,8 @@ export function pasteItemConfig(project: Project, target: Item, clip: ItemConfig
     const keys = new Set([...otherKeys(source), ...(mode === 'replace' ? otherKeys(config) : [])]);
     for (const key of keys) transfer([key]);
     const nested = new Map<string, string[]>();
-    for (const path of [...otherNestedPaths(source), ...(mode === 'replace' ? otherNestedPaths(config) : [])]) nested.set(path.join('.'), path);
+    for (const path of [...otherNestedPaths(source), ...(mode === 'replace' ? otherNestedPaths(config) : [])])
+      nested.set(path.join('.'), path);
     for (const path of nested.values()) transfer(path);
   }
   if (categories.has('rawYaml') && (clip.rawYaml.trim() || mode === 'replace')) target.rawYaml = clip.rawYaml;

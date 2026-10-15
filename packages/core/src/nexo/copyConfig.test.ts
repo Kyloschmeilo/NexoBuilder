@@ -73,7 +73,10 @@ describe('copy properties', () => {
 
   it('only adds in "merge" mode and keeps existing values', () => {
     const { project, source, target } = setup();
-    pasteItemConfig(project, target, copyItemConfig(source, project.id), { categories: new Set(['components', 'attributes']), mode: 'merge' });
+    pasteItemConfig(project, target, copyItemConfig(source, project.id), {
+      categories: new Set(['components', 'attributes']),
+      mode: 'merge',
+    });
     expect(target.config.Enchantments).toEqual({ sharpness: 1 });
     expect(target.config.Components).toEqual({ durability: 10, max_stack_size: 1, food: { nutrition: 4 } });
     expect(target.config.material).toBe('PAPER');

@@ -5,7 +5,10 @@ import { Badge } from './components/badge';
 import { filesFromDataTransfer, pickFiles } from './files';
 
 /** Other props (data attributes, aria) go to the zone element. */
-interface DropZoneProps extends Omit<ComponentProps<'div'>, 'title' | 'children' | 'role' | 'tabIndex' | 'onClick' | 'onKeyDown' | 'onDragOver' | 'onDragLeave' | 'onDrop'> {
+interface DropZoneProps extends Omit<
+  ComponentProps<'div'>,
+  'title' | 'children' | 'role' | 'tabIndex' | 'onClick' | 'onKeyDown' | 'onDragOver' | 'onDragLeave' | 'onDrop'
+> {
   onFiles: (files: File[]) => void;
   /** File types offered by the picker (input `accept` syntax). */
   accept: string;
@@ -67,7 +70,9 @@ export function DropZone({ onFiles, accept, title, subtitle, formats, multiple =
       }}
     >
       <Upload className={cn('text-primary', compact ? 'size-5' : 'size-7')} />
-      <strong className="mt-2 mb-1 block font-heading text-base leading-5 font-semibold tracking-[0.06em] text-foreground uppercase">{title}</strong>
+      <strong className="mt-2 mb-1 block font-heading text-base leading-5 font-semibold tracking-[0.06em] text-foreground uppercase">
+        {title}
+      </strong>
       {subtitle && <div className="text-[13px] leading-[18px]">{subtitle}</div>}
       {formats && (
         <div className="mt-3 flex flex-wrap justify-center gap-1.5">
