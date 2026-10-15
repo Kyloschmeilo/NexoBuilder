@@ -2,7 +2,7 @@ import { useEffect, useRef } from 'react';
 import { useTranslations } from 'next-intl';
 import type { RemoteChange } from '@resourcepackbuilder/core/sync/engine';
 import { useServices } from '../services/servicesContext';
-import { toast } from '../store/notifications';
+import { notify } from './notify';
 
 /** Repeated changes to the same entries by the same person are announced at most this often. */
 const ANNOUNCE_QUIET_MS = 15_000;
@@ -13,7 +13,7 @@ export function useServiceNotices(): void {
   const t = useTranslations('app');
   const lastAnnounced = useRef(new Map<string, number>());
 
-  useEffect(() => autosave.events.subscribe(() => toast('warning', t('autosave.failed'))), [autosave, t]);
+  useEffect(() => autosave.events.subscribe(() => notify('warning', t('autosave.failed'))), [autosave, t]);
 
   useEffect(() => {
     if (!share) return;
@@ -41,7 +41,7 @@ export function useServiceNotices(): void {
               ? labels.map(quote).join(', ')
               : t('share.andMore', { list: labels.slice(0, 2).map(quote).join(', '), count: labels.length - 2 });
         const deleted = list.every((c) => c.deleted);
-        toast('info', t(deleted ? 'share.remoteDeleted' : 'share.remoteChanged', { name, what }));
+        notify('info', t(deleted ? 'share.remoteDeleted' : 'share.remoteChanged', { name, what }));
       }
     };
     return share.events.subscribe(announce);

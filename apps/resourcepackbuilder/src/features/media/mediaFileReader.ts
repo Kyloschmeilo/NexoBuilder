@@ -1,5 +1,5 @@
 import { fileStem } from '@resourcepackbuilder/ui';
-import { toast } from '../../store/notifications';
+import { notify } from '../../shell/notify';
 
 /** A dropped or picked file read for a glyph, sound or painting. */
 export interface MediaFileEntry<T> {
@@ -20,7 +20,7 @@ export function createMediaFileReader<T>(
     const entries: MediaFileEntry<T>[] = [];
     for (const file of files) {
       const result = await read(file);
-      if (result === null) toast('error', rejectMessage(file.name));
+      if (result === null) notify('error', rejectMessage(file.name));
       else entries.push({ name: fileStem(file.name), file: result });
     }
     return entries;

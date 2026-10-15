@@ -6,7 +6,7 @@ import { copyItemProperties } from '../../commands/clipboard';
 import { deleteItem, duplicateItem } from '../../commands/items';
 import { clipboardLabel, useClipboardStore } from '../../store/clipboard';
 import { confirm, openDialog } from '../../store/dialogs';
-import { toast } from '../../store/notifications';
+import { notify } from '../../shell/notify';
 
 export function useItemActions() {
   const t = useTranslations('layout');
@@ -30,13 +30,13 @@ export function useItemActions() {
 
     copyProperties(itemId: string) {
       const clip = copyItemProperties(itemId);
-      if (clip) toast('success', tApp('clipboard.copied', { name: clipboardLabel(clip) }));
+      if (clip) notify('success', tApp('clipboard.copied', { name: clipboardLabel(clip) }));
     },
 
     /** Opens the paste dialog for the target items (or explains that nothing was copied yet). */
     pasteProperties(targetItemIds: string[]) {
       if (useClipboardStore.getState().clip) openDialog({ id: 'pasteConfig', props: { targetItemIds } });
-      else toast('info', tApp('clipboard.nothingCopied'));
+      else notify('info', tApp('clipboard.nothingCopied'));
     },
   };
 }

@@ -15,7 +15,7 @@ import { DialogFrame } from '../../components/DialogFrame';
 import { FolderSelect } from '../../components/FolderSelect';
 import { richTags } from '../../i18n/richTags';
 import { closeDialog, type FeatureDialogProps } from '../../store/dialogs';
-import { toast } from '../../store/notifications';
+import { notify } from '../../shell/notify';
 import { useOpenProject } from '../../store/project';
 import { setEditorTab } from '../../store/ui';
 import { MODEL_ACCEPT, MODEL_FORMATS } from '../item/model/modelFiles';
@@ -68,7 +68,7 @@ export function NewItemDialog({ folderId, files: initialFiles }: FeatureDialogPr
     if (!toCreate) return;
     addItems(toCreate);
     closeDialog();
-    toast('success', t('created', { count: toCreate.length }));
+    notify('success', t('created', { count: toCreate.length }));
     setEditorTab('general');
   };
 

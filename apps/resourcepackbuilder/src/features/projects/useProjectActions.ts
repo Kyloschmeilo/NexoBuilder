@@ -14,7 +14,7 @@ import {
 import { useErrorMessage } from '../../i18n/errors';
 import { useServices } from '../../services/servicesContext';
 import { confirm } from '../../store/dialogs';
-import { toast } from '../../store/notifications';
+import { notify } from '../../shell/notify';
 import { getProject } from '../../store/project';
 
 export function useProjectActions() {
@@ -23,19 +23,19 @@ export function useProjectActions() {
   const tProjectList = useTranslations('layout.projectList');
   const errorMessage = useErrorMessage();
 
-  const report = (err: unknown) => toast('error', errorMessage(err));
+  const report = (err: unknown) => notify('error', errorMessage(err));
 
   return {
     isShareAvailable: services.share !== null,
 
     async create(name: string, namespace: string, minecraftVersion: string) {
       const project = await createNewProject(services, name.trim() || t('defaults.newProjectName'), namespace.trim(), minecraftVersion);
-      toast('success', t('project.created', { name: project.name }));
+      notify('success', t('project.created', { name: project.name }));
     },
 
     async open(id: string) {
       try {
-        if (!(await openStoredProject(services, id))) toast('error', t('project.loadFailed'));
+        if (!(await openStoredProject(services, id))) notify('error', t('project.loadFailed'));
       } catch (err) {
         report(err);
       }
@@ -57,7 +57,7 @@ export function useProjectActions() {
       const project = getProject();
       if (!project) return;
       saveProjectFile(project);
-      toast('success', t('project.fileSaved'));
+      notify('success', t('project.fileSaved'));
     },
 
     async openFile() {
@@ -74,7 +74,7 @@ export function useProjectActions() {
             }),
           copyName: (name) => t('defaults.importedName', { name }),
         });
-        if (project) toast('success', t('project.opened', { name: project.name }));
+        if (project) notify('success', t('project.opened', { name: project.name }));
       } catch (err) {
         report(err);
       }
@@ -93,7 +93,7 @@ export function useProjectActions() {
               destructive: true,
             }),
         });
-        if (project) toast('success', t('project.sharedOpened', { name: project.name }));
+        if (project) notify('success', t('project.sharedOpened', { name: project.name }));
         return project !== null;
       } catch (err) {
         report(err);

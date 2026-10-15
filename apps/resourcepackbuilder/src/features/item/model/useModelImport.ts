@@ -3,7 +3,7 @@ import { useTranslations } from 'next-intl';
 import { createDrafts } from '@resourcepackbuilder/core/model/drafts';
 import type { ImportedModel } from '@resourcepackbuilder/core/model/types';
 import { useErrorMessage } from '../../../i18n/errors';
-import { toast } from '../../../store/notifications';
+import { notify } from '../../../shell/notify';
 import { readImportFiles } from './modelFiles';
 
 export function useModelImport() {
@@ -16,14 +16,14 @@ export function useModelImport() {
       const drafts = createDrafts(await readImportFiles(files), 'combined');
       const [draft] = drafts;
       if (!draft) {
-        toast('error', t('model.noMatchingFile'));
+        notify('error', t('model.noMatchingFile'));
         return null;
       }
       if (!draft.model) {
-        toast('error', draft.error ? errorMessage(draft.error) : t('model.unreadable'));
+        notify('error', draft.error ? errorMessage(draft.error) : t('model.unreadable'));
         return null;
       }
-      if (drafts.length > 1) toast('warning', t('model.onlyFirst'));
+      if (drafts.length > 1) notify('warning', t('model.onlyFirst'));
       return draft.model;
     },
 
@@ -31,11 +31,11 @@ export function useModelImport() {
     async importModels(files: File[]): Promise<ImportedModel[]> {
       const sorted = [...files].sort((a, b) => a.name.localeCompare(b.name, undefined, { numeric: true }));
       const drafts = createDrafts(await readImportFiles(sorted), 'separate');
-      if (drafts.length === 0) toast('error', t('model.noMatchingFile'));
+      if (drafts.length === 0) notify('error', t('model.noMatchingFile'));
       const models: ImportedModel[] = [];
       for (const draft of drafts) {
         if (draft.model) models.push(draft.model);
-        else toast('error', draft.error ? errorMessage(draft.error) : t('model.fileUnreadable', { name: draft.name }));
+        else notify('error', draft.error ? errorMessage(draft.error) : t('model.fileUnreadable', { name: draft.name }));
       }
       return models;
     },

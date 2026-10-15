@@ -6,7 +6,7 @@ import { pickFiles, readPngAsDataUrl } from '@resourcepackbuilder/ui';
 import { Button } from '@resourcepackbuilder/ui/components/button';
 import { Field, FieldTitle } from '@resourcepackbuilder/ui/components/field';
 import { updateProjectSettings } from '../../commands/settings';
-import { toast } from '../../store/notifications';
+import { notify } from '../../shell/notify';
 
 export function PackIconField({ packIcon }: { packIcon: string | null }) {
   const t = useTranslations('dialogs.settings');
@@ -17,7 +17,7 @@ export function PackIconField({ packIcon }: { packIcon: string | null }) {
     if (!file) return;
     const dataUrl = await readPngAsDataUrl(file);
     if (!readPngInfoFromDataUrl(dataUrl)) {
-      toast('error', t('invalidPng'));
+      notify('error', t('invalidPng'));
       return;
     }
     updateProjectSettings((p) => (p.settings.packIcon = dataUrl));

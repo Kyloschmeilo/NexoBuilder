@@ -1,7 +1,7 @@
 import { useTranslations } from 'next-intl';
 import { readPngInfoFromDataUrl } from '@resourcepackbuilder/core/binary/png';
 import { readPngAsDataUrl } from '@resourcepackbuilder/ui';
-import { toast } from '../../store/notifications';
+import { notify } from '../../shell/notify';
 
 /** Files the PNG pickers offer. */
 export const PNG_ACCEPT = '.png,image/png';
@@ -19,7 +19,7 @@ export function usePngReader(): (file: File) => Promise<PngFile | null> {
     const dataUrl = await readPngAsDataUrl(file);
     const info = readPngInfoFromDataUrl(dataUrl);
     if (!info) {
-      toast('error', t('editor.invalidPng'));
+      notify('error', t('editor.invalidPng'));
       return null;
     }
     return { dataUrl, width: info.width, height: info.height };

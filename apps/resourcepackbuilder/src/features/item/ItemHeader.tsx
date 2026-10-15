@@ -14,7 +14,7 @@ import { useErrorMessage } from '../../i18n/errors';
 import { useServices } from '../../services/servicesContext';
 import { clipboardLabel, useClipboardStore } from '../../store/clipboard';
 import { openDialog } from '../../store/dialogs';
-import { toast } from '../../store/notifications';
+import { notify } from '../../shell/notify';
 import { useOpenProject } from '../../store/project';
 import { useTestServerStore } from '../../store/testServer';
 import { useItemActions } from './useItemActions';
@@ -28,8 +28,8 @@ function GiveButton({ nexoId }: { nexoId: string }) {
   if (!testServer || !isRunning) return null;
   const give = () =>
     void testServer.give(nexoId).then(
-      (player) => toast('success', t('editor.giveSuccess', { id: nexoId, player })),
-      (err: unknown) => toast('error', errorMessage(err)),
+      (player) => notify('success', t('editor.giveSuccess', { id: nexoId, player })),
+      (err: unknown) => notify('error', errorMessage(err)),
     );
   return (
     <Tip label={t('editor.giveTooltip')}>

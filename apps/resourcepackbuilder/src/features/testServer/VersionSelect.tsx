@@ -5,7 +5,7 @@ import { NativeSelect, NativeSelectOption } from '@resourcepackbuilder/ui/compon
 import { IconButton } from '@resourcepackbuilder/ui';
 import { FormField, FormHelp } from '../../components/FormField';
 import { useErrorMessage } from '../../i18n/errors';
-import { toast } from '../../store/notifications';
+import { notify } from '../../shell/notify';
 import { useOpenProject } from '../../store/project';
 import { useTestServerStore } from '../../store/testServer';
 import { useSetConfig, useTestServer } from './useTestServer';
@@ -23,7 +23,7 @@ export function VersionSelect({ paperVersion, isLocked }: { paperVersion: string
 
   // Loading is idempotent; it only fails when saving the default version fails
   const load = useCallback(() => {
-    testServer.loadPaperVersions().catch((err: unknown) => toast('error', errorMessage(err)));
+    testServer.loadPaperVersions().catch((err: unknown) => notify('error', errorMessage(err)));
   }, [testServer, errorMessage]);
   useEffect(load, [load]);
 

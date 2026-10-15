@@ -4,7 +4,7 @@ import { planMultiExport, type ExportEntry } from '@resourcepackbuilder/core/exp
 import { buildMultiExportZip } from '@resourcepackbuilder/core/export/zip';
 import { downloadBytes } from '@resourcepackbuilder/ui';
 import { useErrorMessage } from '../../i18n/errors';
-import { toast } from '../../store/notifications';
+import { notify } from '../../shell/notify';
 
 /** Returns the function that builds the ZIP and starts its download; it resolves with whether that worked. */
 export function useRunExport() {
@@ -15,11 +15,11 @@ export function useRunExport() {
     try {
       const result = await buildMultiExportZip(planMultiExport(entries, { includeBinaries: true }), mode);
       downloadBytes(result.data, result.fileName, 'application/zip');
-      toast('success', t('created', { file: result.fileName, count: result.paths.length }));
+      notify('success', t('created', { file: result.fileName, count: result.paths.length }));
       return true;
     } catch (err) {
       console.error(err);
-      toast('error', t('failed', { error: errorMessage(err) }));
+      notify('error', t('failed', { error: errorMessage(err) }));
       return false;
     }
   };

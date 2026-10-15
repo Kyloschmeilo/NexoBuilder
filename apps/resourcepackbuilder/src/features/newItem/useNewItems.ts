@@ -6,7 +6,7 @@ import { validateItemId } from '@resourcepackbuilder/core/project/ids';
 import type { Project } from '@resourcepackbuilder/core/project/types';
 import { DEFAULT_MATERIAL } from '@resourcepackbuilder/core/nexo/material';
 import { useErrorMessage } from '../../i18n/errors';
-import { toast } from '../../store/notifications';
+import { notify } from '../../shell/notify';
 import { readImportFiles } from '../item/model/modelFiles';
 import { initialNewItemState, newItemReducer, sourceKey, type ItemMeta } from './newItemState';
 
@@ -53,7 +53,7 @@ export function useNewItems(project: Project, initialFiles: File[] | undefined) 
       (loaded) => dispatch({ type: 'filesRead', files: loaded }),
       (err: unknown) => {
         dispatch({ type: 'readFailed' });
-        toast('error', t('readFailed', { error: errorMessage(err) }));
+        notify('error', t('readFailed', { error: errorMessage(err) }));
       },
     );
 

@@ -13,7 +13,7 @@ import { NumberInput } from '../../components/editor';
 import { CheckRow } from '../../components/CheckRow';
 import { FormField, FormGrid } from '../../components/FormField';
 import { IssueList } from '../../components/IssueList';
-import { toast } from '../../store/notifications';
+import { notify } from '../../shell/notify';
 import { useOpenProject } from '../../store/project';
 import { MediaCard, PreviewFrame } from '../media/MediaCard';
 import { NexoKey } from '../media/NexoKey';
@@ -41,7 +41,7 @@ export function PaintingCard({ painting, plan }: { painting: Painting; plan: Exp
   };
   const createItem = () => {
     addPaintingItem(painting, project.namespace, tApp('defaults.paintingsFolder'));
-    toast('success', t('itemCreated'));
+    notify('success', t('itemCreated'));
   };
 
   return (

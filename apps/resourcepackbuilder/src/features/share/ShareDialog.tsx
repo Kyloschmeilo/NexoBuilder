@@ -13,7 +13,7 @@ import { richTags } from '../../i18n/richTags';
 import { useServices } from '../../services/servicesContext';
 import type { ShareSync } from '../../services/shareSync';
 import { closeDialog, confirm } from '../../store/dialogs';
-import { toast } from '../../store/notifications';
+import { notify } from '../../shell/notify';
 import { useOpenProject } from '../../store/project';
 import { isProjectShared, useShareStore } from '../../store/share';
 import { ShareStatusBadge } from './ShareStatusBadge';
@@ -76,9 +76,9 @@ function StartSharing({ shareSync }: { shareSync: ShareSync }) {
     setIsStarting(true);
     try {
       const folder = await shareSync.share(project.name || tApp('defaults.sharedProjectFolder'), userName.effective());
-      if (folder) toast('success', t('started', { folder }));
+      if (folder) notify('success', t('started', { folder }));
     } catch (err) {
-      toast('error', errorMessage(err));
+      notify('error', errorMessage(err));
     } finally {
       setIsStarting(false);
     }
@@ -119,7 +119,7 @@ function SharedProject({ shareSync }: { shareSync: ShareSync }) {
     });
     if (!confirmed) return;
     await shareSync.stop();
-    toast('info', t('stopped'));
+    notify('info', t('stopped'));
   };
 
   return (

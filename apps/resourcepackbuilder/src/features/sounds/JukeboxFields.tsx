@@ -6,7 +6,7 @@ import { Input } from '@resourcepackbuilder/ui/components/input';
 import { addMusicDiscItem, updateJukeboxSong } from '../../commands/media';
 import { NumberInput } from '../../components/editor';
 import { FormField, FormGrid } from '../../components/FormField';
-import { toast } from '../../store/notifications';
+import { notify } from '../../shell/notify';
 import { useOpenProject } from '../../store/project';
 import { NexoKey } from '../media/NexoKey';
 
@@ -22,7 +22,7 @@ export function JukeboxFields({ sound, song }: { sound: Sound; song: JukeboxSong
 
   const createDisc = () => {
     addMusicDiscItem(sound, namespace, tApp('defaults.musicFolder'));
-    toast('success', t('discCreated'));
+    notify('success', t('discCreated'));
   };
 
   return (

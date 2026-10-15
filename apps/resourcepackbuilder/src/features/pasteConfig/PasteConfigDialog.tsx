@@ -16,7 +16,7 @@ import { DialogFrame } from '../../components/DialogFrame';
 import { richTags } from '../../i18n/richTags';
 import { clipboardLabel, useClipboardStore } from '../../store/clipboard';
 import { closeDialog, type FeatureDialogProps } from '../../store/dialogs';
-import { toast } from '../../store/notifications';
+import { notify } from '../../shell/notify';
 import { useOpenProject } from '../../store/project';
 import { SelectionTree } from '../export/SelectionTree';
 import { CategoryPicker, type PasteMode } from './CategoryPicker';
@@ -43,7 +43,7 @@ function PasteDialogContent({ clip, targetItemIds }: { clip: ItemConfigClipboard
 
   const apply = () => {
     const count = pasteItemProperties(targets, { categories: new Set(categories), mode });
-    toast('success', t('pasted', { name: clipboardLabel(clip), count }));
+    notify('success', t('pasted', { name: clipboardLabel(clip), count }));
     closeDialog();
   };
 

@@ -3,7 +3,7 @@ import { useTranslations } from 'next-intl';
 import type { Project } from '@resourcepackbuilder/core/project/types';
 import { filesFromDataTransfer } from '@resourcepackbuilder/ui';
 import { isAnyDialogOpen, openDialog } from '../store/dialogs';
-import { toast } from '../store/notifications';
+import { notify } from './notify';
 import { getProject } from '../store/project';
 import { useUiStore, type Selection } from '../store/ui';
 
@@ -42,7 +42,7 @@ export function useWindowDrop(): void {
       if (isTaken || !project || isAnyDialogOpen() || selection?.kind === 'view') return;
       const folderId = dropFolderId(project, selection);
       if (!folderId || !project.folders[folderId]) {
-        toast('warning', t('dropNeedsFolder'));
+        notify('warning', t('dropNeedsFolder'));
         return;
       }
       const files = await filesFromDataTransfer(e.dataTransfer);

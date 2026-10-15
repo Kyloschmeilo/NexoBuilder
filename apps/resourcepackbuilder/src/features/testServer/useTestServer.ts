@@ -3,7 +3,7 @@ import { useErrorMessage } from '../../i18n/errors';
 import type { TestServerConfigPatch } from '../../platform/desktopApi';
 import { useServices } from '../../services/servicesContext';
 import type { TestServerSync } from '../../services/testServerSync';
-import { toast } from '../../store/notifications';
+import { notify } from '../../shell/notify';
 
 /** The test server service; the test server page is only shown with it (desktop program). */
 export function useTestServer(): TestServerSync {
@@ -12,7 +12,7 @@ export function useTestServer(): TestServerSync {
   return testServer;
 }
 
-/** Runs server actions one at a time: `isBusy` while one runs, failures as error toast, optional success toast. */
+/** Runs server actions one at a time: `isBusy` while one runs, failures as error notice, optional success notice. */
 export function useBusyAction() {
   const errorMessage = useErrorMessage();
   const [isBusy, setIsBusy] = useState(false);
@@ -20,9 +20,9 @@ export function useBusyAction() {
     setIsBusy(true);
     try {
       await action();
-      if (success) toast('success', success);
+      if (success) notify('success', success);
     } catch (err) {
-      toast('error', errorMessage(err));
+      notify('error', errorMessage(err));
     } finally {
       setIsBusy(false);
     }
@@ -35,6 +35,6 @@ export function useSetConfig(): (patch: TestServerConfigPatch) => void {
   const testServer = useTestServer();
   const errorMessage = useErrorMessage();
   return (patch) => {
-    testServer.setConfig(patch).catch((err: unknown) => toast('error', errorMessage(err)));
+    testServer.setConfig(patch).catch((err: unknown) => notify('error', errorMessage(err)));
   };
 }

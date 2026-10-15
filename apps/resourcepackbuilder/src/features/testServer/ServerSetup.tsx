@@ -11,7 +11,7 @@ import { StatusBadge } from '@resourcepackbuilder/ui';
 import { useDraft } from '../../components/editor/useDraft';
 import { FormField, FormGrid, FormHelp } from '../../components/FormField';
 import type { TestServerConfig } from '../../platform/desktopApi';
-import { toast } from '../../store/notifications';
+import { notify } from '../../shell/notify';
 import { useBusyAction, useSetConfig, useTestServer } from './useTestServer';
 import { VersionSelect } from './VersionSelect';
 
@@ -79,7 +79,7 @@ function NexoJarField({ config }: { config: TestServerConfig }) {
   const chooseJar = () =>
     run(async () => {
       const jar = await testServer.chooseNexoJar();
-      if (jar) toast('success', t('jarSelected', { version: jar.version }));
+      if (jar) notify('success', t('jarSelected', { version: jar.version }));
     });
 
   return (
