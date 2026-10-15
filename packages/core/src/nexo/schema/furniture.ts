@@ -1,0 +1,113 @@
+/** The furniture mechanic (Mechanics.furniture) – the largest property, hence its own module. */
+import { DISPLAY_TRANSFORMS, TRACKING_ROTATIONS } from '../options';
+import { field, type PropertySpec } from './build';
+import {
+  blockLockerField,
+  blockSoundsField,
+  clickActionsField,
+  dropField,
+  furnitureStatesField,
+  limitedPlacingField,
+  soundField,
+  storageField,
+  textEntitiesField,
+} from './shared';
+
+export const FURNITURE: PropertySpec = {
+  conflicts: ['Mechanics.custom_block'],
+  keepEmpty: true,
+  docs: 'https://docs.nexomc.com/mechanics/furniture-mechanic',
+  field: field.object({
+    hitbox: field.object(
+      {
+        barriers: field.stringList({ placeholder: true }),
+        interactions: field.stringList({ placeholder: true }),
+        shulkers: field.stringList({ placeholder: true }),
+        ghasts: field.stringList({ placeholder: true, minVersion: '1.21.6' }),
+      },
+      { help: true },
+    ),
+    properties: field.object({
+      display_transform: field.select(DISPLAY_TRANSFORMS, { placeholder: true }),
+      tracking_rotation: field.select(TRACKING_ROTATIONS),
+      translation: field.text({ format: 'vector', placeholder: true }),
+      scale: field.text({ format: 'vector', placeholder: true }),
+      left_rotation: field.text({ placeholder: true }),
+      right_rotation: field.text({ placeholder: true }),
+      brightness: field.object({
+        block_light: field.number({ integer: true, min: 0, max: 15 }),
+        sky_light: field.number({ integer: true, min: 0, max: 15 }),
+      }),
+      view_range: field.number({ min: 0, step: 0.1 }),
+      shadow_radius: field.number({ min: 0, step: 0.1 }),
+      shadow_strength: field.number({ min: 0, step: 0.1 }),
+      glow_color: field.text({ placeholder: true }),
+      offset_against_blocks: field.boolean({ defaultHint: true }),
+      cullable: field.boolean(),
+      display_width: field.number({ min: 0, step: 0.1 }),
+      display_height: field.number({ min: 0, step: 0.1 }),
+    }),
+    rotatable: field.boolean(),
+    restricted_rotation: field.select(['STRICT', 'VERY_STRICT']),
+    waterloggable: field.boolean(),
+    seats: field.stringList({ placeholder: true }),
+    beds: field.stringList({ placeholder: true }),
+    lights: field.object({
+      lights: field.stringList({ placeholder: true }),
+      toggleable: field.boolean(),
+      toggled_model: field.text({ placeholder: true }),
+      toggled_item_model: field.text({ format: 'resource' }),
+    }),
+    connectable: field.object(
+      {
+        type: field.select(['ITEM_MODEL', 'ITEM']),
+        default: field.text(),
+        straight: field.text(),
+        left: field.text(),
+        right: field.text(),
+        inner: field.text(),
+        outer: field.text(),
+      },
+      { help: true, minVersion: '1.21.4' },
+    ),
+    states: furnitureStatesField(),
+    text_entities: textEntitiesField(),
+    block_sounds: blockSoundsField(),
+    drop: dropField(),
+    limited_placing: limitedPlacingField(true),
+    storage: storageField(),
+    jukebox: field.object({
+      volume: field.number({ min: 0, step: 0.1 }),
+      pitch: field.number({ min: 0, step: 0.1 }),
+      permission: field.text(),
+    }),
+    door: field.object({
+      is_sliding: field.boolean(),
+      open_sound: soundField(),
+      close_sound: soundField(),
+      toggle_hitbox_on_open: field.boolean(),
+      delay_hitbox_toggle: field.boolean(),
+      automatic_close_delay: field.text({ format: 'duration' }),
+      open_properties: field.yaml({ placeholder: true }),
+    }),
+    evolution: field.object({
+      delay: field.text({ format: 'duration', placeholder: true }),
+      probability: field.number({ min: 0, max: 1, step: 0.05 }),
+      light_boost: field.boolean(),
+      bone_meal_chance: field.number({ min: 0, max: 1, step: 0.05 }),
+      next_stage: field.text(),
+    }),
+    preview_placement: field.object(
+      {
+        opacity: field.number({ min: 0, max: 1, step: 0.05 }),
+        require_permission: field.boolean(),
+      },
+      { emptyValue: true, help: true },
+    ),
+    blocklocker: blockLockerField(),
+    modelengine_id: field.text({ name: 'ModelEngine ID', placeholder: true }),
+    clickActions: clickActionsField(),
+    placements: field.yaml({ help: true, placeholder: true }),
+  }),
+  defaultValue: () => ({ hitbox: { barriers: ['0,0,0'] }, rotatable: true }),
+};

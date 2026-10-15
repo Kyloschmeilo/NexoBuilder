@@ -4,18 +4,19 @@ import { createFolder, createItem, createProject, insertFolder, insertItem } fro
 import { createTexture } from '../model/textures';
 import { makePngDataUrl } from '../test/png';
 import { planExport } from './plan';
-import type { ConfigObject, Project } from '../types';
+import type { ArmorSettings } from '../nexo/armor';
+import type { Project } from '../project/types';
 
 const PNG = makePngDataUrl(64, 32);
 
-function project(version = '1.21.11'): { project: Project; add: (id: string, material: string, armor: ConfigObject) => void } {
+function project(version = '1.21.11'): { project: Project; add: (id: string, material: string, armor: ArmorSettings) => void } {
   const p = createProject('Ausrüstung', 'aus', version);
   const folder = createFolder('Teile', null);
   insertFolder(p, folder);
-  const add = (id: string, material: string, armor: ConfigObject) => {
+  const add = (id: string, material: string, armor: ArmorSettings) => {
     const item = createItem({ displayName: id, nexoId: id, folderId: folder.id, material, model: null });
     item.assets = { tex: createTexture('tex', `${id}.png`, PNG) };
-    item.config.$armor = armor;
+    item.armor = armor;
     insertItem(p, item);
   };
   return { project: p, add };
@@ -61,7 +62,7 @@ describe('Worn textures', () => {
   it('reports layers that do not exist yet in the target version', () => {
     const { project: p, add } = project('1.21.4');
     add('geschirr', 'PAPER', { set: 'ghast', mob: { harness: '@asset:tex' } });
-    expect(planExport(p).issues.some((i) => i.level === 'error' && i.code === 'plan.armorLayerNeedsVersion' && i.params?.version === '1.21.6')).toBe(true);
+    expect(planExport(p).issues.some((i) => i.level === 'error' && i.code === 'plan.armorLayerNeedsVersion' && i.args?.version === '1.21.6')).toBe(true);
   });
 
   it('leaves player armor as before', () => {

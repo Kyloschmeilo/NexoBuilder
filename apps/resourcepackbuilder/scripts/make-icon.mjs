@@ -1,9 +1,11 @@
 /**
  * Generates build/icon.png (512×512), the app icon for the Windows program.
- * Usage: node scripts/make-icon.mjs
+ * Usage: npm run icon (or node scripts/make-icon.mjs from anywhere)
  */
-import { deflateSync } from 'node:zlib';
 import { mkdirSync, writeFileSync } from 'node:fs';
+import { deflateSync } from 'node:zlib';
+
+const OUTPUT = new URL('../build/icon.png', import.meta.url);
 
 const SIZE = 512;
 const SS = 4; // supersampling for smooth edges
@@ -12,9 +14,26 @@ const scale = SIZE / 32;
 // Logo shape from the favicon (32×32): slightly rounded square + "R" (CastCrafter: flat, no gradient)
 const toPx = (points) => points.map(([x, y]) => [x * scale, y * scale]);
 const R = toPx([
-  [9, 23], [9, 9], [19.5, 9], [23, 12.5], [23, 15], [21, 17.4], [23.6, 23], [19.9, 23], [17.4, 18.2], [12.4, 18.2], [12.4, 23],
+  [9, 23],
+  [9, 9],
+  [19.5, 9],
+  [23, 12.5],
+  [23, 15],
+  [21, 17.4],
+  [23.6, 23],
+  [19.9, 23],
+  [17.4, 18.2],
+  [12.4, 18.2],
+  [12.4, 23],
 ]);
-const R_HOLE = toPx([[12.4, 12], [18.6, 12], [19.6, 13], [19.6, 14.4], [18.6, 15.2], [12.4, 15.2]]);
+const R_HOLE = toPx([
+  [12.4, 12],
+  [18.6, 12],
+  [19.6, 13],
+  [19.6, 14.4],
+  [18.6, 15.2],
+  [12.4, 15.2],
+]);
 
 function inPolygon(x, y, poly) {
   let inside = false;
@@ -91,6 +110,6 @@ const png = Buffer.concat([
   chunk('IDAT', deflateSync(raw, { level: 9 })),
   chunk('IEND', Buffer.alloc(0)),
 ]);
-mkdirSync('build', { recursive: true });
-writeFileSync('build/icon.png', png);
+mkdirSync(new URL('.', OUTPUT), { recursive: true });
+writeFileSync(OUTPUT, png);
 console.log('build/icon.png written', png.length, 'bytes');

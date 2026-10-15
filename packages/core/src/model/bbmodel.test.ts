@@ -164,7 +164,7 @@ describe('convertBBModel', () => {
 
   it('reports cubes outside -16 to 32 as errors', () => {
     const result = convertBBModel(bbmodel({ elements: [cube({ uuid: 'c1', from: [-20, 0, 0], to: [0, 1, 1] })] }), 'x');
-    expect(result.issues.some((i) => i.level === 'error' && i.code === 'model.cubesOutOfBounds')).toBe(true);
+    expect(result.issues.some((i) => i.level === 'error' && i.code === 'model.elementsOutOfBounds')).toBe(true);
   });
 
   it('resolves non-embedded textures via additionally dropped PNGs', () => {
@@ -196,7 +196,7 @@ describe('convertBBModel', () => {
     const el = result.json.elements![0];
     expect(el.from).toEqual([4, 0, 4]);
     expect(el.to).toEqual([12, 8, 12]);
-    expect(result.issues.some((i) => i.level === 'warning' && i.code === 'model.nonJavaFormat' && i.params?.format === 'Generic Model')).toBe(true);
+    expect(result.issues.some((i) => i.level === 'warning' && i.code === 'model.nonJavaFormat' && i.args?.format === 'Generic Model')).toBe(true);
   });
 
   it('takes over display settings, parent and GUI light', () => {

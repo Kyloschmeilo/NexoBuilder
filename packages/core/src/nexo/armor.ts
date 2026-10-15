@@ -3,14 +3,32 @@
  * harnesses and saddles. All items with the same set ID share one equipment model
  * (assets/<ns>/equipment/<set>.json); the textures live under textures/entity/equipment/<layer>/.
  */
+import { isPlainObject } from '../object';
+import { keySegment } from './messageKey';
+
 export type ArmorGroup = 'player' | 'elytra' | 'mob' | 'saddle';
 
-export interface ArmorLayerDef {
-  /** Path within $armor */
-  path: string[];
+/** Nested objects of the armor settings that group several layers */
+export type ArmorSection = 'mob' | 'saddles';
+
+/**
+ * Armor settings of an item (`item.armor`). Texture values are asset references ("@asset:<id>").
+ * A type alias (not an interface) so it stays assignable to `ConfigValue` for the generic form.
+ */
+export type ArmorSettings = {
+  /** Set ID: all items with the same ID share one equipment model */
+  set: string;
+  layer1?: string;
+  layer2?: string;
+  elytra?: string;
+  mob?: Record<string, string>;
+  saddles?: Record<string, string>;
+};
+
+interface ArmorLayerBase {
   /** Layer type in the Minecraft equipment model */
   equipment: string;
-  /** Message key in the `schema` namespace */
+  /** Message key in the `schema` namespace (`armor.layers.<camel(key)>`) */
   label: string;
   group: ArmorGroup;
   /** Slot the item with this layer gets (if the material does not define one) */
@@ -19,59 +37,107 @@ export interface ArmorLayerDef {
   entities?: string[];
   minVersion?: string;
   sizeHint?: string;
+  /** The settings field of this layer has a help text */
+  help?: boolean;
 }
 
-const saddle = (key: string, label: string, entities: string[], minVersion = '1.21.5'): ArmorLayerDef => ({
-  path: ['saddles', key],
+/** Where the layer's texture lives in {@link ArmorSettings}: `settings[key]` or `settings[section][key]`. */
+export type ArmorLayerDef = ArmorLayerBase &
+  ({ section: null; key: 'layer1' | 'layer2' | 'elytra' } | { section: ArmorSection; key: string });
+
+type LayerOptions = Omit<ArmorLayerBase, 'label' | 'group' | 'slot' | 'equipment'>;
+
+const player = (key: 'layer1' | 'layer2', equipment: string): ArmorLayerDef => ({
+  section: null,
+  key,
+  equipment,
+  label: `armor.layers.${keySegment(key)}`,
+  group: 'player',
+  slot: 'HEAD',
+  sizeHint: '64×32',
+  help: true,
+});
+
+const mob = (key: string, equipment: string, options: LayerOptions): ArmorLayerDef => ({
+  section: 'mob',
+  key,
+  equipment,
+  label: `armor.layers.${keySegment(key)}`,
+  group: 'mob',
+  slot: 'BODY',
+  ...options,
+});
+
+const saddle = (key: string, entities: string[], minVersion = '1.21.5'): ArmorLayerDef => ({
+  section: 'saddles',
+  key,
   equipment: key,
-  label,
+  label: `armor.layers.${keySegment(key)}`,
   group: 'saddle',
   slot: 'SADDLE',
   entities,
   minVersion,
 });
 
+/** The order is the order of the layers in the equipment model and of the allowed entities. */
 export const ARMOR_LAYERS: ArmorLayerDef[] = [
-  { path: ['layer1'], equipment: 'humanoid', label: 'armor.layers.layer1', group: 'player', slot: 'HEAD', sizeHint: '64×32' },
-  { path: ['layer2'], equipment: 'humanoid_leggings', label: 'armor.layers.layer2', group: 'player', slot: 'HEAD', sizeHint: '64×32' },
-  { path: ['elytra'], equipment: 'wings', label: 'armor.layers.elytra', group: 'elytra', slot: 'CHEST', minVersion: '1.21.2', sizeHint: '64×32' },
-  { path: ['mob', 'wolf_armor'], equipment: 'wolf_body', label: 'armor.layers.wolfArmor', group: 'mob', slot: 'BODY', entities: ['WOLF'], minVersion: '1.21.2' },
-  { path: ['mob', 'horse_armor'], equipment: 'horse_body', label: 'armor.layers.horseArmor', group: 'mob', slot: 'BODY', entities: ['HORSE'], minVersion: '1.21.2' },
+  player('layer1', 'humanoid'),
+  player('layer2', 'humanoid_leggings'),
   {
-    path: ['mob', 'llama_armor'],
-    equipment: 'llama_body',
-    label: 'armor.layers.llamaArmor',
-    group: 'mob',
-    slot: 'BODY',
-    entities: ['LLAMA', 'TRADER_LLAMA'],
+    section: null,
+    key: 'elytra',
+    equipment: 'wings',
+    label: 'armor.layers.elytra',
+    group: 'elytra',
+    slot: 'CHEST',
     minVersion: '1.21.2',
+    sizeHint: '64×32',
+    help: true,
   },
-  {
-    path: ['mob', 'nautilus_armor'],
-    equipment: 'nautilus_body',
-    label: 'armor.layers.nautilusArmor',
-    group: 'mob',
-    slot: 'BODY',
-    entities: ['NAUTILUS', 'ZOMBIE_NAUTILUS'],
-    minVersion: '1.21.11',
-  },
-  {
-    path: ['mob', 'harness'],
-    equipment: 'happy_ghast_body',
-    label: 'armor.layers.harness',
-    group: 'mob',
-    slot: 'BODY',
-    entities: ['HAPPY_GHAST'],
-    minVersion: '1.21.6',
-  },
-  saddle('pig_saddle', 'armor.layers.pigSaddle', ['PIG']),
-  saddle('strider_saddle', 'armor.layers.striderSaddle', ['STRIDER']),
-  saddle('horse_saddle', 'armor.layers.horseSaddle', ['HORSE']),
-  saddle('donkey_saddle', 'armor.layers.donkeySaddle', ['DONKEY']),
-  saddle('mule_saddle', 'armor.layers.muleSaddle', ['MULE']),
-  saddle('camel_saddle', 'armor.layers.camelSaddle', ['CAMEL']),
-  saddle('skeleton_horse_saddle', 'armor.layers.skeletonHorseSaddle', ['SKELETON_HORSE']),
-  saddle('zombie_horse_saddle', 'armor.layers.zombieHorseSaddle', ['ZOMBIE_HORSE']),
-  saddle('nautilus_saddle', 'armor.layers.nautilusSaddle', ['NAUTILUS', 'ZOMBIE_NAUTILUS'], '1.21.11'),
-  saddle('camel_husk_saddle', 'armor.layers.camelHuskSaddle', ['CAMEL_HUSK'], '1.21.11'),
+  mob('wolf_armor', 'wolf_body', { entities: ['WOLF'], minVersion: '1.21.2', help: true }),
+  mob('horse_armor', 'horse_body', { entities: ['HORSE'], minVersion: '1.21.2', help: true }),
+  mob('llama_armor', 'llama_body', { entities: ['LLAMA', 'TRADER_LLAMA'], minVersion: '1.21.2', help: true }),
+  mob('nautilus_armor', 'nautilus_body', { entities: ['NAUTILUS', 'ZOMBIE_NAUTILUS'], minVersion: '1.21.11' }),
+  mob('harness', 'happy_ghast_body', { entities: ['HAPPY_GHAST'], minVersion: '1.21.6' }),
+  saddle('pig_saddle', ['PIG']),
+  saddle('strider_saddle', ['STRIDER']),
+  saddle('horse_saddle', ['HORSE']),
+  saddle('donkey_saddle', ['DONKEY']),
+  saddle('mule_saddle', ['MULE']),
+  saddle('camel_saddle', ['CAMEL']),
+  saddle('skeleton_horse_saddle', ['SKELETON_HORSE']),
+  saddle('zombie_horse_saddle', ['ZOMBIE_HORSE']),
+  saddle('nautilus_saddle', ['NAUTILUS', 'ZOMBIE_NAUTILUS'], '1.21.11'),
+  saddle('camel_husk_saddle', ['CAMEL_HUSK'], '1.21.11'),
 ];
+
+/** The texture reference ("@asset:<id>") of a layer, if set. */
+export function armorTexture(settings: ArmorSettings, layer: ArmorLayerDef): string | undefined {
+  return layer.section ? settings[layer.section]?.[layer.key] : settings[layer.key];
+}
+
+/** Reads armor settings from untyped data (form values, stored `$armor` objects); unknown keys are dropped. */
+export function toArmorSettings(value: unknown): ArmorSettings {
+  const source = isPlainObject(value) ? value : {};
+  const settings: ArmorSettings = { set: typeof source.set === 'string' ? source.set : '' };
+  for (const layer of ARMOR_LAYERS) {
+    const container = layer.section ? source[layer.section] : source;
+    const texture = isPlainObject(container) ? container[layer.key] : undefined;
+    if (typeof texture !== 'string' || !texture) continue;
+    if (layer.section) settings[layer.section] = { ...settings[layer.section], [layer.key]: texture };
+    else settings[layer.key] = texture;
+  }
+  return settings;
+}
+
+/** Determines the equipment slot from the material. */
+export function slotForMaterial(material: string): string | null {
+  const m = material.toUpperCase();
+  if (m.endsWith('_HELMET') || m === 'CARVED_PUMPKIN' || m.endsWith('_HEAD') || m.endsWith('_SKULL')) return 'HEAD';
+  if (m.endsWith('_CHESTPLATE') || m === 'ELYTRA') return 'CHEST';
+  if (m.endsWith('_LEGGINGS')) return 'LEGS';
+  if (m.endsWith('_BOOTS')) return 'FEET';
+  if (m.endsWith('_HORSE_ARMOR') || m === 'WOLF_ARMOR' || m.endsWith('_NAUTILUS_ARMOR') || m.endsWith('_HARNESS')) return 'BODY';
+  if (m === 'SADDLE') return 'SADDLE';
+  return null;
+}

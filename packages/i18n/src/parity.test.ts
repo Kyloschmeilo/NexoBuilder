@@ -5,7 +5,7 @@ import missingKeyDe from './fixtures/parity-missing-key/de.json' with { type: 'j
 import missingKeyEn from './fixtures/parity-missing-key/en.json' with { type: 'json' };
 import okDe from './fixtures/parity-ok/de.json' with { type: 'json' };
 import okEn from './fixtures/parity-ok/en.json' with { type: 'json' };
-import { assertMessageParity, messageParityErrors } from './parity';
+import { messageParityErrors } from './parity';
 
 describe('messageParityErrors', () => {
   it('reports no errors for catalogues with the same keys and ICU arguments', () => {
@@ -34,19 +34,5 @@ describe('messageParityErrors', () => {
     expect(messageParityErrors(english, german)).toEqual([
       { path: 'locked', reason: 'argument_mismatch' },
     ]);
-  });
-});
-
-describe('assertMessageParity', () => {
-  it('does not throw for catalogues in parity', () => {
-    expect(() => {
-      assertMessageParity(okEn, okDe);
-    }).not.toThrow();
-  });
-
-  it('throws when a German key was removed', () => {
-    expect(() => {
-      assertMessageParity(missingKeyEn, missingKeyDe);
-    }).toThrow(/greeting\.farewell/);
   });
 });

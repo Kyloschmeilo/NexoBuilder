@@ -111,22 +111,3 @@ export function messageParityErrors(
   }
   return errors;
 }
-
-/**
- * Asserts that a target message catalogue is in parity with its source
- * catalogue: the same keys, with the same ICU arguments per key.
- *
- * @param source the source catalogue
- * @param target the target catalogue
- * @throws when {@link messageParityErrors} finds any mismatch
- */
-export function assertMessageParity(
-  source: Record<string, unknown>,
-  target: Record<string, unknown>,
-): void {
-  const errors = messageParityErrors(source, target);
-  if (errors.length > 0) {
-    const details = errors.map((error) => `${error.path} (${error.reason})`).join(', ');
-    throw new Error(`message catalogues are not in parity: ${details}`);
-  }
-}

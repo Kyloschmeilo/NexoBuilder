@@ -2,12 +2,13 @@ import { describe, expect, it } from 'vitest';
 import JSZip from 'jszip';
 import { createFolder, createItem, createProject, insertFolder, insertItem } from '../project/factory';
 import { createTextureModel } from '../model/textureModel';
-import { createGlyph } from '../nexo/glyphs';
+import { createGlyph } from '../nexo/glyphs/model';
 import { makePngDataUrl } from '../test/png';
 import { planExport } from './plan';
 import { countSelected, planMultiExport, selectFromProject } from './selection';
-import { buildMultiExportZip, INSTALL_GUIDE_FILE, listExportPaths, listMultiExportPaths } from './zip';
-import type { Project } from '../types';
+import { INSTALL_GUIDE_FILE } from './installGuide';
+import { buildMultiExportZip, listExportPaths, listMultiExportPaths } from './zip';
+import type { Project } from '../project/types';
 
 const PNG16 = makePngDataUrl(16, 16);
 
@@ -85,7 +86,7 @@ describe('Export of multiple projects', () => {
     expect(paths).toContain(INSTALL_GUIDE_FILE);
 
     const result = await buildMultiExportZip(multi, 'full');
-    expect(result.fileName).toBe('resourcepackbuilder_2_projekte_nexo.zip');
+    expect(result.fileName).toBe('resourcepackbuilder_2_projects_nexo.zip');
     const zip = await JSZip.loadAsync(result.data);
     const files = Object.keys(zip.files).filter((f) => !zip.files[f].dir).sort();
     expect(files).toEqual(paths);
@@ -103,13 +104,13 @@ describe('Export of multiple projects', () => {
     const b = project('Pack', 'shared', { weapons: ['ruby_sword'], furniture: [] });
     const multi = planMultiExport([{ project: a }, { project: b }]);
     const errors = multi.issues.filter((i) => i.level === 'error' && !i.projectId);
-    expect(errors.some((i) => i.code === 'selection.itemIdClash' && i.params?.id === 'ruby_sword')).toBe(true);
-    expect(errors.some((i) => i.code === 'selection.glyphIdClash' && i.params?.id === 'herz')).toBe(true);
-    expect(errors.some((i) => i.code === 'selection.packNameClash' && i.params?.pack === 'pack')).toBe(true);
-    expect(errors.some((i) => i.code === 'selection.pluginFileClash' && i.params?.path === 'items/pack/waffen/waffen.yml')).toBe(true);
+    expect(errors.some((i) => i.code === 'selection.itemIdClash' && i.args?.id === 'ruby_sword')).toBe(true);
+    expect(errors.some((i) => i.code === 'selection.glyphIdClash' && i.args?.id === 'herz')).toBe(true);
+    expect(errors.some((i) => i.code === 'selection.packNameClash' && i.args?.pack === 'pack')).toBe(true);
+    expect(errors.some((i) => i.code === 'selection.pluginFileClash' && i.args?.path === 'items/pack/waffen/waffen.yml')).toBe(true);
     const warnings = multi.issues.filter((i) => i.level === 'warning' && !i.projectId);
     expect(
-      warnings.some((i) => i.code === 'selection.assetFileClash' && i.params?.path === 'assets/shared/models/item/waffen/ruby_sword.json'),
+      warnings.some((i) => i.code === 'selection.assetFileClash' && i.args?.path === 'assets/shared/models/item/waffen/ruby_sword.json'),
     ).toBe(true);
   });
 
@@ -118,10 +119,9 @@ describe('Export of multiple projects', () => {
     const b = project('Beta', 'beta', { weapons: [], furniture: ['b1'] });
     b.glyphs = [];
     const multi = planMultiExport([{ project: a }, { project: b }]);
-    const info = multi.issues.find((i) => i.projectId === b.id && i.itemId);
-    expect(info?.code).toBe('context.project');
-    expect(info?.params).toEqual({ project: 'Beta' });
-    expect(info?.detail?.itemId).toBe(info?.itemId);
+    const info = multi.issues.find((i) => i.projectId === b.id && i.target?.kind === 'item');
+    expect(info?.context?.[0]).toEqual({ code: 'context.project', args: { project: 'Beta' } });
+    expect(info?.context?.[1]?.code).toBe('context.item');
   });
 
   it('behaves exactly like the normal export with a single project', () => {

@@ -6,13 +6,15 @@
  *   they are merged into one model (like Blockbench "Resolve parent").
  * - References to vanilla textures (minecraft:...) without a matching PNG are kept.
  */
-import type { FaceName, ImportedModel, Issue, JavaModelElement, JavaModelJson, ModelTexture } from '../types';
-import { MODEL_FEATURE_VERSIONS } from '../minecraft/versions';
-import { fileBaseName, isPlainObject, maxVersion } from '../util';
-import { ModelConversionError, parseTexturePlaceholder, texturePlaceholder } from './common';
-import { createTexture, findMcmetaFor, isPngDataUrl, normalizeTextureName, type DroppedFile } from './textures';
-
-const FACE_NAMES: FaceName[] = ['north', 'east', 'south', 'west', 'up', 'down'];
+import { isPngDataUrl } from '../binary/png';
+import { CoreError, type Issue } from '../issues';
+import { FEATURE_VERSIONS, maxVersion } from '../minecraft/versions';
+import { deepClone, isPlainObject } from '../object';
+import { fileBaseName } from '../text';
+import { texturePlaceholder } from './common';
+import { FACE_NAMES, isOutOfBounds } from './geometry';
+import { createTexture, findMcmetaFor, normalizeTextureName, type DroppedFile } from './textures';
+import type { ImportedModel, JavaModelElement, JavaModelJson, ModelTexture } from './types';
 
 interface ParsedJson {
   name: string;
@@ -29,7 +31,7 @@ const ITEM_PARENTS = [
   'builtin/entity',
 ];
 
-export function stripMinecraftNamespace(ref: string): string {
+function stripMinecraftNamespace(ref: string): string {
   return ref.startsWith('minecraft:') ? ref.slice('minecraft:'.length) : ref;
 }
 
@@ -39,23 +41,23 @@ export function isVanillaReference(ref: string): boolean {
 
 export function convertJavaModel(files: DroppedFile[]): ImportedModel {
   const jsonFiles = files.filter((f) => /\.json$/i.test(f.name) && typeof f.text === 'string');
-  if (jsonFiles.length === 0) throw new ModelConversionError('model.noJsonFile');
+  if (jsonFiles.length === 0) throw new CoreError('model.noJsonFile');
 
   const parsed: ParsedJson[] = jsonFiles.map((file) => {
     let json: unknown;
     try {
       json = JSON.parse(stripJsonComments(file.text ?? ''));
     } catch (err) {
-      throw new ModelConversionError('model.invalidJson', { file: file.name, error: (err as Error).message });
+      throw new CoreError('model.invalidJson', { file: file.name, error: err instanceof Error ? err.message : String(err) });
     }
-    if (!isPlainObject(json)) throw new ModelConversionError('model.notMinecraftModel', { file: file.name });
+    if (!isPlainObject(json)) throw new CoreError('model.notMinecraftModel', { file: file.name });
     return { name: file.name, json: json as JavaModelJson };
   });
 
   const issues: Issue[] = [];
   const main = pickMainModel(parsed);
   if (!main.json.elements && !main.json.parent && !main.json.textures) {
-    throw new ModelConversionError('model.notMinecraftModelEmpty', { file: main.name });
+    throw new CoreError('model.notMinecraftModelEmpty', { file: main.name });
   }
   const merged = mergeParents(main, parsed, issues);
   if ('overrides' in merged) {
@@ -67,7 +69,7 @@ export function convertJavaModel(files: DroppedFile[]): ImportedModel {
   const pngFiles = files.filter((f) => isPngDataUrl(f.dataUrl));
   const nonPngImages = files.filter((f) => /\.(jpe?g|gif|webp|bmp|tga)$/i.test(f.name));
   for (const f of nonPngImages) {
-    issues.push({ level: 'error', code: 'model.fileNotPng', params: { file: f.name } });
+    issues.push({ level: 'error', code: 'model.fileNotPng', args: { file: f.name } });
   }
 
   const textures: ModelTexture[] = [];
@@ -114,27 +116,28 @@ export function convertJavaModel(files: DroppedFile[]): ImportedModel {
     const id = addTexture(png, ref);
     for (const key of unresolved.get(ref) ?? []) texturesJson[key] = texturePlaceholder(id);
     unresolved.delete(ref);
-    issues.push({ level: 'info', code: 'model.textureAutoAssigned', params: { file: png.name, ref } });
+    issues.push({ level: 'info', code: 'model.textureAutoAssigned', args: { file: png.name, ref } });
   }
 
   for (const [ref, keys] of unresolved) {
-    const params = { keys: keys.join(', '), ref };
+    const args = { keys: keys.join(', '), ref };
     if (isVanillaReference(ref)) {
-      issues.push({ level: 'info', code: 'model.vanillaTexture', params });
+      issues.push({ level: 'info', code: 'model.vanillaTexture', args });
     } else {
-      issues.push({ level: 'error', code: 'model.texturePngMissing', params });
+      issues.push({ level: 'error', code: 'model.texturePngMissing', args });
     }
   }
   const unusedPngs = pngFiles.filter((p) => !usedPngs.has(p));
   for (const png of unusedPngs) {
-    issues.push({ level: 'warning', code: 'model.unusedPng', params: { file: png.name } });
+    issues.push({ level: 'warning', code: 'model.unusedPng', args: { file: png.name } });
   }
 
   const json: JavaModelJson = { ...merged };
   if (Object.keys(texturesJson).length > 0) json.textures = texturesJson;
   else delete json.textures;
 
-  const requiresVersion = analyseElements(json, issues);
+  const analysis = analyseElements(json);
+  issues.push(...analysis.issues);
   checkParent(json, issues);
 
   return {
@@ -143,7 +146,7 @@ export function convertJavaModel(files: DroppedFile[]): ImportedModel {
     json,
     textures,
     issues,
-    requiresVersion,
+    requiresVersion: analysis.requiresVersion,
   };
 }
 
@@ -175,34 +178,30 @@ function mergeParents(main: ParsedJson, all: ParsedJson[], issues: Issue[]): Jav
   }
   for (const m of all) {
     if (!used.has(m)) {
-      issues.push({ level: 'warning', code: 'model.notInParentChain', params: { file: m.name, model: main.name } });
+      issues.push({ level: 'warning', code: 'model.notInParentChain', args: { file: m.name, model: main.name } });
     }
   }
-  if (stack.length === 1) return structuredCloneJson(main.json);
+  if (stack.length === 1) return deepClone(main.json);
 
   const merged: JavaModelJson = {};
+  // The child wins: each layer only fills what the layers above did not define
   for (const layer of stack) {
     for (const [key, value] of Object.entries(layer)) {
       if (key === 'parent') continue;
-      if (key === 'textures' || key === 'display') {
-        const target = (merged[key] ?? {}) as Record<string, unknown>;
-        for (const [slot, slotValue] of Object.entries((value ?? {}) as Record<string, unknown>)) {
-          if (target[slot] === undefined) target[slot] = slotValue;
-        }
-        merged[key] = target as never;
-      } else if (merged[key] === undefined) {
-        merged[key] = structuredCloneJson(value);
-      }
+      if (key === 'textures' && layer.textures) merged.textures = { ...merged.textures, ...withoutKeys(layer.textures, merged.textures) };
+      else if (key === 'display' && layer.display) merged.display = { ...merged.display, ...withoutKeys(layer.display, merged.display) };
+      else if (merged[key] === undefined) merged[key] = deepClone(value);
     }
   }
   const last = stack[stack.length - 1];
   if (typeof last.parent === 'string') merged.parent = last.parent;
-  issues.push({ level: 'info', code: 'model.parentsMerged', params: { count: stack.length - 1 } });
+  issues.push({ level: 'info', code: 'model.parentsMerged', args: { count: stack.length - 1 } });
   return merged;
 }
 
-function structuredCloneJson<T>(value: T): T {
-  return JSON.parse(JSON.stringify(value)) as T;
+/** The entries of `source` that `existing` does not define. */
+function withoutKeys<T>(source: Record<string, T>, existing: Record<string, T> | undefined): Record<string, T> {
+  return Object.fromEntries(Object.entries(source).filter(([key]) => existing?.[key] === undefined).map(([key, value]) => [key, deepClone(value)]));
 }
 
 /** Matches a texture reference ("ns:item/foo") to a dropped PNG. */
@@ -245,13 +244,20 @@ function stripJsonComments(text: string): string {
   return result;
 }
 
+export interface ElementAnalysis {
+  issues: Issue[];
+  /** Minimum Minecraft version the elements need */
+  requiresVersion?: string;
+}
+
 /**
  * Checks the elements for things Minecraft cannot load and determines the required version.
- * Also used for already imported models (e.g. during the export check).
+ * Runs on every imported model and again on export.
  */
-export function analyseElements(json: JavaModelJson, issues: Issue[]): string | undefined {
+export function analyseElements(json: JavaModelJson): ElementAnalysis {
+  const issues: Issue[] = [];
   let requiresVersion: string | undefined;
-  const elements = Array.isArray(json.elements) ? (json.elements as JavaModelElement[]) : [];
+  const elements: JavaModelElement[] = Array.isArray(json.elements) ? json.elements : [];
   let outOfBounds = 0;
   let badUvRotation = 0;
   let invalid = 0;
@@ -260,50 +266,39 @@ export function analyseElements(json: JavaModelJson, issues: Issue[]): string | 
       invalid++;
       continue;
     }
-    if ([...el.from, ...el.to].some((v) => typeof v !== 'number' || v < -16 || v > 32)) outOfBounds++;
+    if (isOutOfBounds([...el.from, ...el.to])) outOfBounds++;
     const rot = el.rotation;
     if (rot) {
       if (typeof rot.angle === 'number' && rot.axis) {
         if (Math.abs(rot.angle) > 45) {
-          requiresVersion = maxVersion(requiresVersion, MODEL_FEATURE_VERSIONS.multiAxisRotation);
+          requiresVersion = maxVersion(requiresVersion, FEATURE_VERSIONS.multiAxisRotation);
         } else if (Math.abs(rot.angle) % 22.5 !== 0) {
-          requiresVersion = maxVersion(requiresVersion, MODEL_FEATURE_VERSIONS.freeAngle);
+          requiresVersion = maxVersion(requiresVersion, FEATURE_VERSIONS.freeAngle);
         }
       } else if (rot.x !== undefined || rot.y !== undefined || rot.z !== undefined) {
-        requiresVersion = maxVersion(requiresVersion, MODEL_FEATURE_VERSIONS.multiAxisRotation);
+        requiresVersion = maxVersion(requiresVersion, FEATURE_VERSIONS.multiAxisRotation);
       }
     }
     if (el.shade_direction_override) {
-      requiresVersion = maxVersion(requiresVersion, MODEL_FEATURE_VERSIONS.shadeDirectionOverride);
+      requiresVersion = maxVersion(requiresVersion, FEATURE_VERSIONS.shadeDirectionOverride);
     }
     for (const face of FACE_NAMES) {
       const f = el.faces?.[face];
       if (f && typeof f.rotation === 'number' && f.rotation % 90 !== 0) badUvRotation++;
     }
   }
-  if (invalid > 0) issues.push({ level: 'error', code: 'model.invalidElements', params: { count: invalid } });
-  if (outOfBounds > 0) {
-    issues.push({ level: 'error', code: 'model.elementsOutOfBounds', params: { count: outOfBounds } });
-  }
-  if (badUvRotation > 0) {
-    issues.push({ level: 'error', code: 'model.invalidUvRotation', params: { count: badUvRotation } });
-  }
-  return requiresVersion;
+  if (invalid > 0) issues.push({ level: 'error', code: 'model.invalidElements', args: { count: invalid } });
+  if (outOfBounds > 0) issues.push({ level: 'error', code: 'model.elementsOutOfBounds', args: { count: outOfBounds } });
+  if (badUvRotation > 0) issues.push({ level: 'error', code: 'model.invalidUvRotation', args: { count: badUvRotation } });
+  return { issues, requiresVersion };
 }
 
 function checkParent(json: JavaModelJson, issues: Issue[]) {
   if (typeof json.parent !== 'string') return;
   const parent = stripMinecraftNamespace(json.parent);
   if (!isVanillaReference(json.parent)) {
-    issues.push({ level: 'warning', code: 'model.customParent', params: { parent: json.parent } });
+    issues.push({ level: 'warning', code: 'model.customParent', args: { parent: json.parent } });
   } else if (!json.elements && !ITEM_PARENTS.includes(parent) && !parent.startsWith('block/') && !parent.startsWith('item/')) {
-    issues.push({ level: 'info', code: 'model.vanillaParent', params: { parent: json.parent } });
+    issues.push({ level: 'info', code: 'model.vanillaParent', args: { parent: json.parent } });
   }
-}
-
-/** Lists the texture keys of a model that point to the given texture. */
-export function textureKeysUsingTexture(json: JavaModelJson, textureId: string): string[] {
-  return Object.entries(json.textures ?? {})
-    .filter(([, v]) => parseTexturePlaceholder(v) === textureId)
-    .map(([k]) => k);
 }

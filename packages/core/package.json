@@ -2,7 +2,7 @@
   "name": "@resourcepackbuilder/core",
   "private": true,
   "version": "0.0.0",
-  "description": "Modell-Import, Nexo-Konfiguration, Export-Planung und Sync – ohne Oberfläche.",
+  "description": "Model import, Nexo configuration, export planning and sync – no UI.",
   "type": "module",
   "exports": {
     "./*": "./src/*.ts"
@@ -10,7 +10,8 @@
   "scripts": {
     "typecheck": "tsc -b",
     "test": "vitest run",
-    "test:watch": "vitest"
+    "test:watch": "vitest",
+    "lint": "eslint ."
   },
   "dependencies": {
     "immer": "^11.1.21",

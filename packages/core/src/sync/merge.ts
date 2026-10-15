@@ -6,11 +6,24 @@
  * are always authoritative; the order lists are completed or cleaned up from them.
  */
 import { produce, type Draft } from 'immer';
-import type { Folder, Item, Project } from '../types';
-import { LIST_KIND_NAMES, LIST_KINDS, type Envelope, type ListKind, type ProjectMeta } from './format';
+import type { Item, Project } from '../project/types';
+import { LIST_KINDS, LIST_ORDER_FIELDS, type Envelope, type ListKind, type ProjectMeta } from './format';
 
 /** Folder for items whose folder was deleted by someone else while they were being created. */
-export const RECOVERY_FOLDER_ID = 'f_wiederhergestellt';
+export const RECOVERY_FOLDER_ID = 'f_recovered';
+const RECOVERY_FOLDER_NAME = 'Recovered';
+
+type ListUpdate = <T extends { id: string }>(list: T[], kind: ListKind) => T[];
+
+/** Replaces each project list (glyphs, sounds, paintings) by `update(list)` if that returns a new array. */
+function updateLists(draft: Draft<Project>, update: ListUpdate): void {
+  const glyphs = update(draft.glyphs, 'glyph');
+  if (glyphs !== draft.glyphs) draft.glyphs = glyphs;
+  const sounds = update(draft.sounds, 'sound');
+  if (sounds !== draft.sounds) draft.sounds = sounds;
+  const paintings = update(draft.paintings, 'painting');
+  if (paintings !== draft.paintings) draft.paintings = paintings;
+}
 
 function sameList(a: string[], b: string[]): boolean {
   return a.length === b.length && a.every((v, i) => v === b[i]);
@@ -32,11 +45,17 @@ function mergeOrder(current: string[], actual: string[]): string[] {
 }
 
 function byCreatedThenId(items: Record<string, Item>) {
-  return (a: string, b: string) => (items[a].createdAt ?? 0) - (items[b].createdAt ?? 0) || (a < b ? -1 : a > b ? 1 : 0);
+  return (a: string, b: string) => items[a].createdAt - items[b].createdAt || (a < b ? -1 : a > b ? 1 : 0);
+}
+
+function withoutDuplicateIds<T extends { id: string }>(list: T[]): T[] {
+  if (new Set(list.map((e) => e.id)).size === list.length) return list;
+  const seen = new Set<string>();
+  return list.filter((entry) => !seen.has(entry.id) && seen.add(entry.id));
 }
 
 /** Repairs the folder structure of an (Immer) project. Only changes what is wrong. */
-export function normalizeTree(draft: Draft<Project>): void {
+function normalizeTree(draft: Draft<Project>): void {
   const folders = draft.folders;
   const items = draft.items;
   const folderIds = Object.keys(folders).sort();
@@ -50,8 +69,7 @@ export function normalizeTree(draft: Draft<Project>): void {
   for (;;) {
     const reachable = new Set<string>();
     const queue = folderIds.filter((id) => folders[id].parentId === null);
-    while (queue.length) {
-      const id = queue.shift()!;
+    for (let id = queue.shift(); id !== undefined; id = queue.shift()) {
       if (reachable.has(id)) continue;
       reachable.add(id);
       for (const child of folderIds) if (folders[child].parentId === id) queue.push(child);
@@ -69,7 +87,7 @@ export function normalizeTree(draft: Draft<Project>): void {
   if (orphans.length) {
     let target = rootOrder[0];
     if (!target) {
-      folders[RECOVERY_FOLDER_ID] = { id: RECOVERY_FOLDER_ID, name: 'Wiederhergestellt', parentId: null, folderIds: [], itemIds: [] };
+      folders[RECOVERY_FOLDER_ID] = { id: RECOVERY_FOLDER_ID, name: RECOVERY_FOLDER_NAME, parentId: null, folderIds: [], itemIds: [] };
       target = RECOVERY_FOLDER_ID;
       rootOrder.push(RECOVERY_FOLDER_ID);
       folderIds.push(RECOVERY_FOLDER_ID);
@@ -84,7 +102,7 @@ export function normalizeTree(draft: Draft<Project>): void {
     const parent = folders[id].parentId;
     if (parent) children.set(parent, [...(children.get(parent) ?? []), id]);
   }
-  for (const id of Object.keys(items).sort(byCreatedThenId(items as Record<string, Item>))) {
+  for (const id of Object.keys(items).sort(byCreatedThenId(items))) {
     const folderId = items[id].folderId;
     folderItems.set(folderId, [...(folderItems.get(folderId) ?? []), id]);
   }
@@ -97,101 +115,95 @@ export function normalizeTree(draft: Draft<Project>): void {
   }
 
   // Remove duplicate glyphs, sounds, paintings (same internal ID)
-  for (const kind of LIST_KIND_NAMES) {
-    const field = LIST_KINDS[kind].field;
-    const list = (draft[field] ?? []) as Array<{ id: string }>;
-    const ids = list.map((g) => g.id);
-    if (new Set(ids).size !== ids.length) {
-      const seen = new Set<string>();
-      (draft as unknown as Record<string, unknown>)[field] = list.filter((g) => {
-        if (seen.has(g.id)) return false;
-        seen.add(g.id);
-        return true;
-      });
-    }
-  }
+  updateLists(draft, withoutDuplicateIds);
+}
+
+/** Inserts, replaces or removes (data undefined) the entry with the ID in the list. */
+function upsert<T extends { id: string }>(list: T[], id: string, data: T | undefined): void {
+  const index = list.findIndex((entry) => entry.id === id);
+  if (!data) {
+    if (index >= 0) list.splice(index, 1);
+  } else if (index >= 0) list[index] = data;
+  else list.push(data);
 }
 
 /**
  * Applies changes from the folder. Returns a new project; unchanged parts remain
  * the same objects (important for undo/redo and change detection).
  */
-export function applyRemoteEntities(project: Project, envelopes: Envelope[]): Project {
+export function applyRemoteEntities(project: Project, envelopes: Envelope[], now: number): Project {
   const orders: Partial<Record<ListKind, string[]>> = {};
   const overlaid = produce(project, (draft) => {
-    for (const kind of LIST_KIND_NAMES) {
-      const field = LIST_KINDS[kind].field;
-      if (!Array.isArray(draft[field])) (draft as unknown as Record<string, unknown>)[field] = [];
-    }
     for (const env of envelopes) {
       switch (env.kind) {
-        case 'project': {
-          if (env.deleted || !env.data) break;
-          const meta = env.data as ProjectMeta;
-          draft.name = meta.name;
-          draft.namespace = meta.namespace;
-          draft.settings = meta.settings as Draft<Project['settings']>;
-          draft.rootFolderIds = [...meta.rootFolderIds];
-          if (typeof meta.createdAt === 'number') draft.createdAt = meta.createdAt;
-          for (const kind of LIST_KIND_NAMES) {
-            const order = meta[LIST_KINDS[kind].order];
-            if (Array.isArray(order)) orders[kind] = order;
-          }
+        case 'project':
+          if (env.data && !env.deleted) applyMeta(draft, env.data, orders);
           break;
-        }
         case 'folder':
-          if (env.deleted) delete draft.folders[env.id];
-          else draft.folders[env.id] = env.data as Folder;
+          if (env.data && !env.deleted) draft.folders[env.id] = env.data;
+          else delete draft.folders[env.id];
           break;
         case 'item':
-          if (env.deleted) delete draft.items[env.id];
-          else draft.items[env.id] = env.data as Draft<Item>;
+          if (env.data && !env.deleted) draft.items[env.id] = env.data;
+          else delete draft.items[env.id];
           break;
-        default: {
-          const list = draft[LIST_KINDS[env.kind].field] as Array<{ id: string }>;
-          const index = list.findIndex((g) => g.id === env.id);
-          if (env.deleted) {
-            if (index >= 0) list.splice(index, 1);
-          } else if (index >= 0) list[index] = env.data as { id: string };
-          else list.push(env.data as { id: string });
+        case 'glyph':
+          upsert(draft.glyphs, env.id, env.deleted ? undefined : env.data);
           break;
-        }
+        case 'sound':
+          upsert(draft.sounds, env.id, env.deleted ? undefined : env.data);
+          break;
+        case 'painting':
+          upsert(draft.paintings, env.id, env.deleted ? undefined : env.data);
+          break;
       }
     }
   });
   // Second pass: applied objects are now part of the project and may be adjusted
   return produce(overlaid, (draft) => {
-    for (const kind of LIST_KIND_NAMES) {
-      const wanted = orders[kind];
-      if (!wanted) continue;
-      const field = LIST_KINDS[kind].field;
-      const list = draft[field] as Array<{ id: string }>;
-      const order = new Map(wanted.map((id, i) => [id, i]));
-      const sorted = [...list].sort((a, b) => (order.get(a.id) ?? Number.MAX_SAFE_INTEGER) - (order.get(b.id) ?? Number.MAX_SAFE_INTEGER));
-      if (sorted.some((g, i) => g.id !== list[i].id)) (draft as unknown as Record<string, unknown>)[field] = sorted;
-    }
+    updateLists(draft, (list, kind) => sortByOrder(list, orders[kind]));
     normalizeTree(draft);
-    draft.updatedAt = Math.max(draft.updatedAt, Date.now());
+    draft.updatedAt = Math.max(draft.updatedAt, now);
   });
 }
 
+function applyMeta(draft: Draft<Project>, meta: ProjectMeta, orders: Partial<Record<ListKind, string[]>>): void {
+  draft.name = meta.name;
+  draft.namespace = meta.namespace;
+  draft.settings = meta.settings;
+  draft.rootFolderIds = [...meta.rootFolderIds];
+  if (typeof meta.createdAt === 'number') draft.createdAt = meta.createdAt;
+  for (const kind of LIST_KINDS) {
+    const order = meta[LIST_ORDER_FIELDS[kind]];
+    if (Array.isArray(order)) orders[kind] = order;
+  }
+}
+
+/** The list sorted by `order` (unknown IDs last); the same array if nothing moves. */
+function sortByOrder<T extends { id: string }>(list: T[], order: string[] | undefined): T[] {
+  if (!order) return list;
+  const position = new Map(order.map((id, i) => [id, i]));
+  const rank = (entry: T) => position.get(entry.id) ?? Number.MAX_SAFE_INTEGER;
+  const sorted = [...list].sort((a, b) => rank(a) - rank(b));
+  return sorted.some((entry, i) => entry !== list[i]) ? sorted : list;
+}
+
 /** Builds a project entirely from the files of a shared folder. */
-export function projectFromEnvelopes(meta: Envelope, envelopes: Envelope[]): Project {
-  const data = meta.data as ProjectMeta;
+export function projectFromEnvelopes(meta: ProjectMeta, envelopes: Envelope[], now: number): Project {
   const base: Project = {
     formatVersion: 1,
-    id: data.id,
-    name: data.name,
-    namespace: data.namespace,
-    settings: data.settings,
+    id: meta.id,
+    name: meta.name,
+    namespace: meta.namespace,
+    settings: meta.settings,
     folders: {},
     items: {},
-    rootFolderIds: [...data.rootFolderIds],
+    rootFolderIds: [...meta.rootFolderIds],
     glyphs: [],
     sounds: [],
     paintings: [],
-    createdAt: typeof data.createdAt === 'number' ? data.createdAt : Date.now(),
-    updatedAt: Date.now(),
+    createdAt: typeof meta.createdAt === 'number' ? meta.createdAt : now,
+    updatedAt: now,
   };
-  return applyRemoteEntities(base, [meta, ...envelopes.filter((e) => e.kind !== 'project')]);
+  return applyRemoteEntities(base, envelopes, now);
 }

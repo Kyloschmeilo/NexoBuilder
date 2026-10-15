@@ -1,27 +1,29 @@
+// @ts-check
 /**
  * ResourcepackBuilder as a desktop program (Electron).
  * Loads the static Next.js export (out/) via the custom app:// protocol in its own window.
  * Projects are saved automatically, just like in the browser (IndexedDB in the app data folder).
  */
-const { app, BrowserWindow, Menu, dialog, ipcMain, net, protocol, session, shell } = require('electron');
+const { app, BrowserWindow, Menu, dialog, net, protocol, session, shell } = require('electron');
 const path = require('node:path');
 const { pathToFileURL } = require('node:url');
-const { onLocaleChange, setLocale, t } = require('./messages.cjs');
+const { onLocaleChange, setLocale, t } = require('./i18n.cjs');
+const { APP_ORIGIN, handle } = require('./ipc.cjs');
 const { registerShareHandlers } = require('./share.cjs');
-const { isTestServerRunning, registerTestServerHandlers, stopTestServer } = require('./testserver.cjs');
+const { testHooks } = require('./testHooks.cjs');
+const { isTestServerRunning, registerTestServerHandlers, stopTestServer } = require('./testserver/index.cjs');
 
 const APP_NAME = 'ResourcepackBuilder';
 const OUT_DIR = path.join(__dirname, '..', 'out');
-const APP_ORIGIN = 'app://bundle';
 const ICON = path.join(__dirname, '..', 'build', 'icon.png');
+/** Web permissions the UI needs: copy buttons write to the clipboard. Everything else is denied. */
+const ALLOWED_PERMISSIONS = new Set(['clipboard-sanitized-write']);
 
-app.setName(APP_NAME);
-if (process.platform === 'win32') app.setAppUserModelId('de.resourcepackbuilder.app');
+/** @type {BrowserWindow | null} */
+let mainWindow = null;
 
 // Next.js loads its assets from absolute paths (/_next/...), which file:// cannot serve.
-protocol.registerSchemesAsPrivileged([
-  { scheme: 'app', privileges: { standard: true, secure: true, supportFetchAPI: true } },
-]);
+protocol.registerSchemesAsPrivileged([{ scheme: 'app', privileges: { standard: true, secure: true, supportFetchAPI: true } }]);
 
 function registerAppProtocol() {
   protocol.handle('app', (request) => {
@@ -32,24 +34,17 @@ function registerAppProtocol() {
     if (host !== 'bundle' || !file.startsWith(OUT_DIR + path.sep)) {
       return new Response('Not found', { status: 404 });
     }
-    return net.fetch(pathToFileURL(path.extname(file) ? file : file + '.html').toString());
+    return net.fetch(pathToFileURL(path.extname(file) ? file : `${file}.html`).toString());
   });
 }
 
-// Single instance only: a second launch brings the existing window to the front
-if (!app.requestSingleInstanceLock()) {
-  app.quit();
-}
-
-/** @type {BrowserWindow | null} */
-let mainWindow = null;
-
-function isExternalUrl(url) {
-  return /^https?:\/\//i.test(url);
+/** Opens https links (e.g. to the Nexo docs) in the default browser; anything else is ignored. @param {string} url */
+function openExternal(url) {
+  if (/^https:\/\//i.test(url)) void shell.openExternal(url);
 }
 
 function createWindow() {
-  mainWindow = new BrowserWindow({
+  const window = new BrowserWindow({
     width: 1440,
     height: 920,
     minWidth: 1000,
@@ -67,28 +62,29 @@ function createWindow() {
       preload: path.join(__dirname, 'preload.cjs'),
     },
   });
+  mainWindow = window;
 
-  mainWindow.once('ready-to-show', () => mainWindow?.show());
-
-  // Open links (e.g. to the Nexo docs) in the default browser, no new app windows
-  mainWindow.webContents.setWindowOpenHandler(({ url }) => {
-    if (isExternalUrl(url)) void shell.openExternal(url);
+  window.once('ready-to-show', () => window.show());
+  // No new app windows
+  window.webContents.setWindowOpenHandler(({ url }) => {
+    openExternal(url);
     return { action: 'deny' };
   });
   // Never navigate away from the app (e.g. when a file is dropped onto the window)
-  mainWindow.webContents.on('will-navigate', (event, url) => {
-    if (url === mainWindow?.webContents.getURL()) return;
+  window.webContents.on('will-navigate', (event, url) => {
+    if (url === window.webContents.getURL()) return;
     event.preventDefault();
-    if (isExternalUrl(url)) void shell.openExternal(url);
+    openExternal(url);
   });
 
-  void mainWindow.loadURL(`${APP_ORIGIN}/`);
-  mainWindow.on('closed', () => {
+  void window.loadURL(`${APP_ORIGIN}/`);
+  window.on('closed', () => {
     mainWindow = null;
   });
 }
 
 function buildMenu() {
+  /** @type {Electron.MenuItemConstructorOptions[]} */
   const template = [
     {
       label: t('menu.file'),
@@ -110,8 +106,8 @@ function buildMenu() {
     {
       label: t('menu.help'),
       submenu: [
-        { label: t('menu.nexoDocs'), click: () => void shell.openExternal('https://docs.nexomc.com/') },
-        { label: 'Blockbench', click: () => void shell.openExternal('https://www.blockbench.net/') },
+        { label: t('menu.nexoDocs'), click: () => openExternal('https://docs.nexomc.com/') },
+        { label: 'Blockbench', click: () => openExternal('https://www.blockbench.net/') },
         { type: 'separator' },
         {
           label: t('menu.about', { app: APP_NAME }),
@@ -129,30 +125,11 @@ function buildMenu() {
   Menu.setApplicationMenu(Menu.buildFromTemplate(template));
 }
 
-app.on('second-instance', () => {
-  if (!mainWindow) return;
-  if (mainWindow.isMinimized()) mainWindow.restore();
-  mainWindow.focus();
-});
-
-app.whenReady().then(() => {
-  registerAppProtocol();
-  buildMenu();
-  // The UI reports its language on startup and on every change; menus are rebuilt in that language
-  onLocaleChange(() => buildMenu());
-  ipcMain.handle('app:set-locale', (event, locale) => {
-    const url = event.senderFrame?.url ?? '';
-    if (!url.startsWith('app://bundle/')) throw new Error('Not allowed');
-    setLocale(locale);
-  });
-  registerShareHandlers();
-  registerTestServerHandlers();
-
-  // Save exports (ZIP) and project files via a "Save as" dialog
+/** Exports (ZIP) and project files are saved via a "Save as" dialog. */
+function handleDownloads() {
   session.defaultSession.on('will-download', (_event, item) => {
-    // Automated tests only: save directly into a folder without a dialog
-    if (process.env.RESOURCEPACKBUILDER_DOWNLOAD_DIR) {
-      item.setSavePath(path.join(process.env.RESOURCEPACKBUILDER_DOWNLOAD_DIR, item.getFilename()));
+    if (testHooks.downloadDir) {
+      item.setSavePath(path.join(testHooks.downloadDir, item.getFilename()));
       return;
     }
     item.setSaveDialogOptions({
@@ -160,22 +137,56 @@ app.whenReady().then(() => {
       defaultPath: path.join(app.getPath('downloads'), item.getFilename()),
     });
   });
+}
 
-  createWindow();
-  app.on('activate', () => {
-    if (BrowserWindow.getAllWindows().length === 0) createWindow();
+function denyPermissions() {
+  session.defaultSession.setPermissionRequestHandler((_webContents, permission, callback) => callback(ALLOWED_PERMISSIONS.has(permission)));
+  session.defaultSession.setPermissionCheckHandler((_webContents, permission) => ALLOWED_PERMISSIONS.has(permission));
+}
+
+function run() {
+  // A second launch brings the existing window to the front
+  app.on('second-instance', () => {
+    if (!mainWindow) return;
+    if (mainWindow.isMinimized()) mainWindow.restore();
+    mainWindow.focus();
   });
-});
 
-// If the test server is still running, stop it cleanly before quitting (saves the world)
-let quitting = false;
-app.on('before-quit', (event) => {
-  if (quitting || !isTestServerRunning()) return;
-  event.preventDefault();
-  quitting = true;
-  void stopTestServer().finally(() => app.quit());
-});
+  void app.whenReady().then(() => {
+    registerAppProtocol();
+    denyPermissions();
+    buildMenu();
+    // The UI reports its language on startup and on every change; menus are rebuilt in that language
+    onLocaleChange(() => buildMenu());
+    handle('app:set-locale', (_event, locale) => setLocale(locale));
+    registerShareHandlers();
+    registerTestServerHandlers();
+    handleDownloads();
 
-app.on('window-all-closed', () => {
-  if (process.platform !== 'darwin') app.quit();
-});
+    createWindow();
+    app.on('activate', () => {
+      if (BrowserWindow.getAllWindows().length === 0) createWindow();
+    });
+  });
+
+  // A running test server is stopped cleanly before quitting (saves the world)
+  let quitting = false;
+  app.on('before-quit', (event) => {
+    if (quitting || !isTestServerRunning()) return;
+    event.preventDefault();
+    quitting = true;
+    void stopTestServer().finally(() => app.quit());
+  });
+
+  app.on('window-all-closed', () => {
+    if (process.platform !== 'darwin') app.quit();
+  });
+}
+
+// Before the single-instance lock: the name decides the user data folder, where the lock lives
+app.setName(APP_NAME);
+if (process.platform === 'win32') app.setAppUserModelId('de.resourcepackbuilder.app');
+
+// Single instance only: a second process hands over to the first one and quits without setting anything up
+if (app.requestSingleInstanceLock()) run();
+else app.quit();

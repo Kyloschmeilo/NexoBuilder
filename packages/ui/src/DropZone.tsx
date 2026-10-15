@@ -1,4 +1,4 @@
-import { useState, type ReactNode } from 'react';
+import { useState, type DragEvent, type ReactNode } from 'react';
 import { Upload } from 'lucide-react';
 import { cn } from 'cn';
 import { Badge } from './components/badge';
@@ -6,14 +6,22 @@ import { filesFromDataTransfer, pickFiles } from './files';
 
 interface DropZoneProps {
   onFiles: (files: File[]) => void;
+  /** File types offered by the picker (input `accept` syntax). */
   accept: string;
   title: ReactNode;
   subtitle?: ReactNode;
+  /** Extensions shown as badges. */
   formats?: string[];
   multiple?: boolean;
   compact?: boolean;
 }
 
+const carriesFiles = (e: DragEvent) => e.dataTransfer.types.includes('Files');
+
+/**
+ * Area that accepts dropped files (including folders) and opens the file picker on click. A handled drop
+ * calls `preventDefault()`, so window-level drop handlers can skip events with `defaultPrevented`.
+ */
 export function DropZone({ onFiles, accept, title, subtitle, formats, multiple = true, compact }: DropZoneProps) {
   const [dragging, setDragging] = useState(false);
   const pick = async () => {
@@ -23,12 +31,11 @@ export function DropZone({ onFiles, accept, title, subtitle, formats, multiple =
   return (
     <div
       className={cn(
-        'group/dropzone flex cursor-pointer flex-col items-center rounded-lg border border-dashed border-input text-center text-muted-foreground transition-colors outline-none',
+        'flex cursor-pointer flex-col items-center rounded-lg border border-dashed border-input text-center text-muted-foreground transition-colors outline-none',
         'hover:border-primary hover:bg-accent hover:text-foreground focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/50',
         dragging && 'border-primary bg-accent text-foreground',
         compact ? 'px-3.5 py-4' : 'px-5 py-8',
       )}
-      data-dragging={dragging || undefined}
       role="button"
       tabIndex={0}
       onClick={() => void pick()}
@@ -39,32 +46,31 @@ export function DropZone({ onFiles, accept, title, subtitle, formats, multiple =
         }
       }}
       onDragOver={(e) => {
-        if (![...e.dataTransfer.types].includes('Files')) return;
+        if (!carriesFiles(e)) return;
         e.preventDefault();
-        e.stopPropagation();
         e.dataTransfer.dropEffect = 'copy';
         setDragging(true);
       }}
-      onDragLeave={() => setDragging(false)}
+      onDragLeave={(e) => {
+        // Moving onto a child also fires dragleave; only leaving the zone itself ends the highlight
+        if (!(e.relatedTarget instanceof Node && e.currentTarget.contains(e.relatedTarget))) setDragging(false);
+      }}
       onDrop={async (e) => {
-        if (![...e.dataTransfer.types].includes('Files')) return;
+        if (!carriesFiles(e)) return;
         e.preventDefault();
-        e.stopPropagation();
         setDragging(false);
         const files = await filesFromDataTransfer(e.dataTransfer);
         if (files.length) onFiles(files);
       }}
     >
       <Upload className={cn('text-primary', compact ? 'size-5' : 'size-7')} />
-      <strong className="mt-2 mb-1 block font-heading text-base leading-5 font-semibold tracking-[0.06em] text-foreground uppercase">
-        {title}
-      </strong>
+      <strong className="mt-2 mb-1 block font-heading text-base leading-5 font-semibold tracking-[0.06em] text-foreground uppercase">{title}</strong>
       {subtitle && <div className="text-[13px] leading-[18px]">{subtitle}</div>}
       {formats && (
         <div className="mt-3 flex flex-wrap justify-center gap-1.5">
-          {formats.map((f) => (
-            <Badge key={f} variant="outline" className="font-mono">
-              {f}
+          {formats.map((format) => (
+            <Badge key={format} variant="outline" className="font-mono">
+              {format}
             </Badge>
           ))}
         </div>

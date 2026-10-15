@@ -9,9 +9,9 @@
  * The sync knows neither Electron nor the browser: file access goes through `SyncFs`,
  * the project through `SyncHost`. This allows testing it with an in-memory file system.
  */
-import type { Project } from '../types';
-import { CoreError, type MessageParams } from '../errors';
-import { stripFormatting } from '../util';
+import { CoreError } from '../issues';
+import { itemLabel } from '../project/labels';
+import type { Project } from '../project/types';
 import {
   changedEntityKeys,
   entityKey,
@@ -24,10 +24,10 @@ import {
   parseEntityKey,
   parseEntityPath,
   parseEnvelope,
-  PROJECT_FILE,
-  type EntityData,
   type EntityKind,
+  type EntityRef,
   type Envelope,
+  type ProjectMeta,
 } from './format';
 import { applyRemoteEntities, projectFromEnvelopes } from './merge';
 
@@ -53,11 +53,17 @@ export interface EntityVersion {
   hash: string;
 }
 
+interface FileState {
+  mtimeMs: number;
+  size: number;
+  hash: string;
+}
+
 export interface SyncState {
   clock: number;
   versions: Record<string, EntityVersion>;
   /** Last seen files – so that not everything has to be re-read on startup */
-  files: Record<string, { mtimeMs: number; size: number; hash: string }>;
+  files: Record<string, FileState>;
 }
 
 export interface SyncIdentity {
@@ -72,7 +78,7 @@ export interface RemoteChange {
   id: string;
   byName: string;
   deleted: boolean;
-  /** Display name of the entry, e.g. item name */
+  /** Display name of the entry, e.g. item name ('' for the project itself – the app names that kind) */
   label: string;
 }
 
@@ -87,49 +93,53 @@ export interface SyncResult {
   written: number;
 }
 
-/** The folder belongs to another project or similar – sync not possible. */
-/** The share folder cannot be used; `code` is a key in the `issues` namespace. */
+/** The shared folder cannot be used (e.g. it holds another project) – syncing has to stop. */
 export class ShareFolderError extends CoreError {
-  constructor(code: string, params: MessageParams = {}) {
-    super(code, params);
-    this.name = 'ShareFolderError';
-  }
+  override readonly name = 'ShareFolderError';
 }
 
 /** Is version a newer than b? Ties are decided by the installation ID. */
-export function isNewer(a: { rev: number; by: string }, b: { rev: number; by: string } | undefined): boolean {
+function isNewer(a: { rev: number; by: string }, b: { rev: number; by: string } | undefined): boolean {
   if (!b) return true;
   return a.rev > b.rev || (a.rev === b.rev && a.by > b.by);
 }
 
-export function emptySyncState(): SyncState {
-  return { clock: 0, versions: {}, files: {} };
+function envelopeRef(env: Envelope): EntityRef {
+  return env.kind === 'project' ? { kind: 'project' } : { kind: env.kind, id: env.id };
 }
 
-function labelOf(kind: EntityKind, data: EntityData | undefined): string {
-  if (!data) return '';
-  const d = data as unknown as Record<string, unknown>;
-  switch (kind) {
+function envelopeKey(env: Envelope): string {
+  return entityKey(envelopeRef(env));
+}
+
+function labelOf(env: Envelope, local: Project): string {
+  switch (env.kind) {
     case 'project':
-      // No name of its own – the app shows a translated "project settings" for this kind
       return '';
     case 'folder':
-      return String(d.name ?? '');
-    case 'item':
-      return stripFormatting(String(d.displayName ?? '')) || String(d.nexoId ?? '');
+      return (env.data ?? local.folders[env.id])?.name ?? '';
+    case 'item': {
+      const item = env.data ?? local.items[env.id];
+      return item ? itemLabel(item) : '';
+    }
     case 'glyph':
-      return String(d.glyphId ?? '');
+      return (env.data ?? local.glyphs.find((g) => g.id === env.id))?.glyphId ?? '';
     case 'sound':
-      return String(d.soundId ?? '');
+      return (env.data ?? local.sounds.find((g) => g.id === env.id))?.soundId ?? '';
     case 'painting':
-      return String(d.paintingId ?? '');
+      return (env.data ?? local.paintings.find((g) => g.id === env.id))?.paintingId ?? '';
   }
+}
+
+/** A file read during a poll */
+interface SeenFile extends FileState {
+  path: string;
 }
 
 export class SyncEngine {
   readonly projectId: string;
   private versions: Map<string, EntityVersion>;
-  private files: Map<string, { mtimeMs: number; size: number; hash: string }>;
+  private files: Map<string, FileState>;
   private clock: number;
   private snapshot: Project;
   /** Locally changed entries that must be written with a new version */
@@ -148,16 +158,16 @@ export class SyncEngine {
     private readonly now: () => number = Date.now,
   ) {
     const project = host.getProject();
-    if (!project) throw new Error('SyncEngine: no project is open');
+    if (!project) throw new CoreError('sync.noProjectOpen');
     this.snapshot = project;
     this.projectId = project.id;
     this.versions = new Map(Object.entries(state?.versions ?? {}));
     this.files = new Map(Object.entries(state?.files ?? {}));
     this.clock = state?.clock ?? 0;
     // Everything that changed locally since the last sync (including deletions) must be written
-    const keys = new Set([...entityKeys(project), ...this.versions.keys()]);
-    for (const key of keys) {
-      if (this.versions.get(key)?.hash !== hashData(localEntity(project, key))) this.dirty.add(key);
+    for (const key of new Set([...entityKeys(project), ...this.versions.keys()])) {
+      const ref = parseEntityKey(key);
+      if (ref && this.versions.get(key)?.hash !== hashData(localEntity(project, ref))) this.dirty.add(key);
     }
   }
 
@@ -222,8 +232,8 @@ export class SyncEngine {
       this.dirty.delete(key);
       this.rewrite.delete(key);
       const ref = parseEntityKey(key);
-      if (ref.kind === 'project') ref.id = this.projectId;
-      const data = localEntity(this.snapshot, key);
+      if (!ref) continue;
+      const data = localEntity(this.snapshot, ref);
       const hash = hashData(data);
       let version = this.versions.get(key);
       if (isDirty && version?.hash !== hash) {
@@ -232,9 +242,9 @@ export class SyncEngine {
       } else if (!isRewrite || !version) {
         continue; // nothing changed
       }
-      const content = JSON.stringify(makeEnvelope(ref, version, data));
+      const content = JSON.stringify(makeEnvelope(ref, this.projectId, version, data));
       try {
-        const info = await this.fs.write(entityPath(ref.kind, ref.id), content);
+        const info = await this.fs.write(entityPath(ref), content);
         this.files.set(info.path, { mtimeMs: info.mtimeMs, size: info.size, hash: hashString(content) });
         this.versions.set(key, version);
         written++;
@@ -246,8 +256,12 @@ export class SyncEngine {
     return written;
   }
 
+  /**
+   * Reads changed files and applies newer versions of others. A file only counts as seen once its
+   * change is applied (or needs none) – otherwise it is read again on the next poll.
+   */
   private async pollNow(): Promise<RemoteChange[]> {
-    const accepted: Envelope[] = [];
+    const accepted: Array<{ env: Envelope; file: SeenFile }> = [];
     for (const info of await this.fs.list()) {
       if (this.stopped) return [];
       const ref = parseEntityPath(info.path);
@@ -256,9 +270,9 @@ export class SyncEngine {
       if (known && known.mtimeMs === info.mtimeMs && known.size === info.size) continue;
       const text = await this.fs.read(info.path);
       if (text === null) continue;
-      const hash = hashString(text);
-      if (known?.hash === hash) {
-        this.files.set(info.path, { mtimeMs: info.mtimeMs, size: info.size, hash });
+      const file: SeenFile = { path: info.path, mtimeMs: info.mtimeMs, size: info.size, hash: hashString(text) };
+      if (known?.hash === file.hash) {
+        this.recordFile(file);
         continue;
       }
       const env = parseEnvelope(text, ref);
@@ -267,62 +281,69 @@ export class SyncEngine {
       if (env.kind === 'project' && env.id !== this.projectId) {
         throw new ShareFolderError('sync.otherProjectInFolder');
       }
-      this.files.set(info.path, { mtimeMs: info.mtimeMs, size: info.size, hash });
       this.clock = Math.max(this.clock, env.rev);
-      const key = entityKey(env.kind, env.id);
+      const key = envelopeKey(env);
       const local = this.versions.get(key);
       if (isNewer(env, local)) {
         // An own, not yet written change is newer and will be written shortly
-        if (!this.dirty.has(key)) accepted.push(env);
+        if (!this.dirty.has(key)) {
+          accepted.push({ env, file });
+          continue;
+        }
       } else if (local && (env.rev !== local.rev || env.by !== local.by)) {
         this.rewrite.add(key);
       }
+      this.recordFile(file);
     }
     if (accepted.length === 0) return [];
 
     const before = this.host.getProject();
     if (!before || before.id !== this.projectId || this.stopped) return [];
-    const changes: RemoteChange[] = accepted.map((env) => {
-      const key = entityKey(env.kind, env.id);
-      return {
-        kind: env.kind,
-        id: env.id,
-        byName: env.byName,
-        deleted: !!env.deleted,
-        label: labelOf(env.kind, env.data ?? localEntity(before, key)),
-      };
-    });
+    const envelopes = accepted.map((a) => a.env);
+    const changes: RemoteChange[] = envelopes.map((env) => ({
+      kind: env.kind,
+      id: env.id,
+      byName: env.byName,
+      deleted: !!env.deleted,
+      label: labelOf(env, before),
+    }));
     this.applying = true;
     try {
-      this.host.applyRemote((project) => applyRemoteEntities(project, accepted), changes);
+      this.host.applyRemote((project) => applyRemoteEntities(project, envelopes, this.now()), changes);
     } finally {
       this.applying = false;
     }
     const after = this.host.getProject();
-    if (!after) return [];
+    if (!after || after.id !== this.projectId) return [];
     const acceptedKeys = new Set<string>();
-    for (const env of accepted) {
-      const key = entityKey(env.kind, env.id);
+    for (const { env, file } of accepted) {
+      const key = envelopeKey(env);
       acceptedKeys.add(key);
-      this.versions.set(key, { rev: env.rev, by: env.by, byName: env.byName, hash: hashData(localEntity(after, key)) });
+      this.versions.set(key, { rev: env.rev, by: env.by, byName: env.byName, hash: hashData(localEntity(after, envelopeRef(env))) });
+      this.recordFile(file);
     }
     // Entries that were only adjusted by cleaning up the folder structure still count as synced
     for (const key of changedEntityKeys(before, after)) {
+      const ref = parseEntityKey(key);
+      if (!ref || acceptedKeys.has(key) || this.dirty.has(key)) continue;
       const version = this.versions.get(key);
-      if (acceptedKeys.has(key) || this.dirty.has(key)) continue;
-      if (version) this.versions.set(key, { ...version, hash: hashData(localEntity(after, key)) });
+      if (version) this.versions.set(key, { ...version, hash: hashData(localEntity(after, ref)) });
       else this.dirty.add(key);
     }
     this.snapshot = after;
     return changes;
   }
+
+  private recordFile({ path, ...state }: SeenFile): void {
+    this.files.set(path, state);
+  }
 }
 
 /** Reads a shared folder completely (to open a shared project). */
-export async function readShareFolder(fs: SyncFs): Promise<{ project: Project; state: SyncState } | null> {
+export async function readShareFolder(fs: SyncFs, now = Date.now()): Promise<{ project: Project; state: SyncState } | null> {
   const files: SyncState['files'] = {};
   const envelopes: Envelope[] = [];
-  let meta: Envelope | null = null;
+  let meta: ProjectMeta | null = null;
   let clock = 0;
   for (const info of await fs.list()) {
     const ref = parseEntityPath(info.path);
@@ -333,16 +354,19 @@ export async function readShareFolder(fs: SyncFs): Promise<{ project: Project; s
     if (!env) continue;
     files[info.path] = { mtimeMs: info.mtimeMs, size: info.size, hash: hashString(text) };
     clock = Math.max(clock, env.rev);
-    if (info.path === PROJECT_FILE) meta = env.deleted ? null : env;
-    else envelopes.push(env);
+    if (env.kind === 'project') {
+      meta = env.deleted ? null : (env.data ?? null);
+      envelopes.unshift(env);
+    } else {
+      envelopes.push(env);
+    }
   }
   if (!meta) return null;
-  const project = projectFromEnvelopes(meta, envelopes);
+  const project = projectFromEnvelopes(meta, envelopes, now);
   const versions: SyncState['versions'] = {};
-  for (const env of [meta, ...envelopes]) {
-    const key = entityKey(env.kind, env.id);
-    versions[key] = { rev: env.rev, by: env.by, byName: env.byName, hash: hashData(localEntity(project, key)) };
+  for (const env of envelopes) {
+    versions[envelopeKey(env)] = { rev: env.rev, by: env.by, byName: env.byName, hash: hashData(localEntity(project, envelopeRef(env))) };
   }
-  // Entries that only exist due to the cleanup (e.g. "Wiederhergestellt") are written on startup
+  // Entries that only exist due to the cleanup (e.g. the recovery folder) are written on startup
   return { project, state: { clock, versions, files } };
 }

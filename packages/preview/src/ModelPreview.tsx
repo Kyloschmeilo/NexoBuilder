@@ -1,121 +1,97 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
 import * as THREE from 'three';
-import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 import { RotateCcw } from 'lucide-react';
 import { useTranslations } from 'next-intl';
-import { Button } from '@resourcepackbuilder/ui/components/button';
+import { IconButton } from '@resourcepackbuilder/ui';
 import { NativeSelect, NativeSelectOption } from '@resourcepackbuilder/ui/components/native-select';
-import { Tooltip, TooltipContent, TooltipTrigger } from '@resourcepackbuilder/ui/components/tooltip';
-import type { ImportedModel, JavaDisplayTransform } from '@resourcepackbuilder/core/types';
-import { buildPreviewModel, type PreviewModel } from './modelGeometry';
+import type { ImportedModel, JavaDisplayTransform } from '@resourcepackbuilder/core/model/types';
+import { buildPreviewModel } from './modelGeometry';
+import { createStage, type Stage } from './stage';
 import { createModelObject } from './threeModel';
 
 /** Display slots that can be previewed; labels live in the `preview.display` messages. */
 const DISPLAY_OPTIONS = ['none', 'gui', 'thirdperson_righthand', 'firstperson_righthand', 'head', 'ground', 'fixed'] as const;
+type DisplayOption = (typeof DISPLAY_OPTIONS)[number];
 
-interface ModelPreviewProps {
+const isDisplayOption = (value: string): value is DisplayOption => (DISPLAY_OPTIONS as readonly string[]).includes(value);
+
+/** Ground grid and block outline (one block = 16 pixels). */
+function createBlockHelpers(): { object: THREE.Object3D; dispose: () => void } {
+  const group = new THREE.Group();
+  const grid = new THREE.GridHelper(16, 16, 0x54766a, 0x1f302a);
+  grid.position.y = -8;
+  const outlineMaterial = new THREE.LineBasicMaterial({ color: 0x54766a, transparent: true, opacity: 0.6 });
+  const outline = new THREE.LineSegments(new THREE.EdgesGeometry(new THREE.BoxGeometry(16, 16, 16)), outlineMaterial);
+  group.add(grid, outline);
+  return {
+    object: group,
+    dispose: () => {
+      grid.dispose();
+      outline.geometry.dispose();
+      outlineMaterial.dispose();
+    },
+  };
+}
+
+export interface ModelPreviewProps {
   model: ImportedModel;
+  /** Height in pixels. */
   height?: number;
+  /** Display-slot select and reset button. */
   showToolbar?: boolean;
 }
 
+/** Interactive 3D preview of an imported model (orbit with the mouse, optional display slots). */
 export function ModelPreview({ model, height = 340, showToolbar = true }: ModelPreviewProps) {
   const t = useTranslations('preview');
   const containerRef = useRef<HTMLDivElement>(null);
-  const [display, setDisplay] = useState('none');
+  const stageRef = useRef<Stage | null>(null);
+  const [display, setDisplay] = useState<DisplayOption>('none');
   const [resetCounter, setResetCounter] = useState(0);
   const [webglError, setWebglError] = useState(false);
-  const preview = useMemo<PreviewModel>(() => buildPreviewModel(model), [model]);
+  const preview = useMemo(() => buildPreviewModel(model), [model]);
   const displayTransform = display === 'none' ? undefined : (model.json.display?.[display] as JavaDisplayTransform | undefined);
 
   useEffect(() => {
     const container = containerRef.current;
-    if (!container || preview.kind === 'empty') return;
-    let renderer: THREE.WebGLRenderer;
+    if (!container) return;
     try {
-      renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
+      stageRef.current = createStage(container);
     } catch {
       setWebglError(true);
       return;
     }
-    setWebglError(false);
-    let disposed = false;
-    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
-    renderer.outputColorSpace = THREE.SRGBColorSpace;
-    container.appendChild(renderer.domElement);
-
-    const scene = new THREE.Scene();
-    const camera = new THREE.PerspectiveCamera(35, 1, 0.1, 1000);
-    const controls = new OrbitControls(camera, renderer.domElement);
-    controls.enableDamping = true;
-    controls.dampingFactor = 0.12;
-
-    const render = () => {
-      if (!disposed) renderer.render(scene, camera);
+    return () => {
+      stageRef.current?.dispose();
+      stageRef.current = null;
     };
-    const object = createModelObject(preview, displayTransform, render);
-    scene.add(object.root);
+  }, []);
 
-    const extras: Array<{ dispose: () => void }> = [];
-    if (!displayTransform && preview.kind === 'elements') {
-      // Ground grid and block outline (one block = 16 pixels)
-      const grid = new THREE.GridHelper(16, 16, 0x54766a, 0x1f302a);
-      grid.position.y = -8;
-      scene.add(grid);
-      const outline = new THREE.LineSegments(
-        new THREE.EdgesGeometry(new THREE.BoxGeometry(16, 16, 16)),
-        new THREE.LineBasicMaterial({ color: 0x54766a, transparent: true, opacity: 0.6 }),
-      );
-      scene.add(outline);
-      extras.push(grid.geometry, grid.material as THREE.Material, outline.geometry, outline.material as THREE.Material);
-    }
+  useEffect(() => {
+    const stage = stageRef.current;
+    if (!stage || preview.kind === 'empty') return;
+    const object = createModelObject(preview, displayTransform, stage.render);
+    const helpers = !displayTransform && preview.kind === 'elements' ? createBlockHelpers() : null;
+    stage.scene.add(object.root);
+    if (helpers) stage.scene.add(helpers.object);
 
-    // Fit the camera to the model
     const box = new THREE.Box3().setFromObject(object.root);
     if (box.isEmpty()) box.set(new THREE.Vector3(-8, -8, -8), new THREE.Vector3(8, 8, 8));
-    const center = box.getCenter(new THREE.Vector3());
-    const size = box.getSize(new THREE.Vector3()).length();
-    const distance = Math.max(size, 12) * 1.35;
-    const direction =
-      preview.kind === 'generated' && !displayTransform ? new THREE.Vector3(0, 0.12, 1) : new THREE.Vector3(1, 0.75, 1.15);
-    camera.position.copy(center).add(direction.normalize().multiplyScalar(distance));
-    controls.target.copy(center);
-    controls.update();
-
-    const resize = () => {
-      const width = container.clientWidth;
-      const h = container.clientHeight;
-      if (!width || !h) return;
-      renderer.setSize(width, h, false);
-      camera.aspect = width / h;
-      camera.updateProjectionMatrix();
-      render();
-    };
-    const observer = new ResizeObserver(resize);
-    observer.observe(container);
-    resize();
-
-    let frame = 0;
-    const loop = () => {
-      frame = requestAnimationFrame(loop);
-      if (controls.update()) render();
-    };
-    loop();
-    controls.addEventListener('change', render);
+    const direction = preview.kind === 'generated' && !displayTransform ? new THREE.Vector3(0, 0.12, 1) : new THREE.Vector3(1, 0.75, 1.15);
+    stage.frame(box, direction);
 
     return () => {
-      disposed = true;
-      cancelAnimationFrame(frame);
-      observer.disconnect();
-      controls.dispose();
+      stage.scene.remove(object.root);
       object.dispose();
-      extras.forEach((d) => d.dispose());
-      renderer.dispose();
-      renderer.domElement.remove();
+      if (helpers) {
+        stage.scene.remove(helpers.object);
+        helpers.dispose();
+      }
+      stage.render();
     };
   }, [preview, displayTransform, resetCounter]);
 
-  const hasDisplay = (slot: string) => slot === 'none' || !!model.json.display?.[slot];
+  const hasDisplay = (slot: DisplayOption) => slot === 'none' || !!model.json.display?.[slot];
 
   const note = webglError
     ? t('webglUnavailable')
@@ -126,16 +102,16 @@ export function ModelPreview({ model, height = 340, showToolbar = true }: ModelP
   return (
     <div className="relative overflow-hidden rounded-lg border border-border bg-background" style={{ height }}>
       <div ref={containerRef} className="absolute inset-0 [&>canvas]:block [&>canvas]:size-full" />
-      {(preview.kind === 'empty' || webglError) && (
-        <div className="absolute inset-0 grid place-items-center p-5 text-center text-[13px] text-muted-foreground">{note}</div>
-      )}
-      {showToolbar && preview.kind !== 'empty' && !webglError && (
+      {note && <div className="absolute inset-0 grid place-items-center bg-background p-5 text-center text-[13px] text-muted-foreground">{note}</div>}
+      {showToolbar && !note && (
         <div className="pointer-events-none absolute inset-x-2 top-2 flex items-center gap-1.5 [&>*]:pointer-events-auto">
           <NativeSelect
             size="sm"
             className="max-w-[220px] bg-card [&_select]:text-xs"
             value={display}
-            onChange={(e) => setDisplay(e.target.value)}
+            onChange={(e) => {
+              if (isDisplayOption(e.target.value)) setDisplay(e.target.value);
+            }}
             title={t('display.label')}
             aria-label={t('display.label')}
           >
@@ -146,16 +122,9 @@ export function ModelPreview({ model, height = 340, showToolbar = true }: ModelP
             ))}
           </NativeSelect>
           <span className="flex-1" />
-          <Tooltip>
-            <TooltipTrigger
-              render={
-                <Button variant="outline" size="icon-sm" className="bg-card" aria-label={t('resetView')} onClick={() => setResetCounter((c) => c + 1)} />
-              }
-            >
-              <RotateCcw />
-            </TooltipTrigger>
-            <TooltipContent>{t('resetView')}</TooltipContent>
-          </Tooltip>
+          <IconButton label={t('resetView')} variant="outline" className="bg-card" onClick={() => setResetCounter((c) => c + 1)}>
+            <RotateCcw />
+          </IconButton>
         </div>
       )}
     </div>

@@ -1,0 +1,8 @@
+{
+  "extends": "@resourcepackbuilder/config/node.json",
+  "compilerOptions": {
+    "allowJs": true,
+    "checkJs": true
+  },
+  "include": ["electron/**/*.cjs", "src/platform/desktopApi.ts"]
+}

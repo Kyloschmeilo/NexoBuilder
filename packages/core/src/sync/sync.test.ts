@@ -1,13 +1,13 @@
 import { describe, expect, it } from 'vitest';
 import { produce } from 'immer';
-import type { Project } from '../types';
+import type { Project } from '../project/types';
 import { createFolder, createItem, createProject, insertFolder, insertItem } from '../project/factory';
-import { createGlyph } from '../nexo/glyphs';
-import { createSound } from '../nexo/sounds';
-import { createPainting } from '../nexo/paintings';
+import { createGlyph } from '../nexo/glyphs/model';
+import { createSound } from '../nexo/sounds/model';
+import { createPainting } from '../nexo/paintings/model';
 import { readShareFolder, SyncEngine, ShareFolderError, type SyncFileInfo, type SyncFs, type SyncState } from './engine';
 import { RECOVERY_FOLDER_ID } from './merge';
-import { PROJECT_FILE } from './format';
+import { PROJECT_FILE, README_FILE } from './format';
 
 /** Shared in-memory folder – like a OneDrive folder that both see */
 class MemoryFolder {
@@ -41,6 +41,8 @@ class Client {
   past: Project[] = [];
   engine!: SyncEngine;
   applied: string[] = [];
+  /** The project is closed (e.g. while another one is open) */
+  closed = false;
   constructor(
     project: Project,
     readonly folder: MemoryFolder,
@@ -55,7 +57,7 @@ class Client {
     this.engine = new SyncEngine(
       this.folder.fs(),
       {
-        getProject: () => this.project,
+        getProject: () => (this.closed ? null : this.project),
         applyRemote: (transform, changes) => {
           this.project = transform(this.project);
           this.past = this.past.map(transform);
@@ -380,4 +382,38 @@ describe('Shared projects', () => {
     folder.put(PROJECT_FILE, JSON.stringify({ ...data, id: other.id, rev: data.rev + 1, data: { ...data.data, id: other.id } }));
     await expect(anna.sync()).rejects.toBeInstanceOf(ShareFolderError);
   });
+
+  it('reads a remote change again if it could not be applied yet', async () => {
+    const { anna, ben } = await setup();
+    const itemId = firstItem(anna.project).id;
+    anna.edit((draft) => {
+      draft.items[itemId].displayName = 'Smaragdschwert';
+    });
+    await anna.sync();
+    // Ben's project is closed while the change arrives – nothing can be applied
+    ben.closed = true;
+    expect((await ben.sync()).applied).toEqual([]);
+    ben.closed = false;
+    const result = await ben.sync();
+    expect(result.applied.map((c) => c.label)).toEqual(['Smaragdschwert']);
+    expect(ben.project.items[itemId].displayName).toBe('Smaragdschwert');
+  });
+
+  it('migrates items from older versions (armor in the config)', async () => {
+    const { folder, anna, ben } = await setup();
+    const item = firstItem(anna.project);
+    const path = `items/${item.id}.json`;
+    const envelope = folder.json(path);
+    envelope.rev += 1;
+    envelope.data.config.$armor = { set: 'ruby', layer1: '@asset:a1' };
+    folder.put(path, JSON.stringify(envelope));
+    await ben.sync();
+    expect(ben.project.items[item.id].armor).toEqual({ set: 'ruby', layer1: '@asset:a1' });
+    expect(ben.project.items[item.id].config.$armor).toBeUndefined();
+  });
+
+  it('names the shared folder readme README.txt', () => {
+    expect(README_FILE).toBe('README.txt');
+  });
 });
+

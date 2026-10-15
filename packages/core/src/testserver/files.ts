@@ -3,9 +3,10 @@
  * plus the Nexo settings so that the resource pack is served locally (localhost).
  */
 import { Document, isMap, parseDocument } from 'yaml';
-import type { Project } from '../types';
-import type { ExportPlan, FileContent } from '../export/plan';
+import { packLocation } from '../export/paths';
 import { buildRootFiles } from '../export/rootFiles';
+import type { ExportPlan, FileContent } from '../export/types';
+import type { Project } from '../project/types';
 
 export interface ServerFile {
   /** Path relative to plugins/Nexo */
@@ -13,16 +14,14 @@ export interface ServerFile {
   data: FileContent;
 }
 
-const PACK_NAME_PATTERN = /^[A-Za-z0-9_.-]+$/;
-
 /** All project files for plugins/Nexo (resource pack always as a folder, which syncs faster). */
 export function nexoFolderFiles(project: Project, plan: ExportPlan): ServerFile[] {
-  const packName = PACK_NAME_PATTERN.test(project.settings.packName) ? project.settings.packName : 'resourcepackbuilder';
+  const packFolder = packLocation(project, false);
   const files: ServerFile[] = [];
   for (const map of [plan.itemFiles, plan.recipeFiles, plan.glyphFiles]) {
     for (const [path, data] of map) files.push({ path, data });
   }
-  for (const [path, data] of plan.packFiles) files.push({ path: `pack/external_packs/${packName}/${path}`, data });
+  for (const [path, data] of plan.packFiles) files.push({ path: packFolder + path, data });
   for (const [path, data] of buildRootFiles([plan])) files.push({ path, data });
   return files.sort((a, b) => (a.path < b.path ? -1 : a.path > b.path ? 1 : 0));
 }
@@ -33,7 +32,7 @@ export interface NexoServerSettings {
 }
 
 /** Values that ResourcepackBuilder sets in plugins/Nexo/settings.yml */
-export function settingsOverrides(options: NexoServerSettings): Array<[string[], unknown]> {
+function settingsOverrides(options: NexoServerSettings): Array<[string[], unknown]> {
   return [
     // Serve the pack directly from the local machine instead of via an upload service
     [['Pack', 'server', 'type'], 'SELFHOST'],

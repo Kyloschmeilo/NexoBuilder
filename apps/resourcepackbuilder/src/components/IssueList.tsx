@@ -1,0 +1,93 @@
+import { useCallback } from 'react';
+import { CircleAlert, Info, TriangleAlert } from 'lucide-react';
+import { useTranslations } from 'next-intl';
+import { cn } from 'cn';
+import type { IssueKey } from '@resourcepackbuilder/i18n';
+import type { Issue, IssueLevel, IssueTarget, MessageArgs } from '@resourcepackbuilder/core/issues';
+import { Alert, AlertAction } from '@resourcepackbuilder/ui/components/alert';
+import { Button } from '@resourcepackbuilder/ui/components/button';
+
+const ICONS: Record<IssueLevel, typeof CircleAlert> = { error: CircleAlert, warning: TriangleAlert, info: Info };
+
+const LEVEL_CLASSES: Record<IssueLevel, string> = {
+  error: 'border-destructive/60 *:[svg]:text-destructive',
+  warning: 'border-warning/60 *:[svg]:text-warning',
+  info: '*:[svg]:text-info',
+};
+
+const ORDER: Record<IssueLevel, number> = { error: 0, warning: 1, info: 2 };
+
+/** Targets the list offers a jump to, with the button label. */
+const OPEN_LABELS: Partial<Record<IssueTarget['kind'], IssueKey>> = {
+  item: 'issueList.openItem',
+  glyph: 'issueList.openGlyphs',
+};
+
+/**
+ * Returns a function that renders an issue from core in the current language: the message `code` from
+ * the `issues` namespace with its `args` (label args `{ key, args }` are translated from the `schema`
+ * namespace), prefixed by its `context` frames (outermost first, each an `issues` message):
+ * `frame › frame: message`.
+ */
+export function useIssueText(): (issue: Issue) => string {
+  const t = useTranslations('issues');
+  const tSchema = useTranslations('schema');
+  return useCallback(
+    (issue: Issue) => {
+      // Codes and label keys are runtime keys; core's tests keep every one of them in the catalogues.
+      const render = (code: string, args: MessageArgs = {}) => {
+        const values: Record<string, string | number> = {};
+        for (const [name, arg] of Object.entries(args)) {
+          values[name] = typeof arg === 'object' ? tSchema(arg.key as never, (arg.args ?? {}) as never) : arg;
+        }
+        return t(code as never, values as never);
+      };
+      const message = render(issue.code, issue.args);
+      if (!issue.context?.length) return message;
+      return `${issue.context.map((frame) => render(frame.code, frame.args)).join(' › ')}: ${message}`;
+    },
+    [t, tSchema],
+  );
+}
+
+interface IssueListProps {
+  issues: Issue[];
+  /** Jump to an issue's target; without it no jump buttons are shown. */
+  onOpen?: (target: IssueTarget) => void;
+  /** Whether the jump is offered for this issue (e.g. only for issues of the open project). */
+  canOpen?: (issue: Issue) => boolean;
+  /** Shown when there is nothing to list (nothing is rendered without it) */
+  empty?: string;
+  hideInfo?: boolean;
+}
+
+/** Issues sorted by severity, each with its icon and an optional jump to its target. */
+export function IssueList({ issues, onOpen, canOpen = () => true, empty, hideInfo }: IssueListProps) {
+  const t = useTranslations('issues');
+  const text = useIssueText();
+  const visible = issues.filter((i) => !hideInfo || i.level !== 'info').sort((a, b) => ORDER[a.level] - ORDER[b.level]);
+  if (visible.length === 0) return empty ? <div className="text-xs text-muted-foreground">{empty}</div> : null;
+  return (
+    <div role="list" className="flex flex-col gap-1.5">
+      {visible.map((issue, i) => {
+        const Icon = ICONS[issue.level];
+        const target = issue.target;
+        const openLabel = target && OPEN_LABELS[target.kind];
+        const open = onOpen && target && openLabel && canOpen(issue) ? { target, label: openLabel } : null;
+        return (
+          <Alert key={i} role="listitem" className={cn('items-start rounded-md py-1.5 text-[13px] leading-5', LEVEL_CLASSES[issue.level], open && 'pr-28')}>
+            <Icon aria-label={t(`issueList.level.${issue.level}`)} />
+            <div className="col-start-2 text-foreground">{text(issue)}</div>
+            {open && onOpen && (
+              <AlertAction className="top-1 flex">
+                <Button variant="link" size="xs" onClick={() => onOpen(open.target)}>
+                  {t(open.label)}
+                </Button>
+              </AlertAction>
+            )}
+          </Alert>
+        );
+      })}
+    </div>
+  );
+}

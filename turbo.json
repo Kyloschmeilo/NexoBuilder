@@ -2,33 +2,23 @@
   "$schema": "https://turborepo.com/schema.json",
   "tasks": {
     "typecheck": {
-      "dependsOn": [
-        "^typecheck"
-      ]
+      "dependsOn": ["^typecheck"],
+      "outputs": ["node_modules/.tmp/**"]
+    },
+    "lint": {
+      "outputs": []
     },
     "test": {
-      "dependsOn": [
-        "^typecheck"
-      ]
+      "dependsOn": ["typecheck"],
+      "outputs": []
     },
     "build": {
-      "dependsOn": [
-        "^typecheck"
-      ],
-      "outputs": [
-        ".next/**",
-        "!.next/cache/**",
-        "out/**"
-      ]
+      "dependsOn": ["^typecheck"],
+      "outputs": [".next/**", "!.next/cache/**", "out/**"]
     },
     "dist:win": {
-      "dependsOn": [
-        "^typecheck"
-      ],
-      "outputs": [
-        "out/**",
-        "release/**"
-      ],
+      "dependsOn": ["build"],
+      "outputs": ["release/**"],
       "cache": false
     },
     "dev": {

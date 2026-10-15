@@ -1,12 +1,13 @@
 /** Builds a three.js group from a PreviewModel (for the preview and thumbnails). */
 import * as THREE from 'three';
-import type { JavaDisplayTransform, ModelTexture } from '@resourcepackbuilder/core/types';
+import type { JavaDisplayTransform, ModelTexture } from '@resourcepackbuilder/core/model/types';
 import type { PreviewModel } from './modelGeometry';
 
 export interface ModelObject {
   root: THREE.Group;
-  /** Resolves once all textures are loaded */
+  /** Resolves once all textures are loaded (or failed, or the object was disposed) */
   ready: Promise<void>;
+  /** Frees GPU resources and cancels texture loads still in flight */
   dispose: () => void;
 }
 
@@ -15,6 +16,7 @@ export function createModelObject(preview: PreviewModel, display?: JavaDisplayTr
   const textureCache = new Map<string, THREE.Texture>();
   const materialCache = new Map<string, THREE.Material>();
   const loading: Array<Promise<void>> = [];
+  const pendingLoads = new Set<{ image: HTMLImageElement; settle: () => void }>();
 
   const loadTexture = (tex: ModelTexture): THREE.Texture => {
     const cached = textureCache.get(tex.id);
@@ -23,12 +25,21 @@ export function createModelObject(preview: PreviewModel, display?: JavaDisplayTr
     const texture = new THREE.Texture(image);
     loading.push(
       new Promise<void>((resolve) => {
+        const load = {
+          image,
+          settle: () => {
+            image.onload = image.onerror = null;
+            pendingLoads.delete(load);
+            resolve();
+          },
+        };
+        pendingLoads.add(load);
         image.onload = () => {
+          load.settle();
           texture.needsUpdate = true;
           onTextureLoad?.();
-          resolve();
         };
-        image.onerror = () => resolve();
+        image.onerror = load.settle;
       }),
     );
     image.src = tex.dataUrl;
@@ -44,17 +55,11 @@ export function createModelObject(preview: PreviewModel, display?: JavaDisplayTr
   let missingTexture: THREE.Texture | null = null;
   const getMissingTexture = () => {
     if (missingTexture) return missingTexture;
-    const canvas = document.createElement('canvas');
-    canvas.width = 2;
-    canvas.height = 2;
-    const ctx = canvas.getContext('2d')!;
-    ctx.fillStyle = '#f800f8';
-    ctx.fillRect(0, 0, 1, 1);
-    ctx.fillRect(1, 1, 1, 1);
-    ctx.fillStyle = '#000000';
-    ctx.fillRect(1, 0, 1, 1);
-    ctx.fillRect(0, 1, 1, 1);
-    missingTexture = new THREE.CanvasTexture(canvas);
+    // Minecraft's missing texture: a 2×2 magenta/black checkerboard
+    const M = [0xf8, 0x00, 0xf8, 0xff];
+    const K = [0x00, 0x00, 0x00, 0xff];
+    missingTexture = new THREE.DataTexture(new Uint8Array([...M, ...K, ...K, ...M]), 2, 2);
+    missingTexture.needsUpdate = true;
     missingTexture.magFilter = THREE.NearestFilter;
     missingTexture.minFilter = THREE.NearestFilter;
     missingTexture.colorSpace = THREE.SRGBColorSpace;
@@ -122,6 +127,12 @@ export function createModelObject(preview: PreviewModel, display?: JavaDisplayTr
   return {
     root,
     ready: Promise.all(loading).then(() => undefined),
-    dispose: () => disposables.forEach((d) => d.dispose()),
+    dispose: () => {
+      for (const load of [...pendingLoads]) {
+        load.image.src = '';
+        load.settle();
+      }
+      disposables.forEach((d) => d.dispose());
+    },
   };
 }

@@ -1,6 +1,6 @@
 /** Helpers for reading/writing nested config values. */
-import type { ConfigObject, ConfigValue } from '../types';
-import { isPlainObject } from '../util';
+import { isPlainObject } from '../object';
+import type { ConfigObject, ConfigValue } from '../project/types';
 
 export function getPath(obj: ConfigObject, path: string[]): ConfigValue | undefined {
   let current: unknown = obj;

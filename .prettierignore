@@ -1,0 +1,12 @@
+node_modules
+.next
+.turbo
+out
+release
+dist
+coverage
+exe-test
+package-lock.json
+next-env.d.ts
+# Vendored shadcn components, kept as generated
+packages/ui/src/components

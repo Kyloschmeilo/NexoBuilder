@@ -1,12 +1,2 @@
-import './next-intl';
-export {
-  defaultLocale,
-  isSupportedLocale,
-  localeStorageKey,
-  readStoredLocale,
-  supportedLocales,
-  writeStoredLocale,
-  type SupportedLocale,
-} from './locale';
-export { messagesByLocale, type Messages } from './messages';
-export { assertMessageParity, messageParityErrors, type MessageParityError, type MessageParityReason } from './parity';
+export { readStoredLocale, supportedLocales, writeStoredLocale, type SupportedLocale } from './locale';
+export { messagesByLocale, type IssueKey, type MessageKey, type Messages, type Namespace, type SchemaKey } from './messages';

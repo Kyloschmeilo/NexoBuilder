@@ -1,13 +1,4 @@
-/** Shared helpers for the model importers. */
-import { CoreError, type MessageParams } from '../errors';
-
-/** A model file could not be imported at all; `code` is a key in the `issues` namespace. */
-export class ModelConversionError extends CoreError {
-  constructor(code: string, params: MessageParams = {}) {
-    super(code, params);
-    this.name = 'ModelConversionError';
-  }
-}
+/** Texture placeholders shared by the model importers and the export. */
 
 const PLACEHOLDER_PREFIX = '$tex:';
 

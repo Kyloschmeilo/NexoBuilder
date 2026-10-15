@@ -4,11 +4,13 @@ dist
 .DS_Store
 coverage
 release
-
-# Plugin-Dateien (z.B. die gekaufte Nexo-JAR) nie einchecken
-*.jar
 .turbo
 .next
 out
 next-env.d.ts
 .playwright-mcp
+# Output of the Windows end-to-end test (scripts/test-windows-exe.cjs)
+exe-test/
+
+# Never commit plugin files (e.g. the purchased Nexo JAR)
+*.jar

@@ -2,13 +2,26 @@
  * Creates a model from one or more PNG textures based on a vanilla parent
  * (2D item, tool, cube block, plant …).
  */
-import type { ImportedModel, Issue, JavaModelJson, ModelTexture } from '../types';
-import { fileBaseName } from '../util';
-import { ModelConversionError, texturePlaceholder } from './common';
-import { createTexture, findMcmetaFor, isPngDataUrl, type DroppedFile } from './textures';
+import { isPngDataUrl } from '../binary/png';
+import { CoreError, type Issue } from '../issues';
+import { fileBaseName } from '../text';
+import { texturePlaceholder } from './common';
+import { createTexture, findMcmetaFor, type DroppedFile } from './textures';
+import type { ImportedModel, JavaModelJson, ModelTexture } from './types';
+
+export type TextureTemplateId =
+  | 'generated'
+  | 'handheld'
+  | 'handheld_rod'
+  | 'cube_all'
+  | 'cube_column'
+  | 'cube_bottom_top'
+  | 'orientable'
+  | 'cube'
+  | 'cross';
 
 export interface TextureTemplate {
-  id: string;
+  id: TextureTemplateId;
   parent: string;
   /** Message key in the `schema` namespace (`textureTemplates.<id>.label`) */
   label: string;
@@ -100,8 +113,16 @@ export const TEXTURE_TEMPLATES: TextureTemplate[] = [
   },
 ];
 
-export function getTextureTemplate(id: string): TextureTemplate {
-  return TEXTURE_TEMPLATES.find((t) => t.id === id) ?? TEXTURE_TEMPLATES[0];
+export const DEFAULT_TEXTURE_TEMPLATE: TextureTemplateId = 'generated';
+
+export function isTextureTemplateId(id: string): id is TextureTemplateId {
+  return TEXTURE_TEMPLATES.some((t) => t.id === id);
+}
+
+export function getTextureTemplate(id: TextureTemplateId): TextureTemplate {
+  const template = TEXTURE_TEMPLATES.find((t) => t.id === id);
+  if (!template) throw new Error(`Unknown texture template ${id}`);
+  return template;
 }
 
 /** Suggests a PNG → texture key assignment based on the file names. */
@@ -136,19 +157,20 @@ export function suggestSlotAssignment(template: TextureTemplate, pngs: DroppedFi
     }
   }
   for (const slot of template.slots) {
-    if (!result[slot] && remaining.length > 0) result[slot] = remaining.shift()!;
+    const next = result[slot] ? undefined : remaining.shift();
+    if (next) result[slot] = next;
   }
   return result;
 }
 
 export function createTextureModel(
-  templateId: string,
+  templateId: TextureTemplateId,
   assignment: Record<string, string>,
   files: DroppedFile[],
 ): ImportedModel {
   const template = getTextureTemplate(templateId);
   const pngs = files.filter((f) => isPngDataUrl(f.dataUrl));
-  if (pngs.length === 0) throw new ModelConversionError('model.noPngDropped');
+  if (pngs.length === 0) throw new CoreError('model.noPngDropped');
 
   const issues: Issue[] = [];
   const textures: ModelTexture[] = [];
@@ -167,12 +189,12 @@ export function createTextureModel(
     const file = fileName ? pngs.find((p) => p.name === fileName) : undefined;
     if (!file) {
       if (!template.multiLayer) {
-        issues.push({ level: 'error', code: 'model.slotUnassigned', params: { slot } });
+        issues.push({ level: 'error', code: 'model.slotUnassigned', args: { slot } });
       }
       continue;
     }
     if (template.multiLayer && layerIndex >= MAX_ITEM_LAYERS) {
-      issues.push({ level: 'warning', code: 'model.tooManyLayers', params: { max: MAX_ITEM_LAYERS, file: file.name } });
+      issues.push({ level: 'warning', code: 'model.tooManyLayers', args: { max: MAX_ITEM_LAYERS, file: file.name } });
       continue;
     }
     let id = idByFile.get(file.name);
@@ -184,14 +206,14 @@ export function createTextureModel(
     const key = template.multiLayer ? `layer${layerIndex++}` : slot;
     texturesJson[key] = texturePlaceholder(id);
   }
-  if (textures.length === 0) throw new ModelConversionError('model.noTextureAssigned');
+  if (textures.length === 0) throw new CoreError('model.noTextureAssigned');
   if (template.id === 'cube' && !texturesJson.particle) {
     texturesJson.particle = texturesJson.north ?? Object.values(texturesJson)[0];
   }
 
   const unused = pngs.filter((p) => !idByFile.has(p.name));
   for (const png of unused) {
-    issues.push({ level: 'warning', code: 'model.pngUnassigned', params: { file: png.name } });
+    issues.push({ level: 'warning', code: 'model.pngUnassigned', args: { file: png.name } });
   }
 
   const json: JavaModelJson = {

@@ -1,5 +1,8 @@
-import type { Issue, ModelTexture, TextureAnimation } from '../types';
-import { fileBaseName, readPngInfoFromDataUrl } from '../util';
+/** Textures of imported models: matching dropped files, animation data and checks. */
+import { isPngDataUrl, readPngInfoFromDataUrl } from '../binary/png';
+import type { Issue } from '../issues';
+import { fileBaseName } from '../text';
+import type { ModelTexture, TextureAnimation } from './types';
 
 /** An additional file dropped by the user (PNG or .mcmeta). */
 export interface DroppedFile {
@@ -8,10 +11,6 @@ export interface DroppedFile {
   dataUrl?: string;
   /** For text files (.json, .mcmeta, .bbmodel): content. */
   text?: string;
-}
-
-export function isPngDataUrl(dataUrl: string | undefined): dataUrl is string {
-  return !!dataUrl && /^data:image\/png[;,]/i.test(dataUrl);
 }
 
 /** Normalizes a file name for comparisons ("Ruby_Sword.PNG" → "ruby_sword"). */
@@ -85,7 +84,7 @@ export function getFrameSize(texture: ModelTexture): { width: number; height: nu
 export function validateTexture(texture: ModelTexture): Issue[] {
   const issues: Issue[] = [];
   if (!texture.dataUrl) {
-    issues.push({ level: 'error', code: 'texture.missing', params: { name: texture.name } });
+    issues.push({ level: 'error', code: 'texture.missing', args: { name: texture.name } });
     return issues;
   }
   if (texture.mcmeta?.animation) {
@@ -94,15 +93,15 @@ export function validateTexture(texture: ModelTexture): Issue[] {
       issues.push({
         level: 'error',
         code: 'texture.animationSizeMismatch',
-        params: { name: texture.name, width: texture.width, height: texture.height, frameWidth: width, frameHeight: height },
+        args: { name: texture.name, width: texture.width, height: texture.height, frameWidth: width, frameHeight: height },
       });
     }
   } else if (texture.width !== texture.height && texture.height % texture.width === 0 && texture.height > texture.width) {
-    issues.push({ level: 'info', code: 'texture.maybeAnimation', params: { name: texture.name, width: texture.width, height: texture.height } });
+    issues.push({ level: 'info', code: 'texture.maybeAnimation', args: { name: texture.name, width: texture.width, height: texture.height } });
   }
   const isPowerOfTwo = (n: number) => n > 0 && (n & (n - 1)) === 0;
   if (!isPowerOfTwo(texture.width) || !isPowerOfTwo(texture.height)) {
-    issues.push({ level: 'info', code: 'texture.notPowerOfTwo', params: { name: texture.name, width: texture.width, height: texture.height } });
+    issues.push({ level: 'info', code: 'texture.notPowerOfTwo', args: { name: texture.name, width: texture.width, height: texture.height } });
   }
   return issues;
 }

@@ -15,40 +15,18 @@
  * Each file is an "envelope" with a version number (rev) and sender. Deleted entries remain as
  * a small tombstone (deleted: true) so that the deletion reaches everyone.
  */
-import type { Folder, Item, Project, ProjectSettings } from '../types';
-import type { Glyph } from '../nexo/glyphs';
-import type { Sound } from '../nexo/sounds';
-import type { Painting } from '../nexo/paintings';
-import { isPlainObject } from '../util';
+import type { Glyph } from '../nexo/glyphs/model';
+import type { Painting } from '../nexo/paintings/model';
+import type { Sound } from '../nexo/sounds/model';
+import { isPlainObject } from '../object';
+import { migrateItem } from '../project/migrate';
+import type { Folder, Item, Project, ProjectSettings } from '../project/types';
 
-export const SHARE_FORMAT = 'resourcepackbuilder-share';
-export const SHARE_VERSION = 1;
+const SHARE_FORMAT = 'resourcepackbuilder-share';
+const SHARE_VERSION = 1;
 export const PROJECT_FILE = 'project.json';
-export const README_FILE = 'LIESMICH.txt';
-
-export type EntityKind = 'project' | 'folder' | 'item' | ListKind;
-
-/** Project lists whose entries get their own file (order is stored in project.json) */
-export type ListKind = 'glyph' | 'sound' | 'painting';
-type ListEntry = Glyph | Sound | Painting;
-
-export const LIST_KINDS: Record<ListKind, { field: 'glyphs' | 'sounds' | 'paintings'; order: 'glyphOrder' | 'soundOrder' | 'paintingOrder'; label: string }> = {
-  glyph: { field: 'glyphs', order: 'glyphOrder', label: 'glyphId' },
-  sound: { field: 'sounds', order: 'soundOrder', label: 'soundId' },
-  painting: { field: 'paintings', order: 'paintingOrder', label: 'paintingId' },
-};
-export const LIST_KIND_NAMES = Object.keys(LIST_KINDS) as ListKind[];
-
-export function listOf(project: Project, kind: ListKind): ListEntry[] {
-  return (project[LIST_KINDS[kind].field] ?? []) as ListEntry[];
-}
-
-const DIRS = { folder: 'folders', item: 'items', glyph: 'glyphs', sound: 'sounds', painting: 'paintings' } as const;
-const KIND_BY_DIR: Record<string, EntityKind> = { folders: 'folder', items: 'item', glyphs: 'glyph', sounds: 'sound', paintings: 'painting' };
-
-/** Allowed IDs for file names (everything ResourcepackBuilder generates itself). */
-export const ENTITY_ID_PATTERN = /^[A-Za-z0-9_-]{1,64}$/;
-const ENTITY_PATH_PATTERN = /^(folders|items|glyphs|sounds|paintings)\/([A-Za-z0-9_-]{1,64})\.json$/;
+/** Informational file for people browsing the folder (never read) */
+export const README_FILE = 'README.txt';
 
 /** Project-wide data without items/folders/glyphs (and without updatedAt, which changes on every edit). */
 export interface ProjectMeta {
@@ -65,12 +43,51 @@ export interface ProjectMeta {
   createdAt: number;
 }
 
-export type EntityData = ProjectMeta | Folder | Item | ListEntry;
+/** What each kind of entry stores */
+interface EntityDataByKind {
+  project: ProjectMeta;
+  folder: Folder;
+  item: Item;
+  glyph: Glyph;
+  sound: Sound;
+  painting: Painting;
+}
 
-export interface Envelope {
+export type EntityKind = keyof EntityDataByKind;
+/** Project lists whose entries get their own file (order is stored in project.json) */
+export type ListKind = 'glyph' | 'sound' | 'painting';
+type ListEntry = EntityDataByKind[ListKind];
+export type EntityData = EntityDataByKind[EntityKind];
+
+/** Order field in project.json of each list */
+export const LIST_ORDER_FIELDS = { glyph: 'glyphOrder', sound: 'soundOrder', painting: 'paintingOrder' } as const satisfies Record<
+  ListKind,
+  keyof ProjectMeta
+>;
+export const LIST_KINDS: ListKind[] = ['glyph', 'sound', 'painting'];
+
+function listOf(project: Project, kind: ListKind): ReadonlyArray<ListEntry> {
+  switch (kind) {
+    case 'glyph':
+      return project.glyphs;
+    case 'sound':
+      return project.sounds;
+    case 'painting':
+      return project.paintings;
+  }
+}
+
+const DIRS = { folder: 'folders', item: 'items', glyph: 'glyphs', sound: 'sounds', painting: 'paintings' } as const;
+const KIND_BY_DIR: Record<string, Exclude<EntityKind, 'project'>> = { folders: 'folder', items: 'item', glyphs: 'glyph', sounds: 'sound', paintings: 'painting' };
+
+/** Allowed IDs for file names (everything ResourcepackBuilder generates itself). */
+const ENTITY_ID_PATTERN = /^[A-Za-z0-9_-]{1,64}$/;
+const ENTITY_PATH_PATTERN = /^(folders|items|glyphs|sounds|paintings)\/([A-Za-z0-9_-]{1,64})\.json$/;
+
+type EnvelopeOf<K extends EntityKind> = {
   format: typeof SHARE_FORMAT;
   version: number;
-  kind: EntityKind;
+  kind: K;
   id: string;
   /** Logical clock: higher values are newer */
   rev: number;
@@ -79,36 +96,42 @@ export interface Envelope {
   /** Display name of the person */
   byName: string;
   deleted?: true;
-  data?: EntityData;
+  data?: EntityDataByKind[K];
+};
+
+export type Envelope = { [K in EntityKind]: EnvelopeOf<K> }[EntityKind];
+
+/** An entry: the project itself (its ID comes from the project) or an entry with its own ID. */
+export type EntityRef = { kind: 'project' } | { kind: Exclude<EntityKind, 'project'>; id: string };
+
+/** Key of an entry in the sync state, e.g. "item:i_abc" or "project". */
+export function entityKey(ref: EntityRef): string {
+  return ref.kind === 'project' ? 'project' : `${ref.kind}:${ref.id}`;
 }
 
-export interface EntityRef {
-  kind: EntityKind;
-  id: string;
+function isFileKind(value: string): value is Exclude<EntityKind, 'project'> {
+  return value in DIRS;
 }
 
-export function entityKey(kind: EntityKind, id: string): string {
-  return kind === 'project' ? 'project' : `${kind}:${id}`;
-}
-
-export function parseEntityKey(key: string): EntityRef {
-  if (key === 'project') return { kind: 'project', id: '' };
+export function parseEntityKey(key: string): EntityRef | null {
+  if (key === 'project') return { kind: 'project' };
   const index = key.indexOf(':');
-  return { kind: key.slice(0, index) as EntityKind, id: key.slice(index + 1) };
+  const kind = key.slice(0, index);
+  return index > 0 && isFileKind(kind) ? { kind, id: key.slice(index + 1) } : null;
 }
 
-export function entityPath(kind: EntityKind, id: string): string {
-  return kind === 'project' ? PROJECT_FILE : `${DIRS[kind]}/${id}.json`;
+export function entityPath(ref: EntityRef): string {
+  return ref.kind === 'project' ? PROJECT_FILE : `${DIRS[ref.kind]}/${ref.id}.json`;
 }
 
 /** Maps a file path to an entry – conflict copies ("item (1).json") and foreign files yield null. */
 export function parseEntityPath(path: string): EntityRef | null {
-  if (path === PROJECT_FILE) return { kind: 'project', id: '' };
+  if (path === PROJECT_FILE) return { kind: 'project' };
   const match = ENTITY_PATH_PATTERN.exec(path);
   return match ? { kind: KIND_BY_DIR[match[1]], id: match[2] } : null;
 }
 
-export function projectMeta(project: Project): ProjectMeta {
+function projectMeta(project: Project): ProjectMeta {
   return {
     formatVersion: 1,
     id: project.id,
@@ -117,40 +140,41 @@ export function projectMeta(project: Project): ProjectMeta {
     settings: project.settings,
     rootFolderIds: project.rootFolderIds,
     glyphOrder: project.glyphs.map((g) => g.id),
-    soundOrder: (project.sounds ?? []).map((g) => g.id),
-    paintingOrder: (project.paintings ?? []).map((g) => g.id),
+    soundOrder: project.sounds.map((g) => g.id),
+    paintingOrder: project.paintings.map((g) => g.id),
     createdAt: project.createdAt,
   };
 }
 
 /** Returns the local state of an entry (undefined = does not exist or deleted). */
-export function localEntity(project: Project, key: string): EntityData | undefined {
-  const { kind, id } = parseEntityKey(key);
-  switch (kind) {
+export function localEntity(project: Project, ref: EntityRef): EntityData | undefined {
+  switch (ref.kind) {
     case 'project':
       return projectMeta(project);
     case 'folder':
-      return project.folders[id];
+      return project.folders[ref.id];
     case 'item':
-      return project.items[id];
+      return project.items[ref.id];
     default:
-      return listOf(project, kind).find((g) => g.id === id);
+      return listOf(project, ref.kind).find((g) => g.id === ref.id);
   }
 }
 
 /** All entries of a project as keys (only IDs that are usable as file names). */
 export function entityKeys(project: Project): string[] {
   const keys = ['project'];
-  for (const id of Object.keys(project.folders)) if (ENTITY_ID_PATTERN.test(id)) keys.push(entityKey('folder', id));
-  for (const id of Object.keys(project.items)) if (ENTITY_ID_PATTERN.test(id)) keys.push(entityKey('item', id));
-  for (const kind of LIST_KIND_NAMES) {
-    for (const entry of listOf(project, kind)) if (ENTITY_ID_PATTERN.test(entry.id)) keys.push(entityKey(kind, entry.id));
-  }
+  const add = (kind: Exclude<EntityKind, 'project'>, id: string) => {
+    if (ENTITY_ID_PATTERN.test(id)) keys.push(entityKey({ kind, id }));
+  };
+  for (const id of Object.keys(project.folders)) add('folder', id);
+  for (const id of Object.keys(project.items)) add('item', id);
+  for (const kind of LIST_KINDS) for (const entry of listOf(project, kind)) add(kind, entry.id);
   return keys;
 }
 
-function sameIds(a: string[], b: string[]): boolean {
-  return a.length === b.length && a.every((id, i) => id === b[i]);
+function sameIds(a: ReadonlyArray<{ id: string }> | string[], b: ReadonlyArray<{ id: string }> | string[]): boolean {
+  const id = (v: { id: string } | string) => (typeof v === 'string' ? v : v.id);
+  return a.length === b.length && a.every((v, i) => id(v) === id(b[i]));
 }
 
 /**
@@ -159,8 +183,8 @@ function sameIds(a: string[], b: string[]): boolean {
  */
 export function changedEntityKeys(prev: Project, next: Project): string[] {
   const keys: string[] = [];
-  const add = (key: string, id: string) => {
-    if (ENTITY_ID_PATTERN.test(id)) keys.push(key);
+  const add = (kind: Exclude<EntityKind, 'project'>, id: string) => {
+    if (ENTITY_ID_PATTERN.test(id)) keys.push(entityKey({ kind, id }));
   };
   if (
     prev.name !== next.name ||
@@ -168,49 +192,47 @@ export function changedEntityKeys(prev: Project, next: Project): string[] {
     prev.settings !== next.settings ||
     prev.createdAt !== next.createdAt ||
     !sameIds(prev.rootFolderIds, next.rootFolderIds) ||
-    LIST_KIND_NAMES.some(
-      (kind) =>
-        !sameIds(
-          listOf(prev, kind).map((g) => g.id),
-          listOf(next, kind).map((g) => g.id),
-        ),
-    )
+    LIST_KINDS.some((kind) => !sameIds(listOf(prev, kind), listOf(next, kind)))
   ) {
     keys.push('project');
   }
   if (prev.folders !== next.folders) {
     for (const id of new Set([...Object.keys(prev.folders), ...Object.keys(next.folders)])) {
-      if (prev.folders[id] !== next.folders[id]) add(entityKey('folder', id), id);
+      if (prev.folders[id] !== next.folders[id]) add('folder', id);
     }
   }
   if (prev.items !== next.items) {
     for (const id of new Set([...Object.keys(prev.items), ...Object.keys(next.items)])) {
-      if (prev.items[id] !== next.items[id]) add(entityKey('item', id), id);
+      if (prev.items[id] !== next.items[id]) add('item', id);
     }
   }
-  for (const kind of LIST_KIND_NAMES) {
+  for (const kind of LIST_KINDS) {
     const a = listOf(prev, kind);
     const b = listOf(next, kind);
     if (a === b) continue;
     const before = new Map(a.map((g) => [g.id, g]));
     const after = new Map(b.map((g) => [g.id, g]));
     for (const id of new Set([...before.keys(), ...after.keys()])) {
-      if (before.get(id) !== after.get(id)) add(entityKey(kind, id), id);
+      if (before.get(id) !== after.get(id)) add(kind, id);
     }
   }
   return keys;
 }
 
+/** An envelope as written: the kind of `data` is the one of the entry (see {@link Envelope} for read ones). */
+export type OutgoingEnvelope = EnvelopeOf<EntityKind>;
+
 export function makeEnvelope(
   ref: EntityRef,
+  projectId: string,
   version: { rev: number; by: string; byName: string },
   data: EntityData | undefined,
-): Envelope {
-  const envelope: Envelope = {
+): OutgoingEnvelope {
+  const envelope: OutgoingEnvelope = {
     format: SHARE_FORMAT,
     version: SHARE_VERSION,
     kind: ref.kind,
-    id: ref.id,
+    id: ref.kind === 'project' ? projectId : ref.id,
     rev: version.rev,
     by: version.by,
     byName: version.byName,
@@ -219,6 +241,8 @@ export function makeEnvelope(
   else envelope.data = data;
   return envelope;
 }
+
+type EnvelopeHead = Omit<OutgoingEnvelope, 'kind' | 'data' | 'deleted'>;
 
 /** Reads an envelope and checks whether it matches the expected path. Incomplete files yield null. */
 export function parseEnvelope(text: string, expected: EntityRef): Envelope | null {
@@ -232,45 +256,63 @@ export function parseEnvelope(text: string, expected: EntityRef): Envelope | nul
   if (raw.kind !== expected.kind || typeof raw.id !== 'string') return null;
   if (expected.kind !== 'project' && raw.id !== expected.id) return null;
   if (typeof raw.rev !== 'number' || !Number.isFinite(raw.rev) || typeof raw.by !== 'string') return null;
-  const envelope = raw as unknown as Envelope;
-  if (typeof envelope.byName !== 'string') envelope.byName = '';
-  if (envelope.deleted) {
-    delete envelope.data;
-    return envelope;
-  }
-  if (!isPlainObject(envelope.data)) return null;
-  if (!isValidData(envelope.kind, envelope.id, envelope.data)) return null;
-  return envelope;
+  const head: EnvelopeHead = {
+    format: SHARE_FORMAT,
+    version: raw.version,
+    id: raw.id,
+    rev: raw.rev,
+    by: raw.by,
+    byName: typeof raw.byName === 'string' ? raw.byName : '',
+  };
+  if (raw.deleted) return { ...head, kind: expected.kind, deleted: true };
+  return withData(head, expected.kind, raw.data);
 }
 
-function isValidData(kind: EntityKind, id: string, data: Record<string, unknown>): boolean {
+/** Checks the data of an envelope (items go through the project migration). */
+function withData(head: EnvelopeHead, kind: EntityKind, data: unknown): Envelope | null {
+  if (!isPlainObject(data) || data.id !== head.id) return null;
   switch (kind) {
     case 'project':
-      return (
-        data.id === id &&
-        typeof data.name === 'string' &&
-        typeof data.namespace === 'string' &&
-        isPlainObject(data.settings) &&
-        Array.isArray(data.rootFolderIds) &&
-        Array.isArray(data.glyphOrder)
-      );
+      return isProjectMeta(data) ? { ...head, kind, data } : null;
     case 'folder':
-      return (
-        data.id === id &&
-        typeof data.name === 'string' &&
-        (data.parentId === null || typeof data.parentId === 'string') &&
-        Array.isArray(data.folderIds) &&
-        Array.isArray(data.itemIds)
-      );
-    case 'item':
-      return data.id === id && typeof data.nexoId === 'string' && typeof data.folderId === 'string' && isPlainObject(data.config);
+      return isFolder(data) ? { ...head, kind, data } : null;
+    case 'item': {
+      const item = typeof data.nexoId === 'string' && typeof data.folderId === 'string' && isPlainObject(data.config) ? migrateItem(data) : null;
+      return item ? { ...head, kind, data: item } : null;
+    }
     case 'glyph':
-      return data.id === id && typeof data.glyphId === 'string';
+      return hasStringField<Glyph>(data, 'glyphId') ? { ...head, kind, data } : null;
     case 'sound':
-      return data.id === id && typeof data.soundId === 'string' && Array.isArray(data.files);
+      return hasStringField<Sound>(data, 'soundId') && Array.isArray(data.files) ? { ...head, kind, data } : null;
     case 'painting':
-      return data.id === id && typeof data.paintingId === 'string';
+      return hasStringField<Painting>(data, 'paintingId') ? { ...head, kind, data } : null;
   }
+}
+
+function isProjectMeta(data: unknown): data is ProjectMeta {
+  return (
+    isPlainObject(data) &&
+    typeof data.name === 'string' &&
+    typeof data.namespace === 'string' &&
+    isPlainObject(data.settings) &&
+    Array.isArray(data.rootFolderIds) &&
+    Array.isArray(data.glyphOrder)
+  );
+}
+
+function isFolder(data: unknown): data is Folder {
+  return (
+    isPlainObject(data) &&
+    typeof data.name === 'string' &&
+    (data.parentId === null || typeof data.parentId === 'string') &&
+    Array.isArray(data.folderIds) &&
+    Array.isArray(data.itemIds)
+  );
+}
+
+/** Minimal check of list entries: the field that names them is a string. */
+function hasStringField<T>(data: unknown, field: keyof T & string): data is T {
+  return isPlainObject(data) && typeof data[field] === 'string';
 }
 
 /** Fast, stable string hash (cyrb53) – to detect unchanged files. */

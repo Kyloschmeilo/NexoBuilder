@@ -1,21 +1,23 @@
 /**
- * Description of form fields. The UI renders these fields generically,
- * the values end up 1:1 in the item's config object (= the later YAML).
+ * Description of form fields. The UI renders these fields generically; the values end up 1:1 in the
+ * item's config object (= the later YAML) – or in `item.armor` for the armor settings.
  */
 import type { Option } from './options';
 
-interface BaseField {
+export interface BaseField {
   /** Key within the parent object. "*" = all remaining keys (map only) */
   key: string;
   /**
    * Description (as tooltip) – message key in the `schema` namespace. The original English name is
-   * displayed as the title, see fieldName(). May be '' for the value object of a map entry.
+   * displayed as the title, see fieldName(). '' for the object value of a map entry (the entry key is its title).
    */
   label: string;
   /** Original English name, if it cannot be derived from the key (not translated) */
   name?: string;
   /** Help text below the field – message key in the `schema` namespace */
   help?: string;
+  /** Placeholder text – message key in the `schema` namespace */
+  placeholder?: string;
   /** Only show the field if a sibling field has one of these values */
   showIf?: { key: string; values: Array<string | boolean | number> };
   /** Required Minecraft version for this field */
@@ -24,8 +26,6 @@ interface BaseField {
 
 export interface TextField extends BaseField {
   type: 'text';
-  /** Placeholder text – message key in the `schema` namespace */
-  placeholder?: string;
   suggestions?: Option[];
   /** Additional meaning for display and validation */
   format?: 'minimessage' | 'duration' | 'vector' | 'resource' | 'color' | 'range';
@@ -38,8 +38,6 @@ export interface NumberField extends BaseField {
   min?: number;
   max?: number;
   step?: number;
-  /** Placeholder text – message key in the `schema` namespace */
-  placeholder?: string;
 }
 
 /** Three states: unset / true / false */
@@ -53,15 +51,11 @@ export interface SelectField extends BaseField {
   type: 'select';
   options: Option[];
   allowCustom?: boolean;
-  /** Placeholder text – message key in the `schema` namespace */
-  placeholder?: string;
 }
 
 /** List of strings. With `singleAsString`, a single value is written when there is exactly one entry. */
 export interface StringListField extends BaseField {
   type: 'stringList';
-  /** Placeholder text – message key in the `schema` namespace */
-  placeholder?: string;
   suggestions?: Option[];
   format?: TextField['format'];
   singleAsString?: boolean;
@@ -105,8 +99,6 @@ export interface MapField extends BaseField {
 
 export interface YamlField extends BaseField {
   type: 'yaml';
-  /** Placeholder text – message key in the `schema` namespace */
-  placeholder?: string;
 }
 
 /** Checkbox that writes an empty object `{}` when enabled (e.g. CLEAR_ALL_EFFECTS). */
@@ -134,60 +126,3 @@ export type Field =
   | YamlField
   | PresenceField
   | TextureField;
-
-/* ------------------------------------------------------------------ Validation of single values */
-
-const DURATION = /^\d+(\.\d+)?(t|ms|s|m|h|d|w|mo)?$/;
-const VECTOR = /^\s*-?\d+(\.\d+)?\s*,\s*-?\d+(\.\d+)?\s*,\s*-?\d+(\.\d+)?\s*$/;
-const COLOR = /^\s*(\d{1,3})\s*,\s*(\d{1,3})\s*,\s*(\d{1,3})\s*$/;
-const RANGE = /^-?\d+(\.\d+)?(\.\.-?\d+(\.\d+)?)?$/;
-
-/**
- * Checks a text value against its format.
- * @returns null if valid, otherwise a message key in the `schema` namespace (`validation.*`)
- */
-export function validateTextFormat(format: TextField['format'], value: string): string | null {
-  // "@model" = the item's model (replaced on export)
-  if (!value || value === '@model') return null;
-  switch (format) {
-    case 'duration':
-      return DURATION.test(value.trim()) ? null : 'validation.duration';
-    case 'vector':
-      return VECTOR.test(value) ? null : 'validation.vector';
-    case 'color': {
-      const m = COLOR.exec(value);
-      if (!m) return 'validation.color';
-      return [m[1], m[2], m[3]].every((n) => Number(n) <= 255) ? null : 'validation.colorRange';
-    }
-    case 'range':
-      return RANGE.test(value.trim()) ? null : 'validation.range';
-    case 'resource':
-      return /^([a-z0-9_.-]+:)?[a-z0-9_./-]+$/.test(value.trim()) ? null : 'validation.resource';
-    default:
-      return null;
-  }
-}
-
-const ACRONYMS: Record<string, string> = { id: 'ID', gui: 'GUI', uuid: 'UUID', xp: 'XP', ui: 'UI', nbt: 'NBT' };
-
-/** English display name from a YAML key: max_stack_size → Max Stack Size, layer1 → Layer 1 */
-export function englishName(key: string): string {
-  return key
-    .replace(/^\$/, '')
-    .replace(/([a-z0-9])([A-Z])/g, '$1_$2')
-    .replace(/([a-zA-Z])(\d)/g, '$1_$2')
-    .split(/[_\s.-]+/)
-    .filter(Boolean)
-    .map((w) => ACRONYMS[w.toLowerCase()] ?? w.charAt(0).toUpperCase() + w.slice(1).toLowerCase())
-    .join(' ');
-}
-
-/**
- * Name of a field as it appears in the Nexo docs (English, not translated).
- * Falls back to `label` (a `schema` message key) only for fields without name and key.
- */
-export function fieldName(field: { key: string; label: string; name?: string }): string {
-  if (field.name) return field.name;
-  if (field.key && field.key !== '*') return englishName(field.key);
-  return field.label;
-}

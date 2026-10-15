@@ -1,19 +1,19 @@
-/** Helpers around the folder structure of a project. */
-import type { Folder, Item, Project } from '../types';
-import { slugify } from '../util';
+/** Helpers around the folder structure of a project (all guarded against folder cycles). */
 import { hasPath } from '../nexo/configPath';
+import { slugify } from '../text';
+import type { Folder, Item, Project } from './types';
 
 export function folderSlug(folder: Folder): string {
-  return slugify(folder.name, 'ordner');
+  return slugify(folder.name, 'folder');
 }
 
 /** Returns the folder chain from the root to the given folder. */
-export function getFolderChain(project: Project, folderId: string): Folder[] {
+function getFolderChain(project: Project, folderId: string): Folder[] {
   const chain: Folder[] = [];
   let current: Folder | undefined = project.folders[folderId];
-  const guard = new Set<string>();
-  while (current && !guard.has(current.id)) {
-    guard.add(current.id);
+  const seen = new Set<string>();
+  while (current && !seen.has(current.id)) {
+    seen.add(current.id);
     chain.unshift(current);
     current = current.parentId ? project.folders[current.parentId] : undefined;
   }
@@ -30,39 +30,45 @@ export function getFolderPathLabel(project: Project, folderId: string): string {
     .join(' / ');
 }
 
+/** Visits the folders below `rootIds` depth-first (each folder at most once). */
+function walkFolders(project: Project, rootIds: string[], visit: (folder: Folder) => void): void {
+  const seen = new Set<string>();
+  const walk = (id: string) => {
+    const folder = project.folders[id];
+    if (!folder || seen.has(id)) return;
+    seen.add(id);
+    visit(folder);
+    folder.folderIds.forEach(walk);
+  };
+  rootIds.forEach(walk);
+}
+
 /** All items in tree order (folder by folder). */
 export function getItemsInTreeOrder(project: Project): Item[] {
   const result: Item[] = [];
-  const visit = (folderId: string) => {
-    const folder = project.folders[folderId];
-    if (!folder) return;
+  walkFolders(project, project.rootFolderIds, (folder) => {
     for (const itemId of folder.itemIds) {
       const item = project.items[itemId];
       if (item) result.push(item);
     }
-    for (const child of folder.folderIds) visit(child);
-  };
-  for (const root of project.rootFolderIds) visit(root);
+  });
   return result;
 }
 
 /** All subfolders (recursive) of a folder including the folder itself. */
 export function getDescendantFolderIds(project: Project, folderId: string): string[] {
   const result: string[] = [];
-  const visit = (id: string) => {
-    const folder = project.folders[id];
-    if (!folder) return;
-    result.push(id);
-    folder.folderIds.forEach(visit);
-  };
-  visit(folderId);
+  walkFolders(project, [folderId], (folder) => result.push(folder.id));
+  return result;
+}
+
+/** All items in a folder and its subfolders. */
+export function itemIdsInFolder(project: Project, folderId: string): string[] {
+  const result: string[] = [];
+  walkFolders(project, [folderId], (folder) => result.push(...folder.itemIds.filter((itemId) => project.items[itemId])));
   return result;
 }
 
 export function isBlockItem(item: Item): boolean {
   return hasPath(item.config, ['Mechanics', 'custom_block']);
-}
-
-export function isFurnitureItem(item: Item): boolean {
-  return hasPath(item.config, ['Mechanics', 'furniture']);
 }

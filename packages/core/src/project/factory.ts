@@ -1,14 +1,19 @@
 /** Creates new projects, folders and items with sensible defaults. */
-import type { Folder, ImportedModel, Item, Project, ProjectSettings } from '../types';
 import { DEFAULT_MC_VERSION } from '../minecraft/versions';
-import { slugify, uid } from '../util';
+import type { ImportedModel } from '../model/types';
+import { slugify } from '../text';
+import { uid } from './ids';
+import type { Folder, Item, Project, ProjectSettings } from './types';
+
+/** Fallback for pack name and namespace when the project name yields no identifier. */
+export const DEFAULT_PACK_NAME = 'resourcepackbuilder';
 
 export function defaultSettings(name: string): ProjectSettings {
   return {
     minecraftVersion: DEFAULT_MC_VERSION,
     useItemModel: true,
-    packName: slugify(name, 'resourcepackbuilder'),
-    packDescription: `${name} – erstellt mit ResourcepackBuilder`,
+    packName: slugify(name, DEFAULT_PACK_NAME),
+    packDescription: `${name} – made with ResourcepackBuilder`,
     packIcon: null,
     externalPackAsZip: false,
     itemsInProjectFolder: false,
@@ -24,7 +29,7 @@ export function createProject(name: string, namespace?: string, minecraftVersion
     formatVersion: 1,
     id: uid('p_'),
     name,
-    namespace: namespace ?? slugify(name, 'resourcepackbuilder'),
+    namespace: namespace ?? slugify(name, DEFAULT_PACK_NAME),
     settings,
     folders: {},
     items: {},
@@ -76,18 +81,4 @@ export function insertFolder(project: Project, folder: Folder): void {
 export function insertItem(project: Project, item: Item): void {
   project.items[item.id] = item;
   project.folders[item.folderId]?.itemIds.push(item.id);
-}
-
-/** Suggests a unique item ID, e.g. "ruby_sword_2" if "ruby_sword" already exists. */
-export function uniqueNexoId(project: Project, wanted: string, ignoreItemId?: string): string {
-  const base = slugify(wanted, 'item');
-  const taken = new Set(
-    Object.values(project.items)
-      .filter((i) => i.id !== ignoreItemId)
-      .map((i) => i.nexoId),
-  );
-  if (!taken.has(base)) return base;
-  let n = 2;
-  while (taken.has(`${base}_${n}`)) n++;
-  return `${base}_${n}`;
 }

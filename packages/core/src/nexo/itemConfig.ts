@@ -4,11 +4,13 @@
  *  2. add automatic values (itemname, material, Pack.model, Components.item_model)
  *  3. overlay the user's additional YAML
  */
-import type { ConfigObject, ConfigValue, Item, Project } from '../types';
-import { deepClone, deepMerge, isPlainObject } from '../util';
+import { deepClone, deepMerge, isPlainObject } from '../object';
+import type { ConfigObject, ConfigValue, Item, Project } from '../project/types';
+import { slotForMaterial } from './armor';
 import type { Field } from './fields';
 import { getPath, setPath } from './configPath';
-import { MODEL_TOKEN, PROPERTIES, type PropertyDef } from './schema';
+import { CONFIG_PROPERTIES } from './schema';
+import { MODEL_TOKEN } from './tokens';
 import { parseYaml } from './yaml';
 
 /** Order of the keys in the YAML (as in the Nexo docs) */
@@ -31,11 +33,6 @@ const TOP_LEVEL_ORDER = [
   'CustomArmor',
   'Mechanics',
 ];
-
-/** Internal ResourcepackBuilder keys start with "$" and are never exported. */
-export function isInternalKey(key: string): boolean {
-  return key.startsWith('$');
-}
 
 export interface BuildContext {
   project: Project;
@@ -72,18 +69,19 @@ export function buildItemConfig(ctx: BuildContext): BuildResult {
 
   // 1. Clean up properties according to the schema
   const cleaned: Record<string, unknown> = {};
-  const handledRoots = new Set<string>();
-  for (const def of PROPERTIES) {
+  const handled = new Set<string>();
+  const handledParents = new Set<string>();
+  for (const def of CONFIG_PROPERTIES) {
     const value = getPath(source, def.path);
     if (value === undefined) continue;
-    handledRoots.add(def.path.join('.'));
-    if (isInternalKey(def.path[0])) continue;
+    handled.add(def.path.join('.'));
+    for (let i = 1; i < def.path.length; i++) handledParents.add(def.path.slice(0, i).join('.'));
     let pruned = pruneByField(value, def.field);
     if (pruned === undefined && def.keepEmpty && isPlainObject(value)) pruned = {};
     if (pruned !== undefined) setPath(cleaned as ConfigObject, def.path, pruned as ConfigValue);
   }
   // Take over values that belong to no known property unchanged
-  copyUnknown(source, cleaned, [], handledRoots);
+  copyUnknown(source, cleaned, [], handled, handledParents);
 
   // 2. Resolve placeholders
   const resolved = resolveTokens(cleaned, modelKey) as Record<string, unknown>;
@@ -98,34 +96,32 @@ export function buildItemConfig(ctx: BuildContext): BuildResult {
   delete resolved.itemname;
 
   if (modelKey) {
-    const pack = isPlainObject(resolved.Pack) ? resolved.Pack : {};
     const variants = Object.fromEntries(Object.entries(ctx.variantKeys ?? {}).filter(([, v]) => v !== undefined && v.length > 0));
-    resolved.Pack = { model: modelKey, ...variants, ...pack };
-    const usesCmd = isPlainObject(resolved.Pack) && resolved.Pack.custom_model_data !== undefined;
-    if (project.settings.useItemModel && !usesCmd) {
-      const components = isPlainObject(resolved.Components) ? resolved.Components : {};
-      if (components.item_model === undefined) {
-        resolved.Components = { item_model: `nexo:${item.nexoId}`, ...components };
-      }
+    const pack: Record<string, unknown> = { model: modelKey, ...variants, ...section(resolved, 'Pack') };
+    resolved.Pack = pack;
+    const components = section(resolved, 'Components');
+    if (project.settings.useItemModel && pack.custom_model_data === undefined && components.item_model === undefined) {
+      resolved.Components = { item_model: `nexo:${item.nexoId}`, ...components };
     }
   }
   if (ctx.itemModel) {
-    const components = isPlainObject(resolved.Components) ? resolved.Components : {};
-    resolved.Components = { ...components, item_model: ctx.itemModel };
+    resolved.Components = { ...section(resolved, 'Components'), item_model: ctx.itemModel };
   }
   for (const extra of ctx.extraConfig ?? []) {
     if (extra.ifMissing && getPath(resolved as ConfigObject, extra.path) !== undefined) continue;
     setPath(resolved as ConfigObject, extra.path, deepClone(extra.value) as ConfigValue);
   }
   if (ctx.armorAssetId) {
-    const components = isPlainObject(resolved.Components) ? resolved.Components : {};
-    const equippable = isPlainObject(components.equippable) ? components.equippable : {};
+    const components = section(resolved, 'Components');
+    const equippable = section(components, 'equippable');
     const slot = equippable.slot ?? slotForMaterial(material) ?? ctx.armor?.slot ?? 'HEAD';
     const entities = ctx.armor?.entities ?? [];
     const withEntities =
       (slot === 'BODY' || slot === 'SADDLE') && entities.length > 0 && equippable.allowed_entity_types === undefined
         ? { allowed_entity_types: entities }
         : {};
+    // Elytra wings without material ELYTRA need the glider component, otherwise you cannot fly
+    const needsGlider = ctx.armor?.glider && material.toUpperCase() !== 'ELYTRA' && components.glider === undefined;
     resolved.Components = {
       ...components,
       equippable: {
@@ -134,16 +130,14 @@ export function buildItemConfig(ctx: BuildContext): BuildResult {
         ...withEntities,
         ...equippable,
       },
+      ...(needsGlider && { glider: true }),
     };
-    // Elytra wings without material ELYTRA need the glider component, otherwise you cannot fly
-    const comps = resolved.Components as Record<string, unknown>;
-    if (ctx.armor?.glider && material.toUpperCase() !== 'ELYTRA' && comps.glider === undefined) comps.glider = true;
   }
   for (const key of TOP_LEVEL_ORDER) {
     if (resolved[key] !== undefined && result[key] === undefined) result[key] = resolved[key];
   }
   for (const [key, value] of Object.entries(resolved)) {
-    if (result[key] === undefined && !isInternalKey(key)) result[key] = value;
+    if (result[key] === undefined) result[key] = value;
   }
 
   // 4. Overlay custom YAML
@@ -161,28 +155,26 @@ export function buildItemConfig(ctx: BuildContext): BuildResult {
   return { config: result, rawYamlError };
 }
 
-/** Determines the equipment slot from the material. */
-export function slotForMaterial(material: string): string | null {
-  const m = material.toUpperCase();
-  if (m.endsWith('_HELMET') || m === 'CARVED_PUMPKIN' || m.endsWith('_HEAD') || m.endsWith('_SKULL')) return 'HEAD';
-  if (m.endsWith('_CHESTPLATE') || m === 'ELYTRA') return 'CHEST';
-  if (m.endsWith('_LEGGINGS')) return 'LEGS';
-  if (m.endsWith('_BOOTS')) return 'FEET';
-  if (m.endsWith('_HORSE_ARMOR') || m === 'WOLF_ARMOR' || m.endsWith('_NAUTILUS_ARMOR') || m.endsWith('_HARNESS')) return 'BODY';
-  if (m === 'SADDLE') return 'SADDLE';
-  return null;
+/** The object at `key` (a YAML section such as Pack or Components), or an empty one. */
+function section(parent: Record<string, unknown>, key: string): Record<string, unknown> {
+  const value = parent[key];
+  return isPlainObject(value) ? value : {};
 }
 
-function copyUnknown(source: Record<string, unknown>, target: Record<string, unknown>, path: string[], handled: Set<string>) {
+function copyUnknown(
+  source: Record<string, unknown>,
+  target: Record<string, unknown>,
+  path: string[],
+  handled: Set<string>,
+  handledParents: Set<string>,
+) {
   for (const [key, value] of Object.entries(source)) {
-    if (isInternalKey(key)) continue;
     const full = [...path, key];
     const id = full.join('.');
     if (handled.has(id)) continue;
-    const isPrefixOfHandled = [...handled].some((h) => h.startsWith(id + '.'));
-    if (isPrefixOfHandled && isPlainObject(value)) {
-      const nested = isPlainObject(target[key]) ? (target[key] as Record<string, unknown>) : {};
-      copyUnknown(value, nested, full, handled);
+    if (handledParents.has(id) && isPlainObject(value)) {
+      const nested = section(target, key);
+      copyUnknown(value, nested, full, handled, handledParents);
       if (Object.keys(nested).length > 0) target[key] = nested;
       continue;
     }
@@ -212,7 +204,7 @@ function isEmptyString(v: unknown): boolean {
 }
 
 /** Removes empty values according to the field description. Returns undefined if nothing is left. */
-export function pruneByField(value: unknown, field: Field): unknown {
+function pruneByField(value: unknown, field: Field): unknown {
   if (value === undefined || value === null) return undefined;
   switch (field.type) {
     case 'text':
@@ -262,7 +254,7 @@ export function pruneByField(value: unknown, field: Field): unknown {
         if (pruned !== undefined) out[child.key] = pruned;
       }
       for (const [k, v] of Object.entries(value)) {
-        if (known.has(k) || known.has('*') || isInternalKey(k)) continue;
+        if (known.has(k) || known.has('*')) continue;
         const pruned = pruneGeneric(v);
         if (pruned !== undefined) out[k] = pruned;
       }
@@ -297,7 +289,7 @@ function trimTrailingEmpty(list: string[]): string[] {
 }
 
 /** Pruning for values without a schema: remove empty strings/lists/objects. */
-export function pruneGeneric(value: unknown): unknown {
+function pruneGeneric(value: unknown): unknown {
   if (value === undefined || value === null) return undefined;
   if (typeof value === 'string') return isEmptyString(value) ? undefined : value;
   if (typeof value === 'number') return Number.isFinite(value) ? value : undefined;
@@ -308,17 +300,10 @@ export function pruneGeneric(value: unknown): unknown {
   if (isPlainObject(value)) {
     const out: Record<string, unknown> = {};
     for (const [k, v] of Object.entries(value)) {
-      if (isInternalKey(k)) continue;
       const pruned = pruneGeneric(v);
       if (pruned !== undefined) out[k] = pruned;
     }
     return Object.keys(out).length > 0 ? out : undefined;
   }
   return value;
-}
-
-/** Finds the property definition for a path. */
-export function findProperty(path: string[]): PropertyDef | undefined {
-  const id = path.join('.');
-  return PROPERTIES.find((p) => p.path.join('.') === id);
 }

@@ -29,8 +29,8 @@ describe('convertJavaModel', () => {
       { name: 'y.png', dataUrl: PNG },
     ]);
     expect(result.json.textures).toEqual({ all: 'minecraft:block/stone', other: 'mypack:block/missing' });
-    expect(result.issues.some((i) => i.level === 'error' && i.code === 'model.texturePngMissing' && i.params?.ref === 'mypack:block/missing')).toBe(true);
-    expect(result.issues.some((i) => i.level === 'info' && i.code === 'model.vanillaTexture' && i.params?.ref === 'minecraft:block/stone')).toBe(true);
+    expect(result.issues.some((i) => i.level === 'error' && i.code === 'model.texturePngMissing' && i.args?.ref === 'mypack:block/missing')).toBe(true);
+    expect(result.issues.some((i) => i.level === 'info' && i.code === 'model.vanillaTexture' && i.args?.ref === 'minecraft:block/stone')).toBe(true);
   });
 
   it('automatically assigns a single PNG to the only open reference', () => {

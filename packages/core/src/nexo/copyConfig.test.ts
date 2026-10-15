@@ -1,11 +1,11 @@
 import { describe, expect, it } from 'vitest';
-import { createFolder, createItem, createProject, insertFolder, insertItem } from '../project/factory';
 import { createTextureModel } from '../model/textureModel';
 import { createTexture } from '../model/textures';
+import { createFolder, createItem, createProject, insertFolder, insertItem } from '../project/factory';
+import type { Item, Project } from '../project/types';
 import { makePngDataUrl } from '../test/png';
-import { createRecipe } from './recipes';
 import { COPY_CATEGORIES, copyItemConfig, pasteItemConfig, summarizeClipboard, type CopyCategory } from './copyConfig';
-import type { Item, Project } from '../types';
+import { createRecipe } from './recipes/model';
 
 const PNG16 = makePngDataUrl(16, 16);
 const ALL = new Set<CopyCategory>(COPY_CATEGORIES.map((c) => c.id));
@@ -20,7 +20,7 @@ function setup(): { project: Project; source: Item; target: Item } {
   source.config.Components = { max_stack_size: 1, food: { nutrition: 4 }, some_new_component: { x: 1 } };
   source.config.Mechanics = { custom_block: { type: 'NOTEBLOCK', custom_variation: 3, model: '@model' } };
   source.config.Pack = { custom_model_data: 1001, oversized_in_gui: true, texture: 'test:item/a' };
-  source.config.$armor = { set: 'ruby', layer1: '@asset:a1' };
+  source.armor = { set: 'ruby', layer1: '@asset:a1' };
   source.config.custom_root = 'x';
   source.assets = { a1: createTexture('a1', 'layer1.png', makePngDataUrl(64, 32)) };
   source.rawYaml = 'excludeFromInventory: true\n';
@@ -59,7 +59,8 @@ describe('copy properties', () => {
     expect(target.config.custom_root).toBe('x');
     expect(target.rawYaml).toBe('excludeFromInventory: true\n');
     expect(target.recipes).toEqual([]);
-    // Armor texture is copied along, unused textures are dropped
+    // Armor settings and their texture are copied along, unused textures are dropped
+    expect(target.armor).toEqual({ set: 'ruby', layer1: '@asset:a1' });
     expect(Object.keys(target.assets)).toEqual(['a1']);
   });
 

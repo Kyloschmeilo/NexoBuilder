@@ -1,0 +1,85 @@
+/**
+ * Glyphs (Nexo: configuration/glyphs) – textured Unicode characters for chat, lore, titles and GUIs.
+ * Export: plugins/Nexo/glyphs/<project>.yml + textures in the external pack
+ * (assets/<ns>/textures/glyphs/<id>.png or .gif).
+ */
+import { dataUrlHead } from '../../binary/dataUrl';
+import { readPngInfoFromDataUrl } from '../../binary/png';
+
+export type GlyphKind = 'image' | 'gif' | 'reference';
+
+export interface GlyphFile {
+  name: string;
+  dataUrl: string;
+  width: number;
+  height: number;
+}
+
+export interface Glyph {
+  id: string;
+  /** Key in the YAML, used as <glyph:id> */
+  glyphId: string;
+  kind: GlyphKind;
+  file: GlyphFile | null;
+  ascent: number;
+  height: number;
+  font: string;
+  permission: string;
+  placeholders: string[];
+  isEmoji: boolean;
+  tabcomplete: boolean;
+  rows: number;
+  columns: number;
+  /** GIF only */
+  frameCount: number | null;
+  offset: number | null;
+  /** reference glyphs only */
+  reference: string;
+  index: number;
+}
+
+/** Maximum size of a single glyph cell (otherwise use multi-bitmap). */
+export const MAX_GLYPH_CELL = 256;
+
+/** Reads width/height from a GIF header; null if the data URL is no GIF. */
+export function readGifInfo(dataUrl: string): { width: number; height: number } | null {
+  const bytes = dataUrl.startsWith('data:image/gif') ? dataUrlHead(dataUrl, 10) : null;
+  if (!bytes || bytes.length < 10) return null;
+  const header = String.fromCharCode(...bytes.slice(0, 6));
+  if (header !== 'GIF87a' && header !== 'GIF89a') return null;
+  return { width: bytes[6] | (bytes[7] << 8), height: bytes[8] | (bytes[9] << 8) };
+}
+
+export function createGlyph(id: string, glyphId: string, file: GlyphFile | null, kind: GlyphKind = 'image'): Glyph {
+  // Small images are usually emojis (chat height 8), large images GUI backgrounds
+  const small = !file || (file.width <= 32 && file.height <= 32);
+  const height = file && !small ? Math.min(file.height, MAX_GLYPH_CELL) : 8;
+  return {
+    id,
+    glyphId,
+    kind,
+    file,
+    ascent: small ? 7 : Math.min(height, 13),
+    height,
+    font: '',
+    permission: '',
+    placeholders: [],
+    isEmoji: small && kind !== 'reference',
+    tabcomplete: false,
+    rows: 1,
+    columns: 1,
+    frameCount: null,
+    offset: null,
+    reference: '',
+    index: 1,
+  };
+}
+
+/** Reads a dropped PNG/GIF file as a glyph file. */
+export function glyphFileFromDataUrl(name: string, dataUrl: string): GlyphFile | null {
+  const png = readPngInfoFromDataUrl(dataUrl);
+  if (png) return { name, dataUrl, ...png };
+  const gif = readGifInfo(dataUrl);
+  if (gif) return { name, dataUrl, ...gif };
+  return null;
+}

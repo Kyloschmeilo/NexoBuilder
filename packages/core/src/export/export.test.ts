@@ -5,10 +5,11 @@ import { createFolder, createItem, createProject, insertFolder, insertItem } fro
 import { createTextureModel } from '../model/textureModel';
 import { convertBBModel } from '../model/bbmodel';
 import { planExport } from './plan';
-import { buildExportZip, INSTALL_GUIDE_FILE } from './zip';
+import { INSTALL_GUIDE_FILE } from './installGuide';
+import { buildExportZip } from './zip';
 import { createTexture } from '../model/textures';
 import { makePngDataUrl } from '../test/png';
-import type { Project } from '../types';
+import type { Project } from '../project/types';
 
 const PNG16 = makePngDataUrl(16, 16);
 const PNG64x32 = makePngDataUrl(64, 32);
@@ -178,7 +179,7 @@ describe('planExport', () => {
       textures: { layer0: 'meinpack:item/waffen/ruby_sword/ruby_sword' },
     });
     const mcmeta = JSON.parse(plan.packFiles.get('pack.mcmeta') as string);
-    expect(mcmeta).toEqual({ pack: { description: 'Mein Pack – erstellt mit ResourcepackBuilder', pack_format: 75, min_format: 75, max_format: 999 } });
+    expect(mcmeta).toEqual({ pack: { description: 'Mein Pack – made with ResourcepackBuilder', pack_format: 75, min_format: 75, max_format: 999 } });
   });
 
   it('reports errors for duplicate IDs, invalid values and conflicts', () => {
@@ -190,14 +191,14 @@ describe('planExport', () => {
     dup.rawYaml = 'foo: [';
     insertItem(project, dup);
     const plan = planExport(project);
-    const errors = plan.issues.filter((i) => i.level === 'error' && i.itemId === dup.id);
-    expect(errors.some((i) => i.code === 'plan.itemIdDuplicate' && i.params?.other === '<red>Rubin-Schwert')).toBe(true);
+    const errors = plan.issues.filter((i) => i.level === 'error' && i.target?.id === dup.id);
+    expect(errors.some((i) => i.code === 'plan.itemIdDuplicate' && i.args?.other === 'Rubin-Schwert')).toBe(true);
     expect(errors.some((i) => i.code === 'plan.propertyConflict')).toBe(true);
-    expect(errors.some((i) => i.code === 'plan.blockVariationRange' && i.params?.max === 1149)).toBe(true);
+    expect(errors.some((i) => i.code === 'plan.blockVariationRange' && i.args?.max === 1149)).toBe(true);
     expect(errors.some((i) => i.code === 'plan.rawYamlError')).toBe(true);
-    expect(errors.every((i) => i.params?.item === 'Kopie')).toBe(true);
-    const warnings = plan.issues.filter((i) => i.level === 'warning' && i.itemId === dup.id);
-    expect(warnings.some((i) => i.code === 'plan.fieldFormat' && i.params?.value === 'zwei Sekunden' && i.texts?.error)).toBe(true);
+    expect(errors.every((i) => i.context?.[0].args?.item === 'Kopie')).toBe(true);
+    const warnings = plan.issues.filter((i) => i.level === 'warning' && i.target?.id === dup.id);
+    expect(warnings.some((i) => i.code === 'plan.fieldFormat' && i.args?.value === 'zwei Sekunden' && i.args?.error)).toBe(true);
   });
 
   it('uses the model for custom blocks and places block textures under textures/block', () => {
@@ -232,9 +233,9 @@ describe('planExport', () => {
     insertFolder(project, folder);
     const helmet = createItem({ displayName: 'Rubinhelm', nexoId: 'ruby_helmet', folderId: folder.id, material: 'IRON_HELMET', model: null });
     helmet.assets = { a1: createTexture('a1', 'layer_1', PNG64x32), a2: createTexture('a2', 'layer_2', PNG64x32) };
-    helmet.config.$armor = { set: 'ruby', layer1: '@asset:a1', layer2: '@asset:a2' };
+    helmet.armor = { set: 'ruby', layer1: '@asset:a1', layer2: '@asset:a2' };
     const boots = createItem({ displayName: 'Rubinschuhe', nexoId: 'ruby_boots', folderId: folder.id, material: 'PAPER', model: null });
-    boots.config.$armor = { set: 'ruby' };
+    boots.armor = { set: 'ruby' };
     boots.config.Components = { equippable: { slot: 'FEET' } };
     insertItem(project, helmet);
     insertItem(project, boots);
@@ -327,9 +328,9 @@ describe('Variant models', () => {
     insertItem(project, noModel);
     const plan = planExport(project);
     expect(
-      plan.issues.some((i) => i.itemId === shield.id && i.level === 'warning' && i.code === 'plan.variantWrongMaterial' && String(i.params?.materials).includes('SHIELD')),
+      plan.issues.some((i) => i.target?.id === shield.id && i.level === 'warning' && i.code === 'plan.variantWrongMaterial' && String(i.args?.materials).includes('SHIELD')),
     ).toBe(true);
-    expect(plan.issues.some((i) => i.itemId === noModel.id && i.level === 'error' && i.code === 'plan.variantNeedsMainModel')).toBe(true);
+    expect(plan.issues.some((i) => i.target?.id === noModel.id && i.level === 'error' && i.code === 'plan.variantNeedsMainModel')).toBe(true);
     const yaml = parse(plan.itemFiles.get('items/a/a.yml')!, { version: '1.1' });
     expect(yaml.shield.Pack.blocking_model).toBe('test:item/a/shield-blocking');
   });

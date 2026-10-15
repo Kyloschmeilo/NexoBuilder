@@ -4,7 +4,7 @@
  *
  * Vertex order and UV rotation match Blockbench (js/util/three_custom.js, cube.js).
  */
-import type { FaceName, ImportedModel, JavaModelElement, JavaModelFace, ModelTexture } from '@resourcepackbuilder/core/types';
+import type { FaceName, ImportedModel, JavaModelElement, JavaModelFace, ModelTexture } from '@resourcepackbuilder/core/model/types';
 import { parseTexturePlaceholder } from '@resourcepackbuilder/core/model/common';
 import { getFrameSize } from '@resourcepackbuilder/core/model/textures';
 

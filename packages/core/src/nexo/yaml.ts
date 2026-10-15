@@ -47,9 +47,13 @@ export function parseYaml(text: string): YamlParseResult {
   }
 }
 
-/** Writes several items into one file (separated by a blank line each). */
-export function itemsToYaml(items: Array<{ id: string; config: Record<string, unknown> }>, header?: string): string {
-  const parts = items.map(({ id, config }) => toYaml({ [id]: config }).trimEnd());
-  const body = parts.join('\n\n') + '\n';
-  return header ? `${header.trimEnd()}\n${body}` : body;
+/** Comment line at the top of every generated file. */
+export function yamlHeader(description: string): string {
+  return `# Created with ResourcepackBuilder – ${description}\n`;
+}
+
+/** Writes several entries into one file (separated by a blank line each), with an optional header comment. */
+export function itemsToYaml(items: Array<{ id: string; config: Record<string, unknown> }>, description?: string): string {
+  const body = items.map(({ id, config }) => toYaml({ [id]: config }).trimEnd()).join('\n\n') + '\n';
+  return description ? yamlHeader(description) + body : body;
 }

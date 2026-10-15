@@ -11,7 +11,10 @@ type MessageTree = { [key: string]: string | MessageTree };
 const SRC = new URL('../', import.meta.url);
 
 /** First segments of the keys in `issues` that core uses for issue and error codes */
-const CODE_GROUPS = ['context', 'plan', 'selection', 'model', 'texture', 'sync', 'file', 'recipe', 'glyph', 'sound', 'painting'];
+const CODE_GROUPS = ['context', 'plan', 'selection', 'model', 'texture', 'sync', 'file', 'project', 'recipe', 'glyph', 'sound', 'painting'];
+
+/** Literals that look like codes but are not (file names) */
+const NOT_CODES = new Set(['project.json']);
 
 const CODE_LITERAL = new RegExp(`['\`]((?:${CODE_GROUPS.join('|')})\\.[A-Za-z][A-Za-z0-9_.]*)['\`]`, 'g');
 
@@ -43,7 +46,7 @@ function codesInSources(): Map<string, string> {
     const text = readFileSync(file, 'utf8');
     for (const match of text.matchAll(CODE_LITERAL)) {
       // Template literals with placeholders (`plan.${x}`) are not codes on their own
-      if (!match[1].includes('${')) codes.set(match[1], file.pathname.split('/src/')[1]);
+      if (!match[1].includes('${') && !NOT_CODES.has(match[1])) codes.set(match[1], file.pathname.split('/src/')[1]);
     }
   }
   return codes;

@@ -2,6 +2,7 @@
  * Option lists for the Nexo configuration. All lists are suggestions –
  * custom values can also be entered in the fields.
  */
+import { keySegment } from './messageKey';
 
 export interface Option {
   value: string;
@@ -9,10 +10,18 @@ export interface Option {
   label?: string;
 }
 
-const opts = (values: string[]): Option[] => values.map((value) => ({ value }));
+/** Options shown as their value. */
+export const plainOptions = (values: string[]): Option[] => values.map((value) => ({ value }));
+
+/** Options labeled by the message keys `<scope>.<camel(value)>.label` in the `schema` namespace. */
+export const labeledOptions = (scope: string, values: string[]): Option[] =>
+  values.map((value) => ({ value, label: `${scope}.${keySegment(value)}.label` }));
+
+/** Option lists of this module are labeled under `options.<list name>`. */
+const labeled = (list: string, values: string[]): Option[] => labeledOptions(`options.${list}`, values);
 
 /** Commonly used base materials (Bukkit material names). */
-export const MATERIALS = opts([
+export const MATERIALS = plainOptions([
   'PAPER',
   'STICK',
   'FLINT',
@@ -185,7 +194,7 @@ export const MATERIALS = opts([
 ]);
 
 /** Attributes (Paper org.bukkit.attribute.Attribute, spelled as in the Nexo docs). */
-export const ATTRIBUTES = opts([
+export const ATTRIBUTES = plainOptions([
   'ARMOR',
   'ARMOR_TOUGHNESS',
   'ATTACK_DAMAGE',
@@ -223,39 +232,30 @@ export const ATTRIBUTES = opts([
   'WAYPOINT_TRANSMIT_RANGE',
 ]);
 
-export const ATTRIBUTE_OPERATIONS: Option[] = [
-  { value: 'ADD_NUMBER', label: 'options.attributeOperations.addNumber.label' },
-  { value: 'ADD_SCALAR', label: 'options.attributeOperations.addScalar.label' },
-  { value: 'MULTIPLY_SCALAR_1', label: 'options.attributeOperations.multiplyScalar1.label' },
-];
+export const ATTRIBUTE_OPERATIONS = labeled('attributeOperations', [
+  'ADD_NUMBER',
+  'ADD_SCALAR',
+  'MULTIPLY_SCALAR_1',
+]);
 
 /** EquipmentSlotGroup */
-export const ATTRIBUTE_SLOTS: Option[] = [
-  { value: 'ANY', label: 'options.attributeSlots.any.label' },
-  { value: 'MAINHAND', label: 'options.attributeSlots.mainhand.label' },
-  { value: 'OFFHAND', label: 'options.attributeSlots.offhand.label' },
-  { value: 'HAND', label: 'options.attributeSlots.hand.label' },
-  { value: 'HEAD', label: 'options.attributeSlots.head.label' },
-  { value: 'CHEST', label: 'options.attributeSlots.chest.label' },
-  { value: 'LEGS', label: 'options.attributeSlots.legs.label' },
-  { value: 'FEET', label: 'options.attributeSlots.feet.label' },
-  { value: 'ARMOR', label: 'options.attributeSlots.armor.label' },
-  { value: 'BODY', label: 'options.attributeSlots.body.label' },
-  { value: 'SADDLE', label: 'options.attributeSlots.saddle.label' },
-];
+export const ATTRIBUTE_SLOTS = labeled('attributeSlots', [
+  'ANY',
+  'MAINHAND',
+  'OFFHAND',
+  'HAND',
+  'HEAD',
+  'CHEST',
+  'LEGS',
+  'FEET',
+  'ARMOR',
+  'BODY',
+  'SADDLE',
+]);
 
-export const EQUIPPABLE_SLOTS: Option[] = [
-  { value: 'HEAD' },
-  { value: 'CHEST' },
-  { value: 'LEGS' },
-  { value: 'FEET' },
-  { value: 'BODY' },
-  { value: 'MAINHAND' },
-  { value: 'OFFHAND' },
-  { value: 'SADDLE' },
-];
+export const EQUIPPABLE_SLOTS = plainOptions(['HEAD', 'CHEST', 'LEGS', 'FEET', 'BODY', 'MAINHAND', 'OFFHAND', 'SADDLE']);
 
-export const ITEM_FLAGS = opts([
+export const ITEM_FLAGS = plainOptions([
   'HIDE_ENCHANTS',
   'HIDE_ATTRIBUTES',
   'HIDE_UNBREAKABLE',
@@ -267,7 +267,7 @@ export const ITEM_FLAGS = opts([
   'HIDE_STORED_ENCHANTS',
 ]);
 
-export const ENCHANTMENTS = opts([
+export const ENCHANTMENTS = plainOptions([
   'aqua_affinity',
   'bane_of_arthropods',
   'binding_curse',
@@ -313,7 +313,7 @@ export const ENCHANTMENTS = opts([
   'wind_burst',
 ]);
 
-export const POTION_EFFECTS = opts([
+export const POTION_EFFECTS = plainOptions([
   'absorption',
   'bad_omen',
   'blindness',
@@ -356,11 +356,11 @@ export const POTION_EFFECTS = opts([
   'wither',
 ]);
 
-export const CONSUME_ANIMATIONS = opts(['EAT', 'DRINK', 'NONE', 'BLOCK', 'BOW', 'SPEAR', 'TRIDENT', 'CROSSBOW', 'SPYGLASS', 'TOOT_HORN', 'BRUSH', 'BUNDLE']);
+export const CONSUME_ANIMATIONS = plainOptions(['EAT', 'DRINK', 'NONE', 'BLOCK', 'BOW', 'SPEAR', 'TRIDENT', 'CROSSBOW', 'SPYGLASS', 'TOOT_HORN', 'BRUSH', 'BUNDLE']);
 
-export const SWING_ANIMATIONS = opts(['WHACK', 'STAB', 'NONE']);
+export const SWING_ANIMATIONS = plainOptions(['WHACK', 'STAB', 'NONE']);
 
-export const PERSISTENT_DATA_TYPES = opts([
+export const PERSISTENT_DATA_TYPES = plainOptions([
   'STRING',
   'INTEGER',
   'LONG',
@@ -375,7 +375,7 @@ export const PERSISTENT_DATA_TYPES = opts([
   'UUID',
 ]);
 
-export const DISPLAY_TRANSFORMS = opts([
+export const DISPLAY_TRANSFORMS = plainOptions([
   'NONE',
   'FIXED',
   'HEAD',
@@ -387,51 +387,51 @@ export const DISPLAY_TRANSFORMS = opts([
   'FIRSTPERSON_RIGHTHAND',
 ]);
 
-export const TRACKING_ROTATIONS: Option[] = [
-  { value: 'FIXED', label: 'options.trackingRotations.fixed.label' },
-  { value: 'VERTICAL', label: 'options.trackingRotations.vertical.label' },
-  { value: 'HORIZONTAL', label: 'options.trackingRotations.horizontal.label' },
-  { value: 'CENTER', label: 'options.trackingRotations.center.label' },
-];
+export const TRACKING_ROTATIONS = labeled('trackingRotations', [
+  'FIXED',
+  'VERTICAL',
+  'HORIZONTAL',
+  'CENTER',
+]);
 
-export const TOOL_TIERS = opts(['WOODEN', 'STONE', 'IRON', 'GOLDEN', 'DIAMOND', 'NETHERITE']);
-export const TOOL_TYPES = opts(['PICKAXE', 'AXE', 'SHOVEL', 'HOE', 'SWORD']);
+export const TOOL_TIERS = plainOptions(['WOODEN', 'STONE', 'IRON', 'GOLDEN', 'DIAMOND', 'NETHERITE']);
+export const TOOL_TYPES = plainOptions(['PICKAXE', 'AXE', 'SHOVEL', 'HOE', 'SWORD']);
 
-export const STORAGE_TYPES: Option[] = [
-  { value: 'STORAGE', label: 'options.storageTypes.storage.label' },
-  { value: 'PERSONAL', label: 'options.storageTypes.personal.label' },
-  { value: 'ENDERCHEST', label: 'options.storageTypes.enderchest.label' },
-  { value: 'DISPOSAL', label: 'options.storageTypes.disposal.label' },
-];
+export const STORAGE_TYPES = labeled('storageTypes', [
+  'STORAGE',
+  'PERSONAL',
+  'ENDERCHEST',
+  'DISPOSAL',
+]);
 
-export const CUSTOM_BLOCK_TYPES: Option[] = [
-  { value: 'NOTEBLOCK', label: 'options.customBlockTypes.noteblock.label' },
-  { value: 'STRINGBLOCK', label: 'options.customBlockTypes.stringblock.label' },
-  { value: 'CHORUSBLOCK', label: 'options.customBlockTypes.chorusblock.label' },
-];
+export const CUSTOM_BLOCK_TYPES = labeled('customBlockTypes', [
+  'NOTEBLOCK',
+  'STRINGBLOCK',
+  'CHORUSBLOCK',
+]);
 
-export const BLOCKLOCKER_TYPES = opts(['CONTAINER', 'DOOR', 'ATTACHABLE']);
+export const BLOCKLOCKER_TYPES = plainOptions(['CONTAINER', 'DOOR', 'ATTACHABLE']);
 
-export const CUSTOM_EVENTS: Option[] = [
-  { value: 'CLICK:right:all', label: 'options.customEvents.clickRightAll.label' },
-  { value: 'CLICK:right:block', label: 'options.customEvents.clickRightBlock.label' },
-  { value: 'CLICK:right:air', label: 'options.customEvents.clickRightAir.label' },
-  { value: 'CLICK:left:all', label: 'options.customEvents.clickLeftAll.label' },
-  { value: 'CLICK:left:block', label: 'options.customEvents.clickLeftBlock.label' },
-  { value: 'CLICK:left:air', label: 'options.customEvents.clickLeftAir.label' },
-  { value: 'CLICK:all:all', label: 'options.customEvents.clickAllAll.label' },
-  { value: 'INV_CLICK:all:all', label: 'options.customEvents.invClickAllAll.label' },
-  { value: 'INV_CLICK:right:shift', label: 'options.customEvents.invClickRightShift.label' },
-  { value: 'DROP', label: 'options.customEvents.drop.label' },
-  { value: 'PICKUP', label: 'options.customEvents.pickup.label' },
-  { value: 'BREAK', label: 'options.customEvents.break.label' },
-  { value: 'EQUIP', label: 'options.customEvents.equip.label' },
-  { value: 'UNEQUIP', label: 'options.customEvents.unequip.label' },
-  { value: 'DEATH', label: 'options.customEvents.death.label' },
-  { value: 'DROP_ALL', label: 'options.customEvents.dropAll.label' },
-];
+export const CUSTOM_EVENTS = labeled('customEvents', [
+  'CLICK:right:all',
+  'CLICK:right:block',
+  'CLICK:right:air',
+  'CLICK:left:all',
+  'CLICK:left:block',
+  'CLICK:left:air',
+  'CLICK:all:all',
+  'INV_CLICK:all:all',
+  'INV_CLICK:right:shift',
+  'DROP',
+  'PICKUP',
+  'BREAK',
+  'EQUIP',
+  'UNEQUIP',
+  'DEATH',
+  'DROP_ALL',
+]);
 
-export const SOUND_SUGGESTIONS = opts([
+export const SOUND_SUGGESTIONS = plainOptions([
   'block.stone.place',
   'block.stone.break',
   'block.stone.hit',
@@ -477,7 +477,7 @@ export const SOUND_SUGGESTIONS = opts([
   'entity.item.break',
 ]);
 
-export const DAMAGE_TYPE_TAGS = opts([
+export const DAMAGE_TYPE_TAGS = plainOptions([
   'is_fire',
   'is_explosion',
   'is_projectile',
@@ -489,7 +489,7 @@ export const DAMAGE_TYPE_TAGS = opts([
   'witch_resistant_to',
 ]);
 
-export const VANILLA_COMPONENTS = opts([
+export const VANILLA_COMPONENTS = plainOptions([
   'minecraft:attribute_modifiers',
   'minecraft:enchantments',
   'minecraft:stored_enchantments',
@@ -514,7 +514,7 @@ export const VANILLA_COMPONENTS = opts([
 /** Suggestions for recipe ingredients (materials + common blocks). */
 export const CRAFTING_MATERIALS: Option[] = [
   ...MATERIALS,
-  ...opts([
+  ...plainOptions([
     'OAK_PLANKS',
     'SPRUCE_PLANKS',
     'BIRCH_PLANKS',
@@ -568,7 +568,7 @@ export const CRAFTING_MATERIALS: Option[] = [
 ];
 
 /** Common item tags for recipes (without namespace = minecraft). */
-export const ITEM_TAGS = opts([
+export const ITEM_TAGS = plainOptions([
   'planks',
   'logs',
   'wool',

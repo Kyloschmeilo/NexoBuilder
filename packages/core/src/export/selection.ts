@@ -5,10 +5,12 @@
  * For the selection, a sub-project with the same folders (just without the deselected
  * items) is created – paths and file names thus stay exactly as in the full export.
  */
-import type { Project } from '../types';
-import type { MessageParams } from '../errors';
-import { slugify } from '../util';
-import { planExport, type ExportPlan, type PlanOptions, type ProjectIssue } from './plan';
+import { inContext, type Issue, type MessageArgs } from '../issues';
+import type { Project } from '../project/types';
+import { projectFrame } from './frames';
+import { projectFileName } from '../nexo/projectFiles';
+import { planExport } from './plan';
+import type { ExportPlan, PlanOptions } from './types';
 
 /** What is deselected gets stored – this way new items are included automatically. */
 export interface ExportSelection {
@@ -20,13 +22,12 @@ export interface ExportSelection {
 
 export const SELECT_ALL: ExportSelection = { excludedItemIds: [], excludedGlyphIds: [] };
 
-export function isEverythingSelected(selection: ExportSelection | undefined): boolean {
+function isEverythingSelected(selection: ExportSelection): boolean {
   return (
-    !selection ||
-    (selection.excludedItemIds.length === 0 &&
-      selection.excludedGlyphIds.length === 0 &&
-      !selection.excludedSoundIds?.length &&
-      !selection.excludedPaintingIds?.length)
+    selection.excludedItemIds.length === 0 &&
+    selection.excludedGlyphIds.length === 0 &&
+    !selection.excludedSoundIds?.length &&
+    !selection.excludedPaintingIds?.length
   );
 }
 
@@ -41,9 +42,9 @@ export function countSelected(
   const excludedPaintings = new Set(selection?.excludedPaintingIds ?? []);
   return {
     items: Object.keys(project.items).filter((id) => !excludedItems.has(id)).length,
-    glyphs: (project.glyphs ?? []).filter((g) => !excludedGlyphs.has(g.id)).length,
-    sounds: (project.sounds ?? []).filter((g) => !excludedSounds.has(g.id)).length,
-    paintings: (project.paintings ?? []).filter((g) => !excludedPaintings.has(g.id)).length,
+    glyphs: project.glyphs.filter((g) => !excludedGlyphs.has(g.id)).length,
+    sounds: project.sounds.filter((g) => !excludedSounds.has(g.id)).length,
+    paintings: project.paintings.filter((g) => !excludedPaintings.has(g.id)).length,
   };
 }
 
@@ -52,11 +53,11 @@ export function countSelected(
  * are dropped, all others keep their name and order.
  */
 export function selectFromProject(project: Project, selection: ExportSelection | undefined): Project {
-  if (isEverythingSelected(selection)) return project;
-  const excludedItems = new Set(selection!.excludedItemIds);
-  const excludedGlyphs = new Set(selection!.excludedGlyphIds);
-  const excludedSounds = new Set(selection!.excludedSoundIds ?? []);
-  const excludedPaintings = new Set(selection!.excludedPaintingIds ?? []);
+  if (!selection || isEverythingSelected(selection)) return project;
+  const excludedItems = new Set(selection.excludedItemIds);
+  const excludedGlyphs = new Set(selection.excludedGlyphIds);
+  const excludedSounds = new Set(selection.excludedSoundIds ?? []);
+  const excludedPaintings = new Set(selection.excludedPaintingIds ?? []);
 
   const items: Project['items'] = {};
   for (const [id, item] of Object.entries(project.items)) {
@@ -66,7 +67,8 @@ export function selectFromProject(project: Project, selection: ExportSelection |
   // Keep folders in which something (also further down) is still selected
   const keep = new Map<string, boolean>();
   const visit = (id: string, guard: Set<string>): boolean => {
-    if (keep.has(id)) return keep.get(id)!;
+    const known = keep.get(id);
+    if (known !== undefined) return known;
     const folder = project.folders[id];
     if (!folder || guard.has(id)) return false;
     guard.add(id);
@@ -92,9 +94,9 @@ export function selectFromProject(project: Project, selection: ExportSelection |
     items,
     folders,
     rootFolderIds: project.rootFolderIds.filter((id) => keep.get(id)),
-    glyphs: (project.glyphs ?? []).filter((g) => !excludedGlyphs.has(g.id)),
-    sounds: (project.sounds ?? []).filter((g) => !excludedSounds.has(g.id)),
-    paintings: (project.paintings ?? []).filter((g) => !excludedPaintings.has(g.id)),
+    glyphs: project.glyphs.filter((g) => !excludedGlyphs.has(g.id)),
+    sounds: project.sounds.filter((g) => !excludedSounds.has(g.id)),
+    paintings: project.paintings.filter((g) => !excludedPaintings.has(g.id)),
   };
 }
 
@@ -113,14 +115,15 @@ export interface PlannedProject {
 
 export interface MultiExportPlan {
   projects: PlannedProject[];
-  /** All messages; with multiple projects prefixed with the project name */
-  issues: ProjectIssue[];
+  /** All issues; with multiple projects each carries its project (`projectId` and a context frame) */
+  issues: Issue[];
 }
 
 /**
- * Plans the combined export. With multiple projects, the items of each project end up in
- * items/<project>/ so that folders with the same name do not overwrite each other. Overlaps
- * between the projects (item IDs, pack names, files) are reported as errors.
+ * Plans the combined export. With multiple projects, the items of each project always end up in
+ * items/<project>/ (`itemsInProjectFolder` is switched on for the export, whatever the project
+ * setting says) so that folders with the same name do not overwrite each other. Overlaps between
+ * the projects (item IDs, pack names, files) are reported as errors.
  */
 export function planMultiExport(entries: ExportEntry[], options: PlanOptions = {}): MultiExportPlan {
   const multiple = entries.length > 1;
@@ -134,32 +137,16 @@ export function planMultiExport(entries: ExportEntry[], options: PlanOptions = {
 
   if (!multiple) return { projects, issues: projects[0]?.plan.issues ?? [] };
 
-  const issues: ProjectIssue[] = [];
-  for (const { project, plan } of projects) {
-    for (const issue of plan.issues) {
-      // From the export dialog only items of the open project can be opened – the IDs are kept anyway
-      const { level, itemId, folderId, glyphId, soundId, paintingId } = issue;
-      issues.push({
-        level,
-        code: 'context.project',
-        params: { project: project.name },
-        detail: issue,
-        ...(itemId && { itemId }),
-        ...(folderId && { folderId }),
-        ...(glyphId && { glyphId }),
-        ...(soundId && { soundId }),
-        ...(paintingId && { paintingId }),
-        projectId: project.id,
-      });
-    }
-  }
+  const issues: Issue[] = projects.flatMap(({ project, plan }) =>
+    plan.issues.map((issue) => ({ ...inContext(issue, [projectFrame(project)]), projectId: project.id })),
+  );
   issues.push(...crossProjectIssues(projects));
   return { projects, issues };
 }
 
-function crossProjectIssues(projects: PlannedProject[]): ProjectIssue[] {
-  const issues: ProjectIssue[] = [];
-  const error = (code: string, params: MessageParams) => issues.push({ level: 'error', code, params });
+function crossProjectIssues(projects: PlannedProject[]): Issue[] {
+  const issues: Issue[] = [];
+  const error = (code: string, args: MessageArgs) => issues.push({ level: 'error', code, args });
 
   // Remembers the first project (index) per key and returns its name on overlap
   const firstOwner = <K>(map: Map<K, number>, key: K, owner: number): string | null => {
@@ -189,7 +176,7 @@ function crossProjectIssues(projects: PlannedProject[]): ProjectIssue[] {
       const other = firstOwner(nexoIds, item.nexoId, index);
       if (other) error('selection.itemIdClash', { id: item.nexoId, first: other, second: name });
     }
-    for (const glyph of project.glyphs ?? []) {
+    for (const glyph of project.glyphs) {
       const other = firstOwner(glyphIds, glyph.glyphId, index);
       if (other) error('selection.glyphIdClash', { id: glyph.glyphId, first: other, second: name });
     }
@@ -207,7 +194,7 @@ function crossProjectIssues(projects: PlannedProject[]): ProjectIssue[] {
       const pair = `${pluginFiles.get(path)}:${index}`;
       if (other && !reportedFilePairs.has(pair)) {
         reportedFilePairs.add(pair);
-        error('selection.pluginFileClash', { first: other, second: name, path, slug: slugify(name, 'resourcepackbuilder') });
+        error('selection.pluginFileClash', { first: other, second: name, path, slug: projectFileName(project) });
       }
     }
     // Nexo merges all external packs – identical paths then overwrite each other
@@ -216,7 +203,7 @@ function crossProjectIssues(projects: PlannedProject[]): ProjectIssue[] {
       const other = firstOwner(assetFiles, path, index);
       if (other && !reportedAssets.has(path)) {
         reportedAssets.add(path);
-        issues.push({ level: 'warning', code: 'selection.assetFileClash', params: { first: other, second: name, path } });
+        issues.push({ level: 'warning', code: 'selection.assetFileClash', args: { first: other, second: name, path } });
       }
     }
   });
@@ -224,21 +211,6 @@ function crossProjectIssues(projects: PlannedProject[]): ProjectIssue[] {
 }
 
 /* ====================================================================== helpers for the selection UI */
-
-/** All items in a folder and its subfolders. */
-export function itemIdsInFolder(project: Project, folderId: string): string[] {
-  const result: string[] = [];
-  const guard = new Set<string>();
-  const visit = (id: string) => {
-    const folder = project.folders[id];
-    if (!folder || guard.has(id)) return;
-    guard.add(id);
-    result.push(...folder.itemIds.filter((itemId) => project.items[itemId]));
-    folder.folderIds.forEach(visit);
-  };
-  visit(folderId);
-  return result;
-}
 
 /** Selects or deselects the given items. */
 export function setItemsSelected(selection: ExportSelection, itemIds: string[], selected: boolean): ExportSelection {
@@ -259,15 +231,6 @@ export function setListSelected(selection: ExportSelection, key: ListSelectionKe
     else excluded.add(id);
   }
   return { ...selection, [key]: [...excluded] };
-}
-
-export function setGlyphsSelected(selection: ExportSelection, glyphIds: string[], selected: boolean): ExportSelection {
-  const excluded = new Set(selection.excludedGlyphIds);
-  for (const id of glyphIds) {
-    if (selected) excluded.delete(id);
-    else excluded.add(id);
-  }
-  return { ...selection, excludedGlyphIds: [...excluded] };
 }
 
 /** Selection state of multiple entries: all, none or some. */

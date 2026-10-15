@@ -1,24 +1,33 @@
+// @ts-check
 /**
  * File access for shared projects (folders in OneDrive, Google Drive, Dropbox ...).
  *
- * The UI may only use folders the user picked in the dialog themselves
- * (remembered in <AppData>/shared-folders.json), and within them only the files of a shared
- * project: project.json, LIESMICH.txt, folders/*.json, items/*.json, glyphs/*.json, sounds/*.json, paintings/*.json.
+ * The UI may only use folders the user picked in the dialog themselves (remembered in
+ * `<userData>/shared-folders.json`), and within them only the files of a shared project:
+ * project.json, README.txt, folders/*.json, items/*.json, glyphs/*.json, sounds/*.json, paintings/*.json.
  */
-const { app, BrowserWindow, dialog, ipcMain, shell } = require('electron');
+const { app, BrowserWindow, dialog } = require('electron');
 const fs = require('node:fs');
 const fsp = fs.promises;
 const os = require('node:os');
 const path = require('node:path');
-const crypto = require('node:crypto');
-const { t } = require('./messages.cjs');
+const { errorCode, LOCKED_CODES, openPath, writeFileAtomic } = require('./fsUtil.cjs');
+const { t } = require('./i18n.cjs');
+const { handle, send } = require('./ipc.cjs');
+const { testHooks } = require('./testHooks.cjs');
 
-const FILE_PATTERN = /^(project\.json|LIESMICH\.txt|(folders|items|glyphs|sounds|paintings)\/[A-Za-z0-9_-]{1,64}\.json)$/;
+/** @typedef {import('../src/platform/desktopApi').ShareFileInfo} ShareFileInfo */
+/** @typedef {import('../src/platform/desktopApi').ShareFolderInfo} ShareFolderInfo */
+
+const FILE_PATTERN = /^(project\.json|README\.txt|(folders|items|glyphs|sounds|paintings)\/[A-Za-z0-9_-]{1,64}\.json)$/;
 const ENTITY_DIRS = ['folders', 'items', 'glyphs', 'sounds', 'paintings'];
 const IGNORED_NAMES = new Set(['desktop.ini', 'Thumbs.db', '.DS_Store']);
+const DEFAULT_SUBFOLDER = 'ResourcepackBuilder project';
+const WATCH_DEBOUNCE_MS = 250;
 
 /* ------------------------------------------------------------------ allowed folders */
 
+/** @type {string[] | null} */
 let roots = null;
 
 function rootsFile() {
@@ -29,13 +38,14 @@ function loadRoots() {
   if (roots) return roots;
   try {
     const data = JSON.parse(fs.readFileSync(rootsFile(), 'utf8'));
-    roots = Array.isArray(data) ? data.filter((r) => typeof r === 'string') : [];
+    roots = Array.isArray(data) ? data.filter((root) => typeof root === 'string') : [];
   } catch {
     roots = [];
   }
   return roots;
 }
 
+/** @param {string} folder */
 function allowRoot(folder) {
   const resolved = path.resolve(folder);
   const list = loadRoots();
@@ -51,26 +61,65 @@ function allowRoot(folder) {
   return resolved;
 }
 
-function checkFolder(folder) {
-  if (typeof folder !== 'string' || !folder) throw new Error(t('share.invalidFolder'));
-  const resolved = path.resolve(folder);
-  const allowed = loadRoots().some((root) => resolved === root || resolved.startsWith(root.endsWith(path.sep) ? root : root + path.sep));
-  if (!allowed) throw new Error(t('share.folderNotAllowed'));
-  return resolved;
+/**
+ * @param {string} dir
+ * @param {string} root
+ */
+function isInside(dir, root) {
+  return dir === root || dir.startsWith(root.endsWith(path.sep) ? root : root + path.sep);
 }
 
-function filePath(folder, rel) {
-  if (typeof rel !== 'string' || !FILE_PATTERN.test(rel)) throw new Error(t('share.invalidFile', { file: rel }));
-  return path.join(checkFolder(folder), ...rel.split('/'));
+/**
+ * The real path (symbolic links resolved) of `target`; parts that do not exist yet are appended unchanged.
+ * @param {string} target
+ * @returns {Promise<string>}
+ */
+async function realPath(target) {
+  try {
+    return await fsp.realpath(target);
+  } catch (err) {
+    const parent = path.dirname(target);
+    if (errorCode(err) !== 'ENOENT' || parent === target) return target;
+    return path.join(await realPath(parent), path.basename(target));
+  }
+}
+
+/**
+ * Resolves `folder` and makes sure it lies inside a folder the user picked – also after following links.
+ * @param {unknown} folder
+ */
+async function checkFolder(folder) {
+  if (typeof folder !== 'string' || !folder) throw new Error(t('share.invalidFolder'));
+  const resolved = path.resolve(folder);
+  const real = await realPath(resolved);
+  for (const root of loadRoots()) {
+    if (isInside(resolved, root) && isInside(real, await realPath(root))) return resolved;
+  }
+  throw new Error(t('share.folderNotAllowed'));
+}
+
+/**
+ * The absolute path of a project file inside an allowed folder.
+ * @param {unknown} folder
+ * @param {unknown} rel
+ */
+async function filePath(folder, rel) {
+  if (typeof rel !== 'string' || !FILE_PATTERN.test(rel)) throw new Error(t('share.invalidFile', { file: String(rel) }));
+  const dir = await checkFolder(folder);
+  const target = path.join(dir, ...rel.split('/'));
+  // An entity folder could be a link pointing outside the shared folder
+  if (!isInside(await realPath(target), await realPath(dir))) throw new Error(t('share.folderNotAllowed'));
+  return target;
 }
 
 /* ------------------------------------------------------------------ files */
 
+/** @param {string} dir */
 async function readProjectInfo(dir) {
   try {
-    const env = JSON.parse(await fsp.readFile(path.join(dir, 'project.json'), 'utf8'));
-    if (env && env.format === 'resourcepackbuilder-share' && env.data && typeof env.data.id === 'string') {
-      return { id: env.data.id, name: String(env.data.name ?? '') };
+    const envelope = JSON.parse(await fsp.readFile(path.join(dir, 'project.json'), 'utf8'));
+    if (envelope?.format === 'resourcepackbuilder-share' && typeof envelope.data?.id === 'string') {
+      return { id: envelope.data.id, name: String(envelope.data.name ?? '') };
     }
   } catch {
     // missing or incomplete project file
@@ -78,36 +127,48 @@ async function readProjectInfo(dir) {
   return null;
 }
 
+/**
+ * @param {unknown} folder
+ * @returns {Promise<ShareFolderInfo>}
+ */
 async function inspect(folder) {
-  const dir = checkFolder(folder);
+  const dir = await checkFolder(folder);
   let entries;
   try {
     entries = await fsp.readdir(dir, { withFileTypes: true });
   } catch (err) {
-    if (err.code === 'ENOENT') return { exists: false, empty: true, project: null, children: [] };
+    if (errorCode(err) === 'ENOENT') return { exists: false, empty: true, project: null, children: [] };
     throw err;
   }
-  const visible = entries.filter((e) => !e.name.startsWith('.') && !IGNORED_NAMES.has(e.name));
+  const visible = entries.filter((entry) => !entry.name.startsWith('.') && !IGNORED_NAMES.has(entry.name));
   const project = await readProjectInfo(dir);
+  /** @type {ShareFolderInfo['children']} */
   const children = [];
   if (!project) {
     for (const entry of visible) {
       if (!entry.isDirectory()) continue;
-      const info = await readProjectInfo(path.join(dir, entry.name));
-      if (info) children.push({ path: path.join(dir, entry.name), name: entry.name, projectName: info.name, projectId: info.id });
+      const childPath = path.join(dir, entry.name);
+      const info = await readProjectInfo(childPath);
+      if (info) children.push({ path: childPath, name: entry.name, projectName: info.name, projectId: info.id });
     }
   }
   return { exists: true, empty: visible.length === 0, project, children };
 }
 
+/**
+ * Creates (or reuses an empty) subfolder named after the project.
+ * @param {unknown} parent
+ * @param {unknown} name
+ */
 async function createSubfolder(parent, name) {
-  const base = checkFolder(parent);
+  const base = await checkFolder(parent);
   const clean =
     String(name ?? '')
+      // eslint-disable-next-line no-control-regex -- control characters are invalid in file names
       .replace(/[<>:"/\\|?*\x00-\x1f]/g, '_')
       .replace(/[. ]+$/g, '')
       .trim()
-      .slice(0, 80) || 'ResourcepackBuilder-Projekt';
+      .slice(0, 80) || DEFAULT_SUBFOLDER;
   let candidate = path.join(base, clean);
   for (let n = 2; fs.existsSync(candidate) && (await fsp.readdir(candidate)).length > 0; n++) {
     candidate = path.join(base, `${clean} (${n})`);
@@ -116,133 +177,137 @@ async function createSubfolder(parent, name) {
   return candidate;
 }
 
+/**
+ * @param {string} file
+ * @param {string} rel
+ * @returns {Promise<ShareFileInfo | null>}
+ */
+async function fileInfo(file, rel) {
+  try {
+    const stat = await fsp.stat(file);
+    return stat.isFile() ? { path: rel, mtimeMs: stat.mtimeMs, size: stat.size } : null;
+  } catch {
+    return null; // just deleted or locked; picked up next time
+  }
+}
+
+/** @param {unknown} folder */
 async function list(folder) {
-  const dir = checkFolder(folder);
-  await fsp.access(dir); // if the folder is missing (drive disconnected ...), the UI reports "offline"
-  const result = [];
-  const add = async (rel) => {
-    try {
-      const stat = await fsp.stat(path.join(dir, ...rel.split('/')));
-      if (stat.isFile()) result.push({ path: rel, mtimeMs: stat.mtimeMs, size: stat.size });
-    } catch {
-      // just deleted or locked; picked up next time
-    }
-  };
-  await add('project.json');
+  const dir = await checkFolder(folder);
+  await fsp.access(dir); // a missing folder (drive disconnected ...) makes the UI report "offline"
+  const rels = ['project.json'];
   for (const sub of ENTITY_DIRS) {
-    let names;
     try {
-      names = await fsp.readdir(path.join(dir, sub));
+      for (const name of await fsp.readdir(path.join(dir, sub))) rels.push(`${sub}/${name}`);
     } catch {
-      continue;
+      // no such entity folder yet
     }
-    for (const name of names) {
-      const rel = `${sub}/${name}`;
-      if (FILE_PATTERN.test(rel)) await add(rel);
-    }
+  }
+  /** @type {ShareFileInfo[]} */
+  const result = [];
+  for (const rel of rels) {
+    if (!FILE_PATTERN.test(rel)) continue;
+    const info = await fileInfo(path.join(dir, ...rel.split('/')), rel);
+    if (info) result.push(info);
   }
   return result;
 }
 
+/**
+ * @param {unknown} folder
+ * @param {unknown} rel
+ */
 async function read(folder, rel) {
+  const file = await filePath(folder, rel);
   try {
-    return await fsp.readFile(filePath(folder, rel), 'utf8');
+    return await fsp.readFile(file, 'utf8');
   } catch (err) {
-    // missing or currently locked by the cloud service; retry next time
-    if (['ENOENT', 'EBUSY', 'EPERM', 'EACCES'].includes(err.code)) return null;
+    // missing or currently locked by the cloud service; retried next time
+    const code = errorCode(err);
+    if (code === 'ENOENT' || (typeof code === 'string' && LOCKED_CODES.has(code))) return null;
     throw err;
   }
 }
 
-/** Writes to a temporary file first and then renames it, so nobody reads half-written files. */
+/**
+ * @param {unknown} folder
+ * @param {string} rel
+ * @param {unknown} content
+ * @returns {Promise<ShareFileInfo>}
+ */
 async function write(folder, rel, content) {
   if (typeof content !== 'string') throw new Error(t('share.invalidContent'));
-  const target = filePath(folder, rel);
-  await fsp.mkdir(path.dirname(target), { recursive: true });
-  const tmp = path.join(path.dirname(target), `.${path.basename(target)}.${crypto.randomBytes(4).toString('hex')}.tmp`);
-  await fsp.writeFile(tmp, content, 'utf8');
-  for (let attempt = 0; ; attempt++) {
-    try {
-      await fsp.rename(tmp, target);
-      break;
-    } catch (err) {
-      // Windows: target briefly locked (cloud service, virus scanner, another instance is reading)
-      if (attempt >= 6 || !['EPERM', 'EBUSY', 'EACCES'].includes(err.code)) {
-        await fsp.rm(tmp, { force: true });
-        throw err;
-      }
-      await new Promise((resolve) => setTimeout(resolve, 80 * (attempt + 1)));
-    }
-  }
+  const target = await filePath(folder, rel);
+  await writeFileAtomic(target, content);
   const stat = await fsp.stat(target);
   return { path: rel, mtimeMs: stat.mtimeMs, size: stat.size };
 }
 
 /* ------------------------------------------------------------------ watching */
 
+/** @typedef {{ sender: Electron.WebContents, timer: NodeJS.Timeout | undefined, watcher: fs.FSWatcher }} WatchEntry */
+
+/** @type {Map<string, WatchEntry>} */
 const watchers = new Map();
 
-function watch(sender, folder) {
-  const dir = checkFolder(folder);
+/**
+ * Watches a shared folder and tells `sender` about changes. Returns false if the folder cannot be watched;
+ * the UI then polls by itself.
+ *
+ * @param {Electron.WebContents} sender
+ * @param {unknown} folder
+ */
+async function watch(sender, folder) {
+  const dir = await checkFolder(folder);
   const existing = watchers.get(dir);
   if (existing) {
     existing.sender = sender;
     return true;
   }
   try {
-    const entry = { sender, timer: null, watcher: null };
-    entry.watcher = fs.watch(dir, { recursive: true }, (_event, filename) => {
-      if (filename && String(filename).endsWith('.tmp')) return;
+    const watcher = fs.watch(dir, { recursive: true }, (_event, filename) => {
+      if (filename?.endsWith('.tmp')) return;
       clearTimeout(entry.timer);
-      entry.timer = setTimeout(() => {
-        if (!entry.sender.isDestroyed()) entry.sender.send('share:changed', dir);
-      }, 250);
+      entry.timer = setTimeout(() => send(entry.sender, 'share:changed', dir), WATCH_DEBOUNCE_MS);
     });
-    entry.watcher.on('error', () => unwatch(dir));
+    /** @type {WatchEntry} */
+    const entry = { sender, timer: undefined, watcher };
+    watcher.on('error', () => unwatch(dir));
     watchers.set(dir, entry);
     return true;
   } catch {
-    return false; // without watching, the UI polls periodically itself
+    return false;
   }
 }
 
+/** @param {unknown} folder */
 function unwatch(folder) {
+  if (typeof folder !== 'string') return;
   const dir = path.resolve(folder);
   const entry = watchers.get(dir);
   if (!entry) return;
   clearTimeout(entry.timer);
-  try {
-    entry.watcher.close();
-  } catch {
-    // already closed
-  }
+  entry.watcher.close();
   watchers.delete(dir);
 }
 
 /* ------------------------------------------------------------------ IPC */
 
 function registerShareHandlers() {
-  // Only accept requests from our own app UI
-  const handle = (channel, fn) =>
-    ipcMain.handle(channel, (event, ...args) => {
-      const url = event.senderFrame?.url ?? '';
-      if (!url.startsWith('app://bundle/')) throw new Error('Not allowed');
-      return fn(event, ...args);
-    });
-
   handle('share:choose-folder', async (event, purpose) => {
-    // Automated tests only: preset the folder without a dialog
-    const testDir = process.env.RESOURCEPACKBUILDER_TEST_SHARE_DIR;
-    if (testDir) {
-      await fsp.mkdir(testDir, { recursive: true });
-      return allowRoot(testDir);
+    if (testHooks.shareDir) {
+      await fsp.mkdir(testHooks.shareDir, { recursive: true });
+      return allowRoot(testHooks.shareDir);
     }
     const join = purpose === 'join';
-    const result = await dialog.showOpenDialog(BrowserWindow.fromWebContents(event.sender), {
+    const window = BrowserWindow.fromWebContents(event.sender);
+    /** @type {Electron.OpenDialogOptions} */
+    const options = {
       title: join ? t('share.chooseJoinFolder') : t('share.chooseShareFolder'),
       buttonLabel: join ? t('share.open') : t('share.shareHere'),
       properties: ['openDirectory', 'createDirectory'],
-    });
+    };
+    const result = window ? await dialog.showOpenDialog(window, options) : await dialog.showOpenDialog(options);
     if (result.canceled || !result.filePaths[0]) return null;
     return allowRoot(result.filePaths[0]);
   });
@@ -253,10 +318,7 @@ function registerShareHandlers() {
   handle('share:write', (_event, folder, rel, content) => write(folder, rel, content));
   handle('share:watch', (event, folder) => watch(event.sender, folder));
   handle('share:unwatch', (_event, folder) => unwatch(folder));
-  handle('share:open-folder', async (_event, folder) => {
-    const error = await shell.openPath(checkFolder(folder));
-    if (error) throw new Error(error);
-  });
+  handle('share:open-folder', async (_event, folder) => openPath(await checkFolder(folder)));
   handle('share:user-name', () => {
     try {
       return os.userInfo().username || '';

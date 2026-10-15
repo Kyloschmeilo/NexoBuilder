@@ -5,11 +5,16 @@ copyright: ResourcepackBuilder
 directories:
   output: release
   buildResources: build
+# The app has no runtime dependencies: the UI is a static export (out/), everything else is in electron/.
 files:
   - electron/**
   - out/**
   - build/icon.png
   - package.json
+  # Desktop texts (menus, dialogs) from the shared catalogues; read by electron/i18n.cjs
+  - from: ../../packages/i18n/src/messages
+    to: electron/messages
+    filter: ['*/desktop.json']
 asar: true
 # No automatic updates
 publish: null
