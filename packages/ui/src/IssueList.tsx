@@ -1,0 +1,45 @@
+import { CircleAlert, Info, TriangleAlert } from 'lucide-react';
+import type { Issue } from '@nexobuilder/core/types';
+import type { ProjectIssue } from '@nexobuilder/core/export/plan';
+
+const ICONS = {
+  error: <CircleAlert size={15} />,
+  warning: <TriangleAlert size={15} />,
+  info: <Info size={15} />,
+};
+
+interface IssueListProps {
+  issues: Array<Issue | ProjectIssue>;
+  onOpenItem?: (itemId: string) => void;
+  onOpenGlyphs?: () => void;
+  empty?: string;
+  hideInfo?: boolean;
+  /** Ob „Zum Item“/„Zu den Glyphen“ für diese Meldung angeboten wird (z.B. nur fürs geöffnete Projekt) */
+  canOpen?: (issue: Issue | ProjectIssue) => boolean;
+}
+
+export function IssueList({ issues, onOpenItem, onOpenGlyphs, empty, hideInfo, canOpen = () => true }: IssueListProps) {
+  const order = { error: 0, warning: 1, info: 2 };
+  const visible = issues.filter((i) => !hideInfo || i.level !== 'info').sort((a, b) => order[a.level] - order[b.level]);
+  if (visible.length === 0) return empty ? <div className="faint small">{empty}</div> : null;
+  return (
+    <div className="issue-list">
+      {visible.map((issue, i) => (
+        <div key={i} className={`issue ${issue.level}`}>
+          {ICONS[issue.level]}
+          <span className="issue-text">{issue.message}</span>
+          {onOpenItem && canOpen(issue) && 'itemId' in issue && issue.itemId && (
+            <button className="link" onClick={() => onOpenItem(issue.itemId!)}>
+              Zum Item
+            </button>
+          )}
+          {onOpenGlyphs && canOpen(issue) && 'glyphId' in issue && issue.glyphId && (
+            <button className="link" onClick={onOpenGlyphs}>
+              Glyphs öffnen
+            </button>
+          )}
+        </div>
+      ))}
+    </div>
+  );
+}

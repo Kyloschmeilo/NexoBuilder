@@ -7,7 +7,7 @@ on:
   workflow_dispatch:
     inputs:
       release:
-        description: 'GitHub-Release für die Version aus package.json erstellen'
+        description: 'GitHub-Release für die Version aus apps/nexobuilder/package.json erstellen'
         type: boolean
         default: true
 
@@ -24,7 +24,7 @@ jobs:
       - run: npm run typecheck
       - run: npm test
       - run: npm run build:single
-      - run: cp dist-single/index.html NexoBuilder.html
+      - run: cp apps/nexobuilder/dist-single/index.html NexoBuilder.html
       - uses: actions/upload-artifact@v4
         with:
           name: NexoBuilder
@@ -46,11 +46,11 @@ jobs:
       - uses: actions/upload-artifact@v4
         with:
           name: NexoBuilder-Windows
-          path: release/*.exe
+          path: apps/nexobuilder/release/*.exe
       - name: Installer still installieren
         shell: pwsh
         run: |
-          $setup = Get-ChildItem release/NexoBuilder-Setup-*.exe | Select-Object -First 1
+          $setup = Get-ChildItem apps/nexobuilder/release/NexoBuilder-Setup-*.exe | Select-Object -First 1
           Start-Process -FilePath $setup.FullName -ArgumentList '/S' -Wait
           $exe = "$env:LOCALAPPDATA\Programs\NexoBuilder\NexoBuilder.exe"
           if (-not (Test-Path $exe)) { throw "Installation fehlgeschlagen: $exe fehlt" }
@@ -59,11 +59,11 @@ jobs:
         shell: pwsh
         run: |
           npm install --no-save playwright-core
-          node scripts/test-windows-exe.cjs "$env:NEXO_EXE" exe-test
+          node apps/nexobuilder/scripts/test-windows-exe.cjs "$env:NEXO_EXE" exe-test
       - name: Portable-Version starten
         shell: pwsh
         run: |
-          $portable = Get-ChildItem release/*-portable.exe | Select-Object -First 1
+          $portable = Get-ChildItem apps/nexobuilder/release/*-portable.exe | Select-Object -First 1
           Start-Process -FilePath $portable.FullName
           Start-Sleep -Seconds 25
           $running = Get-Process NexoBuilder -ErrorAction SilentlyContinue | Where-Object { $_.MainWindowTitle -eq 'NexoBuilder' }
@@ -91,9 +91,9 @@ jobs:
       - uses: actions/checkout@v4
       - name: Version und Changelog prüfen
         run: |
-          version=$(node -p "require('./package.json').version")
+          version=$(node -p "require('./apps/nexobuilder/package.json').version")
           if [ "$GITHUB_REF_TYPE" = "tag" ] && [ "v$version" != "$GITHUB_REF_NAME" ]; then
-            echo "Tag $GITHUB_REF_NAME passt nicht zur Version $version in package.json"
+            echo "Tag $GITHUB_REF_NAME passt nicht zur Version $version in apps/nexobuilder/package.json"
             exit 1
           fi
           echo "TAG=v$version" >> "$GITHUB_ENV"
@@ -116,7 +116,7 @@ jobs:
         run: |
           ls -la dist-release
           if gh release view "$TAG" >/dev/null 2>&1; then
-            echo "Release $TAG gibt es schon – für einen neuen Release die Version in package.json erhöhen"
+            echo "Release $TAG gibt es schon – für einen neuen Release die Version in apps/nexobuilder/package.json erhöhen"
             exit 1
           fi
           # Legt den Tag an, falls es ihn noch nicht gibt (Release per „Run workflow“)

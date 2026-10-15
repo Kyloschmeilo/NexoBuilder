@@ -1,0 +1,29 @@
+{
+  "name": "@nexobuilder/ui",
+  "private": true,
+  "version": "0.0.0",
+  "description": "Wiederverwendbare React-Bausteine, Formularfelder und das CastCrafter-Design (CSS, Schriften).",
+  "type": "module",
+  "exports": {
+    ".": "./src/index.ts",
+    "./styles.css": "./src/styles.css",
+    "./fonts.css": "./src/fonts.css"
+  },
+  "scripts": {
+    "typecheck": "tsc -b"
+  },
+  "dependencies": {
+    "@fontsource/chakra-petch": "^5.3.0",
+    "@fontsource/hanken-grotesk": "^5.3.0",
+    "@fontsource/martian-mono": "^5.3.0",
+    "@nexobuilder/core": "*",
+    "lucide-react": "^1.52.0"
+  },
+  "peerDependencies": {
+    "react": "^19.3.0",
+    "react-dom": "^19.3.0"
+  },
+  "devDependencies": {
+    "@nexobuilder/config": "*"
+  }
+}

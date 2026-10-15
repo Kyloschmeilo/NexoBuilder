@@ -1,0 +1,25 @@
+{
+  "name": "@nexobuilder/preview",
+  "private": true,
+  "version": "0.0.0",
+  "description": "3D-Vorschau und Vorschaubilder für Minecraft-Modelle (three.js).",
+  "type": "module",
+  "exports": {
+    ".": "./src/index.ts"
+  },
+  "scripts": {
+    "typecheck": "tsc -b"
+  },
+  "dependencies": {
+    "@nexobuilder/core": "*",
+    "lucide-react": "^1.52.0",
+    "three": "^0.186.1"
+  },
+  "devDependencies": {
+    "@nexobuilder/config": "*",
+    "@types/three": "^0.186.0"
+  },
+  "peerDependencies": {
+    "react": "^19.3.0"
+  }
+}

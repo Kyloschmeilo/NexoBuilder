@@ -1,0 +1,10 @@
+{
+  "name": "@nexobuilder/config",
+  "private": true,
+  "version": "0.0.0",
+  "description": "Gemeinsame TypeScript-Konfiguration für alle Pakete.",
+  "exports": {
+    "./base.json": "./base.json",
+    "./node.json": "./node.json"
+  }
+}

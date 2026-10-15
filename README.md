@@ -82,7 +82,7 @@ Selbst bauen (Windows, oder Linux mit Wine):
 
 ```bash
 npm install
-npm run dist:win     # Ergebnis in release/
+npm run dist:win     # Ergebnis in apps/nexobuilder/release/
 ```
 
 Das Programm ist nicht digital signiert – Windows SmartScreen zeigt deshalb beim ersten Start eventuell
@@ -99,7 +99,7 @@ npm install
 npm run build:single
 ```
 
-Danach `dist-single/index.html` (bzw. `NexoBuilder.html`) per Doppelklick im Browser (Chrome, Edge oder Firefox) öffnen.
+Danach `apps/nexobuilder/dist-single/index.html` (bzw. `NexoBuilder.html`) per Doppelklick im Browser (Chrome, Edge oder Firefox) öffnen.
 Die Datei kann beliebig kopiert werden und funktioniert offline.
 
 ### Entwicklungsserver
@@ -197,26 +197,31 @@ rubin_schwert:
 
 ```bash
 npm test          # Unit-Tests (Konverter, YAML, Export)
-npm run typecheck # TypeScript
-npm run build     # Produktions-Build nach dist/
+npm run typecheck # TypeScript (alle Pakete)
+npm run build     # Produktions-Build nach apps/nexobuilder/dist/
 npm run app       # Desktop-Programm (Electron) lokal starten
-npm run icon      # App-Icon (build/icon.png) neu erzeugen
+npm run icon      # App-Icon (apps/nexobuilder/build/icon.png) neu erzeugen
 ```
 
-Neue Version veröffentlichen: Version in `package.json` erhöhen, in `CHANGELOG.md` einen Abschnitt
+Neue Version veröffentlichen: Version in `apps/nexobuilder/package.json` erhöhen, in `CHANGELOG.md` einen Abschnitt
 `## <version>` ergänzen und dann auf GitHub unter **Actions → Build → Run workflow** starten
 (oder einen Tag `v<version>` pushen). GitHub Actions baut und testet die exe und erstellt den Release
 `v<version>` mit Installer, Portable-exe und HTML-Datei.
 
-Aufbau:
+Aufbau (Monorepo mit npm-Workspaces und [Turborepo](https://turborepo.com); die Befehle oben laufen über `turbo`):
 
-- `src/core/model` – Import von `.bbmodel`, Java-JSON und PNG
-- `src/core/nexo` – Eigenschafts-Schema, YAML-Erzeugung, Eigenschaften kopieren/einfügen (`copyConfig.ts`)
-- `src/core/export` – Export-Planung, Prüfungen, Auswahl und mehrere Projekte (`selection.ts`), ZIP
-- `src/core/sync` – Abgleich geteilter Projekte (Dateiformat, Zusammenführen, Konflikte)
-- `src/core/testserver` – Dateien und Nexo-Einstellungen für den lokalen Testserver
-- `src/ui` – Oberfläche (React), 3D-Vorschau (three.js); Aussehen nach dem CastCrafter-Design in `src/styles.css`
-  (Farben als CSS-Variablen, Schriften Chakra Petch / Hanken Grotesk / Martian Mono lokal eingebunden über `src/fonts.css`)
-- `electron/` – Desktop-Programm (Electron), Konfiguration in `electron-builder.yml`;
-  `share.cjs` regelt den Zugriff auf geteilte Ordner (nur selbst gewählte Ordner, nur Projektdateien),
-  `testserver.cjs` lädt Paper/Java herunter und steuert den lokalen Testserver
+- `packages/core` (`@nexobuilder/core`) – Logik ohne Oberfläche, mit den Unit-Tests
+  - `src/model` – Import von `.bbmodel`, Java-JSON und PNG
+  - `src/nexo` – Eigenschafts-Schema, YAML-Erzeugung, Eigenschaften kopieren/einfügen (`copyConfig.ts`)
+  - `src/export` – Export-Planung, Prüfungen, Auswahl und mehrere Projekte (`selection.ts`), ZIP
+  - `src/sync` – Abgleich geteilter Projekte (Dateiformat, Zusammenführen, Konflikte)
+  - `src/testserver` – Dateien und Nexo-Einstellungen für den lokalen Testserver
+- `packages/ui` (`@nexobuilder/ui`) – wiederverwendbare React-Bausteine (Modal, Popover, Formularfelder, Datei-Helfer)
+  und das CastCrafter-Design in `src/styles.css` (Farben als CSS-Variablen, Schriften Chakra Petch / Hanken Grotesk /
+  Martian Mono lokal eingebunden über `src/fonts.css`)
+- `packages/preview` (`@nexobuilder/preview`) – 3D-Vorschau und Vorschaubilder (three.js)
+- `packages/config` (`@nexobuilder/config`) – gemeinsame TypeScript-Konfiguration
+- `apps/nexobuilder` – die App: Oberfläche (React, `src/ui`), Zustand (`src/state`), Vite-Build
+  - `electron/` – Desktop-Programm (Electron), Konfiguration in `electron-builder.yml`;
+    `share.cjs` regelt den Zugriff auf geteilte Ordner (nur selbst gewählte Ordner, nur Projektdateien),
+    `testserver.cjs` lädt Paper/Java herunter und steuert den lokalen Testserver

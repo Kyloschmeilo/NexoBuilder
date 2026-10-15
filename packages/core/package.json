@@ -1,0 +1,23 @@
+{
+  "name": "@nexobuilder/core",
+  "private": true,
+  "version": "0.0.0",
+  "description": "Modell-Import, Nexo-Konfiguration, Export-Planung und Sync – ohne Oberfläche.",
+  "type": "module",
+  "exports": {
+    "./*": "./src/*.ts"
+  },
+  "scripts": {
+    "typecheck": "tsc -b",
+    "test": "vitest run",
+    "test:watch": "vitest"
+  },
+  "dependencies": {
+    "immer": "^11.1.21",
+    "jszip": "^3.10.2",
+    "yaml": "^2.9.1"
+  },
+  "devDependencies": {
+    "@nexobuilder/config": "*"
+  }
+}
