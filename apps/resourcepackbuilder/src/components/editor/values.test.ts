@@ -10,6 +10,7 @@ import {
   nexoColorToHex,
   parseNumber,
   renameKey,
+  toConfigValue,
   toStringList,
   toggleSelection,
   unknownEntries,
@@ -109,5 +110,21 @@ describe('Nexo colours', () => {
     expect(nexoColorToHex('999, 0, 0')).toBe('#ff0000');
     expect(nexoColorToHex('red')).toBe('#ffffff');
     expect(hexToNexoColor('#ff8000')).toBe('255, 128, 0');
+  });
+});
+
+describe('toConfigValue', () => {
+  it('keeps config data and drops keys without a value', () => {
+    expect(toConfigValue({ a: 1, b: undefined, c: [true, undefined, 'x'], d: { e: null } })).toEqual({
+      a: 1,
+      c: [true, null, 'x'],
+      d: { e: null },
+    });
+  });
+
+  it('treats non-config data as not set', () => {
+    expect(toConfigValue(undefined)).toBeUndefined();
+    expect(toConfigValue(Number.NaN)).toBeUndefined();
+    expect(toConfigValue(() => 1)).toBeUndefined();
   });
 });

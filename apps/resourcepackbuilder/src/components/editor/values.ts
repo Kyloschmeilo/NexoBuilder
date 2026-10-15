@@ -1,6 +1,7 @@
 /** Pure helpers of the field editors: visibility, value shapes and immutable list/object updates. */
 import type { Field } from '@resourcepackbuilder/core/nexo/fields';
 import { isPlainObject } from '@resourcepackbuilder/core/object';
+import type { ConfigValue } from '@resourcepackbuilder/core/project/types';
 
 /** Field types that take the full width of the form grid. */
 const WIDE_TYPES = new Set<Field['type']>(['object', 'objectList', 'map', 'yaml', 'stringList', 'multiSelect', 'texture', 'presence']);
@@ -15,6 +16,24 @@ export function isFieldVisible(field: Field, siblings: Record<string, unknown> |
   if (!field.showIf || !siblings) return true;
   const current = siblings[field.showIf.key];
   return field.showIf.values.some((value) => value === current);
+}
+
+/**
+ * An editor's value as a config value (YAML scalars, lists and objects), or undefined for "not set".
+ * Object keys without a value are dropped, list entries without one become null; anything that is not
+ * config data (functions, NaN…) counts as "not set".
+ */
+export function toConfigValue(value: unknown): ConfigValue | undefined {
+  if (value === null || typeof value === 'string' || typeof value === 'boolean') return value;
+  if (typeof value === 'number') return Number.isFinite(value) ? value : undefined;
+  if (Array.isArray(value)) return value.map((entry) => toConfigValue(entry) ?? null);
+  if (!isPlainObject(value)) return undefined;
+  const result: Record<string, ConfigValue> = {};
+  for (const [key, entry] of Object.entries(value)) {
+    const converted = toConfigValue(entry);
+    if (converted !== undefined) result[key] = converted;
+  }
+  return result;
 }
 
 /** Number of keys of an object that hold a value (not undefined, null or ''). */

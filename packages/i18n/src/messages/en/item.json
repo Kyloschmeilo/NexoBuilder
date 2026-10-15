@@ -24,8 +24,6 @@
     "invalidPng": "The file is not a valid PNG."
   },
   "properties": {
-    "defaultTitle": "Properties",
-    "defaultEmpty": "Nothing added yet.",
     "emptyHint": "{text} Use <b>Add</b> to choose properties.",
     "titles": {
       "general": "General",
@@ -157,7 +155,6 @@
     "states": "States",
     "statesHelp": "States you cycle through by clicking, e.g. a TV with channels. More settings under “Mechanics → Furniture → States”.",
     "addState": "Add state",
-    "stateDescription": "Model in state “{name}”",
     "newState": "New state",
     "stateName": "State name (e.g. on, open, channel_2)",
     "nameRequired": "Please enter a name.",
@@ -171,6 +168,7 @@
     "file": "File:",
     "remove": "Remove recipe",
     "input": "Input",
+    "source": "Ingredient source",
     "cookingTime": "Cooking time in ticks ({seconds, number} s)",
     "experience": "Experience",
     "result": "Result:",

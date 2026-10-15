@@ -15,7 +15,7 @@ interface SelectInputProps {
 
 /** A select with a "not set" entry; a value outside the options is kept and shown as is. */
 export function SelectInput({ value, onChange, options, allowCustom, placeholder }: SelectInputProps) {
-  const t = useTranslations('ui');
+  const t = useTranslations('editor');
   const choiceText = useChoiceText();
   if (allowCustom) {
     return <TextInput value={value} onChange={onChange} suggestions={options} placeholder={placeholder ?? t('inputs.selectOrType')} />;

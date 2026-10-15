@@ -54,7 +54,7 @@ export function ObjectFields({
 
 /** A nested object as a collapsible section; it opens by itself when it gets a value (e.g. by paste or undo). */
 function ObjectSection({ field, value, onChange }: EditorProps<ObjectField>) {
-  const t = useTranslations('ui');
+  const t = useTranslations('editor');
   const text = useSchemaText();
   const { title, description } = useFieldTitle(field);
   const count = countSetValues(value);

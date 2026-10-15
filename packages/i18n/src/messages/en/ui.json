@@ -1,34 +1,5 @@
 {
   "copyButton": {
     "copied": "Copied"
-  },
-  "miniMessage": {
-    "unnamed": "Unnamed"
-  },
-  "inputs": {
-    "default": "Default",
-    "defaultWithHint": "Default ({value})",
-    "defaultTooltip": "Not set – Nexo uses the default value",
-    "allowedRange": "Allowed: {min} to {max}",
-    "selectOrType": "Select or type",
-    "notSetOption": "– not set –",
-    "placeholderOption": "– {placeholder} –",
-    "moveUp": "Move up",
-    "moveDown": "Move down",
-    "pickColor": "Pick colour"
-  },
-  "field": {
-    "minVersion": "from {version}",
-    "minVersionTooLow": "Requires Minecraft {version} or newer",
-    "countSet": "{count} set",
-    "clearSection": "Clear section",
-    "addEntry": "Add entry",
-    "addItem": "Add {item}",
-    "keyTaken": "“{key}” already exists.",
-    "yamlError": "YAML error: {error}",
-    "noTexture": "No texture yet",
-    "noTextureHint": "No texture yet (recommended: {size})",
-    "replace": "Replace",
-    "uploadPng": "Upload PNG"
   }
 }

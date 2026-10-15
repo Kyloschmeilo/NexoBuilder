@@ -4,6 +4,7 @@ import en_common from './messages/en/common.json' with { type: 'json' };
 import en_schema from './messages/en/schema.json' with { type: 'json' };
 import en_issues from './messages/en/issues.json' with { type: 'json' };
 import en_ui from './messages/en/ui.json' with { type: 'json' };
+import en_editor from './messages/en/editor.json' with { type: 'json' };
 import en_preview from './messages/en/preview.json' with { type: 'json' };
 import en_layout from './messages/en/layout.json' with { type: 'json' };
 import en_dialogs from './messages/en/dialogs.json' with { type: 'json' };
@@ -15,6 +16,7 @@ import de_common from './messages/de/common.json' with { type: 'json' };
 import de_schema from './messages/de/schema.json' with { type: 'json' };
 import de_issues from './messages/de/issues.json' with { type: 'json' };
 import de_ui from './messages/de/ui.json' with { type: 'json' };
+import de_editor from './messages/de/editor.json' with { type: 'json' };
 import de_preview from './messages/de/preview.json' with { type: 'json' };
 import de_layout from './messages/de/layout.json' with { type: 'json' };
 import de_dialogs from './messages/de/dialogs.json' with { type: 'json' };
@@ -29,6 +31,7 @@ const en = {
   schema: en_schema,
   issues: en_issues,
   ui: en_ui,
+  editor: en_editor,
   preview: en_preview,
   layout: en_layout,
   dialogs: en_dialogs,
@@ -58,6 +61,7 @@ const de = {
   schema: de_schema,
   issues: de_issues,
   ui: de_ui,
+  editor: de_editor,
   preview: de_preview,
   layout: de_layout,
   dialogs: de_dialogs,

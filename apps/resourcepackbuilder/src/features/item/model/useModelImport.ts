@@ -3,8 +3,8 @@ import { useTranslations } from 'next-intl';
 import { createDrafts } from '@resourcepackbuilder/core/model/drafts';
 import type { ImportedModel } from '@resourcepackbuilder/core/model/types';
 import { readLoadedFiles } from '@resourcepackbuilder/ui';
-import { useErrorMessage } from '../../i18n/errors';
-import { toast } from '../../store/notifications';
+import { useErrorMessage } from '../../../i18n/errors';
+import { toast } from '../../../store/notifications';
 
 /** Files a model can be imported from. */
 export const MODEL_ACCEPT = '.bbmodel,.json,.png,.mcmeta';

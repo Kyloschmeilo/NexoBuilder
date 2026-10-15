@@ -12,8 +12,8 @@ interface ListControlsProps {
 
 /** Move up / move down / remove buttons of a list row. */
 export function ListControls({ index, count, onMove, onRemove }: ListControlsProps) {
-  const t = useTranslations('ui');
-  const common = useTranslations('common');
+  const t = useTranslations('editor');
+  const tCommon = useTranslations('common');
   return (
     <>
       <IconButton label={t('inputs.moveUp')} disabled={index === 0} onClick={() => onMove(index, index - 1)}>
@@ -22,7 +22,7 @@ export function ListControls({ index, count, onMove, onRemove }: ListControlsPro
       <IconButton label={t('inputs.moveDown')} disabled={index === count - 1} onClick={() => onMove(index, index + 1)}>
         <ArrowDown />
       </IconButton>
-      <IconButton label={common('remove')} tone="destructive" onClick={onRemove}>
+      <IconButton label={tCommon('remove')} tone="destructive" onClick={onRemove}>
         <Trash2 />
       </IconButton>
     </>

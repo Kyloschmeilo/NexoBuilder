@@ -1,7 +1,8 @@
 import type { TextField } from '@resourcepackbuilder/core/nexo/fields';
 import { validateTextFormat } from '@resourcepackbuilder/core/nexo/fieldFormat';
 import { Textarea } from '@resourcepackbuilder/ui/components/textarea';
-import { MiniMessageBox, MiniMessageLine } from '../../MiniMessage';
+import { MiniMessageBox } from '../../miniMessage/MiniMessageBox';
+import { MiniMessageLine } from '../../miniMessage/MiniMessageLine';
 import { useSchemaText } from '../../useSchemaText';
 import { FieldShell } from '../FieldShell';
 import { ColorInput } from '../inputs/ColorInput';

@@ -18,7 +18,7 @@ function parseDraft(text: string): { value: unknown } | undefined {
 
 /** Free YAML for values the form has no fields for. Tab indents instead of leaving the field. */
 export function YamlEditor({ field, value, onChange, hideLabel }: EditorProps<YamlField>) {
-  const t = useTranslations('ui');
+  const t = useTranslations('editor');
   const text = useSchemaText();
   const { draft, setDraft } = useDraft(value, parseDraft, formatYaml);
   const error = parseYaml(draft).error;

@@ -3,7 +3,8 @@ import { useTranslations } from 'next-intl';
 import type { StringListField } from '@resourcepackbuilder/core/nexo/fields';
 import { validateTextFormat } from '@resourcepackbuilder/core/nexo/fieldFormat';
 import { Input } from '@resourcepackbuilder/ui/components/input';
-import { MiniMessageBox, MiniMessageLoreLine } from '../../MiniMessage';
+import { MiniMessageBox } from '../../miniMessage/MiniMessageBox';
+import { MiniMessageLoreLine } from '../../miniMessage/MiniMessageLine';
 import { useSchemaText } from '../../useSchemaText';
 import { FieldErrorText, FieldShell } from '../FieldShell';
 import { AddButton, ListControls } from '../inputs/ListControls';
@@ -13,7 +14,7 @@ import { useRowKeys } from '../useRowKeys';
 import { insertAt, listOrUndefined, moveInArray, removeAt, replaceAt, toStringList } from '../values';
 
 export function StringListEditor({ field, value, onChange, hideLabel }: EditorProps<StringListField>) {
-  const t = useTranslations('ui');
+  const t = useTranslations('editor');
   const text = useSchemaText();
   const listId = useId();
   const list = toStringList(value);

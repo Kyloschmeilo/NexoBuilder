@@ -19,8 +19,8 @@ function entryTitle(field: ObjectListField, entry: Record<string, unknown>): str
 }
 
 export function ObjectListEditor({ field, value, onChange, hideLabel }: EditorProps<ObjectListField>) {
-  const t = useTranslations('ui');
-  const common = useTranslations('common');
+  const t = useTranslations('editor');
+  const tCommon = useTranslations('common');
   const text = useSchemaText();
   const itemLabel = text(field.itemLabel) ?? '';
   const list: unknown[] = Array.isArray(value) ? value : [];
@@ -44,7 +44,7 @@ export function ObjectListEditor({ field, value, onChange, hideLabel }: EditorPr
                     {title && <span className="font-normal text-muted-foreground"> · {title}</span>}
                   </span>
                   <IconButton
-                    label={common('duplicate')}
+                    label={tCommon('duplicate')}
                     onClick={() => {
                       rows.insert(i + 1);
                       commit(insertAt(list, i + 1, structuredClone(obj)));

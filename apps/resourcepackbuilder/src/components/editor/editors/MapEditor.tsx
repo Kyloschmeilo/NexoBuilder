@@ -25,7 +25,7 @@ function KeyInput({ value, onRename, listId }: { value: string; onRename: (key: 
   );
   return (
     <Input
-      className="w-[220px] flex-none font-mono"
+      className="w-32 flex-none font-mono @lg:w-56"
       value={draft}
       list={listId}
       onChange={(e) => setDraft(e.target.value)}
@@ -44,8 +44,8 @@ function KeyInput({ value, onRename, listId }: { value: string; onRename: (key: 
 }
 
 export function MapEditor({ field, value, onChange, hideLabel }: EditorProps<MapField>) {
-  const t = useTranslations('ui');
-  const common = useTranslations('common');
+  const t = useTranslations('editor');
+  const tCommon = useTranslations('common');
   const text = useSchemaText();
   const keyLabel = text(field.keyLabel) ?? '';
   const obj = isPlainObject(value) ? value : {};
@@ -67,7 +67,7 @@ export function MapEditor({ field, value, onChange, hideLabel }: EditorProps<Map
     setNewKey('');
   };
   const removeButton = (key: string) => (
-    <IconButton label={common('remove')} tone="destructive" onClick={() => commit(withKey(obj, key, undefined))}>
+    <IconButton label={tCommon('remove')} tone="destructive" onClick={() => commit(withKey(obj, key, undefined))}>
       <Trash2 />
     </IconButton>
   );

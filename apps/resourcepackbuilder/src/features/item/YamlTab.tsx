@@ -4,51 +4,64 @@ import type { ExportPlan } from '@resourcepackbuilder/core/export/types';
 import { parseYaml, toYaml } from '@resourcepackbuilder/core/nexo/yaml';
 import { isPlainObject } from '@resourcepackbuilder/core/object';
 import { CopyButton } from '@resourcepackbuilder/ui';
+import { FieldDescription, FieldError } from '@resourcepackbuilder/ui/components/field';
+import { Textarea } from '@resourcepackbuilder/ui/components/textarea';
 import { updateItem } from '../../commands/items';
 import { YamlView } from '../../components/YamlView';
 import { usePlan } from '../../store/PlanProvider';
-import { FieldDescription, FieldError } from '@resourcepackbuilder/ui/components/field';
-import { Textarea } from '@resourcepackbuilder/ui/components/textarea';
 import { EditorCard } from './EditorCard';
 
+const INDENT = '  ';
+const EXAMPLE = 'Mechanics:\n  furniture:\n    placements:\n      wall:\n        properties:\n          translation: 0,0.3,-0.3';
+/** Shown while the export plan does not know the item's file yet. */
+const DEFAULT_YAML_FILE = 'plugins/Nexo/items/…';
+
+/** The item's final Nexo YAML as the export writes it ('' while the plan is not ready). */
 export function itemYamlPreview(plan: ExportPlan | null, item: Item): string {
   const entry = plan?.items.find((p) => p.item.id === item.id);
-  if (!entry) return '';
-  return toYaml({ [item.nexoId || 'item']: entry.config });
+  return entry ? toYaml({ [item.nexoId || 'item']: entry.config }) : '';
 }
 
-const EXAMPLE = 'Mechanics:\n  furniture:\n    placements:\n      wall:\n        properties:\n          translation: 0,0.3,-0.3';
+function useRawYamlError(text: string): string | null {
+  const t = useTranslations('item');
+  const parsed = parseYaml(text);
+  if (parsed.error) return parsed.error;
+  return parsed.value !== null && !isPlainObject(parsed.value) ? t('yaml.notObject') : null;
+}
 
 export function YamlTab({ item }: { item: Item }) {
   const t = useTranslations('item');
-  const plan = usePlan();
   const tCommon = useTranslations('common');
-  const text = item.rawYaml;
-  const parsed = parseYaml(text);
-  const error = parsed.error ?? (parsed.value !== null && !isPlainObject(parsed.value) ? t('yaml.notObject') : null);
+  const plan = usePlan();
+  const error = useRawYamlError(item.rawYaml);
   const preview = itemYamlPreview(plan, item);
-  const entry = plan?.items.find((p) => p.item.id === item.id);
+  const yamlFile = plan?.items.find((p) => p.item.id === item.id)?.yamlFile ?? DEFAULT_YAML_FILE;
+  const setRawYaml = (rawYaml: string) =>
+    updateItem(
+      item.id,
+      (d) => {
+        d.rawYaml = rawYaml;
+      },
+      'rawYaml',
+    );
 
   return (
-    <div>
+    <div className="flex flex-col gap-6">
       <EditorCard title={t('yaml.extraTitle')} description={t('yaml.extraDescription')}>
         <Textarea
-          className="min-h-0 font-mono text-[13px]"
+          className="min-h-0 font-mono text-xs leading-5 [tab-size:2]"
           aria-invalid={error ? true : undefined}
           rows={10}
           spellCheck={false}
-          value={text}
+          value={item.rawYaml}
           placeholder={`${t('yaml.example')}\n${EXAMPLE}`}
-          onChange={(e) => updateItem(item.id, (d) => (d.rawYaml = e.target.value), 'rawYaml')}
+          onChange={(e) => setRawYaml(e.target.value)}
           onKeyDown={(e) => {
-            if (e.key === 'Tab') {
-              e.preventDefault();
-              const el = e.target as HTMLTextAreaElement;
-              const { selectionStart, selectionEnd } = el;
-              const next = text.slice(0, selectionStart) + '  ' + text.slice(selectionEnd);
-              updateItem(item.id, (d) => (d.rawYaml = next), 'rawYaml');
-              window.requestAnimationFrame(() => el.setSelectionRange(selectionStart + 2, selectionStart + 2));
-            }
+            if (e.key !== 'Tab') return;
+            e.preventDefault();
+            // setRangeText keeps the caret right after the inserted indent
+            e.currentTarget.setRangeText(INDENT, e.currentTarget.selectionStart, e.currentTarget.selectionEnd, 'end');
+            setRawYaml(e.currentTarget.value);
           }}
         />
         {error && <FieldError className="mt-1.5 text-xs">{t('yaml.error', { error })}</FieldError>}
@@ -57,7 +70,7 @@ export function YamlTab({ item }: { item: Item }) {
 
       <EditorCard
         title={t('yaml.finalTitle')}
-        description={t('yaml.finalDescription', { file: entry?.yamlFile ?? 'plugins/Nexo/items/…' })}
+        description={t('yaml.finalDescription', { file: yamlFile })}
         actions={<CopyButton text={preview} label={tCommon('copy')} />}
       >
         <YamlView text={preview || t('yaml.computing')} />

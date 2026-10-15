@@ -55,5 +55,5 @@ export function FieldRenderer({ siblings, ...props }: FieldRendererProps) {
 
 /** Responsive grid of form fields; wide fields (`col-span-full`) span all columns. */
 export function FieldGrid({ children, className }: { children: ReactNode; className?: string }) {
-  return <div className={cn('grid grid-cols-[repeat(auto-fill,minmax(230px,1fr))] gap-4', className)}>{children}</div>;
+  return <div className={cn('grid grid-cols-[repeat(auto-fill,minmax(min(100%,14rem),1fr))] gap-4', className)}>{children}</div>;
 }

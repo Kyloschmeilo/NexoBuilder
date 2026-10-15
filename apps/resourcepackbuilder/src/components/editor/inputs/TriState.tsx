@@ -12,7 +12,7 @@ interface TriStateProps {
   defaultHint?: boolean;
 }
 
-const ITEM =
+const TOGGLE_CLASS =
   'px-3.5 text-muted-foreground hover:bg-muted hover:text-foreground data-pressed:bg-accent data-pressed:font-semibold data-pressed:text-primary';
 
 const STATES = { unset: undefined, true: true, false: false } as const;
@@ -22,8 +22,8 @@ const isStateName = (value: string): value is StateName => value in STATES;
 
 /** Yes / no, optionally with a third "default" state. Behaves like radio buttons. */
 export function TriState({ value, onChange, allowUnset = true, defaultHint }: TriStateProps) {
-  const t = useTranslations('ui');
-  const common = useTranslations('common');
+  const t = useTranslations('editor');
+  const tCommon = useTranslations('common');
   const current: StateName = value === undefined ? 'unset' : value ? 'true' : 'false';
   return (
     <ToggleGroup
@@ -39,18 +39,18 @@ export function TriState({ value, onChange, allowUnset = true, defaultHint }: Tr
     >
       {allowUnset && (
         <Tip label={t('inputs.defaultTooltip')}>
-          <ToggleGroupItem value="unset" className={ITEM}>
+          <ToggleGroupItem value="unset" className={TOGGLE_CLASS}>
             {defaultHint === undefined
               ? t('inputs.default')
-              : t('inputs.defaultWithHint', { value: defaultHint ? common('yes') : common('no') })}
+              : t('inputs.defaultWithHint', { value: defaultHint ? tCommon('yes') : tCommon('no') })}
           </ToggleGroupItem>
         </Tip>
       )}
-      <ToggleGroupItem value="true" className={ITEM}>
-        {common('yes')}
+      <ToggleGroupItem value="true" className={TOGGLE_CLASS}>
+        {tCommon('yes')}
       </ToggleGroupItem>
-      <ToggleGroupItem value="false" className={cn(ITEM, 'data-pressed:bg-muted data-pressed:text-destructive')}>
-        {common('no')}
+      <ToggleGroupItem value="false" className={cn(TOGGLE_CLASS, 'data-pressed:bg-muted data-pressed:text-destructive')}>
+        {tCommon('no')}
       </ToggleGroupItem>
     </ToggleGroup>
   );

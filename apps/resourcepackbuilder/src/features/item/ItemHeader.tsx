@@ -1,0 +1,119 @@
+import { useTranslations } from 'next-intl';
+import { Box, ClipboardCopy, ClipboardPaste, Copy, FolderInput, Gift, Trash2 } from 'lucide-react';
+import type { Item } from '@resourcepackbuilder/core/project/types';
+import type { Issue } from '@resourcepackbuilder/core/issues';
+import { getFolderPathLabel } from '@resourcepackbuilder/core/project/tree';
+import { IconButton, Thumb, Tip } from '@resourcepackbuilder/ui';
+import { Badge } from '@resourcepackbuilder/ui/components/badge';
+import { Button } from '@resourcepackbuilder/ui/components/button';
+import { useThumbnail } from '@resourcepackbuilder/preview';
+import { MiniMessageBox } from '../../components/miniMessage/MiniMessageBox';
+import { MiniMessageLine } from '../../components/miniMessage/MiniMessageLine';
+import { useErrorMessage } from '../../i18n/errors';
+import { useServices } from '../../services/servicesContext';
+import { clipboardLabel, useClipboardStore } from '../../store/clipboard';
+import { openDialog } from '../../store/dialogs';
+import { toast } from '../../store/notifications';
+import { useOpenProject } from '../../store/project';
+import { useTestServerStore } from '../../store/testServer';
+import { itemMaterial } from './itemMaterial';
+import { useItemActions } from './useItemActions';
+
+/** "Give in test server" – only visible while the local test server is running. */
+function GiveButton({ nexoId }: { nexoId: string }) {
+  const t = useTranslations('item');
+  const errorMessage = useErrorMessage();
+  const testServer = useServices().testServer;
+  const isRunning = useTestServerStore((s) => s.server?.status === 'running');
+  if (!testServer || !isRunning) return null;
+  const give = () =>
+    void testServer.give(nexoId).then(
+      (player) => toast('success', t('editor.giveSuccess', { id: nexoId, player })),
+      (err: unknown) => toast('error', errorMessage(err)),
+    );
+  return (
+    <Tip label={t('editor.giveTooltip')}>
+      <Button variant="outline" size="sm" onClick={give}>
+        <Gift /> {t('editor.give')}
+      </Button>
+    </Tip>
+  );
+}
+
+/** The item's state badges: id, folder, material and the result of the checks. */
+function ItemBadges({ item, issues }: { item: Item; issues: Issue[] }) {
+  const t = useTranslations('item');
+  const project = useOpenProject();
+  const errors = issues.filter((i) => i.level === 'error').length;
+  const warnings = issues.filter((i) => i.level === 'warning').length;
+  return (
+    <div className="flex flex-wrap gap-2">
+      <Tip label={t('editor.itemId')}>
+        <Badge variant="outline" className="border-primary font-mono text-primary">
+          {item.nexoId}
+        </Badge>
+      </Tip>
+      <Tip label={t('editor.folder')}>
+        <Badge variant="outline">{getFolderPathLabel(project, item.folderId)}</Badge>
+      </Tip>
+      <Badge variant="outline" className="font-mono">
+        {itemMaterial(item)}
+      </Badge>
+      {errors > 0 && <Badge variant="destructive">{t('editor.errors', { count: errors })}</Badge>}
+      {warnings > 0 && <Badge variant="warning">{t('editor.warnings', { count: warnings })}</Badge>}
+      {errors === 0 && warnings === 0 && <Badge variant="success">{t('editor.ready')}</Badge>}
+    </div>
+  );
+}
+
+function ItemActions({ item }: { item: Item }) {
+  const t = useTranslations('item');
+  const tCommon = useTranslations('common');
+  const clip = useClipboardStore((s) => s.clip);
+  const actions = useItemActions();
+  const canPaste = !!clip && clip.sourceItemId !== item.id;
+  return (
+    <div className="flex flex-wrap gap-2">
+      <GiveButton nexoId={item.nexoId} />
+      <Tip label={t('editor.copyTooltip')}>
+        <Button variant="outline" size="sm" onClick={() => actions.copyProperties(item.id)}>
+          <ClipboardCopy /> {tCommon('copy')}
+        </Button>
+      </Tip>
+      <Tip label={clip ? t('editor.pasteTooltip', { name: clipboardLabel(clip) }) : t('editor.pasteDisabled')}>
+        <Button variant="outline" size="sm" disabled={!canPaste} onClick={() => actions.pasteProperties([item.id])}>
+          <ClipboardPaste /> {tCommon('paste')}
+        </Button>
+      </Tip>
+      <Button variant="outline" size="sm" onClick={() => actions.duplicate(item)}>
+        <Copy /> {tCommon('duplicate')}
+      </Button>
+      <IconButton label={t('editor.move')} variant="outline" onClick={() => openDialog({ id: 'moveItem', props: { itemId: item.id } })}>
+        <FolderInput />
+      </IconButton>
+      <IconButton label={tCommon('delete')} variant="destructive" onClick={() => void actions.remove(item)}>
+        <Trash2 />
+      </IconButton>
+    </div>
+  );
+}
+
+/** Thumbnail, name, badges and actions of the item; the actions wrap below when the editor is narrow. */
+export function ItemHeader({ item, issues }: { item: Item; issues: Issue[] }) {
+  const thumb = useThumbnail(item.model);
+  return (
+    <header className="flex flex-wrap items-start gap-x-4 gap-y-3">
+      <Thumb src={thumb} fallback={<Box className="size-6 opacity-60" />} className="border" />
+      <div className="flex min-w-0 flex-1 basis-48 flex-col gap-2">
+        <h1 className="m-0 min-w-0 font-heading text-2xl leading-8 font-semibold">
+          {/* Minecraft colours are made for a dark background, so the name sits in a dark box in both themes */}
+          <MiniMessageBox className="min-w-0 px-3 py-0.5 align-top font-heading text-2xl leading-8">
+            <MiniMessageLine text={item.displayName || item.nexoId} />
+          </MiniMessageBox>
+        </h1>
+        <ItemBadges item={item} issues={issues} />
+      </div>
+      <ItemActions item={item} />
+    </header>
+  );
+}

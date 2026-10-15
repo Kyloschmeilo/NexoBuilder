@@ -30,7 +30,7 @@ export function useVersionTooLow(field: Field): boolean {
 }
 
 export function MinVersionBadge({ field }: { field: Field }) {
-  const t = useTranslations('ui');
+  const t = useTranslations('editor');
   const tooLow = useVersionTooLow(field);
   if (!field.minVersion) return null;
   return (
@@ -76,7 +76,7 @@ export function FieldShell({ field, hideLabel, wide, error, children }: FieldShe
   return (
     <div className={cn('flex min-w-0 flex-col gap-1.5', wide && 'col-span-full')}>
       {!hideLabel && field.label && (
-        <FieldTitle className="w-full gap-1.5 text-[13px] leading-4">
+        <FieldTitle className="w-full gap-1.5 text-sm leading-4">
           <FieldName field={field} />
           <MinVersionBadge field={field} />
         </FieldTitle>

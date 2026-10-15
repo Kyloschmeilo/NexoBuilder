@@ -24,8 +24,6 @@
     "invalidPng": "Die Datei ist kein gültiges PNG."
   },
   "properties": {
-    "defaultTitle": "Eigenschaften",
-    "defaultEmpty": "Noch nichts hinzugefügt.",
     "emptyHint": "{text} Über <b>„Hinzufügen“</b> kannst du Eigenschaften auswählen.",
     "titles": {
       "general": "General",
@@ -157,7 +155,6 @@
     "states": "States",
     "statesHelp": "Per Klick durchschaltbare Zustände, z.B. Fernseher mit Kanälen. Weitere Einstellungen unter „Mechanics → Furniture → States“.",
     "addState": "State hinzufügen",
-    "stateDescription": "Modell im Zustand „{name}“",
     "newState": "Neuer State",
     "stateName": "Name des States (z.B. an, offen, kanal_2)",
     "nameRequired": "Bitte einen Namen eingeben.",
@@ -171,6 +168,7 @@
     "file": "Datei:",
     "remove": "Rezept entfernen",
     "input": "Eingabe",
+    "source": "Quelle der Zutat",
     "cookingTime": "Garzeit in Ticks ({seconds, number} s)",
     "experience": "Erfahrung",
     "result": "Ergebnis:",

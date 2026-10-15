@@ -1,0 +1,31 @@
+{
+  "miniMessage": {
+    "unnamed": "Unbenannt"
+  },
+  "inputs": {
+    "default": "Standard",
+    "defaultWithHint": "Standard ({value})",
+    "defaultTooltip": "Nicht gesetzt – Nexo verwendet den Standardwert",
+    "allowedRange": "Erlaubt: {min} bis {max}",
+    "selectOrType": "Auswählen oder eingeben",
+    "notSetOption": "– nicht gesetzt –",
+    "placeholderOption": "– {placeholder} –",
+    "moveUp": "Nach oben",
+    "moveDown": "Nach unten",
+    "pickColor": "Farbe wählen"
+  },
+  "field": {
+    "minVersion": "ab {version}",
+    "minVersionTooLow": "Benötigt Minecraft {version} oder neuer",
+    "countSet": "{count} gesetzt",
+    "clearSection": "Abschnitt leeren",
+    "addEntry": "Eintrag hinzufügen",
+    "addItem": "{item} hinzufügen",
+    "keyTaken": "„{key}“ ist bereits vorhanden.",
+    "yamlError": "YAML-Fehler: {error}",
+    "noTexture": "Noch keine Textur",
+    "noTextureHint": "Noch keine Textur (empfohlen: {size})",
+    "replace": "Ersetzen",
+    "uploadPng": "PNG hochladen"
+  }
+}

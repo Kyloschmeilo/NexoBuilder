@@ -1,12 +1,18 @@
 /** Creating, changing, moving and deleting items. */
 import { produce } from 'immer';
 import type { ConfigValue, Item, Project } from '@resourcepackbuilder/core/project/types';
+import type { ImportedModel, ModelTexture } from '@resourcepackbuilder/core/model/types';
 import { createItem, insertItem, type NewItemInput } from '@resourcepackbuilder/core/project/factory';
 import { uid, uniqueNexoId } from '@resourcepackbuilder/core/project/ids';
-import { pruneUnusedAssets } from '@resourcepackbuilder/core/project/assets';
-import { deepClone } from '@resourcepackbuilder/core/object';
+import { assetToken, pruneUnusedAssets } from '@resourcepackbuilder/core/project/assets';
+import { createTexture } from '@resourcepackbuilder/core/model/textures';
+import { texturePlaceholder } from '@resourcepackbuilder/core/model/common';
+import { deepClone, isPlainObject } from '@resourcepackbuilder/core/object';
+import { setPath } from '@resourcepackbuilder/core/nexo/configPath';
 import { PROPERTY_BY_ID, type PropertyDef } from '@resourcepackbuilder/core/nexo/schema';
 import { setPropertyValue } from '@resourcepackbuilder/core/nexo/properties';
+import type { VariantSlot } from '@resourcepackbuilder/core/nexo/variants';
+import { createRecipe, type Recipe, type RecipeType } from '@resourcepackbuilder/core/nexo/recipes/model';
 import { getProject, mutate } from '../store/project';
 import { select, setExpanded } from '../store/ui';
 
@@ -70,6 +76,139 @@ export function removeProperty(itemId: string, propertyId: string): void {
     setPropertyValue(item, def, undefined);
     pruneUnusedAssets(item);
   });
+}
+
+/** Stores a PNG as an extra texture of the item (e.g. an armor layer) and returns its asset token. */
+export function addItemAsset(itemId: string, fileName: string, dataUrl: string): string {
+  const id = uid('a');
+  updateItem(itemId, (item) => {
+    item.assets[id] = createTexture(id, fileName, dataUrl);
+  });
+  return assetToken(id);
+}
+
+// --- Model -------------------------------------------------------------------------------------------
+
+export function setItemModel(itemId: string, model: ImportedModel | null): void {
+  updateItem(itemId, (item) => {
+    item.model = model;
+  });
+}
+
+/** Changes the item's model (nothing happens without one). */
+export function updateItemModel(itemId: string, recipe: (model: ImportedModel) => void, historyKey?: string): void {
+  updateItem(
+    itemId,
+    (item) => {
+      if (item.model) recipe(item.model);
+    },
+    historyKey,
+  );
+}
+
+/** Changes one texture of the item's model. */
+export function updateModelTexture(itemId: string, textureId: string, recipe: (texture: ModelTexture) => void, historyKey?: string): void {
+  updateItemModel(
+    itemId,
+    (model) => {
+      const texture = model.textures.find((candidate) => candidate.id === textureId);
+      if (texture) recipe(texture);
+    },
+    historyKey,
+  );
+}
+
+/** Animation settings of a texture's .mcmeta. */
+export interface TextureAnimationSettings {
+  frametime: number;
+  interpolate: boolean;
+}
+
+/** Sets the animation of a texture, keeping the other values of its .mcmeta animation (frames, size). */
+export function setTextureAnimation(
+  itemId: string,
+  textureId: string,
+  animation: TextureAnimationSettings | null,
+  historyKey?: string,
+): void {
+  updateModelTexture(
+    itemId,
+    textureId,
+    (texture) => {
+      if (!animation) {
+        texture.mcmeta = null;
+        return;
+      }
+      const current = texture.mcmeta?.animation;
+      const next: Record<string, unknown> = { ...(isPlainObject(current) ? current : {}), frametime: animation.frametime };
+      if (animation.interpolate) next.interpolate = true;
+      else delete next.interpolate;
+      texture.mcmeta = { ...(texture.mcmeta ?? {}), animation: next };
+    },
+    historyKey,
+  );
+}
+
+/**
+ * Replaces a texture reference of the model (e.g. a vanilla texture "minecraft:item/stick") by a new
+ * texture of the model: every key that used the reference now uses the texture.
+ */
+export function assignTextureReference(itemId: string, reference: string, fileName: string, dataUrl: string): void {
+  updateItemModel(itemId, (model) => {
+    const references = model.json.textures;
+    if (!references) return;
+    const texture = createTexture(uid('t'), fileName, dataUrl);
+    model.textures.push(texture);
+    for (const [key, value] of Object.entries(references)) {
+      if (value === reference) references[key] = texturePlaceholder(texture.id);
+    }
+  });
+}
+
+// --- Variants and furniture --------------------------------------------------------------------------
+
+/** Sets the models of a variant slot; an empty list keeps the variant (added, but without a model yet). */
+export function setVariantModels(itemId: string, slot: VariantSlot, models: ImportedModel[]): void {
+  updateItem(itemId, (item) => {
+    item.variants = { ...item.variants, [slot]: models };
+  });
+}
+
+export function removeVariant(itemId: string, slot: VariantSlot): void {
+  updateItem(itemId, (item) => {
+    if (item.variants) delete item.variants[slot];
+  });
+}
+
+/** Adds an empty state to the item's furniture mechanic (Mechanics.furniture.states.<name>). */
+export function addFurnitureState(itemId: string, name: string): void {
+  updateItem(itemId, (item) => setPath(item.config, ['Mechanics', 'furniture', 'states', name], {}));
+}
+
+// --- Recipes -----------------------------------------------------------------------------------------
+
+export function addRecipe(itemId: string, type: RecipeType): void {
+  updateItem(itemId, (item) => {
+    item.recipes.push(createRecipe(type, uid('r_')));
+  });
+}
+
+export function removeRecipe(itemId: string, recipeId: string): void {
+  updateItem(itemId, (item) => {
+    item.recipes = item.recipes.filter((recipe) => recipe.id !== recipeId);
+  });
+}
+
+/** Changes a recipe; equal `historyKey`s in quick succession form one undo step. */
+export function updateRecipe(itemId: string, recipeId: string, recipe: (draft: Recipe) => void, historyKey = recipeId): void {
+  updateItem(
+    itemId,
+    (item) => {
+      const draft = item.recipes.find((candidate) => candidate.id === recipeId);
+      if (draft) recipe(draft);
+    },
+    `recipe:${historyKey}`,
+  );
 }
 
 export function deleteItem(itemId: string): void {

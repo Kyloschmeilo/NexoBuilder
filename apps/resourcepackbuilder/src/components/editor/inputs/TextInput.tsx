@@ -22,6 +22,7 @@ export function Datalist({ id, choices }: { id: string; choices?: readonly Choic
 }
 
 interface TextInputProps {
+  id?: string;
   value: string | undefined;
   /** Receives undefined for an empty field. */
   onChange: (value: string | undefined) => void;
@@ -34,11 +35,12 @@ interface TextInputProps {
 }
 
 /** Single-line text input with optional suggestions. */
-export function TextInput({ value, onChange, placeholder, suggestions, invalid, mono, autoFocus, className }: TextInputProps) {
+export function TextInput({ id, value, onChange, placeholder, suggestions, invalid, mono, autoFocus, className }: TextInputProps) {
   const listId = useId();
   return (
     <>
       <Input
+        id={id}
         className={cn(mono && 'font-mono', className)}
         aria-invalid={invalid || undefined}
         value={value ?? ''}
