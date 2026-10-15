@@ -70,7 +70,7 @@ export function removeSoundFile(soundId: string, index: number): void {
   });
 }
 
-/** Registers the sound as a jukebox song (music disc), streamed because music is long – or unregisters it. */
+/** Registers the sound as a jukebox song (music disc), streamed because music is long â€“ or unregisters it. */
 export function setSoundJukebox(soundId: string, enabled: boolean): void {
   updateSound(soundId, (sound) => {
     sound.jukebox = enabled ? { duration: '', description: '', comparatorOutput: null, range: null } : null;

@@ -37,7 +37,7 @@ export interface TestServerSync {
   openFolder(): void;
   /**
    * Loads the Paper versions into the store (once; again after a failure). Without a chosen version the project's
-   * version becomes the default – or the newest one when Paper does not support it (yet).
+   * version becomes the default â€“ or the newest one when Paper does not support it (yet).
    */
   loadPaperVersions(): Promise<void>;
   /** Gives the own player an item via the server console; resolves with the player name. */
