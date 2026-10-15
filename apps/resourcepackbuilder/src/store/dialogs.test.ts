@@ -65,17 +65,29 @@ describe('prompt', () => {
 
 describe('feature dialogs', () => {
   it('opens one at a time and closes', () => {
+    setProject(createProject('Test', 'test'));
     openDialog({ id: 'moveItem', props: { itemId: 'i_1' } });
     openDialog({ id: 'export', props: {} });
-    expect(useDialogStore.getState().feature).toEqual({ id: 'export', props: {}, projectId: null });
+    expect(useDialogStore.getState().feature).toEqual({ id: 'export', props: {} });
     closeDialog();
     expect(useDialogStore.getState().feature).toBeNull();
   });
 
-  it('remembers the project it was opened for', () => {
-    const project = createProject('Test', 'test');
-    setProject(project);
+  it('opens a project dialog only while a project is open', () => {
     openDialog({ id: 'settings', props: {} });
-    expect(useDialogStore.getState().feature?.projectId).toBe(project.id);
+    expect(useDialogStore.getState().feature).toBeNull();
+    openDialog({ id: 'projects', props: { tab: 'open' } });
+    expect(useDialogStore.getState().feature?.id).toBe('projects');
+  });
+
+  it('closes a project dialog when another project is opened, but keeps the projects dialog', () => {
+    setProject(createProject('A', 'a'));
+    openDialog({ id: 'settings', props: {} });
+    setProject(createProject('B', 'b'));
+    expect(useDialogStore.getState().feature).toBeNull();
+
+    openDialog({ id: 'projects', props: { tab: 'open' } });
+    setProject(null);
+    expect(useDialogStore.getState().feature?.id).toBe('projects');
   });
 });

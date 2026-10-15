@@ -47,7 +47,7 @@ function UserNameField({ value, onChange, onCommit }: { value: string; onChange:
 
 /** The user name to share with: the stored one, else the system user name as a suggestion. */
 function useUserName(shareSync: ShareSync) {
-  const tState = useTranslations('state');
+  const tApp = useTranslations('app');
   const [name, setName] = useState(() => useShareStore.getState().userName);
   useEffect(() => {
     let isCurrent = true;
@@ -59,14 +59,14 @@ function useUserName(shareSync: ShareSync) {
     };
   }, [shareSync]);
   /** The name to use: what was entered, or a placeholder name */
-  const effective = () => name.trim() || tState('defaults.unknownUser');
+  const effective = () => name.trim() || tApp('defaults.unknownUser');
   return { name, setName, effective };
 }
 
 /** Explains sharing and shares the open project via a folder the user picks. */
 function StartSharing({ shareSync }: { shareSync: ShareSync }) {
   const t = useTranslations('dialogs.share');
-  const tState = useTranslations('state');
+  const tApp = useTranslations('app');
   const errorMessage = useErrorMessage();
   const project = useOpenProject();
   const userName = useUserName(shareSync);
@@ -75,7 +75,7 @@ function StartSharing({ shareSync }: { shareSync: ShareSync }) {
   const start = async () => {
     setIsStarting(true);
     try {
-      const folder = await shareSync.share(project.name || tState('defaults.sharedProjectFolder'), userName.effective());
+      const folder = await shareSync.share(project.name || tApp('defaults.sharedProjectFolder'), userName.effective());
       if (folder) toast('success', t('started', { folder }));
     } catch (err) {
       toast('error', errorMessage(err));
@@ -103,12 +103,12 @@ function StartSharing({ shareSync }: { shareSync: ShareSync }) {
 /** State of the shared open project: status, folder, own name; stop sharing. */
 function SharedProject({ shareSync }: { shareSync: ShareSync }) {
   const t = useTranslations('dialogs.share');
-  const tState = useTranslations('state');
+  const tApp = useTranslations('app');
   const format = useFormatter();
   const errorMessage = useErrorMessage();
   const share = useShareStore();
   const userName = useUserName(shareSync);
-  const problem = share.status === 'error' ? errorMessage(share.error) : share.status === 'offline' ? tState('share.offline') : null;
+  const problem = share.status === 'error' ? errorMessage(share.error) : share.status === 'offline' ? tApp('share.offline') : null;
 
   const confirmStop = async () => {
     const confirmed = await confirm({

@@ -9,7 +9,7 @@ import { getProject } from '../../store/project';
 export function useFolderActions() {
   const t = useTranslations('layout.folder');
   const tCommon = useTranslations('common');
-  const tState = useTranslations('state');
+  const tApp = useTranslations('app');
 
   return {
     /** Asks for a name and creates a folder (top-level when `parentId` is null). */
@@ -20,7 +20,7 @@ export function useFolderActions() {
         initial: '',
         confirmLabel: tCommon('create'),
       });
-      if (name !== null) addFolder(name || tState('defaults.newFolder'), parentId);
+      if (name !== null) addFolder(name || tApp('defaults.newFolder'), parentId);
     },
 
     async rename(folder: Folder) {

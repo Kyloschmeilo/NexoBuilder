@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useRef, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import * as THREE from 'three';
 import { RotateCcw } from 'lucide-react';
 import { useTranslations } from 'next-intl';
@@ -44,7 +44,6 @@ export interface ModelPreviewProps {
 /** Interactive 3D preview of an imported model (orbit with the mouse, optional display slots). */
 export function ModelPreview({ model, height = 340, showToolbar = true }: ModelPreviewProps) {
   const t = useTranslations('preview');
-  const containerRef = useRef<HTMLDivElement>(null);
   const stageRef = useRef<Stage | null>(null);
   const [display, setDisplay] = useState<DisplayOption>('none');
   const [resetCounter, setResetCounter] = useState(0);
@@ -52,9 +51,8 @@ export function ModelPreview({ model, height = 340, showToolbar = true }: ModelP
   const preview = useMemo(() => buildPreviewModel(model), [model]);
   const displayTransform = display === 'none' ? undefined : (model.json.display?.[display] as JavaDisplayTransform | undefined);
 
-  useEffect(() => {
-    const container = containerRef.current;
-    if (!container) return;
+  // The stage lives as long as its container element (created before the effects below run)
+  const attachStage = useCallback((container: HTMLDivElement) => {
     try {
       stageRef.current = createStage(container);
     } catch {
@@ -101,7 +99,7 @@ export function ModelPreview({ model, height = 340, showToolbar = true }: ModelP
 
   return (
     <div className="relative overflow-hidden rounded-lg border border-border bg-background" style={{ height }}>
-      <div ref={containerRef} className="absolute inset-0 [&>canvas]:block [&>canvas]:size-full" />
+      <div ref={attachStage} className="absolute inset-0 [&>canvas]:block [&>canvas]:size-full" />
       {note && <div className="absolute inset-0 grid place-items-center bg-background p-5 text-center text-[13px] text-muted-foreground">{note}</div>}
       {showToolbar && !note && (
         <div className="pointer-events-none absolute inset-x-2 top-2 flex items-center gap-1.5 [&>*]:pointer-events-auto">

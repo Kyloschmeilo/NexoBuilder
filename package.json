@@ -15,6 +15,7 @@
     "dist:win": "turbo run dist:win",
     "icon": "npm run icon -w resourcepackbuilder",
     "lint": "turbo run lint",
+    "check:encoding": "node scripts/check-encoding.mjs",
     "format": "prettier --write .",
     "format:check": "prettier --check ."
   },

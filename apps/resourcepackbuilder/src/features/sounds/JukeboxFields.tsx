@@ -16,12 +16,12 @@ const MAX_COMPARATOR_OUTPUT = 15;
 /** Options of a sound registered as a jukebox song, and the button that creates a music disc for it. */
 export function JukeboxFields({ sound, song }: { sound: Sound; song: JukeboxSong }) {
   const t = useTranslations('media.sounds');
-  const tState = useTranslations('state');
+  const tApp = useTranslations('app');
   const { namespace } = useOpenProject();
   const update = (recipe: (draft: JukeboxSong) => void, historyKey: string) => updateJukeboxSong(sound.id, recipe, historyKey);
 
   const createDisc = () => {
-    addMusicDiscItem(sound, namespace, tState('defaults.musicFolder'));
+    addMusicDiscItem(sound, namespace, tApp('defaults.musicFolder'));
     toast('success', t('discCreated'));
   };
 

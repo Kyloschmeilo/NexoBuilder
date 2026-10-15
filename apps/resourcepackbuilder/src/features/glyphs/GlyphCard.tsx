@@ -54,10 +54,7 @@ export function GlyphCard({ glyph, glyphs, plan }: { glyph: Glyph; glyphs: Glyph
         glyph.kind !== 'reference' && (
           <>
             <PreviewFrame>
-              {file && (
-                // eslint-disable-next-line @next/next/no-img-element -- a data URL; next/image cannot optimise it in a static export
-                <img src={file.dataUrl} alt="" className="size-full object-contain [image-rendering:pixelated]" />
-              )}
+              {file && <img src={file.dataUrl} alt="" className="size-full object-contain [image-rendering:pixelated]" />}
             </PreviewFrame>
             {file && <ChatPreview glyph={glyph} file={file} />}
           </>

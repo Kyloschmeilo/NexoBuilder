@@ -1,10 +1,11 @@
 /**
  * Dialogs. Simple questions (`confirm`, `prompt`) return promises and stack, so a question asked from inside a
  * dialog never replaces the one underneath. Feature dialogs (export, settings …) are opened by id; the shell renders
- * them from its registry. At most one feature dialog is open at a time.
+ * them from its registry. At most one feature dialog is open at a time; a dialog that belongs to the open project
+ * closes when that project is closed or another one is opened.
  */
 import { create } from 'zustand';
-import { getProject } from './project';
+import { getProject, useProjectStore } from './project';
 
 export interface ConfirmOptions {
   title: string;
@@ -42,12 +43,12 @@ export type FeatureDialogId = keyof FeatureDialogProps;
 
 export type OpenFeatureDialog = { [K in FeatureDialogId]: { id: K; props: FeatureDialogProps[K] } }[FeatureDialogId];
 
-/** An open feature dialog with the id of the project that was open when it was opened. */
-export type OpenedFeatureDialog = OpenFeatureDialog & { projectId: string | null };
+/** Feature dialogs that work without an open project; all others belong to the project they were opened for. */
+const PROJECT_INDEPENDENT_DIALOGS: ReadonlySet<FeatureDialogId> = new Set(['projects']);
 
 interface DialogState {
   questions: Question[];
-  feature: OpenedFeatureDialog | null;
+  feature: OpenFeatureDialog | null;
   nextId: number;
 }
 
@@ -76,11 +77,26 @@ export function prompt(options: PromptOptions): Promise<string | null> {
   return ask<string | null>((id, resolve) => ({ id, kind: 'prompt', options, resolve }));
 }
 
-/** Opens a feature dialog, e.g. `openDialog({ id: 'moveItem', props: { itemId } })`; replaces an open one. */
+/**
+ * Opens a feature dialog, e.g. `openDialog({ id: 'moveItem', props: { itemId } })`; replaces an open one. A project
+ * dialog needs an open project.
+ */
 export function openDialog(dialog: OpenFeatureDialog): void {
-  useDialogStore.setState({ feature: { ...dialog, projectId: getProject()?.id ?? null } });
+  if (!PROJECT_INDEPENDENT_DIALOGS.has(dialog.id) && !getProject()) return;
+  useDialogStore.setState({ feature: dialog });
 }
 
 export function closeDialog(): void {
   useDialogStore.setState({ feature: null });
 }
+
+/** Whether a question or a feature dialog is open (window-level drops then stay out of the way). */
+export function isAnyDialogOpen(): boolean {
+  const { questions, feature } = useDialogStore.getState();
+  return questions.length > 0 || feature !== null;
+}
+
+useProjectStore.subscribe(({ project }, { project: previous }) => {
+  const { feature } = useDialogStore.getState();
+  if (project?.id !== previous?.id && feature && !PROJECT_INDEPENDENT_DIALOGS.has(feature.id)) closeDialog();
+});

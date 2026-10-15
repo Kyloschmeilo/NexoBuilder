@@ -118,7 +118,7 @@ export function summarizeClipboard(clip: ItemConfigClipboard): CategorySummary[]
   const config = clip.config;
   return COPY_CATEGORIES.map(({ id }) => {
     const text = (t: string): SummaryEntry => ({ text: t });
-    let entries: SummaryEntry[] = [];
+    let entries: SummaryEntry[];
     if (id === 'material') entries = typeof config.material === 'string' ? [text(config.material)] : [];
     else if (id === 'other') entries = [...otherKeys(config), ...otherNestedPaths(config).map((p) => p.join('.'))].map(text);
     else if (id === 'rawYaml') entries = clip.rawYaml.trim() ? [{ key: 'copy.rawYamlLines', params: { count: clip.rawYaml.trim().split('\n').length } }] : [];

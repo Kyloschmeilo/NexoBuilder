@@ -4,7 +4,7 @@ import { CoreError } from '@resourcepackbuilder/core/issues';
 import type { MessageKey } from '@resourcepackbuilder/i18n';
 
 /** Codes of the app's own errors: messages in the `state` namespace. */
-export type AppErrorCode = MessageKey<'state'>;
+export type AppErrorCode = MessageKey<'app'>;
 
 /** An error of the app (not of core) whose user-facing text is the message `code` in the `state` namespace. */
 export class AppError extends Error {
@@ -24,7 +24,7 @@ export class AppError extends Error {
 export function useErrorMessage(): (err: unknown) => string {
   const tIssues = useTranslations('issues');
   const tSchema = useTranslations('schema');
-  const tState = useTranslations('state');
+  const tApp = useTranslations('app');
   return useCallback(
     (err: unknown) => {
       if (err instanceof CoreError) {
@@ -35,9 +35,9 @@ export function useErrorMessage(): (err: unknown) => string {
         }
         return tIssues(err.code as never, values as never);
       }
-      if (err instanceof AppError) return tState(err.code, err.args as never);
+      if (err instanceof AppError) return tApp(err.code, err.args as never);
       return err instanceof Error ? err.message : String(err);
     },
-    [tIssues, tSchema, tState],
+    [tIssues, tSchema, tApp],
   );
 }

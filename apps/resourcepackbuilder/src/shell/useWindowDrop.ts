@@ -2,11 +2,10 @@ import { useEffect } from 'react';
 import { useTranslations } from 'next-intl';
 import type { Project } from '@resourcepackbuilder/core/project/types';
 import { filesFromDataTransfer } from '@resourcepackbuilder/ui';
-import { openDialog } from '../store/dialogs';
+import { isAnyDialogOpen, openDialog } from '../store/dialogs';
 import { toast } from '../store/notifications';
 import { getProject } from '../store/project';
 import { useUiStore, type Selection } from '../store/ui';
-import { isAnyDialogShown } from './dialogRegistry';
 
 /** The folder new items from a window drop go to: the selected folder, the selected item's folder, or the first folder. */
 function dropFolderId(project: Project, selection: Selection): string | undefined {
@@ -40,7 +39,7 @@ export function useWindowDrop(): void {
       e.preventDefault();
       const project = getProject();
       const { selection } = useUiStore.getState();
-      if (isTaken || !project || isAnyDialogShown() || selection?.kind === 'view') return;
+      if (isTaken || !project || isAnyDialogOpen() || selection?.kind === 'view') return;
       const folderId = dropFolderId(project, selection);
       if (!folderId || !project.folders[folderId]) {
         toast('warning', t('dropNeedsFolder'));

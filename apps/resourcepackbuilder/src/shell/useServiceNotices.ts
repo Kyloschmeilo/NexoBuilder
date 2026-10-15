@@ -10,7 +10,7 @@ const ANNOUNCE_QUIET_MS = 15_000;
 /** Turns what the background services report into notices for the user. */
 export function useServiceNotices(): void {
   const { autosave, share } = useServices();
-  const t = useTranslations('state');
+  const t = useTranslations('app');
   const lastAnnounced = useRef(new Map<string, number>());
 
   useEffect(() => autosave.events.subscribe(() => toast('warning', t('autosave.failed'))), [autosave, t]);

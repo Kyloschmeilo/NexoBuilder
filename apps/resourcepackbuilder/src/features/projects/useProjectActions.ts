@@ -19,7 +19,7 @@ import { getProject } from '../../store/project';
 
 export function useProjectActions() {
   const services = useServices();
-  const t = useTranslations('state');
+  const t = useTranslations('app');
   const tProjectList = useTranslations('layout.projectList');
   const errorMessage = useErrorMessage();
 

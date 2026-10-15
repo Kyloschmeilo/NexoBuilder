@@ -4,6 +4,7 @@ import nextPlugin from '@next/eslint-plugin-next';
 import { defineConfig, globalIgnores } from 'eslint/config';
 import reactHooks from 'eslint-plugin-react-hooks';
 import globals from 'globals';
+import path from 'node:path';
 import tseslint from 'typescript-eslint';
 
 const APP = 'apps/resourcepackbuilder';
@@ -19,8 +20,10 @@ export default defineConfig(
     '**/coverage/',
     '**/next-env.d.ts',
     'exe-test/',
-    // Vendored shadcn components, kept as generated
+    // Vendored shadcn components, hooks and helpers, kept as generated
     'packages/ui/src/components/',
+    'packages/ui/src/hooks/',
+    'packages/ui/src/lib/',
   ]),
 
   js.configs.recommended,
@@ -41,7 +44,12 @@ export default defineConfig(
   {
     files: [`${APP}/**/*.{ts,tsx}`],
     extends: [nextPlugin.configs['core-web-vitals']],
-    settings: { next: { rootDir: APP } },
+    // Absolute, because lint runs inside each workspace
+    settings: { next: { rootDir: path.join(import.meta.dirname, APP) } },
+    rules: {
+      // Images are data URLs in a static export: next/image cannot optimise them
+      '@next/next/no-img-element': 'off',
+    },
   },
 
   // Node: Electron main process, build scripts and config files

@@ -10,7 +10,7 @@ import en_layout from './messages/en/layout.json' with { type: 'json' };
 import en_dialogs from './messages/en/dialogs.json' with { type: 'json' };
 import en_item from './messages/en/item.json' with { type: 'json' };
 import en_media from './messages/en/media.json' with { type: 'json' };
-import en_state from './messages/en/state.json' with { type: 'json' };
+import en_app from './messages/en/app.json' with { type: 'json' };
 import en_desktop from './messages/en/desktop.json' with { type: 'json' };
 import de_common from './messages/de/common.json' with { type: 'json' };
 import de_schema from './messages/de/schema.json' with { type: 'json' };
@@ -22,7 +22,7 @@ import de_layout from './messages/de/layout.json' with { type: 'json' };
 import de_dialogs from './messages/de/dialogs.json' with { type: 'json' };
 import de_item from './messages/de/item.json' with { type: 'json' };
 import de_media from './messages/de/media.json' with { type: 'json' };
-import de_state from './messages/de/state.json' with { type: 'json' };
+import de_app from './messages/de/app.json' with { type: 'json' };
 import de_desktop from './messages/de/desktop.json' with { type: 'json' };
 
 /** The English catalogue, one top-level key per namespace. English is the source every other locale must match. */
@@ -37,7 +37,7 @@ const en = {
   dialogs: en_dialogs,
   item: en_item,
   media: en_media,
-  state: en_state,
+  app: en_app,
   desktop: en_desktop,
 };
 
@@ -67,7 +67,7 @@ const de = {
   dialogs: de_dialogs,
   item: de_item,
   media: de_media,
-  state: de_state,
+  app: de_app,
   desktop: de_desktop,
 } satisfies Messages;
 
