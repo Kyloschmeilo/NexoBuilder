@@ -204,6 +204,7 @@ A monorepo with npm workspaces:
 | `packages/i18n` (`@resourcepackbuilder/i18n`)       | English and German message catalogues per namespace (`src/messages/<locale>/<namespace>.json`), supported locales, typed message keys and the parity check that keeps both languages in step. The `desktop` namespace holds the texts of the Electron main process.                                                 |
 | `packages/ui` (`@resourcepackbuilder/ui`)           | Generic React building blocks: the vendored shadcn/ui components (Base UI flavour) in `src/components`, shared components on top of them, and the CastCrafter theme (`src/styles.css`: Tailwind v4 with light/dark design tokens; fonts Chakra Petch, Hanken Grotesk and Martian Mono bundled via `src/fonts.css`). |
 | `packages/preview` (`@resourcepackbuilder/preview`) | 3D model preview and thumbnails (three.js).                                                                                                                                                                                                                                                                         |
+| `packages/s3` (`@resourcepackbuilder/s3`)           | Typed wrapper over the AWS SDK for S3-compatible storage (AWS, R2, MinIO, B2 …), Node only, shipped to Electron as a self-contained bundle. Prepared for the upcoming storage locations feature (`docs/superpowers/specs/2026-10-16-storage-locations-design.md`).                                                  |
 | `packages/config` (`@resourcepackbuilder/config`)   | Shared TypeScript configuration: `base.json` (browser/React) and `node.json` (Node/Electron).                                                                                                                                                                                                                       |
 | `apps/resourcepackbuilder`                          | The app: a Next.js (App Router) **static export** shown in an **Electron** window.                                                                                                                                                                                                                                  |
 
@@ -211,7 +212,19 @@ The app (`apps/resourcepackbuilder`):
 
 - `src/` – the React UI. Texts come from the next-intl catalogues of `packages/i18n` (English by default); styling is
   Tailwind utilities and the theme tokens only, so every view works in light and dark mode. Language and theme are
-  per-device settings. Projects are stored in IndexedDB and saved automatically.
+  per-device settings. Projects are stored in IndexedDB and saved automatically. Layout:
+  - `app/` – Next.js routes only (layout with the pre-paint theme script, page, global CSS);
+  - `shell/` – the frame: providers and boot screen, top bar, sidebar, right panel, main area (a map from the
+    selection to its view), dialog host, keyboard shortcuts, window drop;
+  - `store/` – zustand stores: project + undo history, UI state, dialogs (promise-based `confirm`/`prompt` and the
+    feature-dialog registry), notifications, the derived export plan (`usePlan`);
+  - `commands/` – every change to a project goes through these functions (one user action = one undo step);
+  - `services/` – long-running work created once by `bootstrap()`: project repository (IndexedDB), autosave, share
+    sync, test-server sync, desktop locale sync;
+  - `features/<feature>/` – the views and dialogs of each feature (item editor, folder, glyphs, sounds, paintings,
+    test server, export, share, settings, projects, new item, …);
+  - `components/` – app-wide components, incl. the generic field editor that renders the Nexo property schema;
+  - `i18n/`, `theme/`, `platform/` – language store and error translation, theme provider, the desktop bridge.
 - `src/platform/desktopApi.ts` – the typed IPC contract between UI and Electron (channels, payloads and the
   `window.resourcepackBuilder` bridge). It only exists in the desktop program; in the browser, sharing and the test
   server are unavailable.
