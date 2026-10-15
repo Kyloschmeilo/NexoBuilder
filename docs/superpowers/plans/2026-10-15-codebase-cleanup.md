@@ -84,6 +84,9 @@ widths (container queries), and add `data-testid` where the e2e script needs it 
 
 ## Phase 4 – integration (coordinator)
 
+0. Repo-wide naming pass per the spec's naming conventions (files, folders, types, functions, variables) in every
+   package, Electron and scripts; renames applied with all references updated.
+
 1. Typecheck/lint/test everything; fix cross-workstream breaks.
 2. Prettier format the whole repo; `eslint --fix`; commit separately ("format") so review diffs stay readable.
 3. E2E script on roles/test ids; run it against a local `dist:win` build if feasible.

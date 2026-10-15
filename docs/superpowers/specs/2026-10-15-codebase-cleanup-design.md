@@ -136,6 +136,17 @@ Rules:
   `.gitignore` comment translated + `exe-test/`.
 - E2E script (`scripts/test-windows-exe.cjs`) selects by role/`data-testid`, forces English, shares the PNG helper.
 
+## Naming conventions
+
+Applied repo-wide (a dedicated naming pass runs after the feature work):
+
+- Files: React components `PascalCase.tsx` named after their main component; other modules `camelCase.ts`; hooks
+  `useThing.ts`; folders camelCase. Vendored shadcn files keep their kebab-case names. Electron `.cjs` modules camelCase.
+- Identifiers: types/interfaces/classes PascalCase; functions/variables camelCase; module constants UPPER_SNAKE;
+  booleans as predicates (`isX`, `hasX`, `canX`); props `onX`, local handlers `handleX`.
+- No cryptic abbreviations (`tc`, `ts`, `tSel` → `tCommon`, `tSchema`, `tSelection`), no German, no Nexo branding for
+  app concepts (Nexo domain terms such as `nexoId` stay). Names describe what a thing is, not how it is implemented.
+
 ## Bug fixes included
 
 1. Autosave saves the project that changed (per-project pending save), and every project switch flushes first.
