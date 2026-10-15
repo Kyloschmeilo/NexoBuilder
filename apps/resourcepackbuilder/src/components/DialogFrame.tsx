@@ -11,9 +11,9 @@ import {
 import { closeDialog } from '../store/dialogs';
 
 const SIZES = {
-  narrow: 'sm:max-w-[480px]',
-  normal: 'sm:max-w-[720px]',
-  wide: 'sm:max-w-[1040px]',
+  narrow: 'sm:max-w-120',
+  normal: 'sm:max-w-180',
+  wide: 'sm:max-w-260',
 } as const;
 
 interface DialogFrameProps {
@@ -35,7 +35,10 @@ interface DialogFrameProps {
   children: ReactNode;
 }
 
-/** Frame of every app dialog: a shadcn Dialog that is open while it is rendered. */
+/**
+ * Frame of every app dialog: a shadcn Dialog that is open while it is rendered. Its body is a size container
+ * (`@container/dialog`), so content adapts to the dialog's width rather than the window's.
+ */
 export function DialogFrame({
   title,
   icon,
@@ -68,10 +71,10 @@ export function DialogFrame({
           </DialogTitle>
           {description && <DialogDescription>{description}</DialogDescription>}
         </DialogHeader>
-        <div className="min-h-0 flex-1 overflow-auto px-6 pt-1 pb-6">{children}</div>
+        <div className="@container/dialog min-h-0 flex-1 overflow-auto px-6 pt-1 pb-6">{children}</div>
         {(footer || footerStart) && (
           <DialogFooter className="mx-0 mb-0 items-center px-6 py-4 sm:flex-row">
-            {footerStart && <div className="mr-auto text-xs text-muted-foreground">{footerStart}</div>}
+            {footerStart && <div className="mr-auto min-w-0 text-xs text-muted-foreground">{footerStart}</div>}
             {footer}
           </DialogFooter>
         )}

@@ -4,8 +4,8 @@ import { Frame, Music, Server, Smile } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 import { cn } from 'cn';
 import type { IssueTarget } from '@resourcepackbuilder/core/issues';
-import { StatusDot, Tip, type Tone } from '@resourcepackbuilder/ui';
-import type { TestServerStatus } from '../../platform/desktopApi';
+import { StatusDot, Tip } from '@resourcepackbuilder/ui';
+import { TEST_SERVER_STATUS_TONE } from '../../features/testServer/status';
 import { usePlan } from '../../store/PlanProvider';
 import { useOpenProject } from '../../store/project';
 import { useTestServerStore } from '../../store/testServer';
@@ -74,18 +74,10 @@ export function ResourceEntries() {
   );
 }
 
-const TEST_SERVER_TONE: Record<TestServerStatus, Tone> = {
-  stopped: 'neutral',
-  preparing: 'busy',
-  starting: 'busy',
-  running: 'success',
-  stopping: 'busy',
-  error: 'error',
-};
-
 /** Entry of the local test server with its status (desktop program only). */
 export function TestServerEntry() {
   const t = useTranslations('layout.sidebar.testServer');
+  const tStatus = useTranslations('media.testServer.status');
   const status = useTestServerStore((s) => s.server?.status ?? 'stopped');
   return (
     <div className="px-1.5 pb-2">
@@ -96,8 +88,8 @@ export function TestServerEntry() {
         tip={t('hint')}
         status={
           <>
-            {status !== 'stopped' && <StatusDot tone={TEST_SERVER_TONE[status]} />}
-            <span className={rowBadge}>{t(`status.${status}`)}</span>
+            {status !== 'stopped' && <StatusDot tone={TEST_SERVER_STATUS_TONE[status]} />}
+            <span className={rowBadge}>{tStatus(status)}</span>
           </>
         }
       />

@@ -75,15 +75,7 @@
     },
     "testServer": {
       "label": "Testserver",
-      "hint": "Lokaler Minecraft-Testserver mit Nexo – aktualisiert sich automatisch",
-      "status": {
-        "stopped": "Gestoppt",
-        "preparing": "Wird vorbereitet",
-        "starting": "Startet",
-        "running": "Läuft",
-        "stopping": "Stoppt",
-        "error": "Fehler"
-      }
+      "hint": "Lokaler Minecraft-Testserver mit Nexo – aktualisiert sich automatisch"
     },
     "folderMenu": {
       "newItem": "Neues Item",
@@ -173,8 +165,6 @@
     "defaultName": "Mein Pack",
     "namespace": "Namespace (Resourcepack)",
     "version": "Minecraft-Version (Server)",
-    "namespaceInvalid": "Nur Kleinbuchstaben, Zahlen sowie _ . - erlaubt.",
-    "namespaceMinecraft": "„minecraft“ ist nicht erlaubt.",
     "create": "Projekt erstellen"
   },
   "projectList": {
@@ -201,5 +191,10 @@
   "boot": {
     "failedTitle": "ResourcepackBuilder konnte nicht starten",
     "starting": "Wird gestartet…"
+  },
+  "namespaceProblem": {
+    "invalid": "Nur Kleinbuchstaben, Zahlen sowie _ . - erlaubt.",
+    "minecraft": "„minecraft“ ist nicht erlaubt.",
+    "nexo": "„nexo“ wird auch von Nexo selbst verwendet – ein eigener Namespace vermeidet Konflikte."
   }
 }

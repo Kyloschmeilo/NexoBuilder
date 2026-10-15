@@ -36,8 +36,6 @@
     "minecraftVersion": "Server Minecraft version",
     "minecraftVersionHelp": "Determines which components are available and which model features are allowed.",
     "namespace": "Resource pack namespace",
-    "namespaceInvalid": "Only lowercase letters, digits and _ . - are allowed.",
-    "namespaceMinecraft": "“minecraft” is not allowed.",
     "namespaceHelp": "Files go to assets/{namespace}/…",
     "packName": "External pack name",
     "packNameInvalid": "Only letters, digits and _ . - are allowed.",

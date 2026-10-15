@@ -75,15 +75,7 @@
     },
     "testServer": {
       "label": "Test server",
-      "hint": "Local Minecraft test server with Nexo – updates automatically",
-      "status": {
-        "stopped": "Stopped",
-        "preparing": "Preparing",
-        "starting": "Starting",
-        "running": "Running",
-        "stopping": "Stopping",
-        "error": "Error"
-      }
+      "hint": "Local Minecraft test server with Nexo – updates automatically"
     },
     "folderMenu": {
       "newItem": "New item",
@@ -173,8 +165,6 @@
     "defaultName": "My pack",
     "namespace": "Namespace (resource pack)",
     "version": "Minecraft version (server)",
-    "namespaceInvalid": "Only lowercase letters, numbers and _ . - are allowed.",
-    "namespaceMinecraft": "“minecraft” is not allowed.",
     "create": "Create project"
   },
   "projectList": {
@@ -201,5 +191,10 @@
   "boot": {
     "failedTitle": "ResourcepackBuilder could not start",
     "starting": "Starting…"
+  },
+  "namespaceProblem": {
+    "invalid": "Only lowercase letters, digits and _ . - are allowed.",
+    "minecraft": "“minecraft” is not allowed.",
+    "nexo": "“nexo” is also used by Nexo itself – a namespace of your own avoids conflicts."
   }
 }

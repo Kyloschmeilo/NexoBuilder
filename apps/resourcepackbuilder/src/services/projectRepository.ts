@@ -16,6 +16,17 @@ export interface ProjectSummary {
   updatedAt: number;
 }
 
+/** The index entry of a project. */
+export function summarizeProject(project: Project): ProjectSummary {
+  return {
+    id: project.id,
+    name: project.name,
+    namespace: project.namespace,
+    itemCount: Object.keys(project.items).length,
+    updatedAt: project.updatedAt,
+  };
+}
+
 /** Where a shared project lives and under which name this user edits it. */
 export interface ShareConfig {
   /** Shared folder on this computer */
@@ -87,14 +98,7 @@ export function createProjectRepository(): ProjectRepository {
 
     async save(project, syncState) {
       const store = requireDb();
-      const summary: ProjectSummary = {
-        id: project.id,
-        name: project.name,
-        namespace: project.namespace,
-        itemCount: Object.keys(project.items).length,
-        updatedAt: project.updatedAt,
-      };
-      const index = [summary, ...(await readIndex()).filter((p) => p.id !== project.id)];
+      const index = [summarizeProject(project), ...(await readIndex()).filter((p) => p.id !== project.id)];
       const entries: Array<[string, unknown]> = [
         [projectKey(project.id), project],
         [INDEX_KEY, index],

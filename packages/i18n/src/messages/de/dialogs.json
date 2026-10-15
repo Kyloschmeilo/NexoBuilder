@@ -36,8 +36,6 @@
     "minecraftVersion": "Minecraft-Version des Servers",
     "minecraftVersionHelp": "Bestimmt, welche Komponenten verfügbar sind und welche Modell-Features erlaubt sind.",
     "namespace": "Namespace im Resourcepack",
-    "namespaceInvalid": "Nur Kleinbuchstaben, Zahlen sowie _ . - erlaubt.",
-    "namespaceMinecraft": "„minecraft“ ist nicht erlaubt.",
     "namespaceHelp": "Dateien landen unter assets/{namespace}/…",
     "packName": "Name des external packs",
     "packNameInvalid": "Nur Buchstaben, Zahlen sowie _ . - erlaubt.",

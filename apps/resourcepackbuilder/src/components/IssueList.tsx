@@ -17,10 +17,13 @@ const LEVEL_CLASSES: Record<IssueLevel, string> = {
 
 const ORDER: Record<IssueLevel, number> = { error: 0, warning: 1, info: 2 };
 
-/** Targets the list offers a jump to, with the button label. */
-const OPEN_LABELS: Partial<Record<IssueTarget['kind'], IssueKey>> = {
+/** Label of the jump button per target kind. */
+const OPEN_LABELS: Record<IssueTarget['kind'], IssueKey> = {
   item: 'issueList.openItem',
+  folder: 'issueList.openFolder',
   glyph: 'issueList.openGlyphs',
+  sound: 'issueList.openSounds',
+  painting: 'issueList.openPaintings',
 };
 
 /**
@@ -72,20 +75,19 @@ export function IssueList({ issues, onOpen, canOpen = () => true, empty, hideInf
       {visible.map((issue, i) => {
         const Icon = ICONS[issue.level];
         const target = issue.target;
-        const openLabel = target && OPEN_LABELS[target.kind];
-        const open = onOpen && target && openLabel && canOpen(issue) ? { target, label: openLabel } : null;
+        const jump = onOpen && target && canOpen(issue) ? { label: OPEN_LABELS[target.kind], run: () => onOpen(target) } : null;
         return (
           <Alert
             key={i}
             role="listitem"
-            className={cn('items-start rounded-md py-1.5 text-[13px] leading-5', LEVEL_CLASSES[issue.level], open && 'pr-28')}
+            className={cn('items-start rounded-md py-1.5 text-sm', LEVEL_CLASSES[issue.level], jump && 'pr-28')}
           >
             <Icon aria-label={t(`issueList.level.${issue.level}`)} />
             <div className="col-start-2 text-foreground">{text(issue)}</div>
-            {open && onOpen && (
+            {jump && (
               <AlertAction className="top-1 flex">
-                <Button variant="link" size="xs" onClick={() => onOpen(open.target)}>
-                  {t(open.label)}
+                <Button variant="link" size="xs" onClick={jump.run}>
+                  {t(jump.label)}
                 </Button>
               </AlertAction>
             )}

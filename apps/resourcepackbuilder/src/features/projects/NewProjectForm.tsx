@@ -2,12 +2,12 @@ import { useId, useState } from 'react';
 import { FolderPlus } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 import { DEFAULT_MC_VERSION, MC_VERSIONS } from '@resourcepackbuilder/core/minecraft/versions';
-import { namespaceError } from '@resourcepackbuilder/core/minecraft/resourceLocation';
 import { slugify } from '@resourcepackbuilder/core/text';
 import { Button } from '@resourcepackbuilder/ui/components/button';
-import { Field, FieldError, FieldLabel } from '@resourcepackbuilder/ui/components/field';
+import { Field, FieldLabel } from '@resourcepackbuilder/ui/components/field';
 import { Input } from '@resourcepackbuilder/ui/components/input';
 import { NativeSelect, NativeSelectOption } from '@resourcepackbuilder/ui/components/native-select';
+import { NamespaceProblemText, useNamespaceProblem } from './namespaceProblem';
 import { useProjectActions } from './useProjectActions';
 
 /** Slug used when even the default project name gives none. */
@@ -18,16 +18,17 @@ export function NewProjectForm({ onDone }: { onDone?: () => void }) {
   const t = useTranslations('layout.projectForm');
   const id = useId();
   const actions = useProjectActions();
+  const checkNamespace = useNamespaceProblem();
   const [name, setName] = useState('');
   const [editedNamespace, setEditedNamespace] = useState<string | null>(null);
   const [version, setVersion] = useState(DEFAULT_MC_VERSION);
   const defaultName = t('defaultName');
   const namespace = editedNamespace ?? slugify(name || defaultName, slugify(defaultName, FALLBACK_NAMESPACE));
-  const problem = namespaceError(namespace);
-  const namespaceMessage = problem === 'invalid' ? t('namespaceInvalid') : problem === 'minecraft' ? t('namespaceMinecraft') : null;
+  const problem = checkNamespace(namespace);
+  const isInvalid = problem?.isError ?? false;
 
   const submit = async () => {
-    if (namespaceMessage) return;
+    if (isInvalid) return;
     await actions.create(name || defaultName, namespace, version);
     onDone?.();
   };
@@ -52,16 +53,16 @@ export function NewProjectForm({ onDone }: { onDone?: () => void }) {
         />
       </Field>
       <div className="grid grid-cols-[repeat(auto-fit,minmax(min(12rem,100%),1fr))] gap-3">
-        <Field data-invalid={!!namespaceMessage || undefined}>
+        <Field data-invalid={isInvalid || undefined}>
           <FieldLabel htmlFor={`${id}-namespace`}>{t('namespace')}</FieldLabel>
           <Input
             id={`${id}-namespace`}
             className="font-mono"
-            aria-invalid={!!namespaceMessage || undefined}
+            aria-invalid={isInvalid || undefined}
             value={namespace}
             onChange={(e) => setEditedNamespace(e.target.value.toLowerCase())}
           />
-          {namespaceMessage && <FieldError>{namespaceMessage}</FieldError>}
+          <NamespaceProblemText problem={problem} />
         </Field>
         <Field>
           <FieldLabel htmlFor={`${id}-version`}>{t('version')}</FieldLabel>
@@ -74,7 +75,7 @@ export function NewProjectForm({ onDone }: { onDone?: () => void }) {
           </NativeSelect>
         </Field>
       </div>
-      <Button type="submit" size="lg" disabled={!!namespaceMessage}>
+      <Button type="submit" size="lg" disabled={isInvalid}>
         <FolderPlus /> {t('create')}
       </Button>
     </form>

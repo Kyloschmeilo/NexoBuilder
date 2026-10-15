@@ -2,63 +2,45 @@
 import { useMemo, useState } from 'react';
 import { useTranslations } from 'next-intl';
 import { ClipboardPaste } from 'lucide-react';
-import { COPY_CATEGORIES, summarizeClipboard, type CopyCategory, type SummaryEntry } from '@resourcepackbuilder/core/nexo/copyConfig';
 import { selectFromProject } from '@resourcepackbuilder/core/export/selection';
-import { Alert, AlertDescription } from '@resourcepackbuilder/ui/components/alert';
-import { Button } from '@resourcepackbuilder/ui/components/button';
-import { Checkbox } from '@resourcepackbuilder/ui/components/checkbox';
-import { Field, FieldContent, FieldDescription, FieldLabel } from '@resourcepackbuilder/ui/components/field';
-import { ToggleGroup, ToggleGroupItem } from '@resourcepackbuilder/ui/components/toggle-group';
+import { COPY_CATEGORIES, summarizeClipboard, type CopyCategory, type ItemConfigClipboard } from '@resourcepackbuilder/core/nexo/copyConfig';
 import { SectionLabel } from '@resourcepackbuilder/ui';
+import { Button } from '@resourcepackbuilder/ui/components/button';
 import { pasteItemProperties } from '../../commands/clipboard';
 import { DialogFrame } from '../../components/DialogFrame';
-import { useSchemaText } from '../../components/useSchemaText';
 import { richTags } from '../../i18n/richTags';
 import { clipboardLabel, useClipboardStore } from '../../store/clipboard';
 import { closeDialog, type FeatureDialogProps } from '../../store/dialogs';
 import { toast } from '../../store/notifications';
 import { useOpenProject } from '../../store/project';
-import { SelectionTree } from '../export/ExportSelection';
+import { SelectionTree } from '../export/SelectionTree';
+import { CategoryPicker, type PasteMode } from './CategoryPicker';
 
-export function PasteConfigDialog({ targetItemIds }: FeatureDialogProps['pasteConfig']) {
+function PasteDialogContent({ clip, targetItemIds }: { clip: ItemConfigClipboard; targetItemIds: string[] }) {
   const t = useTranslations('dialogs.pasteConfig');
   const tSelection = useTranslations('dialogs.selection');
   const tCommon = useTranslations('common');
-  const schemaText = useSchemaText();
-  const tSchema = useTranslations('schema');
-  const entryText = (entry: SummaryEntry) => ('text' in entry ? entry.text : tSchema(entry.key as never, entry.params as never));
   const project = useOpenProject();
-  const close = closeDialog;
-  const clip = useClipboardStore((s) => s.clip);
-  const summary = useMemo(() => (clip ? summarizeClipboard(clip) : []), [clip]);
-  const [mode, setMode] = useState<'replace' | 'merge'>('replace');
-  const [categories, setCategories] = useState<Set<CopyCategory>>(
+  const summary = useMemo(() => summarizeClipboard(clip), [clip]);
+  const [mode, setMode] = useState<PasteMode>('replace');
+  const [categories, setCategories] = useState<ReadonlySet<CopyCategory>>(
     () => new Set(COPY_CATEGORIES.filter((c) => c.defaultOn && summary.find((s) => s.id === c.id)?.entries.length).map((c) => c.id)),
   );
-  // Target selection like in the export: what is not selected is remembered
-  const [excluded, setExcluded] = useState<string[]>(() => Object.keys(project.items).filter((id) => !targetItemIds.includes(id)));
+  // Target selection like in the export: what is not selected is stored
+  const [excludedIds, setExcludedIds] = useState<string[]>(() => Object.keys(project.items).filter((id) => !targetItemIds.includes(id)));
 
-  if (!clip) return null;
-  const sourceInProject = !!project.items[clip.sourceItemId];
-  const treeProject = sourceInProject
+  // The source item cannot be a target
+  const treeProject = project.items[clip.sourceItemId]
     ? selectFromProject(project, { excludedItemIds: [clip.sourceItemId], excludedGlyphIds: [] })
     : project;
-  const excludedSet = new Set(excluded);
-  const targets = Object.keys(treeProject.items).filter((id) => !excludedSet.has(id));
+  const excluded = new Set(excludedIds);
+  const targets = Object.keys(treeProject.items).filter((id) => !excluded.has(id));
 
   const apply = () => {
-    const count = pasteItemProperties(targets, { categories, mode });
+    const count = pasteItemProperties(targets, { categories: new Set(categories), mode });
     toast('success', t('pasted', { name: clipboardLabel(clip), count }));
-    close();
+    closeDialog();
   };
-
-  const toggle = (id: CopyCategory) =>
-    setCategories((prev) => {
-      const next = new Set(prev);
-      if (next.has(id)) next.delete(id);
-      else next.add(id);
-      return next;
-    });
 
   return (
     <DialogFrame
@@ -73,7 +55,7 @@ export function PasteConfigDialog({ targetItemIds }: FeatureDialogProps['pasteCo
       }
       footer={
         <>
-          <Button variant="outline" onClick={close}>
+          <Button variant="outline" onClick={closeDialog}>
             {tCommon('cancel')}
           </Button>
           <Button disabled={targets.length === 0 || categories.size === 0} onClick={apply}>
@@ -82,76 +64,38 @@ export function PasteConfigDialog({ targetItemIds }: FeatureDialogProps['pasteCo
         </>
       }
     >
-      <div className="grid items-start gap-5 md:grid-cols-2">
-        <div className="flex flex-col gap-3">
-          <SectionLabel>{t('what')}</SectionLabel>
-          <div className="flex flex-col gap-0.5">
-            {COPY_CATEGORIES.map((c) => {
-              const entries = summary.find((s) => s.id === c.id)?.entries ?? [];
-              const id = `paste-category-${c.id}`;
-              return (
-                <Field key={c.id} orientation="horizontal" className="py-1.5">
-                  <Checkbox id={id} checked={categories.has(c.id)} onCheckedChange={() => toggle(c.id)} />
-                  <FieldContent>
-                    <FieldLabel htmlFor={id} className="font-normal">
-                      {schemaText(c.label)}
-                      <span className="font-mono text-xs text-muted-foreground">{entries.length > 0 ? entries.length : '–'}</span>
-                    </FieldLabel>
-                    <FieldDescription className="text-xs">
-                      {entries.length > 0 ? entries.map(entryText).join(', ') : mode === 'replace' ? t('emptyReplace') : t('emptyMerge')}
-                    </FieldDescription>
-                  </FieldContent>
-                </Field>
-              );
-            })}
-          </div>
-          <div className="flex flex-col gap-1.5">
-            <SectionLabel>{t('existing')}</SectionLabel>
-            <ToggleGroup
-              variant="outline"
-              size="sm"
-              spacing={0}
-              aria-label={t('existing')}
-              value={[mode]}
-              onValueChange={(value) => {
-                const next = value[0] as typeof mode | undefined;
-                if (next) setMode(next);
-              }}
-            >
-              <ToggleGroupItem value="replace" className="px-3">
-                {t('replace')}
-              </ToggleGroupItem>
-              <ToggleGroupItem value="merge" className="px-3">
-                {t('merge')}
-              </ToggleGroupItem>
-            </ToggleGroup>
-            <p className="m-0 text-xs text-muted-foreground">{mode === 'replace' ? t('replaceHelp') : t('mergeHelp')}</p>
-          </div>
-          <Alert>
-            <AlertDescription className="text-xs">{t('neverCopied')}</AlertDescription>
-          </Alert>
-        </div>
-        <div className="flex flex-col gap-2">
-          <div className="flex items-center gap-1">
-            <SectionLabel>{t.rich('targets', { ...richTags, count: targets.length })}</SectionLabel>
-            <span className="flex-1" />
-            <Button variant="ghost" size="sm" onClick={() => setExcluded([])}>
-              {tSelection('all')}
-            </Button>
-            <Button variant="ghost" size="sm" onClick={() => setExcluded(Object.keys(project.items))}>
-              {tSelection('none')}
-            </Button>
-          </div>
+      <div className="grid items-start gap-5 @3xl/dialog:grid-cols-2">
+        <CategoryPicker summary={summary} categories={categories} onCategoriesChange={setCategories} mode={mode} onModeChange={setMode} />
+        <section className="flex min-w-0 flex-col gap-2">
+          <SectionLabel
+            actions={
+              <>
+                <Button variant="ghost" size="sm" onClick={() => setExcludedIds([])}>
+                  {tSelection('all')}
+                </Button>
+                <Button variant="ghost" size="sm" onClick={() => setExcludedIds(Object.keys(project.items))}>
+                  {tSelection('none')}
+                </Button>
+              </>
+            }
+          >
+            {t.rich('targets', { ...richTags, count: targets.length })}
+          </SectionLabel>
           <div className="rounded-md border border-primary/50">
             <SelectionTree
               project={treeProject}
               itemsOnly
-              selection={{ excludedItemIds: excluded, excludedGlyphIds: [] }}
-              onChange={(next) => setExcluded(next.excludedItemIds)}
+              selection={{ excludedItemIds: excludedIds, excludedGlyphIds: [] }}
+              onChange={(next) => setExcludedIds(next.excludedItemIds)}
             />
           </div>
-        </div>
+        </section>
       </div>
     </DialogFrame>
   );
+}
+
+export function PasteConfigDialog({ targetItemIds }: FeatureDialogProps['pasteConfig']) {
+  const clip = useClipboardStore((s) => s.clip);
+  return clip ? <PasteDialogContent clip={clip} targetItemIds={targetItemIds} /> : null;
 }
