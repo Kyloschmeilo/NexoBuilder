@@ -8,6 +8,9 @@
  * the server starts, the project lands in plugins/Nexo, a command runs, the server stops.
  * (Without Nexo: the plugin is paid and is not available here.)
  *
+ * Fresh user-data folders start in English, so visible labels are matched in English;
+ * structure is found through data-testid attributes.
+ *
  * Usage: node scripts/test-windows-exe.cjs <path to ResourcepackBuilder.exe> <output folder> [app folder]
  * (app folder only when testing with the bare Electron from node_modules)
  */
@@ -82,6 +85,8 @@ const launch = (dataDir = userData) =>
     args: [...(appDir ? [appDir] : []), `--user-data-dir=${dataDir}`],
     env: {
       ...process.env,
+      // The test hooks below are only honoured with this flag
+      RESOURCEPACKBUILDER_E2E: '1',
       RESOURCEPACKBUILDER_DOWNLOAD_DIR: downloads,
       RESOURCEPACKBUILDER_TEST_SHARE_DIR: shareDir,
       RESOURCEPACKBUILDER_TESTSERVER_DIR: testServerDir,
@@ -109,8 +114,11 @@ async function step(name, fn) {
   }
 }
 
+const treeRow = (win, text) => win.getByTestId('tree-row').filter({ hasText: text });
+const dialog = (win) => win.getByRole('dialog');
+
 (async () => {
-  const texture = path.join(out, 'feuerschwert.png');
+  const texture = path.join(out, 'fire_sword.png');
   fs.writeFileSync(texture, makePng());
 
   let app = await launch();
@@ -123,30 +131,31 @@ async function step(name, fn) {
     if (title !== 'ResourcepackBuilder') throw new Error(`Unexpected title: ${title}`);
   });
   await step('Create project', async () => {
-    await win.getByPlaceholder('z.B. Mittelalter-Pack').fill('Windows Test');
-    await win.getByRole('button', { name: 'Projekt erstellen' }).click();
+    await win.getByTestId('new-project-name').fill('Windows Test');
+    await win.getByRole('button', { name: 'Create project' }).click();
   });
   await step('Create folder', async () => {
-    await win.getByRole('button', { name: 'Ordner anlegen', exact: true }).click();
-    await win.locator('.modal input').fill('Waffen');
+    await win.getByRole('button', { name: 'Create folder', exact: true }).click();
+    await dialog(win).getByRole('textbox').fill('Weapons');
     await win.keyboard.press('Enter');
+    await treeRow(win, 'Weapons').waitFor();
   });
   await step('Create item from PNG', async () => {
-    await win.getByRole('button', { name: 'Neues Item' }).first().click();
+    await win.getByRole('button', { name: 'New item', exact: true }).first().click();
     const chooser = win.waitForEvent('filechooser');
-    await win.locator('.modal .dropzone').click();
+    await win.getByTestId('new-item-dropzone').click();
     await (await chooser).setFiles([texture]);
-    await win.locator('.modal input[placeholder="z.B. <red>Rubin-Schwert"]').fill('Feuerschwert');
-    await win.getByRole('button', { name: 'Item erstellen' }).click();
-    await win.locator('.tree-row', { hasText: 'Feuerschwert' }).waitFor();
+    await win.getByTestId('new-item-display-name').fill('Fire Sword');
+    await dialog(win).getByRole('button', { name: 'Create item' }).click();
+    await treeRow(win, 'Fire Sword').waitFor();
   });
   await win.waitForTimeout(1000);
   await win.screenshot({ path: path.join(out, 'resourcepackbuilder-windows.png') });
 
   let zipPath;
   await step('Export', async () => {
-    await win.getByRole('button', { name: 'Exportieren' }).click();
-    await win.getByRole('button', { name: 'ZIP herunterladen' }).click();
+    await win.getByRole('button', { name: 'Export', exact: true }).click();
+    await win.getByRole('button', { name: 'Download ZIP' }).click();
     for (let i = 0; i < 60 && !zipPath; i++) {
       const f = fs.readdirSync(downloads).find((n) => n.endsWith('.zip'));
       if (f) zipPath = path.join(downloads, f);
@@ -162,9 +171,9 @@ async function step(name, fn) {
     const yml = names.find((n) => n.startsWith('items/') && n.endsWith('.yml'));
     if (!yml) throw new Error('No item file');
     const text = await zip.file(yml).async('string');
-    if (!/^feuerschwert:/m.test(text)) throw new Error('Item feuerschwert missing in ' + yml);
+    if (!/^fire_sword:/m.test(text)) throw new Error('Item fire_sword missing in ' + yml);
     if (!names.some((n) => n.endsWith('/pack.mcmeta'))) throw new Error('pack.mcmeta missing');
-    if (!names.some((n) => /models\/item\/.*feuerschwert\.json$/.test(n))) throw new Error('Model missing');
+    if (!names.some((n) => /models\/item\/.*fire_sword\.json$/.test(n))) throw new Error('Model missing');
     if (!names.some((n) => /textures\/item\/.*\.png$/.test(n))) throw new Error('Texture missing');
   });
   await app.close();
@@ -173,84 +182,80 @@ async function step(name, fn) {
     app = await launch();
     win = await app.firstWindow();
     watchConsole(win);
-    await win.locator('.tree-row', { hasText: 'Feuerschwert' }).waitFor({ timeout: 20000 });
+    await treeRow(win, 'Fire Sword').waitFor({ timeout: 20000 });
   });
 
-  const nameInput = (w) => w.getByPlaceholder('z.B. <gradient:#ff5555:#ffaa00>Feuerschwert');
   let app2;
   let win2;
   await step('Share project via a folder', async () => {
-    await win.locator('.topbar .share-chip').click();
-    await win.locator('.modal input[placeholder="z.B. Kylo"]').fill('Anna');
-    await win.getByRole('button', { name: 'Ordner wählen und teilen' }).click();
-    await win.locator('.modal .badge', { hasText: 'Aktuell' }).waitFor({ timeout: 20000 });
-    await win.getByRole('button', { name: 'Fertig' }).click();
+    await win.getByTestId('share-button').click();
+    await win.getByTestId('share-user-name').fill('Anna');
+    await win.getByRole('button', { name: 'Choose folder and share' }).click();
+    await win.locator('[data-testid="share-status"][data-status="synced"]').waitFor({ timeout: 20000 });
+    await dialog(win).getByRole('button', { name: 'Done' }).click();
     if (!fs.existsSync(path.join(shareDir, 'project.json'))) throw new Error('project.json missing in the shared folder');
   });
   await step('Second program opens the shared project', async () => {
     app2 = await launch(userData2);
     win2 = await app2.firstWindow();
     watchConsole(win2);
-    await win2.getByRole('button', { name: 'Geteiltes Projekt öffnen' }).click();
-    await win2.locator('.tree-row', { hasText: 'Feuerschwert' }).waitFor({ timeout: 20000 });
+    await win2.getByRole('button', { name: 'Open shared project' }).click();
+    await treeRow(win2, 'Fire Sword').waitFor({ timeout: 20000 });
   });
   await step('Change in the second program arrives in the first', async () => {
-    await win2.locator('.tree-row', { hasText: 'Feuerschwert' }).click();
-    await nameInput(win2).fill('Eisschwert');
-    await win.locator('.tree-row', { hasText: 'Eisschwert' }).waitFor({ timeout: 20000 });
+    await treeRow(win2, 'Fire Sword').click();
+    await win2.getByTestId('item-display-name').fill('Ice Sword');
+    await treeRow(win, 'Ice Sword').waitFor({ timeout: 20000 });
   });
   await step('Change in the first program arrives in the second', async () => {
-    await win.locator('.tree-row', { hasText: 'Eisschwert' }).click();
-    await nameInput(win).fill('Donnerschwert');
-    await win2.locator('.tree-row', { hasText: 'Donnerschwert' }).waitFor({ timeout: 20000 });
+    await treeRow(win, 'Ice Sword').click();
+    await win.getByTestId('item-display-name').fill('Thunder Sword');
+    await treeRow(win2, 'Thunder Sword').waitFor({ timeout: 20000 });
     await win2.screenshot({ path: path.join(out, 'resourcepackbuilder-windows-shared.png') });
   });
   await app2.close();
 
-  const serverConsole = () => win.locator('.server-console');
+  const serverConsole = () => win.getByTestId('test-server-console');
+  const serverStatus = (status) => win.locator(`[data-testid="test-server-status"][data-status="${status}"]`);
   try {
     await step('Set up test server', async () => {
-      await win.locator('.tree-row', { hasText: 'Testserver' }).click();
-      await win.getByRole('heading', { name: 'Testserver' }).waitFor();
+      await win.getByRole('button', { name: /^Test server/ }).click();
+      await win.getByRole('heading', { name: 'Test server' }).waitFor();
       // Version list loaded from PaperMC and a version selected
-      await win.waitForFunction(
-        () => {
-          const select = document.querySelector('.editor select');
-          return !!(select && select.value);
-        },
-        null,
-        { timeout: 60000 },
-      );
-      console.log('     Version:', await win.locator('.editor select').first().inputValue());
-      await win.getByPlaceholder('z.B. Kylo').fill('NexoTest');
-      await win.getByPlaceholder('z.B. Kylo').blur();
-      await win.locator('label.toggle-row', { hasText: 'Minecraft-EULA' }).locator('input').check();
+      const version = win.getByTestId('test-server-version');
+      await win.waitForFunction((select) => !!select?.value, await version.elementHandle(), { timeout: 60000 });
+      console.log('     Version:', await version.inputValue());
+      await win.getByTestId('test-server-player-name').fill('NexoTest');
+      await win.getByTestId('test-server-player-name').blur();
+      await win.getByTestId('test-server-eula').check();
     });
     await step('Test server: download Paper and Java and start', async () => {
-      await win.getByRole('button', { name: 'Server starten' }).click();
-      await win.locator('.editor-meta .badge', { hasText: /Läuft|Fehler/ }).waitFor({ timeout: 8 * 60000 });
-      if ((await win.locator('.editor-meta .badge', { hasText: 'Fehler' }).count()) > 0) throw new Error('Server reports an error');
-      console.log('     ' + (await win.locator('.editor-meta .badge.mono').innerText()));
+      await win.getByRole('button', { name: 'Start server' }).click();
+      await serverStatus('running')
+        .or(serverStatus('error'))
+        .waitFor({ timeout: 8 * 60000 });
+      if ((await serverStatus('error').count()) > 0) throw new Error('Server reports an error');
+      console.log('     ' + (await win.getByTestId('test-server-version-label').innerText()));
       await win.screenshot({ path: path.join(out, 'resourcepackbuilder-windows-testserver.png') });
     });
     await step('Test server: project is in plugins/Nexo', async () => {
       const nexo = path.join(testServerDir, 'server', 'plugins', 'Nexo');
-      const yml = path.join(nexo, 'items', 'waffen', 'waffen.yml');
-      if (!fs.existsSync(yml) || !/donnerschwert|feuerschwert/i.test(fs.readFileSync(yml, 'utf8'))) throw new Error('Item file missing');
+      const yml = path.join(nexo, 'items', 'weapons', 'weapons.yml');
+      if (!fs.existsSync(yml) || !/fire_sword/.test(fs.readFileSync(yml, 'utf8'))) throw new Error('Item file missing');
       if (!/SELFHOST/.test(fs.readFileSync(path.join(nexo, 'settings.yml'), 'utf8'))) throw new Error('settings.yml missing');
     });
     await step('Test server: command in the console', async () => {
-      const input = win.locator('.console-input input');
+      const input = win.getByTestId('test-server-command');
       await input.fill('say ResourcepackBuilder-console-test');
       await input.press('Enter');
-      await win
-        .locator('.server-console .console-line:not(.info)', { hasText: 'ResourcepackBuilder-console-test' })
+      await serverConsole()
+        .locator('[data-testid="console-line"]:not([data-level="info"])', { hasText: 'ResourcepackBuilder-console-test' })
         .first()
         .waitFor({ timeout: 60000 });
     });
     await step('Stop test server', async () => {
-      await win.getByRole('button', { name: 'Stoppen' }).click();
-      await win.locator('.editor-meta .badge', { hasText: 'Gestoppt' }).waitFor({ timeout: 2 * 60000 });
+      await win.getByRole('button', { name: 'Stop', exact: true }).click();
+      await serverStatus('stopped').waitFor({ timeout: 2 * 60000 });
     });
   } finally {
     if ((await serverConsole().count()) > 0) fs.writeFileSync(path.join(out, 'testserver-console.txt'), await serverConsole().innerText());
