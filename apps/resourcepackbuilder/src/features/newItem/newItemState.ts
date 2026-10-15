@@ -1,0 +1,120 @@
+/**
+ * State of the "New item" dialog as a reducer: the dropped files, the drafts built from them and the name, ID and
+ * material entered per draft (or for one item without a model).
+ */
+import type { DroppedFile } from '@resourcepackbuilder/core/model/textures';
+import { createDrafts, unsupportedFiles, type ImportDraft, type PngMode } from '@resourcepackbuilder/core/model/drafts';
+import { slugify, stripFormatting } from '@resourcepackbuilder/core/text';
+import { DEFAULT_MATERIAL } from '../item/itemMaterial';
+
+/** What the user enters for one new item. */
+export interface ItemMeta {
+  displayName: string;
+  nexoId: string;
+  /** Once the ID was edited by hand, it no longer follows the display name */
+  isIdEdited: boolean;
+  material: string;
+}
+
+export type MetaPatch = Partial<Pick<ItemMeta, 'displayName' | 'nexoId' | 'material'>>;
+
+export interface NewItemState {
+  files: DroppedFile[];
+  pngMode: PngMode;
+  drafts: ImportDraft[];
+  /** Entered values per draft, by {@link sourceKey}, so they survive rebuilding the drafts */
+  metaBySource: Record<string, ItemMeta>;
+  /** Entered values of the item without a model */
+  plainMeta: ItemMeta;
+  isWithoutModel: boolean;
+  /** Number of file reads still running */
+  pendingReads: number;
+}
+
+export type NewItemAction =
+  | { type: 'readStarted' }
+  | { type: 'filesRead'; files: DroppedFile[] }
+  | { type: 'readFailed' }
+  | { type: 'pngModeChanged'; pngMode: PngMode }
+  | { type: 'withoutModelChanged'; isWithoutModel: boolean }
+  /** `sourceKey` null: the item without a model */
+  | { type: 'metaChanged'; sourceKey: string | null; patch: MetaPatch }
+  | { type: 'draftChanged'; draft: ImportDraft }
+  | { type: 'draftRemoved'; draftKey: string };
+
+/** Stable key of a draft (kind and main file), so its entered values are kept when the drafts are rebuilt. */
+export function sourceKey(draft: ImportDraft): string {
+  return `${draft.kind}:${draft.files[0]?.name ?? draft.key}`;
+}
+
+function newMeta(displayName: string): ItemMeta {
+  return { displayName, nexoId: displayName && slugify(stripFormatting(displayName)), isIdEdited: false, material: DEFAULT_MATERIAL };
+}
+
+/** Applies entered values; the ID follows the display name until it is edited by hand. */
+function patchMeta(meta: ItemMeta, patch: MetaPatch): ItemMeta {
+  const next = { ...meta, ...patch };
+  if (patch.nexoId !== undefined) next.isIdEdited = true;
+  else if (patch.displayName !== undefined && !meta.isIdEdited) next.nexoId = slugify(stripFormatting(patch.displayName));
+  return next;
+}
+
+/** Rebuilds the drafts from `files`, keeping the values entered for drafts of the same source. */
+function withDrafts(state: NewItemState, files: DroppedFile[], pngMode: PngMode): NewItemState {
+  const drafts = createDrafts(files, pngMode);
+  const metaBySource = { ...state.metaBySource };
+  for (const draft of drafts) metaBySource[sourceKey(draft)] ??= newMeta(draft.name);
+  return { ...state, files, pngMode, drafts, metaBySource };
+}
+
+export function initialNewItemState(isReading: boolean): NewItemState {
+  return {
+    files: [],
+    pngMode: 'auto',
+    drafts: [],
+    metaBySource: {},
+    plainMeta: newMeta(''),
+    isWithoutModel: false,
+    pendingReads: isReading ? 1 : 0,
+  };
+}
+
+export function newItemReducer(state: NewItemState, action: NewItemAction): NewItemState {
+  switch (action.type) {
+    case 'readStarted':
+      return { ...state, pendingReads: state.pendingReads + 1 };
+    case 'readFailed':
+      return { ...state, pendingReads: Math.max(0, state.pendingReads - 1) };
+    case 'filesRead': {
+      // A file with the same name replaces the earlier one
+      const files = [...state.files.filter((f) => !action.files.some((r) => r.name === f.name)), ...action.files];
+      return { ...withDrafts(state, files, state.pngMode), isWithoutModel: false, pendingReads: Math.max(0, state.pendingReads - 1) };
+    }
+    case 'pngModeChanged':
+      return withDrafts(state, state.files, action.pngMode);
+    case 'withoutModelChanged':
+      return { ...state, isWithoutModel: action.isWithoutModel };
+    case 'metaChanged': {
+      if (action.sourceKey === null) return { ...state, plainMeta: patchMeta(state.plainMeta, action.patch) };
+      const meta = state.metaBySource[action.sourceKey];
+      return meta ? { ...state, metaBySource: { ...state.metaBySource, [action.sourceKey]: patchMeta(meta, action.patch) } } : state;
+    }
+    case 'draftChanged':
+      return { ...state, drafts: state.drafts.map((d) => (d.key === action.draft.key ? action.draft : d)) };
+    case 'draftRemoved': {
+      const removed = state.drafts.find((d) => d.key === action.draftKey);
+      if (!removed) return state;
+      const drafts = state.drafts.filter((d) => d !== removed);
+      // Its files go too, unless another draft uses them as well (e.g. a shared texture)
+      const stillUsed = new Set(drafts.flatMap((d) => d.files.map((f) => f.name)));
+      const removedNames = new Set(removed.files.map((f) => f.name).filter((name) => !stillUsed.has(name)));
+      const { [sourceKey(removed)]: _removedMeta, ...metaBySource } = state.metaBySource;
+      return { ...state, drafts, files: state.files.filter((f) => !removedNames.has(f.name)), metaBySource };
+    }
+  }
+}
+
+/** Names of dropped files that cannot be imported. */
+export function ignoredFileNames(state: NewItemState): string[] {
+  return unsupportedFiles(state.files).map((f) => f.name);
+}
