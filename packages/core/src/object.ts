@@ -4,9 +4,9 @@ export function isPlainObject(value: unknown): value is Record<string, unknown> 
   return typeof value === 'object' && value !== null && !Array.isArray(value) && Object.getPrototypeOf(value) === Object.prototype;
 }
 
-/** Deep copy of JSON data (functions, undefined and class instances are not supported). */
+/** Deep copy of plain data (no functions; Immer drafts must be passed through `current()` first). */
 export function deepClone<T>(value: T): T {
-  return JSON.parse(JSON.stringify(value)) as T;
+  return structuredClone(value);
 }
 
 /**
