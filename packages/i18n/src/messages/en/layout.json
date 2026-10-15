@@ -198,7 +198,9 @@
     "deleteConfirm": "Delete permanently",
     "replaceTitle": "Replace the open project?",
     "replaceMessage": "The file contains “{name}”, the project that is open right now. Replace it with the version from the file? Changes made since then are lost.",
-    "replaceConfirm": "Replace"
+    "replaceConfirm": "Replace",
+    "replaceSharedTitle": "Replace the local project?",
+    "replaceSharedMessage": "The shared folder contains a project with the same identity as your local project “{name}”, but that project is not linked to this folder. Replace your local copy with the shared one? Its local changes are lost."
   },
   "projectsDialog": {
     "title": "Projects",

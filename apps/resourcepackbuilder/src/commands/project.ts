@@ -75,28 +75,48 @@ export async function openProjectFile(
   return project;
 }
 
+interface OpenSharedProjectOptions {
+  /** Name shown to the others when neither a stored nor a system user name is known. */
+  fallbackUserName: string;
+  /**
+   * Asked when a stored project has the shared project's id but is not the copy linked to this folder (e.g. the
+   * folder was moved, or the local project was never shared): replace it with the shared one?
+   */
+  confirmReplace: (stored: Project) => Promise<boolean>;
+}
+
 /**
- * Opens a shared project from a folder the user picks (OneDrive, Google Drive, Dropbox …) and connects it.
+ * Opens a shared project from a folder the user picks (OneDrive, Google Drive, Dropbox �) and connects it.
+ * The folder's content is untrusted: it never replaces another stored project without asking.
  * Resolves with the project, or null when cancelled.
  */
-export async function openSharedProject(services: AppServices, fallbackUserName: string): Promise<Project | null> {
+export async function openSharedProject(
+  services: AppServices,
+  { fallbackUserName, confirmReplace }: OpenSharedProjectOptions,
+): Promise<Project | null> {
   const { share, repository } = services;
   if (!share) return null;
   const picked = await share.pickSharedProject();
   if (!picked) return null;
   const { folder, project: shared, state } = picked;
   await services.autosave.flush();
+  const stored = await repository.load(shared.id);
   const existing = await repository.loadShareConfig(shared.id);
   // Opened from this folder before: reconnect the stored copy
-  const stored = existing?.folder === folder ? await repository.load(shared.id) : null;
-  if (stored) {
-    setProject(stored);
+  const linked = stored && existing?.folder === folder ? stored : null;
+  if (linked) {
+    setProject(linked);
   } else {
+    if (stored && !(await confirmReplace(stored))) return null;
+    if (getProject()?.id === shared.id) {
+      await switchProject(services, null);
+      await share.connect(); // waits until the old link is disconnected
+    }
     const userName = existing?.userName || (await share.defaultUserName()) || fallbackUserName;
     await repository.save(shared, state);
     await repository.saveShareConfig(shared.id, { folder, userName });
     setProject(shared);
   }
   await share.connect();
-  return stored ?? shared;
+  return linked ?? shared;
 }

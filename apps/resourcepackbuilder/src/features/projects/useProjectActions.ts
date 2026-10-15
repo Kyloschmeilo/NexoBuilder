@@ -83,7 +83,16 @@ export function useProjectActions() {
     /** Resolves with whether a shared project was opened. */
     async openShared(): Promise<boolean> {
       try {
-        const project = await openSharedProject(services, t('defaults.unknownUser'));
+        const project = await openSharedProject(services, {
+          fallbackUserName: t('defaults.unknownUser'),
+          confirmReplace: (stored) =>
+            confirm({
+              title: tProjectList('replaceSharedTitle'),
+              message: tProjectList('replaceSharedMessage', { name: stored.name }),
+              confirmLabel: tProjectList('replaceConfirm'),
+              destructive: true,
+            }),
+        });
         if (project) toast('success', t('project.sharedOpened', { name: project.name }));
         return project !== null;
       } catch (err) {
