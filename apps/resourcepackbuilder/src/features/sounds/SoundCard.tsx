@@ -1,0 +1,72 @@
+import { useTranslations } from 'next-intl';
+import type { ExportPlan } from '@resourcepackbuilder/core/export/types';
+import { issuesFor } from '@resourcepackbuilder/core/issues';
+import { soundKey, type Sound } from '@resourcepackbuilder/core/nexo/sounds/model';
+import { Badge } from '@resourcepackbuilder/ui/components/badge';
+import { Input } from '@resourcepackbuilder/ui/components/input';
+import { deleteSound, setSoundJukebox, updateSound } from '../../commands/media';
+import { NumberInput } from '../../components/editor';
+import { CheckRow } from '../../components/CheckRow';
+import { FormField, FormGrid } from '../../components/FormField';
+import { IssueList } from '../../components/IssueList';
+import { useOpenProject } from '../../store/project';
+import { MediaCard } from '../media/MediaCard';
+import { NexoKey } from '../media/NexoKey';
+import { SOUND_ID_CHARS, typedId } from '../media/typedId';
+import { JukeboxFields } from './JukeboxFields';
+import { SoundFileList } from './SoundFileList';
+
+export function SoundCard({ sound, plan }: { sound: Sound; plan: ExportPlan | null }) {
+  const t = useTranslations('media.sounds');
+  const tShared = useTranslations('media.shared');
+  const project = useOpenProject();
+  const update = (recipe: (draft: Sound) => void, historyKey?: string) => updateSound(sound.id, recipe, historyKey);
+  const issues = plan ? issuesFor(plan.issues, { kind: 'sound', id: sound.id }) : [];
+
+  return (
+    <MediaCard
+      title={sound.soundId}
+      badges={sound.jukebox && <Badge>{t('jukeboxSong')}</Badge>}
+      usage={soundKey(project, sound)}
+      copyLabel={tShared('copyId')}
+      deleteLabel={t('delete')}
+      onDelete={() => deleteSound(sound.id)}
+    >
+      <FormGrid>
+        <FormField label={<NexoKey>ID</NexoKey>} help={t('idHelp')}>
+          <Input
+            className="font-mono"
+            value={sound.soundId}
+            onChange={(e) => update((s) => (s.soundId = typedId(e.target.value, SOUND_ID_CHARS)), 'id')}
+          />
+        </FormField>
+        <FormField label={<NexoKey>Volume</NexoKey>} help={t('volumeHelp')}>
+          <NumberInput value={sound.volume} min={0} onChange={(v) => update((s) => (s.volume = v ?? null), 'volume')} />
+        </FormField>
+        <FormField label={<NexoKey>Pitch</NexoKey>} help={t('pitchHelp')}>
+          <NumberInput value={sound.pitch} min={0} onChange={(v) => update((s) => (s.pitch = v ?? null), 'pitch')} />
+        </FormField>
+        <FormField label={<NexoKey>Attenuation Distance</NexoKey>} help={t('distanceHelp')}>
+          <NumberInput value={sound.distance} integer min={1} onChange={(v) => update((s) => (s.distance = v ?? null), 'distance')} />
+        </FormField>
+      </FormGrid>
+      <SoundFileList sound={sound} />
+      <div className="flex flex-wrap gap-x-5 gap-y-2">
+        <CheckRow
+          checked={sound.stream}
+          onChange={(checked) => update((s) => (s.stream = checked))}
+          label={<NexoKey>Stream</NexoKey>}
+          hint={t('streamHint')}
+        />
+        <CheckRow
+          checked={sound.jukebox !== null}
+          onChange={(checked) => setSoundJukebox(sound.id, checked)}
+          label={<NexoKey>Jukebox Playable</NexoKey>}
+          hint={t('jukeboxHint')}
+        />
+      </div>
+      {sound.jukebox && <JukeboxFields sound={sound} song={sound.jukebox} />}
+      <IssueList issues={issues} />
+    </MediaCard>
+  );
+}

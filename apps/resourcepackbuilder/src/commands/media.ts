@@ -5,7 +5,7 @@ import type { Item, Project } from '@resourcepackbuilder/core/project/types';
 import { slugify, toIdentifier } from '@resourcepackbuilder/core/text';
 import { createGlyph, type Glyph, type GlyphFile, type GlyphKind } from '@resourcepackbuilder/core/nexo/glyphs/model';
 import { createPainting, type Painting, type PaintingFile } from '@resourcepackbuilder/core/nexo/paintings/model';
-import { createSound, type Sound, type SoundFile } from '@resourcepackbuilder/core/nexo/sounds/model';
+import { createSound, type JukeboxSong, type Sound, type SoundFile } from '@resourcepackbuilder/core/nexo/sounds/model';
 import { mutate } from '../store/project';
 import { insertNewItem, showItem } from './items';
 
@@ -54,6 +54,38 @@ export function updateSound(soundId: string, recipe: (sound: Sound) => void, his
       if (sound) recipe(sound);
     },
     historyKey === undefined ? undefined : `sound:${soundId}:${historyKey}`,
+  );
+}
+
+/** Adds variants to a sound; one of its files is played at random. */
+export function addSoundFiles(soundId: string, files: SoundFile[]): void {
+  updateSound(soundId, (sound) => {
+    sound.files.push(...files);
+  });
+}
+
+export function removeSoundFile(soundId: string, index: number): void {
+  updateSound(soundId, (sound) => {
+    sound.files.splice(index, 1);
+  });
+}
+
+/** Registers the sound as a jukebox song (music disc), streamed because music is long – or unregisters it. */
+export function setSoundJukebox(soundId: string, enabled: boolean): void {
+  updateSound(soundId, (sound) => {
+    sound.jukebox = enabled ? { duration: '', description: '', comparatorOutput: null, range: null } : null;
+    if (enabled) sound.stream = true;
+  });
+}
+
+/** Changes the jukebox song of a sound that is registered as one. */
+export function updateJukeboxSong(soundId: string, recipe: (song: JukeboxSong) => void, historyKey?: string): void {
+  updateSound(
+    soundId,
+    (sound) => {
+      if (sound.jukebox) recipe(sound.jukebox);
+    },
+    historyKey,
   );
 }
 
