@@ -13,6 +13,10 @@ export interface TestServerUiState {
   lastCheck: number | null;
   /** Why the last transfer failed; translated by the UI */
   syncError: unknown;
+  /** Paper versions the server can run, newest first; `null` until loaded */
+  paperVersions: string[] | null;
+  /** Why loading the Paper versions failed; translated by the UI */
+  paperVersionsError: unknown;
 }
 
 export const useTestServerStore = create<TestServerUiState>(() => ({
@@ -22,4 +26,6 @@ export const useTestServerStore = create<TestServerUiState>(() => ({
   lastResult: null,
   lastCheck: null,
   syncError: null,
+  paperVersions: null,
+  paperVersionsError: null,
 }));

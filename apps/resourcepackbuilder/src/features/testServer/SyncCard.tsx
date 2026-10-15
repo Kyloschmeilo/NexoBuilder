@@ -1,0 +1,85 @@
+import { RefreshCw, TriangleAlert } from 'lucide-react';
+import { useFormatter, useTranslations } from 'next-intl';
+import { countIssues } from '@resourcepackbuilder/core/issues';
+import { Button } from '@resourcepackbuilder/ui/components/button';
+import { Card, CardAction, CardContent, CardDescription, CardHeader, CardTitle } from '@resourcepackbuilder/ui/components/card';
+import { Spinner } from '@resourcepackbuilder/ui/components/spinner';
+import { CheckRow } from '../../components/CheckRow';
+import { Hint } from '../../components/Hint';
+import { useErrorMessage } from '../../i18n/errors';
+import type { TestServerState } from '../../platform/desktopApi';
+import { usePlan } from '../../store/PlanProvider';
+import { useTestServerStore } from '../../store/testServer';
+import { syncSummary, type SyncSummaryPart } from './syncSummary';
+import { useSetConfig, useTestServer } from './useTestServer';
+
+/** Transfer of the project into the server: manual, automatic, and how the last transfers went. */
+export function SyncCard({ server }: { server: TestServerState }) {
+  const t = useTranslations('media.testServer.sync');
+  const testServer = useTestServer();
+  const setConfig = useSetConfig();
+  const errorMessage = useErrorMessage();
+  const plan = usePlan();
+  const syncing = useTestServerStore((s) => s.syncing);
+  const lastResult = useTestServerStore((s) => s.lastResult);
+  const lastCheck = useTestServerStore((s) => s.lastCheck);
+  const syncError = useTestServerStore((s) => s.syncError);
+  const isRunning = server.status === 'running';
+  const errorCount = plan ? countIssues(plan.issues).error : 0;
+  const summary = useSummaryText(syncSummary({ lastResult, lastCheck, syncError }, isRunning));
+
+  return (
+    <Card size="sm" className="gap-0 py-0">
+      <CardHeader className="border-b border-border py-3">
+        <CardTitle className="font-heading">{t('title')}</CardTitle>
+        <CardDescription className="text-xs">{t('description')}</CardDescription>
+        <CardAction>
+          <Button variant="outline" size="sm" disabled={!isRunning || syncing} onClick={() => void testServer.sync(true)}>
+            {syncing ? <Spinner /> : <RefreshCw />} {t('now')}
+          </Button>
+        </CardAction>
+      </CardHeader>
+      <CardContent className="flex flex-col gap-2 py-4">
+        <CheckRow
+          checked={server.config.autoUpdate}
+          onChange={(checked) => setConfig({ autoUpdate: checked })}
+          label={t('auto')}
+          description={t('autoHint')}
+        />
+        {summary && <div className="text-xs text-muted-foreground">{summary}</div>}
+        {syncError !== null && (
+          <Hint warning>
+            <TriangleAlert className="size-4" />
+            <span>{t('failed', { error: errorMessage(syncError) })}</span>
+          </Hint>
+        )}
+        {errorCount > 0 && (
+          <Hint warning>
+            <TriangleAlert className="size-4" />
+            <span>{t('projectErrors', { count: errorCount })}</span>
+          </Hint>
+        )}
+      </CardContent>
+    </Card>
+  );
+}
+
+/** Words the summary parts as one paragraph. */
+function useSummaryText(parts: SyncSummaryPart[]): string {
+  const t = useTranslations('media.testServer.sync');
+  const format = useFormatter();
+  const time = (at: number) => format.dateTime(new Date(at), { timeStyle: 'medium' });
+  const sentence = (part: SyncSummaryPart) => {
+    switch (part.key) {
+      case 'last':
+        return t('last', { time: time(part.at), written: part.written, deleted: part.deleted, reloaded: String(part.reloaded) });
+      case 'onStart':
+        return t('onStart');
+      case 'upToDate':
+        return t('upToDate', { time: time(part.at) });
+      case 'skipped':
+        return t('skipped', { count: part.count });
+    }
+  };
+  return parts.map(sentence).join(' ');
+}

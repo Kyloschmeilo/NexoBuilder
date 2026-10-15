@@ -147,6 +147,7 @@
       "clear": "Clear",
       "clearHint": "Clear the console",
       "empty": "No output yet.",
+      "commandLabel": "Server command",
       "placeholder": "e.g. nexo give ruby_sword 1 Kylo  ·  gamemode creative Kylo",
       "notRunning": "Server is not running",
       "send": "Send"

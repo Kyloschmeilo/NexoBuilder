@@ -5,6 +5,7 @@
  * and Nexo is reloaded ("nexo reload all"); players get the new resource pack automatically.
  */
 import { planExport } from '@resourcepackbuilder/core/export/plan';
+import { compareVersions } from '@resourcepackbuilder/core/minecraft/versions';
 import { nexoFolderFiles, nexoGiveCommand, patchNexoSettings } from '@resourcepackbuilder/core/testserver/files';
 import { AppError } from '../i18n/errors';
 import type { DesktopTestServerApi, NexoJarInfo, TestServerConfigPatch, TestServerSyncResult } from '../platform/desktopApi';
@@ -34,7 +35,11 @@ export interface TestServerSync {
   reload(): Promise<boolean>;
   clearLog(): Promise<void>;
   openFolder(): void;
-  paperVersions(): Promise<string[]>;
+  /**
+   * Loads the Paper versions into the store (once; again after a failure). Without a chosen version the project's
+   * version becomes the default – or the newest one when Paper does not support it (yet).
+   */
+  loadPaperVersions(): Promise<void>;
   /** Gives the own player an item via the server console; resolves with the player name. */
   give(nexoId: string, amount?: number): Promise<string>;
   dispose(): void;
@@ -42,9 +47,10 @@ export interface TestServerSync {
 
 export function createTestServerSync(api: DesktopTestServerApi): TestServerSync {
   const store = useTestServerStore;
-  let autoSyncTimer: number | undefined;
+  let autoSyncTimer: ReturnType<typeof setTimeout> | undefined;
   let configSaving: Promise<unknown> = Promise.resolve();
   let configSeq = 0;
+  let versionsRequest: Promise<void> | null = null;
 
   const transfer = createSerialTask<boolean, TestServerSyncResult | null>(
     async (reload) => {
@@ -76,7 +82,7 @@ export function createTestServerSync(api: DesktopTestServerApi): TestServerSync 
       const { server } = store.getState();
       return server?.status === 'running' && server.pack.status === 'building';
     };
-    if (!isPackBuilding()) return new Promise((resolve) => window.setTimeout(resolve, UNTRACKED_RELOAD_MS));
+    if (!isPackBuilding()) return new Promise((resolve) => setTimeout(resolve, UNTRACKED_RELOAD_MS));
     return new Promise((resolve) => {
       const unsubscribe = store.subscribe(() => {
         if (isPackBuilding()) return;
@@ -101,12 +107,46 @@ export function createTestServerSync(api: DesktopTestServerApi): TestServerSync 
 
   const unsubscribe = useProjectStore.subscribe(({ project }, { project: previous }) => {
     if (!project || project === previous) return;
-    window.clearTimeout(autoSyncTimer);
-    autoSyncTimer = window.setTimeout(() => {
+    clearTimeout(autoSyncTimer);
+    autoSyncTimer = setTimeout(() => {
       const { server } = store.getState();
       if (server?.status === 'running' && server.config.autoUpdate) void transfer.run(true);
     }, AUTO_SYNC_DELAY_MS);
   });
+
+  const setConfig = (patch: TestServerConfigPatch): Promise<void> => {
+    const { server } = store.getState();
+    if (server) store.setState({ server: { ...server, config: { ...server.config, ...patch } } });
+    const seq = ++configSeq;
+    const run = configSaving.then(async () => {
+      try {
+        const next = await api.setConfig(patch);
+        // Only the answer to the latest change is applied, so intermediate states reset nothing
+        if (seq === configSeq) store.setState({ server: next });
+      } catch (err) {
+        if (seq === configSeq) void api.getState().then(({ log: _log, ...current }) => store.setState({ server: current }));
+        throw err;
+      }
+    });
+    configSaving = run.catch(() => undefined);
+    return run;
+  };
+
+  const fetchPaperVersions = async () => {
+    store.setState({ paperVersionsError: null });
+    let versions: string[];
+    try {
+      versions = [...(await api.versions())].sort((a, b) => compareVersions(b, a));
+    } catch (err) {
+      store.setState({ paperVersionsError: err });
+      return;
+    }
+    store.setState({ paperVersions: versions });
+    const { server } = store.getState();
+    if (!server || server.config.paperVersion || versions.length === 0) return;
+    const projectVersion = useProjectStore.getState().project?.settings.minecraftVersion;
+    await setConfig({ paperVersion: projectVersion && versions.includes(projectVersion) ? projectVersion : versions[0] });
+  };
 
   const stop = async () => {
     store.setState({ server: await api.stop() });
@@ -124,24 +164,7 @@ export function createTestServerSync(api: DesktopTestServerApi): TestServerSync 
   return {
     sync: (reload) => transfer.run(reload),
 
-    setConfig(patch) {
-      const { server } = store.getState();
-      if (server) store.setState({ server: { ...server, config: { ...server.config, ...patch } } });
-      const seq = ++configSeq;
-      const run = configSaving.then(async () => {
-        try {
-          const next = await api.setConfig(patch);
-          // Only the answer to the latest change is applied, so intermediate states reset nothing
-          if (seq === configSeq) store.setState({ server: next });
-        } catch (err) {
-          if (seq === configSeq) void api.getState().then(({ log: _log, ...current }) => store.setState({ server: current }));
-          throw err;
-        }
-      });
-      configSaving = run.catch(() => undefined);
-      return run;
-    },
-
+    setConfig,
     chooseNexoJar: () => api.chooseNexoJar(),
     start,
     stop,
@@ -158,7 +181,13 @@ export function createTestServerSync(api: DesktopTestServerApi): TestServerSync 
     openFolder() {
       void api.openFolder();
     },
-    paperVersions: () => api.versions(),
+    loadPaperVersions() {
+      if (store.getState().paperVersions) return Promise.resolve();
+      versionsRequest ??= fetchPaperVersions().finally(() => {
+        versionsRequest = null;
+      });
+      return versionsRequest;
+    },
 
     async give(nexoId, amount = 1) {
       const { server } = store.getState();
@@ -175,7 +204,7 @@ export function createTestServerSync(api: DesktopTestServerApi): TestServerSync 
     dispose() {
       offEvent();
       unsubscribe();
-      window.clearTimeout(autoSyncTimer);
+      clearTimeout(autoSyncTimer);
     },
   };
 }
