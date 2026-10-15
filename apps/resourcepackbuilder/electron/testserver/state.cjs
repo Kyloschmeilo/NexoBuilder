@@ -95,7 +95,7 @@ function pushLog(line, kind = 'out') {
 }
 
 /** @param {string} line */
-const info = (line) => pushLog(line, 'info');
+const logInfo = (line) => pushLog(line, 'info');
 
 function clearLog() {
   log = [];
@@ -147,20 +147,20 @@ function cleanConfigPatch(patch) {
   const next = {};
   if (patch == null || typeof patch !== 'object') return next;
   /** @type {Record<string, unknown>} */
-  const p = { ...patch };
-  if ('paperVersion' in p) {
-    next.paperVersion = typeof p.paperVersion === 'string' && /^[0-9A-Za-z._-]{1,32}$/.test(p.paperVersion) ? p.paperVersion : null;
+  const source = { ...patch };
+  if ('paperVersion' in source) {
+    next.paperVersion = typeof source.paperVersion === 'string' && /^[0-9A-Za-z._-]{1,32}$/.test(source.paperVersion) ? source.paperVersion : null;
   }
-  if ('ramGb' in p) next.ramGb = clampInt(p.ramGb, 1, 16, DEFAULT_CONFIG.ramGb);
-  if ('port' in p) next.port = clampInt(p.port, 1024, 65535, DEFAULT_CONFIG.port);
-  if ('packPort' in p) next.packPort = clampInt(p.packPort, 1024, 65535, DEFAULT_CONFIG.packPort);
-  if ('playerName' in p) {
-    next.playerName = String(p.playerName ?? '')
+  if ('ramGb' in source) next.ramGb = clampInt(source.ramGb, 1, 16, DEFAULT_CONFIG.ramGb);
+  if ('port' in source) next.port = clampInt(source.port, 1024, 65535, DEFAULT_CONFIG.port);
+  if ('packPort' in source) next.packPort = clampInt(source.packPort, 1024, 65535, DEFAULT_CONFIG.packPort);
+  if ('playerName' in source) {
+    next.playerName = String(source.playerName ?? '')
       .replace(/[^A-Za-z0-9_]/g, '')
       .slice(0, 16);
   }
-  if ('eulaAccepted' in p) next.eulaAccepted = p.eulaAccepted === true;
-  if ('autoUpdate' in p) next.autoUpdate = p.autoUpdate !== false;
+  if ('eulaAccepted' in source) next.eulaAccepted = source.eulaAccepted === true;
+  if ('autoUpdate' in source) next.autoUpdate = source.autoUpdate !== false;
   return next;
 }
 
@@ -172,4 +172,4 @@ async function updateConfig(patch) {
   return publicState();
 }
 
-module.exports = { state, publicState, snapshot, setState, pushLog, info, clearLog, loadConfig, saveConfig, updateConfig };
+module.exports = { state, publicState, snapshot, setState, pushLog, logInfo, clearLog, loadConfig, saveConfig, updateConfig };

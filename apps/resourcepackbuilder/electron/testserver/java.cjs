@@ -8,7 +8,7 @@ const { t } = require('../i18n.cjs');
 const { testHooks } = require('../testHooks.cjs');
 const { download, fetchJson } = require('./download.cjs');
 const { downloadsDir, javaDir } = require('./paths.cjs');
-const { info, setState } = require('./state.cjs');
+const { logInfo, setState } = require('./state.cjs');
 
 const ADOPTIUM_API = 'https://api.adoptium.net/v3';
 const JAVA_EXECUTABLE = process.platform === 'win32' ? 'java.exe' : 'java';
@@ -96,23 +96,23 @@ async function ensureJava(minVersion) {
   const arch = archs[process.arch];
   if (!osName || !arch) throw new Error(t('testServer.javaRequired', { version: minVersion }));
   setState({ message: t('testServer.searchingJava', { version: minVersion }) });
-  let pkg = null;
+  let jrePackage = null;
   try {
     const assets = await fetchJson(
       `${ADOPTIUM_API}/assets/latest/${minVersion}/hotspot?architecture=${arch}&image_type=jre&os=${osName}&vendor=eclipse`,
     );
-    pkg = Array.isArray(assets) ? assets[0]?.binary?.package : null;
+    jrePackage = Array.isArray(assets) ? assets[0]?.binary?.package : null;
   } catch {
     // fall back to the direct download link
   }
-  const url = pkg?.link || `${ADOPTIUM_API}/binary/latest/${minVersion}/ga/${osName}/${arch}/jre/hotspot/normal/eclipse`;
+  const url = jrePackage?.link || `${ADOPTIUM_API}/binary/latest/${minVersion}/ga/${osName}/${arch}/jre/hotspot/normal/eclipse`;
   const archiveName =
-    typeof pkg?.name === 'string' && /^[\w.+-]+$/.test(pkg.name)
-      ? pkg.name
+    typeof jrePackage?.name === 'string' && /^[\w.+-]+$/.test(jrePackage.name)
+      ? jrePackage.name
       : `java-${minVersion}${osName === 'windows' ? '.zip' : '.tar.gz'}`;
   const archive = path.join(downloadsDir(), archiveName);
-  info(t('testServer.javaNotFound', { version: minVersion }));
-  await download(url, archive, `Java ${minVersion}`, pkg?.checksum);
+  logInfo(t('testServer.javaNotFound', { version: minVersion }));
+  await download(url, archive, `Java ${minVersion}`, jrePackage?.checksum);
 
   setState({ message: t('testServer.extractingJava', { version: minVersion }) });
   const target = path.join(javaDir(), String(minVersion));

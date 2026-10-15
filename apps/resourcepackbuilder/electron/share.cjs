@@ -11,7 +11,7 @@ const fs = require('node:fs');
 const fsp = fs.promises;
 const os = require('node:os');
 const path = require('node:path');
-const { errorCode, LOCKED_CODES, openPath, writeFileAtomic } = require('./fsUtil.cjs');
+const { errorCode, LOCKED_CODES, openPath, writeFileAtomic } = require('./fileHelpers.cjs');
 const { t } = require('./i18n.cjs');
 const { handle, send } = require('./ipc.cjs');
 const { testHooks } = require('./testHooks.cjs');
@@ -101,12 +101,12 @@ async function checkFolder(folder) {
 /**
  * The absolute path of a project file inside an allowed folder.
  * @param {unknown} folder
- * @param {unknown} rel
+ * @param {unknown} relativePath
  */
-async function filePath(folder, rel) {
-  if (typeof rel !== 'string' || !FILE_PATTERN.test(rel)) throw new Error(t('share.invalidFile', { file: String(rel) }));
+async function filePath(folder, relativePath) {
+  if (typeof relativePath !== 'string' || !FILE_PATTERN.test(relativePath)) throw new Error(t('share.invalidFile', { file: String(relativePath) }));
   const dir = await checkFolder(folder);
-  const target = path.join(dir, ...rel.split('/'));
+  const target = path.join(dir, ...relativePath.split('/'));
   // An entity folder could be a link pointing outside the shared folder
   if (!isInside(await realPath(target), await realPath(dir))) throw new Error(t('share.folderNotAllowed'));
   return target;
@@ -179,13 +179,13 @@ async function createSubfolder(parent, name) {
 
 /**
  * @param {string} file
- * @param {string} rel
+ * @param {string} relativePath
  * @returns {Promise<ShareFileInfo | null>}
  */
-async function fileInfo(file, rel) {
+async function fileInfo(file, relativePath) {
   try {
     const stat = await fsp.stat(file);
-    return stat.isFile() ? { path: rel, mtimeMs: stat.mtimeMs, size: stat.size } : null;
+    return stat.isFile() ? { path: relativePath, mtimeMs: stat.mtimeMs, size: stat.size } : null;
   } catch {
     return null; // just deleted or locked; picked up next time
   }
@@ -195,19 +195,19 @@ async function fileInfo(file, rel) {
 async function list(folder) {
   const dir = await checkFolder(folder);
   await fsp.access(dir); // a missing folder (drive disconnected ...) makes the UI report "offline"
-  const rels = ['project.json'];
-  for (const sub of ENTITY_DIRS) {
+  const relativePaths = ['project.json'];
+  for (const entityDir of ENTITY_DIRS) {
     try {
-      for (const name of await fsp.readdir(path.join(dir, sub))) rels.push(`${sub}/${name}`);
+      for (const name of await fsp.readdir(path.join(dir, entityDir))) relativePaths.push(`${entityDir}/${name}`);
     } catch {
       // no such entity folder yet
     }
   }
   /** @type {ShareFileInfo[]} */
   const result = [];
-  for (const rel of rels) {
-    if (!FILE_PATTERN.test(rel)) continue;
-    const info = await fileInfo(path.join(dir, ...rel.split('/')), rel);
+  for (const relativePath of relativePaths) {
+    if (!FILE_PATTERN.test(relativePath)) continue;
+    const info = await fileInfo(path.join(dir, ...relativePath.split('/')), relativePath);
     if (info) result.push(info);
   }
   return result;
@@ -215,10 +215,10 @@ async function list(folder) {
 
 /**
  * @param {unknown} folder
- * @param {unknown} rel
+ * @param {unknown} relativePath
  */
-async function read(folder, rel) {
-  const file = await filePath(folder, rel);
+async function read(folder, relativePath) {
+  const file = await filePath(folder, relativePath);
   try {
     return await fsp.readFile(file, 'utf8');
   } catch (err) {
@@ -231,16 +231,16 @@ async function read(folder, rel) {
 
 /**
  * @param {unknown} folder
- * @param {string} rel
+ * @param {string} relativePath
  * @param {unknown} content
  * @returns {Promise<ShareFileInfo>}
  */
-async function write(folder, rel, content) {
+async function write(folder, relativePath, content) {
   if (typeof content !== 'string') throw new Error(t('share.invalidContent'));
-  const target = await filePath(folder, rel);
+  const target = await filePath(folder, relativePath);
   await writeFileAtomic(target, content);
   const stat = await fsp.stat(target);
-  return { path: rel, mtimeMs: stat.mtimeMs, size: stat.size };
+  return { path: relativePath, mtimeMs: stat.mtimeMs, size: stat.size };
 }
 
 /* ------------------------------------------------------------------ watching */
@@ -314,8 +314,8 @@ function registerShareHandlers() {
   handle('share:inspect', (_event, folder) => inspect(folder));
   handle('share:create-subfolder', (_event, parent, name) => createSubfolder(parent, name));
   handle('share:list', (_event, folder) => list(folder));
-  handle('share:read', (_event, folder, rel) => read(folder, rel));
-  handle('share:write', (_event, folder, rel, content) => write(folder, rel, content));
+  handle('share:read', (_event, folder, relativePath) => read(folder, relativePath));
+  handle('share:write', (_event, folder, relativePath, content) => write(folder, relativePath, content));
   handle('share:watch', (event, folder) => watch(event.sender, folder));
   handle('share:unwatch', (_event, folder) => unwatch(folder));
   handle('share:open-folder', async (_event, folder) => openPath(await checkFolder(folder)));

@@ -5,7 +5,7 @@ const fsp = fs.promises;
 const path = require('node:path');
 const { t } = require('../i18n.cjs');
 const { nexoDir, pluginStore, pluginsDir, serverDir } = require('./paths.cjs');
-const { info, state } = require('./state.cjs');
+const { logInfo, state } = require('./state.cjs');
 
 const DEFAULT_PROPERTIES = [
   '# Created by the ResourcepackBuilder test server – feel free to adjust',
@@ -29,11 +29,11 @@ const DEFAULT_PROPERTIES = [
 const EULA = '# The Minecraft EULA (https://aka.ms/MinecraftEULA) was accepted in ResourcepackBuilder.\neula=true\n';
 
 async function writeServerProperties() {
-  const propsPath = path.join(serverDir(), 'server.properties');
-  const props = fs.existsSync(propsPath) ? await fsp.readFile(propsPath, 'utf8') : DEFAULT_PROPERTIES;
+  const propertiesPath = path.join(serverDir(), 'server.properties');
+  const properties = fs.existsSync(propertiesPath) ? await fsp.readFile(propertiesPath, 'utf8') : DEFAULT_PROPERTIES;
   const port = `server-port=${state.config.port}`;
-  const next = /^server-port=.*$/m.test(props) ? props.replace(/^server-port=.*$/m, port) : `${props.trimEnd()}\n${port}\n`;
-  await fsp.writeFile(propsPath, next);
+  const next = /^server-port=.*$/m.test(properties) ? properties.replace(/^server-port=.*$/m, port) : `${properties.trimEnd()}\n${port}\n`;
+  await fsp.writeFile(propertiesPath, next);
 }
 
 /** Recommended by Nexo; otherwise custom blocks based on note blocks, tripwire and chorus plants break. */
@@ -44,7 +44,7 @@ async function patchPaperGlobal() {
   const patched = text.replace(/^(\s+disable-(?:noteblock|tripwire|chorus-plant)-updates:)\s*false\s*$/gm, '$1 true');
   if (patched === text) return;
   await fsp.writeFile(paperGlobal, patched);
-  info(t('testServer.paperSettingsPatched'));
+  logInfo(t('testServer.paperSettingsPatched'));
 }
 
 /** Exactly the selected Nexo version in plugins/. */

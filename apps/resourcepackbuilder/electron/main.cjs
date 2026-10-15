@@ -11,7 +11,7 @@ const { onLocaleChange, setLocale, t } = require('./i18n.cjs');
 const { APP_ORIGIN, handle } = require('./ipc.cjs');
 const { registerShareHandlers } = require('./share.cjs');
 const { testHooks } = require('./testHooks.cjs');
-const { isTestServerRunning, registerTestServerHandlers, stopTestServer } = require('./testserver/index.cjs');
+const { isTestServerRunning, registerTestServerHandlers, stopTestServer } = require('./testServer/index.cjs');
 
 const APP_NAME = 'ResourcepackBuilder';
 const OUT_DIR = path.join(__dirname, '..', 'out');

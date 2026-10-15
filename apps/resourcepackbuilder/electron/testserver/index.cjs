@@ -12,7 +12,7 @@
  */
 const { BrowserWindow } = require('electron');
 const fsp = require('node:fs/promises');
-const { openPath } = require('../fsUtil.cjs');
+const { openPath } = require('../fileHelpers.cjs');
 const { handle } = require('../ipc.cjs');
 const { chooseNexoJar } = require('./nexoJar.cjs');
 const { paperVersions } = require('./paper.cjs');

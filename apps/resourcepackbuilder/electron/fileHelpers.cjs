@@ -26,16 +26,16 @@ function errorCode(err) {
  */
 async function writeFileAtomic(target, data) {
   await fsp.mkdir(path.dirname(target), { recursive: true });
-  const tmp = path.join(path.dirname(target), `.${path.basename(target)}.${crypto.randomBytes(4).toString('hex')}.tmp`);
-  await fsp.writeFile(tmp, data);
+  const tempPath = path.join(path.dirname(target), `.${path.basename(target)}.${crypto.randomBytes(4).toString('hex')}.tempPath`);
+  await fsp.writeFile(tempPath, data);
   for (let attempt = 1; ; attempt++) {
     try {
-      await fsp.rename(tmp, target);
+      await fsp.rename(tempPath, target);
       return;
     } catch (err) {
       const code = errorCode(err);
       if (attempt >= RENAME_ATTEMPTS || typeof code !== 'string' || !LOCKED_CODES.has(code)) {
-        await fsp.rm(tmp, { force: true });
+        await fsp.rm(tempPath, { force: true });
         throw err;
       }
       await delay(80 * attempt);

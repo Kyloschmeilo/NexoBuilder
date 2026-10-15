@@ -7,11 +7,11 @@ const crypto = require('node:crypto');
 const fs = require('node:fs');
 const fsp = fs.promises;
 const path = require('node:path');
-const { writeFileAtomic } = require('../fsUtil.cjs');
+const { writeFileAtomic } = require('../fileHelpers.cjs');
 const { t } = require('../i18n.cjs');
 const { manifestFile, nexoDir, rootDir } = require('./paths.cjs');
 const { isReloadPending, requestReload } = require('./server.cjs');
-const { info, pushLog, setState, state } = require('./state.cjs');
+const { logInfo, pushLog, setState, state } = require('./state.cjs');
 
 /** @typedef {import('../../src/platform/desktopApi').TestServerSyncResult} TestServerSyncResult */
 
@@ -21,11 +21,11 @@ const SAFE_SEGMENT = /^[A-Za-z0-9_.+-]+$/;
 
 /**
  * The absolute target of a project file, or null if the path is not one the project may write.
- * @param {unknown} rel
+ * @param {unknown} relativePath
  */
-function syncTarget(rel) {
-  if (typeof rel !== 'string' || !SYNC_PATH.test(rel)) return null;
-  const segments = rel.split('/');
+function syncTarget(relativePath) {
+  if (typeof relativePath !== 'string' || !SYNC_PATH.test(relativePath)) return null;
+  const segments = relativePath.split('/');
   if (segments.some((segment) => !SAFE_SEGMENT.test(segment) || segment === '.' || segment === '..')) return null;
   return path.join(nexoDir(), ...segments);
 }
@@ -93,24 +93,24 @@ async function syncFiles(files, options) {
   let deleted = 0;
   let skipped = 0;
   for (const file of files) {
-    const rel = file?.path;
-    const target = syncTarget(rel);
+    const relativePath = file?.path;
+    const target = syncTarget(relativePath);
     const data = toBuffer(file?.data);
     if (!target || !data) {
       skipped++;
-      pushLog(t('testServer.skippedFile', { path: String(rel) }), 'err');
+      pushLog(t('testServer.skippedFile', { path: String(relativePath) }), 'err');
       continue;
     }
     const hash = crypto.createHash('sha1').update(data).digest('hex');
-    next[rel] = hash;
-    if (manifest[rel] !== hash || !fs.existsSync(target)) {
+    next[relativePath] = hash;
+    if (manifest[relativePath] !== hash || !fs.existsSync(target)) {
       await writeFileAtomic(target, data);
       written++;
     }
   }
-  for (const rel of Object.keys(manifest)) {
-    if (rel in next) continue;
-    const target = syncTarget(rel);
+  for (const relativePath of Object.keys(manifest)) {
+    if (relativePath in next) continue;
+    const target = syncTarget(relativePath);
     if (!target) continue; // invalid entry
     await fsp.rm(target, { force: true });
     await pruneEmptyDirs(path.dirname(target));
@@ -122,7 +122,7 @@ async function syncFiles(files, options) {
 
   const changed = written > 0 || deleted > 0 || settingsChanged;
   const reloaded = changed && reload === true && state.status === 'running' && (requestReload() || isReloadPending());
-  if (changed) info(t(settingsChanged ? 'testServer.syncedSettings' : 'testServer.synced', { written, deleted }));
+  if (changed) logInfo(t(settingsChanged ? 'testServer.syncedSettings' : 'testServer.synced', { written, deleted }));
   setState({ lastSync: Date.now() });
   return { written, deleted, skipped, settingsChanged, reloaded, total: files.length };
 }

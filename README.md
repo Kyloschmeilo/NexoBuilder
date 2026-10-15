@@ -180,6 +180,7 @@ npm run app          # build and start the desktop program (Electron)
 npm test             # unit tests (core, i18n, app)
 npm run typecheck    # TypeScript in every package, incl. the Electron sources (checkJs)
 npm run lint         # ESLint in every package
+npm run check:encoding  # fails on tracked text files that are not valid UTF-8
 npm run format       # Prettier for the whole repository (format:check only checks)
 npm run build        # static Next.js export to apps/resourcepackbuilder/out/
 npm run dist:win     # Windows installer + portable exe in apps/resourcepackbuilder/release/
@@ -222,8 +223,8 @@ The app (`apps/resourcepackbuilder`):
   - `ipc.cjs` registers handlers that accept requests from the app's own UI only;
   - `share.cjs` gives access to shared folders – only folders the user picked, only project files, no links leading
     outside;
-  - `testserver/` downloads Paper and Java, prepares and runs the server, and syncs the project into `plugins/Nexo`;
-  - `i18n.cjs` reads the `desktop` catalogue; `fsUtil.cjs` holds the atomic write and folder helpers;
+  - `testServer/` downloads Paper and Java, prepares and runs the server, and syncs the project into `plugins/Nexo`;
+  - `i18n.cjs` reads the `desktop` catalogue; `fileHelpers.cjs` holds the atomic write and folder helpers;
   - `testHooks.cjs` – overrides for the automated Windows test, honoured only with `RESOURCEPACKBUILDER_E2E=1`.
 - `electron-builder.yml` – packaging. The app has no runtime dependencies: the installer only contains `electron/`,
   `out/`, the icon and the `desktop` catalogues.

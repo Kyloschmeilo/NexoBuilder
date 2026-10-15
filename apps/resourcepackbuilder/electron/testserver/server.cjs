@@ -11,7 +11,7 @@ const { ensureJava } = require('./java.cjs');
 const { ensurePaper } = require('./paper.cjs');
 const { serverDir } = require('./paths.cjs');
 const { prepareServerFiles } = require('./serverFiles.cjs');
-const { info, loadConfig, publicState, pushLog, saveConfig, setState, state } = require('./state.cjs');
+const { logInfo, loadConfig, publicState, pushLog, saveConfig, setState, state } = require('./state.cjs');
 
 /** @typedef {import('../../src/platform/desktopApi').PackStatus} PackStatus */
 /** @typedef {import('../../src/platform/desktopApi').TestServerState} TestServerState */
@@ -23,7 +23,7 @@ const QUEUED_RELOAD_DELAY_MS = 1000;
 const RELOAD_COMMAND = /^\/?(nexo|n)\s+(reload|rl)\b/i;
 
 /** @type {import('node:child_process').ChildProcessWithoutNullStreams | null} */
-let proc = null;
+let serverProcess = null;
 let stopRequested = false;
 let reloadPending = false;
 /** @type {NodeJS.Timeout | undefined} */
@@ -40,7 +40,7 @@ function setPack(status, message = null) {
   packTimer = undefined;
   if (status === 'building') {
     packTimer = setTimeout(() => {
-      info(t('testServer.packTimeout'));
+      logInfo(t('testServer.packTimeout'));
       setPack('idle');
     }, PACK_BUILD_TIMEOUT_MS);
   }
@@ -53,9 +53,9 @@ function setPack(status, message = null) {
 
 /** Reloads Nexo, or queues the reload while Nexo is still building the resource pack. Returns whether it was sent. */
 function requestReload() {
-  if (state.status !== 'running' || !proc) return false;
+  if (state.status !== 'running' || !serverProcess) return false;
   if (state.pack.status === 'building') {
-    if (!reloadPending) info(t('testServer.reloadQueued'));
+    if (!reloadPending) logInfo(t('testServer.reloadQueued'));
     reloadPending = true;
     return false;
   }
@@ -124,9 +124,9 @@ function sendCommand(command) {
   const text = String(command ?? '')
     .replace(/[\r\n]+/g, ' ')
     .trim();
-  if (!text || !proc) return false;
+  if (!text || !serverProcess) return false;
   pushLog(`> ${text}`, 'info');
-  proc.stdin.write(`${text}\n`);
+  serverProcess.stdin.write(`${text}\n`);
   return true;
 }
 
@@ -150,8 +150,8 @@ function runUserCommand(command) {
  * @param {Partial<TestServerState>} patch
  */
 function processEnded(child, patch) {
-  if (proc !== child) return;
-  proc = null;
+  if (serverProcess !== child) return;
+  serverProcess = null;
   stopRequested = false;
   reloadPending = false;
   setPack('idle');
@@ -160,7 +160,7 @@ function processEnded(child, patch) {
 
 /** @param {{ jar: string, version: string, build: number }} paper @param {{ path: string, version: number }} java */
 function launch(paper, java) {
-  info(t('testServer.startingPaper', { version: paper.version, java: java.version, ram: state.config.ramGb }));
+  logInfo(t('testServer.startingPaper', { version: paper.version, java: java.version, ram: state.config.ramGb }));
   reloadPending = false;
   setState({ status: 'starting', message: t('testServer.starting') });
   // Nexo builds the pack on startup; no reload until then
@@ -169,7 +169,7 @@ function launch(paper, java) {
 
   const args = ['-Xms512M', `-Xmx${state.config.ramGb}G`, '-Dfile.encoding=UTF-8', '-jar', paper.jar, '--nogui'];
   const child = spawn(java.path, args, { cwd: serverDir(), windowsHide: true, stdio: ['pipe', 'pipe', 'pipe'] });
-  proc = child;
+  serverProcess = child;
   readLines(child.stdout, handleLine);
   readLines(child.stderr, (line) => pushLog(line, 'err'));
   child.stdin.on('error', () => undefined);
@@ -179,7 +179,7 @@ function launch(paper, java) {
     processEnded(child, { status: 'error', message });
   });
   child.on('exit', (code) => {
-    info(code !== null ? t('testServer.exitedCode', { code }) : t('testServer.exited'));
+    logInfo(code !== null ? t('testServer.exitedCode', { code }) : t('testServer.exited'));
     const expected = stopRequested || code === 0;
     processEnded(
       child,
@@ -193,7 +193,7 @@ function launch(paper, java) {
 /** Downloads what is missing, prepares the server folder and starts the server. */
 async function start() {
   await loadConfig();
-  if (proc || ['preparing', 'starting', 'running', 'stopping'].includes(state.status)) return publicState();
+  if (serverProcess || ['preparing', 'starting', 'running', 'stopping'].includes(state.status)) return publicState();
   if (!state.config.eulaAccepted) throw new Error(t('testServer.eulaRequired'));
   const { paperVersion } = state.config;
   if (!paperVersion) throw new Error(t('testServer.versionRequired'));
@@ -216,7 +216,7 @@ async function start() {
 
 /** Stops the server with "stop" (saves the world); kills it if it does not exit in time. */
 async function stop() {
-  const child = proc;
+  const child = serverProcess;
   if (!child) {
     if (state.status !== 'stopped') setState({ status: 'stopped', message: null });
     return;
@@ -238,7 +238,7 @@ async function stop() {
 }
 
 function isRunning() {
-  return proc !== null;
+  return serverProcess !== null;
 }
 
 module.exports = { start, stop, isRunning, requestReload, isReloadPending, runUserCommand };

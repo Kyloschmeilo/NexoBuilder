@@ -6,7 +6,7 @@ const { t } = require('../i18n.cjs');
 const { testHooks } = require('../testHooks.cjs');
 const { download, fetchJson } = require('./download.cjs');
 const { downloadsDir } = require('./paths.cjs');
-const { info, setState } = require('./state.cjs');
+const { logInfo, setState } = require('./state.cjs');
 
 const PAPER_API = 'https://fill.papermc.io/v3/projects/paper';
 const VERSIONS_CACHE_MS = 10 * 60_000;
@@ -51,10 +51,10 @@ async function ensurePaper(version) {
   const stable = builds.filter((build) => build?.channel === 'STABLE');
   const pool = stable.length ? stable : builds;
   const pick = pool.reduce((best, build) => (!best || Number(build.id) > Number(best.id) ? build : best), null);
-  const dl = pick?.downloads?.['server:default'];
-  if (!dl?.url) throw new Error(t('testServer.noPaperDownload', { version }));
+  const serverDownload = pick?.downloads?.['server:default'];
+  if (!serverDownload?.url) throw new Error(t('testServer.noPaperDownload', { version }));
   const build = Number(pick.id);
-  if (!stable.length) info(t('testServer.experimentalBuild', { version, build }));
+  if (!stable.length) logInfo(t('testServer.experimentalBuild', { version, build }));
 
   let javaMin = guessJavaFor(version);
   try {
@@ -65,13 +65,13 @@ async function ensurePaper(version) {
     // the estimate is good enough
   }
 
-  const name = typeof dl.name === 'string' && /^[\w.-]+\.jar$/.test(dl.name) ? dl.name : `paper-${version}-${build}.jar`;
-  const dest = path.join(downloadsDir(), name);
-  if (!fs.existsSync(dest)) {
-    info(t('testServer.downloadingPaper', { version, build }));
-    await download(dl.url, dest, `Paper ${version}`, dl.checksums?.sha256);
+  const name = typeof serverDownload.name === 'string' && /^[\w.-]+\.jar$/.test(serverDownload.name) ? serverDownload.name : `paper-${version}-${build}.jar`;
+  const jarPath = path.join(downloadsDir(), name);
+  if (!fs.existsSync(jarPath)) {
+    logInfo(t('testServer.downloadingPaper', { version, build }));
+    await download(serverDownload.url, jarPath, `Paper ${version}`, serverDownload.checksums?.sha256);
   }
-  return { jar: dest, version, build, javaMin };
+  return { jar: jarPath, version, build, javaMin };
 }
 
 module.exports = { paperVersions, ensurePaper };

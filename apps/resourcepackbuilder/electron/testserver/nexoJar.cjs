@@ -7,7 +7,7 @@ const zlib = require('node:zlib');
 const { t } = require('../i18n.cjs');
 const { testHooks } = require('../testHooks.cjs');
 const { pluginStore } = require('./paths.cjs');
-const { info, saveConfig, setState, state } = require('./state.cjs');
+const { logInfo, saveConfig, setState, state } = require('./state.cjs');
 
 /** @typedef {import('../../src/platform/desktopApi').NexoJarInfo} NexoJarInfo */
 
@@ -108,7 +108,7 @@ async function chooseNexoJar(window) {
   state.config = { ...state.config, nexoJar };
   await saveConfig();
   setState();
-  info(t('testServer.nexoSelected', { version: plugin.version }));
+  logInfo(t('testServer.nexoSelected', { version: plugin.version }));
   return nexoJar;
 }
 
