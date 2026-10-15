@@ -159,7 +159,7 @@ function SharedProject({ shareSync }: { shareSync: ShareSync }) {
       <Alert variant="info">
         <AlertDescription>{t('sharedHint')}</AlertDescription>
       </Alert>
-      <Button variant="ghost" className="self-start text-destructive hover:text-destructive" onClick={() => void confirmStop()}>
+      <Button variant="ghost-destructive" className="self-start" onClick={() => void confirmStop()}>
         <Unplug /> {t('stop')}
       </Button>
     </div>

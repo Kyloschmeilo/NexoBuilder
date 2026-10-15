@@ -105,7 +105,7 @@ export function VariantCard({ item, def, removable = true }: VariantCardProps) {
       description={tSchema(def.description as never)}
       actions={
         removable && (
-          <IconButton label={t('variants.remove')} tone="destructive" onClick={() => removeVariant(item.id, def.slot)}>
+          <IconButton label={t('variants.remove')} variant="ghost-destructive" onClick={() => removeVariant(item.id, def.slot)}>
             <Trash2 />
           </IconButton>
         )

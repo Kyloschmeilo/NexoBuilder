@@ -20,7 +20,7 @@ import {
 import { useTranslations } from 'next-intl';
 import { cn } from 'cn';
 import { countIssues } from '@resourcepackbuilder/core/issues';
-import { StatusDot, Tip } from '@resourcepackbuilder/ui';
+import { IconButton, StatusDot, Tip } from '@resourcepackbuilder/ui';
 import { Button } from '@resourcepackbuilder/ui/components/button';
 import { Kbd } from '@resourcepackbuilder/ui/components/kbd';
 import {
@@ -200,28 +200,32 @@ export function TopBar() {
         <>
           <ProjectMenu name={project.name} />
           <div className="flex shrink-0 items-center gap-0.5">
-            <Tip
+            <IconButton
               label={
                 <>
                   {t('undo')} <Kbd>{t('undoShortcut')}</Kbd>
                 </>
               }
+              aria-label={t('undo')}
+              size="icon"
+              disabled={!canUndo}
+              onClick={undo}
             >
-              <Button variant="ghost" size="icon" aria-label={t('undo')} disabled={!canUndo} onClick={undo}>
-                <Undo2 />
-              </Button>
-            </Tip>
-            <Tip
+              <Undo2 />
+            </IconButton>
+            <IconButton
               label={
                 <>
                   {t('redo')} <Kbd>{t('redoShortcut')}</Kbd>
                 </>
               }
+              aria-label={t('redo')}
+              size="icon"
+              disabled={!canRedo}
+              onClick={redo}
             >
-              <Button variant="ghost" size="icon" aria-label={t('redo')} disabled={!canRedo} onClick={redo}>
-                <Redo2 />
-              </Button>
-            </Tip>
+              <Redo2 />
+            </IconButton>
           </div>
           <SaveStatus />
           <ShareButton />
@@ -232,11 +236,9 @@ export function TopBar() {
       <ThemeMenu />
       {project && (
         <>
-          <Tip label={previewLabel}>
-            <Button variant="ghost" size="icon" aria-label={previewLabel} onClick={() => setRightPanelOpen(!isRightPanelOpen)}>
-              {isRightPanelOpen ? <PanelRightClose /> : <PanelRight />}
-            </Button>
-          </Tip>
+          <IconButton label={previewLabel} size="icon" onClick={() => setRightPanelOpen(!isRightPanelOpen)}>
+            {isRightPanelOpen ? <PanelRightClose /> : <PanelRight />}
+          </IconButton>
           <Button className="shrink-0" onClick={openExport}>
             <Download /> {t('export')}
           </Button>

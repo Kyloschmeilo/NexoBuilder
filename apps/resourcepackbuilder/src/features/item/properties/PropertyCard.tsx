@@ -80,7 +80,7 @@ export function PropertyCard({ item, def }: { item: Item; def: PropertyDef }) {
               <ExternalLink />
             </IconButton>
           )}
-          <IconButton label={t('properties.remove')} tone="destructive" onClick={() => removeProperty(item.id, def.id)}>
+          <IconButton label={t('properties.remove')} variant="ghost-destructive" onClick={() => removeProperty(item.id, def.id)}>
             <Trash2 />
           </IconButton>
         </>

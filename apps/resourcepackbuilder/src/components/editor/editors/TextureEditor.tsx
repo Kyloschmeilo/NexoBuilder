@@ -43,13 +43,7 @@ export function TextureEditor({ field, value, onChange, hideLabel }: EditorProps
               <ImageUp /> {texture ? t('field.replace') : t('field.uploadPng')}
             </Button>
             {texture && (
-              <Button
-                type="button"
-                variant="ghost"
-                size="sm"
-                className="text-destructive hover:bg-destructive/10 hover:text-destructive"
-                onClick={() => onChange(undefined)}
-              >
+              <Button type="button" variant="ghost-destructive" size="sm" onClick={() => onChange(undefined)}>
                 <Trash2 /> {tCommon('remove')}
               </Button>
             )}

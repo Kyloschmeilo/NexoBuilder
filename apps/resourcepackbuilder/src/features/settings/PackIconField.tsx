@@ -41,12 +41,7 @@ export function PackIconField({ packIcon }: { packIcon: string | null }) {
               <ImageUp /> {packIcon ? t('replace') : t('upload')}
             </Button>
             {packIcon && (
-              <Button
-                variant="ghost"
-                size="sm"
-                className="text-destructive hover:text-destructive"
-                onClick={() => updateProjectSettings((p) => (p.settings.packIcon = null))}
-              >
+              <Button variant="ghost-destructive" size="sm" onClick={() => updateProjectSettings((p) => (p.settings.packIcon = null))}>
                 <Trash2 /> {tCommon('remove')}
               </Button>
             )}

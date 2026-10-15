@@ -67,7 +67,7 @@ export function MapEditor({ field, value, onChange, hideLabel }: EditorProps<Map
     setNewKey('');
   };
   const removeButton = (key: string) => (
-    <IconButton label={tCommon('remove')} tone="destructive" onClick={() => commit(withKey(map, key, undefined))}>
+    <IconButton label={tCommon('remove')} variant="ghost-destructive" onClick={() => commit(withKey(map, key, undefined))}>
       <Trash2 />
     </IconButton>
   );

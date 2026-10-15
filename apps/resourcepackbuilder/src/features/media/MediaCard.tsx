@@ -32,7 +32,7 @@ export function MediaCard({ title, badges, usage, copyLabel, actions, deleteLabe
           <span className="min-w-0 truncate font-mono text-xs text-muted-foreground">{usage}</span>
           <CopyButton text={usage} label={copyLabel} />
           {actions}
-          <IconButton label={deleteLabel} tone="destructive" onClick={onDelete}>
+          <IconButton label={deleteLabel} variant="ghost-destructive" onClick={onDelete}>
             <Trash2 />
           </IconButton>
         </>

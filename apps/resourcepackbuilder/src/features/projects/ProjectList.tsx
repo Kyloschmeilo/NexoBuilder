@@ -47,7 +47,7 @@ function ProjectRow({ project, isOpen, isShared, onOpen, onDelete }: ProjectRowP
           </span>
         </span>
       </button>
-      <IconButton label={t('delete')} tone="destructive" onClick={onDelete}>
+      <IconButton label={t('delete')} variant="ghost-destructive" onClick={onDelete}>
         <Trash2 />
       </IconButton>
     </div>

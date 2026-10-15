@@ -62,7 +62,7 @@ export function DraftCard({ draft, meta, idError, isSingle, onMetaChange, onDraf
         <>
           {errorCount > 0 && <Badge variant="destructive">{tIssues('errors', { count: errorCount })}</Badge>}
           {!isSingle && (
-            <IconButton label={t('dontImport')} tone="destructive" onClick={onRemove}>
+            <IconButton label={t('dontImport')} variant="ghost-destructive" onClick={onRemove}>
               <Trash2 />
             </IconButton>
           )}

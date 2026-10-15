@@ -40,7 +40,12 @@ export function ModelSlot({ item, def }: { item: Item; def: VariantDef }) {
             <IconButton label={t('model.replace')} size="icon-xs" onClick={() => void replace()}>
               <RefreshCw />
             </IconButton>
-            <IconButton label={tCommon('remove')} size="icon-xs" tone="destructive" onClick={() => removeVariant(item.id, def.slot)}>
+            <IconButton
+              label={tCommon('remove')}
+              size="icon-xs"
+              variant="ghost-destructive"
+              onClick={() => removeVariant(item.id, def.slot)}
+            >
               <Trash2 />
             </IconButton>
           </>

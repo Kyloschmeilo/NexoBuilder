@@ -51,7 +51,7 @@ export function VariantModelRow({ model, label, position, onMove, onReplace, onR
         <IconButton label={t('model.replace')} onClick={onReplace}>
           <RefreshCw />
         </IconButton>
-        <IconButton label={tCommon('remove')} tone="destructive" onClick={onRemove}>
+        <IconButton label={tCommon('remove')} variant="ghost-destructive" onClick={onRemove}>
           <Trash2 />
         </IconButton>
       </div>

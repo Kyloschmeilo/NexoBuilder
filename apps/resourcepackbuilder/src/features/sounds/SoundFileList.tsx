@@ -46,7 +46,7 @@ export function SoundFileList({ sound }: { sound: Sound }) {
             <span className="min-w-0 flex-1 truncate font-mono text-xs">{soundFilePath(sound, index)}.ogg</span>
           </Tip>
           <span className="text-xs text-muted-foreground">{fileSize(file.size)}</span>
-          <IconButton label={t('removeFile')} tone="destructive" onClick={() => removeSoundFile(sound.id, index)}>
+          <IconButton label={t('removeFile')} variant="ghost-destructive" onClick={() => removeSoundFile(sound.id, index)}>
             <Trash2 />
           </IconButton>
         </div>

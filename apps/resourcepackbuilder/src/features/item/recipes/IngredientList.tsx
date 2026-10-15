@@ -44,7 +44,7 @@ export function IngredientList({ recipe, update, isShaped, issues }: IngredientL
             </div>
             <IconButton
               label={t('recipes.removeIngredient')}
-              tone="destructive"
+              variant="ghost-destructive"
               onClick={() =>
                 update((r) => {
                   delete r.ingredients[letter];

@@ -54,7 +54,7 @@ export function RecipeCard({ item, recipe, recipeKey }: RecipeCardProps) {
         </>
       }
       actions={
-        <IconButton label={t('recipes.remove')} tone="destructive" onClick={() => removeRecipe(item.id, recipe.id)}>
+        <IconButton label={t('recipes.remove')} variant="ghost-destructive" onClick={() => removeRecipe(item.id, recipe.id)}>
           <Trash2 />
         </IconButton>
       }
