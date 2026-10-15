@@ -2,10 +2,11 @@ import type { ReactNode } from 'react';
 import { ChevronRight } from 'lucide-react';
 import { cn } from 'cn';
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from './components/collapsible';
+import { Tip } from './Tip';
 
 interface CollapsibleSectionProps {
   title: ReactNode;
-  /** Hover text of the title (e.g. a longer description). */
+  /** Tooltip of the title (e.g. a longer description). */
   titleHint?: string;
   /** Shown after the title inside the trigger (badges, counts). */
   meta?: ReactNode;
@@ -42,11 +43,12 @@ export function CollapsibleSection({
     >
       <div className="flex items-center gap-2 rounded-md pr-2 hover:bg-muted/60">
         <CollapsibleTrigger
-          title={titleHint}
           className="group/trigger flex min-w-0 flex-1 cursor-pointer items-center gap-2 rounded-md py-2.5 pl-3 text-left font-heading text-[13px] leading-4 font-semibold tracking-[0.06em] text-foreground uppercase outline-none select-none focus-visible:ring-3 focus-visible:ring-ring/50"
         >
           <ChevronRight className="size-3.5 shrink-0 text-muted-foreground transition-transform group-data-panel-open/trigger:rotate-90" />
-          <span className="truncate">{title}</span>
+          <Tip label={titleHint}>
+            <span className="truncate">{title}</span>
+          </Tip>
           {meta && <span className="ml-auto flex items-center gap-2 font-sans text-xs font-normal tracking-normal text-muted-foreground normal-case">{meta}</span>}
         </CollapsibleTrigger>
         {actions}

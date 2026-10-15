@@ -1,17 +1,9 @@
 /** Textures of imported models: matching dropped files, animation data and checks. */
 import { isPngDataUrl, readPngInfoFromDataUrl } from '../binary/png';
 import type { Issue } from '../issues';
+import { isPlainObject } from '../object';
 import { fileBaseName } from '../text';
-import type { ModelTexture, TextureAnimation } from './types';
-
-/** An additional file dropped by the user (PNG or .mcmeta). */
-export interface DroppedFile {
-  name: string;
-  /** For PNGs: data URL. */
-  dataUrl?: string;
-  /** For text files (.json, .mcmeta, .bbmodel): content. */
-  text?: string;
-}
+import type { ImportFile, ModelTexture, TextureAnimation } from './types';
 
 /** Normalizes a file name for comparisons ("Ruby_Sword.PNG" → "ruby_sword"). */
 export function normalizeTextureName(name: string): string {
@@ -19,13 +11,13 @@ export function normalizeTextureName(name: string): string {
 }
 
 /** Searches the dropped files for a PNG with a matching name. */
-export function findPngByName(files: DroppedFile[], ...candidates: Array<string | undefined>): DroppedFile | undefined {
+export function findPngByName(files: ImportFile[], ...candidates: Array<string | undefined>): ImportFile | undefined {
   const wanted = candidates.filter((c): c is string => !!c).map(normalizeTextureName);
   return files.find((file) => isPngDataUrl(file.dataUrl) && wanted.includes(normalizeTextureName(file.name)));
 }
 
 /** Finds the .png.mcmeta file for a PNG. */
-export function findMcmetaFor(files: DroppedFile[], pngName: string): Record<string, unknown> | null {
+export function findMcmetaFor(files: ImportFile[], pngName: string): Record<string, unknown> | null {
   const target = normalizeTextureName(pngName);
   const file = files.find((f) => /\.mcmeta$/i.test(f.name) && normalizeTextureName(f.name) === target && f.text);
   if (!file?.text) return null;
@@ -58,6 +50,25 @@ export function getAnimation(texture: ModelTexture): TextureAnimation | null {
     interpolate: a.interpolate === true ? true : undefined,
     frames: Array.isArray(a.frames) ? (a.frames as TextureAnimation['frames']) : undefined,
   };
+}
+
+/** The animation values the user edits; everything else of the .mcmeta animation (frames, size) is kept. */
+export interface TextureAnimationSettings {
+  frametime: number;
+  interpolate: boolean;
+}
+
+/** The texture's .mcmeta with `animation` applied, or null (no .mcmeta) when `animation` is null. */
+export function withTextureAnimation(
+  mcmeta: Record<string, unknown> | null,
+  animation: TextureAnimationSettings | null,
+): Record<string, unknown> | null {
+  if (!animation) return null;
+  const current = mcmeta?.animation;
+  const next: Record<string, unknown> = { ...(isPlainObject(current) ? current : {}), frametime: animation.frametime };
+  if (animation.interpolate) next.interpolate = true;
+  else delete next.interpolate;
+  return { ...(mcmeta ?? {}), animation: next };
 }
 
 /** Size of a single animation frame in pixels (matches the Minecraft logic). */

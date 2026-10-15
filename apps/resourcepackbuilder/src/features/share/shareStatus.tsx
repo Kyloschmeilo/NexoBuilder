@@ -24,11 +24,9 @@ export function ShareStatusBadge({ status }: { status: ShareStatus }) {
   const statusText = useShareStatusText();
   const tone = SHARE_STATUS_TONE[status];
   return (
-    <span data-testid="share-status" data-status={status} className="inline-flex">
-      <StatusBadge tone={tone}>
-        {tone === 'busy' && <Spinner />}
-        {statusText(status)}
-      </StatusBadge>
-    </span>
+    <StatusBadge tone={tone} data-testid="share-status" data-status={status}>
+      {tone === 'busy' && <Spinner />}
+      {statusText(status)}
+    </StatusBadge>
   );
 }

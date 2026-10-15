@@ -5,9 +5,9 @@ import type { ImportedModel, ModelTexture } from '@resourcepackbuilder/core/mode
 import { createItem, insertItem, type NewItemInput } from '@resourcepackbuilder/core/project/factory';
 import { uid, uniqueNexoId } from '@resourcepackbuilder/core/project/ids';
 import { assetToken, pruneUnusedAssets } from '@resourcepackbuilder/core/project/assets';
-import { createTexture } from '@resourcepackbuilder/core/model/textures';
+import { createTexture, withTextureAnimation, type TextureAnimationSettings } from '@resourcepackbuilder/core/model/textures';
 import { texturePlaceholder } from '@resourcepackbuilder/core/model/common';
-import { deepClone, isPlainObject } from '@resourcepackbuilder/core/object';
+import { deepClone } from '@resourcepackbuilder/core/object';
 import { setPath } from '@resourcepackbuilder/core/nexo/configPath';
 import { PROPERTY_BY_ID, type PropertyDef } from '@resourcepackbuilder/core/nexo/schema';
 import { setPropertyValue } from '@resourcepackbuilder/core/nexo/properties';
@@ -118,12 +118,6 @@ export function updateModelTexture(itemId: string, textureId: string, recipe: (t
   );
 }
 
-/** Animation settings of a texture's .mcmeta. */
-export interface TextureAnimationSettings {
-  frametime: number;
-  interpolate: boolean;
-}
-
 /** Sets the animation of a texture, keeping the other values of its .mcmeta animation (frames, size). */
 export function setTextureAnimation(
   itemId: string,
@@ -135,15 +129,7 @@ export function setTextureAnimation(
     itemId,
     textureId,
     (texture) => {
-      if (!animation) {
-        texture.mcmeta = null;
-        return;
-      }
-      const current = texture.mcmeta?.animation;
-      const next: Record<string, unknown> = { ...(isPlainObject(current) ? current : {}), frametime: animation.frametime };
-      if (animation.interpolate) next.interpolate = true;
-      else delete next.interpolate;
-      texture.mcmeta = { ...(texture.mcmeta ?? {}), animation: next };
+      texture.mcmeta = withTextureAnimation(texture.mcmeta, animation);
     },
     historyKey,
   );

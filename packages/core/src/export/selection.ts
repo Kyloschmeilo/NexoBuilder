@@ -22,6 +22,16 @@ export interface ExportSelection {
 
 export const SELECT_ALL: ExportSelection = { excludedItemIds: [], excludedGlyphIds: [] };
 
+/** A selection that leaves out everything of `project`. */
+export function selectNothing(project: Project): ExportSelection {
+  return {
+    excludedItemIds: Object.keys(project.items),
+    excludedGlyphIds: project.glyphs.map((g) => g.id),
+    excludedSoundIds: project.sounds.map((s) => s.id),
+    excludedPaintingIds: project.paintings.map((p) => p.id),
+  };
+}
+
 function isEverythingSelected(selection: ExportSelection): boolean {
   return (
     selection.excludedItemIds.length === 0 &&

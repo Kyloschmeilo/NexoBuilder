@@ -1,6 +1,7 @@
 import { useTranslations } from 'next-intl';
 import { ExternalLink, Trash2 } from 'lucide-react';
 import type { ConfigValue, Item } from '@resourcepackbuilder/core/project/types';
+import { toConfigValue } from '@resourcepackbuilder/core/project/configValue';
 import { getPropertyValue } from '@resourcepackbuilder/core/nexo/properties';
 import type { PropertyDef } from '@resourcepackbuilder/core/nexo/schema';
 import { versionSupport } from '@resourcepackbuilder/core/minecraft/versions';
@@ -8,7 +9,7 @@ import { IconButton, Tip } from '@resourcepackbuilder/ui';
 import { Alert, AlertDescription } from '@resourcepackbuilder/ui/components/alert';
 import { Badge } from '@resourcepackbuilder/ui/components/badge';
 import { removeProperty, setItemProperty } from '../../../commands/items';
-import { FieldRenderer, toConfigValue } from '../../../components/editor';
+import { FieldRenderer } from '../../../components/editor';
 import { useOpenProject } from '../../../store/project';
 import { EditorCard } from '../EditorCard';
 import { VersionBadges } from './VersionBadges';

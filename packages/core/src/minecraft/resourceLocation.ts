@@ -10,9 +10,22 @@ export const PACK_NAME_PATTERN = /^[A-Za-z0-9_.-]+$/;
 /** A resource location with optional namespace, e.g. "minecraft:block/stone" or "item/ruby". */
 export const RESOURCE_LOCATION_PATTERN = /^([a-z0-9_.-]+:)?[a-z0-9_./-]+$/;
 
+/** Characters of item, glyph and painting IDs (a regex character class body). */
+export const ID_CHARS = 'a-z0-9_';
+/** Characters of sound IDs and namespaces, which may contain dots and dashes (`block.ruby.place`). */
+export const SOUND_ID_CHARS = 'a-z0-9_.-';
+
+/**
+ * Normalises an ID while it is typed: lower case, characters outside `allowed` become `_`. Unlike `toIdentifier` it
+ * keeps leading, trailing and repeated underscores, so the text does not change under the cursor.
+ */
+export function normalizeTypedId(text: string, allowed: string = ID_CHARS): string {
+  return text.toLowerCase().replace(new RegExp(`[^${allowed}]`, 'g'), '_');
+}
+
 /** Turns arbitrary text into a namespace-style ID (a-z, 0-9, _ . -), e.g. for sound IDs. */
 export function sanitizeId(text: string, fallback: string): string {
-  return toIdentifier(text, 'a-z0-9_.-', fallback);
+  return toIdentifier(text, SOUND_ID_CHARS, fallback);
 }
 
 export type NamespaceError = 'invalid' | 'minecraft' | 'nexo';

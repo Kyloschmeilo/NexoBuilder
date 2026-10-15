@@ -5,6 +5,9 @@
  */
 import type { Project } from '../../project/types';
 
+/** Largest painting side in blocks. */
+export const MAX_PAINTING_BLOCKS = 16;
+
 export interface PaintingFile {
   name: string;
   dataUrl: string;

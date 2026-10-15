@@ -2,10 +2,10 @@
  * State of the "New item" dialog as a reducer: the dropped files, the drafts built from them and the name, ID and
  * material entered per draft (or for one item without a model).
  */
-import type { DroppedFile } from '@resourcepackbuilder/core/model/textures';
+import type { ImportFile } from '@resourcepackbuilder/core/model/types';
 import { createDrafts, unsupportedFiles, type ImportDraft, type PngMode } from '@resourcepackbuilder/core/model/drafts';
 import { slugify, stripFormatting } from '@resourcepackbuilder/core/text';
-import { DEFAULT_MATERIAL } from '../item/itemMaterial';
+import { DEFAULT_MATERIAL } from '@resourcepackbuilder/core/nexo/material';
 
 /** What the user enters for one new item. */
 export interface ItemMeta {
@@ -19,7 +19,7 @@ export interface ItemMeta {
 export type MetaPatch = Partial<Pick<ItemMeta, 'displayName' | 'nexoId' | 'material'>>;
 
 export interface NewItemState {
-  files: DroppedFile[];
+  files: ImportFile[];
   pngMode: PngMode;
   drafts: ImportDraft[];
   /** Entered values per draft, by {@link sourceKey}, so they survive rebuilding the drafts */
@@ -33,7 +33,7 @@ export interface NewItemState {
 
 export type NewItemAction =
   | { type: 'readStarted' }
-  | { type: 'filesRead'; files: DroppedFile[] }
+  | { type: 'filesRead'; files: ImportFile[] }
   | { type: 'readFailed' }
   | { type: 'pngModeChanged'; pngMode: PngMode }
   | { type: 'withoutModelChanged'; isWithoutModel: boolean }
@@ -60,7 +60,7 @@ function patchMeta(meta: ItemMeta, patch: MetaPatch): ItemMeta {
 }
 
 /** Rebuilds the drafts from `files`, keeping the values entered for drafts of the same source. */
-function withDrafts(state: NewItemState, files: DroppedFile[], pngMode: PngMode): NewItemState {
+function withDrafts(state: NewItemState, files: ImportFile[], pngMode: PngMode): NewItemState {
   const drafts = createDrafts(files, pngMode);
   const metaBySource = { ...state.metaBySource };
   for (const draft of drafts) metaBySource[sourceKey(draft)] ??= newMeta(draft.name);

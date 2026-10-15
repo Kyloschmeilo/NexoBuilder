@@ -10,13 +10,13 @@ import { fileBaseName, prettyNameFromFile } from '../text';
 import { convertBBModel } from './bbmodel';
 import { convertJavaModel } from './javaModel';
 import { createTextureModel, DEFAULT_TEXTURE_TEMPLATE, getTextureTemplate, suggestSlotAssignment, type TextureTemplateId } from './textureModel';
-import { normalizeTextureName, type DroppedFile } from './textures';
-import type { ImportedModel, ModelSource } from './types';
+import { normalizeTextureName } from './textures';
+import type { ImportedModel, ImportFile, ModelSource } from './types';
 
 export interface ImportDraft {
   key: string;
   kind: ModelSource;
-  files: DroppedFile[];
+  files: ImportFile[];
   /** Suggested item name */
   name: string;
   /** Only for PNG imports */
@@ -32,18 +32,18 @@ export type DraftInput = Omit<ImportDraft, 'key' | 'model' | 'error'> & { key?: 
 /** How several PNGs become drafts: one model each, one model together or decided by the names. */
 export type PngMode = 'auto' | 'separate' | 'combined';
 
-const isBBModelFile = (file: DroppedFile) => /\.bbmodel$/i.test(file.name);
-const isJsonModelFile = (file: DroppedFile) => /\.json$/i.test(file.name) && !/\.mcmeta$/i.test(file.name);
-const isMcmetaFile = (file: DroppedFile) => /\.mcmeta$/i.test(file.name);
-const isPngFile = (file: DroppedFile) => isPngDataUrl(file.dataUrl);
+const isBBModelFile = (file: ImportFile) => /\.bbmodel$/i.test(file.name);
+const isJsonModelFile = (file: ImportFile) => /\.json$/i.test(file.name) && !/\.mcmeta$/i.test(file.name);
+const isMcmetaFile = (file: ImportFile) => /\.mcmeta$/i.test(file.name);
+const isPngFile = (file: ImportFile) => isPngDataUrl(file.dataUrl);
 
 /** Dropped files that no importer can use. */
-export function unsupportedFiles(files: DroppedFile[]): DroppedFile[] {
+export function unsupportedFiles(files: ImportFile[]): ImportFile[] {
   return files.filter((f) => !isBBModelFile(f) && !isJsonModelFile(f) && !isPngFile(f) && !isMcmetaFile(f));
 }
 
 /** Splits the dropped files into one or more drafts. */
-export function createDrafts(files: DroppedFile[], pngMode: PngMode = 'auto'): ImportDraft[] {
+export function createDrafts(files: ImportFile[], pngMode: PngMode = 'auto'): ImportDraft[] {
   const bbmodels = files.filter(isBBModelFile);
   const jsons = files.filter(isJsonModelFile);
   const pngs = files.filter(isPngFile);
@@ -114,14 +114,14 @@ function convert(draft: ImportDraft): ImportedModel {
   }
 }
 
-function shouldCombinePngs(pngs: DroppedFile[]): boolean {
+function shouldCombinePngs(pngs: ImportFile[]): boolean {
   if (pngs.length === 1) return true;
   if (pngs.length > 6) return false;
   const prefix = commonPrefix(pngs.map((p) => fileBaseName(p.name).toLowerCase()));
   return prefix.replace(/[_-]+$/, '').length >= 3;
 }
 
-function suggestTemplate(pngs: DroppedFile[]): TextureTemplateId {
+function suggestTemplate(pngs: ImportFile[]): TextureTemplateId {
   if (pngs.length === 1) return 'generated';
   const names = pngs.map((p) => fileBaseName(p.name).toLowerCase());
   const has = (word: string) => names.some((n) => n.endsWith(word));
@@ -141,7 +141,7 @@ function commonPrefix(values: string[]): string {
   return prefix.replace(/[_\- ]+$/, '');
 }
 
-function parseJson(file: DroppedFile): Record<string, unknown> | null {
+function parseJson(file: ImportFile): Record<string, unknown> | null {
   try {
     const value: unknown = JSON.parse(file.text ?? '');
     return isPlainObject(value) ? value : null;
@@ -151,29 +151,29 @@ function parseJson(file: DroppedFile): Record<string, unknown> | null {
 }
 
 /** Base name of a parent reference ("minecraft:item/foo" → "foo"). */
-function parentName(file: DroppedFile): string | null {
+function parentName(file: ImportFile): string | null {
   const parent = parseJson(file)?.parent;
   return typeof parent === 'string' ? normalizeTextureName(parent.split('/').pop() ?? parent) : null;
 }
 
 /** Groups JSON models that are linked via "parent". */
-function groupJsonModels(jsons: DroppedFile[]): DroppedFile[][] {
-  const parentOf = new Map<DroppedFile, DroppedFile>();
+function groupJsonModels(jsons: ImportFile[]): ImportFile[][] {
+  const parentOf = new Map<ImportFile, ImportFile>();
   for (const file of jsons) {
     const name = parentName(file);
     const parent = name ? jsons.find((j) => j !== file && normalizeTextureName(j.name) === name) : undefined;
     if (parent) parentOf.set(file, parent);
   }
-  const rootOf = (file: DroppedFile) => {
+  const rootOf = (file: ImportFile) => {
     let current = file;
-    const seen = new Set<DroppedFile>();
+    const seen = new Set<ImportFile>();
     for (let parent = parentOf.get(current); parent && !seen.has(current); parent = parentOf.get(current)) {
       seen.add(current);
       current = parent;
     }
     return current;
   };
-  const groups = new Map<DroppedFile, DroppedFile[]>();
+  const groups = new Map<ImportFile, ImportFile[]>();
   for (const file of jsons) {
     const root = rootOf(file);
     groups.set(root, [...(groups.get(root) ?? []), file]);
@@ -182,12 +182,12 @@ function groupJsonModels(jsons: DroppedFile[]): DroppedFile[][] {
 }
 
 /** The model of a group that no other model uses as parent. */
-function mainJsonName(group: DroppedFile[]): string {
+function mainJsonName(group: ImportFile[]): string {
   const referenced = new Set(group.map(parentName).filter((name): name is string => name !== null));
   return (group.find((f) => !referenced.has(normalizeTextureName(f.name))) ?? group[0]).name;
 }
 
-function textureReferenceNames(group: DroppedFile[]): Set<string> {
+function textureReferenceNames(group: ImportFile[]): Set<string> {
   const names = new Set<string>();
   for (const file of group) {
     const textures = parseJson(file)?.textures;

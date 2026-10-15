@@ -16,7 +16,8 @@ import { useOpenProject } from '../../../store/project';
 import { EditorCard } from '../EditorCard';
 import { ModelParentSelect } from './ModelParentSelect';
 import { ShadingOptions } from './ShadingOptions';
-import { MODEL_ACCEPT, useModelImport } from './useModelImport';
+import { MODEL_ACCEPT } from './modelFiles';
+import { useModelImport } from './useModelImport';
 
 const PREVIEW_HEIGHT = 360;
 

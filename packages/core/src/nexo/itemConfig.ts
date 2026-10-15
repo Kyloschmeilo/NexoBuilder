@@ -9,6 +9,7 @@ import type { ConfigObject, ConfigValue, Item, Project } from '../project/types'
 import { slotForMaterial } from './armor';
 import type { Field } from './fields';
 import { getPath, setPath } from './configPath';
+import { DEFAULT_MATERIAL } from './material';
 import { CONFIG_PROPERTIES } from './schema';
 import { MODEL_TOKEN } from './tokens';
 import { parseYaml } from './yaml';
@@ -90,7 +91,7 @@ export function buildItemConfig(ctx: BuildContext): BuildResult {
   const result: Record<string, unknown> = {};
   const name = item.displayName.trim();
   if (name) result.itemname = name;
-  const material = typeof source.material === 'string' && source.material.trim() ? source.material.trim() : 'PAPER';
+  const material = typeof source.material === 'string' && source.material.trim() ? source.material.trim() : DEFAULT_MATERIAL;
   result.material = material;
   delete resolved.material;
   delete resolved.itemname;

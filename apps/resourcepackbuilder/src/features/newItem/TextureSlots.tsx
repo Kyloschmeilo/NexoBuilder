@@ -1,7 +1,7 @@
 /** For PNG drafts: which model the textures become, and which texture goes into which slot. */
 import { useId } from 'react';
 import { useTranslations } from 'next-intl';
-import type { DroppedFile } from '@resourcepackbuilder/core/model/textures';
+import type { ImportFile } from '@resourcepackbuilder/core/model/types';
 import {
   MAX_ITEM_LAYERS,
   TEXTURE_TEMPLATES,
@@ -23,7 +23,7 @@ function slotsOf(template: TextureTemplate, pngCount: number): string[] {
 interface TextureSlotsProps {
   draft: ImportDraft;
   template: TextureTemplate;
-  pngs: DroppedFile[];
+  pngs: ImportFile[];
   /** Receives the draft converted again with the new choice */
   onChange: (draft: ImportDraft) => void;
 }

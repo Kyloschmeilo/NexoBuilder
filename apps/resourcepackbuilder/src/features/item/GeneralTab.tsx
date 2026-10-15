@@ -2,6 +2,8 @@ import { useId } from 'react';
 import { useTranslations } from 'next-intl';
 import type { Item } from '@resourcepackbuilder/core/project/types';
 import { MATERIALS } from '@resourcepackbuilder/core/nexo/options';
+import { DEFAULT_MATERIAL, normalizeTypedMaterial } from '@resourcepackbuilder/core/nexo/material';
+import { normalizeTypedId } from '@resourcepackbuilder/core/minecraft/resourceLocation';
 import { validateItemId, type ItemIdError } from '@resourcepackbuilder/core/project/ids';
 import { itemLabel } from '@resourcepackbuilder/core/project/labels';
 import { Field, FieldDescription, FieldError, FieldLabel } from '@resourcepackbuilder/ui/components/field';
@@ -12,7 +14,6 @@ import { FolderSelect } from '../../components/FolderSelect';
 import { ItemTooltip } from '../../components/miniMessage/ItemTooltip';
 import { useOpenProject } from '../../store/project';
 import { EditorCard } from './EditorCard';
-import { DEFAULT_MATERIAL, typedItemId, typedMaterial } from './itemMaterial';
 import { PropertiesPanel } from './properties/PropertiesPanel';
 
 /** Example tags shown in the display-name help (MiniMessage syntax, not translated). */
@@ -84,7 +85,7 @@ export function GeneralTab({ item }: { item: Item }) {
                   updateItem(
                     item.id,
                     (d) => {
-                      d.nexoId = typedItemId(e.target.value);
+                      d.nexoId = normalizeTypedId(e.target.value);
                     },
                     'nexoId',
                   )
@@ -103,7 +104,7 @@ export function GeneralTab({ item }: { item: Item }) {
                   updateItem(
                     item.id,
                     (d) => {
-                      d.config.material = typedMaterial(v ?? '');
+                      d.config.material = normalizeTypedMaterial(v ?? '');
                     },
                     'material',
                   )

@@ -1,16 +1,14 @@
 import { useTranslations } from 'next-intl';
-import type { Glyph } from '@resourcepackbuilder/core/nexo/glyphs/model';
+import { CHAT_TEXT_HEIGHT, type Glyph } from '@resourcepackbuilder/core/nexo/glyphs/model';
+import { normalizeTypedId } from '@resourcepackbuilder/core/minecraft/resourceLocation';
 import { Input } from '@resourcepackbuilder/ui/components/input';
 import { updateGlyph } from '../../commands/media';
 import { NumberInput, TextInput } from '../../components/editor';
 import { CheckRow } from '../../components/CheckRow';
 import { FormField, FormGrid } from '../../components/FormField';
 import { NexoKey } from '../media/NexoKey';
-import { ID_CHARS, typedId } from '../media/typedId';
 import { isMultiBitmap } from './glyphTag';
 
-/** Height of chat text in Minecraft pixels; the height a glyph falls back to. */
-const CHAT_TEXT_HEIGHT = 8;
 const DEFAULT_FONT = 'minecraft:default';
 
 /** The Nexo options of a glyph; which ones apply depends on its kind. */
@@ -27,7 +25,7 @@ export function GlyphFields({ glyph, glyphs }: { glyph: Glyph; glyphs: Glyph[] }
           <Input
             className="font-mono"
             value={glyph.glyphId}
-            onChange={(e) => update((g) => (g.glyphId = typedId(e.target.value, ID_CHARS)), 'id')}
+            onChange={(e) => update((g) => (g.glyphId = normalizeTypedId(e.target.value)), 'id')}
           />
         </FormField>
         {glyph.kind === 'reference' ? (

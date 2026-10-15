@@ -3,7 +3,7 @@ import { ITEM_ID_PATTERN } from '../../minecraft/resourceLocation';
 import { compareVersions } from '../../minecraft/versions';
 import type { Project } from '../../project/types';
 import { issueReporter } from '../issueReporter';
-import { paintingFrameSize } from './model';
+import { MAX_PAINTING_BLOCKS, paintingFrameSize } from './model';
 
 /** Checks all paintings of the project; each issue targets its painting and carries a `context.painting` frame. */
 export function validatePaintings(project: Project): Issue[] {
@@ -25,7 +25,7 @@ export function validatePaintings(project: Project): Issue[] {
       ['painting.widthRange', painting.width],
       ['painting.heightRange', painting.height],
     ] as const) {
-      if (!Number.isInteger(value) || value < 1 || value > 16) add('error', code);
+      if (!Number.isInteger(value) || value < 1 || value > MAX_PAINTING_BLOCKS) add('error', code);
     }
     if (!painting.file) {
       add('error', 'painting.imageMissing');

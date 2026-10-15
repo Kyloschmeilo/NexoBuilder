@@ -1,7 +1,7 @@
 import { useTranslations } from 'next-intl';
 import { Trash2 } from 'lucide-react';
 import type { Item } from '@resourcepackbuilder/core/project/types';
-import { getRecipeTypeInfo, type Recipe } from '@resourcepackbuilder/core/nexo/recipes/model';
+import { getRecipeTypeInfo, MAX_RESULT_AMOUNT, type Recipe } from '@resourcepackbuilder/core/nexo/recipes/model';
 import { recipeFilePath } from '@resourcepackbuilder/core/nexo/recipes/files';
 import { validateRecipe } from '@resourcepackbuilder/core/nexo/recipes/validate';
 import { IconButton, Tip } from '@resourcepackbuilder/ui';
@@ -20,8 +20,6 @@ import { ShapedGrid } from './ShapedGrid';
 /** Changes the recipe; equal history keys in quick succession form one undo step. */
 export type RecipeUpdater = (recipe: (draft: Recipe) => void, historyKey?: string) => void;
 
-/** Highest number of items a recipe can produce. */
-const MAX_RESULT_AMOUNT = 99;
 const TICKS_PER_SECOND = 20;
 
 interface RecipeCardProps {

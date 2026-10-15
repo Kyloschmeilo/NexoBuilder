@@ -2,7 +2,7 @@ import type { Issue, IssueContext } from '../../issues';
 import { RESOURCE_LOCATION_PATTERN } from '../../minecraft/resourceLocation';
 import type { Project } from '../../project/types';
 import { issueReporter } from '../issueReporter';
-import { getRecipeTypeInfo, type Recipe, type RecipeIngredient } from './model';
+import { getRecipeTypeInfo, MAX_INGREDIENT_AMOUNT, MAX_RESULT_AMOUNT, type Recipe, type RecipeIngredient } from './model';
 
 const MATERIAL_PATTERN = /^[A-Za-z0-9_]+$/;
 
@@ -18,7 +18,7 @@ function validateIngredient(ingredient: RecipeIngredient | null | undefined, con
   if (ingredient.source === 'nexo' && !Object.values(project.items).some((i) => i.nexoId === id)) {
     add('info', 'recipe.nexoItemNotInProject', { id });
   }
-  if (ingredient.amount !== undefined && (!Number.isInteger(ingredient.amount) || ingredient.amount < 1 || ingredient.amount > 64)) {
+  if (ingredient.amount !== undefined && (!Number.isInteger(ingredient.amount) || ingredient.amount < 1 || ingredient.amount > MAX_INGREDIENT_AMOUNT)) {
     add('error', 'recipe.amountRange');
   }
 }
@@ -32,7 +32,7 @@ export function validateRecipe(recipe: Recipe, project: Project, key: string): I
   const info = getRecipeTypeInfo(recipe.type);
   const add = issueReporter(issues, { context: [{ code: 'context.recipe', args: { recipe: key } }] });
   const ingredientContext = (letter: string): IssueContext => ({ code: 'context.recipeIngredient', args: { recipe: key, letter } });
-  if (!Number.isInteger(recipe.resultAmount) || recipe.resultAmount < 1 || recipe.resultAmount > 99) {
+  if (!Number.isInteger(recipe.resultAmount) || recipe.resultAmount < 1 || recipe.resultAmount > MAX_RESULT_AMOUNT) {
     add('error', 'recipe.resultAmountRange');
   }
   if (info.kind === 'shaped') {

@@ -60,12 +60,10 @@ function TestServerPage({ server }: { server: TestServerState }) {
         title={t('title')}
         meta={
           <>
-            <span data-testid="test-server-status" data-status={server.status} className="contents">
-              <StatusBadge tone={TEST_SERVER_STATUS_TONE[server.status]}>
-                {isWorking && <Spinner />}
-                {t(`status.${server.status}`)}
-              </StatusBadge>
-            </span>
+            <StatusBadge tone={TEST_SERVER_STATUS_TONE[server.status]} data-testid="test-server-status" data-status={server.status}>
+              {isWorking && <Spinner />}
+              {t(`status.${server.status}`)}
+            </StatusBadge>
             {installed && (
               <Badge variant="outline" className="font-mono" data-testid="test-server-version-label">
                 {t('installed', { paper: installed.paperVersion, java: installed.javaVersion })}

@@ -3,6 +3,7 @@ import { useTranslations } from 'next-intl';
 import { Button } from '@resourcepackbuilder/ui/components/button';
 import { Spinner } from '@resourcepackbuilder/ui/components/spinner';
 import { StatusBadge, Tip } from '@resourcepackbuilder/ui';
+import { nexoPackCommand } from '@resourcepackbuilder/core/testserver/files';
 import type { TestServerState } from '../../platform/desktopApi';
 import { PACK_STATUS_TONE } from './status';
 import { useBusyAction, useTestServer } from './useTestServer';
@@ -34,7 +35,7 @@ export function PackStatus({ pack, player }: { pack: TestServerState['pack']; pl
             variant="outline"
             size="sm"
             disabled={busy || pack.status !== 'ready' || !player}
-            onClick={() => void run(() => testServer.command(`nexo pack ${player}`))}
+            onClick={() => void run(() => testServer.command(nexoPackCommand(player)))}
           >
             <Upload /> {t('resend')}
           </Button>

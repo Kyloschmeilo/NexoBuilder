@@ -14,7 +14,7 @@ import { openDialog } from '../../store/dialogs';
 import { usePlan } from '../../store/PlanProvider';
 import { useOpenProject } from '../../store/project';
 import { select } from '../../store/ui';
-import { NEW_ITEM_ACCEPT, NEW_ITEM_FORMATS } from '../newItem/accept';
+import { MODEL_ACCEPT, MODEL_FORMATS } from '../item/model/modelFiles';
 import { useFolderActions } from './useFolderActions';
 
 export function FolderView({ folderId }: { folderId: string }) {
@@ -62,10 +62,10 @@ export function FolderView({ folderId }: { folderId: string }) {
 
       <DropZone
         onFiles={(files) => openDialog({ id: 'newItem', props: { folderId, files } })}
-        accept={NEW_ITEM_ACCEPT}
+        accept={MODEL_ACCEPT}
         title={t('dropTitle')}
         subtitle={t('dropSubtitle')}
-        formats={NEW_ITEM_FORMATS}
+        formats={MODEL_FORMATS}
         compact
       />
 

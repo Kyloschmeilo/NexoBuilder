@@ -2,7 +2,7 @@
   "name": "@resourcepackbuilder/ui",
   "private": true,
   "version": "0.0.0",
-  "description": "Reusable React building blocks: shadcn/ui components (Base UI), shared generic components and the CastCrafter theme (Tailwind, fonts).",
+  "description": "Reusable React building blocks: shadcn/ui components (Base UI), shared generic components and the app theme (Tailwind, fonts).",
   "type": "module",
   "exports": {
     ".": "./src/index.ts",

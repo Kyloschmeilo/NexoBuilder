@@ -2,7 +2,7 @@
 import { useTranslations } from 'next-intl';
 import { ImageUp, Trash2 } from 'lucide-react';
 import { readPngInfoFromDataUrl } from '@resourcepackbuilder/core/binary/png';
-import { pickFiles, readPngFile } from '@resourcepackbuilder/ui';
+import { pickFiles, readPngAsDataUrl } from '@resourcepackbuilder/ui';
 import { Button } from '@resourcepackbuilder/ui/components/button';
 import { Field, FieldTitle } from '@resourcepackbuilder/ui/components/field';
 import { updateProjectSettings } from '../../commands/settings';
@@ -15,7 +15,7 @@ export function PackIconField({ packIcon }: { packIcon: string | null }) {
   const upload = async () => {
     const [file] = await pickFiles('.png,image/png', false);
     if (!file) return;
-    const dataUrl = await readPngFile(file);
+    const dataUrl = await readPngAsDataUrl(file);
     if (!readPngInfoFromDataUrl(dataUrl)) {
       toast('error', t('invalidPng'));
       return;

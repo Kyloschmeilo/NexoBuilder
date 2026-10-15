@@ -6,6 +6,7 @@ import { inContext, type Issue, type IssueContext } from '../issues';
 import { buildPackMcmeta } from '../minecraft/versions';
 import { getPath } from '../nexo/configPath';
 import { buildItemConfig } from '../nexo/itemConfig';
+import { DEFAULT_MATERIAL } from '../nexo/material';
 import { buildRecipeFiles, recipeKeys } from '../nexo/recipes/files';
 import { validateRecipe } from '../nexo/recipes/validate';
 import { VARIANTS, variantPathSuffix, type VariantSlot } from '../nexo/variants';
@@ -138,7 +139,7 @@ function writeVariants(ctx: ItemExport, hasMainModel: boolean): Partial<Record<V
       return ctx.writeModel(model, `${ctx.modelPath}-${suffix}`, variantFrame(def, suffix)).key;
     });
     keys[def.slot] = def.multiple ? written : written[0];
-    const material = String(item.config.material ?? 'PAPER').toUpperCase();
+    const material = String(item.config.material ?? DEFAULT_MATERIAL).toUpperCase();
     const blocksAttacks = def.slot === 'blocking_model' && getPath(item.config, ['Components', 'blocks_attacks']) !== undefined;
     if (def.materials && !def.materials.includes(material) && !blocksAttacks) {
       ctx.report('warning', 'plan.variantWrongMaterial', { materials: def.materials.join(' / '), material }, [frame]);

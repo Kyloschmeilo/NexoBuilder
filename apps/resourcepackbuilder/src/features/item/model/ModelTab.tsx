@@ -1,16 +1,17 @@
 import { useTranslations } from 'next-intl';
 import { Box } from 'lucide-react';
 import type { Item } from '@resourcepackbuilder/core/project/types';
+import { itemMaterial } from '@resourcepackbuilder/core/nexo/material';
 import { DropZone } from '@resourcepackbuilder/ui';
 import { setItemModel } from '../../../commands/items';
 import { EditorCard } from '../EditorCard';
-import { itemMaterial } from '../itemMaterial';
 import { PropertiesPanel } from '../properties/PropertiesPanel';
 import { BlockModelsSection } from './BlockModelsSection';
 import { FurnitureModelsSection } from './FurnitureModelsSection';
 import { ModelCard } from './ModelCard';
 import { TexturesSection } from './TexturesSection';
-import { MODEL_ACCEPT, useModelImport } from './useModelImport';
+import { MODEL_ACCEPT } from './modelFiles';
+import { useModelImport } from './useModelImport';
 import { VariantsSection } from './VariantsSection';
 
 /** Formats shown on the drop zone of an item without a model. */

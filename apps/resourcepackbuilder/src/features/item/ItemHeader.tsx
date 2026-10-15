@@ -1,6 +1,7 @@
 import { useTranslations } from 'next-intl';
 import { Box, ClipboardCopy, ClipboardPaste, Copy, FolderInput, Gift, Trash2 } from 'lucide-react';
 import type { Item } from '@resourcepackbuilder/core/project/types';
+import { itemMaterial } from '@resourcepackbuilder/core/nexo/material';
 import type { Issue } from '@resourcepackbuilder/core/issues';
 import { getFolderPathLabel } from '@resourcepackbuilder/core/project/tree';
 import { IconButton, Thumb, Tip } from '@resourcepackbuilder/ui';
@@ -16,7 +17,6 @@ import { openDialog } from '../../store/dialogs';
 import { toast } from '../../store/notifications';
 import { useOpenProject } from '../../store/project';
 import { useTestServerStore } from '../../store/testServer';
-import { itemMaterial } from './itemMaterial';
 import { useItemActions } from './useItemActions';
 
 /** "Give in test server" – only visible while the local test server is running. */

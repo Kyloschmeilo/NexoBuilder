@@ -2,6 +2,7 @@ import { useFormatter, useTranslations } from 'next-intl';
 import { Trash2 } from 'lucide-react';
 import type { ImportedModel } from '@resourcepackbuilder/core/model/types';
 import type { Item } from '@resourcepackbuilder/core/project/types';
+import { itemMaterial } from '@resourcepackbuilder/core/nexo/material';
 import { variantPathSuffix, type VariantDef } from '@resourcepackbuilder/core/nexo/variants';
 import { DropZone, IconButton, pickFiles, Tip } from '@resourcepackbuilder/ui';
 import { Alert, AlertDescription } from '@resourcepackbuilder/ui/components/alert';
@@ -10,8 +11,8 @@ import { Button } from '@resourcepackbuilder/ui/components/button';
 import { removeVariant, setVariantModels, updateItem } from '../../../commands/items';
 import { moveInArray, removeAt, replaceAt } from '../../../components/editor';
 import { EditorCard } from '../EditorCard';
-import { itemMaterial } from '../itemMaterial';
-import { MODEL_ACCEPT, useModelImport } from './useModelImport';
+import { MODEL_ACCEPT } from './modelFiles';
+import { useModelImport } from './useModelImport';
 import { VariantModelRow } from './VariantModelRow';
 
 /** Where the variant ends up: a Pack option, an own ItemModel or the custom block's stack stages. */

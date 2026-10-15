@@ -2,10 +2,11 @@
 import { useId } from 'react';
 import { useTranslations } from 'next-intl';
 import { MATERIALS } from '@resourcepackbuilder/core/nexo/options';
+import { DEFAULT_MATERIAL, normalizeTypedMaterial } from '@resourcepackbuilder/core/nexo/material';
+import { normalizeTypedId } from '@resourcepackbuilder/core/minecraft/resourceLocation';
 import { Field, FieldError, FieldLabel } from '@resourcepackbuilder/ui/components/field';
 import { Input } from '@resourcepackbuilder/ui/components/input';
 import { TextInput } from '../../components/editor';
-import { DEFAULT_MATERIAL, typedItemId, typedMaterial } from '../item/itemMaterial';
 import type { ItemMeta, MetaPatch } from './newItemState';
 import type { IdError } from './useNewItems';
 
@@ -38,7 +39,7 @@ export function ItemMetaFields({ meta, idError, onChange }: ItemMetaFieldsProps)
           className="font-mono"
           aria-invalid={idError !== null}
           value={meta.nexoId}
-          onChange={(e) => onChange({ nexoId: typedItemId(e.target.value) })}
+          onChange={(e) => onChange({ nexoId: normalizeTypedId(e.target.value) })}
         />
         {idError && <FieldError>{t(idError)}</FieldError>}
       </Field>
@@ -50,7 +51,7 @@ export function ItemMetaFields({ meta, idError, onChange }: ItemMetaFieldsProps)
           placeholder={DEFAULT_MATERIAL}
           suggestions={MATERIALS}
           mono
-          onChange={(value) => onChange({ material: typedMaterial(value ?? '') })}
+          onChange={(value) => onChange({ material: normalizeTypedMaterial(value ?? '') })}
         />
       </Field>
     </div>

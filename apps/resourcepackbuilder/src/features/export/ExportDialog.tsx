@@ -7,6 +7,7 @@ import type { Project } from '@resourcepackbuilder/core/project/types';
 import {
   planMultiExport,
   SELECT_ALL,
+  selectNothing,
   type ExportEntry,
   type ExportSelection,
   type MultiExportPlan,
@@ -48,16 +49,6 @@ function exportEntries(
     .map((c) => (c.isOpen ? openProject : c.project))
     .filter((p): p is Project => p !== null)
     .map((p) => ({ project: p, selection: selections[p.id] }));
-}
-
-/** A selection that leaves out everything of `project`. */
-function selectNothing(project: Project): ExportSelection {
-  return {
-    excludedItemIds: Object.keys(project.items),
-    excludedGlyphIds: project.glyphs.map((g) => g.id),
-    excludedSoundIds: project.sounds.map((s) => s.id),
-    excludedPaintingIds: project.paintings.map((p) => p.id),
-  };
 }
 
 function isNothingExported({ plan, project }: MultiExportPlan['projects'][number]): boolean {

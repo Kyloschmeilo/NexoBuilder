@@ -1,15 +1,12 @@
 import { useMemo } from 'react';
 import { useTranslations } from 'next-intl';
 import type { Project } from '@resourcepackbuilder/core/project/types';
-import { INGREDIENT_SOURCES, type IngredientSource, type RecipeIngredient } from '@resourcepackbuilder/core/nexo/recipes/model';
+import { INGREDIENT_SOURCES, MAX_INGREDIENT_AMOUNT, type IngredientSource, type RecipeIngredient } from '@resourcepackbuilder/core/nexo/recipes/model';
 import { CRAFTING_MATERIALS, ITEM_TAGS } from '@resourcepackbuilder/core/nexo/options';
 import { itemLabel } from '@resourcepackbuilder/core/project/labels';
 import { NativeSelect, NativeSelectOption } from '@resourcepackbuilder/ui/components/native-select';
 import { NumberInput, TextInput, type LiteralChoice } from '../../../components/editor';
 import { useOpenProject } from '../../../store/project';
-
-/** Highest amount per slot Nexo accepts for an ingredient. */
-const MAX_INGREDIENT_AMOUNT = 64;
 
 /** The project's items as suggestions for a Nexo ingredient: their item id, shown with their name. */
 function itemChoices(project: Project): LiteralChoice[] {

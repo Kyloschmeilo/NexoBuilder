@@ -3,7 +3,8 @@ import { isPngDataUrl, readPngInfoFromDataUrl } from '../../binary/png';
 import type { Issue } from '../../issues';
 import { fileBaseName } from '../../text';
 import { roundNumber } from '../geometry';
-import { findPngByName, type DroppedFile } from '../textures';
+import { findPngByName } from '../textures';
+import type { ImportFile } from '../types';
 import { positiveNumber, type BBFace, type BBTexture, type UvSize } from './types';
 
 export interface TextureEntry {
@@ -17,7 +18,7 @@ export interface TextureEntry {
 }
 
 /** Finds the PNG of every texture (embedded or among the dropped files) and assigns unique keys. */
-export function readTextureEntries(textures: BBTexture[], extraFiles: DroppedFile[], issues: Issue[]): TextureEntry[] {
+export function readTextureEntries(textures: BBTexture[], extraFiles: ImportFile[], issues: Issue[]): TextureEntry[] {
   const keys = textureKeys(textures);
   return textures.map((tex, index) => {
     const displayName = tex.name || fileBaseName(tex.path ?? tex.relative_path ?? '') || `texture_${index}`;

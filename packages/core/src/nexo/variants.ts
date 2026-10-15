@@ -3,6 +3,7 @@
  * drawing a bow, loaded crossbow, shield blocking, fishing rod cast, damage, dyed …
  * The keys match the Pack options from the Nexo docs (configuration/items/item-appearance).
  */
+import { normalizeTypedId } from '../minecraft/resourceLocation';
 import { keySegment } from './messageKey';
 
 /** Variants that Nexo itself builds into the ItemModel via Pack.<slot> */
@@ -24,6 +25,11 @@ export type ConnectSlot = `connect_${(typeof CONNECT_STATES)[number]}`;
 export type PlacementSlot = `placement_${(typeof PLACEMENTS)[number]}`;
 /** Model of a furniture state: "state:<name>" */
 export type StateSlot = `state:${string}`;
+
+/** Keys of Mechanics.furniture.states that are settings, not states. */
+export const RESERVED_STATE_KEYS: readonly string[] = ['next_after', 'reset_after', 'condition'];
+/** Characters a furniture state name may use. */
+export const STATE_NAME_PATTERN = /^[A-Za-z0-9_-]+$/;
 
 export type VariantSlot = PackVariantSlot | 'gui_model' | ConnectSlot | PlacementSlot | 'light_on' | 'stack_models' | StateSlot;
 
@@ -117,7 +123,7 @@ export function stateDef(name: string): VariantDef {
     description: 'variants.state.description',
     params: { name },
     multiple: false,
-    suffix: `state_${name.toLowerCase().replace(/[^a-z0-9_]/g, '_') || 'state'}`,
+    suffix: `state_${normalizeTypedId(name) || 'state'}`,
   };
 }
 

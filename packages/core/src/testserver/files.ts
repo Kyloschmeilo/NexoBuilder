@@ -86,3 +86,8 @@ function sameSetting(actual: unknown, wanted: unknown): boolean {
 export function nexoGiveCommand(nexoId: string, amount: number, player: string): string {
   return `nexo give ${nexoId} ${Math.max(1, Math.floor(amount))} ${player}`;
 }
+
+/** "nexo pack <player>": sends the resource pack to the player again. */
+export function nexoPackCommand(player: string): string {
+  return `nexo pack ${player}`;
+}

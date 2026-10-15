@@ -9,6 +9,7 @@ import {
   TOOL_TYPES,
   TRACKING_ROTATIONS,
 } from '../options';
+import { RESERVED_STATE_KEYS } from '../variants';
 import { field, whenType } from './build';
 
 /** Sound key with suggestions; all sound fields share one placeholder. */
@@ -155,7 +156,7 @@ export const furnitureStatesField = () =>
           reset_after: field.text({ format: 'duration' }),
           conditions: field.stringList({ placeholder: true }),
         }),
-        { name: 'States', keyPlaceholder: true, reservedKeys: ['next_after', 'reset_after', 'condition'], newValue: () => ({}) },
+        { name: 'States', keyPlaceholder: true, reservedKeys: [...RESERVED_STATE_KEYS], newValue: () => ({}) },
       ),
     },
     { scope: 'shared.furnitureStates', help: true },

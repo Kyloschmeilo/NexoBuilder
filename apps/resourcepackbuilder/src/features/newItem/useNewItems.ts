@@ -4,10 +4,10 @@ import type { ImportDraft } from '@resourcepackbuilder/core/model/drafts';
 import type { NewItemInput } from '@resourcepackbuilder/core/project/factory';
 import { validateItemId } from '@resourcepackbuilder/core/project/ids';
 import type { Project } from '@resourcepackbuilder/core/project/types';
-import { readLoadedFiles } from '@resourcepackbuilder/ui';
+import { DEFAULT_MATERIAL } from '@resourcepackbuilder/core/nexo/material';
 import { useErrorMessage } from '../../i18n/errors';
 import { toast } from '../../store/notifications';
-import { DEFAULT_MATERIAL } from '../item/itemMaterial';
+import { readImportFiles } from '../item/model/modelFiles';
 import { initialNewItemState, newItemReducer, sourceKey, type ItemMeta } from './newItemState';
 
 /** Why an entered ID cannot be used (message keys in `dialogs.newItem`). */
@@ -49,7 +49,7 @@ export function useNewItems(project: Project, initialFiles: File[] | undefined) 
   const [state, dispatch] = useReducer(newItemReducer, Boolean(initialFiles?.length), initialNewItemState);
 
   const read = (files: File[]) =>
-    readLoadedFiles(files).then(
+    readImportFiles(files).then(
       (loaded) => dispatch({ type: 'filesRead', files: loaded }),
       (err: unknown) => {
         dispatch({ type: 'readFailed' });

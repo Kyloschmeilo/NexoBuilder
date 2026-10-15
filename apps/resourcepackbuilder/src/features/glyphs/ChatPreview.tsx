@@ -1,10 +1,8 @@
 import { useTranslations } from 'next-intl';
-import type { Glyph, GlyphFile } from '@resourcepackbuilder/core/nexo/glyphs/model';
+import { DEFAULT_FONT_ASCENT, type Glyph, type GlyphFile } from '@resourcepackbuilder/core/nexo/glyphs/model';
 
 /** Screen pixels per Minecraft pixel in the preview. */
 const PREVIEW_SCALE = 2;
-/** Ascent of Minecraft's default font; a glyph with another ascent sits higher or lower than the text. */
-const DEFAULT_FONT_ASCENT = 7;
 /** Glyphs taller than this (screen pixels) are GUI images rather than characters; they get no chat preview. */
 const MAX_PREVIEW_HEIGHT = 120;
 

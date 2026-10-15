@@ -1,10 +1,11 @@
-import { useState, type DragEvent, type ReactNode } from 'react';
+import { useState, type ComponentProps, type DragEvent, type ReactNode } from 'react';
 import { Upload } from 'lucide-react';
 import { cn } from 'cn';
 import { Badge } from './components/badge';
 import { filesFromDataTransfer, pickFiles } from './files';
 
-interface DropZoneProps {
+/** Other props (data attributes, aria) go to the zone element. */
+interface DropZoneProps extends Omit<ComponentProps<'div'>, 'title' | 'children' | 'role' | 'tabIndex' | 'onClick' | 'onKeyDown' | 'onDragOver' | 'onDragLeave' | 'onDrop'> {
   onFiles: (files: File[]) => void;
   /** File types offered by the picker (input `accept` syntax). */
   accept: string;
@@ -22,7 +23,7 @@ const carriesFiles = (e: DragEvent) => e.dataTransfer.types.includes('Files');
  * Area that accepts dropped files (including folders) and opens the file picker on click. A handled drop
  * calls `preventDefault()`, so window-level drop handlers can skip events with `defaultPrevented`.
  */
-export function DropZone({ onFiles, accept, title, subtitle, formats, multiple = true, compact }: DropZoneProps) {
+export function DropZone({ onFiles, accept, title, subtitle, formats, multiple = true, compact, className, ...props }: DropZoneProps) {
   const [dragging, setDragging] = useState(false);
   const pick = async () => {
     const files = await pickFiles(accept, multiple);
@@ -30,11 +31,13 @@ export function DropZone({ onFiles, accept, title, subtitle, formats, multiple =
   };
   return (
     <div
+      {...props}
       className={cn(
         'flex cursor-pointer flex-col items-center rounded-lg border border-dashed border-input text-center text-muted-foreground transition-colors outline-none',
         'hover:border-primary hover:bg-accent hover:text-foreground focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/50',
         dragging && 'border-primary bg-accent text-foreground',
         compact ? 'px-3.5 py-4' : 'px-5 py-8',
+        className,
       )}
       role="button"
       tabIndex={0}

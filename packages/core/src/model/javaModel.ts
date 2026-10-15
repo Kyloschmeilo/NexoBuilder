@@ -13,8 +13,8 @@ import { deepClone, isPlainObject } from '../object';
 import { fileBaseName } from '../text';
 import { texturePlaceholder } from './common';
 import { FACE_NAMES, isOutOfBounds } from './geometry';
-import { createTexture, findMcmetaFor, normalizeTextureName, type DroppedFile } from './textures';
-import type { ImportedModel, JavaModelElement, JavaModelJson, ModelTexture } from './types';
+import { createTexture, findMcmetaFor, normalizeTextureName } from './textures';
+import type { ImportedModel, ImportFile, JavaModelElement, JavaModelJson, ModelTexture } from './types';
 
 interface ParsedJson {
   name: string;
@@ -39,7 +39,7 @@ export function isVanillaReference(ref: string): boolean {
   return !ref.includes(':') || ref.startsWith('minecraft:');
 }
 
-export function convertJavaModel(files: DroppedFile[]): ImportedModel {
+export function convertJavaModel(files: ImportFile[]): ImportedModel {
   const jsonFiles = files.filter((f) => /\.json$/i.test(f.name) && typeof f.text === 'string');
   if (jsonFiles.length === 0) throw new CoreError('model.noJsonFile');
 
@@ -74,11 +74,11 @@ export function convertJavaModel(files: DroppedFile[]): ImportedModel {
 
   const textures: ModelTexture[] = [];
   const texturesJson: Record<string, string> = {};
-  const usedPngs = new Set<DroppedFile>();
+  const usedPngs = new Set<ImportFile>();
   const byReference = new Map<string, string>(); // reference → texture ID
   const unresolved = new Map<string, string[]>(); // reference → texture keys
 
-  const addTexture = (png: DroppedFile, ref: string): string => {
+  const addTexture = (png: ImportFile, ref: string): string => {
     const id = `t${textures.length}`;
     textures.push(createTexture(id, fileBaseName(png.name), png.dataUrl!, findMcmetaFor(files, png.name)));
     usedPngs.add(png);
@@ -205,7 +205,7 @@ function withoutKeys<T>(source: Record<string, T>, existing: Record<string, T> |
 }
 
 /** Matches a texture reference ("ns:item/foo") to a dropped PNG. */
-function matchPng(pngs: DroppedFile[], ref: string, used: Set<DroppedFile>): DroppedFile | undefined {
+function matchPng(pngs: ImportFile[], ref: string, used: Set<ImportFile>): ImportFile | undefined {
   const path = ref.includes(':') ? ref.split(':')[1] : ref;
   const base = normalizeTextureName(path.split('/').pop() ?? path);
   const available = pngs.filter((p) => !used.has(p));

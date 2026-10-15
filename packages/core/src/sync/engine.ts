@@ -31,7 +31,8 @@ import {
 } from './format';
 import { applyRemoteEntities, projectFromEnvelopes } from './merge';
 
-export interface SyncFileInfo {
+/** A file inside a shared folder (the same shape as the desktop API's `ShareFileInfo`; core stays independent of it). */
+export interface ShareFileInfo {
   /** Path relative to the shared folder, separated by "/" */
   path: string;
   mtimeMs: number;
@@ -39,10 +40,10 @@ export interface SyncFileInfo {
 }
 
 export interface SyncFs {
-  list(): Promise<SyncFileInfo[]>;
+  list(): Promise<ShareFileInfo[]>;
   /** null if the file does not exist (at the moment) */
   read(path: string): Promise<string | null>;
-  write(path: string, content: string): Promise<SyncFileInfo>;
+  write(path: string, content: string): Promise<ShareFileInfo>;
 }
 
 export interface EntityVersion {

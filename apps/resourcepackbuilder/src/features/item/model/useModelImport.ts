@@ -2,12 +2,9 @@
 import { useTranslations } from 'next-intl';
 import { createDrafts } from '@resourcepackbuilder/core/model/drafts';
 import type { ImportedModel } from '@resourcepackbuilder/core/model/types';
-import { readLoadedFiles } from '@resourcepackbuilder/ui';
 import { useErrorMessage } from '../../../i18n/errors';
 import { toast } from '../../../store/notifications';
-
-/** Files a model can be imported from. */
-export const MODEL_ACCEPT = '.bbmodel,.json,.png,.mcmeta';
+import { readImportFiles } from './modelFiles';
 
 export function useModelImport() {
   const t = useTranslations('item');
@@ -16,7 +13,7 @@ export function useModelImport() {
   return {
     /** All files together form one model (e.g. JSON + its textures); further models are ignored with a warning. */
     async importModel(files: File[]): Promise<ImportedModel | null> {
-      const drafts = createDrafts(await readLoadedFiles(files), 'combined');
+      const drafts = createDrafts(await readImportFiles(files), 'combined');
       const [draft] = drafts;
       if (!draft) {
         toast('error', t('model.noMatchingFile'));
@@ -33,7 +30,7 @@ export function useModelImport() {
     /** Each file (or each .bbmodel) becomes its own model, in natural file-name order. */
     async importModels(files: File[]): Promise<ImportedModel[]> {
       const sorted = [...files].sort((a, b) => a.name.localeCompare(b.name, undefined, { numeric: true }));
-      const drafts = createDrafts(await readLoadedFiles(sorted), 'separate');
+      const drafts = createDrafts(await readImportFiles(sorted), 'separate');
       if (drafts.length === 0) toast('error', t('model.noMatchingFile'));
       const models: ImportedModel[] = [];
       for (const draft of drafts) {

@@ -4,6 +4,11 @@
  * the folder name is the type in lowercase (shaped, shapeless, furnace, …).
  */
 
+/** Highest amount per slot Nexo accepts for an ingredient. */
+export const MAX_INGREDIENT_AMOUNT = 64;
+/** Highest number of items a recipe can produce. */
+export const MAX_RESULT_AMOUNT = 99;
+
 export type RecipeType = 'shaped' | 'shapeless' | 'furnace' | 'blasting' | 'smoking' | 'campfire' | 'stonecutting';
 
 export type IngredientSource = 'minecraft' | 'nexo' | 'tag';

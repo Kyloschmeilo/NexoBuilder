@@ -1,6 +1,7 @@
 /** Creates new projects, folders and items with sensible defaults. */
 import { DEFAULT_MC_VERSION } from '../minecraft/versions';
 import type { ImportedModel } from '../model/types';
+import { DEFAULT_MATERIAL } from '../nexo/material';
 import { slugify } from '../text';
 import { uid } from './ids';
 import type { Folder, Item, Project, ProjectSettings } from './types';
@@ -62,7 +63,7 @@ export function createItem(input: NewItemInput): Item {
     displayName: input.displayName,
     folderId: input.folderId,
     model: input.model,
-    config: { material: input.material ?? 'PAPER' },
+    config: { material: input.material ?? DEFAULT_MATERIAL },
     rawYaml: '',
     assets: {},
     recipes: [],

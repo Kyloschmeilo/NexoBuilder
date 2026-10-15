@@ -3,7 +3,15 @@ import { useTranslations } from 'next-intl';
 import { Plus } from 'lucide-react';
 import type { Item } from '@resourcepackbuilder/core/project/types';
 import { getPath } from '@resourcepackbuilder/core/nexo/configPath';
-import { CONNECT_SLOTS, FURNITURE_MODEL_SLOTS, PLACEMENT_SLOTS, stateDef, type VariantSlot } from '@resourcepackbuilder/core/nexo/variants';
+import {
+  CONNECT_SLOTS,
+  FURNITURE_MODEL_SLOTS,
+  PLACEMENT_SLOTS,
+  RESERVED_STATE_KEYS,
+  STATE_NAME_PATTERN,
+  stateDef,
+  type VariantSlot,
+} from '@resourcepackbuilder/core/nexo/variants';
 import { isPlainObject } from '@resourcepackbuilder/core/object';
 import { Button } from '@resourcepackbuilder/ui/components/button';
 import { Card, CardContent } from '@resourcepackbuilder/ui/components/card';
@@ -11,10 +19,6 @@ import { addFurnitureState } from '../../../commands/items';
 import { prompt } from '../../../store/dialogs';
 import { EditorSection } from '../EditorSection';
 import { ModelSlot } from './ModelSlot';
-
-/** Keys of Mechanics.furniture.states that are settings, not states. */
-const RESERVED_STATE_KEYS = new Set(['next_after', 'reset_after', 'condition']);
-const STATE_NAME_PATTERN = /^[A-Za-z0-9_-]+$/;
 
 const CONNECT_DEFS = FURNITURE_MODEL_SLOTS.filter((def) => CONNECT_SLOTS.some((c) => c.slot === def.slot));
 const PLACEMENT_DEFS = FURNITURE_MODEL_SLOTS.filter((def) => PLACEMENT_SLOTS.some((p) => p.slot === def.slot));
@@ -39,7 +43,7 @@ export function FurnitureModelsSection({ item }: { item: Item }) {
   const tCommon = useTranslations('common');
   const furniture = getPath(item.config, ['Mechanics', 'furniture']);
   if (!isPlainObject(furniture)) return null;
-  const states = isPlainObject(furniture.states) ? Object.keys(furniture.states).filter((key) => !RESERVED_STATE_KEYS.has(key)) : [];
+  const states = isPlainObject(furniture.states) ? Object.keys(furniture.states).filter((key) => !RESERVED_STATE_KEYS.includes(key)) : [];
 
   const addState = async () => {
     const name = await prompt({
@@ -51,7 +55,7 @@ export function FurnitureModelsSection({ item }: { item: Item }) {
         const trimmed = value.trim();
         if (!trimmed) return t('slots.nameRequired');
         if (!STATE_NAME_PATTERN.test(trimmed)) return t('slots.nameInvalid');
-        if (RESERVED_STATE_KEYS.has(trimmed) || states.includes(trimmed)) return t('slots.nameTaken');
+        if (RESERVED_STATE_KEYS.includes(trimmed) || states.includes(trimmed)) return t('slots.nameTaken');
         return null;
       },
     });

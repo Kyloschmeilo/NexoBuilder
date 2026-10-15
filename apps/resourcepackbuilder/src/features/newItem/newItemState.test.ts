@@ -1,9 +1,9 @@
 import { describe, expect, it } from 'vitest';
-import type { DroppedFile } from '@resourcepackbuilder/core/model/textures';
+import type { ImportFile } from '@resourcepackbuilder/core/model/types';
 import { initialNewItemState, newItemReducer, sourceKey, type NewItemAction, type NewItemState } from './newItemState';
 
 const PIXEL = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNkYPhfDwAChwGA60e6kgAAAABJRU5ErkJggg==';
-const png = (name: string): DroppedFile => ({ name, dataUrl: PIXEL });
+const png = (name: string): ImportFile => ({ name, dataUrl: PIXEL });
 
 function run(...actions: NewItemAction[]): NewItemState {
   return actions.reduce(newItemReducer, initialNewItemState(false));

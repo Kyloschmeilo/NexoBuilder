@@ -2,7 +2,7 @@ import { describe, expect, it } from 'vitest';
 import { parse } from 'yaml';
 import { createFolder, createItem, createProject, insertFolder, insertItem } from '../project/factory';
 import { planExport } from '../export/plan';
-import { nexoFolderFiles, nexoGiveCommand, patchNexoSettings } from './files';
+import { nexoFolderFiles, nexoGiveCommand, nexoPackCommand, patchNexoSettings } from './files';
 import { createTextureModel } from '../model/textureModel';
 import { makePngDataUrl } from '../test/png';
 
@@ -105,5 +105,9 @@ describe('Test server: commands', () => {
   it('gives items in the Nexo 1.29 order: give <item> <amount> <player>', () => {
     expect(nexoGiveCommand('purpel_block', 1, 'Kyloschmeilo')).toBe('nexo give purpel_block 1 Kyloschmeilo');
     expect(nexoGiveCommand('ruby', 0, 'Steve')).toBe('nexo give ruby 1 Steve');
+  });
+
+  it('resends the pack to a player', () => {
+    expect(nexoPackCommand('Steve')).toBe('nexo pack Steve');
   });
 });

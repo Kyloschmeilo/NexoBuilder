@@ -6,8 +6,8 @@ import { isPngDataUrl } from '../binary/png';
 import { CoreError, type Issue } from '../issues';
 import { fileBaseName } from '../text';
 import { texturePlaceholder } from './common';
-import { createTexture, findMcmetaFor, type DroppedFile } from './textures';
-import type { ImportedModel, JavaModelJson, ModelTexture } from './types';
+import { createTexture, findMcmetaFor } from './textures';
+import type { ImportedModel, ImportFile, JavaModelJson, ModelTexture } from './types';
 
 export type TextureTemplateId =
   | 'generated'
@@ -126,7 +126,7 @@ export function getTextureTemplate(id: TextureTemplateId): TextureTemplate {
 }
 
 /** Suggests a PNG → texture key assignment based on the file names. */
-export function suggestSlotAssignment(template: TextureTemplate, pngs: DroppedFile[]): Record<string, string> {
+export function suggestSlotAssignment(template: TextureTemplate, pngs: ImportFile[]): Record<string, string> {
   const names = pngs.map((p) => p.name);
   const result: Record<string, string> = {};
   if (template.multiLayer) {
@@ -166,7 +166,7 @@ export function suggestSlotAssignment(template: TextureTemplate, pngs: DroppedFi
 export function createTextureModel(
   templateId: TextureTemplateId,
   assignment: Record<string, string>,
-  files: DroppedFile[],
+  files: ImportFile[],
 ): ImportedModel {
   const template = getTextureTemplate(templateId);
   const pngs = files.filter((f) => isPngDataUrl(f.dataUrl));

@@ -18,7 +18,7 @@ import { closeDialog, type FeatureDialogProps } from '../../store/dialogs';
 import { toast } from '../../store/notifications';
 import { useOpenProject } from '../../store/project';
 import { setEditorTab } from '../../store/ui';
-import { NEW_ITEM_ACCEPT, NEW_ITEM_FORMATS } from './accept';
+import { MODEL_ACCEPT, MODEL_FORMATS } from '../item/model/modelFiles';
 import { DraftCard } from './DraftCard';
 import { ItemMetaFields } from './ItemMetaFields';
 import { ignoredFileNames, sourceKey, type NewItemAction, type NewItemState } from './newItemState';
@@ -98,16 +98,15 @@ export function NewItemDialog({ folderId, files: initialFiles }: FeatureDialogPr
         </Field>
 
         {!state.isWithoutModel && (
-          <div data-testid="new-item-dropzone">
-            <DropZone
-              onFiles={addFiles}
-              accept={NEW_ITEM_ACCEPT}
-              title={hasDrafts ? t('dropTitleMore') : t('dropTitle')}
-              subtitle={hasDrafts ? t('dropSubtitleMore') : t('dropSubtitle')}
-              formats={hasDrafts ? undefined : NEW_ITEM_FORMATS}
-              compact={hasDrafts}
-            />
-          </div>
+          <DropZone
+            data-testid="new-item-dropzone"
+            onFiles={addFiles}
+            accept={MODEL_ACCEPT}
+            title={hasDrafts ? t('dropTitleMore') : t('dropTitle')}
+            subtitle={hasDrafts ? t('dropSubtitleMore') : t('dropSubtitle')}
+            formats={hasDrafts ? undefined : MODEL_FORMATS}
+            compact={hasDrafts}
+          />
         )}
         {isReading && (
           <p className="flex items-center gap-2 text-xs text-muted-foreground">

@@ -1,6 +1,7 @@
 import { useTranslations } from 'next-intl';
 import type { ExportPlan } from '@resourcepackbuilder/core/export/types';
 import { issuesFor } from '@resourcepackbuilder/core/issues';
+import { normalizeTypedId, SOUND_ID_CHARS } from '@resourcepackbuilder/core/minecraft/resourceLocation';
 import { soundKey, type Sound } from '@resourcepackbuilder/core/nexo/sounds/model';
 import { Badge } from '@resourcepackbuilder/ui/components/badge';
 import { Input } from '@resourcepackbuilder/ui/components/input';
@@ -12,7 +13,6 @@ import { IssueList } from '../../components/IssueList';
 import { useOpenProject } from '../../store/project';
 import { MediaCard } from '../media/MediaCard';
 import { NexoKey } from '../media/NexoKey';
-import { SOUND_ID_CHARS, typedId } from '../media/typedId';
 import { JukeboxFields } from './JukeboxFields';
 import { SoundFileList } from './SoundFileList';
 
@@ -37,7 +37,7 @@ export function SoundCard({ sound, plan }: { sound: Sound; plan: ExportPlan | nu
           <Input
             className="font-mono"
             value={sound.soundId}
-            onChange={(e) => update((s) => (s.soundId = typedId(e.target.value, SOUND_ID_CHARS)), 'id')}
+            onChange={(e) => update((s) => (s.soundId = normalizeTypedId(e.target.value, SOUND_ID_CHARS)), 'id')}
           />
         </FormField>
         <FormField label={<NexoKey>Volume</NexoKey>} help={t('volumeHelp')}>

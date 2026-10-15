@@ -91,3 +91,10 @@ export interface ImportedModel {
   /** Minimum Minecraft version the model requires (e.g. because of free rotation) */
   requiresVersion?: string;
 }
+
+/** A file dropped or picked for a model import: PNGs as data URL, text files (.json, .mcmeta, .bbmodel) as text. */
+export interface ImportFile {
+  name: string;
+  dataUrl?: string;
+  text?: string;
+}

@@ -20,8 +20,8 @@ import { buildTextureMcmeta, readTextureEntries } from './bbmodel/textures';
 import { positiveNumber, type BBModel, type BBTexture } from './bbmodel/types';
 import { texturePlaceholder } from './common';
 import { analyseElements } from './javaModel';
-import { createTexture, findMcmetaFor, type DroppedFile } from './textures';
-import type { ImportedModel, JavaModelJson, ModelTexture } from './types';
+import { createTexture, findMcmetaFor } from './textures';
+import type { ImportedModel, ImportFile, JavaModelJson, ModelTexture } from './types';
 
 /** Formats whose origin is in the center (Blockbench: centered_grid). */
 const CENTERED_FORMATS = new Set(['free', 'bedrock', 'bedrock_block', 'bedrock_old', 'modded_entity', 'optifine_entity', 'optifine_part', 'skin']);
@@ -45,7 +45,7 @@ const FORMAT_LABELS: Record<string, string> = {
 /** Blockbench writes shade_direction_override instead of shade:false from this Java version on */
 const SHADE_OVERRIDE_SINCE = '26.3';
 
-export function convertBBModel(text: string, fileName: string, extraFiles: DroppedFile[] = []): ImportedModel {
+export function convertBBModel(text: string, fileName: string, extraFiles: ImportFile[] = []): ImportedModel {
   const model = parseBBModel(text, fileName);
   const issues: Issue[] = [];
   const format = model.meta?.model_format ?? 'java_block';

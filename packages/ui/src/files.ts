@@ -1,14 +1,5 @@
 /** Browser helpers for files: reading, picking, collecting dropped folders and downloading. */
 
-/** A file read for further processing: images as data URL, known text formats as text, anything else by name only. */
-export interface LoadedFile {
-  name: string;
-  dataUrl?: string;
-  text?: string;
-}
-
-const TEXT_EXTENSIONS = /\.(json|bbmodel|mcmeta|ya?ml|txt)$/i;
-
 function readWith(read: (reader: FileReader) => void): Promise<string> {
   return new Promise((resolve, reject) => {
     const reader = new FileReader();
@@ -27,30 +18,19 @@ export function readAsText(file: Blob): Promise<string> {
  * Reads a file as a data URL with the given MIME type. Systems often report no or a generic type
  * (`application/octet-stream`), so the type the caller knows is set explicitly.
  */
-export async function readFileAs(file: Blob, mime: string): Promise<string> {
+export async function readAsDataUrl(file: Blob, mime: string): Promise<string> {
   const dataUrl = await readWith((reader) => reader.readAsDataURL(file));
   return dataUrl.replace(/^data:[^;,]*/, `data:${mime}`);
 }
 
 /** Reads a PNG file as an `image/png` data URL. */
-export function readPngFile(file: Blob): Promise<string> {
-  return readFileAs(file, 'image/png');
+export function readPngAsDataUrl(file: Blob): Promise<string> {
+  return readAsDataUrl(file, 'image/png');
 }
 
 /** The file name without its last extension: `ruby_sword.bbmodel` → `ruby_sword`. */
 export function fileStem(fileName: string): string {
   return fileName.replace(/\.[^.]+$/, '');
-}
-
-/** Reads dropped or picked files: PNGs as data URL, models/metadata/YAML as text, others by name only. */
-export async function readLoadedFiles(files: File[]): Promise<LoadedFile[]> {
-  return Promise.all(
-    files.map(async (file): Promise<LoadedFile> => {
-      if (/\.png$/i.test(file.name) || file.type === 'image/png') return { name: file.name, dataUrl: await readPngFile(file) };
-      if (TEXT_EXTENSIONS.test(file.name)) return { name: file.name, text: await readAsText(file) };
-      return { name: file.name };
-    }),
-  );
 }
 
 /** Collects the files of a drop, descending into dropped folders. */

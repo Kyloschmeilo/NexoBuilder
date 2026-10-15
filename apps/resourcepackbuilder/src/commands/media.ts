@@ -3,6 +3,8 @@ import { createFolder, insertFolder } from '@resourcepackbuilder/core/project/fa
 import { uid, uniqueId } from '@resourcepackbuilder/core/project/ids';
 import type { Item, Project } from '@resourcepackbuilder/core/project/types';
 import { slugify, toIdentifier } from '@resourcepackbuilder/core/text';
+import { ID_CHARS, SOUND_ID_CHARS } from '@resourcepackbuilder/core/minecraft/resourceLocation';
+import { DEFAULT_MATERIAL } from '@resourcepackbuilder/core/nexo/material';
 import { createGlyph, type Glyph, type GlyphFile, type GlyphKind } from '@resourcepackbuilder/core/nexo/glyphs/model';
 import { createPainting, type Painting, type PaintingFile } from '@resourcepackbuilder/core/nexo/paintings/model';
 import { createSound, type JukeboxSong, type Sound, type SoundFile } from '@resourcepackbuilder/core/nexo/sounds/model';
@@ -41,7 +43,7 @@ export function deleteGlyph(glyphId: string): void {
 export function addSound(name: string, files: SoundFile[]): string {
   const id = uid('s_');
   mutate((draft) => {
-    const soundId = uniqueId(toIdentifier(name, 'a-z0-9_.-', 'sound'), new Set(draft.sounds.map((s) => s.soundId)));
+    const soundId = uniqueId(toIdentifier(name, SOUND_ID_CHARS, 'sound'), new Set(draft.sounds.map((s) => s.soundId)));
     draft.sounds.push(createSound(id, soundId, files));
   });
   return id;
@@ -160,8 +162,8 @@ export function addPaintingItem(painting: Painting, namespace: string, folderNam
 
 /** Creates an item that plays this sound as a music disc in the jukebox. */
 export function addMusicDiscItem(sound: Sound, namespace: string, folderName: string): void {
-  const nexoId = `${toIdentifier(sound.soundId, 'a-z0-9_', 'sound')}_disc`;
-  addMediaItem(folderName, { displayName: sound.jukebox?.description || sound.soundId, nexoId, material: 'PAPER' }, (item) => {
+  const nexoId = `${toIdentifier(sound.soundId, ID_CHARS, 'sound')}_disc`;
+  addMediaItem(folderName, { displayName: sound.jukebox?.description || sound.soundId, nexoId, material: DEFAULT_MATERIAL }, (item) => {
     item.config.Components = { max_stack_size: 1, jukebox_playable: { song_key: `${namespace}:${sound.soundId}` } };
   });
 }

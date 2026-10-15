@@ -5,7 +5,7 @@ import { createTextureModel } from '../model/textureModel';
 import { createGlyph } from '../nexo/glyphs/model';
 import { makePngDataUrl } from '../test/png';
 import { planExport } from './plan';
-import { countSelected, planMultiExport, selectFromProject } from './selection';
+import { countSelected, planMultiExport, selectFromProject, selectNothing } from './selection';
 import { INSTALL_GUIDE_FILE } from './installGuide';
 import { buildMultiExportZip, listExportPaths, listMultiExportPaths } from './zip';
 import type { Project } from '../project/types';
@@ -65,6 +65,11 @@ describe('Export selection within a project', () => {
     const p = project('A', 'a', { weapons: ['x'], furniture: [] });
     expect(selectFromProject(p, undefined)).toBe(p);
     expect(selectFromProject(p, { excludedItemIds: [], excludedGlyphIds: [] })).toBe(p);
+  });
+
+  it('selects nothing', () => {
+    const p = project('A', 'a', { weapons: ['x'], furniture: ['chair'] });
+    expect(countSelected(p, selectNothing(p))).toEqual({ items: 0, glyphs: 0, sounds: 0, paintings: 0 });
   });
 });
 

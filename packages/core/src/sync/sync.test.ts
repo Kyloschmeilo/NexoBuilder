@@ -5,7 +5,7 @@ import { createFolder, createItem, createProject, insertFolder, insertItem } fro
 import { createGlyph } from '../nexo/glyphs/model';
 import { createSound } from '../nexo/sounds/model';
 import { createPainting } from '../nexo/paintings/model';
-import { readShareFolder, SyncEngine, ShareFolderError, type SyncFileInfo, type SyncFs, type SyncState } from './engine';
+import { readShareFolder, SyncEngine, ShareFolderError, type ShareFileInfo, type SyncFs, type SyncState } from './engine';
 import { RECOVERY_FOLDER_ID } from './merge';
 import { PROJECT_FILE, README_FILE } from './format';
 
@@ -18,7 +18,7 @@ class MemoryFolder {
     return {
       list: async () => [...this.files].map(([path, f]) => ({ path, mtimeMs: f.mtimeMs, size: f.content.length })),
       read: async (path) => this.files.get(path)?.content ?? null,
-      write: async (path, content): Promise<SyncFileInfo> => {
+      write: async (path, content): Promise<ShareFileInfo> => {
         this.writes++;
         const mtimeMs = ++this.time;
         this.files.set(path, { content, mtimeMs });

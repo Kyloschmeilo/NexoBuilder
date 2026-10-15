@@ -2,7 +2,8 @@ import { ImagePlus, RefreshCw } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 import type { ExportPlan } from '@resourcepackbuilder/core/export/types';
 import { issuesFor } from '@resourcepackbuilder/core/issues';
-import { paintingFrameSize, paintingKey, type Painting } from '@resourcepackbuilder/core/nexo/paintings/model';
+import { normalizeTypedId } from '@resourcepackbuilder/core/minecraft/resourceLocation';
+import { MAX_PAINTING_BLOCKS, paintingFrameSize, paintingKey, type Painting } from '@resourcepackbuilder/core/nexo/paintings/model';
 import { Badge } from '@resourcepackbuilder/ui/components/badge';
 import { Button } from '@resourcepackbuilder/ui/components/button';
 import { Input } from '@resourcepackbuilder/ui/components/input';
@@ -16,20 +17,17 @@ import { toast } from '../../store/notifications';
 import { useOpenProject } from '../../store/project';
 import { MediaCard, PreviewFrame } from '../media/MediaCard';
 import { NexoKey } from '../media/NexoKey';
-import { ID_CHARS, typedId } from '../media/typedId';
 import { PAINTING_ACCEPT } from './paintingFiles';
 import { PaintingPreview } from './PaintingPreview';
 import { usePaintingFileReader } from './usePaintingFileReader';
 
-/** Largest painting side in blocks that Minecraft supports. */
-const MAX_PAINTING_BLOCKS = 16;
 /** Frame time Nexo uses when none is set (ticks per frame). */
 const DEFAULT_FRAMETIME = 2;
 
 export function PaintingCard({ painting, plan }: { painting: Painting; plan: ExportPlan | null }) {
   const t = useTranslations('media.paintings');
   const tShared = useTranslations('media.shared');
-  const tState = useTranslations('state');
+  const tApp = useTranslations('app');
   const project = useOpenProject();
   const readFiles = usePaintingFileReader();
   const update = (recipe: (draft: Painting) => void, historyKey?: string) => updatePainting(painting.id, recipe, historyKey);
@@ -42,7 +40,7 @@ export function PaintingCard({ painting, plan }: { painting: Painting; plan: Exp
     if (entry) update((p) => (p.file = entry.file));
   };
   const createItem = () => {
-    addPaintingItem(painting, project.namespace, tState('defaults.paintingsFolder'));
+    addPaintingItem(painting, project.namespace, tApp('defaults.paintingsFolder'));
     toast('success', t('itemCreated'));
   };
 
@@ -81,7 +79,7 @@ export function PaintingCard({ painting, plan }: { painting: Painting; plan: Exp
           <Input
             className="font-mono"
             value={painting.paintingId}
-            onChange={(e) => update((p) => (p.paintingId = typedId(e.target.value, ID_CHARS)), 'id')}
+            onChange={(e) => update((p) => (p.paintingId = normalizeTypedId(e.target.value)), 'id')}
           />
         </FormField>
         <FormField label={<NexoKey>Title</NexoKey>} help={t('titleHelp')}>
