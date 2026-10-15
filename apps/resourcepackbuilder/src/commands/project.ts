@@ -86,7 +86,7 @@ interface OpenSharedProjectOptions {
 }
 
 /**
- * Opens a shared project from a folder the user picks (OneDrive, Google Drive, Dropbox �) and connects it.
+ * Opens a shared project from a folder the user picks (OneDrive, Google Drive, Dropbox …) and connects it.
  * The folder's content is untrusted: it never replaces another stored project without asking.
  * Resolves with the project, or null when cancelled.
  */

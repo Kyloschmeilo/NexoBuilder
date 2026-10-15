@@ -23,6 +23,9 @@ const TOAST_STYLES: Record<ToastKind, { icon: typeof Info; className: string; bo
   error: { icon: OctagonX, className: 'text-destructive', border: 'border-destructive/60' },
 };
 
+/** Most toasts shown at once; older ones make room. */
+const MAX_VISIBLE_TOASTS = 5;
+
 /** How long a toast stays; errors stay longer. */
 const TIMEOUT_MS: Record<ToastKind, number> = { info: 4000, success: 4000, warning: 4000, error: 7000 };
 
@@ -69,7 +72,7 @@ export function Toasts() {
   }, [manager]);
 
   return (
-    <ToastProvider toastManager={manager} limit={5}>
+    <ToastProvider toastManager={manager} limit={MAX_VISIBLE_TOASTS}>
       <ToastPortal>
         <ToastViewport>
           <ToastList />

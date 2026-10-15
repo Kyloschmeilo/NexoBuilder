@@ -1,4 +1,4 @@
-import { useRef, useState } from 'react';
+import { useId, useRef, useState } from 'react';
 import { useTranslations } from 'next-intl';
 import { Button } from '@resourcepackbuilder/ui/components/button';
 import { Field, FieldError, FieldLabel } from '@resourcepackbuilder/ui/components/field';
@@ -10,10 +10,11 @@ import type { Question } from '../store/dialogs';
 export function PromptDialog({ question: { options, resolve } }: { question: Extract<Question, { kind: 'prompt' }> }) {
   const t = useTranslations('dialogs');
   const tCommon = useTranslations('common');
+  const inputId = useId();
   const inputRef = useRef<HTMLInputElement>(null);
   const [value, setValue] = useState(options.initial);
   const error = value.trim() ? (options.validate?.(value) ?? null) : t('prompt.nameRequired');
-  const invalid = !!error && !!value;
+  const isInvalid = !!error && !!value;
   const cancel = () => resolve(null);
   const submit = () => {
     if (!error) resolve(value.trim());
@@ -41,17 +42,17 @@ export function PromptDialog({ question: { options, resolve } }: { question: Ext
           submit();
         }}
       >
-        <Field data-invalid={invalid}>
-          <FieldLabel htmlFor="prompt-dialog-input">{options.label}</FieldLabel>
+        <Field data-invalid={isInvalid}>
+          <FieldLabel htmlFor={inputId}>{options.label}</FieldLabel>
           <Input
             ref={inputRef}
-            id="prompt-dialog-input"
-            aria-invalid={invalid}
+            id={inputId}
+            aria-invalid={isInvalid}
             value={value}
             onChange={(e) => setValue(e.target.value)}
             onFocus={(e) => e.target.select()}
           />
-          {invalid && <FieldError>{error}</FieldError>}
+          {isInvalid && <FieldError>{error}</FieldError>}
         </Field>
       </form>
     </DialogFrame>
