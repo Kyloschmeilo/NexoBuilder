@@ -12,7 +12,7 @@ export interface MediaFileEntry<T> {
  * A reader for dropped or picked media files: `read` turns a file into the stored form, or `null` when the
  * file is not supported; such files are reported with `rejectMessage(fileName)`.
  */
-export function mediaFileReader<T>(
+export function createMediaFileReader<T>(
   read: (file: File) => Promise<T | null>,
   rejectMessage: (fileName: string) => string,
 ): (files: File[]) => Promise<MediaFileEntry<T>[]> {

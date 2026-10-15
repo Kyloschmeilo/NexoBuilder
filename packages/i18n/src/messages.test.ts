@@ -1,16 +1,16 @@
 import { describe, expect, expectTypeOf, it } from 'vitest';
-import { messagesByLocale, type MessageKey, type SchemaKey } from './messages';
+import { MESSAGES_BY_LOCALE, type MessageKey, type SchemaKey } from './messages';
 import { messageParityErrors } from './parity';
 
 describe('the message catalogue', () => {
   it('is in parity between English and German', () => {
-    expect(messageParityErrors(messagesByLocale.en, messagesByLocale.de)).toEqual([]);
+    expect(messageParityErrors(MESSAGES_BY_LOCALE.en, MESSAGES_BY_LOCALE.de)).toEqual([]);
   });
 
   it('names every language by its native name in each catalogue', () => {
     const expectedNames = { en: 'English', de: 'Deutsch' };
-    expect(messagesByLocale.en.common.languageNames).toEqual(expectedNames);
-    expect(messagesByLocale.de.common.languageNames).toEqual(expectedNames);
+    expect(MESSAGES_BY_LOCALE.en.common.languageNames).toEqual(expectedNames);
+    expect(MESSAGES_BY_LOCALE.de.common.languageNames).toEqual(expectedNames);
   });
 
   it('types message keys as dotted leaf paths', () => {

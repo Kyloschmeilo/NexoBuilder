@@ -1,2 +1,2 @@
 export { ModelPreview, type ModelPreviewProps } from './ModelPreview';
-export { useThumbnail } from './thumbnail';
+export { useThumbnail } from './useThumbnail';

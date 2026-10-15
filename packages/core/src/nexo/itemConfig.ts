@@ -64,8 +64,8 @@ export interface BuildResult {
   rawYamlError: RawYamlError | null;
 }
 
-export function buildItemConfig(ctx: BuildContext): BuildResult {
-  const { item, project, modelKey } = ctx;
+export function buildItemConfig(context: BuildContext): BuildResult {
+  const { item, project, modelKey } = context;
   const source = deepClone(item.config);
 
   // 1. Clean up properties according to the schema
@@ -97,7 +97,7 @@ export function buildItemConfig(ctx: BuildContext): BuildResult {
   delete resolved.itemname;
 
   if (modelKey) {
-    const variants = Object.fromEntries(Object.entries(ctx.variantKeys ?? {}).filter(([, v]) => v !== undefined && v.length > 0));
+    const variants = Object.fromEntries(Object.entries(context.variantKeys ?? {}).filter(([, v]) => v !== undefined && v.length > 0));
     const pack: Record<string, unknown> = { model: modelKey, ...variants, ...section(resolved, 'Pack') };
     resolved.Pack = pack;
     const components = section(resolved, 'Components');
@@ -105,29 +105,29 @@ export function buildItemConfig(ctx: BuildContext): BuildResult {
       resolved.Components = { item_model: `nexo:${item.nexoId}`, ...components };
     }
   }
-  if (ctx.itemModel) {
-    resolved.Components = { ...section(resolved, 'Components'), item_model: ctx.itemModel };
+  if (context.itemModel) {
+    resolved.Components = { ...section(resolved, 'Components'), item_model: context.itemModel };
   }
-  for (const extra of ctx.extraConfig ?? []) {
+  for (const extra of context.extraConfig ?? []) {
     if (extra.ifMissing && getPath(resolved as ConfigObject, extra.path) !== undefined) continue;
     setPath(resolved as ConfigObject, extra.path, deepClone(extra.value) as ConfigValue);
   }
-  if (ctx.armorAssetId) {
+  if (context.armorAssetId) {
     const components = section(resolved, 'Components');
     const equippable = section(components, 'equippable');
-    const slot = equippable.slot ?? slotForMaterial(material) ?? ctx.armor?.slot ?? 'HEAD';
-    const entities = ctx.armor?.entities ?? [];
+    const slot = equippable.slot ?? slotForMaterial(material) ?? context.armor?.slot ?? 'HEAD';
+    const entities = context.armor?.entities ?? [];
     const withEntities =
       (slot === 'BODY' || slot === 'SADDLE') && entities.length > 0 && equippable.allowed_entity_types === undefined
         ? { allowed_entity_types: entities }
         : {};
     // Elytra wings without material ELYTRA need the glider component, otherwise you cannot fly
-    const needsGlider = ctx.armor?.glider && material.toUpperCase() !== 'ELYTRA' && components.glider === undefined;
+    const needsGlider = context.armor?.glider && material.toUpperCase() !== 'ELYTRA' && components.glider === undefined;
     resolved.Components = {
       ...components,
       equippable: {
         slot,
-        asset_id: equippable.asset_id ?? ctx.armorAssetId,
+        asset_id: equippable.asset_id ?? context.armorAssetId,
         ...withEntities,
         ...equippable,
       },

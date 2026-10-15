@@ -95,12 +95,12 @@ export function useThumbnail(model: ImportedModel | null): string | null {
   const [rendered, setRendered] = useState<{ model: ImportedModel; url: string | null } | null>(null);
   useEffect(() => {
     if (!model || cache.has(model)) return;
-    let active = true;
+    let isCurrent = true;
     void renderThumbnail(model).then((url) => {
-      if (active) setRendered({ model, url });
+      if (isCurrent) setRendered({ model, url });
     });
     return () => {
-      active = false;
+      isCurrent = false;
     };
   }, [model]);
   if (!model) return null;

@@ -67,7 +67,7 @@ function planItem(project: Project, item: Item, writer: PackWriter, issues: Issu
   const target = itemTarget(item);
   const frame = itemFrame(item);
   const reportIn = (issue: Issue, context: IssueContext[] = []) => issues.push(inContext(issue, [frame, ...context], target));
-  const ctx: ItemExport = {
+  const itemExport: ItemExport = {
     project,
     item,
     writer,
@@ -79,11 +79,11 @@ function planItem(project: Project, item: Item, writer: PackWriter, issues: Issu
       writeModel(writer, project, model, modelPath, (issue) => reportIn(issue, modelFrame ? [modelFrame] : [])),
   };
 
-  const main = item.model ? ctx.writeModel(item.model, ctx.modelPath, null) : null;
-  if (!main) ctx.report('info', 'plan.missingModel');
-  const variantKeys = writeVariants(ctx, main !== null);
+  const main = item.model ? itemExport.writeModel(item.model, itemExport.modelPath, null) : null;
+  if (!main) itemExport.report('info', 'plan.missingModel');
+  const variantKeys = writeVariants(itemExport, main !== null);
   const packSlots = VARIANTS.filter((def) => variantKeys[def.slot] !== undefined).map((def) => def.slot);
-  const itemModels = writeItemModels(ctx, main?.key ?? null, packSlots);
+  const itemModels = writeItemModels(itemExport, main?.key ?? null, packSlots);
 
   const built = buildItemConfig({
     project,
@@ -95,9 +95,9 @@ function planItem(project: Project, item: Item, writer: PackWriter, issues: Issu
     itemModel: itemModels.itemModel,
     extraConfig: itemModels.config,
   });
-  if (built.rawYamlError?.kind === 'syntax') ctx.report('error', 'plan.rawYamlError', { error: built.rawYamlError.message });
-  else if (built.rawYamlError) ctx.report('error', 'plan.rawYamlNotMapping');
-  validateItemConfig(ctx, { config: built.config, usedVariations: shared.usedVariations, armorSlot: shared.armor?.slot ?? null });
+  if (built.rawYamlError?.kind === 'syntax') itemExport.report('error', 'plan.rawYamlError', { error: built.rawYamlError.message });
+  else if (built.rawYamlError) itemExport.report('error', 'plan.rawYamlNotMapping');
+  validateItemConfig(itemExport, { config: built.config, usedVariations: shared.usedVariations, armorSlot: shared.armor?.slot ?? null });
   const keys = recipeKeys(item);
   for (const recipe of item.recipes) {
     for (const issue of validateRecipe(recipe, project, keys.get(recipe.id) ?? recipe.type)) reportIn(issue);
@@ -105,12 +105,12 @@ function planItem(project: Project, item: Item, writer: PackWriter, issues: Issu
 
   return {
     item,
-    folderSlugs: ctx.folderSlugs,
+    folderSlugs: itemExport.folderSlugs,
     modelKey: main?.key ?? null,
     modelFile: main?.file ?? null,
     modelJson: main?.json ?? null,
     config: built.config,
-    yamlFile: itemYamlFile(project, ctx.folderSlugs, item.nexoId),
+    yamlFile: itemYamlFile(project, itemExport.folderSlugs, item.nexoId),
   };
 }
 
@@ -118,8 +118,8 @@ function planItem(project: Project, item: Item, writer: PackWriter, issues: Issu
  * Variant models that Nexo builds in via Pack.<slot> (bow, shield, fishing rod …). The hyphen in
  * their path cannot occur in item IDs and folder names – so there are no overlaps with other items.
  */
-function writeVariants(ctx: ItemExport, hasMainModel: boolean): Partial<Record<VariantSlot, string | string[]>> {
-  const { item } = ctx;
+function writeVariants(itemExport: ItemExport, hasMainModel: boolean): Partial<Record<VariantSlot, string | string[]>> {
+  const { item } = itemExport;
   const keys: Partial<Record<VariantSlot, string | string[]>> = {};
   for (const def of VARIANTS) {
     if (def.kind !== 'pack') continue;
@@ -127,22 +127,22 @@ function writeVariants(ctx: ItemExport, hasMainModel: boolean): Partial<Record<V
     if (models === undefined) continue;
     const frame = variantFrame(def);
     if (!hasMainModel) {
-      ctx.report('error', 'plan.variantNeedsMainModel', {}, [frame]);
+      itemExport.report('error', 'plan.variantNeedsMainModel', {}, [frame]);
       continue;
     }
     if (models.length === 0) {
-      ctx.report('warning', 'plan.variantEmpty', {}, [frame]);
+      itemExport.report('warning', 'plan.variantEmpty', {}, [frame]);
       continue;
     }
     const written = models.map((model, i) => {
       const suffix = variantPathSuffix(def, i);
-      return ctx.writeModel(model, `${ctx.modelPath}-${suffix}`, variantFrame(def, suffix)).key;
+      return itemExport.writeModel(model, `${itemExport.modelPath}-${suffix}`, variantFrame(def, suffix)).key;
     });
     keys[def.slot] = def.multiple ? written : written[0];
     const material = String(item.config.material ?? DEFAULT_MATERIAL).toUpperCase();
     const blocksAttacks = def.slot === 'blocking_model' && getPath(item.config, ['Components', 'blocks_attacks']) !== undefined;
     if (def.materials && !def.materials.includes(material) && !blocksAttacks) {
-      ctx.report('warning', 'plan.variantWrongMaterial', { materials: def.materials.join(' / '), material }, [frame]);
+      itemExport.report('warning', 'plan.variantWrongMaterial', { materials: def.materials.join(' / '), material }, [frame]);
     }
   }
   return keys;

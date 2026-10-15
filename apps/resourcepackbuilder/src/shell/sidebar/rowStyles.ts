@@ -19,8 +19,8 @@ export function rowClass(isSelected: boolean, isDropTarget = false) {
 }
 
 /** The focusable, clickable part of a row. */
-export const rowButton =
+export const ROW_BUTTON_CLASS =
   'flex h-full min-w-0 flex-1 cursor-pointer items-center gap-1.5 rounded-sm pr-1 text-left outline-none focus-visible:ring-2 focus-visible:ring-ring/50';
-export const rowIcon = 'grid shrink-0 place-items-center text-muted-foreground group-data-selected/row:text-primary';
-export const rowLabel = 'min-w-0 flex-1 truncate';
-export const rowBadge = 'px-1 font-mono text-xs text-muted-foreground';
+export const ROW_ICON_CLASS = 'grid shrink-0 place-items-center text-muted-foreground group-data-selected/row:text-primary';
+export const ROW_LABEL_CLASS = 'min-w-0 flex-1 truncate';
+export const ROW_BADGE_CLASS = 'px-1 font-mono text-xs text-muted-foreground';

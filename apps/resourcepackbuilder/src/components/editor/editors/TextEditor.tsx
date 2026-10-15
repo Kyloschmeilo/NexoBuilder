@@ -17,24 +17,24 @@ function asText(value: unknown): string | undefined {
 
 export function TextEditor({ field, value, onChange, hideLabel }: EditorProps<TextField>) {
   const text = useSchemaText();
-  const str = asText(value);
-  const error = text(str ? (validateTextFormat(field.format, str) ?? undefined) : undefined);
+  const textValue = asText(value);
+  const error = text(textValue ? (validateTextFormat(field.format, textValue) ?? undefined) : undefined);
   const placeholder = text(field.placeholder);
   return (
     <FieldShell field={field} hideLabel={hideLabel} wide={field.multiline} error={error}>
       <div className="flex items-start gap-2">
         <div className="min-w-0 flex-1">
           {field.multiline ? (
-            <Textarea value={str ?? ''} placeholder={placeholder} onChange={(e) => onChange(e.target.value || undefined)} />
+            <Textarea value={textValue ?? ''} placeholder={placeholder} onChange={(e) => onChange(e.target.value || undefined)} />
           ) : (
-            <TextInput value={str} onChange={onChange} placeholder={placeholder} suggestions={field.suggestions} invalid={!!error} />
+            <TextInput value={textValue} onChange={onChange} placeholder={placeholder} suggestions={field.suggestions} invalid={!!error} />
           )}
         </div>
-        {field.format === 'color' && <ColorInput value={str} onChange={onChange} />}
+        {field.format === 'color' && <ColorInput value={textValue} onChange={onChange} />}
       </div>
-      {field.format === 'minimessage' && str && (
+      {field.format === 'minimessage' && textValue && (
         <MiniMessageBox className="min-w-0">
-          <MiniMessageLine text={str} />
+          <MiniMessageLine text={textValue} />
         </MiniMessageBox>
       )}
     </FieldShell>

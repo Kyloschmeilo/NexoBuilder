@@ -6,7 +6,7 @@ import { Button } from '@resourcepackbuilder/ui/components/button';
 import { ContextMenu, ContextMenuContent, ContextMenuTrigger } from '@resourcepackbuilder/ui/components/context-menu';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuTrigger } from '@resourcepackbuilder/ui/components/dropdown-menu';
 import { MenuEntries, type MenuEntry } from '../../components/MenuEntries';
-import { rowButton, rowClass } from './rowStyles';
+import { ROW_BUTTON_CLASS, rowClass } from './rowStyles';
 
 /** Enter and Space activate a focused tree row like a click. */
 export function activateOnKey(action: () => void) {
@@ -40,7 +40,7 @@ export function TreeRow({ entries, actions, isSelected, drop, children, ...rowPr
   return (
     <div className={rowClass(isSelected, drop.isOver)} data-selected={isSelected || undefined} {...drop.handlers}>
       <ContextMenu>
-        <ContextMenuTrigger data-testid="tree-row" aria-selected={isSelected} className={rowButton} {...rowProps}>
+        <ContextMenuTrigger data-testid="tree-row" aria-selected={isSelected} className={ROW_BUTTON_CLASS} {...rowProps}>
           {children}
         </ContextMenuTrigger>
         <ContextMenuContent className="w-68">

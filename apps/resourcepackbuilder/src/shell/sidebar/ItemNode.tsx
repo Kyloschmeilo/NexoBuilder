@@ -9,7 +9,7 @@ import { useItemActions } from '../../features/item/useItemActions';
 import { clipboardLabel, useClipboardStore } from '../../store/clipboard';
 import { openDialog } from '../../store/dialogs';
 import { select, useUiStore } from '../../store/ui';
-import { INDENT_PX, ITEM_PADDING_PX, rowLabel } from './rowStyles';
+import { INDENT_PX, ITEM_PADDING_PX, ROW_LABEL_CLASS } from './rowStyles';
 import type { SidebarTree } from './treeIndex';
 import { activateOnKey, TreeRow } from './TreeRow';
 import { DRAG_ITEM, useDropTarget } from './useDropTarget';
@@ -73,7 +73,7 @@ export function ItemNode({ itemId, depth, tree }: { itemId: string; depth: numbe
       ) : (
         <Box className="size-3.75 shrink-0 text-muted-foreground" />
       )}
-      <span className={rowLabel}>{itemLabel(item)}</span>
+      <span className={ROW_LABEL_CLASS}>{itemLabel(item)}</span>
       {level && <StatusDot tone={level} label={level === 'error' ? t('status.error') : t('status.warning')} />}
     </TreeRow>
   );

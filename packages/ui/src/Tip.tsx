@@ -20,10 +20,10 @@ function isDisabled(element: ReactElement): boolean {
  */
 export function Tip({ label, side, children }: TipProps) {
   if (!label) return children;
-  const disabled = isValidElement(children) && isDisabled(children);
+  const isTriggerDisabled = isValidElement(children) && isDisabled(children);
   return (
     <Tooltip>
-      {disabled ? <TooltipTrigger render={<span className="inline-flex" />}>{children}</TooltipTrigger> : <TooltipTrigger render={children} />}
+      {isTriggerDisabled ? <TooltipTrigger render={<span className="inline-flex" />}>{children}</TooltipTrigger> : <TooltipTrigger render={children} />}
       <TooltipContent side={side}>{label}</TooltipContent>
     </Tooltip>
   );

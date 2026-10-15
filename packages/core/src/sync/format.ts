@@ -222,7 +222,7 @@ export function changedEntityKeys(prev: Project, next: Project): string[] {
 /** An envelope as written: the kind of `data` is the one of the entry (see {@link Envelope} for read ones). */
 export type OutgoingEnvelope = EnvelopeOf<EntityKind>;
 
-export function makeEnvelope(
+export function createEnvelope(
   ref: EntityRef,
   projectId: string,
   version: { rev: number; by: string; byName: string },

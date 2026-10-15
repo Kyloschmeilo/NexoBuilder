@@ -6,7 +6,7 @@ export interface TestServerUiState {
   /** `null` until the desktop program reported its state (or outside the desktop program) */
   server: TestServerState | null;
   log: TestServerLogLine[];
-  syncing: boolean;
+  isSyncing: boolean;
   /** Last transfer in which something changed */
   lastResult: (TestServerSyncResult & { at: number }) | null;
   /** Time of the last transfer (even without changes) */
@@ -22,7 +22,7 @@ export interface TestServerUiState {
 export const useTestServerStore = create<TestServerUiState>(() => ({
   server: null,
   log: [],
-  syncing: false,
+  isSyncing: false,
   lastResult: null,
   lastCheck: null,
   syncError: null,

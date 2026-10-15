@@ -1,7 +1,7 @@
 // @vitest-environment jsdom
 import { afterEach, describe, expect, it, vi } from 'vitest';
-import { initializeTheme, themeInitScript } from './themeScript';
-import { themeStorageKey } from './theme';
+import { initializeTheme, THEME_INIT_SCRIPT } from './themeScript';
+import { THEME_STORAGE_KEY } from './theme';
 
 afterEach(() => {
   document.documentElement.classList.remove('dark');
@@ -21,21 +21,21 @@ function stubMatchMedia(result: { matches: boolean } | (() => never)): void {
 
 describe('initializeTheme', () => {
   it('applies dark when "dark" is stored', () => {
-    window.localStorage.setItem(themeStorageKey, 'dark');
+    window.localStorage.setItem(THEME_STORAGE_KEY, 'dark');
     initializeTheme();
     expect(document.documentElement.classList.contains('dark')).toBe(true);
     expect(document.documentElement.style.colorScheme).toBe('dark');
   });
 
   it('applies light when "light" is stored', () => {
-    window.localStorage.setItem(themeStorageKey, 'light');
+    window.localStorage.setItem(THEME_STORAGE_KEY, 'light');
     initializeTheme();
     expect(document.documentElement.classList.contains('dark')).toBe(false);
     expect(document.documentElement.style.colorScheme).toBe('light');
   });
 
   it('falls back to the system preference when "system" is stored', () => {
-    window.localStorage.setItem(themeStorageKey, 'system');
+    window.localStorage.setItem(THEME_STORAGE_KEY, 'system');
     stubMatchMedia({ matches: true });
     initializeTheme();
     expect(document.documentElement.classList.contains('dark')).toBe(true);
@@ -62,7 +62,7 @@ describe('initializeTheme', () => {
   });
 
   it('falls back to light when matchMedia throws', () => {
-    window.localStorage.setItem(themeStorageKey, 'system');
+    window.localStorage.setItem(THEME_STORAGE_KEY, 'system');
     stubMatchMedia(() => {
       throw new Error('not supported');
     });
@@ -73,17 +73,17 @@ describe('initializeTheme', () => {
   });
 });
 
-describe('themeInitScript', () => {
+describe('THEME_INIT_SCRIPT', () => {
   it('is the source of initializeTheme wrapped as an immediately invoked expression', () => {
-    expect(themeInitScript).toContain('initializeTheme');
-    expect(themeInitScript.trim().startsWith('(')).toBe(true);
-    expect(themeInitScript.trim().endsWith(')();')).toBe(true);
+    expect(THEME_INIT_SCRIPT).toContain('initializeTheme');
+    expect(THEME_INIT_SCRIPT.trim().startsWith('(')).toBe(true);
+    expect(THEME_INIT_SCRIPT.trim().endsWith(')();')).toBe(true);
   });
 
   it('applies the theme when executed standalone, exactly like a browser running the inline script', () => {
-    window.localStorage.setItem(themeStorageKey, 'dark');
+    window.localStorage.setItem(THEME_STORAGE_KEY, 'dark');
     // Runs the exact source embedded in <head>.
-    new Function(themeInitScript)();
+    new Function(THEME_INIT_SCRIPT)();
     expect(document.documentElement.classList.contains('dark')).toBe(true);
   });
 });

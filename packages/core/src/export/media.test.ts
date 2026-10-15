@@ -6,7 +6,7 @@ import { INSTALL_GUIDE_FILE } from './installGuide';
 import { planExport } from './plan';
 import { planMultiExport } from './selection';
 import { buildExportZip, buildMultiExportZip } from './zip';
-import { nexoFolderFiles } from '../testserver/files';
+import { nexoFolderFiles } from '../testServer/files';
 import { makePngDataUrl } from '../test/png';
 import type { Issue } from '../issues';
 import type { Project } from '../project/types';

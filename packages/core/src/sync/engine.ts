@@ -20,7 +20,7 @@ import {
   hashData,
   hashString,
   localEntity,
-  makeEnvelope,
+  createEnvelope,
   parseEntityKey,
   parseEntityPath,
   parseEnvelope,
@@ -243,7 +243,7 @@ export class SyncEngine {
       } else if (!isRewrite || !version) {
         continue; // nothing changed
       }
-      const content = JSON.stringify(makeEnvelope(ref, this.projectId, version, data));
+      const content = JSON.stringify(createEnvelope(ref, this.projectId, version, data));
       try {
         const info = await this.fs.write(entityPath(ref), content);
         this.files.set(info.path, { mtimeMs: info.mtimeMs, size: info.size, hash: hashString(content) });

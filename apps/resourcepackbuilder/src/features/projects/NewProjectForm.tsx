@@ -7,7 +7,7 @@ import { Button } from '@resourcepackbuilder/ui/components/button';
 import { Field, FieldLabel } from '@resourcepackbuilder/ui/components/field';
 import { Input } from '@resourcepackbuilder/ui/components/input';
 import { NativeSelect, NativeSelectOption } from '@resourcepackbuilder/ui/components/native-select';
-import { NamespaceProblemText, useNamespaceProblem } from './namespaceProblem';
+import { NamespaceProblemText, useNamespaceProblem } from './NamespaceProblem';
 import { useProjectActions } from './useProjectActions';
 
 /** Slug used when even the default project name gives none. */

@@ -1,7 +1,7 @@
 /** Language and appearance: stored on this device, not in the project. */
 import { useId } from 'react';
 import { useTranslations } from 'next-intl';
-import { supportedLocales } from '@resourcepackbuilder/i18n';
+import { SUPPORTED_LOCALES } from '@resourcepackbuilder/i18n';
 import { Field, FieldDescription, FieldLabel, FieldTitle } from '@resourcepackbuilder/ui/components/field';
 import { NativeSelect, NativeSelectOption } from '@resourcepackbuilder/ui/components/native-select';
 import { ToggleGroup, ToggleGroupItem } from '@resourcepackbuilder/ui/components/toggle-group';
@@ -25,11 +25,11 @@ export function DeviceSettings() {
           className="w-full"
           value={locale}
           onChange={(e) => {
-            const next = supportedLocales.find((l) => l === e.target.value);
+            const next = SUPPORTED_LOCALES.find((l) => l === e.target.value);
             if (next) setLocale(next);
           }}
         >
-          {supportedLocales.map((l) => (
+          {SUPPORTED_LOCALES.map((l) => (
             <NativeSelectOption key={l} value={l}>
               {tCommon(`languageNames.${l}`)}
             </NativeSelectOption>

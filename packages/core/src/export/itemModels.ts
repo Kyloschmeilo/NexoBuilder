@@ -38,14 +38,14 @@ function defOf(slot: VariantSlot): VariantDef {
  * @param modelKey key of the item's main model (null = it has none)
  * @param packVariants variant slots that Nexo builds in via Pack.<slot> (they stop working with an own item model)
  */
-export function writeItemModels(ctx: ItemExport, modelKey: string | null, packVariants: VariantSlot[]): ItemModelsResult {
-  const { project, item, writer, report } = ctx;
+export function writeItemModels(itemExport: ItemExport, modelKey: string | null, packVariants: VariantSlot[]): ItemModelsResult {
+  const { project, item, writer, report } = itemExport;
   const ns = project.namespace;
   const result: ItemModelsResult = { itemModel: null, config: [] };
   const variants = item.variants ?? {};
   const has = (slot: VariantSlot) => (variants[slot]?.length ?? 0) > 0;
   const atLeast = (version: string) => compareVersions(project.settings.minecraftVersion, version) >= 0;
-  const definitionBase = [...ctx.folderSlugs, item.nexoId].join('/');
+  const definitionBase = [...itemExport.folderSlugs, item.nexoId].join('/');
   const writeDefinition = (path: string, model: ItemModelNode, extra: Record<string, unknown> = {}) => {
     writer.json(itemModelDefinitionFile(ns, path), { model, ...extra });
     return `${ns}:${path}`;
@@ -53,7 +53,7 @@ export function writeItemModels(ctx: ItemExport, modelKey: string | null, packVa
   /** Writes the first model of a slot as "<main model path>-<suffix>" and returns its key. */
   const writeSlot = (slot: VariantSlot, suffix: string): string | null => {
     const model = variants[slot]?.[0];
-    return model ? ctx.writeModel(model, `${ctx.modelPath}-${suffix}`, variantFrame(defOf(slot), suffix)).key : null;
+    return model ? itemExport.writeModel(model, `${itemExport.modelPath}-${suffix}`, variantFrame(defOf(slot), suffix)).key : null;
   };
 
   const stateSlots = Object.keys(variants)
@@ -158,7 +158,7 @@ export function writeItemModels(ctx: ItemExport, modelKey: string | null, packVa
       if (block.type !== 'STRINGBLOCK') report('warning', 'plan.stackableNeedsStringblock');
       const keys = (variants.stack_models ?? []).map((model, i) => {
         const suffix = `stack_${i + 1}`;
-        return ctx.writeModel(model, `${ctx.modelPath}-${suffix}`, variantFrame(STACK_MODELS, suffix)).key;
+        return itemExport.writeModel(model, `${itemExport.modelPath}-${suffix}`, variantFrame(STACK_MODELS, suffix)).key;
       });
       result.config.push({ path: ['Mechanics', 'custom_block', 'stackable'], value: keys.map((model) => ({ model })), ifMissing: true });
     }

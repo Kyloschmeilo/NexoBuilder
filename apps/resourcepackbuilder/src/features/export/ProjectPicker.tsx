@@ -4,7 +4,7 @@ import { cn } from 'cn';
 import { countSelected, SELECT_ALL, type ExportSelection } from '@resourcepackbuilder/core/export/selection';
 import { Badge } from '@resourcepackbuilder/ui/components/badge';
 import { Spinner } from '@resourcepackbuilder/ui/components/spinner';
-import { COUNT, GroupRow, LABEL } from './selectionRows';
+import { COUNT_CLASS, GroupRow, LABEL_CLASS } from './SelectionRows';
 import { SelectionTree } from './SelectionTree';
 import type { ProjectChoice } from './useProjectChoices';
 
@@ -64,13 +64,13 @@ export function ProjectPicker({
               onToggle={() => (isIncluded ? onExpand(isExpanded ? null : summary.id) : onIncludedChange(summary.id, true))}
               className="h-10 pl-2.5"
             >
-              <span className={cn(LABEL, 'font-medium')}>{summary.name}</span>
+              <span className={cn(LABEL_CLASS, 'font-medium')}>{summary.name}</span>
               {isOpen && (
                 <Badge variant="outline" className="font-heading tracking-wider text-muted-foreground uppercase">
                   {t('open')}
                 </Badge>
               )}
-              <span className={COUNT}>{isIncluded && !project ? <Spinner className="size-3.5" /> : selectionSummary(choice, selection, isIncluded)}</span>
+              <span className={COUNT_CLASS}>{isIncluded && !project ? <Spinner className="size-3.5" /> : selectionSummary(choice, selection, isIncluded)}</span>
             </GroupRow>
             {isExpanded && project && (
               <SelectionTree project={project} selection={selection} onChange={(next) => onSelectionChange(summary.id, next)} />

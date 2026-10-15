@@ -1,5 +1,5 @@
 /** Local storage key the person's theme choice is persisted under. */
-export const themeStorageKey = 'theme';
+export const THEME_STORAGE_KEY = 'theme';
 
 /** The three theme choices a person can pick between. */
 export type ThemeChoice = 'light' | 'dark' | 'system';
@@ -29,7 +29,7 @@ export function readStoredThemeChoice(storage: Pick<Storage, 'getItem'> | undefi
     return 'system';
   }
   try {
-    const stored = storage.getItem(themeStorageKey);
+    const stored = storage.getItem(THEME_STORAGE_KEY);
     return isThemeChoice(stored) ? stored : 'system';
   } catch {
     return 'system';
@@ -47,7 +47,7 @@ export function writeStoredThemeChoice(storage: Pick<Storage, 'setItem'> | undef
     return;
   }
   try {
-    storage.setItem(themeStorageKey, choice);
+    storage.setItem(THEME_STORAGE_KEY, choice);
   } catch {
     // Storage access failed; the choice still applies to the current page
     // through in-memory state.

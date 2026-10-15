@@ -8,8 +8,8 @@ const CONFIRMATION_MS = 1500;
 /** Copies `text` to the clipboard and confirms it briefly; `label` defaults to the common "Copy". */
 export function CopyButton({ text, label }: { text: string; label?: string }) {
   const t = useTranslations('ui');
-  const common = useTranslations('common');
-  const [copied, setCopied] = useState(false);
+  const tCommon = useTranslations('common');
+  const [isCopied, setIsCopied] = useState(false);
   const timer = useRef<number | undefined>(undefined);
   useEffect(() => () => window.clearTimeout(timer.current), []);
 
@@ -19,15 +19,15 @@ export function CopyButton({ text, label }: { text: string; label?: string }) {
     } catch {
       return; // Clipboard not available (e.g. denied permission): nothing to confirm
     }
-    setCopied(true);
+    setIsCopied(true);
     window.clearTimeout(timer.current);
-    timer.current = window.setTimeout(() => setCopied(false), CONFIRMATION_MS);
+    timer.current = window.setTimeout(() => setIsCopied(false), CONFIRMATION_MS);
   };
 
   return (
     <Button variant="outline" size="sm" onClick={() => void copy()}>
-      {copied ? <Check /> : <Copy />}
-      {copied ? t('copyButton.copied') : (label ?? common('copy'))}
+      {isCopied ? <Check /> : <Copy />}
+      {isCopied ? t('copyButton.copied') : (label ?? tCommon('copy'))}
     </Button>
   );
 }

@@ -6,7 +6,7 @@
  */
 import { planExport } from '@resourcepackbuilder/core/export/plan';
 import { compareVersions } from '@resourcepackbuilder/core/minecraft/versions';
-import { nexoFolderFiles, nexoGiveCommand, patchNexoSettings } from '@resourcepackbuilder/core/testserver/files';
+import { nexoFolderFiles, nexoGiveCommand, patchNexoSettings } from '@resourcepackbuilder/core/testServer/files';
 import { AppError } from '../i18n/errors';
 import type { DesktopTestServerApi, NexoJarInfo, TestServerConfigPatch, TestServerSyncResult } from '../platform/desktopApi';
 import { useProjectStore } from '../store/project';
@@ -57,7 +57,7 @@ export function createTestServerSync(api: DesktopTestServerApi): TestServerSync 
       const project = useProjectStore.getState().project;
       const { server } = store.getState();
       if (!project || !server) return null;
-      store.setState({ syncing: true });
+      store.setState({ isSyncing: true });
       try {
         const plan = planExport(project, { includeBinaries: true });
         const files = nexoFolderFiles(project, plan);
@@ -70,7 +70,7 @@ export function createTestServerSync(api: DesktopTestServerApi): TestServerSync 
         store.setState({ syncError: err });
         return null;
       } finally {
-        store.setState({ syncing: false });
+        store.setState({ isSyncing: false });
       }
     },
     (queued, next) => queued || next,

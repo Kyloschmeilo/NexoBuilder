@@ -31,4 +31,4 @@ export function initializeTheme(): void {
 }
 
 /** Inline script source that runs {@link initializeTheme} immediately. */
-export const themeInitScript = `(${initializeTheme.toString()})();`;
+export const THEME_INIT_SCRIPT = `(${initializeTheme.toString()})();`;

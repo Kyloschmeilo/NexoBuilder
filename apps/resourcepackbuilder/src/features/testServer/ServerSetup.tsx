@@ -25,7 +25,7 @@ const PLAYER_NAME_INVALID_CHARS = /[^A-Za-z0-9_]/g;
 const EULA_URL = 'https://aka.ms/MinecraftEULA';
 
 /** Settings of the test server; most of them only apply on the next start. */
-export function Setup({ config, isLocked }: { config: TestServerConfig; isLocked: boolean }) {
+export function ServerSetup({ config, isLocked }: { config: TestServerConfig; isLocked: boolean }) {
   const t = useTranslations('media.testServer.setup');
   const setConfig = useSetConfig();
 
@@ -75,7 +75,7 @@ export function Setup({ config, isLocked }: { config: TestServerConfig; isLocked
 function NexoJarField({ config }: { config: TestServerConfig }) {
   const t = useTranslations('media.testServer.setup');
   const testServer = useTestServer();
-  const { busy, run } = useBusyAction();
+  const { isBusy, run } = useBusyAction();
   const chooseJar = () =>
     run(async () => {
       const jar = await testServer.chooseNexoJar();
@@ -89,7 +89,7 @@ function NexoJarField({ config }: { config: TestServerConfig }) {
         <StatusBadge tone={config.nexoJar ? 'success' : 'warning'}>
           {config.nexoJar ? `${config.nexoJar.name} ${config.nexoJar.version}` : t('notSelected')}
         </StatusBadge>
-        <Button variant="outline" size="sm" disabled={busy} onClick={() => void chooseJar()}>
+        <Button variant="outline" size="sm" disabled={isBusy} onClick={() => void chooseJar()}>
           <Upload /> {t('chooseJar')}
         </Button>
       </div>

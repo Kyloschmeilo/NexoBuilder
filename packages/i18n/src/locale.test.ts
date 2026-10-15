@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { defaultLocale, localeStorageKey, readStoredLocale, supportedLocales, writeStoredLocale } from './locale';
+import { DEFAULT_LOCALE, LOCALE_STORAGE_KEY, readStoredLocale, SUPPORTED_LOCALES, writeStoredLocale } from './locale';
 
 /** A minimal in-memory storage. */
 function memoryStorage(initial: Record<string, string> = {}) {
@@ -10,21 +10,21 @@ function memoryStorage(initial: Record<string, string> = {}) {
   };
 }
 
-describe('supportedLocales', () => {
+describe('SUPPORTED_LOCALES', () => {
   it('ships English and German with English as the default', () => {
-    expect(supportedLocales).toEqual(['en', 'de']);
-    expect(defaultLocale).toBe('en');
+    expect(SUPPORTED_LOCALES).toEqual(['en', 'de']);
+    expect(DEFAULT_LOCALE).toBe('en');
   });
 });
 
 describe('readStoredLocale', () => {
   it('returns the stored locale when it is supported', () => {
-    expect(readStoredLocale(memoryStorage({ [localeStorageKey]: 'de' }))).toBe('de');
+    expect(readStoredLocale(memoryStorage({ [LOCALE_STORAGE_KEY]: 'de' }))).toBe('de');
   });
 
   it('falls back to English when nothing or an unsupported locale is stored', () => {
     expect(readStoredLocale(memoryStorage())).toBe('en');
-    expect(readStoredLocale(memoryStorage({ [localeStorageKey]: 'fr' }))).toBe('en');
+    expect(readStoredLocale(memoryStorage({ [LOCALE_STORAGE_KEY]: 'fr' }))).toBe('en');
     expect(readStoredLocale(undefined)).toBe('en');
   });
 

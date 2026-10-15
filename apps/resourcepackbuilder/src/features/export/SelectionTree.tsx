@@ -13,7 +13,7 @@ import {
   type ExportSelection,
   type ListSelectionKey,
 } from '@resourcepackbuilder/core/export/selection';
-import { COUNT, EntryRow, GroupRow, ICON, INDENT_PX, LABEL } from './selectionRows';
+import { COUNT_CLASS, EntryRow, GroupRow, ICON_CLASS, INDENT_PX, LABEL_CLASS } from './SelectionRows';
 
 /** Projects with at most this many items start with every folder open; larger ones only show the top level. */
 const OPEN_ALL_UP_TO_ITEMS = 40;
@@ -74,9 +74,9 @@ export function SelectionTree({ project, selection, onChange, itemsOnly }: Selec
           onToggle={() => toggleOpen(folderId)}
           style={{ paddingLeft: FOLDER_PADDING_PX + depth * INDENT_PX }}
         >
-          <FolderIcon className={ICON} />
-          <span className={LABEL}>{folder.name}</span>
-          <span className={COUNT}>{countLabel(ids, excludedItems)}</span>
+          <FolderIcon className={ICON_CLASS} />
+          <span className={LABEL_CLASS}>{folder.name}</span>
+          <span className={COUNT_CLASS}>{countLabel(ids, excludedItems)}</span>
         </GroupRow>
         {isOpen && (
           <>
@@ -92,8 +92,8 @@ export function SelectionTree({ project, selection, onChange, itemsOnly }: Selec
                   onCheckedChange={() => onChange(setItemsSelected(selection, [itemId], !isChecked))}
                   style={{ paddingLeft: FOLDER_PADDING_PX + ITEM_PADDING_PX + depth * INDENT_PX }}
                 >
-                  <span className={LABEL}>{itemLabel(item)}</span>
-                  <span className={COUNT}>{item.nexoId}</span>
+                  <span className={LABEL_CLASS}>{itemLabel(item)}</span>
+                  <span className={COUNT_CLASS}>{item.nexoId}</span>
                 </EntryRow>
               );
             })}
@@ -109,19 +109,19 @@ export function SelectionTree({ project, selection, onChange, itemsOnly }: Selec
         {
           key: 'excludedGlyphIds',
           label: t('glyphs'),
-          icon: <Smile className={ICON} />,
+          icon: <Smile className={ICON_CLASS} />,
           entries: project.glyphs.map((g) => ({ id: g.id, label: `<glyph:${g.glyphId}>` })),
         },
         {
           key: 'excludedSoundIds',
           label: t('sounds'),
-          icon: <Music className={ICON} />,
+          icon: <Music className={ICON_CLASS} />,
           entries: project.sounds.map((s) => ({ id: s.id, label: s.soundId })),
         },
         {
           key: 'excludedPaintingIds',
           label: t('paintings'),
-          icon: <Frame className={ICON} />,
+          icon: <Frame className={ICON_CLASS} />,
           entries: project.paintings.map((p) => ({ id: p.id, label: p.paintingId })),
         },
       ];
@@ -148,8 +148,8 @@ export function SelectionTree({ project, selection, onChange, itemsOnly }: Selec
                 style={{ paddingLeft: FOLDER_PADDING_PX }}
               >
                 {list.icon}
-                <span className={LABEL}>{list.label}</span>
-                <span className={COUNT}>{countLabel(ids, excluded)}</span>
+                <span className={LABEL_CLASS}>{list.label}</span>
+                <span className={COUNT_CLASS}>{countLabel(ids, excluded)}</span>
               </GroupRow>
               {isOpen &&
                 list.entries.map((entry) => {
@@ -161,7 +161,7 @@ export function SelectionTree({ project, selection, onChange, itemsOnly }: Selec
                       onCheckedChange={() => onChange(setListSelected(selection, list.key, [entry.id], !isChecked))}
                       style={{ paddingLeft: FOLDER_PADDING_PX + ITEM_PADDING_PX }}
                     >
-                      <span className={cn(LABEL, 'font-mono')}>{entry.label}</span>
+                      <span className={cn(LABEL_CLASS, 'font-mono')}>{entry.label}</span>
                     </EntryRow>
                   );
                 })}

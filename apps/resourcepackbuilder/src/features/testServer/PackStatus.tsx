@@ -3,7 +3,7 @@ import { useTranslations } from 'next-intl';
 import { Button } from '@resourcepackbuilder/ui/components/button';
 import { Spinner } from '@resourcepackbuilder/ui/components/spinner';
 import { StatusBadge, Tip } from '@resourcepackbuilder/ui';
-import { nexoPackCommand } from '@resourcepackbuilder/core/testserver/files';
+import { nexoPackCommand } from '@resourcepackbuilder/core/testServer/files';
 import type { TestServerState } from '../../platform/desktopApi';
 import { PACK_STATUS_TONE } from './status';
 import { useBusyAction, useTestServer } from './useTestServer';
@@ -12,7 +12,7 @@ import { useBusyAction, useTestServer } from './useTestServer';
 export function PackStatus({ pack, player }: { pack: TestServerState['pack']; player: string }) {
   const t = useTranslations('media.testServer.pack');
   const testServer = useTestServer();
-  const { busy, run } = useBusyAction();
+  const { isBusy, run } = useBusyAction();
   const detail = pack.status === 'failed' || pack.status === 'ready' ? pack.message : null;
 
   return (
@@ -26,7 +26,7 @@ export function PackStatus({ pack, player }: { pack: TestServerState['pack']; pl
       </Tip>
       <div className="flex flex-wrap gap-2">
         <Tip label={t('reloadHint')}>
-          <Button variant="outline" size="sm" disabled={busy || pack.status === 'building'} onClick={() => void run(testServer.reload)}>
+          <Button variant="outline" size="sm" disabled={isBusy || pack.status === 'building'} onClick={() => void run(testServer.reload)}>
             <RefreshCw /> {t('reload')}
           </Button>
         </Tip>
@@ -34,7 +34,7 @@ export function PackStatus({ pack, player }: { pack: TestServerState['pack']; pl
           <Button
             variant="outline"
             size="sm"
-            disabled={busy || pack.status !== 'ready' || !player}
+            disabled={isBusy || pack.status !== 'ready' || !player}
             onClick={() => void run(() => testServer.command(nexoPackCommand(player)))}
           >
             <Upload /> {t('resend')}

@@ -35,7 +35,7 @@ import {
 import { BrandMark } from '../components/BrandMark';
 import { MenuEntries, type MenuEntry } from '../components/MenuEntries';
 import { useProjectActions } from '../features/projects/useProjectActions';
-import { SHARE_STATUS_TONE, useShareStatusText } from '../features/share/shareStatus';
+import { SHARE_STATUS_TONE, useShareStatusText } from '../features/share/ShareStatusBadge';
 import { openDialog } from '../store/dialogs';
 import { usePlan } from '../store/PlanProvider';
 import { redo, undo, useProjectStore } from '../store/project';

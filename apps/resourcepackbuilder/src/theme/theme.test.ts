@@ -6,13 +6,13 @@ import {
   readStoredThemeChoice,
   resolveTheme,
   systemPrefersDark,
-  themeStorageKey,
+  THEME_STORAGE_KEY,
   writeStoredThemeChoice,
 } from './theme';
 
-describe('themeStorageKey', () => {
+describe('THEME_STORAGE_KEY', () => {
   it('is "theme"', () => {
-    expect(themeStorageKey).toBe('theme');
+    expect(THEME_STORAGE_KEY).toBe('theme');
   });
 });
 
@@ -54,7 +54,7 @@ function fakeStorage(initial: Record<string, string> = {}): Storage {
 
 describe('readStoredThemeChoice', () => {
   it('reads a valid stored choice', () => {
-    expect(readStoredThemeChoice(fakeStorage({ [themeStorageKey]: 'dark' }))).toBe('dark');
+    expect(readStoredThemeChoice(fakeStorage({ [THEME_STORAGE_KEY]: 'dark' }))).toBe('dark');
   });
 
   it('falls back to "system" when nothing is stored', () => {
@@ -62,7 +62,7 @@ describe('readStoredThemeChoice', () => {
   });
 
   it('falls back to "system" when the stored value is not a recognised choice', () => {
-    expect(readStoredThemeChoice(fakeStorage({ [themeStorageKey]: 'sepia' }))).toBe('system');
+    expect(readStoredThemeChoice(fakeStorage({ [THEME_STORAGE_KEY]: 'sepia' }))).toBe('system');
   });
 
   it('falls back to "system" when storage is undefined', () => {
@@ -84,7 +84,7 @@ describe('writeStoredThemeChoice', () => {
   it('persists the choice under the storage key', () => {
     const storage = fakeStorage();
     writeStoredThemeChoice(storage, 'dark');
-    expect(storage.getItem(themeStorageKey)).toBe('dark');
+    expect(storage.getItem(THEME_STORAGE_KEY)).toBe('dark');
   });
 
   it('does nothing when storage is undefined', () => {

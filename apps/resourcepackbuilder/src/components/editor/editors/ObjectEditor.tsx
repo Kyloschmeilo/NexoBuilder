@@ -21,7 +21,7 @@ export function ObjectFields({
   value: unknown;
   onChange: (value: Record<string, unknown>) => void;
 }) {
-  const obj = isPlainObject(value) ? value : {};
+  const object = isPlainObject(value) ? value : {};
   const known = new Set(field.fields.map((f) => f.key));
   const simple = field.fields.filter((f) => !isWideField(f));
   const wide = field.fields.filter(isWideField);
@@ -30,7 +30,7 @@ export function ObjectFields({
       {simple.length > 0 && (
         <FieldGrid>
           {simple.map((f) => (
-            <FieldRenderer key={f.key} field={f} value={obj[f.key]} siblings={obj} onChange={(v) => onChange(withKey(obj, f.key, v))} />
+            <FieldRenderer key={f.key} field={f} value={object[f.key]} siblings={object} onChange={(v) => onChange(withKey(object, f.key, v))} />
           ))}
         </FieldGrid>
       )}
@@ -40,12 +40,12 @@ export function ObjectFields({
           <FieldRenderer
             key="*"
             field={f}
-            value={unknownEntries(obj, known)}
-            siblings={obj}
-            onChange={(rest) => onChange(withUnknownEntries(obj, known, rest))}
+            value={unknownEntries(object, known)}
+            siblings={object}
+            onChange={(rest) => onChange(withUnknownEntries(object, known, rest))}
           />
         ) : (
-          <FieldRenderer key={f.key} field={f} value={obj[f.key]} siblings={obj} onChange={(v) => onChange(withKey(obj, f.key, v))} />
+          <FieldRenderer key={f.key} field={f} value={object[f.key]} siblings={object} onChange={(v) => onChange(withKey(object, f.key, v))} />
         ),
       )}
     </div>
@@ -58,18 +58,18 @@ function ObjectSection({ field, value, onChange }: EditorProps<ObjectField>) {
   const text = useSchemaText();
   const { title, description } = useFieldTitle(field);
   const count = countSetValues(value);
-  const [open, setOpen] = useState(count > 0);
+  const [isOpen, setIsOpen] = useState(count > 0);
   const [hadValues, setHadValues] = useState(count > 0);
   if (hadValues !== count > 0) {
     setHadValues(count > 0);
-    if (count > 0) setOpen(true);
+    if (count > 0) setIsOpen(true);
   }
   const help = text(field.help);
   return (
     <CollapsibleSection
       className="col-span-full"
-      open={open}
-      onOpenChange={setOpen}
+      open={isOpen}
+      onOpenChange={setIsOpen}
       title={title}
       titleHint={description}
       meta={

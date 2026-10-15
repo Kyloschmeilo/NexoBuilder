@@ -20,7 +20,7 @@ export function SyncCard({ server }: { server: TestServerState }) {
   const setConfig = useSetConfig();
   const errorMessage = useErrorMessage();
   const plan = usePlan();
-  const syncing = useTestServerStore((s) => s.syncing);
+  const isSyncing = useTestServerStore((s) => s.isSyncing);
   const lastResult = useTestServerStore((s) => s.lastResult);
   const lastCheck = useTestServerStore((s) => s.lastCheck);
   const syncError = useTestServerStore((s) => s.syncError);
@@ -34,8 +34,8 @@ export function SyncCard({ server }: { server: TestServerState }) {
         <CardTitle className="font-heading">{t('title')}</CardTitle>
         <CardDescription className="text-xs">{t('description')}</CardDescription>
         <CardAction>
-          <Button variant="outline" size="sm" disabled={!isRunning || syncing} onClick={() => void testServer.sync(true)}>
-            {syncing ? <Spinner /> : <RefreshCw />} {t('now')}
+          <Button variant="outline" size="sm" disabled={!isRunning || isSyncing} onClick={() => void testServer.sync(true)}>
+            {isSyncing ? <Spinner /> : <RefreshCw />} {t('now')}
           </Button>
         </CardAction>
       </CardHeader>

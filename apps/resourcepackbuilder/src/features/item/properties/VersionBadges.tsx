@@ -8,15 +8,15 @@ interface VersionBadgesProps {
   /** The project's Minecraft version. */
   version: string;
   /** Show both limits; otherwise only the one that matters for `version`. */
-  both?: boolean;
+  showBoth?: boolean;
 }
 
 /** "from 1.21.4" / "until 1.21.3" badges, coloured when the project's version is outside the range. */
-export function VersionBadges({ def, version, both }: VersionBadgesProps) {
+export function VersionBadges({ def, version, showBoth }: VersionBadgesProps) {
   const t = useTranslations('item');
   const support = versionSupport(version, def);
-  const showMax = !!def.maxVersion && (both || support === 'removed');
-  const showMin = !!def.minVersion && (both || !showMax);
+  const showMax = !!def.maxVersion && (showBoth || support === 'removed');
+  const showMin = !!def.minVersion && (showBoth || !showMax);
   return (
     <>
       {showMin && (

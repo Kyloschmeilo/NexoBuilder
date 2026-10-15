@@ -6,10 +6,10 @@ import { Checkbox } from '@resourcepackbuilder/ui/components/checkbox';
 
 export type CheckState = 'all' | 'none' | 'some';
 
-export const ROW = 'flex min-h-8 items-center gap-2 rounded-sm pr-3 text-sm text-foreground select-none hover:bg-muted';
-export const LABEL = 'min-w-0 flex-1 truncate';
-export const COUNT = 'font-mono text-xs whitespace-nowrap text-muted-foreground';
-export const ICON = 'size-4 shrink-0 text-muted-foreground';
+export const ROW_CLASS = 'flex min-h-8 items-center gap-2 rounded-sm pr-3 text-sm text-foreground select-none hover:bg-muted';
+export const LABEL_CLASS = 'min-w-0 flex-1 truncate';
+export const COUNT_CLASS = 'font-mono text-xs whitespace-nowrap text-muted-foreground';
+export const ICON_CLASS = 'size-4 shrink-0 text-muted-foreground';
 
 /** Indentation per level of the selection tree, in pixels. */
 export const INDENT_PX = 16;
@@ -38,7 +38,7 @@ interface GroupRowProps {
 /** A row that groups others (folder, list, project): checkbox for the whole group and a toggle for its children. */
 export function GroupRow({ label, state, onCheckedChange, isOpen, onToggle, style, className, children }: GroupRowProps) {
   return (
-    <div className={cn(ROW, className)} style={style}>
+    <div className={cn(ROW_CLASS, className)} style={style}>
       <Checkbox
         aria-label={label}
         checked={state === 'all'}
@@ -71,7 +71,7 @@ export function EntryRow({
   children: ReactNode;
 }) {
   return (
-    <label className={cn(ROW, 'cursor-pointer')} style={style}>
+    <label className={cn(ROW_CLASS, 'cursor-pointer')} style={style}>
       <Checkbox checked={isChecked} onCheckedChange={onCheckedChange} />
       {children}
     </label>

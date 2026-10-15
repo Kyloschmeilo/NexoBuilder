@@ -16,7 +16,7 @@ import { closeDialog, confirm } from '../../store/dialogs';
 import { toast } from '../../store/notifications';
 import { useOpenProject } from '../../store/project';
 import { isProjectShared, useShareStore } from '../../store/share';
-import { ShareStatusBadge } from './shareStatus';
+import { ShareStatusBadge } from './ShareStatusBadge';
 
 /** Longest name shown to the others. */
 const MAX_USER_NAME_LENGTH = 40;

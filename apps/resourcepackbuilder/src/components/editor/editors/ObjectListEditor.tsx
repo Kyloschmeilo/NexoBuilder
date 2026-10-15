@@ -32,8 +32,8 @@ export function ObjectListEditor({ field, value, onChange, hideLabel }: EditorPr
     <FieldShell field={field} hideLabel={hideLabel} wide>
       <div className="flex flex-col gap-2.5">
         {list.map((entry, i) => {
-          const obj = isPlainObject(entry) ? entry : {};
-          const title = entryTitle(field, obj);
+          const entryObject = isPlainObject(entry) ? entry : {};
+          const title = entryTitle(field, entryObject);
           return (
             <EntryCard
               key={rows.keys[i]}
@@ -47,7 +47,7 @@ export function ObjectListEditor({ field, value, onChange, hideLabel }: EditorPr
                     label={tCommon('duplicate')}
                     onClick={() => {
                       rows.insert(i + 1);
-                      commit(insertAt(list, i + 1, structuredClone(obj)));
+                      commit(insertAt(list, i + 1, structuredClone(entryObject)));
                     }}
                   >
                     <Copy />
@@ -67,7 +67,7 @@ export function ObjectListEditor({ field, value, onChange, hideLabel }: EditorPr
                 </>
               }
             >
-              <ObjectFields field={entryField} value={obj} onChange={(next) => commit(replaceAt(list, i, next))} />
+              <ObjectFields field={entryField} value={entryObject} onChange={(next) => commit(replaceAt(list, i, next))} />
             </EntryCard>
           );
         })}

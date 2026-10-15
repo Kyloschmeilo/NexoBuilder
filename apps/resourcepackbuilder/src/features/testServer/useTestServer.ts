@@ -12,22 +12,22 @@ export function useTestServer(): TestServerSync {
   return testServer;
 }
 
-/** Runs server actions one at a time: `busy` while one runs, failures as error toast, optional success toast. */
+/** Runs server actions one at a time: `isBusy` while one runs, failures as error toast, optional success toast. */
 export function useBusyAction() {
   const errorMessage = useErrorMessage();
-  const [busy, setBusy] = useState(false);
+  const [isBusy, setIsBusy] = useState(false);
   const run = async (action: () => Promise<unknown>, success?: string) => {
-    setBusy(true);
+    setIsBusy(true);
     try {
       await action();
       if (success) toast('success', success);
     } catch (err) {
       toast('error', errorMessage(err));
     } finally {
-      setBusy(false);
+      setIsBusy(false);
     }
   };
-  return { busy, run };
+  return { isBusy, run };
 }
 
 /** Saves test server settings; a failure is shown as error toast (the service has restored the saved state). */

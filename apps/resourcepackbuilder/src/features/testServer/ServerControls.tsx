@@ -10,19 +10,19 @@ import { useBusyAction, useTestServer } from './useTestServer';
 export function ServerControls({ server }: { server: TestServerState }) {
   const t = useTranslations('media.testServer');
   const testServer = useTestServer();
-  const { busy, run } = useBusyAction();
+  const { isBusy, run } = useBusyAction();
   const { status, config } = server;
   const isWorking = isTransitioning(status);
 
   if (status === 'running' || isWorking) {
     return (
       <>
-        <Button variant="outline" disabled={busy || isWorking} onClick={() => void run(testServer.restart)}>
+        <Button variant="outline" disabled={isBusy || isWorking} onClick={() => void run(testServer.restart)}>
           <RotateCcw /> {t('restart')}
         </Button>
         <Button
           variant="destructive"
-          disabled={busy || status === 'stopping' || status === 'preparing'}
+          disabled={isBusy || status === 'stopping' || status === 'preparing'}
           onClick={() => void run(testServer.stop)}
         >
           <Square /> {t('stop')}
@@ -34,7 +34,7 @@ export function ServerControls({ server }: { server: TestServerState }) {
   const missing = !config.eulaAccepted ? t('missingEula') : !config.paperVersion ? t('missingVersion') : null;
   return (
     <Tip label={missing}>
-      <Button size="lg" disabled={busy || missing !== null} onClick={() => void run(testServer.start)}>
+      <Button size="lg" disabled={isBusy || missing !== null} onClick={() => void run(testServer.start)}>
         <Play /> {t('start')}
       </Button>
     </Tip>

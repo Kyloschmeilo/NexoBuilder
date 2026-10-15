@@ -26,9 +26,9 @@ export interface ItemConfigChecks {
   armorSlot: string | null;
 }
 
-export function validateItemConfig(ctx: ItemExport, { config, usedVariations, armorSlot }: ItemConfigChecks): void {
-  const { item, report } = ctx;
-  const targetVersion = ctx.project.settings.minecraftVersion;
+export function validateItemConfig(itemExport: ItemExport, { config, usedVariations, armorSlot }: ItemConfigChecks): void {
+  const { item, report } = itemExport;
+  const targetVersion = itemExport.project.settings.minecraftVersion;
   const material = config.material;
   if (typeof material !== 'string' || !/^[A-Z0-9_]+$/.test(material)) {
     report('error', 'plan.materialInvalid', { material: String(material) });

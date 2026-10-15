@@ -3,7 +3,7 @@ import { useTranslations } from 'next-intl';
 import type { TextureField } from '@resourcepackbuilder/core/nexo/fields';
 import { pickFiles, Thumb } from '@resourcepackbuilder/ui';
 import { Button } from '@resourcepackbuilder/ui/components/button';
-import { useFieldContext } from '../FieldContext';
+import { useFieldContext } from '../fieldContext';
 import { FieldShell } from '../FieldShell';
 import type { EditorProps } from '../types';
 

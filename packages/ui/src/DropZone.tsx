@@ -24,7 +24,7 @@ const carriesFiles = (e: DragEvent) => e.dataTransfer.types.includes('Files');
  * calls `preventDefault()`, so window-level drop handlers can skip events with `defaultPrevented`.
  */
 export function DropZone({ onFiles, accept, title, subtitle, formats, multiple = true, compact, className, ...props }: DropZoneProps) {
-  const [dragging, setDragging] = useState(false);
+  const [isDragging, setIsDragging] = useState(false);
   const pick = async () => {
     const files = await pickFiles(accept, multiple);
     if (files.length) onFiles(files);
@@ -35,7 +35,7 @@ export function DropZone({ onFiles, accept, title, subtitle, formats, multiple =
       className={cn(
         'flex cursor-pointer flex-col items-center rounded-lg border border-dashed border-input text-center text-muted-foreground transition-colors outline-none',
         'hover:border-primary hover:bg-accent hover:text-foreground focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/50',
-        dragging && 'border-primary bg-accent text-foreground',
+        isDragging && 'border-primary bg-accent text-foreground',
         compact ? 'px-3.5 py-4' : 'px-5 py-8',
         className,
       )}
@@ -52,16 +52,16 @@ export function DropZone({ onFiles, accept, title, subtitle, formats, multiple =
         if (!carriesFiles(e)) return;
         e.preventDefault();
         e.dataTransfer.dropEffect = 'copy';
-        setDragging(true);
+        setIsDragging(true);
       }}
       onDragLeave={(e) => {
         // Moving onto a child also fires dragleave; only leaving the zone itself ends the highlight
-        if (!(e.relatedTarget instanceof Node && e.currentTarget.contains(e.relatedTarget))) setDragging(false);
+        if (!(e.relatedTarget instanceof Node && e.currentTarget.contains(e.relatedTarget))) setIsDragging(false);
       }}
       onDrop={async (e) => {
         if (!carriesFiles(e)) return;
         e.preventDefault();
-        setDragging(false);
+        setIsDragging(false);
         const files = await filesFromDataTransfer(e.dataTransfer);
         if (files.length) onFiles(files);
       }}

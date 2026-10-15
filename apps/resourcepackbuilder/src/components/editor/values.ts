@@ -23,27 +23,27 @@ export function countSetValues(value: unknown): number {
   return Object.values(value).filter((v) => v !== undefined && v !== null && v !== '').length;
 }
 
-/** `obj` with `key` set to `value`, or removed when `value` is undefined. */
-export function withKey(obj: Record<string, unknown>, key: string, value: unknown): Record<string, unknown> {
-  const next = { ...obj };
+/** `object` with `key` set to `value`, or removed when `value` is undefined. */
+export function withKey(object: Record<string, unknown>, key: string, value: unknown): Record<string, unknown> {
+  const next = { ...object };
   if (value === undefined) delete next[key];
   else next[key] = value;
   return next;
 }
 
-/** `obj` with `oldKey` renamed to `newKey`, keeping the key order. */
-export function renameKey(obj: Record<string, unknown>, oldKey: string, newKey: string): Record<string, unknown> {
-  return Object.fromEntries(Object.entries(obj).map(([k, v]) => [k === oldKey ? newKey : k, v]));
+/** `object` with `oldKey` renamed to `newKey`, keeping the key order. */
+export function renameKey(object: Record<string, unknown>, oldKey: string, newKey: string): Record<string, unknown> {
+  return Object.fromEntries(Object.entries(object).map(([k, v]) => [k === oldKey ? newKey : k, v]));
 }
 
-/** The entries of `obj` whose keys are not in `known` (the "*" field of an object). */
-export function unknownEntries(obj: Record<string, unknown>, known: ReadonlySet<string>): Record<string, unknown> {
-  return Object.fromEntries(Object.entries(obj).filter(([k]) => !known.has(k)));
+/** The entries of `object` whose keys are not in `known` (the "*" field of an object). */
+export function unknownEntries(object: Record<string, unknown>, known: ReadonlySet<string>): Record<string, unknown> {
+  return Object.fromEntries(Object.entries(object).filter(([k]) => !known.has(k)));
 }
 
-/** `obj` with its unknown entries replaced by `rest`. */
-export function withUnknownEntries(obj: Record<string, unknown>, known: ReadonlySet<string>, rest: unknown): Record<string, unknown> {
-  const next = Object.fromEntries(Object.entries(obj).filter(([k]) => known.has(k)));
+/** `object` with its unknown entries replaced by `rest`. */
+export function withUnknownEntries(object: Record<string, unknown>, known: ReadonlySet<string>, rest: unknown): Record<string, unknown> {
+  const next = Object.fromEntries(Object.entries(object).filter(([k]) => known.has(k)));
   return isPlainObject(rest) ? { ...next, ...rest } : next;
 }
 
@@ -59,8 +59,8 @@ export function listOrUndefined<T>(list: T[]): T[] | undefined {
 }
 
 /** Empty objects are stored as "not set". */
-export function objectOrUndefined(obj: Record<string, unknown>): Record<string, unknown> | undefined {
-  return Object.keys(obj).length ? obj : undefined;
+export function objectOrUndefined(object: Record<string, unknown>): Record<string, unknown> | undefined {
+  return Object.keys(object).length ? object : undefined;
 }
 
 export function insertAt<T>(list: readonly T[], index: number, entry: T): T[] {

@@ -1,2 +1,2 @@
-export { readStoredLocale, supportedLocales, writeStoredLocale, type SupportedLocale } from './locale';
-export { messagesByLocale, type IssueKey, type MessageKey, type Messages, type Namespace, type SchemaKey } from './messages';
+export { readStoredLocale, SUPPORTED_LOCALES, writeStoredLocale, type SupportedLocale } from './locale';
+export { MESSAGES_BY_LOCALE, type IssueKey, type MessageKey, type Messages, type Namespace, type SchemaKey } from './messages';

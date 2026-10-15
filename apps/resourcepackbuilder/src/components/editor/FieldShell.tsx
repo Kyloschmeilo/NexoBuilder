@@ -9,7 +9,7 @@ import { Tip } from '@resourcepackbuilder/ui';
 import { Badge } from '@resourcepackbuilder/ui/components/badge';
 import { FieldDescription, FieldError, FieldTitle } from '@resourcepackbuilder/ui/components/field';
 import { useSchemaText } from '../useSchemaText';
-import { useFieldContext } from './FieldContext';
+import { useFieldContext } from './fieldContext';
 
 /**
  * Displayed name of a field: its original English (Nexo) name, or the translated label when there is no

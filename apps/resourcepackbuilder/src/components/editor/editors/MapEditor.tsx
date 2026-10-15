@@ -48,26 +48,26 @@ export function MapEditor({ field, value, onChange, hideLabel }: EditorProps<Map
   const tCommon = useTranslations('common');
   const text = useSchemaText();
   const keyLabel = text(field.keyLabel) ?? '';
-  const obj = isPlainObject(value) ? value : {};
+  const map = isPlainObject(value) ? value : {};
   const reserved = field.reservedKeys ?? [];
-  const entries = Object.entries(obj).filter(([key]) => !reserved.includes(key));
+  const entries = Object.entries(map).filter(([key]) => !reserved.includes(key));
   const [newKey, setNewKey] = useState('');
   const listId = useId();
   const trimmedKey = newKey.trim();
-  const keyTaken = trimmedKey !== '' && (trimmedKey in obj || reserved.includes(trimmedKey));
+  const keyTaken = trimmedKey !== '' && (trimmedKey in map || reserved.includes(trimmedKey));
   const valueField = field.value;
 
   const commit = (next: Record<string, unknown>) => onChange(objectOrUndefined(next));
   const rename = (oldKey: string, nextKey: string) => {
-    if (nextKey !== oldKey && !(nextKey in obj)) commit(renameKey(obj, oldKey, nextKey));
+    if (nextKey !== oldKey && !(nextKey in map)) commit(renameKey(map, oldKey, nextKey));
   };
   const add = () => {
     if (!trimmedKey || keyTaken) return;
-    commit({ ...obj, [trimmedKey]: field.newValue?.() ?? (valueField.type === 'object' ? {} : '') });
+    commit({ ...map, [trimmedKey]: field.newValue?.() ?? (valueField.type === 'object' ? {} : '') });
     setNewKey('');
   };
   const removeButton = (key: string) => (
-    <IconButton label={tCommon('remove')} tone="destructive" onClick={() => commit(withKey(obj, key, undefined))}>
+    <IconButton label={tCommon('remove')} tone="destructive" onClick={() => commit(withKey(map, key, undefined))}>
       <Trash2 />
     </IconButton>
   );
@@ -88,16 +88,16 @@ export function MapEditor({ field, value, onChange, hideLabel }: EditorProps<Map
               }
             >
               {valueField.type === 'object' ? (
-                <ObjectFields field={valueField} value={entry} onChange={(v) => commit({ ...obj, [key]: v })} />
+                <ObjectFields field={valueField} value={entry} onChange={(v) => commit({ ...map, [key]: v })} />
               ) : (
-                <FieldRenderer field={valueField} value={entry} hideLabel onChange={(v) => commit({ ...obj, [key]: v })} />
+                <FieldRenderer field={valueField} value={entry} hideLabel onChange={(v) => commit({ ...map, [key]: v })} />
               )}
             </EntryCard>
           ) : (
             <div key={key} className="flex items-start gap-2">
               <KeyInput value={key} onRename={(k) => rename(key, k)} listId={listId} />
               <div className="min-w-0 flex-1">
-                <FieldRenderer field={valueField} value={entry} hideLabel onChange={(v) => commit({ ...obj, [key]: v })} />
+                <FieldRenderer field={valueField} value={entry} hideLabel onChange={(v) => commit({ ...map, [key]: v })} />
               </div>
               {removeButton(key)}
             </div>
@@ -121,7 +121,7 @@ export function MapEditor({ field, value, onChange, hideLabel }: EditorProps<Map
           </Button>
         </div>
         {keyTaken && <FieldErrorText>{t('field.keyTaken', { key: trimmedKey })}</FieldErrorText>}
-        <Datalist id={listId} choices={field.keyOptions?.filter((option) => !(option.value in obj))} />
+        <Datalist id={listId} choices={field.keyOptions?.filter((option) => !(option.value in map))} />
       </div>
     </FieldShell>
   );

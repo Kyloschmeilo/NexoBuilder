@@ -47,7 +47,7 @@ export function ModelPreview({ model, height = 340, showToolbar = true }: ModelP
   const stageRef = useRef<Stage | null>(null);
   const [display, setDisplay] = useState<DisplayOption>('none');
   const [resetCounter, setResetCounter] = useState(0);
-  const [webglError, setWebglError] = useState(false);
+  const [isWebglUnavailable, setIsWebglUnavailable] = useState(false);
   const preview = useMemo(() => buildPreviewModel(model), [model]);
   const displayTransform = display === 'none' ? undefined : (model.json.display?.[display] as JavaDisplayTransform | undefined);
 
@@ -56,7 +56,7 @@ export function ModelPreview({ model, height = 340, showToolbar = true }: ModelP
     try {
       stageRef.current = createStage(container);
     } catch {
-      setWebglError(true);
+      setIsWebglUnavailable(true);
       return;
     }
     return () => {
@@ -91,7 +91,7 @@ export function ModelPreview({ model, height = 340, showToolbar = true }: ModelP
 
   const hasDisplay = (slot: DisplayOption) => slot === 'none' || !!model.json.display?.[slot];
 
-  const note = webglError
+  const note = isWebglUnavailable
     ? t('webglUnavailable')
     : preview.kind === 'empty' && preview.note
       ? t(`notes.${preview.note.code}`, preview.note.params)

@@ -21,7 +21,7 @@ const LINE_COLOR: Record<TestServerLogLine['kind'], string> = {
 };
 
 /** Server output and command line. */
-export function Console() {
+export function ServerConsole() {
   const t = useTranslations('media.testServer.console');
   const testServer = useTestServer();
   const log = useTestServerStore((s) => s.log);

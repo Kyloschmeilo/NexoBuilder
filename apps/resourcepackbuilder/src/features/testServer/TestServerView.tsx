@@ -10,9 +10,9 @@ import type { TestServerState } from '../../platform/desktopApi';
 import { useServices } from '../../services/servicesContext';
 import { useTestServerStore } from '../../store/testServer';
 import { ConnectCard } from './ConnectCard';
-import { Console } from './Console';
+import { ServerConsole } from './ServerConsole';
 import { ServerControls } from './ServerControls';
-import { Setup } from './Setup';
+import { ServerSetup } from './ServerSetup';
 import { isConfigLocked, isTransitioning, TEST_SERVER_STATUS_TONE } from './status';
 import { SyncCard } from './SyncCard';
 
@@ -94,8 +94,8 @@ function TestServerPage({ server }: { server: TestServerState }) {
 
       <ConnectCard server={server} />
       <SyncCard server={server} />
-      <Console />
-      <Setup config={config} isLocked={isConfigLocked(server.status)} />
+      <ServerConsole />
+      <ServerSetup config={config} isLocked={isConfigLocked(server.status)} />
     </PageShell>
   );
 }

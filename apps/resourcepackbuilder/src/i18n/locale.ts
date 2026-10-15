@@ -1,5 +1,5 @@
 import { create } from 'zustand';
-import { readStoredLocale, supportedLocales, writeStoredLocale, type SupportedLocale } from '@resourcepackbuilder/i18n';
+import { readStoredLocale, SUPPORTED_LOCALES, writeStoredLocale, type SupportedLocale } from '@resourcepackbuilder/i18n';
 
 interface LocaleState {
   /** The language the app is shown in, persisted on this device. */
@@ -7,7 +7,7 @@ interface LocaleState {
 }
 
 /** The device's language choice; `loadStoredLocale()` reads it at startup. */
-export const useLocaleStore = create<LocaleState>(() => ({ locale: supportedLocales[0] }));
+export const useLocaleStore = create<LocaleState>(() => ({ locale: SUPPORTED_LOCALES[0] }));
 
 /** Applies the language stored on this device (called once at startup). */
 export function loadStoredLocale(): void {

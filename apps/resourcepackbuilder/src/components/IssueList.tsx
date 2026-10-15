@@ -15,10 +15,10 @@ const LEVEL_CLASSES: Record<IssueLevel, string> = {
   info: '*:[svg]:text-info',
 };
 
-const ORDER: Record<IssueLevel, number> = { error: 0, warning: 1, info: 2 };
+const LEVEL_ORDER: Record<IssueLevel, number> = { error: 0, warning: 1, info: 2 };
 
-/** Label of the jump button per target kind. */
-const OPEN_LABELS: Record<IssueTarget['kind'], IssueKey> = {
+/** Message key of the jump button label per target kind. */
+const OPEN_LABEL_KEYS: Record<IssueTarget['kind'], IssueKey> = {
   item: 'issueList.openItem',
   folder: 'issueList.openFolder',
   glyph: 'issueList.openGlyphs',
@@ -68,14 +68,14 @@ interface IssueListProps {
 export function IssueList({ issues, onOpen, canOpen = () => true, empty, hideInfo }: IssueListProps) {
   const t = useTranslations('issues');
   const text = useIssueText();
-  const visible = issues.filter((i) => !hideInfo || i.level !== 'info').sort((a, b) => ORDER[a.level] - ORDER[b.level]);
-  if (visible.length === 0) return empty ? <div className="text-xs text-muted-foreground">{empty}</div> : null;
+  const visibleIssues = issues.filter((i) => !hideInfo || i.level !== 'info').sort((a, b) => LEVEL_ORDER[a.level] - LEVEL_ORDER[b.level]);
+  if (visibleIssues.length === 0) return empty ? <div className="text-xs text-muted-foreground">{empty}</div> : null;
   return (
     <div role="list" className="flex flex-col gap-1.5">
-      {visible.map((issue, i) => {
+      {visibleIssues.map((issue, i) => {
         const Icon = ICONS[issue.level];
         const target = issue.target;
-        const jump = onOpen && target && canOpen(issue) ? { label: OPEN_LABELS[target.kind], run: () => onOpen(target) } : null;
+        const jump = onOpen && target && canOpen(issue) ? { label: OPEN_LABEL_KEYS[target.kind], run: () => onOpen(target) } : null;
         return (
           <Alert
             key={i}

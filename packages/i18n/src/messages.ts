@@ -72,4 +72,4 @@ const de = {
 } satisfies Messages;
 
 /** The message catalogue of every supported locale. */
-export const messagesByLocale: Record<SupportedLocale, Messages> = { en, de };
+export const MESSAGES_BY_LOCALE: Record<SupportedLocale, Messages> = { en, de };

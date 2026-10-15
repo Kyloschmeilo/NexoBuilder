@@ -10,7 +10,7 @@ import { NativeSelect, NativeSelectOption } from '@resourcepackbuilder/ui/compon
 import { updateProjectSettings } from '../../commands/settings';
 import { richTags } from '../../i18n/richTags';
 import { useOpenProject } from '../../store/project';
-import { NamespaceProblemText, useNamespaceProblem } from '../projects/namespaceProblem';
+import { NamespaceProblemText, useNamespaceProblem } from '../projects/NamespaceProblem';
 import { PackIconField } from './PackIconField';
 
 export function ProjectSettings() {

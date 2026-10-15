@@ -27,12 +27,12 @@ export function AddPropertyButton({ item, group }: { item: Item; group: Property
   const t = useTranslations('item');
   const tCommon = useTranslations('common');
   const tSchema = useTranslations('schema');
-  const [open, setOpen] = useState(false);
+  const [isOpen, setIsOpen] = useState(false);
   const version = useOpenProject().settings.minecraftVersion;
   const available = PROPERTIES.filter((p) => p.group === group && !isPropertyActive(item, p));
 
   return (
-    <Popover open={open} onOpenChange={setOpen}>
+    <Popover open={isOpen} onOpenChange={setIsOpen}>
       <PopoverTrigger render={<Button size="sm" />}>
         <Plus /> {tCommon('add')}
       </PopoverTrigger>
@@ -53,13 +53,13 @@ export function AddPropertyButton({ item, group }: { item: Item; group: Property
                   disabled={!!conflict}
                   onSelect={() => {
                     addProperty(item.id, def.id);
-                    setOpen(false);
+                    setIsOpen(false);
                   }}
                 >
                   <div className="flex min-w-0 flex-1 flex-col gap-0.5">
                     <span className="flex flex-wrap items-center gap-1.5 font-medium">
                       {label}
-                      <VersionBadges def={def} version={version} both />
+                      <VersionBadges def={def} version={version} showBoth />
                     </span>
                     <span className="text-xs text-muted-foreground">
                       {conflict ? t('properties.conflict', { name: tSchema(conflict.label as never) }) : description}
