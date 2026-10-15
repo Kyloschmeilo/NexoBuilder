@@ -1,15 +1,15 @@
 /**
- * Export-Auswahl: nur bestimmte Ordner, Items und Glyphen eines Projekts exportieren
- * und mehrere Projekte gemeinsam in ein ZIP packen.
+ * Export selection: export only certain folders, items and glyphs of a project
+ * and pack multiple projects together into one ZIP.
  *
- * Für die Auswahl entsteht ein Teilprojekt mit denselben Ordnern (nur ohne die abgewählten
- * Items) – Pfade und Dateinamen bleiben dadurch genau wie beim vollständigen Export.
+ * For the selection, a sub-project with the same folders (just without the deselected
+ * items) is created – paths and file names thus stay exactly as in the full export.
  */
 import type { Project } from '../types';
 import { slugify } from '../util';
 import { planExport, type ExportPlan, type PlanOptions, type ProjectIssue } from './plan';
 
-/** Gespeichert wird, was abgewählt ist – neue Items sind so automatisch dabei. */
+/** What is deselected gets stored – this way new items are included automatically. */
 export interface ExportSelection {
   excludedItemIds: string[];
   excludedGlyphIds: string[];
@@ -29,7 +29,7 @@ export function isEverythingSelected(selection: ExportSelection | undefined): bo
   );
 }
 
-/** Anzahl der ausgewählten Items und Glyphen. */
+/** Number of selected items and glyphs. */
 export function countSelected(
   project: Project,
   selection: ExportSelection | undefined,
@@ -47,8 +47,8 @@ export function countSelected(
 }
 
 /**
- * Teilprojekt mit den ausgewählten Items und Glyphen. Ordner ohne ausgewählte Items
- * fallen weg, alle anderen behalten Namen und Reihenfolge.
+ * Sub-project with the selected items and glyphs. Folders without selected items
+ * are dropped, all others keep their name and order.
  */
 export function selectFromProject(project: Project, selection: ExportSelection | undefined): Project {
   if (isEverythingSelected(selection)) return project;
@@ -62,7 +62,7 @@ export function selectFromProject(project: Project, selection: ExportSelection |
     if (!excludedItems.has(id)) items[id] = item;
   }
 
-  // Ordner behalten, in denen (auch weiter unten) noch etwas ausgewählt ist
+  // Keep folders in which something (also further down) is still selected
   const keep = new Map<string, boolean>();
   const visit = (id: string, guard: Set<string>): boolean => {
     if (keep.has(id)) return keep.get(id)!;
@@ -97,7 +97,7 @@ export function selectFromProject(project: Project, selection: ExportSelection |
   };
 }
 
-/* ====================================================================== mehrere Projekte */
+/* ====================================================================== multiple projects */
 
 export interface ExportEntry {
   project: Project;
@@ -105,21 +105,21 @@ export interface ExportEntry {
 }
 
 export interface PlannedProject {
-  /** Teilprojekt (nur die Auswahl, ggf. mit angepassten Einstellungen) */
+  /** Sub-project (only the selection, possibly with adjusted settings) */
   project: Project;
   plan: ExportPlan;
 }
 
 export interface MultiExportPlan {
   projects: PlannedProject[];
-  /** Alle Meldungen; bei mehreren Projekten mit dem Projektnamen davor */
+  /** All messages; with multiple projects prefixed with the project name */
   issues: ProjectIssue[];
 }
 
 /**
- * Plant den gemeinsamen Export. Bei mehreren Projekten landen die Items jedes Projekts in
- * items/<projekt>/, damit sich gleich benannte Ordner nicht überschreiben. Überschneidungen
- * zwischen den Projekten (Item-IDs, Pack-Namen, Dateien) werden als Fehler gemeldet.
+ * Plans the combined export. With multiple projects, the items of each project end up in
+ * items/<project>/ so that folders with the same name do not overwrite each other. Overlaps
+ * between the projects (item IDs, pack names, files) are reported as errors.
  */
 export function planMultiExport(entries: ExportEntry[], options: PlanOptions = {}): MultiExportPlan {
   const multiple = entries.length > 1;
@@ -136,7 +136,7 @@ export function planMultiExport(entries: ExportEntry[], options: PlanOptions = {
   const issues: ProjectIssue[] = [];
   for (const { project, plan } of projects) {
     for (const issue of plan.issues) {
-      // Aus dem Export-Dialog lassen sich nur Items des geöffneten Projekts öffnen – die IDs bleiben trotzdem dran
+      // From the export dialog only items of the open project can be opened – the IDs are kept anyway
       issues.push({ ...issue, message: `[${project.name}] ${issue.message}`, projectId: project.id });
     }
   }
@@ -148,7 +148,7 @@ function crossProjectIssues(projects: PlannedProject[]): ProjectIssue[] {
   const issues: ProjectIssue[] = [];
   const error = (message: string) => issues.push({ level: 'error', message });
 
-  // Merkt sich je Schlüssel das erste Projekt (Index) und liefert bei Überschneidung dessen Namen
+  // Remembers the first project (index) per key and returns its name on overlap
   const firstOwner = <K>(map: Map<K, number>, key: K, owner: number): string | null => {
     const other = map.get(key);
     if (other === undefined) map.set(key, owner);
@@ -195,11 +195,11 @@ function crossProjectIssues(projects: PlannedProject[]): ProjectIssue[] {
       if (other && !reportedFilePairs.has(pair)) {
         reportedFilePairs.add(pair);
         error(
-          `„${other}“ und „${name}“ würden beide die Datei „${path}“ schreiben (gleicher Projektname „${slugify(name, 'nexobuilder')}“). Bitte ein Projekt umbenennen.`,
+          `„${other}“ und „${name}“ würden beide die Datei „${path}“ schreiben (gleicher Projektname „${slugify(name, 'resourcepackbuilder')}“). Bitte ein Projekt umbenennen.`,
         );
       }
     }
-    // Nexo legt alle external packs zusammen – gleiche Pfade überschreiben sich dann gegenseitig
+    // Nexo merges all external packs – identical paths then overwrite each other
     for (const path of plan.packFiles.keys()) {
       if (!path.startsWith('assets/')) continue;
       const other = firstOwner(assetFiles, path, index);
@@ -215,9 +215,9 @@ function crossProjectIssues(projects: PlannedProject[]): ProjectIssue[] {
   return issues;
 }
 
-/* ====================================================================== Hilfen für die Auswahl-Oberfläche */
+/* ====================================================================== helpers for the selection UI */
 
-/** Alle Items in einem Ordner und seinen Unterordnern. */
+/** All items in a folder and its subfolders. */
 export function itemIdsInFolder(project: Project, folderId: string): string[] {
   const result: string[] = [];
   const guard = new Set<string>();
@@ -232,7 +232,7 @@ export function itemIdsInFolder(project: Project, folderId: string): string[] {
   return result;
 }
 
-/** Wählt die angegebenen Items an oder ab. */
+/** Selects or deselects the given items. */
 export function setItemsSelected(selection: ExportSelection, itemIds: string[], selected: boolean): ExportSelection {
   const excluded = new Set(selection.excludedItemIds);
   for (const id of itemIds) {
@@ -262,7 +262,7 @@ export function setGlyphsSelected(selection: ExportSelection, glyphIds: string[]
   return { ...selection, excludedGlyphIds: [...excluded] };
 }
 
-/** Auswahlzustand mehrerer Einträge: alle, keiner oder ein Teil. */
+/** Selection state of multiple entries: all, none or some. */
 export function selectionState(ids: string[], excluded: string[]): 'all' | 'none' | 'some' {
   if (ids.length === 0) return 'none';
   const set = new Set(excluded);

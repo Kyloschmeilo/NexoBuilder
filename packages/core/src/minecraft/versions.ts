@@ -1,6 +1,6 @@
 /**
- * Minecraft-Versionen, die von Nexo unterstützt werden (siehe docs.nexomc.com → Version Support),
- * mit dem jeweiligen Resourcepack-Format.
+ * Minecraft versions supported by Nexo (see docs.nexomc.com → Version Support),
+ * with their respective resource pack format.
  */
 export interface McVersion {
   id: string;
@@ -22,9 +22,9 @@ export const MC_VERSIONS: McVersion[] = [
 
 export const DEFAULT_MC_VERSION = '26.3';
 
-/** Ab diesem Pack-Format gelten min_format/max_format (Minecraft 1.21.9+). */
+/** From this pack format on, min_format/max_format apply (Minecraft 1.21.9+). */
 const MIN_MAX_FORMAT_SINCE = 65;
-/** Obergrenze, damit neuere Clients keine „veraltet“-Warnung anzeigen. */
+/** Upper bound so that newer clients do not show an "outdated" warning. */
 const MAX_FORMAT = 999;
 
 export function getMcVersion(id: string): McVersion {
@@ -32,10 +32,10 @@ export function getMcVersion(id: string): McVersion {
 }
 
 /**
- * Erstellt den Inhalt der pack.mcmeta passend zur Zielversion.
- * Regeln laut Minecraft-Wiki / vanilla-mcdoc:
- *  - supported_formats darf NICHT gesetzt werden, wenn min_format ≥ 65 (1.21.9+) ist.
- *  - pack_format wird für ältere Clients weiterhin angegeben.
+ * Creates the content of the pack.mcmeta matching the target version.
+ * Rules according to the Minecraft Wiki / vanilla-mcdoc:
+ *  - supported_formats must NOT be set if min_format ≥ 65 (1.21.9+).
+ *  - pack_format is still specified for older clients.
  */
 export function buildPackMcmeta(versionId: string, description: string): Record<string, unknown> {
   const format = getMcVersion(versionId).packFormat;
@@ -51,12 +51,12 @@ export function buildPackMcmeta(versionId: string, description: string): Record<
   return { pack };
 }
 
-/** Versionsgrenzen für Modell-Features (abgeleitet aus Blockbench / Minecraft-Changelogs). */
+/** Version limits for model features (derived from Blockbench / Minecraft changelogs). */
 export const MODEL_FEATURE_VERSIONS = {
-  /** Beliebige Winkel zwischen -45° und 45° (vorher nur 22,5°-Schritte) */
+  /** Arbitrary angles between -45° and 45° (previously only 22.5° steps) */
   freeAngle: '1.21.6',
-  /** Rotation auf mehreren Achsen bzw. Winkel über 45° */
+  /** Rotation on multiple axes or angles above 45° */
   multiAxisRotation: '1.21.11',
-  /** shade_direction_override an Elementen */
+  /** shade_direction_override on elements */
   shadeDirectionOverride: '26.3',
 } as const;

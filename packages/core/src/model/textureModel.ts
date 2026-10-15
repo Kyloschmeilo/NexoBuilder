@@ -1,6 +1,6 @@
 /**
- * Erstellt aus einer oder mehreren PNG-Texturen ein Modell auf Basis eines Vanilla-Parents
- * (2D-Item, Werkzeug, Würfel-Block, Pflanze …).
+ * Creates a model from one or more PNG textures based on a vanilla parent
+ * (2D item, tool, cube block, plant …).
  */
 import type { ImportedModel, Issue, JavaModelJson, ModelTexture } from '../types';
 import { fileBaseName } from '../util';
@@ -12,15 +12,15 @@ export interface TextureTemplate {
   parent: string;
   label: string;
   description: string;
-  /** Textur-Schlüssel, die belegt werden müssen */
+  /** Texture keys that must be assigned */
   slots: string[];
-  /** Für 2D-Items: jede weitere PNG wird eine zusätzliche Ebene (layer1, layer2 …) */
+  /** For 2D items: each further PNG becomes an additional layer (layer1, layer2 …) */
   multiLayer?: boolean;
-  /** Eignet sich für Custom Blocks */
+  /** Suitable for custom blocks */
   block?: boolean;
 }
 
-/** Minecraft unterstützt bei item/generated die Ebenen layer0 bis layer4. */
+/** Minecraft supports layers layer0 to layer4 for item/generated. */
 export const MAX_ITEM_LAYERS = 5;
 
 export const TEXTURE_TEMPLATES: TextureTemplate[] = [
@@ -102,7 +102,7 @@ export function getTextureTemplate(id: string): TextureTemplate {
   return TEXTURE_TEMPLATES.find((t) => t.id === id) ?? TEXTURE_TEMPLATES[0];
 }
 
-/** Schlägt anhand der Dateinamen eine Zuordnung PNG → Textur-Schlüssel vor. */
+/** Suggests a PNG → texture key assignment based on the file names. */
 export function suggestSlotAssignment(template: TextureTemplate, pngs: DroppedFile[]): Record<string, string> {
   const names = pngs.map((p) => p.name);
   const result: Record<string, string> = {};

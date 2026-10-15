@@ -1,11 +1,11 @@
 /**
- * Zusätzliche Modelle eines Items für bestimmte Zustände (Nexo „Special Item Appearance“):
- * Bogen spannen, Armbrust geladen, Schild blocken, Angel ausgeworfen, Beschädigung, gefärbt …
- * Die Schlüssel entsprechen den Pack-Optionen aus der Nexo-Doku (configuration/items/item-appearance).
+ * Additional models of an item for specific states (Nexo "Special Item Appearance"):
+ * drawing a bow, loaded crossbow, shield blocking, fishing rod cast, damage, dyed …
+ * The keys match the Pack options from the Nexo docs (configuration/items/item-appearance).
  */
 import type { ImportedModel, Item } from '../types';
 
-/** Varianten, die Nexo über Pack.<slot> selbst ins ItemModel einbaut */
+/** Variants that Nexo itself builds into the ItemModel via Pack.<slot> */
 export type PackVariantSlot =
   | 'pulling_models'
   | 'charged_model'
@@ -19,16 +19,16 @@ export type PackVariantSlot =
 
 export type ConnectSlot = 'connect_straight' | 'connect_left' | 'connect_right' | 'connect_inner' | 'connect_outer';
 export type PlacementSlot = 'placement_floor' | 'placement_wall' | 'placement_roof';
-/** Modell eines Möbel-Zustands: "state:<name>" */
+/** Model of a furniture state: "state:<name>" */
 export type StateSlot = `state:${string}`;
 
 export type VariantSlot = PackVariantSlot | 'gui_model' | ConnectSlot | PlacementSlot | 'light_on' | 'stack_models' | StateSlot;
 
 /**
- * pack:       Nexo baut das Modell über Pack.<slot> ein
- * definition: NexoBuilder schreibt ein eigenes ItemModel (assets/<ns>/items/…) für das Item
- * furniture:  Modell für Möbel-Funktionen (verbinden, Platzierung, Licht, Zustände)
- * block:      zusätzliche Block-Modelle (Stapel-Stufen)
+ * pack:       Nexo builds the model in via Pack.<slot>
+ * definition: ResourcepackBuilder writes its own ItemModel (assets/<ns>/items/…) for the item
+ * furniture:  model for furniture features (connecting, placement, light, states)
+ * block:      additional block models (stack stages)
  */
 export type VariantKind = 'pack' | 'definition' | 'furniture' | 'block';
 
@@ -37,13 +37,13 @@ export interface VariantDef {
   kind: VariantKind;
   label: string;
   description: string;
-  /** Mehrere Modelle (Liste) statt eines einzelnen */
+  /** Several models (list) instead of a single one */
   multiple: boolean;
-  /** Teil des Dateinamens im Pack, z.B. "<id>-pulling_0" */
+  /** Part of the file name in the pack, e.g. "<id>-pulling_0" */
   suffix: string;
-  /** Erster Index bei Listen (pulling_0 … bzw. damaged_1 …) */
+  /** First index for lists (pulling_0 … or damaged_1 …) */
   firstIndex?: number;
-  /** Materialien, bei denen Minecraft diesen Zustand kennt */
+  /** Materials for which Minecraft knows this state */
   materials?: string[];
   hint?: string;
 }
@@ -141,11 +141,11 @@ export const VARIANTS: VariantDef[] = [
     description: 'Anderes Modell im Inventar (z.B. flaches 2D-Bild), während in der Hand, auf dem Kopf oder als Furniture das Hauptmodell zu sehen ist.',
     multiple: false,
     suffix: 'gui',
-    hint: 'NexoBuilder erzeugt dafür ein eigenes ItemModel (ab Minecraft 1.21.4). Pulling, Blocking & Co. wirken dann nicht mehr.',
+    hint: 'ResourcepackBuilder erzeugt dafür ein eigenes ItemModel (ab Minecraft 1.21.4). Pulling, Blocking & Co. wirken dann nicht mehr.',
   },
 ];
 
-/** Modelle für Möbel-Funktionen – werden im Modell-Tab bei aktiver Möbel-Mechanik angezeigt */
+/** Models for furniture features – shown in the model tab when the furniture mechanic is active */
 export const FURNITURE_MODEL_SLOTS: VariantDef[] = [
   { slot: 'connect_straight', kind: 'furniture', label: 'Straight', description: 'Mittelstück zwischen linkem und rechtem Ende', multiple: false, suffix: 'straight' },
   { slot: 'connect_left', kind: 'furniture', label: 'Left', description: 'Linkes Ende', multiple: false, suffix: 'left' },
@@ -172,7 +172,7 @@ export const PLACEMENT_SLOTS: Array<{ slot: PlacementSlot; placement: 'floor' | 
   { slot: 'placement_roof', placement: 'roof' },
 ];
 
-/** Stapel-Stufen eines StringBlocks (Mechanics.custom_block.stackable) */
+/** Stack stages of a StringBlock (Mechanics.custom_block.stackable) */
 export const STACK_MODELS: VariantDef = {
   slot: 'stack_models',
   kind: 'block',
@@ -204,7 +204,7 @@ export function getVariantModels(item: Item, slot: VariantSlot): ImportedModel[]
   return item.variants?.[slot] ?? [];
 }
 
-/** Alle Modell-Plätze mit Modellen (auch Möbel-, Zustands- und Block-Modelle) */
+/** All model slots with models (including furniture, state and block models) */
 export function allVariantDefs(item: Item): VariantDef[] {
   const defs: VariantDef[] = [...VARIANTS, ...FURNITURE_MODEL_SLOTS, STACK_MODELS];
   for (const slot of Object.keys(item.variants ?? {})) {
@@ -217,7 +217,7 @@ export function activeVariantSlots(item: Item): VariantSlot[] {
   return VARIANTS.map((v) => v.slot).filter((slot) => item.variants?.[slot] !== undefined);
 }
 
-/** Pfad-Zusatz eines Varianten-Modells, z.B. "pulling_0" oder "blocking". */
+/** Path suffix of a variant model, e.g. "pulling_0" or "blocking". */
 export function variantPathSuffix(def: VariantDef, index: number): string {
   return def.multiple ? `${def.suffix}_${index + (def.firstIndex ?? 0)}` : def.suffix;
 }

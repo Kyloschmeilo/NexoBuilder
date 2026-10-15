@@ -8,7 +8,7 @@ interface ModalProps {
   children: ReactNode;
   footer?: ReactNode;
   size?: 'narrow' | 'normal' | 'wide';
-  /** Schließen per Klick auf den Hintergrund verhindern (z.B. bei ungespeicherten Eingaben) */
+  /** Prevent closing by clicking the backdrop (e.g. with unsaved input) */
   sticky?: boolean;
 }
 

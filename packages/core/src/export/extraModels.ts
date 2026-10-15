@@ -1,7 +1,7 @@
 /**
- * Zusätzliche Modelle, für die NexoBuilder selbst ItemModels (assets/<ns>/items/…) schreibt:
- * eigenes Inventar-Symbol, verbindbare Möbel, Platzierungs-, Licht- und Zustands-Modelle von Möbeln
- * sowie Stapel-Stufen von Blöcken. Die passenden Werte in der Item-Konfiguration werden mitgeliefert.
+ * Additional models for which ResourcepackBuilder writes ItemModels (assets/<ns>/items/…) itself:
+ * custom inventory icon, connectable furniture, placement, light and state models of furniture
+ * as well as stack stages of blocks. The matching values in the item configuration are supplied too.
  */
 import type { ConfigObject, IssueLevel, Item, JavaModelJson, Project } from '../types';
 import { getPath } from '../nexo/configPath';
@@ -12,12 +12,12 @@ import type { FileContent } from './plan';
 export interface ExtraConfig {
   path: string[];
   value: unknown;
-  /** Nur setzen, wenn der Nutzer dort selbst nichts eingetragen hat */
+  /** Only set if the user has not entered anything there themselves */
   ifMissing?: boolean;
 }
 
 export interface ExtraModelsResult {
-  /** Eigenes ItemModel für das Item (Components.item_model) */
+  /** Custom ItemModel for the item (Components.item_model) */
   itemModel: string | null;
   config: ExtraConfig[];
 }
@@ -27,7 +27,7 @@ interface ExtraModelsContext {
   item: Item;
   ns: string;
   modelKey: string | null;
-  /** Pfad des Hauptmodells, z.B. item/moebel/sofa */
+  /** Path of the main model, e.g. item/moebel/sofa */
   modelPath: string;
   folderSlugs: string[];
   writeModel: (model: NonNullable<Item['model']>, modelPath: string, what: string) => { key: string; json: JavaModelJson };
@@ -82,7 +82,7 @@ export function planExtraModels(ctx: ExtraModelsContext): ExtraModelsResult {
     add('warning', 'Es sind Furniture-Modelle hochgeladen, aber die Mechanic „Furniture“ fehlt – sie werden nicht exportiert.');
   }
 
-  /* ------------------------------------------------ Haupt-ItemModel: verbindbar + Inventar-Symbol */
+  /* ------------------------------------------------ Main ItemModel: connectable + inventory icon */
   let main: ItemModelNode | null = null;
   if (furnitureActive) {
     const connect = CONNECT_SLOTS.map((c) => ({ ...c, key: has(c.slot) ? writeSlot(c.slot, c.state, `Connectable (${c.state})`) : null })).filter(
@@ -128,7 +128,7 @@ export function planExtraModels(ctx: ExtraModelsContext): ExtraModelsResult {
     result.itemModel = writeDefinition(defBase, main, oversized);
   }
 
-  /* ------------------------------------------------ Möbel: Platzierung, Licht, Zustände */
+  /* ------------------------------------------------ Furniture: placement, light, states */
   if (furnitureActive) {
     const needItemModel = (what: string) => {
       if (!atLeast('1.21.2')) add('error', `${what}: eigene Furniture-Modelle brauchen mindestens Minecraft 1.21.2.`);
@@ -173,7 +173,7 @@ export function planExtraModels(ctx: ExtraModelsContext): ExtraModelsResult {
     }
   }
 
-  /* ------------------------------------------------ Blöcke: Stapel-Stufen */
+  /* ------------------------------------------------ Blocks: stack stages */
   if (has('stack_models')) {
     const block = getPath(config, ['Mechanics', 'custom_block']);
     if (!isPlainObject(block)) {

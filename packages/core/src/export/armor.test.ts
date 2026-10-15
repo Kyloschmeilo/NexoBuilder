@@ -23,8 +23,8 @@ function project(version = '1.21.11'): { project: Project; add: (id: string, mat
 
 const yamlOf = (p: Project) => parse(planExport(p).itemFiles.get('items/teile/teile.yml')!);
 
-describe('Getragene Texturen', () => {
-  it('erzeugt Elytra-Flügel mit Slot CHEST und Gleiter-Komponente', () => {
+describe('Worn textures', () => {
+  it('creates elytra wings with slot CHEST and glider component', () => {
     const { project: p, add } = project();
     add('fluegel', 'PAPER', { set: 'feuer_elytra', elytra: '@asset:tex' });
     const plan = planExport(p);
@@ -37,7 +37,7 @@ describe('Getragene Texturen', () => {
     expect(item.Components.glider).toBe(true);
   });
 
-  it('setzt bei Tier-Rüstungen Slot BODY und die erlaubten Tiere', () => {
+  it('sets slot BODY and the allowed animals for animal armor', () => {
     const { project: p, add } = project();
     add('teppich', 'PAPER', { set: 'bunt', mob: { llama_armor: '@asset:tex' } });
     add('wolfspanzer', 'WOLF_ARMOR', { set: 'wolf', mob: { wolf_armor: '@asset:tex' } });
@@ -49,7 +49,7 @@ describe('Getragene Texturen', () => {
     expect(yaml.teppich.Components.glider).toBeUndefined();
   });
 
-  it('erzeugt Sättel für mehrere Tiere', () => {
+  it('creates saddles for multiple animals', () => {
     const { project: p, add } = project();
     add('sattel', 'SADDLE', { set: 'leder', saddles: { pig_saddle: '@asset:tex', horse_saddle: '@asset:tex' } });
     const plan = planExport(p);
@@ -58,13 +58,13 @@ describe('Getragene Texturen', () => {
     expect(yamlOf(p).sattel.Components.equippable).toEqual({ slot: 'SADDLE', asset_id: 'aus:leder', allowed_entity_types: ['PIG', 'HORSE'] });
   });
 
-  it('meldet Layer, die es auf der Zielversion noch nicht gibt', () => {
+  it('reports layers that do not exist yet in the target version', () => {
     const { project: p, add } = project('1.21.4');
     add('geschirr', 'PAPER', { set: 'ghast', mob: { harness: '@asset:tex' } });
     expect(planExport(p).issues.some((i) => i.level === 'error' && i.message.includes('1.21.6'))).toBe(true);
   });
 
-  it('lässt Spieler-Rüstungen wie bisher', () => {
+  it('leaves player armor as before', () => {
     const { project: p, add } = project();
     add('helm', 'IRON_HELMET', { set: 'rubin', layer1: '@asset:tex', layer2: '@asset:tex' });
     const plan = planExport(p);

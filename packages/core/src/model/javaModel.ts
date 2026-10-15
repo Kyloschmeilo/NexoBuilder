@@ -1,10 +1,10 @@
 /**
- * Import eines vorhandenen Minecraft-Java-Modells (JSON) inklusive PNG-Texturen.
+ * Import of an existing Minecraft Java model (JSON) including PNG textures.
  *
- * - Texturverweise ("namespace:pfad/name") werden über den Dateinamen den abgelegten PNGs zugeordnet.
- * - Werden mehrere JSON-Dateien abgelegt, deren eine die andere als "parent" referenziert,
- *   werden sie zu einem Modell zusammengeführt (wie Blockbench "Parent auflösen").
- * - Verweise auf Vanilla-Texturen (minecraft:...) ohne passende PNG bleiben erhalten.
+ * - Texture references ("namespace:path/name") are matched to the dropped PNGs by file name.
+ * - If several JSON files are dropped, one of which references the other as "parent",
+ *   they are merged into one model (like Blockbench "Resolve parent").
+ * - References to vanilla textures (minecraft:...) without a matching PNG are kept.
  */
 import type { FaceName, ImportedModel, Issue, JavaModelElement, JavaModelJson, ModelTexture } from '../types';
 import { MODEL_FEATURE_VERSIONS } from '../minecraft/versions';
@@ -19,7 +19,7 @@ interface ParsedJson {
   json: JavaModelJson;
 }
 
-/** Parent-Modelle, die Minecraft für 2D-Items nutzt (hier sind keine Elemente nötig). */
+/** Parent models Minecraft uses for 2D items (no elements needed here). */
 const ITEM_PARENTS = [
   'item/generated',
   'item/handheld',
@@ -76,8 +76,8 @@ export function convertJavaModel(files: DroppedFile[]): ImportedModel {
   const textures: ModelTexture[] = [];
   const texturesJson: Record<string, string> = {};
   const usedPngs = new Set<DroppedFile>();
-  const byReference = new Map<string, string>(); // Referenz → Textur-ID
-  const unresolved = new Map<string, string[]>(); // Referenz → Textur-Schlüssel
+  const byReference = new Map<string, string>(); // reference → texture ID
+  const unresolved = new Map<string, string[]>(); // reference → texture keys
 
   const addTexture = (png: DroppedFile, ref: string): string => {
     const id = `t${textures.length}`;
@@ -107,7 +107,7 @@ export function convertJavaModel(files: DroppedFile[]): ImportedModel {
     }
   }
 
-  // Genau eine nicht zugeordnete Referenz und genau eine übrige PNG → automatisch zuordnen
+  // Exactly one unassigned reference and exactly one leftover PNG → assign automatically
   const leftoverPngs = pngFiles.filter((p) => !usedPngs.has(p));
   const customUnresolved = [...unresolved.keys()].filter((ref) => !isVanillaReference(ref));
   const candidates = customUnresolved.length > 0 ? customUnresolved : [...unresolved.keys()];
@@ -156,7 +156,7 @@ export function convertJavaModel(files: DroppedFile[]): ImportedModel {
   };
 }
 
-/** Wählt das Hauptmodell: dasjenige, das von keinem anderen als parent genutzt wird. */
+/** Picks the main model: the one not used as parent by any other. */
 function pickMainModel(models: ParsedJson[]): ParsedJson {
   if (models.length === 1) return models[0];
   const referenced = new Set(
@@ -169,7 +169,7 @@ function pickMainModel(models: ParsedJson[]): ParsedJson {
   return candidates[0] ?? models[0];
 }
 
-/** Führt die Parent-Kette zusammen, soweit die Parent-Dateien mit abgelegt wurden. */
+/** Merges the parent chain, as far as the parent files were dropped too. */
 function mergeParents(main: ParsedJson, all: ParsedJson[], issues: Issue[]): JavaModelJson {
   const stack: JavaModelJson[] = [main.json];
   const used = new Set<ParsedJson>([main]);
@@ -214,7 +214,7 @@ function structuredCloneJson<T>(value: T): T {
   return JSON.parse(JSON.stringify(value)) as T;
 }
 
-/** Ordnet eine Texturreferenz ("ns:item/foo") einer abgelegten PNG zu. */
+/** Matches a texture reference ("ns:item/foo") to a dropped PNG. */
 function matchPng(pngs: DroppedFile[], ref: string, used: Set<DroppedFile>): DroppedFile | undefined {
   const path = ref.includes(':') ? ref.split(':')[1] : ref;
   const base = normalizeTextureName(path.split('/').pop() ?? path);
@@ -222,7 +222,7 @@ function matchPng(pngs: DroppedFile[], ref: string, used: Set<DroppedFile>): Dro
   return available.find((p) => normalizeTextureName(p.name) === base);
 }
 
-/** Entfernt //- und /* *\/-Kommentare (manche Tools schreiben sie in Modell-JSONs). */
+/** Removes // and /* *\/ comments (some tools write them into model JSONs). */
 function stripJsonComments(text: string): string {
   let result = '';
   let inString = false;
@@ -255,8 +255,8 @@ function stripJsonComments(text: string): string {
 }
 
 /**
- * Prüft die Elemente auf Dinge, die Minecraft nicht laden kann, und ermittelt die nötige Version.
- * Wird auch für bereits importierte Modelle (z.B. bei der Export-Prüfung) verwendet.
+ * Checks the elements for things Minecraft cannot load and determines the required version.
+ * Also used for already imported models (e.g. during the export check).
  */
 export function analyseElements(json: JavaModelJson, issues: Issue[]): string | undefined {
   let requiresVersion: string | undefined;
@@ -316,7 +316,7 @@ function checkParent(json: JavaModelJson, issues: Issue[]) {
   }
 }
 
-/** Ersetzt die Texturzuordnung eines Schlüssels (z.B. nachträglich im Modell-Tab). */
+/** Lists the texture keys of a model that point to the given texture. */
 export function textureKeysUsingTexture(json: JavaModelJson, textureId: string): string[] {
   return Object.entries(json.textures ?? {})
     .filter(([, v]) => parseTexturePlaceholder(v) === textureId)

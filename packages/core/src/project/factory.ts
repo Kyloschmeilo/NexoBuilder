@@ -1,4 +1,4 @@
-/** Erzeugt neue Projekte, Ordner und Items mit sinnvollen Standardwerten. */
+/** Creates new projects, folders and items with sensible defaults. */
 import type { Folder, ImportedModel, Item, Project, ProjectSettings } from '../types';
 import { DEFAULT_MC_VERSION } from '../minecraft/versions';
 import { slugify, uid } from '../util';
@@ -7,8 +7,8 @@ export function defaultSettings(name: string): ProjectSettings {
   return {
     minecraftVersion: DEFAULT_MC_VERSION,
     useItemModel: true,
-    packName: slugify(name, 'nexobuilder'),
-    packDescription: `${name} – erstellt mit NexoBuilder`,
+    packName: slugify(name, 'resourcepackbuilder'),
+    packDescription: `${name} – erstellt mit ResourcepackBuilder`,
     packIcon: null,
     externalPackAsZip: false,
     itemsInProjectFolder: false,
@@ -24,7 +24,7 @@ export function createProject(name: string, namespace?: string, minecraftVersion
     formatVersion: 1,
     id: uid('p_'),
     name,
-    namespace: namespace ?? slugify(name, 'nexobuilder'),
+    namespace: namespace ?? slugify(name, 'resourcepackbuilder'),
     settings,
     folders: {},
     items: {},
@@ -66,7 +66,7 @@ export function createItem(input: NewItemInput): Item {
   };
 }
 
-/** Fügt Ordner/Item in ein Projekt ein (verändert das Projekt – für Immer-Drafts oder Tests). */
+/** Inserts a folder/item into a project (mutates the project – for Immer drafts or tests). */
 export function insertFolder(project: Project, folder: Folder): void {
   project.folders[folder.id] = folder;
   if (folder.parentId) project.folders[folder.parentId]?.folderIds.push(folder.id);
@@ -78,7 +78,7 @@ export function insertItem(project: Project, item: Item): void {
   project.folders[item.folderId]?.itemIds.push(item.id);
 }
 
-/** Schlägt eine eindeutige Item-ID vor, z.B. "ruby_sword_2", wenn "ruby_sword" schon existiert. */
+/** Suggests a unique item ID, e.g. "ruby_sword_2" if "ruby_sword" already exists. */
 export function uniqueNexoId(project: Project, wanted: string, ignoreItemId?: string): string {
   const base = slugify(wanted, 'item');
   const taken = new Set(

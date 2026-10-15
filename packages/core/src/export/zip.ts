@@ -1,4 +1,4 @@
-/** Erstellt das ZIP-Archiv für den Export (ein oder mehrere Projekte). */
+/** Creates the ZIP archive for the export (one or more projects). */
 import JSZip from 'jszip';
 import type { Project } from '../types';
 import type { ExportMode, ExportPlan, FileContent } from './plan';
@@ -8,11 +8,11 @@ import { buildRootFiles, PAINTINGS_FILE, SOUNDS_FILE } from './rootFiles';
 export interface ExportResult {
   fileName: string;
   data: Uint8Array;
-  /** Alle Pfade im Archiv (für die Vorschau) */
+  /** All paths in the archive (for the preview) */
   paths: string[];
 }
 
-/** Feste Zeitstempel sorgen dafür, dass derselbe Inhalt dasselbe ZIP ergibt. */
+/** Fixed timestamps ensure that the same content yields the same ZIP. */
 const FIXED_DATE = new Date(Date.UTC(2020, 0, 1, 0, 0, 0));
 
 function addFiles(zip: JSZip, files: Map<string, FileContent>, prefix = '') {
@@ -31,7 +31,7 @@ function single(project: Project, plan: ExportPlan): MultiExportPlan {
 }
 
 export function exportFileName(project: Project, mode: ExportMode): string {
-  const base = project.settings.packName || 'nexobuilder';
+  const base = project.settings.packName || 'resourcepackbuilder';
   if (mode === 'pack') return `${base}.zip`;
   if (mode === 'items') return `${base}_items.zip`;
   return `${base}_nexo.zip`;
@@ -39,7 +39,7 @@ export function exportFileName(project: Project, mode: ExportMode): string {
 
 export function multiExportFileName(multi: MultiExportPlan, mode: ExportMode): string {
   if (multi.projects.length === 1) return exportFileName(multi.projects[0].project, mode);
-  const base = `nexobuilder_${multi.projects.length}_projekte`;
+  const base = `resourcepackbuilder_${multi.projects.length}_projekte`;
   if (mode === 'pack') return `${base}_packs.zip`;
   if (mode === 'items') return `${base}_items.zip`;
   return `${base}_nexo.zip`;
@@ -50,12 +50,12 @@ function packLocation(project: Project): string {
   return project.settings.externalPackAsZip ? `pack/external_packs/${packName}.zip` : `pack/external_packs/${packName}/`;
 }
 
-/** Ein einzelnes Pack liegt direkt im ZIP, mehrere bekommen je einen Ordner. */
+/** A single pack lies directly in the ZIP, multiple packs each get a folder. */
 function packPrefix(multi: MultiExportPlan, entry: PlannedProject): string {
   return multi.projects.length === 1 ? '' : `${entry.project.settings.packName}/`;
 }
 
-/** Listet die Pfade, die im Archiv landen (ohne es zu erzeugen). */
+/** Lists the paths that end up in the archive (without creating it). */
 export function listExportPaths(project: Project, plan: ExportPlan, mode: ExportMode): string[] {
   return listMultiExportPaths(single(project, plan), mode);
 }
@@ -114,7 +114,7 @@ export async function buildMultiExportZip(multi: MultiExportPlan, mode: ExportMo
   return { fileName: multiExportFileName(multi, mode), data, paths: listMultiExportPaths(multi, mode) };
 }
 
-/** Hinweis auf sounds.yml/paintings.yml – davon gibt es auf dem Server nur jeweils eine Datei */
+/** Note about sounds.yml/paintings.yml – there is only one file of each on the server */
 function rootFileLines(plans: ExportPlan[]): string[] {
   const lines: string[] = [];
   const files = buildRootFiles(plans);
@@ -140,7 +140,7 @@ export function installGuide(project: Project, plan: ExportPlan): string {
   const location = packLocation(project);
   const ids = plan.items.map((p) => `  - ${p.item.nexoId}`).join('\n');
   return [
-    `NexoBuilder – Projekt "${project.name}"`,
+    `ResourcepackBuilder – Projekt "${project.name}"`,
     '==========================================',
     '',
     'Installation',
@@ -168,7 +168,7 @@ export function installGuide(project: Project, plan: ExportPlan): string {
 
 export function multiInstallGuide(multi: MultiExportPlan): string {
   const lines = [
-    `NexoBuilder – ${multi.projects.length} Projekte`,
+    `ResourcepackBuilder – ${multi.projects.length} Projekte`,
     '==========================================',
     '',
     'Installation',

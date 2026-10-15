@@ -1,7 +1,7 @@
-/** Kleine Vorschaubilder (wie im Inventar) für Baum und Editor – mit einem gemeinsamen Renderer. */
+/** Small thumbnails (like in the inventory) for the tree and editor – with a shared renderer. */
 import { useEffect, useState } from 'react';
 import * as THREE from 'three';
-import type { ImportedModel, JavaDisplayTransform } from '@nexobuilder/core/types';
+import type { ImportedModel, JavaDisplayTransform } from '@resourcepackbuilder/core/types';
 import { buildPreviewModel, resolveTextureRef } from './modelGeometry';
 import { createModelObject } from './threeModel';
 
@@ -11,7 +11,7 @@ const pending = new WeakMap<ImportedModel, Promise<string | null>>();
 let renderer: THREE.WebGLRenderer | null | undefined;
 let queue: Promise<unknown> = Promise.resolve();
 
-/** Standard-Ansicht von Blöcken im Inventar (block/block.json) */
+/** Default view of blocks in the inventory (block/block.json) */
 const DEFAULT_GUI: JavaDisplayTransform = { rotation: [30, 225, 0], translation: [0, 0, 0], scale: [0.625, 0.625, 0.625] };
 
 function getRenderer(): THREE.WebGLRenderer | null {

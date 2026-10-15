@@ -1,7 +1,7 @@
 import { useState, type ReactNode } from 'react';
 import { Check, Copy } from 'lucide-react';
 
-/** Einfache Syntax-Hervorhebung für YAML (nur zur Anzeige). */
+/** Simple syntax highlighting for YAML (display only). */
 function highlightLine(line: string, key: number): ReactNode {
   if (/^\s*#/.test(line)) return <span key={key} className="y-comment">{line}</span>;
   const m = /^(\s*)(- )?([^\s"'#][^:#]*?|"[^"]*"|'[^']*')(:)(\s|$)(.*)$/.exec(line);
@@ -64,7 +64,7 @@ export function CopyButton({ text, label = 'Kopieren' }: { text: string; label?:
           setCopied(true);
           window.setTimeout(() => setCopied(false), 1500);
         } catch {
-          /* Zwischenablage nicht verfügbar */
+          /* Clipboard not available */
         }
       }}
     >

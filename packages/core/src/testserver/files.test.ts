@@ -6,10 +6,10 @@ import { nexoFolderFiles, nexoGiveCommand, patchNexoSettings } from './files';
 import { createTextureModel } from '../model/textureModel';
 import { makePngDataUrl } from '../test/png';
 
-describe('Testserver: Dateien für plugins/Nexo', () => {
-  it('legt Items, Rezepte und das Pack als Ordner unter pack/external_packs ab', () => {
+describe('Test server: files for plugins/Nexo', () => {
+  it('places items, recipes and the pack as a folder under pack/external_packs', () => {
     const project = createProject('Test Pack', 'testpack');
-    project.settings.externalPackAsZip = true; // wird für den Testserver ignoriert
+    project.settings.externalPackAsZip = true; // ignored for the test server
     const folder = createFolder('Waffen', null);
     insertFolder(project, folder);
     const model = createTextureModel('handheld', { layer0: 'ruby.png' }, [{ name: 'ruby.png', dataUrl: makePngDataUrl(16, 16) }]);
@@ -24,16 +24,16 @@ describe('Testserver: Dateien für plugins/Nexo', () => {
     expect(paths.every((p) => !p.endsWith('.zip'))).toBe(true);
   });
 
-  it('nutzt einen sicheren Ordnernamen, wenn der Pack-Name ungültig ist', () => {
+  it('uses a safe folder name if the pack name is invalid', () => {
     const project = createProject('X');
     project.settings.packName = 'mein pack!';
     const files = nexoFolderFiles(project, planExport(project, { includeBinaries: true }));
-    expect(files.some((f) => f.path.startsWith('pack/external_packs/nexobuilder/'))).toBe(true);
+    expect(files.some((f) => f.path.startsWith('pack/external_packs/resourcepackbuilder/'))).toBe(true);
   });
 });
 
-describe('Testserver: Nexo-Einstellungen', () => {
-  it('legt eine neue settings.yml mit lokalem Pack-Server an', () => {
+describe('Test server: Nexo settings', () => {
+  it('creates a new settings.yml with a local pack server', () => {
     const text = patchNexoSettings(null, { packPort: 8082 });
     expect(parse(text)).toEqual({
       Pack: {
@@ -44,7 +44,7 @@ describe('Testserver: Nexo-Einstellungen', () => {
     });
   });
 
-  it('ändert nur die nötigen Werte und behält Kommentare und andere Einstellungen', () => {
+  it('changes only the required values and keeps comments and other settings', () => {
     const existing = [
       '# Nexo Einstellungen',
       'Plugin:',
@@ -67,12 +67,12 @@ describe('Testserver: Nexo-Einstellungen', () => {
     expect(data.Pack.server.type).toBe('SELFHOST');
     expect(data.Pack.server.selfhost).toEqual({ port: 8090, public_address: '127.0.0.1' });
     expect(data.Pack.dispatch).toEqual({ send_on_reload: true, mandatory: true });
-    // Zweiter Durchlauf ändert nichts mehr
+    // A second pass changes nothing
     expect(patchNexoSettings(text, { packPort: 8090 })).toBe(text);
   });
 
-  it('lässt eine von Nexo umformatierte Datei unverändert, wenn alle Werte schon stimmen', () => {
-    // So schreibt Nexo die Datei nach dem Start (andere Einrückung, Anführungszeichen, Kommentare)
+  it('leaves a file reformatted by Nexo unchanged if all values are already correct', () => {
+    // This is how Nexo writes the file after startup (different indentation, quotes, comments)
     const nexoFormatted = [
       'Plugin:',
       '    language: english',
@@ -95,14 +95,14 @@ describe('Testserver: Nexo-Einstellungen', () => {
     expect(patchNexoSettings(nexoFormatted, { packPort: 8082 })).toBe(nexoFormatted);
   });
 
-  it('ersetzt eine kaputte Datei durch die nötigen Werte', () => {
+  it('replaces a broken file with the required values', () => {
     const text = patchNexoSettings('Pack: [kaputt', { packPort: 8082 });
     expect(parse(text).Pack.server.type).toBe('SELFHOST');
   });
 });
 
-describe('Testserver: Befehle', () => {
-  it('gibt Items in der Reihenfolge von Nexo 1.29: give <item> <anzahl> <spieler>', () => {
+describe('Test server: commands', () => {
+  it('gives items in the Nexo 1.29 order: give <item> <amount> <player>', () => {
     expect(nexoGiveCommand('purpel_block', 1, 'Kyloschmeilo')).toBe('nexo give purpel_block 1 Kyloschmeilo');
     expect(nexoGiveCommand('ruby', 0, 'Steve')).toBe('nexo give ruby 1 Steve');
   });

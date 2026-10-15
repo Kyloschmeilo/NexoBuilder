@@ -1,0 +1,32 @@
+# Configuration for the Windows program (npm run dist:win)
+appId: de.resourcepackbuilder.app
+productName: ResourcepackBuilder
+copyright: ResourcepackBuilder
+directories:
+  output: release
+  buildResources: build
+files:
+  - electron/**
+  - out/**
+  - build/icon.png
+  - package.json
+asar: true
+# No automatic updates
+publish: null
+win:
+  icon: build/icon.png
+  target:
+    - target: nsis
+      arch: [x64]
+    - target: portable
+      arch: [x64]
+nsis:
+  oneClick: false
+  perMachine: false
+  allowToChangeInstallationDirectory: true
+  createDesktopShortcut: true
+  createStartMenuShortcut: true
+  shortcutName: ResourcepackBuilder
+  artifactName: ResourcepackBuilder-Setup-${version}.exe
+portable:
+  artifactName: ResourcepackBuilder-${version}-portable.exe

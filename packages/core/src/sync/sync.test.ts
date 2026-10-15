@@ -9,7 +9,7 @@ import { readShareFolder, SyncEngine, ShareFolderError, type SyncFileInfo, type 
 import { RECOVERY_FOLDER_ID } from './merge';
 import { PROJECT_FILE } from './format';
 
-/** Gemeinsamer Ordner im Speicher – wie ein OneDrive-Ordner, den beide sehen */
+/** Shared in-memory folder – like a OneDrive folder that both see */
 class MemoryFolder {
   files = new Map<string, { content: string; mtimeMs: number }>();
   private time = 1000;
@@ -26,7 +26,7 @@ class MemoryFolder {
       },
     };
   }
-  /** Datei von außen ersetzen (z.B. Cloud-Dienst lädt eine andere Fassung herunter) */
+  /** Replace a file from outside (e.g. the cloud service downloads a different version) */
   put(path: string, content: string) {
     this.files.set(path, { content, mtimeMs: ++this.time });
   }
@@ -35,7 +35,7 @@ class MemoryFolder {
   }
 }
 
-/** Eine Person mit NexoBuilder: Projekt + Undo-Verlauf wie im echten Store */
+/** A person using ResourcepackBuilder: project + undo history like in the real store */
 class Client {
   project: Project;
   past: Project[] = [];
@@ -59,7 +59,7 @@ class Client {
         applyRemote: (transform, changes) => {
           this.project = transform(this.project);
           this.past = this.past.map(transform);
-          this.applied.push(...changes.map((c) => `${c.byName}:${c.kind}:${c.label}${c.deleted ? ':gelöscht' : ''}`));
+          this.applied.push(...changes.map((c) => `${c.byName}:${c.kind}:${c.label}${c.deleted ? ':deleted' : ''}`));
         },
       },
       { clientId: `id-${this.name}`, userName: this.name },
@@ -96,7 +96,7 @@ async function setup() {
   const clock = { t: 10_000 };
   const anna = new Client(sampleProject(), folder, 'Anna', clock);
   const { written } = await anna.sync();
-  expect(written).toBe(4); // project.json, Ordner, Item, Glyphe
+  expect(written).toBe(4); // project.json, folder, item, glyph
   const shared = await readShareFolder(folder.fs());
   expect(shared).not.toBeNull();
   const ben = new Client(shared!.project, folder, 'Ben', clock, shared!.state);
@@ -105,7 +105,7 @@ async function setup() {
 
 const firstItem = (p: Project) => Object.values(p.items)[0];
 const firstFolder = (p: Project) => p.folders[p.rootFolderIds[0]];
-/** Vergleichbarer Inhalt: Schlüssel sortiert, ohne updatedAt (setzt jede Kopie selbst) */
+/** Comparable content: keys sorted, without updatedAt (each copy sets it itself) */
 const content = (p: Project) =>
   JSON.stringify({ ...p, updatedAt: 0 }, (_key, value: unknown) =>
     value && typeof value === 'object' && !Array.isArray(value)
@@ -113,20 +113,20 @@ const content = (p: Project) =>
       : value,
   );
 
-describe('Geteilte Projekte', () => {
-  it('schreibt ein Projekt als Einzeldateien und liest es vollständig wieder ein', async () => {
+describe('Shared projects', () => {
+  it('writes a project as individual files and reads it back completely', async () => {
     const { folder, anna, ben } = await setup();
     expect([...folder.files.keys()].sort()).toEqual(
       [PROJECT_FILE, `folders/${firstFolder(anna.project).id}.json`, `items/${firstItem(anna.project).id}.json`, 'glyphs/g_herz.json'].sort(),
     );
     expect(content(ben.project)).toBe(content(anna.project));
-    // Beim Verbinden gibt es nichts zu tun
+    // Nothing to do when connecting
     const writes = folder.writes;
     expect(await ben.sync()).toEqual({ applied: [], written: 0 });
     expect(folder.writes).toBe(writes);
   });
 
-  it('überträgt Änderungen in beide Richtungen', async () => {
+  it('transfers changes in both directions', async () => {
     const { clock, anna, ben } = await setup();
     const itemId = firstItem(anna.project).id;
     clock.t += 10;
@@ -151,7 +151,7 @@ describe('Geteilte Projekte', () => {
     expect(content(anna.project)).toBe(content(ben.project));
   });
 
-  it('neue Items, Ordner und Glyphen kommen bei den anderen an', async () => {
+  it('new items, folders and glyphs reach the others', async () => {
     const { clock, anna, ben } = await setup();
     clock.t += 10;
     const sub = createFolder('Bögen', firstFolder(anna.project).id);
@@ -170,7 +170,7 @@ describe('Geteilte Projekte', () => {
     expect(content(ben.project)).toBe(content(anna.project));
   });
 
-  it('Sounds und Gemälde werden als eigene Dateien geteilt – samt Reihenfolge und Löschen', async () => {
+  it('sounds and paintings are shared as separate files – including order and deletion', async () => {
     const { folder, clock, anna, ben } = await setup();
     clock.t += 10;
     anna.edit((d) => {
@@ -198,7 +198,7 @@ describe('Geteilte Projekte', () => {
     expect(content(anna.project)).toBe(content(ben.project));
   });
 
-  it('Löschen kommt bei den anderen an (Grabstein-Datei)', async () => {
+  it('deletion reaches the others (tombstone file)', async () => {
     const { folder, clock, anna, ben } = await setup();
     const itemId = firstItem(anna.project).id;
     clock.t += 10;
@@ -214,10 +214,10 @@ describe('Geteilte Projekte', () => {
     expect(ben.project.items[itemId]).toBeUndefined();
     expect(firstFolder(ben.project).itemIds).toEqual([]);
     expect(ben.project.glyphs).toEqual([]);
-    expect(ben.applied).toContain('Anna:item:Rubinschwert:gelöscht');
+    expect(ben.applied).toContain('Anna:item:Rubinschwert:deleted');
   });
 
-  it('gleichzeitige Änderungen am selben Item: die neuere gewinnt bei allen', async () => {
+  it('concurrent changes to the same item: the newer one wins for everyone', async () => {
     const { clock, anna, ben } = await setup();
     const itemId = firstItem(anna.project).id;
     clock.t += 10;
@@ -228,7 +228,7 @@ describe('Geteilte Projekte', () => {
     ben.edit((d) => {
       d.items[itemId].displayName = 'Bens Name';
     });
-    // Beide schreiben, bevor sie die Änderung des anderen gesehen haben
+    // Both write before having seen the other's change
     await anna.engine.flush();
     await ben.engine.flush();
     await anna.sync();
@@ -238,7 +238,7 @@ describe('Geteilte Projekte', () => {
     expect(ben.project.items[itemId].displayName).toBe('Bens Name');
   });
 
-  it('wird die Datei durch eine ältere Fassung ersetzt, stellt der Neuere seine wieder her', async () => {
+  it('if the file is replaced by an older version, the newer one restores its own', async () => {
     const { folder, clock, anna, ben } = await setup();
     const itemId = firstItem(anna.project).id;
     const path = `items/${itemId}.json`;
@@ -248,14 +248,14 @@ describe('Geteilte Projekte', () => {
       d.items[itemId].displayName = 'Neu';
     });
     await anna.sync();
-    folder.put(path, old); // Cloud-Dienst hat die alte Fassung zurückgespielt
+    folder.put(path, old); // cloud service restored the old version
     await anna.sync();
     expect(folder.json(path).data.displayName).toBe('Neu');
     await ben.sync();
     expect(ben.project.items[itemId].displayName).toBe('Neu');
   });
 
-  it('eine eigene, noch nicht geschriebene Änderung wird nicht überschrieben', async () => {
+  it('an own, not yet written change is not overwritten', async () => {
     const { clock, anna, ben } = await setup();
     const itemId = firstItem(anna.project).id;
     clock.t += 10;
@@ -267,13 +267,13 @@ describe('Geteilte Projekte', () => {
     ben.edit((d) => {
       d.items[itemId].displayName = 'Von Ben (später)';
     });
-    await ben.sync(); // sieht Annas Datei, behält aber die eigene neuere Änderung
+    await ben.sync(); // sees Anna's file but keeps its own newer change
     expect(ben.project.items[itemId].displayName).toBe('Von Ben (später)');
     await anna.sync();
     expect(anna.project.items[itemId].displayName).toBe('Von Ben (später)');
   });
 
-  it('zwei Personen legen gleichzeitig Items in denselben Ordner – beide bleiben erhalten', async () => {
+  it('two people add items to the same folder at the same time – both are kept', async () => {
     const { clock, anna, ben } = await setup();
     const folderId = firstFolder(anna.project).id;
     clock.t += 10;
@@ -295,7 +295,7 @@ describe('Geteilte Projekte', () => {
     expect(content(anna.project)).toBe(content(ben.project));
   });
 
-  it('Item in einem gleichzeitig gelöschten Ordner geht nicht verloren', async () => {
+  it('an item in a concurrently deleted folder is not lost', async () => {
     const { clock, anna, ben } = await setup();
     const folderId = firstFolder(anna.project).id;
     const oldItem = firstItem(anna.project).id;
@@ -320,7 +320,7 @@ describe('Geteilte Projekte', () => {
     }
   });
 
-  it('Rückgängig macht nur eigene Änderungen rückgängig, nicht die der anderen', async () => {
+  it('undo only reverts own changes, not those of others', async () => {
     const { clock, anna, ben } = await setup();
     const itemId = firstItem(anna.project).id;
     clock.t += 10;
@@ -343,7 +343,7 @@ describe('Geteilte Projekte', () => {
     expect(ben.project.items[itemId].displayName).toBe('Bens Item');
   });
 
-  it('nach einem Neustart wird nur geschrieben, was sich wirklich geändert hat', async () => {
+  it('after a restart only what really changed is written', async () => {
     const { folder, clock, anna } = await setup();
     const state = anna.engine.state;
     const writes = folder.writes;
@@ -351,7 +351,7 @@ describe('Geteilte Projekte', () => {
     expect(await anna.sync()).toEqual({ applied: [], written: 0 });
     expect(folder.writes).toBe(writes);
 
-    // Änderung, die gespeichert wurde, aber vor dem Schließen nicht mehr in den Ordner kam
+    // Change that was saved but did not make it into the folder before closing
     const itemId = firstItem(anna.project).id;
     anna.project = produce(anna.project, (d) => {
       d.items[itemId].displayName = 'Offline geändert';
@@ -362,18 +362,18 @@ describe('Geteilte Projekte', () => {
     expect(folder.json(`items/${itemId}.json`).data.displayName).toBe('Offline geändert');
   });
 
-  it('ignoriert Konfliktkopien, fremde und unvollständige Dateien', async () => {
+  it('ignores conflict copies, foreign and incomplete files', async () => {
     const { folder, anna, ben } = await setup();
     const itemId = firstItem(anna.project).id;
     folder.put(`items/${itemId} (Konflikt).json`, '{"kaputt": true}');
     folder.put('notizen.txt', 'hallo');
-    folder.put(`items/${itemId}.json`, '{"format":"nexobuilder-share","vers'); // wird gerade geladen
+    folder.put(`items/${itemId}.json`, '{"format":"resourcepackbuilder-share","vers'); // currently being downloaded
     const result = await ben.sync();
     expect(result.applied).toEqual([]);
     expect(ben.project.items[itemId].displayName).toBe('Rubinschwert');
   });
 
-  it('verweigert einen Ordner, in dem ein anderes Projekt liegt', async () => {
+  it('refuses a folder that contains another project', async () => {
     const { folder, anna } = await setup();
     const other = createProject('Anderes');
     const data = folder.json(PROJECT_FILE);

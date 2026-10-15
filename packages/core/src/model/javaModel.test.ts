@@ -6,7 +6,7 @@ import { makePngDataUrl } from '../test/png';
 const PNG = makePngDataUrl(16, 16);
 
 describe('convertJavaModel', () => {
-  it('ordnet Texturverweise über den Dateinamen den PNGs zu', () => {
+  it('matches texture references to the PNGs by file name', () => {
     const model = {
       textures: { '0': 'custom:item/ruby_blade', '1': 'custom:item/handle', particle: '#0' },
       elements: [{ from: [0, 0, 0], to: [1, 1, 1], faces: { north: { uv: [0, 0, 1, 1], texture: '#0' } } }],
@@ -21,7 +21,7 @@ describe('convertJavaModel', () => {
     expect(result.issues.filter((i) => i.level === 'error')).toHaveLength(0);
   });
 
-  it('behält Vanilla-Texturen und meldet fehlende eigene Texturen', () => {
+  it('keeps vanilla textures and reports missing custom textures', () => {
     const model = { parent: 'block/cube_all', textures: { all: 'minecraft:block/stone', other: 'mypack:block/missing' } };
     const result = convertJavaModel([
       { name: 'a.json', text: JSON.stringify(model) },
@@ -33,7 +33,7 @@ describe('convertJavaModel', () => {
     expect(result.issues.some((i) => i.level === 'info' && i.message.includes('minecraft:block/stone'))).toBe(true);
   });
 
-  it('ordnet eine einzelne PNG automatisch der einzigen offenen Referenz zu', () => {
+  it('automatically assigns a single PNG to the only open reference', () => {
     const model = { parent: 'item/generated', textures: { layer0: 'item/some_name' } };
     const result = convertJavaModel([
       { name: 'a.json', text: JSON.stringify(model) },
@@ -43,7 +43,7 @@ describe('convertJavaModel', () => {
     expect(result.issues.some((i) => i.message.includes('automatisch'))).toBe(true);
   });
 
-  it('führt mit abgelegte Parent-Modelle zusammen und entfernt overrides', () => {
+  it('merges parent models dropped along and removes overrides', () => {
     const parent = {
       parent: 'block/block',
       textures: { particle: '#side' },
@@ -69,7 +69,7 @@ describe('convertJavaModel', () => {
     expect(result.json.overrides).toBeUndefined();
   });
 
-  it('erkennt Elemente außerhalb des erlaubten Bereichs und freie Rotationen', () => {
+  it('detects elements outside the allowed range and free rotations', () => {
     const model = {
       textures: { '0': 'a' },
       elements: [
@@ -85,14 +85,14 @@ describe('convertJavaModel', () => {
     expect(result.requiresVersion).toBe('1.21.11');
   });
 
-  it('akzeptiert JSON mit Kommentaren und lehnt Nicht-Modelle ab', () => {
-    const withComments = '{\n // Kommentar\n "parent": "item/generated", /* x */ "textures": {"layer0": "item/a"}}';
+  it('accepts JSON with comments and rejects non-models', () => {
+    const withComments = '{\n // comment\n "parent": "item/generated", /* x */ "textures": {"layer0": "item/a"}}';
     expect(() => convertJavaModel([{ name: 'a.json', text: withComments }])).not.toThrow();
     expect(() => convertJavaModel([{ name: 'a.json', text: '{"foo": 1}' }])).toThrow(/kein Minecraft-Modell/);
     expect(() => convertJavaModel([{ name: 'a.json', text: '[' }])).toThrow(/kein gültiges JSON/);
   });
 
-  it('übernimmt passende .png.mcmeta-Dateien', () => {
+  it('takes over matching .png.mcmeta files', () => {
     const model = { parent: 'item/generated', textures: { layer0: 'mypack:item/fire' } };
     const mcmeta = { animation: { frametime: 2 } };
     const result = convertJavaModel([
@@ -105,7 +105,7 @@ describe('convertJavaModel', () => {
 });
 
 describe('createTextureModel', () => {
-  it('erstellt ein 2D-Item mit mehreren Ebenen', () => {
+  it('creates a 2D item with several layers', () => {
     const files = [
       { name: 'base.png', dataUrl: PNG },
       { name: 'overlay.png', dataUrl: PNG },
@@ -117,7 +117,7 @@ describe('createTextureModel', () => {
     expect(result.source).toBe('png');
   });
 
-  it('ordnet Block-Texturen anhand der Dateinamen zu', () => {
+  it('assigns block textures based on the file names', () => {
     const files = [
       { name: 'log_side.png', dataUrl: PNG },
       { name: 'log_top.png', dataUrl: PNG },
@@ -128,7 +128,7 @@ describe('createTextureModel', () => {
     expect(result.json.textures).toEqual({ end: '$tex:t0', side: '$tex:t1' });
   });
 
-  it('meldet fehlende Zuordnungen und setzt particle für block/cube', () => {
+  it('reports missing assignments and sets particle for block/cube', () => {
     const files = [{ name: 'a.png', dataUrl: PNG }];
     const result = createTextureModel('cube', { north: 'a.png' }, files);
     expect(result.issues.filter((i) => i.level === 'error')).toHaveLength(5);

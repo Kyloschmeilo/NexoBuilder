@@ -1,6 +1,6 @@
 import { CircleAlert, Info, TriangleAlert } from 'lucide-react';
-import type { Issue } from '@nexobuilder/core/types';
-import type { ProjectIssue } from '@nexobuilder/core/export/plan';
+import type { Issue } from '@resourcepackbuilder/core/types';
+import type { ProjectIssue } from '@resourcepackbuilder/core/export/plan';
 
 const ICONS = {
   error: <CircleAlert size={15} />,
@@ -14,7 +14,7 @@ interface IssueListProps {
   onOpenGlyphs?: () => void;
   empty?: string;
   hideInfo?: boolean;
-  /** Ob „Zum Item“/„Zu den Glyphen“ für diese Meldung angeboten wird (z.B. nur fürs geöffnete Projekt) */
+  /** Whether "Zum Item"/"Zu den Glyphen" is offered for this issue (e.g. only for the open project) */
   canOpen?: (issue: Issue | ProjectIssue) => boolean;
 }
 

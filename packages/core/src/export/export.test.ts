@@ -47,17 +47,17 @@ function sampleBBModel(): string {
 
 function buildProject(): Project {
   const project = createProject('Mein Pack', 'meinpack', '1.21.11');
-  const waffen = createFolder('Waffen', null);
-  const moebel = createFolder('Möbel', null);
-  const stuehle = createFolder('Stühle', moebel.id);
-  insertFolder(project, waffen);
-  insertFolder(project, moebel);
-  insertFolder(project, stuehle);
+  const weapons = createFolder('Waffen', null);
+  const furniture = createFolder('Möbel', null);
+  const chairs = createFolder('Stühle', furniture.id);
+  insertFolder(project, weapons);
+  insertFolder(project, furniture);
+  insertFolder(project, chairs);
 
   const sword = createItem({
     displayName: '<red>Rubin-Schwert',
     nexoId: 'ruby_sword',
-    folderId: waffen.id,
+    folderId: weapons.id,
     material: 'DIAMOND_SWORD',
     model: createTextureModel('handheld', { layer0: 'ruby_sword.png' }, [{ name: 'ruby_sword.png', dataUrl: PNG16 }]),
   });
@@ -73,7 +73,7 @@ function buildProject(): Project {
   const table = createItem({
     displayName: 'Eichentisch',
     nexoId: 'oak_table',
-    folderId: moebel.id,
+    folderId: furniture.id,
     model: convertBBModel(sampleBBModel(), 'table.bbmodel'),
   });
   table.config.Mechanics = {
@@ -87,7 +87,7 @@ function buildProject(): Project {
   };
   insertItem(project, table);
 
-  const chair = createItem({ displayName: 'Stuhl', nexoId: 'chair', folderId: stuehle.id, model: null });
+  const chair = createItem({ displayName: 'Stuhl', nexoId: 'chair', folderId: chairs.id, model: null });
   chair.config.Mechanics = { furniture: {} };
   chair.rawYaml = 'Mechanics:\n  furniture:\n    seat: 0,0.4,0\nexcludeFromInventory: true\n';
   insertItem(project, chair);
@@ -107,15 +107,15 @@ async function unzip(data: Uint8Array): Promise<Map<string, Uint8Array>> {
 const text = (bytes: Uint8Array | undefined) => new TextDecoder().decode(bytes);
 
 describe('planExport', () => {
-  it('erzeugt die Item-YAMLs pro Ordner mit korrekten Werten', () => {
+  it('creates the item YAMLs per folder with correct values', () => {
     const plan = planExport(buildProject());
     expect([...plan.itemFiles.keys()].sort()).toEqual([
       'items/moebel/moebel.yml',
       'items/moebel/stuehle/stuehle.yml',
       'items/waffen/waffen.yml',
     ]);
-    const waffen = parse(plan.itemFiles.get('items/waffen/waffen.yml')!, { version: '1.1' });
-    expect(waffen).toEqual({
+    const weapons = parse(plan.itemFiles.get('items/waffen/waffen.yml')!, { version: '1.1' });
+    expect(weapons).toEqual({
       ruby_sword: {
         itemname: '<red>Rubin-Schwert',
         material: 'DIAMOND_SWORD',
@@ -129,22 +129,22 @@ describe('planExport', () => {
         Enchantments: { sharpness: 5 },
       },
     });
-    // "yes" muss für SnakeYAML in Anführungszeichen stehen
+    // "yes" must be quoted for SnakeYAML
     expect(plan.itemFiles.get('items/waffen/waffen.yml')).toContain('- "yes"');
     expect(plan.itemFiles.get('items/waffen/waffen.yml')).toContain('itemname: "<red>Rubin-Schwert"');
   });
 
-  it('behält leere Mechaniken und wendet zusätzliches YAML an', () => {
+  it('keeps empty mechanics and applies additional YAML', () => {
     const plan = planExport(buildProject());
-    const moebel = parse(plan.itemFiles.get('items/moebel/moebel.yml')!, { version: '1.1' });
-    expect(moebel.oak_table.Mechanics.furniture).toEqual({
+    const furniture = parse(plan.itemFiles.get('items/moebel/moebel.yml')!, { version: '1.1' });
+    expect(furniture.oak_table.Mechanics.furniture).toEqual({
       hitbox: { barriers: ['0,0,0'] },
       rotatable: true,
       preview_placement: true,
       seats: ['0,0.5,0'],
     });
-    const stuehle = parse(plan.itemFiles.get('items/moebel/stuehle/stuehle.yml')!, { version: '1.1' });
-    expect(stuehle).toEqual({
+    const chairs = parse(plan.itemFiles.get('items/moebel/stuehle/stuehle.yml')!, { version: '1.1' });
+    expect(chairs).toEqual({
       chair: {
         itemname: 'Stuhl',
         material: 'PAPER',
@@ -154,7 +154,7 @@ describe('planExport', () => {
     });
   });
 
-  it('schreibt Modelle und Texturen in die richtigen Pfade', () => {
+  it('writes models and textures to the correct paths', () => {
     const plan = planExport(buildProject());
     const files = [...plan.packFiles.keys()].sort();
     expect(files).toEqual([
@@ -178,10 +178,10 @@ describe('planExport', () => {
       textures: { layer0: 'meinpack:item/waffen/ruby_sword/ruby_sword' },
     });
     const mcmeta = JSON.parse(plan.packFiles.get('pack.mcmeta') as string);
-    expect(mcmeta).toEqual({ pack: { description: 'Mein Pack – erstellt mit NexoBuilder', pack_format: 75, min_format: 75, max_format: 999 } });
+    expect(mcmeta).toEqual({ pack: { description: 'Mein Pack – erstellt mit ResourcepackBuilder', pack_format: 75, min_format: 75, max_format: 999 } });
   });
 
-  it('meldet Fehler bei doppelten IDs, ungültigen Werten und Konflikten', () => {
+  it('reports errors for duplicate IDs, invalid values and conflicts', () => {
     const project = buildProject();
     const folderId = project.rootFolderIds[0];
     const dup = createItem({ displayName: 'Kopie', nexoId: 'ruby_sword', folderId, model: null });
@@ -199,7 +199,7 @@ describe('planExport', () => {
     expect(warnings.some((m) => m.includes('Dauer'))).toBe(true);
   });
 
-  it('setzt das Modell für eigene Blöcke ein und legt Block-Texturen unter textures/block ab', () => {
+  it('uses the model for custom blocks and places block textures under textures/block', () => {
     const project = createProject('Blöcke', 'bloecke', '26.3');
     const folder = createFolder('Erze', null);
     insertFolder(project, folder);
@@ -221,11 +221,11 @@ describe('planExport', () => {
       custom_variation: 12,
       hardness: 3,
     });
-    // "@model" darf nicht als ungültiger Schlüssel gemeldet werden
+    // "@model" must not be reported as an invalid key
     expect(plan.issues.filter((i) => i.level !== 'info')).toEqual([]);
   });
 
-  it('erzeugt Equipment-Modelle für Rüstungs-Texturen', () => {
+  it('creates equipment models for armor textures', () => {
     const project = createProject('Rüstung', 'ruestung', '1.21.4');
     const folder = createFolder('Rüstung', null);
     insertFolder(project, folder);
@@ -253,7 +253,7 @@ describe('planExport', () => {
 });
 
 describe('buildExportZip', () => {
-  it('legt Items und den external pack in die Nexo-Ordnerstruktur', async () => {
+  it('places items and the external pack into the Nexo folder structure', async () => {
     const project = buildProject();
     const plan = planExport(project);
     const result = await buildExportZip(project, plan, 'full');
@@ -269,7 +269,7 @@ describe('buildExportZip', () => {
     expect([...png.slice(0, 4)]).toEqual([0x89, 0x50, 0x4e, 0x47]);
   });
 
-  it('kann den external pack als eigenes ZIP verpacken', async () => {
+  it('can pack the external pack as a separate ZIP', async () => {
     const project = buildProject();
     project.settings.externalPackAsZip = true;
     const plan = planExport(project);
@@ -279,7 +279,7 @@ describe('buildExportZip', () => {
     expect(inner.has('assets/meinpack/models/item/waffen/ruby_sword.json')).toBe(true);
   });
 
-  it('exportiert nur den Resourcepack', async () => {
+  it('exports only the resource pack', async () => {
     const project = buildProject();
     const plan = planExport(project);
     const files = await unzip((await buildExportZip(project, plan, 'pack')).data);
@@ -287,8 +287,8 @@ describe('buildExportZip', () => {
   });
 });
 
-describe('Varianten-Modelle', () => {
-  it('exportiert Spann-Stufen eines Bogens und setzt Pack.pulling_models', () => {
+describe('Variant models', () => {
+  it('exports the pulling stages of a bow and sets Pack.pulling_models', () => {
     const project = createProject('Bögen', 'boegen', '26.3');
     const folder = createFolder('Fernkampf', null);
     insertFolder(project, folder);
@@ -313,7 +313,7 @@ describe('Varianten-Modelle', () => {
     expect(plan.issues.filter((i) => i.level !== 'info')).toEqual([]);
   });
 
-  it('warnt bei unpassendem Material und fehlendem Hauptmodell', () => {
+  it('warns about an unsuitable material and a missing main model', () => {
     const project = createProject('Test', 'test', '26.3');
     const folder = createFolder('A', null);
     insertFolder(project, folder);

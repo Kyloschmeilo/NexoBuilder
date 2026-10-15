@@ -1,22 +1,22 @@
 /**
- * Übernimmt Änderungen aus dem geteilten Ordner in ein Projekt und repariert danach die Ordnerstruktur.
+ * Applies changes from the shared folder to a project and then repairs the folder structure.
  *
- * Weil jeder Eintrag einzeln abgeglichen wird, können sich Listen widersprechen – z.B. wenn zwei Personen
- * gleichzeitig ein Item in denselben Ordner legen. Maßgeblich sind deshalb immer `item.folderId` und
- * `folder.parentId`; die Reihenfolge-Listen werden daraus ergänzt bzw. bereinigt.
+ * Because each entry is synced individually, lists can contradict each other – e.g. when two people
+ * put an item into the same folder at the same time. Therefore `item.folderId` and `folder.parentId`
+ * are always authoritative; the order lists are completed or cleaned up from them.
  */
 import { produce, type Draft } from 'immer';
 import type { Folder, Item, Project } from '../types';
 import { LIST_KIND_NAMES, LIST_KINDS, type Envelope, type ListKind, type ProjectMeta } from './format';
 
-/** Ordner für Items, deren Ordner von jemand anderem gelöscht wurde, während sie angelegt wurden. */
+/** Folder for items whose folder was deleted by someone else while they were being created. */
 export const RECOVERY_FOLDER_ID = 'f_wiederhergestellt';
 
 function sameList(a: string[], b: string[]): boolean {
   return a.length === b.length && a.every((v, i) => v === b[i]);
 }
 
-/** Behält die bekannte Reihenfolge, entfernt Ungültiges/Doppeltes und hängt Fehlendes an. */
+/** Keeps the known order, removes invalid/duplicate entries and appends missing ones. */
 function mergeOrder(current: string[], actual: string[]): string[] {
   const valid = new Set(actual);
   const seen = new Set<string>();
@@ -35,18 +35,18 @@ function byCreatedThenId(items: Record<string, Item>) {
   return (a: string, b: string) => (items[a].createdAt ?? 0) - (items[b].createdAt ?? 0) || (a < b ? -1 : a > b ? 1 : 0);
 }
 
-/** Repariert die Ordnerstruktur eines (Immer-)Projekts. Ändert nur, was nicht stimmt. */
+/** Repairs the folder structure of an (Immer) project. Only changes what is wrong. */
 export function normalizeTree(draft: Draft<Project>): void {
   const folders = draft.folders;
   const items = draft.items;
   const folderIds = Object.keys(folders).sort();
 
-  // Ordner, deren Elternordner fehlt, kommen nach oben
+  // Folders whose parent folder is missing move to the top level
   for (const id of folderIds) {
     const folder = folders[id];
     if (folder.parentId !== null && (!folders[folder.parentId] || folder.parentId === id)) folder.parentId = null;
   }
-  // Kreise (A in B, B in A – gleichzeitig verschoben) auflösen
+  // Resolve cycles (A in B, B in A – moved at the same time)
   for (;;) {
     const reachable = new Set<string>();
     const queue = folderIds.filter((id) => folders[id].parentId === null);
@@ -64,7 +64,7 @@ export function normalizeTree(draft: Draft<Project>): void {
   const roots = folderIds.filter((id) => folders[id].parentId === null);
   const rootOrder = mergeOrder(draft.rootFolderIds, roots);
 
-  // Items ohne Ordner retten
+  // Rescue items without a folder
   const orphans = Object.keys(items).filter((id) => !folders[items[id].folderId]);
   if (orphans.length) {
     let target = rootOrder[0];
@@ -96,7 +96,7 @@ export function normalizeTree(draft: Draft<Project>): void {
     if (!sameList(folder.itemIds, nextItems)) folder.itemIds = nextItems;
   }
 
-  // Doppelte Glyphen, Sounds, Gemälde (gleiche interne ID) entfernen
+  // Remove duplicate glyphs, sounds, paintings (same internal ID)
   for (const kind of LIST_KIND_NAMES) {
     const field = LIST_KINDS[kind].field;
     const list = (draft[field] ?? []) as Array<{ id: string }>;
@@ -113,8 +113,8 @@ export function normalizeTree(draft: Draft<Project>): void {
 }
 
 /**
- * Wendet Änderungen aus dem Ordner an. Gibt ein neues Projekt zurück; unveränderte Teile bleiben
- * dieselben Objekte (wichtig für Undo/Redo und die Änderungserkennung).
+ * Applies changes from the folder. Returns a new project; unchanged parts remain
+ * the same objects (important for undo/redo and change detection).
  */
 export function applyRemoteEntities(project: Project, envelopes: Envelope[]): Project {
   const orders: Partial<Record<ListKind, string[]>> = {};
@@ -159,7 +159,7 @@ export function applyRemoteEntities(project: Project, envelopes: Envelope[]): Pr
       }
     }
   });
-  // Zweiter Durchgang: übernommene Objekte sind jetzt Teil des Projekts und dürfen angepasst werden
+  // Second pass: applied objects are now part of the project and may be adjusted
   return produce(overlaid, (draft) => {
     for (const kind of LIST_KIND_NAMES) {
       const wanted = orders[kind];
@@ -175,7 +175,7 @@ export function applyRemoteEntities(project: Project, envelopes: Envelope[]): Pr
   });
 }
 
-/** Baut ein Projekt komplett aus den Dateien eines geteilten Ordners. */
+/** Builds a project entirely from the files of a shared folder. */
 export function projectFromEnvelopes(meta: Envelope, envelopes: Envelope[]): Project {
   const data = meta.data as ProjectMeta;
   const base: Project = {

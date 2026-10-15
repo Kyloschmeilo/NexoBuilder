@@ -1,6 +1,6 @@
 /**
- * sounds.yml und paintings.yml liegen direkt in plugins/Nexo – es gibt jeweils nur eine Datei.
- * Beim Export mehrerer Projekte werden die Einträge deshalb zu einer Datei zusammengefasst.
+ * sounds.yml and paintings.yml live directly in plugins/Nexo – there is only one file of each.
+ * When exporting multiple projects, the entries are therefore combined into one file.
  */
 import { toYaml } from '../nexo/yaml';
 
@@ -18,7 +18,7 @@ export function buildRootFiles(plans: RootEntries[]): Map<string, string> {
   if (sounds.length > 0) {
     files.set(
       SOUNDS_FILE,
-      '# Erstellt mit NexoBuilder – ersetzt eine vorhandene sounds.yml. Eigene Einträge von dort bitte hier ergänzen.\n' +
+      '# Erstellt mit ResourcepackBuilder – ersetzt eine vorhandene sounds.yml. Eigene Einträge von dort bitte hier ergänzen.\n' +
         toYaml({ sounds }),
     );
   }
@@ -26,7 +26,7 @@ export function buildRootFiles(plans: RootEntries[]): Map<string, string> {
   if (Object.keys(paintings).length > 0) {
     files.set(
       PAINTINGS_FILE,
-      '# Erstellt mit NexoBuilder – ersetzt eine vorhandene paintings.yml. Neue Gemälde brauchen einen Server-Neustart.\n' +
+      '# Erstellt mit ResourcepackBuilder – ersetzt eine vorhandene paintings.yml. Neue Gemälde brauchen einen Server-Neustart.\n' +
         toYaml({ paintings }),
     );
   }

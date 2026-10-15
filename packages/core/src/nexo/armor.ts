@@ -1,20 +1,20 @@
 /**
- * Getragene Texturen (Equipment-Modelle): Spieler-Rüstung, Elytra-Flügel, Tier-Rüstungen,
- * Geschirr und Sättel. Alle Items mit derselben Set-ID teilen sich ein Equipment-Modell
- * (assets/<ns>/equipment/<set>.json), die Texturen liegen unter textures/entity/equipment/<layer>/.
+ * Worn textures (equipment models): player armor, elytra wings, animal armor,
+ * harnesses and saddles. All items with the same set ID share one equipment model
+ * (assets/<ns>/equipment/<set>.json); the textures live under textures/entity/equipment/<layer>/.
  */
 export type ArmorGroup = 'player' | 'elytra' | 'mob' | 'saddle';
 
 export interface ArmorLayerDef {
-  /** Pfad innerhalb von $armor */
+  /** Path within $armor */
   path: string[];
-  /** Layer-Typ im Equipment-Modell von Minecraft */
+  /** Layer type in the Minecraft equipment model */
   equipment: string;
   label: string;
   group: ArmorGroup;
-  /** Slot, den das Item mit diesem Layer bekommt (wenn das Material keinen festlegt) */
+  /** Slot the item with this layer gets (if the material does not define one) */
   slot: 'HEAD' | 'CHEST' | 'BODY' | 'SADDLE';
-  /** Für Tier-Rüstungen und Sättel: welche Tiere das Item tragen dürfen */
+  /** For animal armor and saddles: which animals may wear the item */
   entities?: string[];
   minVersion?: string;
   sizeHint?: string;

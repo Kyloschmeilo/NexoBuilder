@@ -1,19 +1,19 @@
 /**
- * Dateiformat für geteilte Projekte.
+ * File format for shared projects.
  *
- * Ein geteiltes Projekt liegt in einem normalen Ordner (z.B. in OneDrive, Google Drive oder Dropbox).
- * Jedes Item, jeder Ordner und jede Glyphe ist eine eigene kleine Datei – so überschreiben sich zwei
- * Personen nur dann gegenseitig, wenn sie gleichzeitig genau dasselbe Item ändern.
+ * A shared project lives in a normal folder (e.g. in OneDrive, Google Drive or Dropbox).
+ * Each item, folder and glyph is its own small file – so two people only overwrite
+ * each other if they change exactly the same item at the same time.
  *
- *   project.json          Projektdaten (Name, Namespace, Einstellungen, Reihenfolgen)
- *   folders/<id>.json     ein Ordner
- *   items/<id>.json       ein Item (inkl. Modell und Texturen)
- *   glyphs/<id>.json      eine Glyphe
- *   sounds/<id>.json      ein Sound (inkl. OGG-Dateien)
- *   paintings/<id>.json   ein Gemälde (inkl. Bild)
+ *   project.json          project data (name, namespace, settings, orderings)
+ *   folders/<id>.json     a folder
+ *   items/<id>.json       an item (incl. model and textures)
+ *   glyphs/<id>.json      a glyph
+ *   sounds/<id>.json      a sound (incl. OGG files)
+ *   paintings/<id>.json   a painting (incl. image)
  *
- * Jede Datei ist ein „Umschlag“ mit Versionsnummer (rev) und Absender. Gelöschte Einträge bleiben als
- * kleiner Grabstein (deleted: true) liegen, damit das Löschen bei allen ankommt.
+ * Each file is an "envelope" with a version number (rev) and sender. Deleted entries remain as
+ * a small tombstone (deleted: true) so that the deletion reaches everyone.
  */
 import type { Folder, Item, Project, ProjectSettings } from '../types';
 import type { Glyph } from '../nexo/glyphs';
@@ -21,14 +21,14 @@ import type { Sound } from '../nexo/sounds';
 import type { Painting } from '../nexo/paintings';
 import { isPlainObject } from '../util';
 
-export const SHARE_FORMAT = 'nexobuilder-share';
+export const SHARE_FORMAT = 'resourcepackbuilder-share';
 export const SHARE_VERSION = 1;
 export const PROJECT_FILE = 'project.json';
 export const README_FILE = 'LIESMICH.txt';
 
 export type EntityKind = 'project' | 'folder' | 'item' | ListKind;
 
-/** Projekt-Listen, deren Einträge eine eigene Datei bekommen (Reihenfolge steht in project.json) */
+/** Project lists whose entries get their own file (order is stored in project.json) */
 export type ListKind = 'glyph' | 'sound' | 'painting';
 type ListEntry = Glyph | Sound | Painting;
 
@@ -46,11 +46,11 @@ export function listOf(project: Project, kind: ListKind): ListEntry[] {
 const DIRS = { folder: 'folders', item: 'items', glyph: 'glyphs', sound: 'sounds', painting: 'paintings' } as const;
 const KIND_BY_DIR: Record<string, EntityKind> = { folders: 'folder', items: 'item', glyphs: 'glyph', sounds: 'sound', paintings: 'painting' };
 
-/** Erlaubte IDs für Dateinamen (alles, was NexoBuilder selbst erzeugt). */
+/** Allowed IDs for file names (everything ResourcepackBuilder generates itself). */
 export const ENTITY_ID_PATTERN = /^[A-Za-z0-9_-]{1,64}$/;
 const ENTITY_PATH_PATTERN = /^(folders|items|glyphs|sounds|paintings)\/([A-Za-z0-9_-]{1,64})\.json$/;
 
-/** Projektweite Daten ohne Items/Ordner/Glyphen (und ohne updatedAt, das sich bei jeder Änderung ändert). */
+/** Project-wide data without items/folders/glyphs (and without updatedAt, which changes on every edit). */
 export interface ProjectMeta {
   formatVersion: 1;
   id: string;
@@ -59,7 +59,7 @@ export interface ProjectMeta {
   settings: ProjectSettings;
   rootFolderIds: string[];
   glyphOrder: string[];
-  /** Ab 1.4 – ältere Versionen kennen keine Sounds/Gemälde */
+  /** Since 1.4 – older versions know no sounds/paintings */
   soundOrder?: string[];
   paintingOrder?: string[];
   createdAt: number;
@@ -72,11 +72,11 @@ export interface Envelope {
   version: number;
   kind: EntityKind;
   id: string;
-  /** Logische Uhr: höhere Werte sind neuer */
+  /** Logical clock: higher values are newer */
   rev: number;
-  /** Installation, die geschrieben hat (Gleichstand-Entscheider) */
+  /** Installation that wrote it (tie-breaker) */
   by: string;
-  /** Anzeigename der Person */
+  /** Display name of the person */
   byName: string;
   deleted?: true;
   data?: EntityData;
@@ -101,7 +101,7 @@ export function entityPath(kind: EntityKind, id: string): string {
   return kind === 'project' ? PROJECT_FILE : `${DIRS[kind]}/${id}.json`;
 }
 
-/** Ordnet einen Dateipfad einem Eintrag zu – Konfliktkopien („item (1).json“) und fremde Dateien ergeben null. */
+/** Maps a file path to an entry – conflict copies ("item (1).json") and foreign files yield null. */
 export function parseEntityPath(path: string): EntityRef | null {
   if (path === PROJECT_FILE) return { kind: 'project', id: '' };
   const match = ENTITY_PATH_PATTERN.exec(path);
@@ -123,7 +123,7 @@ export function projectMeta(project: Project): ProjectMeta {
   };
 }
 
-/** Liefert den lokalen Stand eines Eintrags (undefined = gibt es nicht bzw. gelöscht). */
+/** Returns the local state of an entry (undefined = does not exist or deleted). */
 export function localEntity(project: Project, key: string): EntityData | undefined {
   const { kind, id } = parseEntityKey(key);
   switch (kind) {
@@ -138,7 +138,7 @@ export function localEntity(project: Project, key: string): EntityData | undefin
   }
 }
 
-/** Alle Einträge eines Projekts als Schlüssel (nur IDs, die als Dateiname taugen). */
+/** All entries of a project as keys (only IDs that are usable as file names). */
 export function entityKeys(project: Project): string[] {
   const keys = ['project'];
   for (const id of Object.keys(project.folders)) if (ENTITY_ID_PATTERN.test(id)) keys.push(entityKey('folder', id));
@@ -154,8 +154,8 @@ function sameIds(a: string[], b: string[]): boolean {
 }
 
 /**
- * Welche Einträge haben sich zwischen zwei Projektständen geändert?
- * Nutzt aus, dass Immer unveränderte Objekte wiederverwendet – es werden nur Referenzen verglichen.
+ * Which entries changed between two project states?
+ * Relies on Immer reusing unchanged objects – only references are compared.
  */
 export function changedEntityKeys(prev: Project, next: Project): string[] {
   const keys: string[] = [];
@@ -220,7 +220,7 @@ export function makeEnvelope(
   return envelope;
 }
 
-/** Liest einen Umschlag und prüft, ob er zum erwarteten Pfad passt. Unvollständige Dateien ergeben null. */
+/** Reads an envelope and checks whether it matches the expected path. Incomplete files yield null. */
 export function parseEnvelope(text: string, expected: EntityRef): Envelope | null {
   let raw: unknown;
   try {
@@ -273,7 +273,7 @@ function isValidData(kind: EntityKind, id: string, data: Record<string, unknown>
   }
 }
 
-/** Schneller, stabiler String-Hash (cyrb53) – um unveränderte Dateien zu erkennen. */
+/** Fast, stable string hash (cyrb53) – to detect unchanged files. */
 export function hashString(text: string): string {
   let h1 = 0xdeadbeef;
   let h2 = 0x41c6ce57;
@@ -291,9 +291,9 @@ export function hashData(data: EntityData | undefined): string {
   return data === undefined ? 'deleted' : hashString(JSON.stringify(data));
 }
 
-export const README_TEXT = `Dieser Ordner enthält ein geteiltes NexoBuilder-Projekt.
+export const README_TEXT = `Dieser Ordner enthält ein geteiltes ResourcepackBuilder-Projekt.
 
-Öffnen: NexoBuilder starten → „Geteiltes Projekt öffnen“ → diesen Ordner wählen.
+Öffnen: ResourcepackBuilder starten → „Geteiltes Projekt öffnen“ → diesen Ordner wählen.
 Alle, die den Ordner geöffnet haben, sehen Änderungen der anderen automatisch.
 
 Bitte die Dateien hier nicht von Hand ändern, umbenennen oder löschen.

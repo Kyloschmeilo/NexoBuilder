@@ -2,22 +2,33 @@
   "$schema": "https://turborepo.com/schema.json",
   "tasks": {
     "typecheck": {
-      "dependsOn": ["^typecheck"]
+      "dependsOn": [
+        "^typecheck"
+      ]
     },
     "test": {
-      "dependsOn": ["^typecheck"]
+      "dependsOn": [
+        "^typecheck"
+      ]
     },
     "build": {
-      "dependsOn": ["^typecheck"],
-      "outputs": ["dist/**"]
-    },
-    "build:single": {
-      "dependsOn": ["^typecheck"],
-      "outputs": ["dist-single/**"]
+      "dependsOn": [
+        "^typecheck"
+      ],
+      "outputs": [
+        ".next/**",
+        "!.next/cache/**",
+        "out/**"
+      ]
     },
     "dist:win": {
-      "dependsOn": ["^typecheck"],
-      "outputs": ["dist-single/**", "release/**"],
+      "dependsOn": [
+        "^typecheck"
+      ],
+      "outputs": [
+        "out/**",
+        "release/**"
+      ],
       "cache": false
     },
     "dev": {

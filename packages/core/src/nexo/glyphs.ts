@@ -1,7 +1,7 @@
 /**
- * Glyphen (Nexo: configuration/glyphs) – texturierte Unicode-Zeichen für Chat, Lore, Titel und GUIs.
- * Export: plugins/Nexo/glyphs/<projekt>.yml + Texturen im external pack
- * (assets/<ns>/textures/glyphs/<id>.png bzw. .gif).
+ * Glyphs (Nexo: configuration/glyphs) – textured Unicode characters for chat, lore, titles and GUIs.
+ * Export: plugins/Nexo/glyphs/<project>.yml + textures in the external pack
+ * (assets/<ns>/textures/glyphs/<id>.png or .gif).
  */
 import type { Issue, Project } from '../types';
 import { base64ToBytes, ITEM_ID_PATTERN, readPngInfoFromDataUrl, slugify } from '../util';
@@ -18,7 +18,7 @@ export interface GlyphFile {
 
 export interface Glyph {
   id: string;
-  /** Schlüssel im YAML, wird als <glyph:id> verwendet */
+  /** Key in the YAML, used as <glyph:id> */
   glyphId: string;
   kind: GlyphKind;
   file: GlyphFile | null;
@@ -31,15 +31,15 @@ export interface Glyph {
   tabcomplete: boolean;
   rows: number;
   columns: number;
-  /** nur GIF */
+  /** GIF only */
   frameCount: number | null;
   offset: number | null;
-  /** nur Referenz-Glyphen */
+  /** reference glyphs only */
   reference: string;
   index: number;
 }
 
-/** Maximale Größe eines einzelnen Glyph-Feldes (sonst Multi-Bitmap verwenden). */
+/** Maximum size of a single glyph cell (otherwise use multi-bitmap). */
 export const MAX_GLYPH_CELL = 256;
 
 export function readGifInfo(dataUrl: string): { width: number; height: number } | null {
@@ -56,7 +56,7 @@ export function readGifInfo(dataUrl: string): { width: number; height: number } 
 }
 
 export function createGlyph(id: string, glyphId: string, file: GlyphFile | null, kind: GlyphKind = 'image'): Glyph {
-  // Kleine Bilder sind meist Emojis (Chat-Höhe 8), große Bilder GUI-Hintergründe
+  // Small images are usually emojis (chat height 8), large images GUI backgrounds
   const small = !file || (file.width <= 32 && file.height <= 32);
   const height = small ? 8 : Math.min(file!.height, MAX_GLYPH_CELL);
   return {
@@ -80,7 +80,7 @@ export function createGlyph(id: string, glyphId: string, file: GlyphFile | null,
   };
 }
 
-/** Liest eine abgelegte PNG/GIF-Datei als Glyph-Datei. */
+/** Reads a dropped PNG/GIF file as a glyph file. */
 export function glyphFileFromDataUrl(name: string, dataUrl: string): GlyphFile | null {
   const png = readPngInfoFromDataUrl(dataUrl);
   if (png) return { name, dataUrl, ...png };
@@ -125,7 +125,7 @@ export function glyphToYaml(project: Project, glyph: Glyph): Record<string, unkn
 }
 
 export function glyphFilePath(project: Project): string {
-  return `glyphs/${slugify(project.name, 'nexobuilder')}.yml`;
+  return `glyphs/${slugify(project.name, 'resourcepackbuilder')}.yml`;
 }
 
 export function buildGlyphFile(project: Project): string | null {
@@ -133,7 +133,7 @@ export function buildGlyphFile(project: Project): string | null {
   if (glyphs.length === 0) return null;
   return itemsToYaml(
     glyphs.map((g) => ({ id: g.glyphId, config: glyphToYaml(project, g) })),
-    `# Erstellt mit NexoBuilder – Glyphen von "${project.name}"`,
+    `# Erstellt mit ResourcepackBuilder – Glyphen von "${project.name}"`,
   );
 }
 

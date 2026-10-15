@@ -1,22 +1,22 @@
 /**
- * Berechnet die Flächen eines Java-Modells für die 3D-Vorschau
- * (ohne three.js-Abhängigkeit, damit die Logik testbar bleibt).
+ * Computes the faces of a Java model for the 3D preview
+ * (without a three.js dependency so the logic stays testable).
  *
- * Vertex-Reihenfolge und UV-Rotation entsprechen Blockbench (js/util/three_custom.js, cube.js).
+ * Vertex order and UV rotation match Blockbench (js/util/three_custom.js, cube.js).
  */
-import type { FaceName, ImportedModel, JavaModelElement, JavaModelFace, ModelTexture } from '@nexobuilder/core/types';
-import { parseTexturePlaceholder } from '@nexobuilder/core/model/common';
-import { getFrameSize } from '@nexobuilder/core/model/textures';
+import type { FaceName, ImportedModel, JavaModelElement, JavaModelFace, ModelTexture } from '@resourcepackbuilder/core/types';
+import { parseTexturePlaceholder } from '@resourcepackbuilder/core/model/common';
+import { getFrameSize } from '@resourcepackbuilder/core/model/textures';
 
 export type Vec3 = [number, number, number];
 
 export interface PreviewFace {
-  /** 4 Eckpunkte: oben-links, oben-rechts, unten-links, unten-rechts (relativ zum Rotationsursprung) */
+  /** 4 corners: top-left, top-right, bottom-left, bottom-right (relative to the rotation origin) */
   positions: [Vec3, Vec3, Vec3, Vec3];
-  /** UV-Koordinaten im Bereich 0–1 (three.js, flipY) */
+  /** UV coordinates in the range 0–1 (three.js, flipY) */
   uvs: [[number, number], [number, number], [number, number], [number, number]];
   texture: ModelTexture | null;
-  /** Ungelöste Referenz (Vanilla-Textur oder #missing) */
+  /** Unresolved reference (vanilla texture or #missing) */
   unresolved: string | null;
   shade: number;
   doubleSided?: boolean;
@@ -36,12 +36,12 @@ export interface PreviewModel {
 }
 
 const FACE_ORDER: FaceName[] = ['east', 'west', 'up', 'down', 'south', 'north'];
-/** Helligkeit wie bei Minecraft-Blöcken (gerichtetes Licht) */
+/** Brightness like Minecraft blocks (directional light) */
 const FACE_SHADE: Record<FaceName, number> = { up: 1, down: 0.5, north: 0.8, south: 0.8, east: 0.6, west: 0.6 };
 
 const GENERATED_PARENTS = ['item/generated', 'item/handheld', 'item/handheld_rod', 'item/handheld_mace', 'builtin/generated'];
 
-/** Elemente der wichtigsten Vanilla-Parent-Modelle, damit auch Textur-Modelle eine Vorschau haben. */
+/** Elements of the most important vanilla parent models so texture models get a preview too. */
 function builtinParentElements(parent: string): JavaModelElement[] | null {
   const p = parent.replace(/^minecraft:/, '');
   const cube = (faces: Partial<Record<FaceName, string>>): JavaModelElement => ({
@@ -82,7 +82,7 @@ function builtinParentElements(parent: string): JavaModelElement[] | null {
   }
 }
 
-/** Standard-UVs, wenn eine Fläche keine eigenen UVs hat (wie Minecraft). */
+/** Default UVs when a face has no UVs of its own (like Minecraft). */
 function defaultUv(face: FaceName, from: Vec3, to: Vec3): [number, number, number, number] {
   switch (face) {
     case 'down':
@@ -158,7 +158,7 @@ export interface TextureResolution {
   unresolved: string | null;
 }
 
-/** Löst "#schlüssel"-Verweise bis zur eigentlichen Textur auf. */
+/** Resolves "#key" references down to the actual texture. */
 export function resolveTextureRef(model: ImportedModel, ref: string): TextureResolution {
   const textures = model.json.textures ?? {};
   let value: string | undefined = ref;
@@ -243,7 +243,7 @@ export function buildPreviewModel(model: ImportedModel): PreviewModel {
 }
 
 function computeUvs(uv: number[], rotation: number, texture: ModelTexture | null): PreviewFace['uvs'] {
-  // Animierte Texturen: nur das erste Bild anzeigen
+  // Animated textures: show only the first frame
   let frameFactor = 1;
   if (texture?.mcmeta?.animation && texture.height > 0) {
     const frame = getFrameSize(texture);
@@ -269,7 +269,7 @@ function computeUvs(uv: number[], rotation: number, texture: ModelTexture | null
   return arr as PreviewFace['uvs'];
 }
 
-/** 2D-Items (item/generated): Ebenen als flache Fläche in der Mitte des Blocks. */
+/** 2D items (item/generated): layers as a flat plane in the middle of the block. */
 function buildGeneratedModel(model: ImportedModel): PreviewModel {
   const elements: PreviewElement[] = [];
   for (let i = 0; i < 5; i++) {

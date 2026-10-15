@@ -1,6 +1,6 @@
 /**
- * Auswahllisten für die Nexo-Konfiguration. Alle Listen sind Vorschläge –
- * in den Feldern können auch eigene Werte eingetragen werden.
+ * Option lists for the Nexo configuration. All lists are suggestions –
+ * custom values can also be entered in the fields.
  */
 
 export interface Option {
@@ -10,7 +10,7 @@ export interface Option {
 
 const opts = (values: string[]): Option[] => values.map((value) => ({ value }));
 
-/** Häufig genutzte Basis-Materialien (Bukkit Material-Namen). */
+/** Commonly used base materials (Bukkit material names). */
 export const MATERIALS = opts([
   'PAPER',
   'STICK',
@@ -183,7 +183,7 @@ export const MATERIALS = opts([
   'PAINTING',
 ]);
 
-/** Attribute (Paper org.bukkit.attribute.Attribute, Schreibweise wie in der Nexo-Doku). */
+/** Attributes (Paper org.bukkit.attribute.Attribute, spelled as in the Nexo docs). */
 export const ATTRIBUTES = opts([
   'ARMOR',
   'ARMOR_TOUGHNESS',
@@ -510,7 +510,7 @@ export const VANILLA_COMPONENTS = opts([
   'minecraft:equippable',
 ]);
 
-/** Vorschläge für Rezept-Zutaten (Materialien + häufige Blöcke). */
+/** Suggestions for recipe ingredients (materials + common blocks). */
 export const CRAFTING_MATERIALS: Option[] = [
   ...MATERIALS,
   ...opts([
@@ -566,7 +566,7 @@ export const CRAFTING_MATERIALS: Option[] = [
   ]),
 ];
 
-/** Häufige Item-Tags für Rezepte (ohne Namespace = minecraft). */
+/** Common item tags for recipes (without namespace = minecraft). */
 export const ITEM_TAGS = opts([
   'planks',
   'logs',

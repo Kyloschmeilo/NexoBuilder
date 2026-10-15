@@ -1,20 +1,20 @@
 /**
- * Rendert ein Formularfeld aus dem Eigenschafts-Schema. Werte werden unverändert
- * im Konfigurationsobjekt gespeichert; leere Werte werden als undefined zurückgegeben.
+ * Renders a form field from the property schema. Values are stored unchanged
+ * in the config object; empty values are returned as undefined.
  */
 import { createContext, useContext, useEffect, useId, useState, type ReactNode } from 'react';
 import { ChevronRight, Copy, ImageUp, Plus, Trash2, X } from 'lucide-react';
-import type { Field, MapField, ObjectField, ObjectListField, StringListField, TextureField } from '@nexobuilder/core/nexo/fields';
-import { fieldName, validateTextFormat } from '@nexobuilder/core/nexo/fields';
-import type { ModelTexture } from '@nexobuilder/core/types';
-import { compareVersions, isPlainObject } from '@nexobuilder/core/util';
-import { parseYaml, toYaml } from '@nexobuilder/core/nexo/yaml';
+import type { Field, MapField, ObjectField, ObjectListField, StringListField, TextureField } from '@resourcepackbuilder/core/nexo/fields';
+import { fieldName, validateTextFormat } from '@resourcepackbuilder/core/nexo/fields';
+import type { ModelTexture } from '@resourcepackbuilder/core/types';
+import { compareVersions, isPlainObject } from '@resourcepackbuilder/core/util';
+import { parseYaml, toYaml } from '@resourcepackbuilder/core/nexo/yaml';
 import { MiniMessageLine } from '../MiniMessage';
 import { AddButton, ColorInput, Datalist, ListControls, moveInArray, NumberInput, SelectInput, TextInput, TriState } from './inputs';
 
 export interface FieldContextValue {
   minecraftVersion: string;
-  /** Lädt eine PNG als Zusatz-Textur hoch und gibt den Platzhalter "@asset:<id>" zurück */
+  /** Uploads a PNG as an extra texture and returns the placeholder "@asset:<id>" */
   uploadAsset: (file: File) => Promise<string | null>;
   getAsset: (token: string) => ModelTexture | undefined;
 }
@@ -31,9 +31,9 @@ interface FieldRendererProps {
   field: Field;
   value: Value;
   onChange: (value: Value) => void;
-  /** Wert des übergeordneten Objekts (für showIf) */
+  /** Value of the parent object (for showIf) */
   siblings?: Record<string, unknown>;
-  /** Oberstes Feld einer Eigenschaft: Booleans ohne „nicht gesetzt“, Objekte ohne Rahmen */
+  /** Top-level field of a property: booleans without "not set", objects without a frame */
   root?: boolean;
   hideLabel?: boolean;
 }
@@ -216,14 +216,14 @@ export function FieldRenderer({ field, value, onChange, siblings, root, hideLabe
   }
 }
 
-/* ====================================================================== Objekte */
+/* ====================================================================== Objects */
 
 function countValues(value: unknown): number {
   if (!isPlainObject(value)) return 0;
   return Object.values(value).filter((v) => v !== undefined && v !== null && v !== '').length;
 }
 
-/** Felder eines Objekts im Raster (einfache Felder) bzw. volle Breite (komplexe Felder). */
+/** Fields of an object in a grid (simple fields) or full width (complex fields). */
 export function ObjectFields({ field, value, onChange }: { field: ObjectField; value: unknown; onChange: (v: unknown) => void }) {
   const obj = isPlainObject(value) ? value : {};
   const known = new Set(field.fields.map((f) => f.key));
@@ -314,7 +314,7 @@ function ObjectSection({
   );
 }
 
-/* ====================================================================== Listen */
+/* ====================================================================== Lists */
 
 function StringListEditor({ field, value, onChange }: { field: StringListField; value: unknown; onChange: (v: unknown) => void }) {
   const listId = useId();
@@ -541,7 +541,7 @@ function KeyInput({ value, onRename, listId }: { value: string; onRename: (key: 
   );
 }
 
-/* ====================================================================== YAML & Texturen */
+/* ====================================================================== YAML & textures */
 
 export function YamlInput({
   value,
@@ -558,7 +558,7 @@ export function YamlInput({
   const [text, setText] = useState(() => toText(value));
   const [error, setError] = useState<string | null>(null);
   useEffect(() => {
-    // Externe Änderungen (z.B. Rückgängig) übernehmen, solange der Text gültig ist
+    // Apply external changes (e.g. undo) as long as the text is valid
     const parsed = parseYaml(text);
     if (!parsed.error && JSON.stringify(parsed.value ?? null) !== JSON.stringify(value ?? null)) {
       setText(toText(value));

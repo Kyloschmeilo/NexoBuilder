@@ -10,7 +10,7 @@ interface PopoverProps {
   width?: number;
 }
 
-/** Schwebendes Menü, das an einem Element ausgerichtet wird. */
+/** Floating menu that is anchored to an element. */
 export function Popover({ anchor, open, onClose, children, align = 'left', width }: PopoverProps) {
   const ref = useRef<HTMLDivElement>(null);
   const [pos, setPos] = useState<{ top: number; left: number; maxHeight: number } | null>(null);

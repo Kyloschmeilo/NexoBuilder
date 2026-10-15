@@ -1,7 +1,7 @@
 /**
- * Eigene Sounds (Nexo: configuration/sounds) – OGG-Dateien im Resourcepack plus Eintrag in
- * plugins/Nexo/sounds.yml. Mit „Musik-CD“ registriert Nexo den Sound zusätzlich als Jukebox-Song,
- * den ein Item über die Komponente „Schallplatte“ (jukebox_playable) abspielen kann.
+ * Custom sounds (Nexo: configuration/sounds) – OGG files in the resource pack plus an entry in
+ * plugins/Nexo/sounds.yml. With "Musik-CD", Nexo additionally registers the sound as a jukebox song
+ * that an item can play via the "Schallplatte" component (jukebox_playable).
  */
 import type { Issue, Project } from '../types';
 import { base64ToBytes } from '../util';
@@ -14,22 +14,22 @@ export interface SoundFile {
 
 export interface Sound {
   id: string;
-  /** Name des Sounds, z.B. "block.rubin.place" – verwendet als <namespace>:<soundId> */
+  /** Name of the sound, e.g. "block.rubin.place" – used as <namespace>:<soundId> */
   soundId: string;
-  /** Eine Datei – oder mehrere, von denen zufällig eine abgespielt wird */
+  /** One file – or several, of which a random one is played */
   files: SoundFile[];
-  /** Lange Sounds (Musik) streamen statt komplett zu laden */
+  /** Stream long sounds (music) instead of loading them completely */
   stream: boolean;
   volume: number | null;
   pitch: number | null;
-  /** Reichweite in Blöcken (attenuation_distance) */
+  /** Range in blocks (attenuation_distance) */
   distance: number | null;
-  /** Als Musik-CD (Jukebox-Song) registrieren */
+  /** Register as a music disc (jukebox song) */
   jukebox: JukeboxSong | null;
 }
 
 export interface JukeboxSong {
-  /** z.B. "2m 30s" oder "150s" */
+  /** e.g. "2m 30s" or "150s" */
   duration: string;
   description: string;
   comparatorOutput: number | null;
@@ -42,12 +42,12 @@ export function createSound(id: string, soundId: string, files: SoundFile[]): So
   return { id, soundId, files, stream: false, volume: null, pitch: null, distance: null, jukebox: null };
 }
 
-/** Vollständige ID, wie sie in Item-Configs (z.B. Sounds von Blöcken) verwendet wird */
+/** Full ID as used in item configs (e.g. block sounds) */
 export function soundKey(project: Project, sound: Sound): string {
   return `${project.namespace}:${sound.soundId}`;
 }
 
-/** Pfad der OGG-Datei relativ zu assets/<ns>/sounds (ohne Endung) */
+/** Path of the OGG file relative to assets/<ns>/sounds (without extension) */
 export function soundFilePath(sound: Sound, index: number): string {
   const base = sound.soundId.split('.').filter(Boolean).join('/') || 'sound';
   return sound.files.length > 1 ? `${base}_${index + 1}` : base;
@@ -64,7 +64,7 @@ export function isOgg(dataUrl: string): boolean {
   }
 }
 
-/** Eintrag für sounds.yml */
+/** Entry for sounds.yml */
 export function soundToYaml(project: Project, sound: Sound): Record<string, unknown> {
   const ns = project.namespace;
   const refs = sound.files.map((_, i) => `${ns}:${soundFilePath(sound, i)}`);

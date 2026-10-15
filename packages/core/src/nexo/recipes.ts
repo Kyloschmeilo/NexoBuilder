@@ -1,7 +1,7 @@
 /**
- * Crafting-Rezepte für Nexo (plugins/Nexo/recipes/<typ>/…yml).
- * Format laut Nexo-Doku (general-usage/recipes): jeder Rezept-Typ hat einen eigenen Ordner,
- * der Ordnername ist der Typ in Kleinbuchstaben (shaped, shapeless, furnace, …).
+ * Crafting recipes for Nexo (plugins/Nexo/recipes/<type>/…yml).
+ * Format per the Nexo docs (general-usage/recipes): each recipe type has its own folder,
+ * the folder name is the type in lowercase (shaped, shapeless, furnace, …).
  */
 import type { Issue, Item, Project } from '../types';
 import { slugify } from '../util';
@@ -14,22 +14,22 @@ export type IngredientSource = 'minecraft' | 'nexo' | 'tag';
 export interface RecipeIngredient {
   source: IngredientSource;
   id: string;
-  /** Benötigte Anzahl pro Slot (Nexo Amount-Predicate) */
+  /** Required amount per slot (Nexo amount predicate) */
   amount?: number;
 }
 
 export interface Recipe {
   id: string;
   type: RecipeType;
-  /** Anzahl der erzeugten Items */
+  /** Number of produced items */
   resultAmount: number;
-  /** shaped: 9 Felder (Zeile für Zeile), jeweils ein Buchstabe aus `ingredients` oder '' */
+  /** shaped: 9 cells (row by row), each a letter from `ingredients` or '' */
   grid: string[];
-  /** shaped/shapeless: Buchstabe → Zutat */
+  /** shaped/shapeless: letter → ingredient */
   ingredients: Record<string, RecipeIngredient>;
-  /** Öfen & Steinsäge: Eingabe */
+  /** Furnaces & stonecutter: input */
   input: RecipeIngredient | null;
-  /** Öfen: Dauer in Ticks */
+  /** Furnaces: duration in ticks */
   cookingTime: number;
   experience: number;
 }
@@ -89,7 +89,7 @@ function ingredientToYaml(ingredient: RecipeIngredient): Record<string, unknown>
   return out;
 }
 
-/** Entfernt leere Randzeilen/-spalten, damit das Rezept an jeder Stelle im Raster funktioniert. */
+/** Removes empty border rows/columns so the recipe works at any position in the grid. */
 export function trimShape(grid: string[]): string[] {
   const rows = [0, 1, 2].map((r) => [0, 1, 2].map((c) => grid[r * 3 + c] || ' '));
   const usedRows = [0, 1, 2].filter((r) => rows[r].some((ch) => ch !== ' '));
@@ -136,7 +136,7 @@ export function recipeToYaml(recipe: Recipe, item: Item): Record<string, unknown
   return out;
 }
 
-/** Eindeutiger Schlüssel des Rezepts, z.B. "rubin_schwert_shaped" bzw. "rubin_schwert_shaped_2". */
+/** Unique key of the recipe, e.g. "rubin_schwert_shaped" or "rubin_schwert_shaped_2". */
 export function recipeKeys(item: Item): Map<string, string> {
   const keys = new Map<string, string>();
   const counter = new Map<RecipeType, number>();
@@ -149,10 +149,10 @@ export function recipeKeys(item: Item): Map<string, string> {
 }
 
 export function recipeFilePath(project: Project, type: RecipeType): string {
-  return `recipes/${type}/${slugify(project.name, 'nexobuilder')}.yml`;
+  return `recipes/${type}/${slugify(project.name, 'resourcepackbuilder')}.yml`;
 }
 
-/* ====================================================================== Prüfung */
+/* ====================================================================== Validation */
 
 const MATERIAL_PATTERN = /^[A-Za-z0-9_]+$/;
 const TAG_PATTERN = /^([a-z0-9_.-]+:)?[a-z0-9_./-]+$/;
@@ -211,7 +211,7 @@ export function validateRecipe(recipe: Recipe, project: Project, key: string): I
   return issues;
 }
 
-/** Erzeugt alle Rezept-Dateien des Projekts (Pfad → YAML). */
+/** Generates all recipe files of the project (path → YAML). */
 export function buildRecipeFiles(project: Project, items: Item[]): Map<string, string> {
   const byType = new Map<RecipeType, Array<{ id: string; config: Record<string, unknown> }>>();
   for (const item of items) {
@@ -226,7 +226,7 @@ export function buildRecipeFiles(project: Project, items: Item[]): Map<string, s
   for (const info of RECIPE_TYPES) {
     const list = byType.get(info.type);
     if (!list?.length) continue;
-    files.set(recipeFilePath(project, info.type), itemsToYaml(list, `# Erstellt mit NexoBuilder – ${info.label}-Rezepte`));
+    files.set(recipeFilePath(project, info.type), itemsToYaml(list, `# Erstellt mit ResourcepackBuilder – ${info.label}-Rezepte`));
   }
   return files;
 }

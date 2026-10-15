@@ -15,7 +15,7 @@ function setup() {
 }
 
 describe('trimShape', () => {
-  it('entfernt leere Randzeilen und -spalten', () => {
+  it('removes empty border rows and columns', () => {
     expect(trimShape(['', 'A', '', '', 'A', '', '', 'B', ''])).toEqual(['A', 'A', 'B']);
     expect(trimShape(['A', 'A', '', 'A', 'A', '', '', '', ''])).toEqual(['AA', 'AA']);
     expect(trimShape(['A', '', 'A', '', 'B', '', 'A', '', 'A'])).toEqual(['A A', ' B ', 'A A']);
@@ -23,8 +23,8 @@ describe('trimShape', () => {
   });
 });
 
-describe('Rezepte', () => {
-  it('schreibt geformte Rezepte im Nexo-Format', () => {
+describe('recipes', () => {
+  it('writes shaped recipes in Nexo format', () => {
     const { item } = setup();
     const recipe = createRecipe('shaped', 'r1');
     recipe.grid = ['', 'A', '', '', 'A', '', '', 'B', ''];
@@ -37,7 +37,7 @@ describe('Rezepte', () => {
     });
   });
 
-  it('schreibt formlose und Ofen-Rezepte', () => {
+  it('writes shapeless and furnace recipes', () => {
     const { item } = setup();
     const shapeless = createRecipe('shapeless', 'r2');
     shapeless.ingredients = { A: { source: 'nexo', id: 'ruby', amount: 2 }, B: { source: 'minecraft', id: 'STICK' } };
@@ -60,7 +60,7 @@ describe('Rezepte', () => {
     expect(recipeToYaml(cutter, item)).toEqual({ result: { nexo_item: 'ruby_sword' }, input: { minecraft_type: 'STONE' } });
   });
 
-  it('prüft unvollständige Rezepte', () => {
+  it('validates incomplete recipes', () => {
     const { project } = setup();
     const empty = createRecipe('shaped', 'x');
     expect(validateRecipe(empty, project, 'k').some((i) => i.level === 'error')).toBe(true);
@@ -72,7 +72,7 @@ describe('Rezepte', () => {
     expect(validateRecipe(furnace, project, 'k')).toEqual([]);
   });
 
-  it('legt Rezepte pro Typ in recipes/<typ>/ ab und vergibt eindeutige Schlüssel', async () => {
+  it('stores recipes per type in recipes/<type>/ and assigns unique keys', async () => {
     const { project, item } = setup();
     const a = createRecipe('shaped', 'a');
     a.grid = ['A', 'A', '', '', '', '', '', '', ''];

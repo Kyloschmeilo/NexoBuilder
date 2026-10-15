@@ -1,5 +1,15 @@
 # Changelog
 
+## Unveröffentlicht
+
+### Umbenannt: ResourcepackBuilder
+
+- NexoBuilder heißt jetzt **ResourcepackBuilder** (Programm, Installer, Fenster, Icon).
+- **Nicht kompatibel mit NexoBuilder:** gespeicherte Projekte, Projektdateien (`.nexobuilder.json`), geteilte Ordner
+  und kopierte Eigenschaften aus NexoBuilder lassen sich nicht öffnen. Der Installer installiert ResourcepackBuilder
+  neben einem vorhandenen NexoBuilder.
+- Die einzelne HTML-Datei für den Browser entfällt – ResourcepackBuilder gibt es nur noch als Windows-Programm.
+
 ## 1.4.0
 
 ### Neu: Furniture

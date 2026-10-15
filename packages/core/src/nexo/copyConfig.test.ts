@@ -37,8 +37,8 @@ function setup(): { project: Project; source: Item; target: Item } {
   return { project, source, target };
 }
 
-describe('Eigenschaften kopieren', () => {
-  it('überträgt die komplette Konfiguration außer Name, ID, Modell, Ordner und Modell-Daten', () => {
+describe('copy properties', () => {
+  it('transfers the complete config except name, ID, model, folder and model data', () => {
     const { project, source, target } = setup();
     const clip = copyItemConfig(source, project.id);
     const folderBefore = target.folderId;
@@ -51,26 +51,26 @@ describe('Eigenschaften kopieren', () => {
     expect(target.folderId).toBe(folderBefore);
     expect(target.config.material).toBe('DIAMOND_SWORD');
     expect(target.config.lore).toEqual(['<gray>Scharf']);
-    // Ersetzen: Werte, die nur das Ziel hatte, sind weg (durability, Enchantments)
+    // Replace: values only the target had are gone (durability, Enchantments)
     expect(target.config.Components).toEqual({ max_stack_size: 1, food: { nutrition: 4 }, some_new_component: { x: 1 } });
     expect(target.config.Enchantments).toBeUndefined();
-    // Modell-Daten bleiben beim Ziel
+    // Model data stays with the target
     expect(target.config.Pack).toEqual({ custom_model_data: 2002, model: 'test:item/eigenes', oversized_in_gui: true });
     expect(target.config.custom_root).toBe('x');
     expect(target.rawYaml).toBe('excludeFromInventory: true\n');
     expect(target.recipes).toEqual([]);
-    // Rüstungs-Textur wird mitkopiert, nicht mehr benutzte Texturen fliegen raus
+    // Armor texture is copied along, unused textures are dropped
     expect(Object.keys(target.assets)).toEqual(['a1']);
   });
 
-  it('vergibt für eigene Blöcke eine freie Variation', () => {
+  it('assigns a free variation to custom blocks', () => {
     const { project, source, target } = setup();
     pasteItemConfig(project, target, copyItemConfig(source, project.id), { categories: ALL, mode: 'replace' });
     expect((target.config.Mechanics as Record<string, Record<string, unknown>>).custom_block.custom_variation).toBe(1);
     expect((source.config.Mechanics as Record<string, Record<string, unknown>>).custom_block.custom_variation).toBe(3);
   });
 
-  it('ergänzt im Modus „merge“ nur und lässt eigene Werte stehen', () => {
+  it('only adds in "merge" mode and keeps existing values', () => {
     const { project, source, target } = setup();
     pasteItemConfig(project, target, copyItemConfig(source, project.id), { categories: new Set(['components', 'attributes']), mode: 'merge' });
     expect(target.config.Enchantments).toEqual({ sharpness: 1 });
@@ -79,7 +79,7 @@ describe('Eigenschaften kopieren', () => {
     expect(target.config.lore).toBeUndefined();
   });
 
-  it('kopiert Rezepte nur auf Wunsch und mit neuen IDs', () => {
+  it('copies recipes only on request and with new IDs', () => {
     const { project, source, target } = setup();
     pasteItemConfig(project, target, copyItemConfig(source, project.id), { categories: new Set(['recipes']), mode: 'merge' });
     expect(target.recipes).toHaveLength(1);
@@ -87,7 +87,7 @@ describe('Eigenschaften kopieren', () => {
     expect(target.recipes[0].type).toBe('shaped');
   });
 
-  it('ändert die Quelle selbst nicht und die Zwischenablage ist unabhängig vom Original', () => {
+  it('does not change the source itself and the clipboard is independent of the original', () => {
     const { project, source, target } = setup();
     const clip = copyItemConfig(source, project.id);
     source.config.lore = ['geändert'];
@@ -98,12 +98,12 @@ describe('Eigenschaften kopieren', () => {
     expect(JSON.stringify(source)).toBe(before);
   });
 
-  it('fasst den Inhalt der Zwischenablage je Kategorie zusammen', () => {
+  it('summarizes the clipboard contents per category', () => {
     const { project, source } = setup();
     const summary = Object.fromEntries(summarizeClipboard(copyItemConfig(source, project.id)).map((s) => [s.id, s.entries]));
     expect(summary.material).toEqual(['DIAMOND_SWORD']);
     expect(summary.general.length).toBe(1);
-    expect(summary.appearance.length).toBe(2); // oversized_in_gui + Rüstung, nicht custom_model_data
+    expect(summary.appearance.length).toBe(2); // oversized_in_gui + armor, not custom_model_data
     expect(summary.other).toEqual(['custom_root', 'Components.some_new_component']);
     expect(summary.recipes).toEqual(['shaped']);
   });

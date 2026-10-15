@@ -1,7 +1,7 @@
-/** Einzelne Eingabefelder, die der FieldRenderer zusammensetzt. */
+/** Individual input fields that the FieldRenderer composes. */
 import { useEffect, useId, useState } from 'react';
 import { ArrowDown, ArrowUp, Plus, Trash2 } from 'lucide-react';
-import type { Option } from '@nexobuilder/core/nexo/options';
+import type { Option } from '@resourcepackbuilder/core/nexo/options';
 
 export function Datalist({ id, options }: { id: string; options?: Option[] }) {
   if (!options?.length) return null;
@@ -55,7 +55,7 @@ interface NumberInputProps {
   invalid?: boolean;
 }
 
-/** Zahlenfeld mit lokalem Entwurf, damit Zwischenstände wie "-" oder "1." getippt werden können. */
+/** Number field with a local draft so intermediate states like "-" or "1." can be typed. */
 export function NumberInput({ value, onChange, placeholder, integer, min, max, invalid }: NumberInputProps) {
   const external = value === undefined || value === null ? '' : String(value);
   const [draft, setDraft] = useState(external);
@@ -189,7 +189,7 @@ export function moveInArray<T>(list: T[], from: number, to: number): T[] {
   return copy;
 }
 
-/** Farbwähler, der den Nexo-Farbwert "R, G, B" bearbeitet. */
+/** Color picker that edits the Nexo color value "R, G, B". */
 export function ColorInput({ value, onChange }: { value: string | undefined; onChange: (v: string | undefined) => void }) {
   const m = /^\s*(\d{1,3})\s*,\s*(\d{1,3})\s*,\s*(\d{1,3})\s*$/.exec(value ?? '');
   const hex = m ? `#${[m[1], m[2], m[3]].map((n) => Math.min(255, Number(n)).toString(16).padStart(2, '0')).join('')}` : '#ffffff';

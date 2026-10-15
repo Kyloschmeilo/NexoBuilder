@@ -1,4 +1,4 @@
-/** Hilfsfunktionen zum Lesen/Schreiben verschachtelter Konfigurationswerte. */
+/** Helpers for reading/writing nested config values. */
 import type { ConfigObject, ConfigValue } from '../types';
 import { isPlainObject } from '../util';
 
@@ -15,7 +15,7 @@ export function hasPath(obj: ConfigObject, path: string[]): boolean {
   return getPath(obj, path) !== undefined;
 }
 
-/** Setzt einen Wert (verändert `obj`). Fehlende Zwischenobjekte werden angelegt. */
+/** Sets a value (mutates `obj`). Missing intermediate objects are created. */
 export function setPath(obj: ConfigObject, path: string[], value: ConfigValue | undefined): void {
   if (path.length === 0) return;
   let current: Record<string, unknown> = obj;
@@ -31,7 +31,7 @@ export function setPath(obj: ConfigObject, path: string[], value: ConfigValue | 
   else current[last] = value;
 }
 
-/** Entfernt einen Wert und räumt leer gewordene Elternobjekte auf (verändert `obj`). */
+/** Removes a value and cleans up parent objects that became empty (mutates `obj`). */
 export function deletePath(obj: ConfigObject, path: string[]): void {
   if (path.length === 0) return;
   const parents: Array<Record<string, unknown>> = [];
@@ -43,7 +43,7 @@ export function deletePath(obj: ConfigObject, path: string[]): void {
   }
   if (!isPlainObject(current)) return;
   delete current[path[path.length - 1]];
-  // leere Eltern entfernen
+  // remove empty parents
   for (let i = path.length - 2; i >= 0; i--) {
     const parent = parents[i];
     const child = parent[path[i]];

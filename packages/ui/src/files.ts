@@ -1,5 +1,5 @@
-/** Browser-Hilfen für Dateien (Lesen per Drag & Drop, Herunterladen). */
-import type { DroppedFile } from '@nexobuilder/core/model/textures';
+/** Browser helpers for files (reading via drag & drop, downloading). */
+import type { DroppedFile } from '@resourcepackbuilder/core/model/textures';
 
 const TEXT_EXTENSIONS = /\.(json|bbmodel|mcmeta|yml|yaml|txt)$/i;
 
@@ -21,13 +21,13 @@ export function readAsText(file: Blob): Promise<string> {
   });
 }
 
-/** Liest abgelegte Dateien: PNGs als Data-URL, Modelle/Metadaten als Text. */
+/** Reads dropped files: PNGs as data URL, models/metadata as text. */
 export async function readDroppedFiles(files: File[]): Promise<DroppedFile[]> {
   const result: DroppedFile[] = [];
   for (const file of files) {
     if (/\.png$/i.test(file.name) || file.type === 'image/png') {
       let dataUrl = await readAsDataUrl(file);
-      // Manche Systeme liefern keinen MIME-Typ – dann korrigieren
+      // Some systems provide no MIME type – correct it in that case
       if (dataUrl.startsWith('data:application/octet-stream')) dataUrl = dataUrl.replace('data:application/octet-stream', 'data:image/png');
       result.push({ name: file.name, dataUrl });
     } else if (TEXT_EXTENSIONS.test(file.name)) {
@@ -39,7 +39,7 @@ export async function readDroppedFiles(files: File[]): Promise<DroppedFile[]> {
   return result;
 }
 
-/** Sammelt Dateien aus einem Drop-Event (inklusive Dateien in abgelegten Ordnern). */
+/** Collects files from a drop event (including files in dropped folders). */
 export async function filesFromDataTransfer(dataTransfer: DataTransfer): Promise<File[]> {
   const items = [...dataTransfer.items].filter((i) => i.kind === 'file');
   const entries = items.map((i) => (typeof i.webkitGetAsEntry === 'function' ? i.webkitGetAsEntry() : null));
@@ -94,7 +94,7 @@ export function pickFiles(accept: string, multiple = true): Promise<File[]> {
   });
 }
 
-/** Macht aus "ruby_sword.bbmodel" einen lesbaren Namen ("Ruby Sword"). */
+/** Turns "ruby_sword.bbmodel" into a readable name ("Ruby Sword"). */
 export function prettyNameFromFile(fileName: string): string {
   const base = fileName.replace(/\.[^.]+$/, '').replace(/[_-]+/g, ' ').trim();
   return base.replace(/\b\p{L}/gu, (c) => c.toUpperCase());

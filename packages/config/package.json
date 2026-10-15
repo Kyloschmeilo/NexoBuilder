@@ -1,5 +1,5 @@
 {
-  "name": "@nexobuilder/config",
+  "name": "@resourcepackbuilder/config",
   "private": true,
   "version": "0.0.0",
   "description": "Gemeinsame TypeScript-Konfiguration für alle Pakete.",

@@ -1,5 +1,5 @@
 {
-  "name": "nexobuilder-monorepo",
+  "name": "resourcepackbuilder-monorepo",
   "private": true,
   "type": "module",
   "workspaces": [
@@ -7,15 +7,13 @@
     "apps/*"
   ],
   "scripts": {
-    "dev": "turbo run dev --filter=nexobuilder",
+    "dev": "turbo run dev --filter=resourcepackbuilder",
     "build": "turbo run build",
-    "build:single": "turbo run build:single",
-    "preview": "npm run preview -w nexobuilder",
     "typecheck": "turbo run typecheck",
     "test": "turbo run test",
-    "app": "npm run app -w nexobuilder",
+    "app": "npm run app -w resourcepackbuilder",
     "dist:win": "turbo run dist:win",
-    "icon": "npm run icon -w nexobuilder"
+    "icon": "npm run icon -w resourcepackbuilder"
   },
   "devDependencies": {
     "@types/node": "^22.0.0",

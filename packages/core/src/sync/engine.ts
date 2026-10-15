@@ -1,13 +1,13 @@
 /**
- * Gleicht ein Projekt mit einem geteilten Ordner ab – in beide Richtungen.
+ * Syncs a project with a shared folder – in both directions.
  *
- * - Lokale Änderungen werden pro Eintrag (Item, Ordner, Glyphe, Projektdaten) als eigene Datei geschrieben.
- * - Änderungen der anderen werden beim regelmäßigen Nachsehen eingelesen und übernommen.
- * - Haben zwei Personen denselben Eintrag geändert, gewinnt die neuere Fassung (logische Uhr `rev`);
- *   alle Beteiligten landen dadurch beim selben Stand.
+ * - Local changes are written per entry (item, folder, glyph, project data) as a separate file.
+ * - Changes by others are read in and applied during regular polling.
+ * - If two people changed the same entry, the newer version wins (logical clock `rev`);
+ *   all participants thereby end up with the same state.
  *
- * Der Abgleich kennt weder Electron noch den Browser: Dateizugriffe laufen über `SyncFs`,
- * das Projekt über `SyncHost`. Dadurch lässt er sich mit einem Speicher-Dateisystem testen.
+ * The sync knows neither Electron nor the browser: file access goes through `SyncFs`,
+ * the project through `SyncHost`. This allows testing it with an in-memory file system.
  */
 import type { Project } from '../types';
 import { stripFormatting } from '../util';
@@ -31,7 +31,7 @@ import {
 import { applyRemoteEntities, projectFromEnvelopes } from './merge';
 
 export interface SyncFileInfo {
-  /** Pfad relativ zum geteilten Ordner, mit „/“ getrennt */
+  /** Path relative to the shared folder, separated by "/" */
   path: string;
   mtimeMs: number;
   size: number;
@@ -39,7 +39,7 @@ export interface SyncFileInfo {
 
 export interface SyncFs {
   list(): Promise<SyncFileInfo[]>;
-  /** null, wenn die Datei (gerade) nicht existiert */
+  /** null if the file does not exist (at the moment) */
   read(path: string): Promise<string | null>;
   write(path: string, content: string): Promise<SyncFileInfo>;
 }
@@ -48,21 +48,21 @@ export interface EntityVersion {
   rev: number;
   by: string;
   byName: string;
-  /** Hash des lokalen Stands zu dieser Version ('deleted' = gelöscht) */
+  /** Hash of the local state at this version ('deleted' = deleted) */
   hash: string;
 }
 
 export interface SyncState {
   clock: number;
   versions: Record<string, EntityVersion>;
-  /** Zuletzt gesehene Dateien – damit beim Start nicht alles neu gelesen werden muss */
+  /** Last seen files – so that not everything has to be re-read on startup */
   files: Record<string, { mtimeMs: number; size: number; hash: string }>;
 }
 
 export interface SyncIdentity {
-  /** Zufällige, feste ID dieser Installation */
+  /** Random, fixed ID of this installation */
   clientId: string;
-  /** Name, der bei den anderen angezeigt wird */
+  /** Name shown to the others */
   userName: string;
 }
 
@@ -71,13 +71,13 @@ export interface RemoteChange {
   id: string;
   byName: string;
   deleted: boolean;
-  /** Anzeigename des Eintrags, z.B. Item-Name */
+  /** Display name of the entry, e.g. item name */
   label: string;
 }
 
 export interface SyncHost {
   getProject(): Project | null;
-  /** Änderungen der anderen übernehmen – darf nicht als eigene Änderung (Undo-Schritt) zählen */
+  /** Apply changes by others – must not count as an own change (undo step) */
   applyRemote(transform: (project: Project) => Project, changes: RemoteChange[]): void;
 }
 
@@ -86,10 +86,10 @@ export interface SyncResult {
   written: number;
 }
 
-/** Der Ordner gehört zu einem anderen Projekt o.ä. – Abgleich nicht möglich. */
+/** The folder belongs to another project or similar – sync not possible. */
 export class ShareFolderError extends Error {}
 
-/** Ist Fassung a neuer als b? Gleichstand wird über die Installations-ID entschieden. */
+/** Is version a newer than b? Ties are decided by the installation ID. */
 export function isNewer(a: { rev: number; by: string }, b: { rev: number; by: string } | undefined): boolean {
   if (!b) return true;
   return a.rev > b.rev || (a.rev === b.rev && a.by > b.by);
@@ -124,9 +124,9 @@ export class SyncEngine {
   private files: Map<string, { mtimeMs: number; size: number; hash: string }>;
   private clock: number;
   private snapshot: Project;
-  /** Lokal geänderte Einträge, die mit neuer Version geschrieben werden müssen */
+  /** Locally changed entries that must be written with a new version */
   private dirty = new Set<string>();
-  /** Einträge, deren Datei eine ältere Fassung enthält als wir – unsere wieder hinschreiben */
+  /** Entries whose file contains an older version than ours – write ours again */
   private rewrite = new Set<string>();
   private queue: Promise<unknown> = Promise.resolve();
   private applying = false;
@@ -146,7 +146,7 @@ export class SyncEngine {
     this.versions = new Map(Object.entries(state?.versions ?? {}));
     this.files = new Map(Object.entries(state?.files ?? {}));
     this.clock = state?.clock ?? 0;
-    // Alles, was sich seit dem letzten Abgleich lokal geändert hat (auch Gelöschtes), muss geschrieben werden
+    // Everything that changed locally since the last sync (including deletions) must be written
     const keys = new Set([...entityKeys(project), ...this.versions.keys()]);
     for (const key of keys) {
       if (this.versions.get(key)?.hash !== hashData(localEntity(project, key))) this.dirty.add(key);
@@ -157,7 +157,7 @@ export class SyncEngine {
     return { clock: this.clock, versions: Object.fromEntries(this.versions), files: Object.fromEntries(this.files) };
   }
 
-  /** Anzahl lokaler Änderungen, die noch nicht im Ordner sind */
+  /** Number of local changes not yet in the folder */
   get pending(): number {
     return this.dirty.size + this.rewrite.size;
   }
@@ -170,7 +170,7 @@ export class SyncEngine {
     this.stopped = true;
   }
 
-  /** Eine lokale Änderung melden (aus dem Store-Abo). Gibt true zurück, wenn etwas zu schreiben ist. */
+  /** Report a local change (from the store subscription). Returns true if there is something to write. */
   noteLocalChange(project: Project): boolean {
     if (this.applying || this.stopped || project.id !== this.projectId || project === this.snapshot) return false;
     for (const key of changedEntityKeys(this.snapshot, project)) this.dirty.add(key);
@@ -178,12 +178,12 @@ export class SyncEngine {
     return this.dirty.size > 0;
   }
 
-  /** Ausstehende lokale Änderungen schreiben. */
+  /** Write pending local changes. */
   flush(): Promise<number> {
     return this.serial(() => this.flushNow());
   }
 
-  /** Änderungen der anderen einlesen und danach Ausstehendes schreiben. */
+  /** Read in changes by others and then write pending changes. */
   sync(): Promise<SyncResult> {
     return this.serial(async () => {
       const applied = await this.pollNow();
@@ -204,7 +204,7 @@ export class SyncEngine {
   }
 
   private async flushNow(): Promise<number> {
-    // Projektdatei zuerst – sie kennzeichnet den Ordner als NexoBuilder-Projekt
+    // Project file first – it marks the folder as a ResourcepackBuilder project
     const keys = [...new Set([...this.dirty, ...this.rewrite])].sort((a, b) => Number(b === 'project') - Number(a === 'project'));
     let written = 0;
     for (const key of keys) {
@@ -219,10 +219,10 @@ export class SyncEngine {
       const hash = hashData(data);
       let version = this.versions.get(key);
       if (isDirty && version?.hash !== hash) {
-        if (!version && data === undefined) continue; // nie geteilt, schon wieder gelöscht
+        if (!version && data === undefined) continue; // never shared, already deleted again
         version = { rev: this.tick(), by: this.identity.clientId, byName: this.identity.userName, hash };
       } else if (!isRewrite || !version) {
-        continue; // nichts geändert
+        continue; // nothing changed
       }
       const content = JSON.stringify(makeEnvelope(ref, version, data));
       try {
@@ -254,7 +254,7 @@ export class SyncEngine {
         continue;
       }
       const env = parseEnvelope(text, ref);
-      // Unvollständig (wird z.B. gerade vom Cloud-Dienst geladen) – beim nächsten Mal erneut versuchen
+      // Incomplete (e.g. currently being downloaded by the cloud service) – try again next time
       if (!env) continue;
       if (env.kind === 'project' && env.id !== this.projectId) {
         throw new ShareFolderError('In diesem Ordner liegt ein anderes geteiltes Projekt.');
@@ -264,7 +264,7 @@ export class SyncEngine {
       const key = entityKey(env.kind, env.id);
       const local = this.versions.get(key);
       if (isNewer(env, local)) {
-        // Eine eigene, noch nicht geschriebene Änderung ist neuer und wird gleich geschrieben
+        // An own, not yet written change is newer and will be written shortly
         if (!this.dirty.has(key)) accepted.push(env);
       } else if (local && (env.rev !== local.rev || env.by !== local.by)) {
         this.rewrite.add(key);
@@ -298,7 +298,7 @@ export class SyncEngine {
       acceptedKeys.add(key);
       this.versions.set(key, { rev: env.rev, by: env.by, byName: env.byName, hash: hashData(localEntity(after, key)) });
     }
-    // Einträge, die nur durch das Aufräumen der Ordnerstruktur angepasst wurden, gelten weiter als abgeglichen
+    // Entries that were only adjusted by cleaning up the folder structure still count as synced
     for (const key of changedEntityKeys(before, after)) {
       const version = this.versions.get(key);
       if (acceptedKeys.has(key) || this.dirty.has(key)) continue;
@@ -310,7 +310,7 @@ export class SyncEngine {
   }
 }
 
-/** Liest einen geteilten Ordner komplett ein (zum Öffnen eines geteilten Projekts). */
+/** Reads a shared folder completely (to open a shared project). */
 export async function readShareFolder(fs: SyncFs): Promise<{ project: Project; state: SyncState } | null> {
   const files: SyncState['files'] = {};
   const envelopes: Envelope[] = [];
@@ -335,6 +335,6 @@ export async function readShareFolder(fs: SyncFs): Promise<{ project: Project; s
     const key = entityKey(env.kind, env.id);
     versions[key] = { rev: env.rev, by: env.by, byName: env.byName, hash: hashData(localEntity(project, key)) };
   }
-  // Einträge, die es nur durch das Aufräumen gibt (z.B. „Wiederhergestellt“), werden beim Start geschrieben
+  // Entries that only exist due to the cleanup (e.g. "Wiederhergestellt") are written on startup
   return { project, state: { clock, versions, files } };
 }

@@ -1,7 +1,7 @@
 /**
- * Eigenschaften eines Items auf andere Items übertragen – alles außer dem, was ein Item
- * ausmacht: Anzeigename, Item-ID, Modell (inkl. Varianten), Ordner und Modell-Daten
- * wie custom_model_data.
+ * Transfer properties of one item to other items – everything except what defines an item:
+ * display name, item ID, model (incl. variants), folder and model data
+ * such as custom_model_data.
  */
 import type { ConfigObject, ConfigValue, Item, ModelTexture, Project } from '../types';
 import { deepClone, isPlainObject, uid } from '../util';
@@ -24,25 +24,25 @@ export const COPY_CATEGORIES: Array<{ id: CopyCategory; label: string; descripti
   },
 ];
 
-/** Werte, die nie kopiert werden: sie gehören zum Modell und müssen pro Item eindeutig sein. */
+/** Values that are never copied: they belong to the model and must be unique per item. */
 export const NEVER_COPIED_PROPERTIES = new Set(['Pack.custom_model_data']);
 
 export interface ItemConfigClipboard {
-  format: 'nexobuilder-item-config';
+  format: 'resourcepackbuilder-item-config';
   sourceItemId: string;
   sourceName: string;
   sourceNexoId: string;
   projectId: string;
   config: ConfigObject;
   rawYaml: string;
-  /** Zusatz-Texturen, auf die die Konfiguration verweist (@asset:…) */
+  /** Extra textures referenced by the config (@asset:…) */
   assets: Record<string, ModelTexture>;
   recipes: Recipe[];
 }
 
 export function copyItemConfig(item: Item, projectId: string): ItemConfigClipboard {
   return {
-    format: 'nexobuilder-item-config',
+    format: 'resourcepackbuilder-item-config',
     sourceItemId: item.id,
     sourceName: item.displayName,
     sourceNexoId: item.nexoId,
@@ -57,15 +57,15 @@ export function copyItemConfig(item: Item, projectId: string): ItemConfigClipboa
 const copyableProperties = (group: PropertyGroup): PropertyDef[] =>
   PROPERTIES.filter((p) => p.group === group && !NEVER_COPIED_PROPERTIES.has(p.id));
 
-/** Oberste Schlüssel, die zu keiner Eigenschaft gehören (z.B. aus importierten Configs) */
+/** Top-level keys that belong to no property (e.g. from imported configs) */
 function otherKeys(config: ConfigObject): string[] {
   const roots = new Set(PROPERTIES.map((p) => p.path[0]));
   return Object.keys(config).filter((k) => !roots.has(k) && !MANAGED_TOP_LEVEL_KEYS.includes(k));
 }
 
 /**
- * Unbekannte Unterschlüssel in Components/Mechanics (die keine eigene Eigenschaft haben).
- * Unbekanntes unter Pack (model, textures, parent_model …) gehört zum Modell und bleibt beim Ziel.
+ * Unknown sub-keys in Components/Mechanics (that have no property of their own).
+ * Unknown keys under Pack (model, textures, parent_model …) belong to the model and stay with the target.
  */
 function otherNestedPaths(config: ConfigObject): string[][] {
   const known = new Set(PROPERTIES.map((p) => p.path.join('.')));
@@ -84,11 +84,11 @@ function otherNestedPaths(config: ConfigObject): string[][] {
 
 export interface CategorySummary {
   id: CopyCategory;
-  /** Namen der enthaltenen Eigenschaften (für die Anzeige) */
+  /** Names of the contained properties (for display) */
   entries: string[];
 }
 
-/** Was in der Zwischenablage je Kategorie enthalten ist. */
+/** What the clipboard contains per category. */
 export function summarizeClipboard(clip: ItemConfigClipboard): CategorySummary[] {
   const config = clip.config;
   return COPY_CATEGORIES.map(({ id }) => {
@@ -105,16 +105,16 @@ export function summarizeClipboard(clip: ItemConfigClipboard): CategorySummary[]
 export interface PasteOptions {
   categories: ReadonlySet<CopyCategory>;
   /**
-   * replace: Das Ziel bekommt in den gewählten Kategorien genau die Werte der Quelle
-   *          (Eigenschaften, die es nur im Ziel gibt, werden entfernt).
-   * merge:   Nur hinzufügen bzw. überschreiben, was die Quelle hat.
+   * replace: The target gets exactly the source values in the selected categories
+   *          (properties that only exist on the target are removed).
+   * merge:   Only add or overwrite what the source has.
    */
   mode: 'replace' | 'merge';
 }
 
 /**
- * Überträgt die gewählten Kategorien auf ein Item (verändert `target`, z.B. in einem Immer-Draft).
- * `project` wird für eindeutige Block-Variationen gebraucht.
+ * Applies the selected categories to an item (mutates `target`, e.g. in an Immer draft).
+ * `project` is needed for unique block variations.
  */
 export function pasteItemConfig(project: Project, target: Item, clip: ItemConfigClipboard, options: PasteOptions): void {
   if (target.id === clip.sourceItemId) return;
@@ -153,7 +153,7 @@ export function pasteItemConfig(project: Project, target: Item, clip: ItemConfig
   syncAssets(target, clip);
 }
 
-/** Eigene Blöcke brauchen pro Typ eine eigene Variation – sonst wäre es derselbe Block. */
+/** Custom blocks need their own variation per type – otherwise it would be the same block. */
 function keepBlockVariationUnique(project: Project, target: Item) {
   const block = getPath(target.config, ['Mechanics', 'custom_block']);
   if (!isPlainObject(block) || typeof block.custom_variation !== 'number') return;
@@ -170,7 +170,7 @@ function keepBlockVariationUnique(project: Project, target: Item) {
   (block as Record<string, ConfigValue>).custom_variation = next;
 }
 
-/** Übernimmt referenzierte Zusatz-Texturen und entfernt nicht mehr benutzte. */
+/** Takes over referenced extra textures and removes ones no longer used. */
 function syncAssets(target: Item, clip: ItemConfigClipboard) {
   const used = JSON.stringify(target.config) + target.rawYaml;
   target.assets = target.assets ?? {};

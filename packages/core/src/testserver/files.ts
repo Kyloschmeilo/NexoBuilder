@@ -1,6 +1,6 @@
 /**
- * Dateien für den lokalen Testserver: das Projekt so, wie es in plugins/Nexo/ liegt,
- * plus die Nexo-Einstellungen, damit das Resourcepack lokal (localhost) ausgeliefert wird.
+ * Files for the local test server: the project as it lies in plugins/Nexo/,
+ * plus the Nexo settings so that the resource pack is served locally (localhost).
  */
 import { Document, isMap, parseDocument } from 'yaml';
 import type { Project } from '../types';
@@ -8,16 +8,16 @@ import type { ExportPlan, FileContent } from '../export/plan';
 import { buildRootFiles } from '../export/rootFiles';
 
 export interface ServerFile {
-  /** Pfad relativ zu plugins/Nexo */
+  /** Path relative to plugins/Nexo */
   path: string;
   data: FileContent;
 }
 
 const PACK_NAME_PATTERN = /^[A-Za-z0-9_.-]+$/;
 
-/** Alle Projektdateien für plugins/Nexo (Resourcepack immer als Ordner, das lässt sich schneller abgleichen). */
+/** All project files for plugins/Nexo (resource pack always as a folder, which syncs faster). */
 export function nexoFolderFiles(project: Project, plan: ExportPlan): ServerFile[] {
-  const packName = PACK_NAME_PATTERN.test(project.settings.packName) ? project.settings.packName : 'nexobuilder';
+  const packName = PACK_NAME_PATTERN.test(project.settings.packName) ? project.settings.packName : 'resourcepackbuilder';
   const files: ServerFile[] = [];
   for (const map of [plan.itemFiles, plan.recipeFiles, plan.glyphFiles]) {
     for (const [path, data] of map) files.push({ path, data });
@@ -28,42 +28,42 @@ export function nexoFolderFiles(project: Project, plan: ExportPlan): ServerFile[
 }
 
 export interface NexoServerSettings {
-  /** Port, über den Nexo das Resourcepack ausliefert */
+  /** Port over which Nexo serves the resource pack */
   packPort: number;
 }
 
-/** Werte, die NexoBuilder in plugins/Nexo/settings.yml setzt */
+/** Values that ResourcepackBuilder sets in plugins/Nexo/settings.yml */
 export function settingsOverrides(options: NexoServerSettings): Array<[string[], unknown]> {
   return [
-    // Pack direkt vom eigenen Rechner ausliefern statt über einen Upload-Dienst
+    // Serve the pack directly from the local machine instead of via an upload service
     [['Pack', 'server', 'type'], 'SELFHOST'],
     [['Pack', 'server', 'selfhost', 'port'], options.packPort],
     [['Pack', 'server', 'selfhost', 'public_address'], '127.0.0.1'],
-    // Nach /nexo reload das neue Pack sofort an alle Spieler schicken
+    // After /nexo reload, send the new pack to all players immediately
     [['Pack', 'dispatch', 'send_on_reload'], true],
-    // Zum Testen unnötig, macht das Erstellen langsamer und nutzt einen Zwischenspeicher, der kaputtgehen kann
+    // Unnecessary for testing, slows down generation and uses a cache that can break
     [['Pack', 'obfuscation', 'type'], 'NONE'],
   ];
 }
 
 /**
- * Setzt die nötigen Einstellungen in settings.yml. Alles andere (auch Kommentare) bleibt erhalten.
- * Gibt es die Datei noch nicht, entsteht eine kleine Datei – Nexo ergänzt den Rest beim Start.
- * Stimmen alle Werte schon, kommt die Datei unverändert zurück (Nexo formatiert sie selbst um –
- * das darf nicht als Änderung zählen, sonst würde Nexo ständig neu geladen).
+ * Sets the required settings in settings.yml. Everything else (including comments) is preserved.
+ * If the file does not exist yet, a small file is created – Nexo fills in the rest on startup.
+ * If all values are already correct, the file is returned unchanged (Nexo reformats it itself –
+ * that must not count as a change, otherwise Nexo would be reloaded constantly).
  */
 export function patchNexoSettings(current: string | null, options: NexoServerSettings): string {
   const doc = current?.trim() ? parseDocument(current, { version: '1.1' }) : new Document({}, { version: '1.1' });
   if (doc.errors.length > 0 || (doc.contents !== null && typeof doc.toJS() !== 'object')) {
-    // Kaputte Datei nicht verschlimmbessern: nur unsere Werte neu schreiben
+    // Don't make a broken file worse: only write our values fresh
     return patchNexoSettings(null, options);
   }
-  if (!current?.trim()) doc.commentBefore = ' Von NexoBuilder angelegt – Nexo ergänzt die übrigen Einstellungen beim Start.';
+  if (!current?.trim()) doc.commentBefore = ' Von ResourcepackBuilder angelegt – Nexo ergänzt die übrigen Einstellungen beim Start.';
   let changed = !current?.trim();
   for (const [path, value] of settingsOverrides(options)) {
     if (sameSetting(doc.getIn(path), value)) continue;
     changed = true;
-    // Fehlende oder falsche Zwischenebenen als normale Abschnitte anlegen
+    // Create missing or wrong intermediate levels as normal sections
     for (let i = 1; i < path.length; i++) {
       const prefix = path.slice(0, i);
       if (!isMap(doc.getIn(prefix, true))) doc.setIn(prefix, doc.createNode({}));
@@ -74,7 +74,7 @@ export function patchNexoSettings(current: string | null, options: NexoServerSet
   return doc.toString({ lineWidth: 0 });
 }
 
-/** Nexo schreibt Werte teils anders (z.B. Zahl als Text, Enum klein) – inhaltlich gleich ist gleich. */
+/** Nexo sometimes writes values differently (e.g. number as text, enum lowercase) – same content counts as equal. */
 function sameSetting(actual: unknown, wanted: unknown): boolean {
   if (actual === wanted) return true;
   if (typeof wanted === 'number') return Number(actual) === wanted;
@@ -83,7 +83,7 @@ function sameSetting(actual: unknown, wanted: unknown): boolean {
   return false;
 }
 
-/** Nexo 1.29: „nexo give <item> <anzahl> <spieler>“ (so im Plugin registriert – nicht wie im Hilfetext) */
+/** Nexo 1.29: "nexo give <item> <amount> <player>" (as registered in the plugin – not as in the help text) */
 export function nexoGiveCommand(nexoId: string, amount: number, player: string): string {
   return `nexo give ${nexoId} ${Math.max(1, Math.floor(amount))} ${player}`;
 }

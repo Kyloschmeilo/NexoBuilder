@@ -1,9 +1,9 @@
 /**
- * Zentrale Datentypen von NexoBuilder.
+ * Central data types of ResourcepackBuilder.
  *
- * Ein Projekt enthält Ordner (werden zu Unterordnern in plugins/Nexo/items) und Items.
- * Jedes Item besitzt optional ein importiertes Modell, das beim Export in den
- * Resourcepack (pack/external_packs/<name>) geschrieben wird.
+ * A project contains folders (become subfolders in plugins/Nexo/items) and items.
+ * Each item optionally has an imported model that is written into the
+ * resource pack (pack/external_packs/<name>) on export.
  */
 
 import type { Recipe } from './nexo/recipes';
@@ -14,7 +14,7 @@ import type { Painting } from './nexo/paintings';
 
 export type DataUrl = string;
 
-/** Minecraft-Java-Blockmodell (assets/<ns>/models/...json) */
+/** Minecraft Java block model (assets/<ns>/models/...json) */
 export interface JavaModelJson {
   parent?: string;
   ambientocclusion?: boolean;
@@ -46,10 +46,10 @@ export interface JavaModelFace {
 
 export interface JavaElementRotation {
   origin: [number, number, number];
-  /** klassische Ein-Achsen-Rotation */
+  /** classic single-axis rotation */
   angle?: number;
   axis?: 'x' | 'y' | 'z';
-  /** freie Rotation (Minecraft 1.21.11+) */
+  /** free rotation (Minecraft 1.21.11+) */
   x?: number;
   y?: number;
   z?: number;
@@ -67,7 +67,7 @@ export interface JavaModelElement {
   [key: string]: unknown;
 }
 
-/** Animationsdaten einer Textur (.png.mcmeta) */
+/** Animation data of a texture (.png.mcmeta) */
 export interface TextureAnimation {
   frametime: number;
   interpolate?: boolean;
@@ -75,14 +75,14 @@ export interface TextureAnimation {
 }
 
 export interface ModelTexture {
-  /** Interne, stabile ID innerhalb des Items, z.B. "t0" */
+  /** Internal, stable ID within the item, e.g. "t0" */
   id: string;
-  /** Ursprünglicher Name (ohne Endung) – wird für den Dateinamen im Pack genutzt */
+  /** Original name (without extension) – used for the file name in the pack */
   name: string;
   dataUrl: DataUrl;
   width: number;
   height: number;
-  /** Vollständiger Inhalt einer .png.mcmeta – null wenn keine benötigt wird */
+  /** Full content of a .png.mcmeta – null if none is needed */
   mcmeta: Record<string, unknown> | null;
 }
 
@@ -96,18 +96,18 @@ export interface Issue {
 }
 
 /**
- * Ein importiertes Modell. Texturverweise auf importierte Texturen werden in
- * `json.textures` als Platzhalter "$tex:<textureId>" gespeichert und erst beim
- * Export durch den endgültigen Pfad ersetzt (der vom Namespace/Ordner/ID abhängt).
+ * An imported model. Texture references to imported textures are stored in
+ * `json.textures` as placeholders "$tex:<textureId>" and only replaced on
+ * export by the final path (which depends on namespace/folder/ID).
  */
 export interface ImportedModel {
   source: ModelSource;
   fileName: string;
   json: JavaModelJson;
   textures: ModelTexture[];
-  /** Hinweise aus der Konvertierung */
+  /** Notes from the conversion */
   issues: Issue[];
-  /** Mindestversion von Minecraft, die das Modell benötigt (z.B. wegen freier Rotation) */
+  /** Minimum Minecraft version the model requires (e.g. because of free rotation) */
   requiresVersion?: string;
 }
 
@@ -115,9 +115,9 @@ export interface Folder {
   id: string;
   name: string;
   parentId: string | null;
-  /** Reihenfolge der Unterordner */
+  /** Order of the subfolders */
   folderIds: string[];
-  /** Reihenfolge der Items */
+  /** Order of the items */
   itemIds: string[];
 }
 
@@ -126,46 +126,46 @@ export type ConfigObject = { [key: string]: ConfigValue };
 
 export interface Item {
   id: string;
-  /** Nexo-Item-ID (YAML-Schlüssel), z.B. "ruby_sword" */
+  /** Nexo item ID (YAML key), e.g. "ruby_sword" */
   nexoId: string;
-  /** Anzeigename (MiniMessage) → itemname */
+  /** Display name (MiniMessage) → itemname */
   displayName: string;
   folderId: string;
   model: ImportedModel | null;
-  /** Strukturierte Nexo-Konfiguration (spiegelt den YAML-Aufbau) */
+  /** Structured Nexo configuration (mirrors the YAML structure) */
   config: ConfigObject;
-  /** Zusätzliches YAML, das zuletzt über die Konfiguration gelegt wird */
+  /** Additional YAML that is applied over the configuration last */
   rawYaml: string;
-  /** Zusätzlich hochgeladene Texturen (z.B. Rüstungs-Layer), referenziert als "@asset:<id>" */
+  /** Additionally uploaded textures (e.g. armor layers), referenced as "@asset:<id>" */
   assets: Record<string, ModelTexture>;
-  /** Crafting-Rezepte, deren Ergebnis dieses Item ist */
+  /** Crafting recipes whose result is this item */
   recipes: Recipe[];
-  /** Zusätzliche Modelle für Zustände (Pack.pulling_models, Pack.blocking_model …) */
+  /** Additional models for states (Pack.pulling_models, Pack.blocking_model …) */
   variants?: Partial<Record<VariantSlot, ImportedModel[]>>;
   createdAt: number;
   updatedAt: number;
 }
 
 export interface ProjectSettings {
-  /** Ziel-Minecraft-Version des Servers, z.B. "1.21.11" */
+  /** Target Minecraft version of the server, e.g. "1.21.11" */
   minecraftVersion: string;
-  /** Components.item_model automatisch auf nexo:<id> setzen */
+  /** Automatically set Components.item_model to nexo:<id> */
   useItemModel: boolean;
-  /** Name des Ordners in pack/external_packs */
+  /** Name of the folder in pack/external_packs */
   packName: string;
   packDescription: string;
-  /** Optionales pack.png (128x128) */
+  /** Optional pack.png (128x128) */
   packIcon: DataUrl | null;
-  /** external pack als .zip statt als Ordner exportieren */
+  /** Export the external pack as .zip instead of a folder */
   externalPackAsZip: boolean;
-  /** Items zusätzlich in einen Projektordner unter items/ legen */
+  /** Additionally put items into a project folder under items/ */
   itemsInProjectFolder: boolean;
-  /** Eine YAML-Datei pro Ordner (folder) oder pro Item (item) */
+  /** One YAML file per folder (folder) or per item (item) */
   yamlFileMode: 'folder' | 'item';
 }
 
 export interface Project {
-  /** Version des Datenformats für spätere Migrationen */
+  /** Version of the data format for future migrations */
   formatVersion: 1;
   id: string;
   name: string;
@@ -174,11 +174,11 @@ export interface Project {
   folders: Record<string, Folder>;
   items: Record<string, Item>;
   rootFolderIds: string[];
-  /** Glyphen (plugins/Nexo/glyphs) */
+  /** Glyphs (plugins/Nexo/glyphs) */
   glyphs: Glyph[];
-  /** Eigene Sounds (plugins/Nexo/sounds.yml + OGG im Pack) */
+  /** Custom sounds (plugins/Nexo/sounds.yml + OGG in the pack) */
   sounds: Sound[];
-  /** Eigene Gemälde (plugins/Nexo/paintings.yml + Textur im Pack) */
+  /** Custom paintings (plugins/Nexo/paintings.yml + texture in the pack) */
   paintings: Painting[];
   createdAt: number;
   updatedAt: number;

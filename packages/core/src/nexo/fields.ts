@@ -1,20 +1,20 @@
 /**
- * Beschreibung von Formularfeldern. Die Oberfläche rendert diese Felder generisch,
- * die Werte landen 1:1 im Konfigurationsobjekt des Items (= späteres YAML).
+ * Description of form fields. The UI renders these fields generically,
+ * the values end up 1:1 in the item's config object (= the later YAML).
  */
 import type { Option } from './options';
 
 interface BaseField {
-  /** Schlüssel innerhalb des übergeordneten Objekts. "*" = alle übrigen Schlüssel (nur bei map) */
+  /** Key within the parent object. "*" = all remaining keys (map only) */
   key: string;
-  /** Deutsche Beschreibung (als Tooltip) – angezeigt wird der englische Originalname, siehe fieldName() */
+  /** German description (as tooltip) – the original English name is displayed, see fieldName() */
   label: string;
-  /** Englischer Originalname, falls er sich nicht aus dem Schlüssel ergibt */
+  /** Original English name, if it cannot be derived from the key */
   name?: string;
   help?: string;
-  /** Feld nur anzeigen, wenn ein Geschwisterfeld einen dieser Werte hat */
+  /** Only show the field if a sibling field has one of these values */
   showIf?: { key: string; values: Array<string | boolean | number> };
-  /** Benötigte Minecraft-Version für dieses Feld */
+  /** Required Minecraft version for this field */
   minVersion?: string;
 }
 
@@ -22,7 +22,7 @@ export interface TextField extends BaseField {
   type: 'text';
   placeholder?: string;
   suggestions?: Option[];
-  /** Zusätzliche Bedeutung für Darstellung und Prüfung */
+  /** Additional meaning for display and validation */
   format?: 'minimessage' | 'duration' | 'vector' | 'resource' | 'color' | 'range';
   multiline?: boolean;
 }
@@ -36,10 +36,10 @@ export interface NumberField extends BaseField {
   placeholder?: string;
 }
 
-/** Drei Zustände: nicht gesetzt / true / false */
+/** Three states: unset / true / false */
 export interface BooleanField extends BaseField {
   type: 'boolean';
-  /** Standardwert von Nexo, wenn nicht gesetzt (nur zur Anzeige) */
+  /** Nexo default value when unset (display only) */
   defaultHint?: boolean;
 }
 
@@ -50,7 +50,7 @@ export interface SelectField extends BaseField {
   placeholder?: string;
 }
 
-/** Liste von Texten. Mit `singleAsString` wird bei genau einem Eintrag ein einzelner Wert geschrieben. */
+/** List of strings. With `singleAsString`, a single value is written when there is exactly one entry. */
 export interface StringListField extends BaseField {
   type: 'stringList';
   placeholder?: string;
@@ -67,7 +67,7 @@ export interface MultiSelectField extends BaseField {
 export interface ObjectField extends BaseField {
   type: 'object';
   fields: Field[];
-  /** Wird statt eines leeren Objekts geschrieben (z.B. `preview_placement: true`) */
+  /** Written instead of an empty object (e.g. `preview_placement: true`) */
   emptyValue?: true;
 }
 
@@ -75,7 +75,7 @@ export interface ObjectListField extends BaseField {
   type: 'objectList';
   fields: Field[];
   itemLabel: string;
-  /** Feld, dessen Wert als Titel eines Eintrags angezeigt wird */
+  /** Field whose value is shown as the title of an entry */
   titleKey?: string;
   newItem?: () => Record<string, unknown>;
 }
@@ -85,9 +85,9 @@ export interface MapField extends BaseField {
   keyLabel: string;
   keyOptions?: Option[];
   keyPlaceholder?: string;
-  /** Feld für den Wert eines Eintrags (key wird ignoriert) */
+  /** Field for the value of an entry (key is ignored) */
   value: Field;
-  /** Schlüssel, die von anderen Feldern im selben Objekt belegt sind */
+  /** Keys taken by other fields in the same object */
   reservedKeys?: string[];
   newValue?: () => unknown;
 }
@@ -97,15 +97,15 @@ export interface YamlField extends BaseField {
   placeholder?: string;
 }
 
-/** Checkbox, die bei Aktivierung ein leeres Objekt `{}` schreibt (z.B. CLEAR_ALL_EFFECTS). */
+/** Checkbox that writes an empty object `{}` when enabled (e.g. CLEAR_ALL_EFFECTS). */
 export interface PresenceField extends BaseField {
   type: 'presence';
 }
 
-/** Upload einer zusätzlichen PNG (z.B. Rüstungs-Textur). Der Wert ist "@asset:<id>". */
+/** Upload of an additional PNG (e.g. armor texture). The value is "@asset:<id>". */
 export interface TextureField extends BaseField {
   type: 'texture';
-  /** Erwartete Größe als Hinweis, z.B. "64×32" */
+  /** Expected size as a hint, e.g. "64×32" */
   sizeHint?: string;
 }
 
@@ -123,7 +123,7 @@ export type Field =
   | PresenceField
   | TextureField;
 
-/* ------------------------------------------------------------------ Validierung von Einzelwerten */
+/* ------------------------------------------------------------------ Validation of single values */
 
 const DURATION = /^\d+(\.\d+)?(t|ms|s|m|h|d|w|mo)?$/;
 const VECTOR = /^\s*-?\d+(\.\d+)?\s*,\s*-?\d+(\.\d+)?\s*,\s*-?\d+(\.\d+)?\s*$/;
@@ -131,7 +131,7 @@ const COLOR = /^\s*(\d{1,3})\s*,\s*(\d{1,3})\s*,\s*(\d{1,3})\s*$/;
 const RANGE = /^-?\d+(\.\d+)?(\.\.-?\d+(\.\d+)?)?$/;
 
 export function validateTextFormat(format: TextField['format'], value: string): string | null {
-  // "@model" = Modell des Items (wird beim Export ersetzt)
+  // "@model" = the item's model (replaced on export)
   if (!value || value === '@model') return null;
   switch (format) {
     case 'duration':
@@ -154,7 +154,7 @@ export function validateTextFormat(format: TextField['format'], value: string): 
 
 const ACRONYMS: Record<string, string> = { id: 'ID', gui: 'GUI', uuid: 'UUID', xp: 'XP', ui: 'UI', nbt: 'NBT' };
 
-/** Englischer Anzeigename aus einem YAML-Schlüssel: max_stack_size → Max Stack Size, layer1 → Layer 1 */
+/** English display name from a YAML key: max_stack_size → Max Stack Size, layer1 → Layer 1 */
 export function englishName(key: string): string {
   return key
     .replace(/^\$/, '')
@@ -166,7 +166,7 @@ export function englishName(key: string): string {
     .join(' ');
 }
 
-/** Name eines Feldes, wie er in der Nexo-Doku steht (englisch) */
+/** Name of a field as it appears in the Nexo docs (English) */
 export function fieldName(field: { key: string; label: string; name?: string }): string {
   if (field.name) return field.name;
   if (field.key && field.key !== '*') return englishName(field.key);

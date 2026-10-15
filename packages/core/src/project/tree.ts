@@ -1,4 +1,4 @@
-/** Hilfen rund um die Ordnerstruktur eines Projekts. */
+/** Helpers around the folder structure of a project. */
 import type { Folder, Item, Project } from '../types';
 import { slugify } from '../util';
 import { hasPath } from '../nexo/configPath';
@@ -7,7 +7,7 @@ export function folderSlug(folder: Folder): string {
   return slugify(folder.name, 'ordner');
 }
 
-/** Liefert die Ordnerkette von der Wurzel bis zum angegebenen Ordner. */
+/** Returns the folder chain from the root to the given folder. */
 export function getFolderChain(project: Project, folderId: string): Folder[] {
   const chain: Folder[] = [];
   let current: Folder | undefined = project.folders[folderId];
@@ -30,7 +30,7 @@ export function getFolderPathLabel(project: Project, folderId: string): string {
     .join(' / ');
 }
 
-/** Alle Items in Baumreihenfolge (Ordner für Ordner). */
+/** All items in tree order (folder by folder). */
 export function getItemsInTreeOrder(project: Project): Item[] {
   const result: Item[] = [];
   const visit = (folderId: string) => {
@@ -46,7 +46,7 @@ export function getItemsInTreeOrder(project: Project): Item[] {
   return result;
 }
 
-/** Alle Unterordner (rekursiv) eines Ordners inklusive des Ordners selbst. */
+/** All subfolders (recursive) of a folder including the folder itself. */
 export function getDescendantFolderIds(project: Project, folderId: string): string[] {
   const result: string[] = [];
   const visit = (id: string) => {

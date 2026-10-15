@@ -1,11 +1,11 @@
-/** Baut aus einem PreviewModel eine three.js-Gruppe (für Vorschau und Vorschaubilder). */
+/** Builds a three.js group from a PreviewModel (for the preview and thumbnails). */
 import * as THREE from 'three';
-import type { JavaDisplayTransform, ModelTexture } from '@nexobuilder/core/types';
+import type { JavaDisplayTransform, ModelTexture } from '@resourcepackbuilder/core/types';
 import type { PreviewModel } from './modelGeometry';
 
 export interface ModelObject {
   root: THREE.Group;
-  /** Wird erfüllt, sobald alle Texturen geladen sind */
+  /** Resolves once all textures are loaded */
   ready: Promise<void>;
   dispose: () => void;
 }
@@ -72,7 +72,7 @@ export function createModelObject(preview: PreviewModel, display?: JavaDisplayTr
     if (tex) {
       material = new THREE.MeshBasicMaterial({ map: loadTexture(tex), color: new THREE.Color(shade, shade, shade), alphaTest: 0.05, side });
     } else if (kind === 'vanilla') {
-      // Vanilla-Textur, die im Browser nicht verfügbar ist
+      // Vanilla texture that is not available in the browser
       material = new THREE.MeshBasicMaterial({ color: new THREE.Color(0.55 * shade, 0.57 * shade, 0.66 * shade), side });
     } else {
       material = new THREE.MeshBasicMaterial({ map: getMissingTexture(), color: new THREE.Color(shade, shade, shade), side });
@@ -82,7 +82,7 @@ export function createModelObject(preview: PreviewModel, display?: JavaDisplayTr
     return material;
   };
 
-  // Minecraft-Koordinaten 0–16 mit Mittelpunkt 8,8,8
+  // Minecraft coordinates 0–16 with center 8,8,8
   const root = new THREE.Group();
   const modelGroup = new THREE.Group();
   modelGroup.position.set(-8, -8, -8);
@@ -108,7 +108,7 @@ export function createModelObject(preview: PreviewModel, display?: JavaDisplayTr
     modelGroup.add(pivot);
   }
 
-  // Display-Transformation (wie im Blockbench-Display-Modus)
+  // Display transformation (like in Blockbench display mode)
   if (display) {
     const [tx, ty, tz] = (display.translation as number[] | undefined) ?? [0, 0, 0];
     const [rx, ry, rz] = (display.rotation as number[] | undefined) ?? [0, 0, 0];

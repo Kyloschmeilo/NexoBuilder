@@ -1,13 +1,13 @@
 /**
- * Konvertiert Blockbench-Projekte (.bbmodel) in Minecraft-Java-Modelle.
+ * Converts Blockbench projects (.bbmodel) into Minecraft Java models.
  *
- * Die Logik folgt dem offiziellen Blockbench-Exporter für „Java Block/Item“
+ * The logic follows the official Blockbench exporter for "Java Block/Item"
  * (js/formats/java/java_block.ts, Codec.compile):
- *  - nur Würfel werden exportiert (Meshes etc. gibt es im Java-Format nicht)
- *  - UVs werden von Pixel-Koordinaten in den 0–16-Bereich umgerechnet
- *  - Flächen mit texture === null werden ausgelassen, Flächen ohne Textur bekommen "#missing"
- *  - "inflate" vergrößert from/to
- *  - Rotationen werden als {angle, axis, origin} bzw. (ab 1.21.11) als {x, y, z, origin} geschrieben
+ *  - only cubes are exported (meshes etc. do not exist in the Java format)
+ *  - UVs are converted from pixel coordinates to the 0–16 range
+ *  - faces with texture === null are skipped, faces without a texture get "#missing"
+ *  - "inflate" enlarges from/to
+ *  - rotations are written as {angle, axis, origin} or (from 1.21.11 on) as {x, y, z, origin}
  */
 import type {
   FaceName,
@@ -91,7 +91,7 @@ interface BBModel {
 
 const FACE_NAMES: FaceName[] = ['north', 'east', 'south', 'west', 'up', 'down'];
 
-/** Formate, bei denen der Nullpunkt in der Mitte liegt (Blockbench: centered_grid). */
+/** Formats whose origin is in the center (Blockbench: centered_grid). */
 const CENTERED_FORMATS = new Set([
   'free',
   'bedrock',
@@ -102,7 +102,7 @@ const CENTERED_FORMATS = new Set([
   'optifine_part',
   'skin',
 ]);
-/** Formate mit eigener UV-Größe pro Textur (Blockbench: per_texture_uv_size). */
+/** Formats with their own UV size per texture (Blockbench: per_texture_uv_size). */
 const PER_TEXTURE_UV_FORMATS = new Set(['free', 'optifine_entity', 'optifine_part', 'image']);
 
 const FORMAT_LABELS: Record<string, string> = {
@@ -118,7 +118,7 @@ const FORMAT_LABELS: Record<string, string> = {
   image: 'Bild',
 };
 
-/** Java-Anzeigekontexte (display), die Blockbench exportiert. */
+/** Java display contexts (display) that Blockbench exports. */
 const DISPLAY_SLOTS = [
   'thirdperson_righthand',
   'thirdperson_lefthand',
@@ -132,7 +132,7 @@ const DISPLAY_SLOTS = [
   'on_shelf',
 ];
 
-/** Elementtypen ohne eigene Geometrie */
+/** Element types without their own geometry */
 const NON_GEOMETRY_TYPES = new Set(['generated_item_mesh', 'locator', 'null_object', 'bounding_box', 'armature', 'armature_bone']);
 
 const COORD_MIN = -16;
@@ -170,7 +170,7 @@ export function convertBBModel(text: string, fileName: string, extraFiles: Dropp
   const resW = positiveNumber(model.resolution?.width, 16);
   const resH = positiveNumber(model.resolution?.height, 16);
 
-  /* ------------------------------------------------------------ Texturen */
+  /* ------------------------------------------------------------ Textures */
   const bbTextures = Array.isArray(model.textures) ? model.textures : [];
   const textureEntries = bbTextures.map((tex, index) => {
     const displayName = tex.name || fileBaseName(tex.path ?? tex.relative_path ?? '') || `texture_${index}`;
@@ -194,7 +194,7 @@ export function convertBBModel(text: string, fileName: string, extraFiles: Dropp
     return undefined;
   };
 
-  /* ------------------------------------------------------------ Elemente */
+  /* ------------------------------------------------------------ Elements */
   const allElements = Array.isArray(model.elements) ? model.elements : [];
   const ordered = orderElements(allElements, model.outliner);
   const usedTextureIndices = new Set<number>();
@@ -207,7 +207,7 @@ export function convertBBModel(text: string, fileName: string, extraFiles: Dropp
 
   for (const el of ordered) {
     const type = el.type ?? 'cube';
-    // Nicht exportierte Elemente und reine Hilfsobjekte (Locator, Platzhalter für 2D-Items …) still überspringen
+    // Silently skip non-exported elements and pure helper objects (locators, placeholders for 2D items …)
     if (el.export === false || NON_GEOMETRY_TYPES.has(type)) continue;
     if (type !== 'cube') {
       skippedNonCubes++;
@@ -221,7 +221,7 @@ export function convertBBModel(text: string, fileName: string, extraFiles: Dropp
     const to = vec3(el.to).map((v, i) => roundNumber(v + inflate + offset[i])) as [number, number, number];
     const origin = vec3(el.origin ?? [0, 0, 0]).map((v, i) => roundNumber(v + offset[i])) as [number, number, number];
 
-    // Schlüssel-Reihenfolge wie im Blockbench-Export: name, from, to, shade, light_emission, rotation, faces
+    // Key order as in the Blockbench export: name, from, to, shade, light_emission, rotation, faces
     const element = {} as JavaModelElement;
     if (el.name && el.name !== 'cube') element.name = el.name;
     element.from = from;
@@ -250,7 +250,7 @@ export function convertBBModel(text: string, fileName: string, extraFiles: Dropp
       }
     }
 
-    // Shading & Licht (wie Blockbench: shade:false bzw. ab 26.3 shade_direction_override)
+    // Shading & light (like Blockbench: shade:false or, from 26.3 on, shade_direction_override)
     if (usesShadeOverride) {
       if (el.shade_direction_override) {
         element.shade_direction_override = el.shade_direction_override;
@@ -263,7 +263,7 @@ export function convertBBModel(text: string, fileName: string, extraFiles: Dropp
       element.light_emission = Math.min(15, Math.max(0, Math.round(el.light_emission)));
     }
 
-    // Flächen
+    // Faces
     element.faces = {};
     const faces = el.faces ?? {};
     const boxUvs = el.box_uv ? computeBoxUv(el) : null;
@@ -271,7 +271,7 @@ export function convertBBModel(text: string, fileName: string, extraFiles: Dropp
       const face = faces[faceName];
       if (!face) continue;
       const texEntry = textureByIndex(face.texture);
-      if (texEntry === null) continue; // Fläche deaktiviert → wird nicht exportiert
+      if (texEntry === null) continue; // face disabled → not exported
 
       const out: JavaModelFace = { texture: '#missing' };
       if (face.enabled !== false) {
@@ -338,7 +338,7 @@ export function convertBBModel(text: string, fileName: string, extraFiles: Dropp
     });
   }
 
-  /* ------------------------------------------------------------ Texturen zusammenstellen */
+  /* ------------------------------------------------------------ Assemble textures */
   const isTexturesOnlyModel = elements.length === 0 && !!model.parent;
   const textures: ModelTexture[] = [];
   const texturesJson: Record<string, string> = {};
@@ -366,7 +366,7 @@ export function convertBBModel(text: string, fileName: string, extraFiles: Dropp
     if (particle) texturesJson.particle = texturePlaceholder(id);
   }
   if (!texturesJson.particle && textures.length > 0 && elements.length > 0) {
-    // Ohne particle-Textur zeigt Minecraft beim Abbauen (Blöcke) fehlende Partikel an.
+    // Without a particle texture, Minecraft shows missing particles when breaking (blocks).
     texturesJson.particle = texturePlaceholder(textures[0].id);
   }
   const unused = textureEntries.length - textures.length;
@@ -374,7 +374,7 @@ export function convertBBModel(text: string, fileName: string, extraFiles: Dropp
     issues.push({ level: 'info', message: `${unused} ungenutzte Textur(en) wurden nicht übernommen.` });
   }
 
-  /* ------------------------------------------------------------ Modell-JSON */
+  /* ------------------------------------------------------------ Model JSON */
   const json: JavaModelJson = {};
   if (typeof model.parent === 'string' && model.parent.trim()) json.parent = model.parent.trim();
   if (model.ambientocclusion === false) json.ambientocclusion = false;
@@ -404,7 +404,7 @@ export function convertBBModel(text: string, fileName: string, extraFiles: Dropp
   };
 }
 
-/* ====================================================================== Hilfsfunktionen */
+/* ====================================================================== Helpers */
 
 function positiveNumber(value: unknown, fallback: number): number {
   return typeof value === 'number' && Number.isFinite(value) && value > 0 ? value : fallback;
@@ -419,11 +419,11 @@ function vec3(value: unknown): [number, number, number] {
   ];
 }
 
-/** Liefert den Schlüssel der Textur im "textures"-Objekt (Blockbench: texture.id). */
+/** Returns the texture key in the "textures" object (Blockbench: texture.id). */
 function textureKey(tex: BBTexture, index: number, all: Array<{ tex: BBTexture; index: number }>): string {
   const raw = tex.id !== undefined && tex.id !== null && String(tex.id).trim() !== '' ? String(tex.id) : String(index);
   const key = raw.replace(/^#/, '');
-  // Doppelte IDs eindeutig machen (Blockbench macht dies beim Import ähnlich)
+  // Make duplicate IDs unique (Blockbench does something similar on import)
   const firstWithSameKey = all.find((e) => {
     const other = e.tex.id !== undefined && e.tex.id !== null && String(e.tex.id).trim() !== '' ? String(e.tex.id) : String(e.index);
     return other.replace(/^#/, '') === key;
@@ -431,7 +431,7 @@ function textureKey(tex: BBTexture, index: number, all: Array<{ tex: BBTexture; 
   return firstWithSameKey && firstWithSameKey.index !== index ? `${key}_${index}` : key;
 }
 
-/** Reihenfolge der Elemente wie im Outliner (so exportiert auch Blockbench). */
+/** Order of the elements as in the outliner (Blockbench exports it this way too). */
 function orderElements(elements: BBElement[], outliner: unknown[] | undefined): BBElement[] {
   if (!Array.isArray(outliner)) return elements;
   const byUuid = new Map<string, BBElement>();
@@ -468,7 +468,7 @@ function hasRotatedGroups(outliner: unknown[] | undefined): boolean {
   });
 }
 
-/** Box-UV-Berechnung wie in Blockbench (cube.js → updateUV), falls Flächen keine UVs gespeichert haben. */
+/** Box UV calculation as in Blockbench (cube.js → updateUV), in case faces have no stored UVs. */
 function computeBoxUv(el: BBElement): Partial<Record<FaceName, number[]>> {
   const from = vec3(el.from);
   const to = vec3(el.to);
@@ -500,8 +500,8 @@ function computeBoxUv(el: BBElement): Partial<Record<FaceName, number[]>> {
 }
 
 /**
- * Animationsdaten wie Blockbench (Texture.getMCMetaContent): Eine Textur gilt als animiert,
- * wenn ihr Seitenverhältnis nicht zum UV-Raster passt.
+ * Animation data like Blockbench (Texture.getMCMetaContent): a texture counts as animated
+ * if its aspect ratio does not match the UV grid.
  */
 function buildBBTextureMcmeta(
   tex: BBTexture,
@@ -571,7 +571,7 @@ function convertDisplay(display: unknown): Record<string, JavaDisplayTransform> 
         out[key] = (v as number[]).map((n) => roundNumber(n));
       }
     }
-    // Ältere .bbmodel-Dateien speichern "mirror" separat → in negative Skalierung umrechnen
+    // Older .bbmodel files store "mirror" separately → convert to negative scale
     const mirror = value.mirror;
     if (Array.isArray(mirror) && mirror.some(Boolean)) {
       const scale = (out.scale as number[] | undefined) ?? [1, 1, 1];

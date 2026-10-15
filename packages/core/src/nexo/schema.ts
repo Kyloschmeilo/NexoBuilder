@@ -1,8 +1,8 @@
 /**
- * Alle Eigenschaften, die im Item-Editor hinzugefügt werden können.
- * Quelle: Nexo-Dokumentation (docs.nexomc.com, Stand Nexo 1.29 / Minecraft 26.3).
+ * All properties that can be added in the item editor.
+ * Source: Nexo documentation (docs.nexomc.com, as of Nexo 1.29 / Minecraft 26.3).
  *
- * Jede Eigenschaft beschreibt den Pfad im Item-YAML, einen Standardwert und das Formular.
+ * Each property describes the path in the item YAML, a default value and the form.
  */
 import type { ConfigValue } from '../types';
 import type { Field, ObjectField } from './fields';
@@ -31,9 +31,9 @@ import {
   VANILLA_COMPONENTS,
 } from './options';
 
-/** Platzhalter für „das Modell dieses Items“ (wird beim Export durch den Modell-Pfad ersetzt). */
+/** Placeholder for "the model of this item" (replaced by the model path on export). */
 export const MODEL_TOKEN = '@model';
-/** Präfix für hochgeladene Zusatz-Texturen. */
+/** Prefix for uploaded extra textures. */
 export const ASSET_TOKEN_PREFIX = '@asset:';
 
 export type PropertyGroup = 'general' | 'appearance' | 'attributes' | 'components' | 'mechanics';
@@ -49,25 +49,25 @@ export const PROPERTY_GROUPS: Array<{ id: PropertyGroup; label: string; descript
 export interface PropertyDef {
   id: string;
   group: PropertyGroup;
-  /** Pfad im Item-YAML, z.B. ['Components', 'food'] */
+  /** Path in the item YAML, e.g. ['Components', 'food'] */
   path: string[];
   label: string;
   description: string;
   field: Field;
   defaultValue: () => ConfigValue;
   minVersion?: string;
-  /** Letzte Version, in der die Eigenschaft existiert */
+  /** Last version in which the property exists */
   maxVersion?: string;
-  /** Diese Eigenschaften schließen sich gegenseitig aus */
+  /** These properties are mutually exclusive */
   conflicts?: string[];
-  /** Hinweis, der über dem Formular angezeigt wird */
+  /** Hint shown above the form */
   hint?: string;
   docs?: string;
-  /** Leeres Objekt trotzdem schreiben (Mechanik aktiv, auch ohne Optionen) */
+  /** Write an empty object anyway (mechanic active, even without options) */
   keepEmpty?: boolean;
 }
 
-/* ====================================================================== wiederverwendbare Felder */
+/* ====================================================================== reusable fields */
 
 const soundField = (key: string, label: string, help?: string): Field => ({
   type: 'text',
@@ -229,7 +229,7 @@ const blockLockerField = (): ObjectField => ({
   ],
 });
 
-/** Zustände einer Möbel (Mechanics.furniture.states) – Modelle für ITEM_MODEL-Zustände kommen aus dem Modell-Tab */
+/** States of a furniture (Mechanics.furniture.states) – models for ITEM_MODEL states come from the model tab */
 const furnitureStatesField = (): ObjectField => ({
   type: 'object',
   key: 'states',
@@ -291,7 +291,7 @@ const furnitureStatesField = (): ObjectField => ({
   ],
 });
 
-/** Text über einer Möbel (Mechanics.furniture.text_entities) */
+/** Text above a furniture (Mechanics.furniture.text_entities) */
 const textEntitiesField = (): Field => ({
   type: 'objectList',
   key: 'text_entities',
@@ -341,10 +341,10 @@ const clickActionsField = (): Field => ({
   ],
 });
 
-/* ====================================================================== Eigenschaften */
+/* ====================================================================== Properties */
 
 export const PROPERTIES: PropertyDef[] = [
-  /* ------------------------------------------------------------------ Allgemein */
+  /* ------------------------------------------------------------------ General */
   {
     id: 'lore',
     group: 'general',
@@ -421,7 +421,7 @@ export const PROPERTIES: PropertyDef[] = [
     defaultValue: () => [{ type: 'STRING', key: 'meinplugin:schluessel', value: '' }],
   },
 
-  /* ------------------------------------------------------------------ Aussehen */
+  /* ------------------------------------------------------------------ Appearance */
   {
     id: 'color',
     group: 'appearance',
@@ -456,7 +456,7 @@ export const PROPERTIES: PropertyDef[] = [
     path: ['$armor'],
     label: 'CustomArmor (Armor, Elytra, Mob Armor, Harness, Saddles)',
     description:
-      'Textur, die beim Tragen angezeigt wird: Spieler-Rüstung, Elytra-Flügel, Rüstung für Wolf/Pferd/Lama/Nautilus, Geschirr für den Glücklichen Ghast oder Sättel. NexoBuilder erzeugt daraus ein Equipment-Modell im Pack und setzt Components.equippable (Slot, asset_id, erlaubte Tiere).',
+      'Textur, die beim Tragen angezeigt wird: Spieler-Rüstung, Elytra-Flügel, Rüstung für Wolf/Pferd/Lama/Nautilus, Geschirr für den Glücklichen Ghast oder Sättel. ResourcepackBuilder erzeugt daraus ein Equipment-Modell im Pack und setzt Components.equippable (Slot, asset_id, erlaubte Tiere).',
     hint: 'Alle Teile eines Sets bekommen dieselbe Set-ID, die Texturen müssen nur bei einem Teil hochgeladen werden. Elytren, Tier-Rüstungen und Sättel brauchen jeweils eine eigene Set-ID.',
     field: {
       type: 'object',
@@ -483,7 +483,7 @@ export const PROPERTIES: PropertyDef[] = [
           key: 'elytra',
           label: 'Elytra-Flügel',
           sizeHint: '64×32',
-          help: 'Wie elytra.png. Ohne Material ELYTRA setzt NexoBuilder die Gleiter-Komponente automatisch.',
+          help: 'Wie elytra.png. Ohne Material ELYTRA setzt ResourcepackBuilder die Gleiter-Komponente automatisch.',
           minVersion: '1.21.2',
         },
         {
@@ -521,7 +521,7 @@ export const PROPERTIES: PropertyDef[] = [
     defaultValue: () => ({ set: '' }),
   },
 
-  /* ------------------------------------------------------------------ Attribute & Verzauberungen */
+  /* ------------------------------------------------------------------ Attributes & enchantments */
   {
     id: 'AttributeModifiers',
     group: 'attributes',
@@ -588,7 +588,7 @@ export const PROPERTIES: PropertyDef[] = [
     defaultValue: () => ({ sharpness: 1 }),
   },
 
-  /* ------------------------------------------------------------------ Komponenten */
+  /* ------------------------------------------------------------------ Components */
   {
     id: 'Components.max_stack_size',
     group: 'components',
@@ -1212,7 +1212,7 @@ export const PROPERTIES: PropertyDef[] = [
     minVersion: '26.3',
   },
 
-  /* ------------------------------------------------------------------ Mechaniken */
+  /* ------------------------------------------------------------------ Mechanics */
   {
     id: 'Mechanics.furniture',
     group: 'mechanics',
@@ -1768,5 +1768,5 @@ export function getPropertiesForGroup(group: PropertyGroup): PropertyDef[] {
   return PROPERTIES.filter((p) => p.group === group);
 }
 
-/** Pfade, die automatisch von NexoBuilder gesetzt werden und nicht als Eigenschaft gelten. */
+/** Paths that ResourcepackBuilder sets automatically and that do not count as properties. */
 export const MANAGED_TOP_LEVEL_KEYS = ['itemname', 'material'];

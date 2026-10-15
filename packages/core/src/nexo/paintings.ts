@@ -1,7 +1,7 @@
 /**
- * Eigene Gemälde (Nexo: configuration/custom-paintings) – Textur unter
- * assets/<ns>/textures/painting/<id>.png plus Eintrag in plugins/Nexo/paintings.yml.
- * Nexo erzeugt daraus ab Minecraft 1.21.5 das nötige Datapack.
+ * Custom paintings (Nexo: configuration/custom-paintings) – texture under
+ * assets/<ns>/textures/painting/<id>.png plus an entry in plugins/Nexo/paintings.yml.
+ * From Minecraft 1.21.5 on, Nexo generates the required datapack from it.
  */
 import type { Issue, Project } from '../types';
 import { compareVersions, ITEM_ID_PATTERN } from '../util';
@@ -15,23 +15,23 @@ export interface PaintingFile {
 
 export interface Painting {
   id: string;
-  /** Schlüssel, z.B. "sonnenuntergang" – verwendet als <namespace>:<paintingId> */
+  /** Key, e.g. "sonnenuntergang" – used as <namespace>:<paintingId> */
   paintingId: string;
   title: string;
   author: string;
-  /** Größe in Blöcken */
+  /** Size in blocks */
   width: number;
   height: number;
-  /** Auch zufällig beim Aufhängen normaler Gemälde auswählen */
+  /** Also pick randomly when hanging regular paintings */
   randomPlace: boolean;
   file: PaintingFile | null;
-  /** Animiert: Bild enthält mehrere Bilder untereinander */
+  /** Animated: the image contains several frames stacked vertically */
   animated: boolean;
   frametime: number;
 }
 
 export function createPainting(id: string, paintingId: string, file: PaintingFile | null): Painting {
-  // Größe in Blöcken aus dem Bild schätzen (16 Pixel pro Block)
+  // Estimate size in blocks from the image (16 pixels per block)
   const blocks = (px: number) => Math.min(16, Math.max(1, Math.round(px / 16)));
   return {
     id,
@@ -55,7 +55,7 @@ export function paintingTexturePath(project: Project, painting: Painting): strin
   return `assets/${project.namespace}/textures/painting/${painting.paintingId}.png`;
 }
 
-/** Größe eines Einzelbilds bei animierten Gemälden (gleiches Seitenverhältnis wie das Gemälde) */
+/** Size of a single frame for animated paintings (same aspect ratio as the painting) */
 export function paintingFrameSize(painting: Painting): { width: number; height: number; frames: number } | null {
   if (!painting.file) return null;
   const width = painting.file.width;
@@ -71,7 +71,7 @@ export function paintingMcmeta(painting: Painting): Record<string, unknown> | nu
   return { animation: { width: frame.width, height: frame.height, frametime: Math.max(1, Math.round(painting.frametime)) } };
 }
 
-/** Eintrag für paintings.yml */
+/** Entry for paintings.yml */
 export function paintingToYaml(project: Project, painting: Painting): Record<string, unknown> {
   const out: Record<string, unknown> = {};
   if (painting.author.trim()) out.author = painting.author.trim();

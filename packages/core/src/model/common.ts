@@ -1,4 +1,4 @@
-/** Gemeinsame Hilfen für die Modell-Importer. */
+/** Shared helpers for the model importers. */
 
 export class ModelConversionError extends Error {
   constructor(message: string) {
@@ -9,12 +9,12 @@ export class ModelConversionError extends Error {
 
 const PLACEHOLDER_PREFIX = '$tex:';
 
-/** Platzhalter für eine importierte Textur im Modell-JSON (wird beim Export ersetzt). */
+/** Placeholder for an imported texture in the model JSON (replaced on export). */
 export function texturePlaceholder(textureId: string): string {
   return PLACEHOLDER_PREFIX + textureId;
 }
 
-/** Gibt die Textur-ID zurück, wenn `value` ein Platzhalter ist. */
+/** Returns the texture ID if `value` is a placeholder. */
 export function parseTexturePlaceholder(value: unknown): string | null {
   return typeof value === 'string' && value.startsWith(PLACEHOLDER_PREFIX) ? value.slice(PLACEHOLDER_PREFIX.length) : null;
 }

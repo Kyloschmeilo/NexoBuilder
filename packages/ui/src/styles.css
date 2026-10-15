@@ -1,16 +1,16 @@
 /*
- * NexoBuilder im CastCrafter-Design: dunkler Waldboden, ein smaragdgrünes Signal (accent),
- * Gold und Glut (ember) nur für Warnungen und Fehler. Flächen werden durch 1px-Linien getrennt,
- * nicht durch Schatten – nur Menüs, Dialoge und der Fokusring haben einen.
+ * ResourcepackBuilder in the CastCrafter design: dark forest floor, one emerald signal (accent),
+ * gold and ember only for warnings and errors. Surfaces are separated by 1px lines,
+ * not by shadows – only menus, dialogs and the focus ring have one.
  */
 :root {
-  /* Flächen */
+  /* Surfaces */
   --surface-0: #0a1110;
   --surface-1: #0f1917;
   --surface-2: #16241f;
   --border: #1f302a;
   --border-control: #54766a;
-  /* Schrift */
+  /* Type */
   --ink: #e8f2ed;
   --ink-muted: #94aaa0;
   --ink-faint: #7f958b;
@@ -20,7 +20,7 @@
   --on-accent: #04130c;
   --accent-soft: #10382a;
   --moss: #14543a;
-  /* Status (Warnung = gold, Fehler = ember, Info = sky) */
+  /* Status (warning = gold, error = ember, info = sky) */
   --gold: #f2b52c;
   --on-gold: #1a1200;
   --ember: #ff7a59;
@@ -106,7 +106,7 @@ a:hover {
   color: var(--accent-hover);
 }
 
-/* Lucide-Symbole: 1.5px Strichstärke wie im Design */
+/* Lucide icons: 1.5px stroke width as in the design */
 .lucide {
   stroke-width: 1.5;
 }
@@ -138,7 +138,7 @@ a:hover {
   background: transparent;
 }
 
-/* ------------------------------------------------------------------ Typo-Hilfen */
+/* ------------------------------------------------------------------ Type helpers */
 
 .label-caps {
   font: 600 12px/16px var(--font-display);
@@ -356,7 +356,7 @@ a:hover {
   font-size: 14px;
 }
 
-/* ------------------------------------------------------------------ Formulare */
+/* ------------------------------------------------------------------ Forms */
 
 .input,
 .select,
@@ -617,7 +617,7 @@ progress {
   padding: var(--space-3);
 }
 
-/* ------------------------------------------------------------------ Baum */
+/* ------------------------------------------------------------------ Tree */
 
 .tree-row {
   display: flex;
@@ -753,7 +753,7 @@ progress {
   justify-content: flex-end;
   gap: var(--space-2);
 }
-/* Item-Kopf: Name und Aktionen in einer Zeile, Pills darunter über die volle Breite */
+/* Item header: name and actions in one row, pills below across the full width */
 .item-header {
   display: grid;
   grid-template-columns: 64px minmax(160px, 1fr) auto;
@@ -796,7 +796,7 @@ progress {
   font-size: 12px;
 }
 
-/* Pills: Martian Mono für IDs und Werte, Status-Pills in Großbuchstaben mit Zeichen */
+/* Pills: Martian Mono for IDs and values, status pills in uppercase with a glyph */
 .badge,
 .pill {
   display: inline-flex;
@@ -855,7 +855,7 @@ progress {
 .badge.success::before {
   content: '●';
 }
-/* Läuft gerade (Start, Pack wird gebaut …) – mit drehendem Symbol statt Zeichen */
+/* In progress (starting, pack being built …) – with a spinning icon instead of a glyph */
 .badge.busy {
   border-color: var(--accent);
   color: var(--accent);
@@ -1008,7 +1008,7 @@ progress {
   max-width: 460px;
 }
 
-/* Kurzer Code im Fließtext (Pfade, Befehle) */
+/* Short code in running text (paths, commands) */
 .code-inline {
   font: 500 12px/18px var(--font-mono);
   padding: 1px 6px;
@@ -1018,7 +1018,7 @@ progress {
   white-space: nowrap;
 }
 
-/* ------------------------------------------------------------------ Meldungen */
+/* ------------------------------------------------------------------ Messages */
 
 .issue-list {
   display: flex;
@@ -1113,7 +1113,7 @@ button.link:hover {
   flex-wrap: wrap;
 }
 
-/* ------------------------------------------------------------------ Dialoge */
+/* ------------------------------------------------------------------ Dialogs */
 
 .modal-backdrop {
   position: fixed;
@@ -1189,7 +1189,7 @@ button.link:hover {
   }
 }
 
-/* ------------------------------------------------------------------ Menüs */
+/* ------------------------------------------------------------------ Menus */
 
 .popover {
   position: fixed;
@@ -1343,7 +1343,7 @@ button.link:hover {
   color: var(--ink-faint);
 }
 
-/* ------------------------------------------------------------------ Vorschau */
+/* ------------------------------------------------------------------ Preview */
 
 .preview-3d {
   position: relative;
@@ -1392,7 +1392,7 @@ button.link:hover {
   font-size: 13px;
 }
 
-/* Tooltip-Vorschau (Farben im Text kommen aus MiniMessage und bleiben wie im Spiel) */
+/* Tooltip preview (colors in the text come from MiniMessage and stay as in-game) */
 .mc-text {
   font-family: 'Minecraft', var(--font-sans);
   background: var(--surface-0);
@@ -1431,7 +1431,7 @@ button.link:hover {
 .texture-card.missing {
   border-color: var(--ember);
 }
-/* Schachbrett für transparente Pixel (als Muster, kein Verlauf) */
+/* Checkerboard for transparent pixels (as a pattern, not a gradient) */
 .texture-thumb {
   width: 64px;
   height: 64px;
@@ -1529,7 +1529,7 @@ button.link:hover {
   color: var(--ink-faint);
 }
 
-/* ------------------------------------------------------------------ Start */
+/* ------------------------------------------------------------------ Start screen */
 
 .welcome {
   max-width: 960px;
@@ -1624,7 +1624,7 @@ button.link:hover {
   margin-bottom: var(--space-2);
 }
 
-/* ------------------------------------------------------------------ Hilfsklassen */
+/* ------------------------------------------------------------------ Utility classes */
 
 .row {
   display: flex;
@@ -1687,7 +1687,7 @@ button.link:hover {
   max-width: 340px;
 }
 
-/* ------------------------------------------------------------------ Export-Auswahl */
+/* ------------------------------------------------------------------ Export selection */
 
 .export-grid {
   display: grid;
@@ -1765,7 +1765,7 @@ button.link:hover {
   white-space: nowrap;
 }
 
-/* ------------------------------------------------------------------ Modell-Plätze (Möbel, Blöcke) */
+/* ------------------------------------------------------------------ Model slots (furniture, blocks) */
 
 .slot-grid {
   display: grid;
@@ -1839,7 +1839,7 @@ button.link:hover {
   color: var(--ink);
 }
 
-/* ------------------------------------------------------------------ Sounds & Gemälde */
+/* ------------------------------------------------------------------ Sounds & paintings */
 
 .sound-file {
   display: flex;
@@ -1873,7 +1873,7 @@ button.link:hover {
   border: 2px solid var(--border-control);
 }
 
-/* ------------------------------------------------------------------ Testserver */
+/* ------------------------------------------------------------------ Test server */
 
 .server-console {
   height: 340px;
@@ -1909,7 +1909,7 @@ button.link:hover {
   align-self: center;
 }
 
-/* ------------------------------------------------------------------ Geteilte Projekte */
+/* ------------------------------------------------------------------ Shared projects */
 
 .share-status {
   display: flex;

@@ -1,4 +1,4 @@
-/** Test-Hilfe: erzeugt echte PNG-Dateien (nur in Node verwenden). */
+/** Test helper: creates real PNG files (only use in Node). */
 import { deflateSync } from 'node:zlib';
 
 const CRC_TABLE = (() => {
@@ -33,7 +33,7 @@ export function makePng(width: number, height: number, rgba: [number, number, nu
   const v = new DataView(ihdr.buffer);
   v.setUint32(0, width);
   v.setUint32(4, height);
-  ihdr[8] = 8; // Bit-Tiefe
+  ihdr[8] = 8; // bit depth
   ihdr[9] = 6; // RGBA
   const raw = new Uint8Array(height * (width * 4 + 1));
   for (let y = 0; y < height; y++) {

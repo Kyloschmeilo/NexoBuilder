@@ -77,7 +77,7 @@ function bbmodel(overrides: Record<string, unknown> = {}) {
 }
 
 describe('convertBBModel', () => {
-  it('rechnet UVs vom Pixelraster in den 0–16-Bereich um', () => {
+  it('converts UVs from the pixel grid to the 0–16 range', () => {
     const result = convertBBModel(bbmodel(), 'test.bbmodel');
     const el = result.json.elements![0];
     expect(el.faces.north).toEqual({ uv: [0, 0, 16, 16], texture: '#0' });
@@ -89,7 +89,7 @@ describe('convertBBModel', () => {
     expect(result.issues.filter((i) => i.level === 'error')).toHaveLength(0);
   });
 
-  it('lässt deaktivierte Flächen (texture: null) weg und markiert Flächen ohne Textur', () => {
+  it('omits disabled faces (texture: null) and marks faces without a texture', () => {
     const el = cube({
       uuid: 'c1',
       faces: {
@@ -105,7 +105,7 @@ describe('convertBBModel', () => {
     expect(result.issues.some((i) => i.level === 'warning' && i.message.includes('keine Textur'))).toBe(true);
   });
 
-  it('schreibt Ein-Achsen-Rotationen klassisch und freie Winkel mit Versionshinweis', () => {
+  it('writes single-axis rotations classically and free angles with a version hint', () => {
     const a = convertBBModel(bbmodel({ elements: [cube({ uuid: 'c1', rotation: [0, 0, 45] })] }), 'a.bbmodel');
     expect(a.json.elements![0].rotation).toEqual({ angle: 45, axis: 'z', origin: [8, 8, 8] });
     expect(a.requiresVersion).toBeUndefined();
@@ -123,7 +123,7 @@ describe('convertBBModel', () => {
     expect(d.requiresVersion).toBe('1.21.11');
   });
 
-  it('übernimmt rescale, shade und light_emission', () => {
+  it('takes over rescale, shade and light_emission', () => {
     const result = convertBBModel(
       bbmodel({ elements: [cube({ uuid: 'c1', rescale: true, shade: false, light_emission: 7 })] }),
       'x.bbmodel',
@@ -134,7 +134,7 @@ describe('convertBBModel', () => {
     expect(el.light_emission).toBe(7);
   });
 
-  it('nutzt ab java_block_version 26.3 shade_direction_override statt shade', () => {
+  it('uses shade_direction_override instead of shade from java_block_version 26.3 on', () => {
     const result = convertBBModel(
       bbmodel({ java_block_version: '26.3', elements: [cube({ uuid: 'c1', shade: false, shade_direction_override: 'up' })] }),
       'x.bbmodel',
@@ -145,13 +145,13 @@ describe('convertBBModel', () => {
     expect(result.requiresVersion).toBe('26.3');
   });
 
-  it('berücksichtigt inflate', () => {
+  it('takes inflate into account', () => {
     const result = convertBBModel(bbmodel({ elements: [cube({ uuid: 'c1', from: [4, 4, 4], to: [12, 12, 12], inflate: 0.5 })] }), 'x');
     expect(result.json.elements![0].from).toEqual([3.5, 3.5, 3.5]);
     expect(result.json.elements![0].to).toEqual([12.5, 12.5, 12.5]);
   });
 
-  it('exportiert Elemente in Outliner-Reihenfolge und überspringt export:false', () => {
+  it('exports elements in outliner order and skips export:false', () => {
     const elements = [
       cube({ uuid: 'a', name: 'a', from: [0, 0, 0], to: [1, 1, 1] }),
       cube({ uuid: 'b', name: 'b', from: [2, 2, 2], to: [3, 3, 3] }),
@@ -162,12 +162,12 @@ describe('convertBBModel', () => {
     expect(result.json.elements!.map((e) => e.name)).toEqual(['b', 'a']);
   });
 
-  it('meldet Würfel außerhalb von -16 bis 32 als Fehler', () => {
+  it('reports cubes outside -16 to 32 as errors', () => {
     const result = convertBBModel(bbmodel({ elements: [cube({ uuid: 'c1', from: [-20, 0, 0], to: [0, 1, 1] })] }), 'x');
     expect(result.issues.some((i) => i.level === 'error' && i.message.includes('-16 bis 32'))).toBe(true);
   });
 
-  it('löst nicht eingebettete Texturen über zusätzlich abgelegte PNGs auf', () => {
+  it('resolves non-embedded textures via additionally dropped PNGs', () => {
     const missing = convertBBModel(bbmodel({ textures: [texture({ source: undefined, internal: false })] }), 'x');
     expect(missing.textures[0].dataUrl).toBe('');
     expect(missing.issues.some((i) => i.level === 'error' && i.message.includes('nicht in der .bbmodel'))).toBe(true);
@@ -179,13 +179,13 @@ describe('convertBBModel', () => {
     expect(resolved.issues.filter((i) => i.level === 'error')).toHaveLength(0);
   });
 
-  it('erzeugt eine mcmeta für animierte Texturen', () => {
+  it('generates an mcmeta for animated textures', () => {
     const tex = texture({ source: makePngDataUrl(32, 128), height: 128, frame_time: 4, frame_order_type: 'back_and_forth' });
     const result = convertBBModel(bbmodel({ textures: [tex] }), 'x');
     expect(result.textures[0].mcmeta).toEqual({ animation: { frametime: 4, frames: [0, 1, 2, 3, 2, 1] } });
   });
 
-  it('verschiebt Modelle aus zentrierten Formaten (Generic Model) um 8 Pixel', () => {
+  it('shifts models from centered formats (Generic Model) by 8 pixels', () => {
     const result = convertBBModel(
       bbmodel({
         meta: { format_version: '5.0', model_format: 'free', box_uv: false },
@@ -199,7 +199,7 @@ describe('convertBBModel', () => {
     expect(result.issues.some((i) => i.level === 'warning' && i.message.includes('Generic Model'))).toBe(true);
   });
 
-  it('übernimmt Display-Einstellungen, Parent und GUI-Licht', () => {
+  it('takes over display settings, parent and GUI light', () => {
     const result = convertBBModel(
       bbmodel({
         parent: 'item/handheld',
@@ -207,7 +207,7 @@ describe('convertBBModel', () => {
         display: {
           gui: { rotation: [30, 45, 0], translation: [0, 0, 0], scale: [0.6, 0.6, 0.6] },
           head: { translation: [0, 14, 0] },
-          unbekannt: { scale: [2, 2, 2] },
+          unknown: { scale: [2, 2, 2] },
         },
       }),
       'x',
@@ -220,7 +220,7 @@ describe('convertBBModel', () => {
     });
   });
 
-  it('exportiert reine Textur-Modelle (item/generated) mit allen Texturen', () => {
+  it('exports texture-only models (item/generated) with all textures', () => {
     const placeholder = { type: 'generated_item_mesh', uuid: 'gen', name: 'layer0', export: false };
     const result = convertBBModel(
       bbmodel({ parent: 'item/generated', elements: [placeholder], outliner: ['gen'], textures: [texture({ id: 'layer0' })] }),
@@ -232,8 +232,8 @@ describe('convertBBModel', () => {
     expect(result.issues.filter((i) => i.level === 'error')).toHaveLength(0);
   });
 
-  it('wirft bei ungültigen Dateien einen verständlichen Fehler', () => {
-    expect(() => convertBBModel('{kaputt', 'x.bbmodel')).toThrow(/keine gültige/);
+  it('throws an understandable error for invalid files', () => {
+    expect(() => convertBBModel('{broken', 'x.bbmodel')).toThrow(/keine gültige/);
     expect(() => convertBBModel('{"foo":1}', 'x.bbmodel')).toThrow(/kein Blockbench-Modell/);
   });
 });

@@ -17,26 +17,26 @@ function mediaProject(name = 'Klang', ns = 'klang'): Project {
   const project = createProject(name, ns, '1.21.11');
   const ding = createSound('s1', 'block.glocke.ding', [{ name: 'ding.ogg', dataUrl: OGG, size: 24 }]);
   ding.volume = 0.8;
-  const lied = createSound('s2', 'music.lied', [
+  const song = createSound('s2', 'music.lied', [
     { name: 'a.ogg', dataUrl: OGG, size: 24 },
     { name: 'b.ogg', dataUrl: OGG, size: 24 },
   ]);
-  lied.stream = true;
-  lied.jukebox = { duration: '2m 30s', description: '<gold>Mein Lied', comparatorOutput: 7, range: null };
-  project.sounds = [ding, lied];
-  const bild = createPainting('p1', 'sonne', { name: 'sonne.png', dataUrl: makePngDataUrl(32, 16), width: 32, height: 16 });
-  bild.title = 'Sonne';
+  song.stream = true;
+  song.jukebox = { duration: '2m 30s', description: '<gold>Mein Lied', comparatorOutput: 7, range: null };
+  project.sounds = [ding, song];
+  const picture = createPainting('p1', 'sonne', { name: 'sonne.png', dataUrl: makePngDataUrl(32, 16), width: 32, height: 16 });
+  picture.title = 'Sonne';
   const anim = createPainting('p2', 'welle', { name: 'welle.png', dataUrl: makePngDataUrl(16, 64), width: 16, height: 64 });
   anim.width = 1;
   anim.height = 1;
   anim.animated = true;
   anim.frametime = 4;
-  project.paintings = [bild, anim];
+  project.paintings = [picture, anim];
   return project;
 }
 
-describe('Sounds und Gemälde', () => {
-  it('schreibt OGG-Dateien, Gemälde-Texturen und die Einträge für sounds.yml/paintings.yml', async () => {
+describe('sounds and paintings', () => {
+  it('writes OGG files, painting textures and the entries for sounds.yml/paintings.yml', async () => {
     const project = mediaProject();
     const plan = planExport(project);
     expect(plan.issues.filter((i) => i.level === 'error')).toEqual([]);
@@ -69,7 +69,7 @@ describe('Sounds und Gemälde', () => {
     expect(guide).toContain('sounds.yml');
   });
 
-  it('meldet fehlerhafte Sounds und Gemälde', () => {
+  it('reports invalid sounds and paintings', () => {
     const project = mediaProject();
     project.sounds[0].files[0].dataUrl = makePngDataUrl(1, 1);
     project.sounds[1].jukebox!.duration = '';
@@ -82,7 +82,7 @@ describe('Sounds und Gemälde', () => {
     expect(messages.some((m) => m.startsWith('warning') && m.includes('1.21.5'))).toBe(true);
   });
 
-  it('fasst sounds.yml mehrerer Projekte zusammen und meldet doppelte IDs', async () => {
+  it('merges sounds.yml of several projects and reports duplicate IDs', async () => {
     const a = mediaProject('Klang', 'klang');
     const b = mediaProject('Andere', 'andere');
     const multi = planMultiExport([{ project: a }, { project: b }], { includeBinaries: true });
@@ -96,7 +96,7 @@ describe('Sounds und Gemälde', () => {
     expect(same.issues.some((i) => i.message.includes('Das Gemälde „klang:sonne“'))).toBe(true);
   });
 
-  it('überträgt sounds.yml und paintings.yml auch in den Testserver', () => {
+  it('also transfers sounds.yml and paintings.yml to the test server', () => {
     const project = mediaProject();
     const paths = nexoFolderFiles(project, planExport(project)).map((f) => f.path);
     expect(paths).toContain('sounds.yml');
@@ -104,7 +104,7 @@ describe('Sounds und Gemälde', () => {
     expect(paths).toContain('pack/external_packs/klang/assets/klang/sounds/block/glocke/ding.ogg');
   });
 
-  it('lässt abgewählte Sounds und Gemälde beim Export weg', () => {
+  it('leaves deselected sounds and paintings out of the export', () => {
     const project = mediaProject();
     const multi = planMultiExport([{ project, selection: { excludedItemIds: [], excludedGlyphIds: [], excludedSoundIds: ['s2'], excludedPaintingIds: ['p1', 'p2'] } }]);
     expect(multi.projects[0].plan.soundEntries.map((s) => s.id)).toEqual(['klang:block.glocke.ding']);

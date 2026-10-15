@@ -1,12 +1,12 @@
 import type { Issue, ModelTexture, TextureAnimation } from '../types';
 import { fileBaseName, readPngInfoFromDataUrl } from '../util';
 
-/** Eine zusätzlich vom Nutzer abgelegte Datei (PNG oder .mcmeta). */
+/** An additional file dropped by the user (PNG or .mcmeta). */
 export interface DroppedFile {
   name: string;
-  /** Für PNGs: Data-URL. */
+  /** For PNGs: data URL. */
   dataUrl?: string;
-  /** Für Text-Dateien (.json, .mcmeta, .bbmodel): Inhalt. */
+  /** For text files (.json, .mcmeta, .bbmodel): content. */
   text?: string;
 }
 
@@ -14,18 +14,18 @@ export function isPngDataUrl(dataUrl: string | undefined): dataUrl is string {
   return !!dataUrl && /^data:image\/png[;,]/i.test(dataUrl);
 }
 
-/** Normalisiert einen Dateinamen für Vergleiche ("Ruby_Sword.PNG" → "ruby_sword"). */
+/** Normalizes a file name for comparisons ("Ruby_Sword.PNG" → "ruby_sword"). */
 export function normalizeTextureName(name: string): string {
   return fileBaseName(name.replace(/\.png\.mcmeta$/i, '.png')).toLowerCase();
 }
 
-/** Sucht in den abgelegten Dateien eine PNG mit passendem Namen. */
+/** Searches the dropped files for a PNG with a matching name. */
 export function findPngByName(files: DroppedFile[], ...candidates: Array<string | undefined>): DroppedFile | undefined {
   const wanted = candidates.filter((c): c is string => !!c).map(normalizeTextureName);
   return files.find((file) => isPngDataUrl(file.dataUrl) && wanted.includes(normalizeTextureName(file.name)));
 }
 
-/** Sucht die .png.mcmeta-Datei zu einer PNG. */
+/** Finds the .png.mcmeta file for a PNG. */
 export function findMcmetaFor(files: DroppedFile[], pngName: string): Record<string, unknown> | null {
   const target = normalizeTextureName(pngName);
   const file = files.find((f) => /\.mcmeta$/i.test(f.name) && normalizeTextureName(f.name) === target && f.text);
@@ -61,7 +61,7 @@ export function getAnimation(texture: ModelTexture): TextureAnimation | null {
   };
 }
 
-/** Größe eines einzelnen Animations-Frames in Pixeln (entspricht der Minecraft-Logik). */
+/** Size of a single animation frame in pixels (matches the Minecraft logic). */
 export function getFrameSize(texture: ModelTexture): { width: number; height: number; count: number } {
   const anim = texture.mcmeta?.animation as Record<string, unknown> | undefined;
   if (!anim || typeof anim !== 'object') {
@@ -81,7 +81,7 @@ export function getFrameSize(texture: ModelTexture): { width: number; height: nu
   return { width, height, count: Math.max(1, count) };
 }
 
-/** Prüft eine Textur so, wie Minecraft sie beim Laden prüfen würde. */
+/** Validates a texture the way Minecraft would when loading it. */
 export function validateTexture(texture: ModelTexture, label: string): Issue[] {
   const issues: Issue[] = [];
   if (!texture.dataUrl) {

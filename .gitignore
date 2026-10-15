@@ -1,6 +1,5 @@
 node_modules
 dist
-dist-single
 *.local
 .DS_Store
 coverage
@@ -9,3 +8,6 @@ release
 # Plugin-Dateien (z.B. die gekaufte Nexo-JAR) nie einchecken
 *.jar
 .turbo
+.next
+out
+next-env.d.ts

@@ -11,28 +11,28 @@ import type { Project } from '../types';
 
 const PNG16 = makePngDataUrl(16, 16);
 
-function project(name: string, ns: string, ids: { waffen: string[]; moebel: string[] }): Project {
+function project(name: string, ns: string, ids: { weapons: string[]; furniture: string[] }): Project {
   const p = createProject(name, ns);
-  const waffen = createFolder('Waffen', null);
-  const moebel = createFolder('Möbel', null);
-  const stuehle = createFolder('Stühle', moebel.id);
-  insertFolder(p, waffen);
-  insertFolder(p, moebel);
-  insertFolder(p, stuehle);
-  for (const id of ids.waffen) {
+  const weapons = createFolder('Waffen', null);
+  const furniture = createFolder('Möbel', null);
+  const chairs = createFolder('Stühle', furniture.id);
+  insertFolder(p, weapons);
+  insertFolder(p, furniture);
+  insertFolder(p, chairs);
+  for (const id of ids.weapons) {
     const model = createTextureModel('handheld', { layer0: `${id}.png` }, [{ name: `${id}.png`, dataUrl: PNG16 }]);
-    insertItem(p, createItem({ displayName: id, nexoId: id, folderId: waffen.id, model }));
+    insertItem(p, createItem({ displayName: id, nexoId: id, folderId: weapons.id, model }));
   }
-  for (const id of ids.moebel) insertItem(p, createItem({ displayName: id, nexoId: id, folderId: stuehle.id, model: null }));
+  for (const id of ids.furniture) insertItem(p, createItem({ displayName: id, nexoId: id, folderId: chairs.id, model: null }));
   p.glyphs = [createGlyph('g1', 'herz', { name: 'herz.png', dataUrl: PNG16, width: 16, height: 16 })];
   return p;
 }
 
 const itemId = (p: Project, nexoId: string) => Object.values(p.items).find((i) => i.nexoId === nexoId)!.id;
 
-describe('Export-Auswahl in einem Projekt', () => {
-  it('exportiert nur die ausgewählten Items und lässt leere Ordner weg', () => {
-    const p = project('Mein Pack', 'meinpack', { waffen: ['ruby_sword', 'axe'], moebel: ['chair'] });
+describe('Export selection within a project', () => {
+  it('exports only the selected items and omits empty folders', () => {
+    const p = project('Mein Pack', 'meinpack', { weapons: ['ruby_sword', 'axe'], furniture: ['chair'] });
     const selection = { excludedItemIds: [itemId(p, 'axe'), itemId(p, 'chair')], excludedGlyphIds: ['g1'] };
     const subset = selectFromProject(p, selection);
     expect(Object.values(subset.items).map((i) => i.nexoId)).toEqual(['ruby_sword']);
@@ -47,30 +47,30 @@ describe('Export-Auswahl in einem Projekt', () => {
     expect(paths.some((x) => x.includes('axe'))).toBe(false);
     expect(paths.some((x) => x.includes('moebel'))).toBe(false);
     expect(paths.some((x) => x.startsWith('glyphs/'))).toBe(false);
-    // keine Meldung über leere Ordner, die nur wegen der Auswahl leer sind
+    // no message about folders that are only empty because of the selection
     expect(plan.issues.some((i) => i.message.includes('ist leer'))).toBe(false);
-    // Das Original bleibt unverändert
+    // The original stays unchanged
     expect(Object.keys(p.items)).toHaveLength(3);
   });
 
-  it('behält Pfade von Unterordnern, auch wenn der Elternordner selbst keine Items hat', () => {
-    const p = project('Mein Pack', 'meinpack', { waffen: ['ruby_sword'], moebel: ['chair'] });
+  it('keeps paths of subfolders even if the parent folder itself has no items', () => {
+    const p = project('Mein Pack', 'meinpack', { weapons: ['ruby_sword'], furniture: ['chair'] });
     const subset = selectFromProject(p, { excludedItemIds: [itemId(p, 'ruby_sword')], excludedGlyphIds: [] });
     const plan = planExport(subset);
     expect([...plan.itemFiles.keys()]).toEqual(['items/moebel/stuehle/stuehle.yml']);
   });
 
-  it('gibt ohne Auswahl das unveränderte Projekt zurück', () => {
-    const p = project('A', 'a', { waffen: ['x'], moebel: [] });
+  it('returns the unchanged project without a selection', () => {
+    const p = project('A', 'a', { weapons: ['x'], furniture: [] });
     expect(selectFromProject(p, undefined)).toBe(p);
     expect(selectFromProject(p, { excludedItemIds: [], excludedGlyphIds: [] })).toBe(p);
   });
 });
 
-describe('Export mehrerer Projekte', () => {
-  it('packt mehrere Projekte in ein ZIP mit eigenem Ordner und Pack pro Projekt', async () => {
-    const a = project('Waffen Pack', 'waffenpack', { waffen: ['ruby_sword'], moebel: [] });
-    const b = project('Deko', 'deko', { waffen: ['deko_axe'], moebel: ['chair'] });
+describe('Export of multiple projects', () => {
+  it('packs multiple projects into one ZIP with a separate folder and pack per project', async () => {
+    const a = project('Waffen Pack', 'waffenpack', { weapons: ['ruby_sword'], furniture: [] });
+    const b = project('Deko', 'deko', { weapons: ['deko_axe'], furniture: ['chair'] });
     b.glyphs[0].glyphId = 'stern';
     const multi = planMultiExport([{ project: a }, { project: b }], { includeBinaries: true });
     expect(multi.issues.filter((i) => i.level === 'error')).toEqual([]);
@@ -85,7 +85,7 @@ describe('Export mehrerer Projekte', () => {
     expect(paths).toContain('ANLEITUNG.txt');
 
     const result = await buildMultiExportZip(multi, 'full');
-    expect(result.fileName).toBe('nexobuilder_2_projekte_nexo.zip');
+    expect(result.fileName).toBe('resourcepackbuilder_2_projekte_nexo.zip');
     const zip = await JSZip.loadAsync(result.data);
     const files = Object.keys(zip.files).filter((f) => !zip.files[f].dir).sort();
     expect(files).toEqual(paths);
@@ -98,9 +98,9 @@ describe('Export mehrerer Projekte', () => {
     expect(packs).toContain('deko/pack.mcmeta');
   });
 
-  it('meldet doppelte Item-IDs, Glyphen, Pack-Namen und gleiche Dateien zwischen Projekten', () => {
-    const a = project('Pack', 'shared', { waffen: ['ruby_sword'], moebel: [] });
-    const b = project('Pack', 'shared', { waffen: ['ruby_sword'], moebel: [] });
+  it('reports duplicate item IDs, glyphs, pack names and identical files between projects', () => {
+    const a = project('Pack', 'shared', { weapons: ['ruby_sword'], furniture: [] });
+    const b = project('Pack', 'shared', { weapons: ['ruby_sword'], furniture: [] });
     const multi = planMultiExport([{ project: a }, { project: b }]);
     const errors = multi.issues.filter((i) => i.level === 'error' && !i.projectId).map((i) => i.message);
     expect(errors.some((m) => m.includes('Item-ID „ruby_sword“'))).toBe(true);
@@ -111,17 +111,17 @@ describe('Export mehrerer Projekte', () => {
     expect(warnings.some((m) => m.includes('assets/shared/models/item/waffen/ruby_sword.json'))).toBe(true);
   });
 
-  it('kennzeichnet Meldungen mit dem Projekt', () => {
-    const a = project('Alpha', 'alpha', { waffen: ['a1'], moebel: [] });
-    const b = project('Beta', 'beta', { waffen: [], moebel: ['b1'] });
+  it('tags messages with the project', () => {
+    const a = project('Alpha', 'alpha', { weapons: ['a1'], furniture: [] });
+    const b = project('Beta', 'beta', { weapons: [], furniture: ['b1'] });
     b.glyphs = [];
     const multi = planMultiExport([{ project: a }, { project: b }]);
     const info = multi.issues.find((i) => i.projectId === b.id && i.itemId);
     expect(info?.message.startsWith('[Beta] ')).toBe(true);
   });
 
-  it('verhält sich mit einem Projekt genau wie der normale Export', () => {
-    const a = project('Alpha', 'alpha', { waffen: ['a1'], moebel: ['a2'] });
+  it('behaves exactly like the normal export with a single project', () => {
+    const a = project('Alpha', 'alpha', { weapons: ['a1'], furniture: ['a2'] });
     const multi = planMultiExport([{ project: a }]);
     expect(listMultiExportPaths(multi, 'full')).toEqual(listExportPaths(a, planExport(a), 'full'));
     expect(multi.issues.every((i) => !i.projectId)).toBe(true);

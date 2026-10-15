@@ -1,12 +1,12 @@
-# NexoBuilder
+# ResourcepackBuilder
 
 **Aus Blockbench-Modellen fertige [Nexo](https://docs.nexomc.com/)-Items machen – inklusive Resourcepack.**
 
-NexoBuilder gibt es als **Windows-Programm (.exe)** und als Web-App (läuft komplett im Browser, auch offline per Doppelklick).
+ResourcepackBuilder gibt es als **Windows-Programm (.exe)**.
 Du legst Ordner an, ziehst deine Modelle hinein, stellst die Nexo-Eigenschaften per Formular ein
 und exportierst alles als ZIP, das du direkt in `plugins/Nexo/` entpackst.
 
-![NexoBuilder](docs/screenshot.png)
+![ResourcepackBuilder](docs/screenshot.png)
 
 ## Funktionen
 
@@ -43,7 +43,7 @@ und exportierst alles als ZIP, das du direkt in `plugins/Nexo/` entpackst.
   Throwing (Dreizack), Damaged, Dyeable und Composite Models (`Pack.pulling_models`, `Pack.blocking_model` …)
   sowie ein eigenes **GUI Model** (anderes Modell im Inventar)
 - **Furniture-Modelle** – Connectable (Straight/Left/Right/Inner/Outer), Placements (Floor/Wall/Roof), Lights
-  (eingeschaltet) und States – NexoBuilder schreibt die nötigen ItemModels selbst
+  (eingeschaltet) und States – ResourcepackBuilder schreibt die nötigen ItemModels selbst
 - **Shade & Ambient Occlusion** pro Modell ein- und ausschaltbar
 - **Glyphs** – Emojis und GUI-Texturen (PNG, animierte GIFs, Multi-Bitmap, Reference-Glyphs) mit Chat-Vorschau
   → `glyphs/<projekt>.yml`, verwendbar überall mit `<glyph:id>`
@@ -73,34 +73,21 @@ und exportierst alles als ZIP, das du direkt in `plugins/Nexo/` entpackst.
 
 ### Windows-Programm (.exe)
 
-- **Installer:** `NexoBuilder-Setup-<version>.exe` – installiert NexoBuilder mit Startmenü- und Desktop-Verknüpfung.
-- **Portable:** `NexoBuilder-<version>-portable.exe` – ohne Installation direkt starten.
+- **Installer:** `ResourcepackBuilder-Setup-<version>.exe` – installiert ResourcepackBuilder mit Startmenü- und Desktop-Verknüpfung.
+- **Portable:** `ResourcepackBuilder-<version>-portable.exe` – ohne Installation direkt starten.
 
-**Download:** auf GitHub unter **[Releases](https://github.com/Kyloschmeilo/NexoBuilder/releases/latest)**.
-Zwischenstände werden zusätzlich bei jedem Push gebaut: **GitHub → Actions → Build → Artefakt „NexoBuilder-Windows“**.
+**Download:** auf GitHub unter **[Releases](https://github.com/SLNE-Development/ResourcepackBuilder/releases/latest)**.
+Zwischenstände werden zusätzlich bei jedem Push gebaut: **GitHub → Actions → Build → Artefakt „ResourcepackBuilder-Windows“**.
 Selbst bauen (Windows, oder Linux mit Wine):
 
 ```bash
 npm install
-npm run dist:win     # Ergebnis in apps/nexobuilder/release/
+npm run dist:win     # Ergebnis in apps/resourcepackbuilder/release/
 ```
 
 Das Programm ist nicht digital signiert – Windows SmartScreen zeigt deshalb beim ersten Start eventuell
 „Der Computer wurde durch Windows geschützt“. Über **Weitere Informationen → Trotzdem ausführen** startet es.
-Projekte werden automatisch gespeichert (im App-Datenordner, siehe *Hilfe → Über NexoBuilder*).
-
-### Einzelne HTML-Datei (ohne Installation)
-
-Fertig gebaut gibt es die Datei unter **[Releases](https://github.com/Kyloschmeilo/NexoBuilder/releases/latest)** und bei jedem Push unter **GitHub → Actions → Build → Artefakt „NexoBuilder“**
-(`NexoBuilder.html`). Oder selbst bauen:
-
-```bash
-npm install
-npm run build:single
-```
-
-Danach `apps/nexobuilder/dist-single/index.html` (bzw. `NexoBuilder.html`) per Doppelklick im Browser (Chrome, Edge oder Firefox) öffnen.
-Die Datei kann beliebig kopiert werden und funktioniert offline.
+Projekte werden automatisch gespeichert (im App-Datenordner, siehe *Hilfe → Über ResourcepackBuilder*).
 
 ### Entwicklungsserver
 
@@ -109,7 +96,7 @@ npm install
 npm run dev
 ```
 
-und <http://localhost:5173> öffnen.
+und <http://localhost:3000> öffnen (Next.js). Teilen und Testserver gibt es nur im Windows-Programm.
 
 ### Projekte teilen und gemeinsam bearbeiten
 
@@ -117,7 +104,7 @@ Funktioniert im Windows-Programm. Ihr braucht einen Ordner, den ihr gemeinsam nu
 **Google Drive** oder **Dropbox** (Ordner anlegen und für die anderen freigeben).
 
 1. Projekt öffnen → oben auf **Teilen** klicken → Namen eintragen → **Ordner wählen und teilen** → den gemeinsamen Ordner wählen.
-   Liegen darin schon andere Dateien, legt NexoBuilder einen Unterordner mit dem Projektnamen an.
+   Liegen darin schon andere Dateien, legt ResourcepackBuilder einen Unterordner mit dem Projektnamen an.
 2. Die anderen klicken auf der Startseite (oder im Projektmenü) auf **Geteiltes Projekt öffnen** und wählen denselben Ordner.
 3. Ab jetzt kommen Änderungen automatisch bei allen an – meist nach wenigen Sekunden, je nachdem wie schnell der
    Cloud-Dienst die Dateien überträgt. Oben zeigt ein Punkt den Zustand: grün = aktuell, gelb = überträgt bzw. Ordner
@@ -135,13 +122,13 @@ Gut zu wissen:
 ### Lokaler Testserver
 
 Im Windows-Programm gibt es links unten den Bereich **Testserver**. Damit läuft ein Minecraft-Server (Paper) mit Nexo
-direkt auf deinem PC – und alles, was du in NexoBuilder änderst, ist nach wenigen Sekunden im Spiel.
+direkt auf deinem PC – und alles, was du in ResourcepackBuilder änderst, ist nach wenigen Sekunden im Spiel.
 
 1. **Testserver** öffnen → **JAR auswählen …** → deine Nexo-JAR wählen (die gekaufte Datei, z.B. von Polymart).
    Sie wird nur in den lokalen Testserver kopiert und nirgendwohin hochgeladen.
 2. Minecraft-Version wählen (Standard: die Version des Projekts), deinen **Minecraft-Namen** eintragen und die
    **Minecraft-EULA** akzeptieren.
-3. **Server starten**. Beim ersten Mal lädt NexoBuilder Paper und – falls nötig – Java herunter (einige Minuten).
+3. **Server starten**. Beim ersten Mal lädt ResourcepackBuilder Paper und – falls nötig – Java herunter (einige Minuten).
 4. In Minecraft (gleiche Version) → **Mehrspieler → Direktverbindung → `localhost`**. Das Resourcepack kommt automatisch.
 
 Danach:
@@ -151,9 +138,9 @@ Danach:
 - Im Item-Editor legt **Im Testserver geben** das Item direkt in dein Inventar.
 - Die **Konsole** zeigt die Server-Ausgabe; dort kannst du Befehle eingeben (ohne `/`).
 - Dein Name bekommt beim Start OP-Rechte. Die Welt ist flach, im Kreativmodus und friedlich.
-- Beim Schließen von NexoBuilder wird der Server sauber gestoppt (die Welt wird gespeichert).
+- Beim Schließen von ResourcepackBuilder wird der Server sauber gestoppt (die Welt wird gespeichert).
 
-NexoBuilder stellt Nexo im Testserver so ein, dass das Resourcepack vom eigenen PC kommt (`Pack.server.type: SELFHOST`,
+ResourcepackBuilder stellt Nexo im Testserver so ein, dass das Resourcepack vom eigenen PC kommt (`Pack.server.type: SELFHOST`,
 Adresse `127.0.0.1`, Port 8082, ohne Verschleierung). Neu geladen wird erst, wenn Nexo mit dem vorherigen Pack fertig ist;
 der Stand des Packs (wird erstellt / bereit / Fehler) steht im Testserver-Bereich, dort gibt es auch **Pack erneut senden**.
 Der Server liegt im App-Datenordner unter `testserver/server` (Knopf **Ordner**).
@@ -198,30 +185,30 @@ rubin_schwert:
 ```bash
 npm test          # Unit-Tests (Konverter, YAML, Export)
 npm run typecheck # TypeScript (alle Pakete)
-npm run build     # Produktions-Build nach apps/nexobuilder/dist/
+npm run build     # Statischer Next.js-Export nach apps/resourcepackbuilder/out/
 npm run app       # Desktop-Programm (Electron) lokal starten
-npm run icon      # App-Icon (apps/nexobuilder/build/icon.png) neu erzeugen
+npm run icon      # App-Icon (apps/resourcepackbuilder/build/icon.png) neu erzeugen
 ```
 
-Neue Version veröffentlichen: Version in `apps/nexobuilder/package.json` erhöhen, in `CHANGELOG.md` einen Abschnitt
+Neue Version veröffentlichen: Version in `apps/resourcepackbuilder/package.json` erhöhen, in `CHANGELOG.md` einen Abschnitt
 `## <version>` ergänzen und dann auf GitHub unter **Actions → Build → Run workflow** starten
 (oder einen Tag `v<version>` pushen). GitHub Actions baut und testet die exe und erstellt den Release
-`v<version>` mit Installer, Portable-exe und HTML-Datei.
+`v<version>` mit Installer und Portable-exe.
 
 Aufbau (Monorepo mit npm-Workspaces und [Turborepo](https://turborepo.com); die Befehle oben laufen über `turbo`):
 
-- `packages/core` (`@nexobuilder/core`) – Logik ohne Oberfläche, mit den Unit-Tests
+- `packages/core` (`@resourcepackbuilder/core`) – Logik ohne Oberfläche, mit den Unit-Tests
   - `src/model` – Import von `.bbmodel`, Java-JSON und PNG
   - `src/nexo` – Eigenschafts-Schema, YAML-Erzeugung, Eigenschaften kopieren/einfügen (`copyConfig.ts`)
   - `src/export` – Export-Planung, Prüfungen, Auswahl und mehrere Projekte (`selection.ts`), ZIP
   - `src/sync` – Abgleich geteilter Projekte (Dateiformat, Zusammenführen, Konflikte)
   - `src/testserver` – Dateien und Nexo-Einstellungen für den lokalen Testserver
-- `packages/ui` (`@nexobuilder/ui`) – wiederverwendbare React-Bausteine (Modal, Popover, Formularfelder, Datei-Helfer)
+- `packages/ui` (`@resourcepackbuilder/ui`) – wiederverwendbare React-Bausteine (Modal, Popover, Formularfelder, Datei-Helfer)
   und das CastCrafter-Design in `src/styles.css` (Farben als CSS-Variablen, Schriften Chakra Petch / Hanken Grotesk /
   Martian Mono lokal eingebunden über `src/fonts.css`)
-- `packages/preview` (`@nexobuilder/preview`) – 3D-Vorschau und Vorschaubilder (three.js)
-- `packages/config` (`@nexobuilder/config`) – gemeinsame TypeScript-Konfiguration
-- `apps/nexobuilder` – die App: Oberfläche (React, `src/ui`), Zustand (`src/state`), Vite-Build
-  - `electron/` – Desktop-Programm (Electron), Konfiguration in `electron-builder.yml`;
+- `packages/preview` (`@resourcepackbuilder/preview`) – 3D-Vorschau und Vorschaubilder (three.js)
+- `packages/config` (`@resourcepackbuilder/config`) – gemeinsame TypeScript-Konfiguration
+- `apps/resourcepackbuilder` – die App: Next.js (App Router, statischer Export) mit Oberfläche (React, `src/ui`) und Zustand (`src/state`)
+  - `electron/` – Desktop-Programm (Electron, lädt den Export über `app://`), Konfiguration in `electron-builder.yml`;
     `share.cjs` regelt den Zugriff auf geteilte Ordner (nur selbst gewählte Ordner, nur Projektdateien),
     `testserver.cjs` lädt Paper/Java herunter und steuert den lokalen Testserver

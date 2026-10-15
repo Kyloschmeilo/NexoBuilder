@@ -1,6 +1,6 @@
 /**
- * Vereinfachte Vorschau für MiniMessage-Texte (Farben, Verläufe, Formatierungen),
- * wie sie in Nexo für itemname und lore verwendet werden.
+ * Simplified preview for MiniMessage texts (colors, gradients, formatting)
+ * as used in Nexo for itemname and lore.
  */
 import type { CSSProperties, ReactNode } from 'react';
 
@@ -81,9 +81,9 @@ const DECORATIONS: Record<string, keyof Style> = {
   obf: 'obfuscated',
 };
 
-/** Zerlegt einen MiniMessage-Text in formatierte Abschnitte. */
+/** Splits a MiniMessage text into formatted segments. */
 export function parseMiniMessage(input: string): Segment[] {
-  // Legacy-Codes (&a, §c) in Tags umwandeln
+  // Convert legacy codes (&a, §c) into tags
   const text = input.replace(/[&§]([0-9a-fk-or])/gi, (_, code: string) => {
     const c = code.toLowerCase();
     if (LEGACY[c]) return `<${LEGACY[c]}>`;
@@ -106,7 +106,7 @@ export function parseMiniMessage(input: string): Segment[] {
     const [name, ...args] = raw.split(':');
     const lower = name.toLowerCase();
     if (closing) {
-      // Schließt den passenden Tag (und alle danach geöffneten)
+      // Closes the matching tag (and all tags opened after it)
       let idx = -1;
       for (let k = stack.length - 1; k >= 0; k--) {
         if (stack[k].name === lower) {
@@ -142,7 +142,7 @@ export function parseMiniMessage(input: string): Segment[] {
       const color = parseColor(raw);
       if (color) next = { ...style, color, gradient: undefined, rainbow: false };
     }
-    // Unbekannte Tags (z.B. <glyph:…>, <shift:…>) bleiben unsichtbar
+    // Unknown tags (e.g. <glyph:…>, <shift:…>) stay invisible
     if (next) {
       stack.push({ name: lower, previous: style });
       style = next;
@@ -176,7 +176,7 @@ function cssFor(style: Style, fallbackColor: string, defaultItalic = false): CSS
   };
 }
 
-/** Rendert eine Zeile MiniMessage. */
+/** Renders one line of MiniMessage. */
 export function MiniMessageLine({
   text,
   fallbackColor = '#FFFFFF',
@@ -212,7 +212,7 @@ export function MiniMessageLine({
   return <div className="line">{nodes.length ? nodes : ' '}</div>;
 }
 
-/** Tooltip-ähnliche Vorschau aus Name und Lore. */
+/** Tooltip-like preview from name and lore. */
 export function ItemTooltip({ name, lore }: { name: string; lore?: string[] }) {
   return (
     <div className="mc-text">

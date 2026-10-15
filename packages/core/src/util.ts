@@ -1,4 +1,4 @@
-/** Allgemeine Hilfsfunktionen ohne DOM-Abhängigkeiten (laufen auch in Tests unter Node). */
+/** General helper functions without DOM dependencies (also run in tests under Node). */
 
 export function uid(prefix = ''): string {
   const random =
@@ -10,7 +10,7 @@ export function uid(prefix = ''): string {
 
 const UMLAUTS: Record<string, string> = { ä: 'ae', ö: 'oe', ü: 'ue', ß: 'ss', Ä: 'ae', Ö: 'oe', Ü: 'ue' };
 
-/** Entfernt MiniMessage-/Legacy-Formatierungen aus einem Text. */
+/** Removes MiniMessage/legacy formatting from a text. */
 export function stripFormatting(text: string): string {
   return text
     .replace(/<[^<>]*>/g, '')
@@ -19,8 +19,8 @@ export function stripFormatting(text: string): string {
 }
 
 /**
- * Wandelt beliebigen Text in einen gültigen Bezeichner um (nur a-z, 0-9 und _).
- * Wird für Item-IDs, Ordner- und Dateinamen verwendet.
+ * Converts arbitrary text into a valid identifier (only a-z, 0-9 and _).
+ * Used for item IDs, folder and file names.
  */
 export function slugify(text: string, fallback = 'item'): string {
   const slug = stripFormatting(text)
@@ -34,11 +34,11 @@ export function slugify(text: string, fallback = 'item'): string {
   return slug || fallback;
 }
 
-/** Erlaubte Zeichen für Nexo-Item-IDs (werden auch als Pfad im ResourcePack genutzt). */
+/** Allowed characters for Nexo item IDs (also used as a path in the resource pack). */
 export const ITEM_ID_PATTERN = /^[a-z0-9_]+$/;
-/** Erlaubte Zeichen für einen ResourcePack-Namespace. */
+/** Allowed characters for a resource pack namespace. */
 export const NAMESPACE_PATTERN = /^[a-z0-9_.-]+$/;
-/** Erlaubte Zeichen für Pfade innerhalb eines Namespaces. */
+/** Allowed characters for paths within a namespace. */
 export const RESOURCE_PATH_PATTERN = /^[a-z0-9_./-]+$/;
 
 export function isValidResourceLocation(value: string): boolean {
@@ -57,8 +57,8 @@ export function deepClone<T>(value: T): T {
 }
 
 /**
- * Führt `patch` rekursiv in `base` zusammen (Objekte werden gemischt, alles andere ersetzt).
- * Gibt ein neues Objekt zurück; die Eingaben werden nicht verändert.
+ * Recursively merges `patch` into `base` (objects are merged, everything else is replaced).
+ * Returns a new object; the inputs are not modified.
  */
 export function deepMerge(base: Record<string, unknown>, patch: Record<string, unknown>): Record<string, unknown> {
   const result: Record<string, unknown> = { ...base };
@@ -73,7 +73,7 @@ export function deepMerge(base: Record<string, unknown>, patch: Record<string, u
   return result;
 }
 
-/** Rundet Gleitkommazahlen, um Artefakte wie 5.333333333333333 zu vermeiden. */
+/** Rounds floating point numbers to avoid artifacts like 5.333333333333333. */
 export function roundNumber(value: number, decimals = 6): number {
   const factor = 10 ** decimals;
   const rounded = Math.round(value * factor) / factor;
@@ -90,7 +90,7 @@ export function fileExtension(fileName: string): string {
   return match ? match[1].toLowerCase() : '';
 }
 
-/* ---------------------------------------------------------------- Binärdaten */
+/* ---------------------------------------------------------------- Binary data */
 
 export function base64ToBytes(base64: string): Uint8Array {
   const binary = atob(base64);
@@ -128,7 +128,7 @@ export interface PngInfo {
 
 const PNG_SIGNATURE = [0x89, 0x50, 0x4e, 0x47, 0x0d, 0x0a, 0x1a, 0x0a];
 
-/** Liest Breite/Höhe aus dem PNG-Header. Gibt null zurück, wenn es kein gültiges PNG ist. */
+/** Reads width/height from the PNG header. Returns null if it is not a valid PNG. */
 export function readPngInfo(bytes: Uint8Array): PngInfo | null {
   if (bytes.length < 24) return null;
   for (let i = 0; i < PNG_SIGNATURE.length; i++) {
@@ -151,7 +151,7 @@ export function readPngInfoFromDataUrl(dataUrl: string): PngInfo | null {
   }
 }
 
-/** Vergleicht Versionsnummern wie "1.21.11" und "26.1". */
+/** Compares version numbers like "1.21.11" and "26.1". */
 export function compareVersions(a: string, b: string): number {
   const pa = a.split('.').map((n) => parseInt(n, 10) || 0);
   const pb = b.split('.').map((n) => parseInt(n, 10) || 0);

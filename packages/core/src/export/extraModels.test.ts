@@ -33,8 +33,8 @@ function furnitureProject(): Project {
 
 const readJson = (plan: ReturnType<typeof planExport>, path: string) => JSON.parse(plan.packFiles.get(path) as string);
 
-describe('Zusätzliche Modelle', () => {
-  it('erzeugt ein ItemModel für verbindbare Möbel mit Inventar-Symbol', () => {
+describe('Additional models', () => {
+  it('creates an ItemModel for connectable furniture with an inventory icon', () => {
     const plan = planExport(furnitureProject());
     const def = readJson(plan, 'assets/moebel/items/sofas/sofa.json');
     expect(def.model.type).toBe('minecraft:select');
@@ -55,7 +55,7 @@ describe('Zusätzliche Modelle', () => {
     expect(yaml.Mechanics.furniture.placements).toEqual({ wall: { item_model: 'moebel:sofas/sofa-placement_wall' } });
     expect(yaml.Mechanics.furniture.lights).toEqual({ toggled_item_model: 'moebel:sofas/sofa-light_on', toggleable: true });
     expect(yaml.Mechanics.furniture.states.an).toEqual({ type: 'ITEM_MODEL', item_model: 'moebel:sofas/sofa-state_an' });
-    // Zustand mit anderem Typ behält seine Werte, das Modell wird nicht verwendet
+    // A state with a different type keeps its values, the model is not used
     expect(yaml.Mechanics.furniture.states.kaputt).toEqual({ type: 'CUSTOM_MODEL_DATA', value: '5' });
     expect(plan.packFiles.has('assets/moebel/items/sofas/sofa-state_kaputt.json')).toBe(false);
     expect(plan.issues.some((i) => i.message.includes('kaputt') && i.level === 'warning')).toBe(true);
@@ -65,7 +65,7 @@ describe('Zusätzliche Modelle', () => {
     expect(plan.issues.filter((i) => i.level === 'error')).toEqual([]);
   });
 
-  it('lässt eigene Werte des Nutzers stehen', () => {
+  it('keeps values the user set themselves', () => {
     const project = furnitureProject();
     const sofa = Object.values(project.items)[0];
     (sofa.config.Mechanics as Record<string, Record<string, unknown>>).furniture.placements = { wall: { item_model: 'eigenes:modell', properties: { translation: '0,0.3,-0.3' } } };
@@ -73,7 +73,7 @@ describe('Zusätzliche Modelle', () => {
     expect(yaml.Mechanics.furniture.placements.wall).toEqual({ item_model: 'eigenes:modell', properties: { translation: '0,0.3,-0.3' } });
   });
 
-  it('meldet Möbel-Modelle ohne Möbel-Mechanik und zu alte Versionen', () => {
+  it('reports furniture models without furniture mechanic and too old versions', () => {
     const project = furnitureProject();
     project.settings.minecraftVersion = '1.21.1';
     const sofa = Object.values(project.items)[0];
@@ -84,7 +84,7 @@ describe('Zusätzliche Modelle', () => {
     expect(plan.packFiles.has('assets/moebel/models/item/sofas/sofa-left.json')).toBe(false);
   });
 
-  it('schreibt Stapel-Stufen für StringBlocks', () => {
+  it('writes stack stages for StringBlocks', () => {
     const project = createProject('Blöcke', 'bl', '1.21.11');
     const folder = createFolder('Pflanzen', null);
     insertFolder(project, folder);
@@ -98,7 +98,7 @@ describe('Zusätzliche Modelle', () => {
     expect(plan.packFiles.has('assets/bl/models/block/pflanzen/blume-stack_2.json')).toBe(true);
   });
 
-  it('gibt dem Dreizack ein Wurf-Modell über Pack.throwing_model', () => {
+  it('gives the trident a throwing model via Pack.throwing_model', () => {
     const project = createProject('Waffen', 'wf', '1.21.11');
     const folder = createFolder('Dreizacke', null);
     insertFolder(project, folder);

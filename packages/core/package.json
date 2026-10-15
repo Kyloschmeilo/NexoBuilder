@@ -1,5 +1,5 @@
 {
-  "name": "@nexobuilder/core",
+  "name": "@resourcepackbuilder/core",
   "private": true,
   "version": "0.0.0",
   "description": "Modell-Import, Nexo-Konfiguration, Export-Planung und Sync – ohne Oberfläche.",
@@ -18,6 +18,6 @@
     "yaml": "^2.9.1"
   },
   "devDependencies": {
-    "@nexobuilder/config": "*"
+    "@resourcepackbuilder/config": "*"
   }
 }

@@ -1,14 +1,14 @@
 /**
- * Plant den kompletten Export eines Projekts: Item-YAMLs, Modelle, Texturen, Rüstungen
- * und alle Prüfungen. Das Ergebnis enthält fertige Dateiinhalte und kann direkt gezippt werden.
+ * Plans the complete export of a project: item YAMLs, models, textures, armor
+ * and all checks. The result contains finished file contents and can be zipped directly.
  *
- * Aufbau des Resourcepacks (assets/<namespace>/…):
- *   models/{item|block}/<ordner…>/<item_id>.json
- *   textures/{item|block}/<ordner…>/<item_id>/<textur>.png   (+ .png.mcmeta)
+ * Structure of the resource pack (assets/<namespace>/…):
+ *   models/{item|block}/<folder…>/<item_id>.json
+ *   textures/{item|block}/<folder…>/<item_id>/<texture>.png   (+ .png.mcmeta)
  *   equipment/<set>.json + textures/entity/equipment/humanoid[_leggings]/<set>.png
  *
- * Texturen liegen bewusst unter textures/item bzw. textures/block: Nur diese Ordner landen
- * automatisch im Item- bzw. Block-Atlas von Minecraft (auch ab 1.21.11 mit getrennten Atlanten).
+ * Textures deliberately live under textures/item or textures/block: only these folders end up
+ * automatically in Minecraft's item or block atlas (also from 1.21.11 on with separate atlases).
  */
 import type { ConfigObject, ImportedModel, Issue, IssueLevel, Item, JavaModelJson, ModelTexture, Project } from '../types';
 import { buildPackMcmeta, getMcVersion } from '../minecraft/versions';
@@ -41,12 +41,12 @@ import {
 export interface ProjectIssue extends Issue {
   itemId?: string;
   folderId?: string;
-  /** interne ID eines Glyphs */
+  /** internal ID of a glyph */
   glyphId?: string;
-  /** interne ID eines Sounds bzw. Gemäldes */
+  /** internal ID of a sound or painting */
   soundId?: string;
   paintingId?: string;
-  /** Projekt, aus dem die Meldung stammt (nur beim Export mehrerer Projekte gesetzt) */
+  /** Project the message originates from (only set when exporting multiple projects) */
   projectId?: string;
 }
 
@@ -66,17 +66,17 @@ export interface ItemPlan {
 
 export interface ExportPlan {
   items: ItemPlan[];
-  /** Dateien relativ zum Wurzelverzeichnis des Resourcepacks */
+  /** Files relative to the root directory of the resource pack */
   packFiles: Map<string, FileContent>;
-  /** Dateien relativ zum Nexo-Plugin-Ordner (items/…) */
+  /** Files relative to the Nexo plugin folder (items/…) */
   itemFiles: Map<string, string>;
-  /** Rezept-Dateien relativ zum Nexo-Plugin-Ordner (recipes/<typ>/…) */
+  /** Recipe files relative to the Nexo plugin folder (recipes/<type>/…) */
   recipeFiles: Map<string, string>;
-  /** Glyph-Dateien relativ zum Nexo-Plugin-Ordner (glyphs/…) */
+  /** Glyph files relative to the Nexo plugin folder (glyphs/…) */
   glyphFiles: Map<string, string>;
-  /** Einträge für plugins/Nexo/sounds.yml */
+  /** Entries for plugins/Nexo/sounds.yml */
   soundEntries: Array<Record<string, unknown>>;
-  /** Einträge für plugins/Nexo/paintings.yml (Schlüssel = namespace:id) */
+  /** Entries for plugins/Nexo/paintings.yml (key = namespace:id) */
   paintingEntries: Record<string, Record<string, unknown>>;
   issues: ProjectIssue[];
 }
@@ -96,7 +96,7 @@ export function modelKeyFor(project: Project, item: Item): string | null {
 }
 
 export interface PlanOptions {
-  /** Binärdateien (Texturen) dekodieren. Für die Live-Prüfung im Editor nicht nötig. */
+  /** Decode binary files (textures). Not needed for the live check in the editor. */
   includeBinaries?: boolean;
 }
 
@@ -114,7 +114,7 @@ export function planExport(project: Project, options: PlanOptions = {}): ExportP
   const items = getItemsInTreeOrder(project);
   validateItemIds(items, issues);
 
-  /* ------------------------------------------------------------ Rüstungen */
+  /* ------------------------------------------------------------ Armor */
   const armorSets = collectArmorSets(items, issues, targetVersion);
   for (const set of armorSets.values()) {
     const layers: Record<string, Array<{ texture: string }>> = {};
@@ -135,7 +135,7 @@ export function planExport(project: Project, options: PlanOptions = {}): ExportP
     const add = (level: IssueLevel, message: string) => issues.push({ level, message: `${label}: ${message}`, itemId: item.id });
     const folderSlugs = getFolderSlugs(project, item.folderId);
 
-    // Modell & Texturen
+    // Model & textures
     let modelKey: string | null = null;
     let modelFile: string | null = null;
     let modelJson: JavaModelJson | null = null;
@@ -168,8 +168,8 @@ export function planExport(project: Project, options: PlanOptions = {}): ExportP
       add('info', 'Kein Modell – das Item nutzt das Aussehen des Basis-Materials.');
     }
 
-    // Varianten-Modelle (Bogen, Schild, Angel …). Der Bindestrich im Pfad kann in Item-IDs
-    // und Ordnernamen nicht vorkommen – so gibt es keine Überschneidungen mit anderen Items.
+    // Variant models (bow, shield, fishing rod …). The hyphen in the path cannot occur in item IDs
+    // and folder names – so there are no overlaps with other items.
     const variantKeys: Partial<Record<VariantSlot, string | string[]>> = {};
     for (const def of VARIANTS) {
       if (def.kind !== 'pack') continue;
@@ -200,10 +200,10 @@ export function planExport(project: Project, options: PlanOptions = {}): ExportP
       }
     }
 
-    // Modelle für Inventar-Symbol, Möbel-Funktionen und Stapel-Stufen
+    // Models for inventory icon, furniture functions and stack stages
     const extras = planExtraModels({ project, item, ns, modelKey, modelPath: modelPathFor(project, item), folderSlugs, writeModel, packFiles, add, variantKeys });
 
-    // Konfiguration
+    // Configuration
     const armorSetId = getArmorSetId(item);
     const armorSet = armorSetId ? armorSets.get(armorSetId) : undefined;
     const armor = armorSet?.hasTextures ? { assetId: `${ns}:${armorSet.id}`, slot: armorSet.slot, entities: armorSet.entities, glider: armorSet.glider } : null;
@@ -228,7 +228,7 @@ export function planExport(project: Project, options: PlanOptions = {}): ExportP
     plans.push({ item, folderSlugs, modelKey, modelFile, modelJson, config: built.config, yamlFile });
   }
 
-  /* ------------------------------------------------------------ Item-Dateien */
+  /* ------------------------------------------------------------ Item files */
   const byFile = new Map<string, ItemPlan[]>();
   for (const plan of plans) {
     const list = byFile.get(plan.yamlFile) ?? [];
@@ -236,11 +236,11 @@ export function planExport(project: Project, options: PlanOptions = {}): ExportP
     byFile.set(plan.yamlFile, list);
   }
   for (const [file, list] of byFile) {
-    const header = `# Erstellt mit NexoBuilder – Projekt "${project.name}"`;
+    const header = `# Erstellt mit ResourcepackBuilder – Projekt "${project.name}"`;
     itemFiles.set(file, itemsToYaml(list.map((p) => ({ id: p.item.nexoId, config: p.config })), header));
   }
 
-  /* ------------------------------------------------------------ Pack-Grunddateien */
+  /* ------------------------------------------------------------ Pack base files */
   packFiles.set('pack.mcmeta', json(buildPackMcmeta(targetVersion, project.settings.packDescription || project.name)));
   if (project.settings.packIcon) {
     try {
@@ -252,7 +252,7 @@ export function planExport(project: Project, options: PlanOptions = {}): ExportP
 
   const recipeFiles = buildRecipeFiles(project, items);
 
-  /* ------------------------------------------------------------ Glyphen */
+  /* ------------------------------------------------------------ Glyphs */
   const glyphFiles = new Map<string, string>();
   issues.push(...validateGlyphs(project));
   for (const glyph of project.glyphs ?? []) {
@@ -262,7 +262,7 @@ export function planExport(project: Project, options: PlanOptions = {}): ExportP
   const glyphYaml = buildGlyphFile(project);
   if (glyphYaml) glyphFiles.set(glyphFilePath(project), glyphYaml);
 
-  /* ------------------------------------------------------------ Sounds & Gemälde */
+  /* ------------------------------------------------------------ Sounds & paintings */
   issues.push(...validateSounds(project), ...validatePaintings(project));
   for (const sound of project.sounds ?? []) {
     sound.files.forEach((file, i) => {
@@ -286,9 +286,9 @@ export function planExport(project: Project, options: PlanOptions = {}): ExportP
   return { items: plans, packFiles, itemFiles, recipeFiles, glyphFiles, soundEntries, paintingEntries, issues };
 }
 
-/* ====================================================================== Dateien & Pfade */
+/* ====================================================================== Files & paths */
 
-/** Map, die mehrfach geschriebene Pfade merkt (Sicherheitsnetz gegen Überschreiben). */
+/** Map that remembers paths written multiple times (safety net against overwriting). */
 class TrackingMap<K, V> extends Map<K, V> {
   readonly duplicates = new Set<K>();
   override set(key: K, value: V): this {
@@ -310,13 +310,13 @@ function addTextureFile(files: Map<string, FileContent>, path: string, texture: 
 
 export function yamlFileFor(project: Project, item: Item, folderSlugs: string[]): string {
   const base = ['items'];
-  if (project.settings.itemsInProjectFolder) base.push(slugify(project.name, 'nexobuilder'));
+  if (project.settings.itemsInProjectFolder) base.push(slugify(project.name, 'resourcepackbuilder'));
   const dir = [...base, ...folderSlugs];
   const fileName = project.settings.yamlFileMode === 'item' ? item.nexoId : folderSlugs[folderSlugs.length - 1] ?? 'items';
   return `${dir.join('/')}/${fileName}.yml`;
 }
 
-/** Ersetzt die Textur-Platzhalter im Modell durch die endgültigen Pfade. */
+/** Replaces the texture placeholders in the model with the final paths. */
 export function resolveModelTextures(model: JavaModelJson, refs: Map<string, string>): JavaModelJson {
   const result = deepClone(model);
   if (result.textures) {
@@ -332,17 +332,17 @@ export function resolveModelTextures(model: JavaModelJson, refs: Map<string, str
   return result;
 }
 
-/* ====================================================================== Rüstungen */
+/* ====================================================================== Armor */
 
 interface ArmorSet {
   id: string;
-  /** Layer-Typ (humanoid, wings, wolf_body …) → Textur */
+  /** Layer type (humanoid, wings, wolf_body …) → texture */
   textures: Map<string, ModelTexture>;
   groups: Set<ArmorGroup>;
-  /** Slot aus den Layern (null = Spieler-Rüstung, Slot kommt vom Material) */
+  /** Slot from the layers (null = player armor, slot comes from the material) */
   slot: string | null;
   entities: string[];
-  /** Elytra-Flügel: Item braucht die Gleiter-Komponente */
+  /** Elytra wings: item needs the glider component */
   glider: boolean;
   hasTextures: boolean;
   items: Item[];
@@ -448,7 +448,7 @@ function collectArmorSets(items: Item[], issues: ProjectIssue[], targetVersion: 
       if (set.groups.has('mob') && set.groups.has('saddle')) {
         issues.push({ level: 'warning', message: `Das Set „${set.id}“ mischt Tier-Rüstung und Sattel – dafür bitte zwei Set-IDs verwenden.` });
       }
-      // Nur die Tiere des gewählten Slots
+      // Only the animals of the chosen slot
       set.entities = ARMOR_LAYERS.filter((l) => l.slot === set.slot && set.textures.has(l.equipment)).flatMap((l) => l.entities ?? []);
       set.glider = set.groups.has('elytra');
     }
@@ -456,7 +456,7 @@ function collectArmorSets(items: Item[], issues: ProjectIssue[], targetVersion: 
   return sets;
 }
 
-/* ====================================================================== Prüfungen */
+/* ====================================================================== Checks */
 
 function validateProjectSettings(project: Project, issues: ProjectIssue[]) {
   if (!NAMESPACE_PATTERN.test(project.namespace)) {
@@ -554,7 +554,7 @@ function validateModel(
         add('warning', `Textur „${key}“ verweist auf „${value}“, das im Modell nicht definiert ist.`);
       }
     } else if (!isVanillaReference(value) && !ownRefs.has(value)) {
-      // Fremde Referenzen müssen von einem anderen Pack bereitgestellt werden
+      // Foreign references must be provided by another pack
       add('warning', `Textur „${key}“ verweist auf „${value}“, das nicht in diesem Pack enthalten ist.`);
     }
   }
@@ -642,7 +642,7 @@ function validateItemConfig(
   }
 }
 
-/** Prüft Formate (Dauer, Vektor, Farbe …) innerhalb eines Werts rekursiv. */
+/** Recursively checks formats (duration, vector, color …) within a value. */
 function validateFieldValues(value: unknown, field: Field, label: string): string[] {
   const messages: string[] = [];
   const visit = (v: unknown, f: Field, path: string) => {

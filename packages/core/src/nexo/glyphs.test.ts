@@ -6,17 +6,17 @@ import { planExport } from '../export/plan';
 import { buildExportZip } from '../export/zip';
 import { makePngDataUrl } from '../test/png';
 
-// Minimales GIF (1×1) mit Breite/Höhe im Header
+// Minimal GIF (1×1) with width/height in the header
 const GIF_9x11 = 'data:image/gif;base64,' + Buffer.from([0x47, 0x49, 0x46, 0x38, 0x39, 0x61, 9, 0, 11, 0, 0, 0, 0, 0x3b]).toString('base64');
 
-describe('Glyphen', () => {
-  it('liest PNG- und GIF-Größen', () => {
+describe('glyphs', () => {
+  it('reads PNG and GIF sizes', () => {
     expect(readGifInfo(GIF_9x11)).toEqual({ width: 9, height: 11 });
     expect(glyphFileFromDataUrl('a.png', makePngDataUrl(8, 8))).toMatchObject({ width: 8, height: 8 });
     expect(glyphFileFromDataUrl('a.txt', 'data:text/plain;base64,aGFsbG8=')).toBeNull();
   });
 
-  it('exportiert Glyphen nach glyphs/<projekt>.yml und legt die Texturen in den Pack', async () => {
+  it('exports glyphs to glyphs/<project>.yml and puts the textures into the pack', async () => {
     const project = createProject('Emoji Pack', 'emojis', '26.3');
     const heart = createGlyph('g1', 'heart', glyphFileFromDataUrl('heart.png', makePngDataUrl(8, 8)));
     heart.placeholders = ['<3', ''];
@@ -51,14 +51,14 @@ describe('Glyphen', () => {
     expect(zip.paths).toContain('pack/external_packs/emoji_pack/assets/emojis/textures/glyphs/heart.png');
   });
 
-  it('prüft Ascent, Größe, Aufteilung und doppelte IDs', () => {
+  it('checks ascent, size, grid split and duplicate IDs', () => {
     const project = createProject('X', 'x', '26.3');
     const a = createGlyph('a', 'dup', glyphFileFromDataUrl('a.png', makePngDataUrl(8, 8)));
     a.ascent = 9;
     const b = createGlyph('b', 'dup', glyphFileFromDataUrl('b.png', makePngDataUrl(512, 512)));
     const c = createGlyph('c', 'grid', glyphFileFromDataUrl('c.png', makePngDataUrl(30, 30)));
     c.columns = 4;
-    const d = createGlyph('d', 'leer', null);
+    const d = createGlyph('d', 'empty', null);
     project.glyphs = [a, b, c, d];
     const messages = validateGlyphs(project).filter((i) => i.level === 'error').map((i) => i.message);
     expect(messages.some((m) => m.includes('Ascent (9)'))).toBe(true);

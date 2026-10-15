@@ -2,7 +2,7 @@ import { useEffect, useMemo, useRef, useState } from 'react';
 import * as THREE from 'three';
 import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 import { RotateCcw } from 'lucide-react';
-import type { ImportedModel, JavaDisplayTransform } from '@nexobuilder/core/types';
+import type { ImportedModel, JavaDisplayTransform } from '@resourcepackbuilder/core/types';
 import { buildPreviewModel, type PreviewModel } from './modelGeometry';
 import { createModelObject } from './threeModel';
 
@@ -60,7 +60,7 @@ export function ModelPreview({ model, height = 340, showToolbar = true }: ModelP
 
     const extras: Array<{ dispose: () => void }> = [];
     if (!displayTransform && preview.kind === 'elements') {
-      // Bodenraster und Block-Umriss (ein Block = 16 Pixel)
+      // Ground grid and block outline (one block = 16 pixels)
       const grid = new THREE.GridHelper(16, 16, 0x54766a, 0x1f302a);
       grid.position.y = -8;
       scene.add(grid);
@@ -72,7 +72,7 @@ export function ModelPreview({ model, height = 340, showToolbar = true }: ModelP
       extras.push(grid.geometry, grid.material as THREE.Material, outline.geometry, outline.material as THREE.Material);
     }
 
-    // Kamera an das Modell anpassen
+    // Fit the camera to the model
     const box = new THREE.Box3().setFromObject(object.root);
     if (box.isEmpty()) box.set(new THREE.Vector3(-8, -8, -8), new THREE.Vector3(8, 8, 8));
     const center = box.getCenter(new THREE.Vector3());

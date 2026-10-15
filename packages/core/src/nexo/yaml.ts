@@ -1,13 +1,13 @@
 /**
- * YAML-Ausgabe für Nexo. Bukkit/Paper lesen YAML 1.1 (SnakeYAML) – dort sind z.B. "yes", "no",
- * "on" oder "1:30" keine Texte. Deshalb wird im YAML-1.1-Modus geschrieben, damit solche Werte
- * automatisch in Anführungszeichen gesetzt werden.
+ * YAML output for Nexo. Bukkit/Paper read YAML 1.1 (SnakeYAML) – there e.g. "yes", "no",
+ * "on" or "1:30" are not strings. So we write in YAML 1.1 mode, so that such values
+ * get quoted automatically.
  */
 import { Document, isScalar, parse, visit, type Scalar } from 'yaml';
 
 const STRINGIFY_OPTIONS = { indent: 2, lineWidth: 0, minContentWidth: 0 } as const;
 
-/** Texte mit Formatierungen werden wie in der Nexo-Doku in doppelte Anführungszeichen gesetzt. */
+/** Strings with formatting are double-quoted, as in the Nexo docs. */
 const QUOTE_PATTERN = /[<>&§%]|^\s|\s$/;
 
 export function toYaml(value: unknown): string {
@@ -35,7 +35,7 @@ export interface YamlParseResult {
   error: string | null;
 }
 
-/** Liest YAML so, wie es Bukkit auch tun würde (YAML 1.1). */
+/** Parses YAML the way Bukkit would (YAML 1.1). */
 export function parseYaml(text: string): YamlParseResult {
   if (!text.trim()) return { value: null, error: null };
   try {
@@ -46,7 +46,7 @@ export function parseYaml(text: string): YamlParseResult {
   }
 }
 
-/** Schreibt mehrere Items in eine Datei (jeweils durch eine Leerzeile getrennt). */
+/** Writes several items into one file (separated by a blank line each). */
 export function itemsToYaml(items: Array<{ id: string; config: Record<string, unknown> }>, header?: string): string {
   const parts = items.map(({ id, config }) => toYaml({ [id]: config }).trimEnd());
   const body = parts.join('\n\n') + '\n';
