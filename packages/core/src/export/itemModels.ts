@@ -3,6 +3,7 @@
  * custom inventory icon, connectable furniture, placement, light and state models of furniture
  * as well as stack stages of blocks. The matching values in the item configuration are returned too.
  */
+import { formatResourceLocation } from '../minecraft/resourceLocation';
 import { compareVersions, FEATURE_VERSIONS } from '../minecraft/versions';
 import { getPath } from '../nexo/configPath';
 import {
@@ -58,7 +59,7 @@ export function writeItemModels(itemExport: ItemExport, modelKey: string | null,
   const definitionBase = [...itemExport.folderSlugs, item.nexoId].join('/');
   const writeDefinition = (path: string, model: ItemModelNode, extra: Record<string, unknown> = {}) => {
     writer.json(itemModelDefinitionFile(ns, path), { model, ...extra });
-    return `${ns}:${path}`;
+    return formatResourceLocation(ns, path);
   };
   /** Writes the first model of a slot as "<main model path>-<suffix>" and returns its key. */
   const writeSlot = (slot: VariantSlot, suffix: string): string | null => {

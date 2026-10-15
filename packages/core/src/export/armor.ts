@@ -4,7 +4,7 @@
  */
 import type { Issue, IssueContext } from '../issues';
 import { compareVersions } from '../minecraft/versions';
-import { NAMESPACE_PATTERN } from '../minecraft/resourceLocation';
+import { formatResourceLocation, NAMESPACE_PATTERN } from '../minecraft/resourceLocation';
 import { validateTexture } from '../model/textures';
 import type { ModelTexture } from '../model/types';
 import { ARMOR_LAYERS, armorTexture, type ArmorGroup } from '../nexo/armor';
@@ -119,7 +119,7 @@ export function writeArmorSets(writer: PackWriter, project: Project, sets: Map<s
     const layers: Record<string, Array<{ texture: string }>> = {};
     for (const [equipment, texture] of set.textures) {
       writer.texture(equipmentTextureFile(ns, equipment, set.id), texture);
-      layers[equipment] = [{ texture: `${ns}:${set.id}` }];
+      layers[equipment] = [{ texture: formatResourceLocation(ns, set.id) }];
     }
     writer.json(equipmentModelFile(ns, set.id), { layers });
   }
@@ -139,5 +139,5 @@ export function itemArmor(item: Item, project: Project, sets: Map<string, ArmorS
   const setId = armorSetId(item);
   const set = setId ? sets.get(setId) : undefined;
   if (!set || set.textures.size === 0) return null;
-  return { assetId: `${project.namespace}:${set.id}`, slot: set.slot, entities: set.entities, glider: set.glider };
+  return { assetId: formatResourceLocation(project.namespace, set.id), slot: set.slot, entities: set.entities, glider: set.glider };
 }

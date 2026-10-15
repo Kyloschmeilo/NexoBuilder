@@ -1,4 +1,5 @@
 /** Export of glyphs: texture paths and the glyph file. */
+import { formatResourceLocation } from '../../minecraft/resourceLocation';
 import type { Project } from '../../project/types';
 import { projectFileName } from '../projectFiles';
 import { itemsToYaml } from '../yaml';
@@ -17,8 +18,8 @@ function glyphToYaml(project: Project, glyph: Glyph): Record<string, unknown> {
     out.reference = glyph.reference;
     out.index = glyph.index;
   } else {
-    if (glyph.kind === 'gif') out.gif = `${ns}:glyphs/${glyph.glyphId}.gif`;
-    else out.texture = `${ns}:glyphs/${glyph.glyphId}`;
+    if (glyph.kind === 'gif') out.gif = formatResourceLocation(ns, `glyphs/${glyph.glyphId}.gif`);
+    else out.texture = formatResourceLocation(ns, `glyphs/${glyph.glyphId}`);
     out.ascent = glyph.ascent;
     out.height = glyph.height;
     if (glyph.kind === 'image') {

@@ -10,6 +10,41 @@ export const PACK_NAME_PATTERN = /^[A-Za-z0-9_.-]+$/;
 /** A resource location with optional namespace, e.g. "minecraft:block/stone" or "item/ruby". */
 export const RESOURCE_LOCATION_PATTERN = /^([a-z0-9_.-]+:)?[a-z0-9_./-]+$/;
 
+/** The namespace a resource location without one belongs to. */
+export const MINECRAFT_NAMESPACE = 'minecraft';
+
+export interface ResourceLocation {
+  namespace: string;
+  path: string;
+}
+
+/** Splits "ns:path" (a missing namespace means `minecraft`, as in Minecraft itself). */
+export function parseResourceLocation(ref: string): ResourceLocation {
+  const colon = ref.indexOf(':');
+  return colon < 0 ? { namespace: MINECRAFT_NAMESPACE, path: ref } : { namespace: ref.slice(0, colon), path: ref.slice(colon + 1) };
+}
+
+/** "ns:path" */
+export function formatResourceLocation(namespace: string, path: string): string {
+  return `${namespace}:${path}`;
+}
+
+/** "minecraft:block/stone" → "block/stone"; other namespaces stay. */
+export function stripMinecraftNamespace(ref: string): string {
+  return ref.startsWith(`${MINECRAFT_NAMESPACE}:`) ? ref.slice(MINECRAFT_NAMESPACE.length + 1) : ref;
+}
+
+/** Whether the reference points into vanilla Minecraft (no or the `minecraft` namespace). */
+export function isVanillaReference(ref: string): boolean {
+  return parseResourceLocation(ref).namespace === MINECRAFT_NAMESPACE;
+}
+
+/** Last path segment, e.g. "minecraft:item/ruby_sword" → "ruby_sword". */
+export function resourceBaseName(ref: string): string {
+  const { path } = parseResourceLocation(ref);
+  return path.slice(path.lastIndexOf('/') + 1);
+}
+
 /** Characters of item, glyph and painting IDs (a regex character class body). */
 export const ID_CHARS = 'a-z0-9_';
 /** Characters of sound IDs and namespaces, which may contain dots and dashes (`block.ruby.place`). */

@@ -6,6 +6,7 @@
  */
 import type { FaceName, ImportedModel, JavaModelElement, JavaModelFace, ModelTexture } from '@resourcepackbuilder/core/model/types';
 import { parseTexturePlaceholder } from '@resourcepackbuilder/core/model/common';
+import { stripMinecraftNamespace } from '@resourcepackbuilder/core/minecraft/resourceLocation';
 import { getFrameSize } from '@resourcepackbuilder/core/model/textures';
 
 export type Vec3 = [number, number, number];
@@ -49,7 +50,7 @@ const GENERATED_PARENTS = ['item/generated', 'item/handheld', 'item/handheld_rod
 
 /** Elements of the most important vanilla parent models so texture models get a preview too. */
 function builtinParentElements(parent: string): JavaModelElement[] | null {
-  const p = parent.replace(/^minecraft:/, '');
+  const p = stripMinecraftNamespace(parent);
   const cube = (faces: Partial<Record<FaceName, string>>): JavaModelElement => ({
     from: [0, 0, 0],
     to: [16, 16, 16],
@@ -187,7 +188,7 @@ export function resolveTextureRef(model: ImportedModel, ref: string): TextureRes
 export function buildPreviewModel(model: ImportedModel): PreviewModel {
   const json = model.json;
   let elements = Array.isArray(json.elements) ? json.elements : null;
-  const parent = typeof json.parent === 'string' ? json.parent.replace(/^minecraft:/, '') : '';
+  const parent = typeof json.parent === 'string' ? stripMinecraftNamespace(json.parent) : '';
 
   if (!elements && GENERATED_PARENTS.includes(parent)) {
     return buildGeneratedModel(model);

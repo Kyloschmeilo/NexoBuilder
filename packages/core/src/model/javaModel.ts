@@ -8,6 +8,7 @@
  */
 import { isPngDataUrl } from '../binary/png';
 import { CoreError, type Issue } from '../issues';
+import { isVanillaReference, resourceBaseName, stripMinecraftNamespace } from '../minecraft/resourceLocation';
 import { FEATURE_VERSIONS, maxVersion } from '../minecraft/versions';
 import { deepClone, isPlainObject } from '../object';
 import { fileBaseName } from '../text';
@@ -24,27 +25,19 @@ interface ParsedJson {
 /** Parent models Minecraft uses for 2D items (no elements needed here). */
 const ITEM_PARENTS = ['item/generated', 'item/handheld', 'item/handheld_rod', 'item/handheld_mace', 'builtin/generated', 'builtin/entity'];
 
-function stripMinecraftNamespace(ref: string): string {
-  return ref.startsWith('minecraft:') ? ref.slice('minecraft:'.length) : ref;
-}
-
-export function isVanillaReference(ref: string): boolean {
-  return !ref.includes(':') || ref.startsWith('minecraft:');
-}
-
 export function convertJavaModel(files: ImportFile[]): ImportedModel {
   const jsonFiles = files.filter((f) => /\.json$/i.test(f.name) && typeof f.text === 'string');
   if (jsonFiles.length === 0) throw new CoreError('model.noJsonFile');
 
   const parsed: ParsedJson[] = jsonFiles.map((file) => {
-    let json: unknown;
+    let json: JavaModelJson | null;
     try {
-      json = JSON.parse(stripJsonComments(file.text ?? ''));
+      json = parseModelJson(file.text ?? '');
     } catch (err) {
       throw new CoreError('model.invalidJson', { file: file.name, error: err instanceof Error ? err.message : String(err) });
     }
-    if (!isPlainObject(json)) throw new CoreError('model.notMinecraftModel', { file: file.name });
-    return { name: file.name, json: json as JavaModelJson };
+    if (!json) throw new CoreError('model.notMinecraftModel', { file: file.name });
+    return { name: file.name, json };
   });
 
   const issues: Issue[] = [];
@@ -143,15 +136,24 @@ export function convertJavaModel(files: ImportFile[]): ImportedModel {
   };
 }
 
+/**
+ * Parses the text of a model JSON file (comments allowed). Null if it is no JSON object;
+ * throws the parser's SyntaxError if it is no JSON at all.
+ */
+export function parseModelJson(text: string): JavaModelJson | null {
+  const json: unknown = JSON.parse(stripJsonComments(text));
+  return isPlainObject(json) ? (json as JavaModelJson) : null;
+}
+
+/** Normalised file name of the model's parent ("minecraft:item/foo" → "foo"), matching dropped file names. */
+export function parentBaseName(json: JavaModelJson | null): string | null {
+  return typeof json?.parent === 'string' ? normalizeTextureName(resourceBaseName(json.parent)) : null;
+}
+
 /** Picks the main model: the one not used as parent by any other. */
-function pickMainModel(models: ParsedJson[]): ParsedJson {
+export function pickMainModel<T extends { name: string; json: JavaModelJson | null }>(models: T[]): T {
   if (models.length === 1) return models[0];
-  const referenced = new Set(
-    models
-      .map((m) => m.json.parent)
-      .filter((p): p is string => typeof p === 'string')
-      .map((p) => normalizeTextureName(p.split('/').pop() ?? p)),
-  );
+  const referenced = new Set(models.map((m) => parentBaseName(m.json)).filter((name) => name !== null));
   const candidates = models.filter((m) => !referenced.has(normalizeTextureName(m.name)));
   return candidates[0] ?? models[0];
 }
@@ -162,7 +164,7 @@ function mergeParents(main: ParsedJson, all: ParsedJson[], issues: Issue[]): Jav
   const used = new Set<ParsedJson>([main]);
   let current = main.json;
   while (typeof current.parent === 'string' && stack.length < 32) {
-    const parentName = normalizeTextureName(current.parent.split('/').pop() ?? current.parent);
+    const parentName = parentBaseName(current);
     const parentFile = all.find((m) => !used.has(m) && normalizeTextureName(m.name) === parentName);
     if (!parentFile) break;
     used.add(parentFile);
@@ -203,8 +205,7 @@ function withoutKeys<T>(source: Record<string, T>, existing: Record<string, T> |
 
 /** Matches a texture reference ("ns:item/foo") to a dropped PNG. */
 function matchPng(pngs: ImportFile[], ref: string, used: Set<ImportFile>): ImportFile | undefined {
-  const path = ref.includes(':') ? ref.split(':')[1] : ref;
-  const base = normalizeTextureName(path.split('/').pop() ?? path);
+  const base = normalizeTextureName(resourceBaseName(ref));
   const available = pngs.filter((p) => !used.has(p));
   return available.find((p) => normalizeTextureName(p.name) === base);
 }

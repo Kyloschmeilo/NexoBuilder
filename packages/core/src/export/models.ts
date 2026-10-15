@@ -1,5 +1,6 @@
 /** Writes imported models with their textures into the pack. */
 import type { Issue } from '../issues';
+import { formatResourceLocation } from '../minecraft/resourceLocation';
 import { parseTexturePlaceholder } from '../model/common';
 import { validateTexture } from '../model/textures';
 import type { ImportedModel, JavaModelJson } from '../model/types';
@@ -31,7 +32,7 @@ export function writeModel(
     for (let n = 2; usedNames.has(name); n++) name = `${base}_${n}`;
     usedNames.add(name);
     const texturePath = `${modelPath}/${name}`;
-    textureRefs.set(texture.id, `${ns}:${texturePath}`);
+    textureRefs.set(texture.id, formatResourceLocation(ns, texturePath));
     validateTexture(texture).forEach(report);
     if (texture.dataUrl) writer.texture(textureFile(ns, texturePath), texture, { report });
   }
@@ -39,7 +40,7 @@ export function writeModel(
   validateModel(json, project.settings.minecraftVersion, new Set(textureRefs.values())).forEach(report);
   const file = modelFile(ns, modelPath);
   writer.json(file, json);
-  return { key: `${ns}:${modelPath}`, file, json };
+  return { key: formatResourceLocation(ns, modelPath), file, json };
 }
 
 /** Replaces the texture placeholders in the model with the final paths (unknown ones are removed). */

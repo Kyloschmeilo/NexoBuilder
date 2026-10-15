@@ -4,11 +4,12 @@
  */
 import { isPngDataUrl } from '../binary/png';
 import { CoreError } from '../issues';
+import { resourceBaseName } from '../minecraft/resourceLocation';
 import { isPlainObject } from '../object';
 import { uid } from '../project/ids';
 import { fileBaseName, prettyNameFromFile } from '../text';
 import { convertBBModel } from './bbmodel';
-import { convertJavaModel } from './javaModel';
+import { convertJavaModel, parentBaseName, parseModelJson, pickMainModel } from './javaModel';
 import {
   createTextureModel,
   DEFAULT_TEXTURE_TEMPLATE,
@@ -17,7 +18,7 @@ import {
   type TextureTemplateId,
 } from './textureModel';
 import { normalizeTextureName } from './textures';
-import type { ImportedModel, ImportFile, ModelSource } from './types';
+import type { ImportedModel, ImportFile, JavaModelJson, ModelSource } from './types';
 
 export interface ImportDraft {
   key: string;
@@ -152,19 +153,17 @@ function commonPrefix(values: string[]): string {
   return prefix.replace(/[_\- ]+$/, '');
 }
 
-function parseJson(file: ImportFile): Record<string, unknown> | null {
+function parseJson(file: ImportFile): JavaModelJson | null {
   try {
-    const value: unknown = JSON.parse(file.text ?? '');
-    return isPlainObject(value) ? value : null;
+    return parseModelJson(file.text ?? '');
   } catch {
     return null;
   }
 }
 
-/** Base name of a parent reference ("minecraft:item/foo" → "foo"). */
+/** Base name of the file's parent reference ("minecraft:item/foo" → "foo"). */
 function parentName(file: ImportFile): string | null {
-  const parent = parseJson(file)?.parent;
-  return typeof parent === 'string' ? normalizeTextureName(parent.split('/').pop() ?? parent) : null;
+  return parentBaseName(parseJson(file));
 }
 
 /** Groups JSON models that are linked via "parent". */
@@ -194,8 +193,7 @@ function groupJsonModels(jsons: ImportFile[]): ImportFile[][] {
 
 /** The model of a group that no other model uses as parent. */
 function mainJsonName(group: ImportFile[]): string {
-  const referenced = new Set(group.map(parentName).filter((name): name is string => name !== null));
-  return (group.find((f) => !referenced.has(normalizeTextureName(f.name))) ?? group[0]).name;
+  return pickMainModel(group.map((file) => ({ name: file.name, json: parseJson(file) }))).name;
 }
 
 function textureReferenceNames(group: ImportFile[]): Set<string> {
@@ -204,10 +202,7 @@ function textureReferenceNames(group: ImportFile[]): Set<string> {
     const textures = parseJson(file)?.textures;
     if (!isPlainObject(textures)) continue;
     for (const value of Object.values(textures)) {
-      if (typeof value === 'string' && !value.startsWith('#')) {
-        const path = value.includes(':') ? value.split(':')[1] : value;
-        names.add(normalizeTextureName(path.split('/').pop() ?? path));
-      }
+      if (typeof value === 'string' && !value.startsWith('#')) names.add(normalizeTextureName(resourceBaseName(value)));
     }
   }
   return names;

@@ -1,7 +1,8 @@
 /** Checks of a model as written into the pack (texture paths already resolved). */
 import type { Issue } from '../../issues';
 import { compareVersions, getMcVersion } from '../../minecraft/versions';
-import { analyseElements, isVanillaReference } from '../../model/javaModel';
+import { isVanillaReference } from '../../minecraft/resourceLocation';
+import { analyseElements } from '../../model/javaModel';
 import type { JavaModelJson } from '../../model/types';
 
 /** `ownTextures`: texture references written by this export. */
