@@ -6,6 +6,7 @@ import { createStore, del, get, keys, set, setMany } from 'idb-keyval';
 import type { Item, Project } from '@resourcepackbuilder/core/types';
 import { defaultSettings } from '@resourcepackbuilder/core/project/factory';
 import { isPlainObject, uid } from '@resourcepackbuilder/core/util';
+import { translator } from '../i18n/locale';
 import { useStore } from './store';
 
 export interface ProjectSummary {
@@ -47,7 +48,7 @@ export function setExtraSaveProvider(provider: ExtraSaveProvider | null) {
 
 /** Saves project and additional data in one step – afterwards both always match. */
 export async function saveProject(project: Project, extra: Array<[string, unknown]> = extraSaveProvider?.(project.id) ?? []): Promise<void> {
-  if (!db) throw new Error('IndexedDB ist nicht verfügbar');
+  if (!db) throw new Error(translator('state')('persistence.storageUnavailable'));
   const index = ((await get(INDEX_KEY, db)) as ProjectSummary[] | undefined) ?? [];
   const summary: ProjectSummary = {
     id: project.id,
@@ -100,7 +101,7 @@ export async function loadShareConfig(projectId: string): Promise<ShareConfig | 
 }
 
 export async function saveShareConfig(projectId: string, config: ShareConfig | null): Promise<void> {
-  if (!db) throw new Error('IndexedDB ist nicht verfügbar');
+  if (!db) throw new Error(translator('state')('persistence.storageUnavailable'));
   if (config) await set(`share:${projectId}`, config, db);
   else await del(`share:${projectId}`, db);
 }
@@ -143,19 +144,19 @@ export function parseProjectFile(text: string): Project {
   try {
     data = JSON.parse(text);
   } catch {
-    throw new Error('Die Datei ist keine gültige ResourcepackBuilder-Projektdatei.');
+    throw new Error(translator('state')('persistence.invalidProjectFile'));
   }
   if (!isPlainObject(data) || data.app !== 'ResourcepackBuilder' || !isPlainObject(data.project)) {
-    throw new Error('Die Datei ist keine ResourcepackBuilder-Projektdatei.');
+    throw new Error(translator('state')('persistence.notAProjectFile'));
   }
   return migrateProject(data.project);
 }
 
 /** Ensures that older or incomplete projects have all fields. */
 export function migrateProject(raw: unknown): Project {
-  if (!isPlainObject(raw)) throw new Error('Ungültiges Projekt');
+  if (!isPlainObject(raw)) throw new Error(translator('state')('persistence.invalidProject'));
   const project = raw as unknown as Project;
-  if (typeof project.name !== 'string') throw new Error('Ungültiges Projekt (Name fehlt)');
+  if (typeof project.name !== 'string') throw new Error(translator('state')('persistence.invalidProjectNoName'));
   project.formatVersion = 1;
   project.id = typeof project.id === 'string' ? project.id : uid('p_');
   project.namespace = typeof project.namespace === 'string' ? project.namespace : 'resourcepackbuilder';
@@ -226,9 +227,7 @@ async function flush() {
     useStore.getState().setSaveStatus('error');
     if (!warned) {
       warned = true;
-      useStore
-        .getState()
-        .toast('warning', 'Automatisches Speichern im Browser ist nicht möglich. Bitte das Projekt regelmäßig als Datei speichern.');
+      useStore.getState().toast('warning', translator('state')('persistence.autosaveFailed'));
     }
   }
 }

@@ -82,10 +82,10 @@ export function getFrameSize(texture: ModelTexture): { width: number; height: nu
 }
 
 /** Validates a texture the way Minecraft would when loading it. */
-export function validateTexture(texture: ModelTexture, label: string): Issue[] {
+export function validateTexture(texture: ModelTexture): Issue[] {
   const issues: Issue[] = [];
   if (!texture.dataUrl) {
-    issues.push({ level: 'error', message: `${label}: Die Textur „${texture.name}“ fehlt. Bitte eine PNG-Datei zuweisen.` });
+    issues.push({ level: 'error', code: 'texture.missing', params: { name: texture.name } });
     return issues;
   }
   if (texture.mcmeta?.animation) {
@@ -93,21 +93,16 @@ export function validateTexture(texture: ModelTexture, label: string): Issue[] {
     if (width <= 0 || height <= 0 || texture.width % width !== 0 || texture.height % height !== 0) {
       issues.push({
         level: 'error',
-        message: `${label}: Die Animation der Textur „${texture.name}“ passt nicht zur Bildgröße (${texture.width}×${texture.height}, Frame ${width}×${height}).`,
+        code: 'texture.animationSizeMismatch',
+        params: { name: texture.name, width: texture.width, height: texture.height, frameWidth: width, frameHeight: height },
       });
     }
   } else if (texture.width !== texture.height && texture.height % texture.width === 0 && texture.height > texture.width) {
-    issues.push({
-      level: 'info',
-      message: `${label}: „${texture.name}“ ist ${texture.width}×${texture.height} groß. Falls das eine Animation ist, bitte im Modell-Tab die Animation aktivieren.`,
-    });
+    issues.push({ level: 'info', code: 'texture.maybeAnimation', params: { name: texture.name, width: texture.width, height: texture.height } });
   }
   const isPowerOfTwo = (n: number) => n > 0 && (n & (n - 1)) === 0;
   if (!isPowerOfTwo(texture.width) || !isPowerOfTwo(texture.height)) {
-    issues.push({
-      level: 'info',
-      message: `${label}: „${texture.name}“ (${texture.width}×${texture.height}) hat keine Zweierpotenz als Größe. Das funktioniert, kann aber die Mipmaps im Spiel verschlechtern.`,
-    });
+    issues.push({ level: 'info', code: 'texture.notPowerOfTwo', params: { name: texture.name, width: texture.width, height: texture.height } });
   }
   return issues;
 }

@@ -60,11 +60,11 @@ describe('glyphs', () => {
     c.columns = 4;
     const d = createGlyph('d', 'empty', null);
     project.glyphs = [a, b, c, d];
-    const messages = validateGlyphs(project).filter((i) => i.level === 'error').map((i) => i.message);
-    expect(messages.some((m) => m.includes('Ascent (9)'))).toBe(true);
-    expect(messages.some((m) => m.includes('bereits verwendet'))).toBe(true);
-    expect(messages.some((m) => m.includes('maximal 256×256'))).toBe(true);
-    expect(messages.some((m) => m.includes('gleichmäßig'))).toBe(true);
-    expect(messages.some((m) => m.includes('noch keine PNG'))).toBe(true);
+    const codes = validateGlyphs(project).filter((i) => i.level === 'error').map((i) => i.detail?.code);
+    expect(codes).toContain('glyph.ascentTooLarge');
+    expect(codes).toContain('glyph.idDuplicate');
+    expect(codes).toContain('glyph.cellTooLarge');
+    expect(codes).toContain('glyph.gridUneven');
+    expect(codes).toContain('glyph.pngMissing');
   });
 });

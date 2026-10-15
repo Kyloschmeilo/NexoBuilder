@@ -11,6 +11,7 @@ import type { VariantSlot } from './nexo/variants';
 import type { Glyph } from './nexo/glyphs';
 import type { Sound } from './nexo/sounds';
 import type { Painting } from './nexo/paintings';
+import type { MessageParams } from './errors';
 
 export type DataUrl = string;
 
@@ -90,9 +91,31 @@ export type ModelSource = 'bbmodel' | 'json' | 'png';
 
 export type IssueLevel = 'error' | 'warning' | 'info';
 
+/**
+ * A piece of text built from literal parts and labels defined by core's nexo data. Each `schema`
+ * entry is a message key in the `schema` namespace; renderers translate it and join all parts.
+ */
+export type IssueText = Array<string | { schema: string }>;
+
+/**
+ * A check result. Its user-facing text lives in the `issues` message namespace (`code` is the key),
+ * so the app can show it in the current language.
+ */
 export interface Issue {
   level: IssueLevel;
-  message: string;
+  /** Message key inside the `issues` namespace, e.g. `plan.duplicateFile` */
+  code: string;
+  /** ICU arguments of the message */
+  params?: MessageParams;
+  /** ICU arguments whose text contains translatable labels (see {@link IssueText}) */
+  texts?: Record<string, IssueText>;
+  /**
+   * For a context message (e.g. `context.item` = "“{item}”: {detail}"): the wrapped issue. Renderers
+   * render it first and pass the result as the `detail` argument.
+   */
+  detail?: Issue;
+  /** Internal ID of the item the issue belongs to */
+  itemId?: string;
 }
 
 /**

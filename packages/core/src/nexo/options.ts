@@ -5,6 +5,7 @@
 
 export interface Option {
   value: string;
+  /** Message key in the `schema` namespace; without a label the value itself is shown */
   label?: string;
 }
 
@@ -223,24 +224,24 @@ export const ATTRIBUTES = opts([
 ]);
 
 export const ATTRIBUTE_OPERATIONS: Option[] = [
-  { value: 'ADD_NUMBER', label: 'ADD_NUMBER (Wert addieren)' },
-  { value: 'ADD_SCALAR', label: 'ADD_SCALAR (Prozent vom Basiswert)' },
-  { value: 'MULTIPLY_SCALAR_1', label: 'MULTIPLY_SCALAR_1 (multiplizieren)' },
+  { value: 'ADD_NUMBER', label: 'options.attributeOperations.addNumber.label' },
+  { value: 'ADD_SCALAR', label: 'options.attributeOperations.addScalar.label' },
+  { value: 'MULTIPLY_SCALAR_1', label: 'options.attributeOperations.multiplyScalar1.label' },
 ];
 
 /** EquipmentSlotGroup */
 export const ATTRIBUTE_SLOTS: Option[] = [
-  { value: 'ANY', label: 'ANY (überall)' },
-  { value: 'MAINHAND', label: 'MAINHAND (Haupthand)' },
-  { value: 'OFFHAND', label: 'OFFHAND (Zweithand)' },
-  { value: 'HAND', label: 'HAND (beide Hände)' },
-  { value: 'HEAD', label: 'HEAD (Kopf)' },
-  { value: 'CHEST', label: 'CHEST (Brust)' },
-  { value: 'LEGS', label: 'LEGS (Beine)' },
-  { value: 'FEET', label: 'FEET (Füße)' },
-  { value: 'ARMOR', label: 'ARMOR (beliebiges Rüstungsteil)' },
-  { value: 'BODY', label: 'BODY (Tierrüstung)' },
-  { value: 'SADDLE', label: 'SADDLE (Sattel, 1.21.5+)' },
+  { value: 'ANY', label: 'options.attributeSlots.any.label' },
+  { value: 'MAINHAND', label: 'options.attributeSlots.mainhand.label' },
+  { value: 'OFFHAND', label: 'options.attributeSlots.offhand.label' },
+  { value: 'HAND', label: 'options.attributeSlots.hand.label' },
+  { value: 'HEAD', label: 'options.attributeSlots.head.label' },
+  { value: 'CHEST', label: 'options.attributeSlots.chest.label' },
+  { value: 'LEGS', label: 'options.attributeSlots.legs.label' },
+  { value: 'FEET', label: 'options.attributeSlots.feet.label' },
+  { value: 'ARMOR', label: 'options.attributeSlots.armor.label' },
+  { value: 'BODY', label: 'options.attributeSlots.body.label' },
+  { value: 'SADDLE', label: 'options.attributeSlots.saddle.label' },
 ];
 
 export const EQUIPPABLE_SLOTS: Option[] = [
@@ -387,47 +388,47 @@ export const DISPLAY_TRANSFORMS = opts([
 ]);
 
 export const TRACKING_ROTATIONS: Option[] = [
-  { value: 'FIXED', label: 'FIXED (keine Drehung)' },
-  { value: 'VERTICAL', label: 'VERTICAL (um die senkrechte Achse)' },
-  { value: 'HORIZONTAL', label: 'HORIZONTAL (um die waagrechte Achse)' },
-  { value: 'CENTER', label: 'CENTER (immer zum Spieler)' },
+  { value: 'FIXED', label: 'options.trackingRotations.fixed.label' },
+  { value: 'VERTICAL', label: 'options.trackingRotations.vertical.label' },
+  { value: 'HORIZONTAL', label: 'options.trackingRotations.horizontal.label' },
+  { value: 'CENTER', label: 'options.trackingRotations.center.label' },
 ];
 
 export const TOOL_TIERS = opts(['WOODEN', 'STONE', 'IRON', 'GOLDEN', 'DIAMOND', 'NETHERITE']);
 export const TOOL_TYPES = opts(['PICKAXE', 'AXE', 'SHOVEL', 'HOE', 'SWORD']);
 
 export const STORAGE_TYPES: Option[] = [
-  { value: 'STORAGE', label: 'STORAGE (wie eine Truhe)' },
-  { value: 'PERSONAL', label: 'PERSONAL (pro Spieler)' },
-  { value: 'ENDERCHEST', label: 'ENDERCHEST (Endertruhen-Inventar)' },
-  { value: 'DISPOSAL', label: 'DISPOSAL (Mülleimer)' },
+  { value: 'STORAGE', label: 'options.storageTypes.storage.label' },
+  { value: 'PERSONAL', label: 'options.storageTypes.personal.label' },
+  { value: 'ENDERCHEST', label: 'options.storageTypes.enderchest.label' },
+  { value: 'DISPOSAL', label: 'options.storageTypes.disposal.label' },
 ];
 
 export const CUSTOM_BLOCK_TYPES: Option[] = [
-  { value: 'NOTEBLOCK', label: 'NOTEBLOCK – normaler Block (bis 1149)' },
-  { value: 'STRINGBLOCK', label: 'STRINGBLOCK – Pflanzen/Deko (bis 127)' },
-  { value: 'CHORUSBLOCK', label: 'CHORUSBLOCK – transparente Blöcke (bis 63)' },
+  { value: 'NOTEBLOCK', label: 'options.customBlockTypes.noteblock.label' },
+  { value: 'STRINGBLOCK', label: 'options.customBlockTypes.stringblock.label' },
+  { value: 'CHORUSBLOCK', label: 'options.customBlockTypes.chorusblock.label' },
 ];
 
 export const BLOCKLOCKER_TYPES = opts(['CONTAINER', 'DOOR', 'ATTACHABLE']);
 
 export const CUSTOM_EVENTS: Option[] = [
-  { value: 'CLICK:right:all', label: 'Rechtsklick (überall)' },
-  { value: 'CLICK:right:block', label: 'Rechtsklick auf Block' },
-  { value: 'CLICK:right:air', label: 'Rechtsklick in die Luft' },
-  { value: 'CLICK:left:all', label: 'Linksklick (überall)' },
-  { value: 'CLICK:left:block', label: 'Linksklick auf Block' },
-  { value: 'CLICK:left:air', label: 'Linksklick in die Luft' },
-  { value: 'CLICK:all:all', label: 'Beliebiger Klick' },
-  { value: 'INV_CLICK:all:all', label: 'Klick im Inventar' },
-  { value: 'INV_CLICK:right:shift', label: 'Shift-Rechtsklick im Inventar' },
-  { value: 'DROP', label: 'Fallenlassen' },
-  { value: 'PICKUP', label: 'Aufheben' },
-  { value: 'BREAK', label: 'Item geht kaputt' },
-  { value: 'EQUIP', label: 'Ausrüsten' },
-  { value: 'UNEQUIP', label: 'Ablegen' },
-  { value: 'DEATH', label: 'Tod des Spielers' },
-  { value: 'DROP_ALL', label: 'Letztes Exemplar fallengelassen' },
+  { value: 'CLICK:right:all', label: 'options.customEvents.clickRightAll.label' },
+  { value: 'CLICK:right:block', label: 'options.customEvents.clickRightBlock.label' },
+  { value: 'CLICK:right:air', label: 'options.customEvents.clickRightAir.label' },
+  { value: 'CLICK:left:all', label: 'options.customEvents.clickLeftAll.label' },
+  { value: 'CLICK:left:block', label: 'options.customEvents.clickLeftBlock.label' },
+  { value: 'CLICK:left:air', label: 'options.customEvents.clickLeftAir.label' },
+  { value: 'CLICK:all:all', label: 'options.customEvents.clickAllAll.label' },
+  { value: 'INV_CLICK:all:all', label: 'options.customEvents.invClickAllAll.label' },
+  { value: 'INV_CLICK:right:shift', label: 'options.customEvents.invClickRightShift.label' },
+  { value: 'DROP', label: 'options.customEvents.drop.label' },
+  { value: 'PICKUP', label: 'options.customEvents.pickup.label' },
+  { value: 'BREAK', label: 'options.customEvents.break.label' },
+  { value: 'EQUIP', label: 'options.customEvents.equip.label' },
+  { value: 'UNEQUIP', label: 'options.customEvents.unequip.label' },
+  { value: 'DEATH', label: 'options.customEvents.death.label' },
+  { value: 'DROP_ALL', label: 'options.customEvents.dropAll.label' },
 ];
 
 export const SOUND_SUGGESTIONS = opts([

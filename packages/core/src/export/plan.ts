@@ -10,7 +10,8 @@
  * Textures deliberately live under textures/item or textures/block: only these folders end up
  * automatically in Minecraft's item or block atlas (also from 1.21.11 on with separate atlases).
  */
-import type { ConfigObject, ImportedModel, Issue, IssueLevel, Item, JavaModelJson, ModelTexture, Project } from '../types';
+import type { ConfigObject, ImportedModel, Issue, IssueLevel, IssueText, Item, JavaModelJson, ModelTexture, Project } from '../types';
+import type { MessageParams } from '../errors';
 import { buildPackMcmeta, getMcVersion } from '../minecraft/versions';
 import { analyseElements, isVanillaReference } from '../model/javaModel';
 import { parseTexturePlaceholder } from '../model/common';
@@ -51,6 +52,18 @@ export interface ProjectIssue extends Issue {
 }
 
 export type ExportMode = 'full' | 'pack' | 'items';
+
+/** Adds an issue about the current item; the item's name is passed as the `item` argument. */
+export type AddItemIssue = (
+  level: IssueLevel,
+  code: string,
+  params?: MessageParams,
+  texts?: Record<string, IssueText>,
+  detail?: Issue,
+) => void;
+
+/** Context of a model written for an item: null = the main model, otherwise e.g. a variant label */
+export type ModelScope = IssueText | null;
 
 export type FileContent = string | Uint8Array;
 
@@ -131,19 +144,22 @@ export function planExport(project: Project, options: PlanOptions = {}): ExportP
   const plans: ItemPlan[] = [];
   const usedVariations = new Map<string, Item>();
   for (const item of items) {
-    const label = `„${item.displayName || item.nexoId}“`;
-    const add = (level: IssueLevel, message: string) => issues.push({ level, message: `${label}: ${message}`, itemId: item.id });
+    const itemName = item.displayName || item.nexoId;
+    const add: AddItemIssue = (level, code, params, texts, detail) =>
+      issues.push({ level, code, params: { item: itemName, ...params }, ...(texts && { texts }), ...(detail && { detail }), itemId: item.id });
+    /** Reports an issue from a shared check (model, texture, recipe) in the context of this item. */
+    const addIn = (scope: ModelScope, detail: Issue) =>
+      scope ? add(detail.level, 'context.itemModel', {}, { model: scope }, detail) : add(detail.level, 'context.item', {}, undefined, detail);
     const folderSlugs = getFolderSlugs(project, item.folderId);
 
     // Model & textures
     let modelKey: string | null = null;
     let modelFile: string | null = null;
     let modelJson: JavaModelJson | null = null;
-    const writeModel = (model: ImportedModel, modelPath: string, what: string) => {
+    const writeModel = (model: ImportedModel, modelPath: string, scope: ModelScope) => {
       const file = `assets/${ns}/models/${modelPath}.json`;
       const textureRefs = new Map<string, string>();
       const usedNames = new Set<string>();
-      const prefix = what ? `${what}: ` : '';
       for (const texture of model.textures) {
         let name = slugify(texture.name, 'texture');
         let n = 2;
@@ -151,21 +167,21 @@ export function planExport(project: Project, options: PlanOptions = {}): ExportP
         usedNames.add(name);
         const texPath = `${modelPath}/${name}`;
         textureRefs.set(texture.id, `${ns}:${texPath}`);
-        for (const issue of validateTexture(texture, `${prefix}Textur`)) add(issue.level, issue.message);
+        for (const issue of validateTexture(texture)) addIn(scope, issue);
         if (texture.dataUrl) addTextureFile(packFiles, `assets/${ns}/textures/${texPath}.png`, texture, includeBinaries);
       }
       const resolved = resolveModelTextures(model.json, textureRefs);
-      validateModel(resolved, targetVersion, (level, message) => add(level, prefix + message), new Set(textureRefs.values()));
+      validateModel(resolved, targetVersion, (issue) => addIn(scope, issue), new Set(textureRefs.values()));
       packFiles.set(file, json(resolved));
       return { key: `${ns}:${modelPath}`, file, json: resolved };
     };
     if (item.model) {
-      const written = writeModel(item.model, modelPathFor(project, item), '');
+      const written = writeModel(item.model, modelPathFor(project, item), null);
       modelKey = written.key;
       modelFile = written.file;
       modelJson = written.json;
     } else {
-      add('info', 'Kein Modell – das Item nutzt das Aussehen des Basis-Materials.');
+      add('info', 'plan.missingModel');
     }
 
     // Variant models (bow, shield, fishing rod …). The hyphen in the path cannot occur in item IDs
@@ -175,27 +191,26 @@ export function planExport(project: Project, options: PlanOptions = {}): ExportP
       if (def.kind !== 'pack') continue;
       const models = item.variants?.[def.slot];
       if (models === undefined) continue;
+      // Variant labels are message keys in the `schema` namespace
+      const variant: IssueText = [{ schema: def.label }];
       if (!item.model) {
-        add('error', `„${def.label}“ benötigt ein Hauptmodell. Bitte zuerst ein Modell für das Item importieren.`);
+        add('error', 'plan.variantNeedsMainModel', {}, { variant });
         continue;
       }
       if (models.length === 0) {
-        add('warning', `„${def.label}“ ist hinzugefügt, enthält aber noch kein Modell.`);
+        add('warning', 'plan.variantEmpty', {}, { variant });
         continue;
       }
       const keys = models.map((m, i) => {
         const suffix = variantPathSuffix(def, i);
-        return writeModel(m, `${modelPathFor(project, item)}-${suffix}`, `${def.label} (${suffix})`).key;
+        return writeModel(m, `${modelPathFor(project, item)}-${suffix}`, [...variant, ` (${suffix})`]).key;
       });
       variantKeys[def.slot] = def.multiple ? keys : keys[0];
       const material = String(item.config.material ?? 'PAPER').toUpperCase();
       if (def.materials && !def.materials.includes(material)) {
         const blocksAttacks = def.slot === 'blocking_model' && getPath(item.config, ['Components', 'blocks_attacks']) !== undefined;
         if (!blocksAttacks) {
-          add(
-            'warning',
-            `„${def.label}“ funktioniert nur mit dem Material ${def.materials.join(' oder ')} (aktuell ${material}).`,
-          );
+          add('warning', 'plan.variantWrongMaterial', { materials: def.materials.join(' / '), material }, { variant });
         }
       }
     }
@@ -217,11 +232,12 @@ export function planExport(project: Project, options: PlanOptions = {}): ExportP
       itemModel: extras.itemModel,
       extraConfig: extras.config,
     });
-    if (built.rawYamlError) add('error', `Fehler im zusätzlichen YAML: ${built.rawYamlError}`);
+    if (built.rawYamlError?.kind === 'syntax') add('error', 'plan.rawYamlError', { error: built.rawYamlError.message });
+    else if (built.rawYamlError) add('error', 'plan.rawYamlNotMapping');
     validateItemConfig(item, built.config, targetVersion, add, usedVariations, armor?.slot ?? null);
     const keys = recipeKeys(item);
     for (const recipe of item.recipes ?? []) {
-      for (const issue of validateRecipe(recipe, project, keys.get(recipe.id) ?? recipe.type)) add(issue.level, issue.message);
+      for (const issue of validateRecipe(recipe, project, keys.get(recipe.id) ?? recipe.type)) addIn(null, issue);
     }
 
     const yamlFile = yamlFileFor(project, item, folderSlugs);
@@ -236,7 +252,7 @@ export function planExport(project: Project, options: PlanOptions = {}): ExportP
     byFile.set(plan.yamlFile, list);
   }
   for (const [file, list] of byFile) {
-    const header = `# Erstellt mit ResourcepackBuilder – Projekt "${project.name}"`;
+    const header = `# Created with ResourcepackBuilder – project "${project.name}"`;
     itemFiles.set(file, itemsToYaml(list.map((p) => ({ id: p.item.nexoId, config: p.config })), header));
   }
 
@@ -246,7 +262,7 @@ export function planExport(project: Project, options: PlanOptions = {}): ExportP
     try {
       packFiles.set('pack.png', includeBinaries ? dataUrlToBytes(project.settings.packIcon) : new Uint8Array(0));
     } catch {
-      issues.push({ level: 'warning', message: 'Das Pack-Icon konnte nicht gelesen werden und wird ignoriert.' });
+      issues.push({ level: 'warning', code: 'plan.packIconUnreadable' });
     }
   }
 
@@ -280,7 +296,7 @@ export function planExport(project: Project, options: PlanOptions = {}): ExportP
   const paintingEntries = Object.fromEntries((project.paintings ?? []).map((p) => [paintingKey(project, p), paintingToYaml(project, p)]));
 
   for (const path of packFiles.duplicates) {
-    issues.push({ level: 'error', message: `Die Datei „${path}“ würde im Pack mehrfach erzeugt. Bitte Item-IDs bzw. Set-IDs eindeutig machen.` });
+    issues.push({ level: 'error', code: 'plan.duplicateFile', params: { path } });
   }
 
   return { items: plans, packFiles, itemFiles, recipeFiles, glyphFiles, soundEntries, paintingEntries, issues };
@@ -365,18 +381,14 @@ function collectArmorSets(items: Item[], issues: ProjectIssue[], targetVersion: 
   for (const item of items) {
     const armor = item.config.$armor;
     if (armor === undefined) continue;
-    const label = `„${item.displayName || item.nexoId}“`;
+    const itemName = item.displayName || item.nexoId;
     const setId = getArmorSetId(item);
     if (!setId) {
-      issues.push({ level: 'error', message: `${label}: Für die Rüstungs-Textur fehlt die Set-ID.`, itemId: item.id });
+      issues.push({ level: 'error', code: 'plan.armorSetIdMissing', params: { item: itemName }, itemId: item.id });
       continue;
     }
     if (!/^[a-z0-9_.-]+$/.test(setId)) {
-      issues.push({
-        level: 'error',
-        message: `${label}: Die Set-ID „${setId}“ darf nur Kleinbuchstaben, Zahlen, _ . - enthalten.`,
-        itemId: item.id,
-      });
+      issues.push({ level: 'error', code: 'plan.armorSetIdInvalid', params: { item: itemName, set: setId }, itemId: item.id });
       continue;
     }
     const set: ArmorSet = sets.get(setId) ?? {
@@ -393,30 +405,33 @@ function collectArmorSets(items: Item[], issues: ProjectIssue[], targetVersion: 
     for (const layer of ARMOR_LAYERS) {
       const tex = resolveAsset(item, getPath(armor as ConfigObject, layer.path));
       if (!tex) continue;
-      for (const issue of validateTexture(tex, `${label} ${layer.label}`)) {
-        issues.push({ ...issue, itemId: item.id });
+      // The layer's label is a message key in the `schema` namespace
+      const layerText: IssueText = [{ schema: layer.label }];
+      const texts = { layer: layerText };
+      for (const detail of validateTexture(tex)) {
+        issues.push({ level: detail.level, code: 'context.itemModel', params: { item: itemName }, texts: { model: layerText }, detail, itemId: item.id });
       }
       if (layer.minVersion && compareVersions(targetVersion, layer.minVersion) < 0) {
         issues.push({
           level: 'error',
-          message: `${label}: „${layer.label}“ gibt es erst ab Minecraft ${layer.minVersion} – das Projekt ist auf ${targetVersion} eingestellt.`,
+          code: 'plan.armorLayerNeedsVersion',
+          params: { item: itemName, version: layer.minVersion, target: targetVersion },
+          texts,
           itemId: item.id,
         });
       }
       if (layer.group === 'player' && tex.width && tex.height && tex.width !== tex.height * 2) {
         issues.push({
           level: 'warning',
-          message: `${label}: Die Rüstungs-Textur ${layer.label} sollte doppelt so breit wie hoch sein (z.B. 64×32), ist aber ${tex.width}×${tex.height}.`,
+          code: 'plan.armorLayerAspect',
+          params: { item: itemName, width: tex.width, height: tex.height },
+          texts,
           itemId: item.id,
         });
       }
       const existing = set.textures.get(layer.equipment);
       if (existing && existing.dataUrl !== tex.dataUrl) {
-        issues.push({
-          level: 'warning',
-          message: `${label}: Für das Set „${setId}“ wurde „${layer.label}“ mehrfach mit unterschiedlichen Texturen hochgeladen. Es wird die erste verwendet.`,
-          itemId: item.id,
-        });
+        issues.push({ level: 'warning', code: 'plan.armorLayerConflict', params: { item: itemName, set: setId }, texts, itemId: item.id });
       } else if (!existing && tex.dataUrl) {
         set.textures.set(layer.equipment, tex);
         set.groups.add(layer.group);
@@ -431,22 +446,20 @@ function collectArmorSets(items: Item[], issues: ProjectIssue[], targetVersion: 
       for (const item of set.items) {
         issues.push({
           level: 'error',
-          message: `„${item.displayName || item.nexoId}“: Für das Set „${set.id}“ wurde bei keinem Item eine Textur hochgeladen.`,
+          code: 'plan.armorSetWithoutTexture',
+          params: { item: item.displayName || item.nexoId, set: set.id },
           itemId: item.id,
         });
       }
       continue;
     }
     if (set.groups.has('elytra') && set.groups.has('player')) {
-      issues.push({
-        level: 'warning',
-        message: `Das Set „${set.id}“ enthält Elytra-Flügel und Spieler-Rüstung – die Flügel würden dann auch auf dem Brustpanzer erscheinen. Elytren brauchen eine eigene Set-ID.`,
-      });
+      issues.push({ level: 'warning', code: 'plan.armorSetElytraAndPlayer', params: { set: set.id } });
     }
     if (!set.groups.has('player')) {
       set.slot = set.groups.has('elytra') ? 'CHEST' : set.groups.has('mob') ? 'BODY' : set.groups.has('saddle') ? 'SADDLE' : null;
       if (set.groups.has('mob') && set.groups.has('saddle')) {
-        issues.push({ level: 'warning', message: `Das Set „${set.id}“ mischt Tier-Rüstung und Sattel – dafür bitte zwei Set-IDs verwenden.` });
+        issues.push({ level: 'warning', code: 'plan.armorSetMobAndSaddle', params: { set: set.id } });
       }
       // Only the animals of the chosen slot
       set.entities = ARMOR_LAYERS.filter((l) => l.slot === set.slot && set.textures.has(l.equipment)).flatMap((l) => l.entities ?? []);
@@ -460,20 +473,17 @@ function collectArmorSets(items: Item[], issues: ProjectIssue[], targetVersion: 
 
 function validateProjectSettings(project: Project, issues: ProjectIssue[]) {
   if (!NAMESPACE_PATTERN.test(project.namespace)) {
-    issues.push({ level: 'error', message: `Der Namespace „${project.namespace}“ darf nur Kleinbuchstaben, Zahlen sowie _ . - enthalten.` });
+    issues.push({ level: 'error', code: 'plan.namespaceInvalid', params: { namespace: project.namespace } });
   } else if (project.namespace === 'minecraft') {
-    issues.push({ level: 'error', message: 'Der Namespace „minecraft“ würde Vanilla-Dateien überschreiben. Bitte einen eigenen Namespace wählen.' });
+    issues.push({ level: 'error', code: 'plan.namespaceMinecraft' });
   } else if (project.namespace === 'nexo') {
-    issues.push({
-      level: 'warning',
-      message: 'Der Namespace „nexo“ wird auch von Nexo selbst verwendet. Ein eigener Namespace vermeidet Konflikte.',
-    });
+    issues.push({ level: 'warning', code: 'plan.namespaceNexo' });
   }
   if (!/^[A-Za-z0-9_.-]+$/.test(project.settings.packName)) {
-    issues.push({ level: 'error', message: `Der Pack-Name „${project.settings.packName}“ darf nur Buchstaben, Zahlen sowie _ . - enthalten.` });
+    issues.push({ level: 'error', code: 'plan.packNameInvalid', params: { name: project.settings.packName } });
   }
   if (project.settings.packIcon && !project.settings.packIcon.startsWith('data:image/png')) {
-    issues.push({ level: 'warning', message: 'Das Pack-Icon muss eine PNG-Datei sein.' });
+    issues.push({ level: 'warning', code: 'plan.packIconNotPng' });
   }
 }
 
@@ -488,7 +498,8 @@ function validateFolders(project: Project, issues: ProjectIssue[]) {
       if (other) {
         issues.push({
           level: 'error',
-          message: `Die Ordner „${project.folders[other].name}“ und „${folder.name}“ ergeben denselben Ordnernamen „${slug}“. Bitte einen umbenennen.`,
+          code: 'plan.folderSlugClash',
+          params: { first: project.folders[other].name, second: folder.name, slug },
           folderId: id,
         });
       } else {
@@ -500,7 +511,7 @@ function validateFolders(project: Project, issues: ProjectIssue[]) {
   checkSiblings(project.rootFolderIds);
   for (const folder of Object.values(project.folders)) {
     if (folder.itemIds.length === 0 && folder.folderIds.length === 0) {
-      issues.push({ level: 'info', message: `Der Ordner „${folder.name}“ ist leer und wird nicht exportiert.`, folderId: folder.id });
+      issues.push({ level: 'info', code: 'plan.folderEmpty', params: { folder: folder.name }, folderId: folder.id });
     }
   }
 }
@@ -508,21 +519,18 @@ function validateFolders(project: Project, issues: ProjectIssue[]) {
 function validateItemIds(items: Item[], issues: ProjectIssue[]) {
   const seen = new Map<string, Item>();
   for (const item of items) {
-    const label = `„${item.displayName || item.nexoId}“`;
+    const itemName = item.displayName || item.nexoId;
     if (!item.nexoId) {
-      issues.push({ level: 'error', message: `${label}: Die Item-ID fehlt.`, itemId: item.id });
+      issues.push({ level: 'error', code: 'plan.itemIdMissing', params: { item: itemName }, itemId: item.id });
     } else if (!ITEM_ID_PATTERN.test(item.nexoId)) {
-      issues.push({
-        level: 'error',
-        message: `${label}: Die Item-ID „${item.nexoId}“ darf nur Kleinbuchstaben, Zahlen und _ enthalten.`,
-        itemId: item.id,
-      });
+      issues.push({ level: 'error', code: 'plan.itemIdInvalid', params: { item: itemName, id: item.nexoId }, itemId: item.id });
     }
     const other = seen.get(item.nexoId);
     if (other) {
       issues.push({
         level: 'error',
-        message: `${label}: Die Item-ID „${item.nexoId}“ wird bereits von „${other.displayName || other.nexoId}“ verwendet. Nexo-IDs müssen eindeutig sein.`,
+        code: 'plan.itemIdDuplicate',
+        params: { item: itemName, id: item.nexoId, other: other.displayName || other.nexoId },
         itemId: item.id,
       });
     } else {
@@ -534,28 +542,25 @@ function validateItemIds(items: Item[], issues: ProjectIssue[]) {
 function validateModel(
   model: JavaModelJson,
   targetVersion: string,
-  add: (l: IssueLevel, m: string) => void,
+  report: (issue: Issue) => void,
   ownRefs: Set<string>,
 ) {
   const analysis: Issue[] = [];
   const requires = analyseElements(model, analysis);
-  for (const issue of analysis) add(issue.level, issue.message);
+  for (const issue of analysis) report(issue);
   if (requires && compareVersions(requires, targetVersion) > 0) {
-    add(
-      'error',
-      `Das Modell benötigt mindestens Minecraft ${requires} (z.B. wegen freier Rotationen), das Projekt ist aber auf ${getMcVersion(targetVersion).label} eingestellt.`,
-    );
+    report({ level: 'error', code: 'plan.modelNeedsVersion', params: { version: requires, target: getMcVersion(targetVersion).label } });
   }
   for (const [key, value] of Object.entries(model.textures ?? {})) {
     if (typeof value !== 'string') continue;
     if (value.startsWith('#')) {
       const target = value.slice(1);
       if (target !== 'missing' && model.textures?.[target] === undefined && !model.parent) {
-        add('warning', `Textur „${key}“ verweist auf „${value}“, das im Modell nicht definiert ist.`);
+        report({ level: 'warning', code: 'plan.textureRefUndefined', params: { key, value } });
       }
     } else if (!isVanillaReference(value) && !ownRefs.has(value)) {
       // Foreign references must be provided by another pack
-      add('warning', `Textur „${key}“ verweist auf „${value}“, das nicht in diesem Pack enthalten ist.`);
+      report({ level: 'warning', code: 'plan.textureRefForeign', params: { key, value } });
     }
   }
   const usedKeys = new Set<string>();
@@ -566,7 +571,7 @@ function validateModel(
   }
   for (const key of usedKeys) {
     if (key !== 'missing' && model.textures?.[key] === undefined && !model.parent) {
-      add('warning', `Flächen verwenden die Textur „#${key}“, die nicht definiert ist (wird lila/schwarz angezeigt).`);
+      report({ level: 'warning', code: 'plan.faceTextureUndefined', params: { key } });
     }
   }
 }
@@ -575,61 +580,62 @@ function validateItemConfig(
   item: Item,
   config: Record<string, unknown>,
   targetVersion: string,
-  add: (l: IssueLevel, m: string) => void,
+  add: AddItemIssue,
   usedVariations: Map<string, Item>,
   armorSlot: string | null,
 ) {
   const material = config.material;
   if (typeof material !== 'string' || !/^[A-Z0-9_]+$/.test(material)) {
-    add('error', `Das Material „${String(material)}“ ist ungültig (nur GROSSBUCHSTABEN, Zahlen und _).`);
+    add('error', 'plan.materialInvalid', { material: String(material) });
   }
   const cfg = item.config as ConfigObject;
   for (const def of PROPERTIES) {
     const value = getPath(cfg, def.path);
     if (value === undefined) continue;
+    // Property labels are message keys in the `schema` namespace
+    const property: IssueText = [{ schema: def.label }];
     if (def.minVersion && compareVersions(targetVersion, def.minVersion) < 0) {
-      add('warning', `„${def.label}“ benötigt Minecraft ${def.minVersion} oder neuer und wird auf ${targetVersion} ignoriert.`);
+      add('warning', 'plan.propertyNeedsVersion', { version: def.minVersion, target: targetVersion }, { property });
     }
     if (def.maxVersion && compareVersions(targetVersion, def.maxVersion) > 0) {
-      add('warning', `„${def.label}“ gibt es ab Minecraft ${def.maxVersion} nicht mehr.`);
+      add('warning', 'plan.propertyRemoved', { version: def.maxVersion }, { property });
     }
     for (const conflict of def.conflicts ?? []) {
       const other = PROPERTIES.find((p) => p.id === conflict);
       if (other && getPath(cfg, other.path) !== undefined && def.id < other.id) {
-        add('error', `„${def.label}“ und „${other.label}“ können nicht gleichzeitig verwendet werden.`);
+        add('error', 'plan.propertyConflict', {}, { property, other: [{ schema: other.label }] });
       }
     }
-    for (const message of validateFieldValues(value, def.field, def.label)) add('warning', message);
+    for (const found of validateFieldValues(value, def.field, property)) {
+      add('warning', found.code, found.params, { ...found.texts, field: found.field });
+    }
   }
 
   const block = getPath(cfg, ['Mechanics', 'custom_block']);
   if (isPlainObject(block)) {
     const type = typeof block.type === 'string' ? block.type : '';
-    if (!type) add('error', 'Beim eigenen Block fehlt der Block-Typ.');
+    if (!type) add('error', 'plan.blockTypeMissing');
     const variation = block.custom_variation;
     if (typeof variation === 'number' && type in BLOCK_VARIATION_LIMITS) {
       const max = BLOCK_VARIATION_LIMITS[type];
-      if (variation < 1 || variation > max) add('error', `Die Variation ${variation} liegt außerhalb von 1–${max} für ${type}.`);
+      if (variation < 1 || variation > max) add('error', 'plan.blockVariationRange', { variation, max, type });
       const key = `${type}:${variation}`;
       const other = usedVariations.get(key);
       if (other) {
-        add('error', `Die Variation ${variation} (${type}) wird bereits von „${other.displayName || other.nexoId}“ verwendet.`);
+        add('error', 'plan.blockVariationDuplicate', { variation, type, other: other.displayName || other.nexoId });
       } else {
         usedVariations.set(key, item);
       }
     }
     if (!item.model && (block.model === undefined || block.model === '@model')) {
-      add('warning', 'Der Block hat kein Modell. Bitte ein Modell importieren oder im Feld „Modell“ einen Pfad angeben.');
+      add('warning', 'plan.blockWithoutModel');
     }
   }
 
   if (getArmorSetId(item) && armorSlot === null && typeof material === 'string' && !slotForMaterial(material)) {
     const equippable = getPath(cfg, ['Components', 'equippable']);
     if (!isPlainObject(equippable) || !equippable.slot) {
-      add(
-        'warning',
-        `Das Material ${material} legt keinen Rüstungs-Slot fest. Es wird HEAD verwendet – sonst bitte die Component „Equippable“ mit dem passenden Slot hinzufügen.`,
-      );
+      add('warning', 'plan.armorMaterialNoSlot', { material });
     }
   }
 
@@ -637,36 +643,45 @@ function validateItemConfig(
   if (isPlainObject(components)) {
     const stack = components.max_stack_size;
     if (typeof stack === 'number' && components.max_damage !== undefined && stack > 1) {
-      add('error', 'Items mit Haltbarkeit (max_damage) dürfen nicht stapelbar sein – bitte die Stapelgröße auf 1 setzen.');
+      add('error', 'plan.damageableStackable');
     }
   }
 }
 
+interface FieldValueIssue {
+  code: string;
+  params?: MessageParams;
+  /** Path to the value: field labels (keys in the `schema` namespace), list positions and map keys */
+  field: IssueText;
+  texts?: Record<string, IssueText>;
+}
+
 /** Recursively checks formats (duration, vector, color …) within a value. */
-function validateFieldValues(value: unknown, field: Field, label: string): string[] {
-  const messages: string[] = [];
-  const visit = (v: unknown, f: Field, path: string) => {
+function validateFieldValues(value: unknown, field: Field, label: IssueText): FieldValueIssue[] {
+  const found: FieldValueIssue[] = [];
+  const visit = (v: unknown, f: Field, path: IssueText) => {
     if (v === undefined || v === null) return;
     switch (f.type) {
       case 'text': {
         if (typeof v === 'string') {
+          // validateTextFormat returns a message key in the `schema` namespace
           const error = validateTextFormat(f.format, v);
-          if (error) messages.push(`${path}: ${error} (aktuell „${v}“).`);
+          if (error) found.push({ code: 'plan.fieldFormat', params: { value: v }, field: path, texts: { error: [{ schema: error }] } });
         }
         break;
       }
       case 'number':
         if (typeof v === 'number') {
-          if (f.min !== undefined && v < f.min) messages.push(`${path}: Der Wert ${v} ist kleiner als ${f.min}.`);
-          if (f.max !== undefined && v > f.max) messages.push(`${path}: Der Wert ${v} ist größer als ${f.max}.`);
-          if (f.integer && !Number.isInteger(v)) messages.push(`${path}: Es wird eine ganze Zahl erwartet.`);
+          if (f.min !== undefined && v < f.min) found.push({ code: 'plan.fieldTooSmall', params: { value: v, min: f.min }, field: path });
+          if (f.max !== undefined && v > f.max) found.push({ code: 'plan.fieldTooLarge', params: { value: v, max: f.max }, field: path });
+          if (f.integer && !Number.isInteger(v)) found.push({ code: 'plan.fieldNotInteger', field: path });
         }
         break;
       case 'object':
         if (isPlainObject(v)) {
           for (const child of f.fields) {
             if (child.key === '*') continue;
-            visit(v[child.key], child, `${path} → ${child.label}`);
+            visit(v[child.key], child, [...path, ' → ', { schema: child.label }]);
           }
         }
         break;
@@ -674,7 +689,7 @@ function validateFieldValues(value: unknown, field: Field, label: string): strin
         if (Array.isArray(v)) {
           v.forEach((entry, i) => {
             for (const child of f.fields) {
-              if (isPlainObject(entry)) visit(entry[child.key], child, `${path} #${i + 1} → ${child.label}`);
+              if (isPlainObject(entry)) visit(entry[child.key], child, [...path, ` #${i + 1} → `, { schema: child.label }]);
             }
           });
         }
@@ -683,7 +698,7 @@ function validateFieldValues(value: unknown, field: Field, label: string): strin
         if (isPlainObject(v)) {
           for (const [k, entry] of Object.entries(v)) {
             if (f.reservedKeys?.includes(k)) continue;
-            visit(entry, f.value, `${path} → ${k}`);
+            visit(entry, f.value, [...path, ` → ${k}`]);
           }
         }
         break;
@@ -692,7 +707,7 @@ function validateFieldValues(value: unknown, field: Field, label: string): strin
     }
   };
   visit(value, field, label);
-  return messages;
+  return found;
 }
 
 export function countIssues(issues: ProjectIssue[]): Record<IssueLevel, number> {

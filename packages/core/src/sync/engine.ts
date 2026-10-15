@@ -10,6 +10,7 @@
  * the project through `SyncHost`. This allows testing it with an in-memory file system.
  */
 import type { Project } from '../types';
+import { CoreError, type MessageParams } from '../errors';
 import { stripFormatting } from '../util';
 import {
   changedEntityKeys,
@@ -87,7 +88,13 @@ export interface SyncResult {
 }
 
 /** The folder belongs to another project or similar – sync not possible. */
-export class ShareFolderError extends Error {}
+/** The share folder cannot be used; `code` is a key in the `issues` namespace. */
+export class ShareFolderError extends CoreError {
+  constructor(code: string, params: MessageParams = {}) {
+    super(code, params);
+    this.name = 'ShareFolderError';
+  }
+}
 
 /** Is version a newer than b? Ties are decided by the installation ID. */
 export function isNewer(a: { rev: number; by: string }, b: { rev: number; by: string } | undefined): boolean {
@@ -104,7 +111,8 @@ function labelOf(kind: EntityKind, data: EntityData | undefined): string {
   const d = data as unknown as Record<string, unknown>;
   switch (kind) {
     case 'project':
-      return 'Projekt-Einstellungen';
+      // No name of its own – the app shows a translated "project settings" for this kind
+      return '';
     case 'folder':
       return String(d.name ?? '');
     case 'item':
@@ -140,7 +148,7 @@ export class SyncEngine {
     private readonly now: () => number = Date.now,
   ) {
     const project = host.getProject();
-    if (!project) throw new Error('Kein Projekt geöffnet');
+    if (!project) throw new Error('SyncEngine: no project is open');
     this.snapshot = project;
     this.projectId = project.id;
     this.versions = new Map(Object.entries(state?.versions ?? {}));
@@ -257,7 +265,7 @@ export class SyncEngine {
       // Incomplete (e.g. currently being downloaded by the cloud service) – try again next time
       if (!env) continue;
       if (env.kind === 'project' && env.id !== this.projectId) {
-        throw new ShareFolderError('In diesem Ordner liegt ein anderes geteiltes Projekt.');
+        throw new ShareFolderError('sync.otherProjectInFolder');
       }
       this.files.set(info.path, { mtimeMs: info.mtimeMs, size: info.size, hash });
       this.clock = Math.max(this.clock, env.rev);

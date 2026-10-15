@@ -1,15 +1,24 @@
 import { Box, FolderOpen, FolderPlus, Pencil, Plus, Trash2 } from 'lucide-react';
+import { useTranslations } from 'next-intl';
 import type { Item } from '@resourcepackbuilder/core/types';
 import type { ExportPlan } from '@resourcepackbuilder/core/export/plan';
 import { getFolderPathLabel, getFolderSlugs } from '@resourcepackbuilder/core/project/tree';
 import { yamlFileFor } from '@resourcepackbuilder/core/export/plan';
-import { deleteFolder, renameFolder } from '../../state/actions';
-import { useStore } from '../../state/store';
 import { DropZone } from '@resourcepackbuilder/ui';
+import { Badge } from '@resourcepackbuilder/ui/components/badge';
+import { Button } from '@resourcepackbuilder/ui/components/button';
 import { useThumbnail } from '@resourcepackbuilder/preview';
-import { itemLabel, promptNewFolder } from './Sidebar';
+import { deleteFolder } from '../../state/actions';
+import { useStore } from '../../state/store';
+import { translator } from '../../i18n/locale';
+import { itemLabel, promptNewFolder, promptRenameFolder } from './Sidebar';
+import { Tip } from './parts';
+
+const sectionTitle = 'mt-6 mb-3 font-heading text-xs font-semibold tracking-[0.14em] text-muted-foreground uppercase';
 
 export function FolderView({ folderId, plan }: { folderId: string; plan: ExportPlan | null }) {
+  const t = useTranslations('layout.folderView');
+  const tc = useTranslations('common');
   const project = useStore((s) => s.project)!;
   const folder = project.folders[folderId];
   if (!folder) return null;
@@ -17,77 +26,67 @@ export function FolderView({ folderId, plan }: { folderId: string; plan: ExportP
   const slugs = getFolderSlugs(project, folderId);
   const yamlPath = yamlFileFor(project, { nexoId: '<item_id>' } as Item, slugs);
 
+  const confirmDelete = () => {
+    const tl = translator('layout');
+    useStore.getState().openDialog({
+      type: 'confirm',
+      title: tl('folder.deleteTitle'),
+      message: `${tl('folder.deleteAll', { name: folder.name })}\n\n${tl('folder.undoHint')}`,
+      confirmLabel: translator('common')('delete'),
+      danger: true,
+      onConfirm: () => deleteFolder(folderId),
+    });
+  };
+
   return (
-    <div className="editor">
-      <div className="editor-header">
-        <div className="editor-thumb">
-          <FolderOpen size={30} />
+    <div className="mx-auto max-w-[1120px] px-8 pt-6 pb-16">
+      <div className="mb-5 flex items-center gap-4">
+        <div className="grid size-16 shrink-0 place-items-center overflow-hidden rounded-sm border border-border bg-muted text-muted-foreground">
+          <FolderOpen className="size-7.5" />
         </div>
-        <div className="editor-title">
-          <h1>{folder.name}</h1>
-          <div className="editor-meta">
-            <span className="badge">{getFolderPathLabel(project, folderId)}</span>
-            <span className="badge mono" title="Ziel im Nexo-Ordner">
+        <div className="min-w-[200px] flex-1">
+          <h1 className="m-0 truncate font-heading text-[28px] leading-8 font-semibold">{folder.name}</h1>
+          <div className="mt-2 flex flex-wrap gap-2">
+            <Badge variant="outline">{getFolderPathLabel(project, folderId)}</Badge>
+            <Badge variant="outline" className="font-mono" title={t('targetHint')}>
               plugins/Nexo/{yamlPath}
-            </span>
-            <span className="badge">{items.length} Item(s)</span>
+            </Badge>
+            <Badge variant="outline">{t('itemCount', { count: items.length })}</Badge>
           </div>
         </div>
-        <button className="btn primary" onClick={() => useStore.getState().openDialog({ type: 'newItem', folderId })}>
-          <Plus size={16} /> Neues Item
-        </button>
-        <button className="btn" onClick={() => promptNewFolder(folderId)} title="Unterordner anlegen">
-          <FolderPlus size={16} />
-        </button>
-        <button
-          className="btn"
-          title="Umbenennen"
-          onClick={() =>
-            useStore.getState().openDialog({
-              type: 'prompt',
-              title: 'Ordner umbenennen',
-              label: 'Neuer Name',
-              initial: folder.name,
-              confirmLabel: 'Umbenennen',
-              onSubmit: (name) => renameFolder(folderId, name),
-            })
-          }
-        >
-          <Pencil size={16} />
-        </button>
-        <button
-          className="btn danger"
-          title="Ordner löschen"
-          onClick={() =>
-            useStore.getState().openDialog({
-              type: 'confirm',
-              title: 'Ordner löschen?',
-              message: `„${folder.name}“ wird mit allen Items und Unterordnern gelöscht.\n\nDu kannst das mit Strg+Z rückgängig machen.`,
-              confirmLabel: 'Löschen',
-              danger: true,
-              onConfirm: () => deleteFolder(folderId),
-            })
-          }
-        >
-          <Trash2 size={16} />
-        </button>
+        <Button onClick={() => useStore.getState().openDialog({ type: 'newItem', folderId })}>
+          <Plus /> {t('newItem')}
+        </Button>
+        <Tip label={t('newSubfolder')}>
+          <Button variant="outline" size="icon" aria-label={t('newSubfolder')} onClick={() => promptNewFolder(folderId)}>
+            <FolderPlus />
+          </Button>
+        </Tip>
+        <Tip label={tc('rename')}>
+          <Button variant="outline" size="icon" aria-label={tc('rename')} onClick={() => promptRenameFolder(folder)}>
+            <Pencil />
+          </Button>
+        </Tip>
+        <Tip label={t('delete')}>
+          <Button variant="destructive" size="icon" aria-label={t('delete')} onClick={confirmDelete}>
+            <Trash2 />
+          </Button>
+        </Tip>
       </div>
 
       <DropZone
         onFiles={(files) => useStore.getState().openDialog({ type: 'newItem', folderId, files })}
         accept=".bbmodel,.json,.png,.mcmeta"
-        title="Modelle hier ablegen, um Items zu erstellen"
-        subtitle="Mehrere .bbmodel-Dateien ergeben mehrere Items"
+        title={t('dropTitle')}
+        subtitle={t('dropSubtitle')}
         formats={['.bbmodel', '.json + .png', '.png']}
         compact
       />
 
       {items.length > 0 && (
         <>
-          <div className="section-title" style={{ marginTop: 22 }}>
-            Items in diesem Ordner
-          </div>
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(190px, 1fr))', gap: 10 }}>
+          <div className={sectionTitle}>{t('itemsHeading')}</div>
+          <div className="grid grid-cols-[repeat(auto-fill,minmax(190px,1fr))] gap-2.5">
             {items.map((item) => (
               <ItemTile key={item.id} item={item} plan={plan} />
             ))}
@@ -96,14 +95,12 @@ export function FolderView({ folderId, plan }: { folderId: string; plan: ExportP
       )}
       {folder.folderIds.length > 0 && (
         <>
-          <div className="section-title" style={{ marginTop: 22 }}>
-            Unterordner
-          </div>
-          <div className="row wrap">
+          <div className={sectionTitle}>{t('subfoldersHeading')}</div>
+          <div className="flex flex-wrap gap-2">
             {folder.folderIds.map((id) => (
-              <button key={id} className="btn" onClick={() => useStore.getState().select({ kind: 'folder', id })}>
-                <FolderOpen size={15} className="faint" /> {project.folders[id]?.name}
-              </button>
+              <Button key={id} variant="outline" onClick={() => useStore.getState().select({ kind: 'folder', id })}>
+                <FolderOpen className="text-muted-foreground" /> {project.folders[id]?.name}
+              </Button>
             ))}
           </div>
         </>
@@ -113,28 +110,31 @@ export function FolderView({ folderId, plan }: { folderId: string; plan: ExportP
 }
 
 function ItemTile({ item, plan }: { item: Item; plan: ExportPlan | null }) {
+  const t = useTranslations('layout.folderView');
   const thumb = useThumbnail(item.model);
   const issues = plan?.issues.filter((i) => i.itemId === item.id) ?? [];
   const errors = issues.filter((i) => i.level === 'error').length;
   const warnings = issues.filter((i) => i.level === 'warning').length;
   return (
     <button
-      className="card mb-0"
-      style={{ textAlign: 'left', cursor: 'pointer', padding: 12, display: 'flex', gap: 10, alignItems: 'center', color: 'inherit' }}
+      type="button"
+      className="flex cursor-pointer items-center gap-2.5 rounded-lg border border-border bg-card p-3 text-left text-card-foreground transition-colors outline-none hover:bg-muted focus-visible:ring-3 focus-visible:ring-ring/50"
       onClick={() => useStore.getState().select({ kind: 'item', id: item.id })}
     >
-      <div className="editor-thumb" style={{ width: 48, height: 48 }}>
-        {thumb ? <img src={thumb} alt="" style={{ width: 36, height: 36 }} /> : <Box size={20} className="faint" />}
+      <div className="grid size-12 shrink-0 place-items-center overflow-hidden rounded-sm border border-border bg-muted">
+        {thumb ? (
+          <img src={thumb} alt="" className="size-9 object-contain [image-rendering:pixelated]" />
+        ) : (
+          <Box className="size-5 text-muted-foreground" />
+        )}
       </div>
-      <div style={{ minWidth: 0, flex: 1 }}>
-        <div style={{ fontWeight: 600, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{itemLabel(item)}</div>
-        <div className="mono faint small" style={{ overflow: 'hidden', textOverflow: 'ellipsis' }}>
-          {item.nexoId}
-        </div>
+      <div className="min-w-0 flex-1">
+        <div className="truncate font-semibold">{itemLabel(item)}</div>
+        <div className="truncate font-mono text-xs text-muted-foreground">{item.nexoId}</div>
         {(errors > 0 || warnings > 0) && (
-          <div className="row" style={{ gap: 4, marginTop: 3 }}>
-            {errors > 0 && <span className="badge danger">{errors} Fehler</span>}
-            {warnings > 0 && <span className="badge warning">{warnings}</span>}
+          <div className="mt-1 flex items-center gap-1">
+            {errors > 0 && <Badge variant="destructive">{t('errors', { count: errors })}</Badge>}
+            {warnings > 0 && <Badge className="bg-warning/15 text-warning">{warnings}</Badge>}
           </div>
         )}
       </div>

@@ -11,6 +11,7 @@ const fsp = fs.promises;
 const os = require('node:os');
 const path = require('node:path');
 const crypto = require('node:crypto');
+const { t } = require('./messages.cjs');
 
 const FILE_PATTERN = /^(project\.json|LIESMICH\.txt|(folders|items|glyphs|sounds|paintings)\/[A-Za-z0-9_-]{1,64}\.json)$/;
 const ENTITY_DIRS = ['folders', 'items', 'glyphs', 'sounds', 'paintings'];
@@ -51,15 +52,15 @@ function allowRoot(folder) {
 }
 
 function checkFolder(folder) {
-  if (typeof folder !== 'string' || !folder) throw new Error('Ungültiger Ordner');
+  if (typeof folder !== 'string' || !folder) throw new Error(t('share.invalidFolder'));
   const resolved = path.resolve(folder);
   const allowed = loadRoots().some((root) => resolved === root || resolved.startsWith(root.endsWith(path.sep) ? root : root + path.sep));
-  if (!allowed) throw new Error('Dieser Ordner wurde nicht zum Teilen ausgewählt');
+  if (!allowed) throw new Error(t('share.folderNotAllowed'));
   return resolved;
 }
 
 function filePath(folder, rel) {
-  if (typeof rel !== 'string' || !FILE_PATTERN.test(rel)) throw new Error(`Ungültige Datei: ${rel}`);
+  if (typeof rel !== 'string' || !FILE_PATTERN.test(rel)) throw new Error(t('share.invalidFile', { file: rel }));
   return path.join(checkFolder(folder), ...rel.split('/'));
 }
 
@@ -155,7 +156,7 @@ async function read(folder, rel) {
 
 /** Writes to a temporary file first and then renames it, so nobody reads half-written files. */
 async function write(folder, rel, content) {
-  if (typeof content !== 'string') throw new Error('Ungültiger Inhalt');
+  if (typeof content !== 'string') throw new Error(t('share.invalidContent'));
   const target = filePath(folder, rel);
   await fsp.mkdir(path.dirname(target), { recursive: true });
   const tmp = path.join(path.dirname(target), `.${path.basename(target)}.${crypto.randomBytes(4).toString('hex')}.tmp`);
@@ -238,8 +239,8 @@ function registerShareHandlers() {
     }
     const join = purpose === 'join';
     const result = await dialog.showOpenDialog(BrowserWindow.fromWebContents(event.sender), {
-      title: join ? 'Ordner mit dem geteilten Projekt wählen' : 'Ordner zum Teilen wählen (z.B. in OneDrive)',
-      buttonLabel: join ? 'Öffnen' : 'Hier teilen',
+      title: join ? t('share.chooseJoinFolder') : t('share.chooseShareFolder'),
+      buttonLabel: join ? t('share.open') : t('share.shareHere'),
       properties: ['openDirectory', 'createDirectory'],
     });
     if (result.canceled || !result.filePaths[0]) return null;

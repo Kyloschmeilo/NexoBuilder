@@ -1,14 +1,18 @@
-import { useRef, useState } from 'react';
+import { useFormatter, useTranslations } from 'next-intl';
 import { ArrowDown, ArrowUp, Box, Plus, RefreshCw, Trash2 } from 'lucide-react';
 import type { ImportedModel, Item } from '@resourcepackbuilder/core/types';
 import { VARIANTS, variantPathSuffix, type VariantDef } from '@resourcepackbuilder/core/nexo/variants';
 import { updateItem } from '../../state/actions';
 import { useStore } from '../../state/store';
 import { DropZone } from '@resourcepackbuilder/ui';
-import { MenuItem, Popover } from '@resourcepackbuilder/ui';
 import { pickFiles, readDroppedFiles } from '@resourcepackbuilder/ui';
+import { Badge } from '@resourcepackbuilder/ui/components/badge';
+import { Button } from '@resourcepackbuilder/ui/components/button';
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@resourcepackbuilder/ui/components/dropdown-menu';
+import { translator } from '../../i18n/locale';
 import { createDrafts } from '../importer';
 import { useThumbnail } from '@resourcepackbuilder/preview';
+import { EditorCard, EmptyCard, Hint, SectionTitle, TextureThumb, Tip } from './parts';
 
 export const MODEL_ACCEPT = '.bbmodel,.json,.png,.mcmeta';
 const ACCEPT = MODEL_ACCEPT;
@@ -16,34 +20,25 @@ const ACCEPT = MODEL_ACCEPT;
 /** Reads models from files – each file (or each .bbmodel) becomes its own model. */
 export async function importModels(files: File[]): Promise<ImportedModel[]> {
   const toast = useStore.getState().toast;
+  const t = translator('item');
   const sorted = [...files].sort((a, b) => a.name.localeCompare(b.name, 'de', { numeric: true }));
   const drafts = createDrafts(await readDroppedFiles(sorted), 'separate');
   const models: ImportedModel[] = [];
   for (const draft of drafts) {
-    if (draft.error || !draft.model) toast('error', draft.error ?? `„${draft.name}“ konnte nicht gelesen werden.`);
+    if (draft.error || !draft.model) toast('error', draft.error ?? t('model.fileUnreadable', { name: draft.name }));
     else models.push(draft.model);
   }
-  if (drafts.length === 0) toast('error', 'Keine passende Datei gefunden. Erlaubt sind .bbmodel, .json (+ PNG) und .png.');
+  if (drafts.length === 0) toast('error', t('model.noMatchingFile'));
   return models;
 }
 
 export function VariantsSection({ item }: { item: Item }) {
+  const t = useTranslations('item');
   const active = VARIANTS.filter((v) => item.variants?.[v.slot] !== undefined);
   return (
     <div>
-      <div className="section-title">
-        <span>Special Item Appearance</span>
-        <span className="spacer" />
-        <AddVariantButton item={item} />
-      </div>
-      {active.length === 0 && (
-        <div className="card">
-          <div className="card-body faint small" style={{ textAlign: 'center', padding: 22 }}>
-            Pulling, Charged, Blocking, Cast, Throwing, Damaged, Dyeable, Composite oder ein eigenes GUI Model: weitere Modelle über{' '}
-            <strong>„Hinzufügen“</strong>.
-          </div>
-        </div>
-      )}
+      <SectionTitle actions={<AddVariantButton item={item} />}>{t('variants.title')}</SectionTitle>
+      {active.length === 0 && <EmptyCard>{t.rich('variants.empty', { b: (chunks) => <strong>{chunks}</strong> })}</EmptyCard>}
       {active.map((def) => (
         <VariantCard key={def.slot} item={item} def={def} />
       ))}
@@ -52,34 +47,38 @@ export function VariantsSection({ item }: { item: Item }) {
 }
 
 function AddVariantButton({ item }: { item: Item }) {
-  const [open, setOpen] = useState(false);
-  const anchor = useRef<HTMLButtonElement>(null);
+  const tc = useTranslations('common');
+  const ts = useTranslations('schema');
   const available = VARIANTS.filter((v) => item.variants?.[v.slot] === undefined);
   return (
-    <>
-      <button ref={anchor} className="btn small primary" onClick={() => setOpen((o) => !o)} disabled={available.length === 0}>
-        <Plus size={14} /> Hinzufügen
-      </button>
-      <Popover anchor={anchor.current} open={open} onClose={() => setOpen(false)} align="right" width={360}>
+    <DropdownMenu>
+      <DropdownMenuTrigger render={<Button size="sm" disabled={available.length === 0} />}>
+        <Plus /> {tc('add')}
+      </DropdownMenuTrigger>
+      <DropdownMenuContent align="end" className="w-[360px]">
         {available.map((def) => (
-          <MenuItem
+          <DropdownMenuItem
             key={def.slot}
-            label={def.label}
-            description={def.description}
-            onClick={() => {
-              setOpen(false);
+            className="flex-col items-start gap-0.5"
+            onClick={() =>
               updateItem(item.id, (d) => {
                 d.variants = { ...(d.variants ?? {}), [def.slot]: [] };
-              });
-            }}
-          />
+              })
+            }
+          >
+            <span className="font-medium">{ts(def.label as never)}</span>
+            <span className="text-xs text-muted-foreground">{ts(def.description as never)}</span>
+          </DropdownMenuItem>
         ))}
-      </Popover>
-    </>
+      </DropdownMenuContent>
+    </DropdownMenu>
   );
 }
 
 export function VariantCard({ item, def, removable = true }: { item: Item; def: VariantDef; removable?: boolean }) {
+  const t = useTranslations('item');
+  const ts = useTranslations('schema');
+  const format = useFormatter();
   const models = item.variants?.[def.slot] ?? [];
   const material = String(item.config.material ?? 'PAPER').toUpperCase();
   const wrongMaterial = def.materials && !def.materials.includes(material);
@@ -94,50 +93,67 @@ export function VariantCard({ item, def, removable = true }: { item: Item; def: 
   };
 
   return (
-    <div className="card">
-      <div className="card-header">
-        <div className="card-title-group">
-          <div className="row">
-            <h3>{def.label}</h3>
-            {def.kind === 'pack' && (
-              <span className="badge mono" title="Pfad im YAML">
+    <EditorCard
+      title={ts(def.label as never)}
+      badges={
+        <>
+          {def.kind === 'pack' && (
+            <Tip label={t('properties.pathInYaml')}>
+              <Badge variant="outline" className="font-mono">
                 Pack.{def.slot}
-              </span>
-            )}
-            {def.kind === 'definition' && <span className="badge mono">eigenes ItemModel</span>}
-            {def.kind === 'block' && <span className="badge mono">custom_block.stackable</span>}
-          </div>
-          <div className="desc">{def.description}</div>
-        </div>
-        {removable && (
-          <button
-            className="btn ghost icon small danger"
-            title="Variante entfernen"
-            onClick={() =>
-              updateItem(item.id, (d) => {
-                const next = { ...(d.variants ?? {}) };
-                delete next[def.slot];
-                d.variants = next;
-              })
-            }
-          >
-            <Trash2 size={15} />
-          </button>
-        )}
-      </div>
-      <div className="card-body">
-        {wrongMaterial && (
-          <div className="hint warning" style={{ alignItems: 'center' }}>
-            <span className="grow">
-              Funktioniert nur mit dem Material {def.materials!.join(' oder ')} – aktuell {material}.
-            </span>
-            <button className="btn small" onClick={() => updateItem(item.id, (d) => (d.config.material = def.materials![0]))}>
-              Material auf {def.materials![0]} setzen
-            </button>
-          </div>
-        )}
-        {def.hint && <div className="hint">{def.hint}</div>}
-        <div className="list-editor" style={{ gap: 8, marginBottom: models.length ? 10 : 0 }}>
+              </Badge>
+            </Tip>
+          )}
+          {def.kind === 'definition' && (
+            <Badge variant="outline" className="font-mono">
+              {t('variants.ownItemModel')}
+            </Badge>
+          )}
+          {def.kind === 'block' && (
+            <Badge variant="outline" className="font-mono">
+              custom_block.stackable
+            </Badge>
+          )}
+        </>
+      }
+      description={ts(def.description as never)}
+      actions={
+        removable && (
+          <Tip label={t('variants.remove')}>
+            <Button
+              variant="ghost"
+              size="icon-sm"
+              className="text-destructive hover:text-destructive"
+              aria-label={t('variants.remove')}
+              onClick={() =>
+                updateItem(item.id, (d) => {
+                  const next = { ...(d.variants ?? {}) };
+                  delete next[def.slot];
+                  d.variants = next;
+                })
+              }
+            >
+              <Trash2 />
+            </Button>
+          </Tip>
+        )
+      }
+    >
+      {wrongMaterial && (
+        <Hint
+          warning
+          action={
+            <Button variant="outline" size="sm" onClick={() => updateItem(item.id, (d) => (d.config.material = def.materials![0]))}>
+              {t('variants.setMaterial', { material: def.materials![0] })}
+            </Button>
+          }
+        >
+          {t('variants.wrongMaterial', { materials: format.list(def.materials!, { type: 'disjunction' }), material })}
+        </Hint>
+      )}
+      {def.hint && <Hint>{ts(def.hint as never)}</Hint>}
+      {models.length > 0 && (
+        <div className="mb-2.5 flex flex-col gap-2">
           {models.map((model, index) => (
             <VariantEntry
               key={index}
@@ -162,21 +178,17 @@ export function VariantCard({ item, def, removable = true }: { item: Item; def: 
             />
           ))}
         </div>
-        {(def.multiple || models.length === 0) && (
-          <DropZone
-            onFiles={(files) => void add(files)}
-            accept={ACCEPT}
-            title={def.multiple ? 'Modelle hier ablegen' : 'Modell hier ablegen'}
-            subtitle={
-              def.multiple
-                ? 'Mehrere Dateien auf einmal möglich – sie werden nach Dateinamen sortiert (z.B. bow_0, bow_1, bow_2).'
-                : '.bbmodel, .json + .png oder .png'
-            }
-            compact
-          />
-        )}
-      </div>
-    </div>
+      )}
+      {(def.multiple || models.length === 0) && (
+        <DropZone
+          onFiles={(files) => void add(files)}
+          accept={ACCEPT}
+          title={def.multiple ? t('variants.dropMany') : t('model.dropTitle')}
+          subtitle={def.multiple ? t('variants.dropManySubtitle') : t('variants.dropOneSubtitle')}
+          compact
+        />
+      )}
+    </EditorCard>
   );
 }
 
@@ -192,36 +204,50 @@ interface VariantEntryProps {
 }
 
 function VariantEntry({ model, label, index, count, multiple, onMove, onReplace, onRemove }: VariantEntryProps) {
+  const t = useTranslations('item');
+  const tc = useTranslations('common');
   const thumb = useThumbnail(model);
   const errors = model.issues.filter((i) => i.level === 'error').length;
   return (
-    <div className="texture-card" style={{ alignItems: 'center', padding: 8 }}>
-      <div className="texture-thumb" style={{ width: 44, height: 44 }}>
-        {thumb ? <img src={thumb} alt="" /> : <Box size={18} className="faint" />}
-      </div>
-      <div className="texture-info" style={{ gap: 2 }}>
-        <span className="mono small">{label}</span>
-        <span className="faint small" style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+    <div className="flex items-center gap-3 rounded-md border bg-muted/50 p-2">
+      <TextureThumb size={44}>{thumb ? <img src={thumb} alt="" /> : <Box size={18} className="opacity-60" />}</TextureThumb>
+      <div className="flex min-w-0 flex-1 flex-col gap-0.5 text-xs">
+        <span className="font-mono">{label}</span>
+        <span className="truncate text-muted-foreground">
           {model.fileName}
-          {errors > 0 && <span style={{ color: 'var(--ember)' }}> · {errors} Fehler</span>}
+          {errors > 0 && <span className="text-destructive"> · {t('editor.errors', { count: errors })}</span>}
         </span>
       </div>
       {multiple && (
         <>
-          <button className="btn ghost icon small" title="Nach oben" disabled={index === 0} onClick={() => onMove(index - 1)}>
-            <ArrowUp size={14} />
-          </button>
-          <button className="btn ghost icon small" title="Nach unten" disabled={index === count - 1} onClick={() => onMove(index + 1)}>
-            <ArrowDown size={14} />
-          </button>
+          <Tip label={t('variants.moveUp')}>
+            <Button variant="ghost" size="icon-sm" aria-label={t('variants.moveUp')} disabled={index === 0} onClick={() => onMove(index - 1)}>
+              <ArrowUp />
+            </Button>
+          </Tip>
+          <Tip label={t('variants.moveDown')}>
+            <Button
+              variant="ghost"
+              size="icon-sm"
+              aria-label={t('variants.moveDown')}
+              disabled={index === count - 1}
+              onClick={() => onMove(index + 1)}
+            >
+              <ArrowDown />
+            </Button>
+          </Tip>
         </>
       )}
-      <button className="btn ghost icon small" title="Ersetzen" onClick={onReplace}>
-        <RefreshCw size={14} />
-      </button>
-      <button className="btn ghost icon small danger" title="Entfernen" onClick={onRemove}>
-        <Trash2 size={14} />
-      </button>
+      <Tip label={t('model.replace')}>
+        <Button variant="ghost" size="icon-sm" aria-label={t('model.replace')} onClick={onReplace}>
+          <RefreshCw />
+        </Button>
+      </Tip>
+      <Tip label={tc('remove')}>
+        <Button variant="ghost" size="icon-sm" className="text-destructive hover:text-destructive" aria-label={tc('remove')} onClick={onRemove}>
+          <Trash2 />
+        </Button>
+      </Tip>
     </div>
   );
 }

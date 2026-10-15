@@ -1,72 +1,92 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useId, useState } from 'react';
 import { FolderOpen, FolderPlus, FolderSync, Package, Trash2, Upload } from 'lucide-react';
+import { useFormatter, useTranslations } from 'next-intl';
 import { DEFAULT_MC_VERSION, MC_VERSIONS } from '@resourcepackbuilder/core/minecraft/versions';
 import { NAMESPACE_PATTERN, slugify } from '@resourcepackbuilder/core/util';
+import { Badge } from '@resourcepackbuilder/ui/components/badge';
+import { Button } from '@resourcepackbuilder/ui/components/button';
+import { Card, CardAction, CardContent, CardHeader, CardTitle } from '@resourcepackbuilder/ui/components/card';
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@resourcepackbuilder/ui/components/dialog';
+import { Field, FieldError, FieldLabel } from '@resourcepackbuilder/ui/components/field';
+import { Input } from '@resourcepackbuilder/ui/components/input';
+import { NativeSelect, NativeSelectOption } from '@resourcepackbuilder/ui/components/native-select';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@resourcepackbuilder/ui/components/tabs';
+import { Spinner } from '@resourcepackbuilder/ui/components/spinner';
 import { isStorageAvailable, listProjects, listSharedProjectIds, type ProjectSummary } from '../../state/persistence';
 import { isShareAvailable } from '../../state/share';
 import { useStore } from '../../state/store';
-import { Modal } from '@resourcepackbuilder/ui';
+import { translator } from '../../i18n/locale';
 import { openProjectFile, openSharedProjectFromFolder, openStoredProject, removeStoredProject, startNewProject } from '../projectActions';
+import { Tip } from './parts';
 
 export function NewProjectForm({ onDone }: { onDone?: () => void }) {
+  const t = useTranslations('layout.projectForm');
+  const id = useId();
   const [name, setName] = useState('');
   const [namespace, setNamespace] = useState('');
   const [nsEdited, setNsEdited] = useState(false);
   const [version, setVersion] = useState(DEFAULT_MC_VERSION);
-  const ns = nsEdited ? namespace : slugify(name || 'mein_pack', 'mein_pack');
-  const nsError = !NAMESPACE_PATTERN.test(ns) ? 'Nur Kleinbuchstaben, Zahlen sowie _ . - erlaubt.' : ns === 'minecraft' ? '„minecraft“ ist nicht erlaubt.' : null;
+  const defaultName = t('defaultName');
+  const defaultSlug = slugify(defaultName, 'my_pack');
+  const ns = nsEdited ? namespace : slugify(name || defaultName, defaultSlug);
+  const nsError = !NAMESPACE_PATTERN.test(ns) ? t('namespaceInvalid') : ns === 'minecraft' ? t('namespaceMinecraft') : null;
   const submit = () => {
     if (nsError) return;
-    startNewProject(name || 'Mein Pack', ns, version);
+    startNewProject(name || defaultName, ns, version);
     onDone?.();
   };
   return (
-    <div className="col" style={{ gap: 12 }}>
-      <label className="field">
-        <span className="field-label">Projektname</span>
-        <input
-          className="input"
+    <div className="flex flex-col gap-3">
+      <Field>
+        <FieldLabel htmlFor={`${id}-name`}>{t('name')}</FieldLabel>
+        <Input
+          id={`${id}-name`}
           autoFocus
-          placeholder="z.B. Mittelalter-Pack"
+          placeholder={t('namePlaceholder')}
           value={name}
           onChange={(e) => setName(e.target.value)}
           onKeyDown={(e) => {
             if (e.key === 'Enter') submit();
           }}
         />
-      </label>
-      <div className="field-grid" style={{ gridTemplateColumns: '1fr 1fr' }}>
-        <label className="field">
-          <span className="field-label">Namespace (Resourcepack)</span>
-          <input
-            className={`input mono ${nsError ? 'invalid' : ''}`}
+      </Field>
+      <div className="grid grid-cols-2 gap-3">
+        <Field data-invalid={!!nsError || undefined}>
+          <FieldLabel htmlFor={`${id}-ns`}>{t('namespace')}</FieldLabel>
+          <Input
+            id={`${id}-ns`}
+            className="font-mono"
+            aria-invalid={!!nsError || undefined}
             value={ns}
             onChange={(e) => {
               setNsEdited(true);
               setNamespace(e.target.value.toLowerCase());
             }}
           />
-          {nsError && <span className="field-error">{nsError}</span>}
-        </label>
-        <label className="field">
-          <span className="field-label">Minecraft-Version (Server)</span>
-          <select className="select" value={version} onChange={(e) => setVersion(e.target.value)}>
+          {nsError && <FieldError>{nsError}</FieldError>}
+        </Field>
+        <Field>
+          <FieldLabel htmlFor={`${id}-version`}>{t('version')}</FieldLabel>
+          <NativeSelect id={`${id}-version`} value={version} onChange={(e) => setVersion(e.target.value)}>
             {MC_VERSIONS.map((v) => (
-              <option key={v.id} value={v.id}>
+              <NativeSelectOption key={v.id} value={v.id}>
                 {v.label}
-              </option>
+              </NativeSelectOption>
             ))}
-          </select>
-        </label>
+          </NativeSelect>
+        </Field>
       </div>
-      <button className="btn primary large" disabled={!!nsError} onClick={submit}>
-        <FolderPlus size={17} /> Projekt erstellen
-      </button>
+      <Button size="lg" disabled={!!nsError} onClick={submit}>
+        <FolderPlus /> {t('create')}
+      </Button>
     </div>
   );
 }
 
 export function ProjectList({ onOpened }: { onOpened?: () => void }) {
+  const t = useTranslations('layout.projectList');
+  const tc = useTranslations('common');
+  const format = useFormatter();
   const [projects, setProjects] = useState<ProjectSummary[] | null>(null);
   const [sharedIds, setSharedIds] = useState<Set<string>>(new Set());
   const currentId = useStore((s) => s.project?.id);
@@ -76,114 +96,137 @@ export function ProjectList({ onOpened }: { onOpened?: () => void }) {
   };
   useEffect(refresh, []);
   if (!isStorageAvailable()) {
-    return <div className="faint small">Projekte können in diesem Browser nicht gespeichert werden. Bitte Projektdateien verwenden.</div>;
+    return <div className="text-xs text-muted-foreground">{t('storageUnavailable')}</div>;
   }
-  if (!projects) return <div className="faint small">Lade …</div>;
-  if (projects.length === 0) return <div className="faint small">Noch keine gespeicherten Projekte.</div>;
+  if (!projects) {
+    return (
+      <div className="flex items-center gap-2 text-xs text-muted-foreground">
+        <Spinner /> {tc('loading')}
+      </div>
+    );
+  }
+  if (projects.length === 0) return <div className="text-xs text-muted-foreground">{t('empty')}</div>;
   return (
-    <div className="project-list">
-      {projects.map((p) => (
-        <div
-          key={p.id}
-          className="project-row"
-          onClick={async () => {
-            await openStoredProject(p.id);
-            onOpened?.();
-          }}
-        >
-          <Package size={18} className="faint" />
-          <div className="pr-main">
-            <div style={{ fontWeight: 600 }}>
-              {p.name} {p.id === currentId && <span className="badge accent">geöffnet</span>}{' '}
-              {sharedIds.has(p.id) && <span className="badge success">geteilt</span>}
-            </div>
-            <div className="pr-meta">
-              {p.itemCount} Item(s) · <span className="mono">{p.namespace}</span> · zuletzt {new Date(p.updatedAt).toLocaleString('de-DE')}
-            </div>
-          </div>
-          <button
-            className="btn ghost icon small danger"
-            title="Projekt löschen"
-            onClick={(e) => {
-              e.stopPropagation();
-              useStore.getState().openDialog({
-                type: 'confirm',
-                title: 'Projekt löschen?',
-                message: `„${p.name}“ wird aus diesem Browser gelöscht. Das kann nicht rückgängig gemacht werden.\nTipp: Vorher über „Projektdatei speichern“ sichern.`,
-                confirmLabel: 'Endgültig löschen',
-                danger: true,
-                onConfirm: () => void removeStoredProject(p.id).then(refresh),
-              });
+    <div className="flex flex-col gap-1.5">
+      {projects.map((p) => {
+        const open = async () => {
+          await openStoredProject(p.id);
+          onOpened?.();
+        };
+        return (
+          <div
+            key={p.id}
+            role="button"
+            tabIndex={0}
+            className="flex cursor-pointer items-center gap-3 rounded-md border border-border bg-card px-3 py-2.5 transition-colors outline-none hover:border-input hover:bg-muted focus-visible:ring-3 focus-visible:ring-ring/50"
+            onClick={() => void open()}
+            onKeyDown={(e) => {
+              if (e.target === e.currentTarget && (e.key === 'Enter' || e.key === ' ')) {
+                e.preventDefault();
+                void open();
+              }
             }}
           >
-            <Trash2 size={14} />
-          </button>
-        </div>
-      ))}
+            <Package className="size-4.5 shrink-0 text-muted-foreground" />
+            <div className="min-w-0 flex-1">
+              <div className="flex flex-wrap items-center gap-1.5 font-semibold">
+                {p.name}
+                {p.id === currentId && <Badge>{t('current')}</Badge>}
+                {sharedIds.has(p.id) && <Badge className="bg-success/15 text-success">{t('shared')}</Badge>}
+              </div>
+              <div className="text-xs text-muted-foreground">
+                {t.rich('meta', {
+                  count: p.itemCount,
+                  namespace: p.namespace,
+                  date: format.dateTime(new Date(p.updatedAt), { dateStyle: 'medium', timeStyle: 'short' }),
+                  mono: (chunks) => <span className="font-mono">{chunks}</span>,
+                })}
+              </div>
+            </div>
+            <Tip label={t('delete')}>
+              <Button
+                variant="ghost"
+                size="icon-sm"
+                className="text-destructive hover:bg-destructive/10 hover:text-destructive"
+                aria-label={t('delete')}
+                onClick={(e) => {
+                  e.stopPropagation();
+                  const tl = translator('layout');
+                  useStore.getState().openDialog({
+                    type: 'confirm',
+                    title: tl('projectList.deleteTitle'),
+                    message: tl('projectList.deleteMessage', { name: p.name }),
+                    confirmLabel: tl('projectList.deleteConfirm'),
+                    danger: true,
+                    onConfirm: () => void removeStoredProject(p.id).then(refresh),
+                  });
+                }}
+                onKeyDown={(e) => e.stopPropagation()}
+              >
+                <Trash2 />
+              </Button>
+            </Tip>
+          </div>
+        );
+      })}
     </div>
   );
 }
 
+const STEPS = ['folders', 'model', 'properties', 'export'] as const;
+
 export function Welcome() {
+  const t = useTranslations('layout.welcome');
   return (
-    <div className="main">
-      <div className="welcome">
-        <div className="welcome-hero">
-          <div className="brand-logo large">
+    <div className="min-h-0 min-w-0 overflow-auto">
+      <div className="mx-auto max-w-[960px] px-6 py-12">
+        <div className="mb-8 text-center">
+          <div className="mx-auto grid size-14 place-items-center rounded-sm bg-primary font-heading text-[32px] leading-none font-bold text-primary-foreground">
             N
           </div>
-          <h1>ResourcepackBuilder</h1>
-          <p>
-            Aus Blockbench-Modellen, Java-Modellen oder Texturen werden fertige Nexo-Items – mit Item-Config und Resourcepack als external pack.
-          </p>
+          <h1 className="mt-4 mb-2 font-heading text-[56px] leading-[60px] font-bold tracking-[0.01em]">ResourcepackBuilder</h1>
+          <p className="mx-auto max-w-[620px] text-lg leading-7 text-muted-foreground">{t('tagline')}</p>
         </div>
-        <div className="welcome-grid">
-          <div className="card mb-0">
-            <div className="card-header">
-              <h3>Neues Projekt</h3>
-            </div>
-            <div className="card-body">
+        <div className="grid grid-cols-[1.1fr_1fr] gap-4">
+          <Card>
+            <CardHeader className="border-b">
+              <CardTitle className="font-heading">{t('newProject')}</CardTitle>
+            </CardHeader>
+            <CardContent>
               <NewProjectForm />
-            </div>
-          </div>
-          <div className="card mb-0">
-            <div className="card-header">
-              <h3 className="grow">Gespeicherte Projekte</h3>
-              {isShareAvailable() && (
-                <button className="btn small" onClick={() => void openSharedProjectFromFolder()}>
-                  <FolderSync size={14} /> Geteiltes Projekt öffnen
-                </button>
-              )}
-              <button className="btn small" onClick={() => void openProjectFile()}>
-                <Upload size={14} /> Projektdatei öffnen
-              </button>
-            </div>
-            <div className="card-body">
+            </CardContent>
+          </Card>
+          <Card>
+            <CardHeader className="border-b">
+              <CardTitle className="font-heading">{t('savedProjects')}</CardTitle>
+              <CardAction className="flex gap-1.5">
+                {isShareAvailable() && (
+                  <Button variant="outline" size="sm" onClick={() => void openSharedProjectFromFolder()}>
+                    <FolderSync /> {t('openShared')}
+                  </Button>
+                )}
+                <Button variant="outline" size="sm" onClick={() => void openProjectFile()}>
+                  <Upload /> {t('openFile')}
+                </Button>
+              </CardAction>
+            </CardHeader>
+            <CardContent>
               <ProjectList />
-            </div>
-          </div>
+            </CardContent>
+          </Card>
         </div>
-        <div className="steps">
-          <div className="step">
-            <div className="step-num">1</div>
-            <b>Ordner anlegen</b>
-            Jeder Ordner wird ein Unterordner in plugins/Nexo/items.
-          </div>
-          <div className="step">
-            <div className="step-num">2</div>
-            <b>Modell ablegen</b>
-            .bbmodel, .json + .png oder nur .png per Drag & Drop – mit Namen.
-          </div>
-          <div className="step">
-            <div className="step-num">3</div>
-            <b>Eigenschaften hinzufügen</b>
-            Components, Mechanics (Furniture, Custom Block …), CustomArmor und mehr.
-          </div>
-          <div className="step">
-            <div className="step-num">4</div>
-            <b>Exportieren</b>
-            ZIP in plugins/Nexo entpacken und /nexo reload all ausführen.
-          </div>
+        <div className="mt-8 grid grid-cols-4 gap-3">
+          {STEPS.map((step, i) => (
+            <div key={step} className="rounded-lg border border-border bg-card p-4 text-[13px] leading-5 text-muted-foreground">
+              <div className="mb-2 inline-grid size-6 place-items-center rounded-sm border border-primary bg-primary/10 font-heading text-xs font-bold text-primary">
+                {i + 1}
+              </div>
+              <b className="mb-1 block font-heading text-[13px] leading-4 font-semibold tracking-[0.06em] text-foreground uppercase">
+                {t(`steps.${step}.title`)}
+              </b>
+              {t(`steps.${step}.text`)}
+            </div>
+          ))}
         </div>
       </div>
     </div>
@@ -191,46 +234,58 @@ export function Welcome() {
 }
 
 export function ProjectsDialog({ initialTab = 'open' }: { initialTab?: 'open' | 'new' }) {
+  const t = useTranslations('layout');
   const close = useStore((s) => s.closeDialog);
   const [tab, setTab] = useState<'open' | 'new'>(initialTab);
   return (
-    <Modal title="Projekte" icon={<FolderOpen size={20} />} onClose={close}>
-      <div className="tabs">
-        <button className={`tab ${tab === 'open' ? 'active' : ''}`} onClick={() => setTab('open')}>
-          Öffnen
-        </button>
-        <button className={`tab ${tab === 'new' ? 'active' : ''}`} onClick={() => setTab('new')}>
-          Neues Projekt
-        </button>
-      </div>
-      {tab === 'open' ? (
-        <div className="col">
-          <ProjectList onOpened={close} />
-          <div className="row" style={{ gap: 8 }}>
-            <button
-              className="btn"
-              onClick={async () => {
-                await openProjectFile();
-                close();
-              }}
-            >
-              <Upload size={14} /> Projektdatei öffnen
-            </button>
-            {isShareAvailable() && (
-              <button
-                className="btn"
+    <Dialog
+      open
+      onOpenChange={(open) => {
+        if (!open) close();
+      }}
+    >
+      <DialogContent className="sm:max-w-xl">
+        <DialogHeader>
+          <DialogTitle className="flex items-center gap-2 font-heading text-lg">
+            <FolderOpen className="size-5" /> {t('projectsDialog.title')}
+          </DialogTitle>
+        </DialogHeader>
+        <Tabs value={tab} onValueChange={(value) => setTab(value as 'open' | 'new')}>
+          <TabsList variant="line">
+            <TabsTrigger value="open">{t('projectsDialog.openTab')}</TabsTrigger>
+            <TabsTrigger value="new">{t('projectsDialog.newTab')}</TabsTrigger>
+          </TabsList>
+          <TabsContent value="open" className="flex flex-col gap-3 pt-2">
+            <div className="max-h-[360px] overflow-auto">
+              <ProjectList onOpened={close} />
+            </div>
+            <div className="flex gap-2">
+              <Button
+                variant="outline"
                 onClick={async () => {
-                  if (await openSharedProjectFromFolder()) close();
+                  await openProjectFile();
+                  close();
                 }}
               >
-                <FolderSync size={14} /> Geteiltes Projekt öffnen
-              </button>
-            )}
-          </div>
-        </div>
-      ) : (
-        <NewProjectForm onDone={close} />
-      )}
-    </Modal>
+                <Upload /> {t('welcome.openFile')}
+              </Button>
+              {isShareAvailable() && (
+                <Button
+                  variant="outline"
+                  onClick={async () => {
+                    if (await openSharedProjectFromFolder()) close();
+                  }}
+                >
+                  <FolderSync /> {t('welcome.openShared')}
+                </Button>
+              )}
+            </div>
+          </TabsContent>
+          <TabsContent value="new" className="pt-2">
+            <NewProjectForm onDone={close} />
+          </TabsContent>
+        </Tabs>
+      </DialogContent>
+    </Dialog>
   );
 }

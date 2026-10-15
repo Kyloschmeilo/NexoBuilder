@@ -6,6 +6,7 @@
  * items) is created – paths and file names thus stay exactly as in the full export.
  */
 import type { Project } from '../types';
+import type { MessageParams } from '../errors';
 import { slugify } from '../util';
 import { planExport, type ExportPlan, type PlanOptions, type ProjectIssue } from './plan';
 
@@ -137,7 +138,19 @@ export function planMultiExport(entries: ExportEntry[], options: PlanOptions = {
   for (const { project, plan } of projects) {
     for (const issue of plan.issues) {
       // From the export dialog only items of the open project can be opened – the IDs are kept anyway
-      issues.push({ ...issue, message: `[${project.name}] ${issue.message}`, projectId: project.id });
+      const { level, itemId, folderId, glyphId, soundId, paintingId } = issue;
+      issues.push({
+        level,
+        code: 'context.project',
+        params: { project: project.name },
+        detail: issue,
+        ...(itemId && { itemId }),
+        ...(folderId && { folderId }),
+        ...(glyphId && { glyphId }),
+        ...(soundId && { soundId }),
+        ...(paintingId && { paintingId }),
+        projectId: project.id,
+      });
     }
   }
   issues.push(...crossProjectIssues(projects));
@@ -146,7 +159,7 @@ export function planMultiExport(entries: ExportEntry[], options: PlanOptions = {
 
 function crossProjectIssues(projects: PlannedProject[]): ProjectIssue[] {
   const issues: ProjectIssue[] = [];
-  const error = (message: string) => issues.push({ level: 'error', message });
+  const error = (code: string, params: MessageParams) => issues.push({ level: 'error', code, params });
 
   // Remembers the first project (index) per key and returns its name on overlap
   const firstOwner = <K>(map: Map<K, number>, key: K, owner: number): string | null => {
@@ -170,33 +183,31 @@ function crossProjectIssues(projects: PlannedProject[]): ProjectIssue[] {
     const pack = project.settings.packName;
     const otherPack = firstOwner(packNames, pack.toLowerCase(), index);
     if (otherPack) {
-      error(`„${otherPack}“ und „${name}“ verwenden denselben Pack-Namen „${pack}“. Bitte in den Einstellungen eines Projekts umbenennen.`);
+      error('selection.packNameClash', { first: otherPack, second: name, pack });
     }
     for (const { item } of plan.items) {
       const other = firstOwner(nexoIds, item.nexoId, index);
-      if (other) error(`Die Item-ID „${item.nexoId}“ gibt es in „${other}“ und in „${name}“. Nexo-IDs müssen eindeutig sein.`);
+      if (other) error('selection.itemIdClash', { id: item.nexoId, first: other, second: name });
     }
     for (const glyph of project.glyphs ?? []) {
       const other = firstOwner(glyphIds, glyph.glyphId, index);
-      if (other) error(`Den Glyph „${glyph.glyphId}“ gibt es in „${other}“ und in „${name}“. Glyph-IDs müssen eindeutig sein.`);
+      if (other) error('selection.glyphIdClash', { id: glyph.glyphId, first: other, second: name });
     }
     for (const entry of plan.soundEntries) {
       const id = String(entry.id);
       const other = firstOwner(soundIds, id, index);
-      if (other) error(`Den Sound „${id}“ gibt es in „${other}“ und in „${name}“. Sound-IDs müssen eindeutig sein.`);
+      if (other) error('selection.soundIdClash', { id, first: other, second: name });
     }
     for (const id of Object.keys(plan.paintingEntries)) {
       const other = firstOwner(paintingIds, id, index);
-      if (other) error(`Das Gemälde „${id}“ gibt es in „${other}“ und in „${name}“. Gemälde-IDs müssen eindeutig sein.`);
+      if (other) error('selection.paintingIdClash', { id, first: other, second: name });
     }
     for (const path of [...plan.itemFiles.keys(), ...plan.recipeFiles.keys(), ...plan.glyphFiles.keys()]) {
       const other = firstOwner(pluginFiles, path, index);
       const pair = `${pluginFiles.get(path)}:${index}`;
       if (other && !reportedFilePairs.has(pair)) {
         reportedFilePairs.add(pair);
-        error(
-          `„${other}“ und „${name}“ würden beide die Datei „${path}“ schreiben (gleicher Projektname „${slugify(name, 'resourcepackbuilder')}“). Bitte ein Projekt umbenennen.`,
-        );
+        error('selection.pluginFileClash', { first: other, second: name, path, slug: slugify(name, 'resourcepackbuilder') });
       }
     }
     // Nexo merges all external packs – identical paths then overwrite each other
@@ -205,10 +216,7 @@ function crossProjectIssues(projects: PlannedProject[]): ProjectIssue[] {
       const other = firstOwner(assetFiles, path, index);
       if (other && !reportedAssets.has(path)) {
         reportedAssets.add(path);
-        issues.push({
-          level: 'warning',
-          message: `„${other}“ und „${name}“ enthalten beide „${path}“ – im fertigen Pack gewinnt nur eine Datei. Ein eigener Namespace pro Projekt vermeidet das.`,
-        });
+        issues.push({ level: 'warning', code: 'selection.assetFileClash', params: { first: other, second: name, path } });
       }
     }
   });

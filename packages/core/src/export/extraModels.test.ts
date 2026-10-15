@@ -58,7 +58,7 @@ describe('Additional models', () => {
     // A state with a different type keeps its values, the model is not used
     expect(yaml.Mechanics.furniture.states.kaputt).toEqual({ type: 'CUSTOM_MODEL_DATA', value: '5' });
     expect(plan.packFiles.has('assets/moebel/items/sofas/sofa-state_kaputt.json')).toBe(false);
-    expect(plan.issues.some((i) => i.message.includes('kaputt') && i.level === 'warning')).toBe(true);
+    expect(plan.issues.some((i) => i.code === 'plan.stateTypeUnused' && i.params?.state === 'kaputt' && i.level === 'warning')).toBe(true);
     expect(readJson(plan, 'assets/moebel/items/sofas/sofa-placement_wall.json')).toEqual({
       model: { type: 'minecraft:model', model: 'moebel:item/sofas/sofa-placement_wall' },
     });
@@ -79,8 +79,8 @@ describe('Additional models', () => {
     const sofa = Object.values(project.items)[0];
     sofa.config.Mechanics = {};
     const plan = planExport(project);
-    expect(plan.issues.some((i) => i.message.includes('Mechanic „Furniture“ fehlt'))).toBe(true);
-    expect(plan.issues.some((i) => i.level === 'error' && i.message.includes('1.21.4'))).toBe(true);
+    expect(plan.issues.some((i) => i.code === 'plan.furnitureMechanicMissing')).toBe(true);
+    expect(plan.issues.some((i) => i.level === 'error' && i.params?.version === '1.21.4')).toBe(true);
     expect(plan.packFiles.has('assets/moebel/models/item/sofas/sofa-left.json')).toBe(false);
   });
 

@@ -6,7 +6,7 @@ import { createGlyph } from '../nexo/glyphs';
 import { makePngDataUrl } from '../test/png';
 import { planExport } from './plan';
 import { countSelected, planMultiExport, selectFromProject } from './selection';
-import { buildMultiExportZip, listExportPaths, listMultiExportPaths } from './zip';
+import { buildMultiExportZip, INSTALL_GUIDE_FILE, listExportPaths, listMultiExportPaths } from './zip';
 import type { Project } from '../types';
 
 const PNG16 = makePngDataUrl(16, 16);
@@ -48,7 +48,7 @@ describe('Export selection within a project', () => {
     expect(paths.some((x) => x.includes('moebel'))).toBe(false);
     expect(paths.some((x) => x.startsWith('glyphs/'))).toBe(false);
     // no message about folders that are only empty because of the selection
-    expect(plan.issues.some((i) => i.message.includes('ist leer'))).toBe(false);
+    expect(plan.issues.some((i) => i.code === 'plan.folderEmpty')).toBe(false);
     // The original stays unchanged
     expect(Object.keys(p.items)).toHaveLength(3);
   });
@@ -82,15 +82,15 @@ describe('Export of multiple projects', () => {
     expect(paths).toContain('glyphs/deko.yml');
     expect(paths).toContain('pack/external_packs/waffen_pack/pack.mcmeta');
     expect(paths).toContain('pack/external_packs/deko/pack.mcmeta');
-    expect(paths).toContain('ANLEITUNG.txt');
+    expect(paths).toContain(INSTALL_GUIDE_FILE);
 
     const result = await buildMultiExportZip(multi, 'full');
     expect(result.fileName).toBe('resourcepackbuilder_2_projekte_nexo.zip');
     const zip = await JSZip.loadAsync(result.data);
     const files = Object.keys(zip.files).filter((f) => !zip.files[f].dir).sort();
     expect(files).toEqual(paths);
-    const guide = await zip.file('ANLEITUNG.txt')!.async('string');
-    expect(guide).toContain('Projekt "Waffen Pack"');
+    const guide = await zip.file(INSTALL_GUIDE_FILE)!.async('string');
+    expect(guide).toContain('Project "Waffen Pack"');
     expect(guide).toContain('  - deko_axe');
 
     const packs = listMultiExportPaths(multi, 'pack');
@@ -102,13 +102,15 @@ describe('Export of multiple projects', () => {
     const a = project('Pack', 'shared', { weapons: ['ruby_sword'], furniture: [] });
     const b = project('Pack', 'shared', { weapons: ['ruby_sword'], furniture: [] });
     const multi = planMultiExport([{ project: a }, { project: b }]);
-    const errors = multi.issues.filter((i) => i.level === 'error' && !i.projectId).map((i) => i.message);
-    expect(errors.some((m) => m.includes('Item-ID „ruby_sword“'))).toBe(true);
-    expect(errors.some((m) => m.includes('Glyph „herz“'))).toBe(true);
-    expect(errors.some((m) => m.includes('Pack-Namen „pack“'))).toBe(true);
-    expect(errors.some((m) => m.includes('items/pack/waffen/waffen.yml'))).toBe(true);
-    const warnings = multi.issues.filter((i) => i.level === 'warning' && !i.projectId).map((i) => i.message);
-    expect(warnings.some((m) => m.includes('assets/shared/models/item/waffen/ruby_sword.json'))).toBe(true);
+    const errors = multi.issues.filter((i) => i.level === 'error' && !i.projectId);
+    expect(errors.some((i) => i.code === 'selection.itemIdClash' && i.params?.id === 'ruby_sword')).toBe(true);
+    expect(errors.some((i) => i.code === 'selection.glyphIdClash' && i.params?.id === 'herz')).toBe(true);
+    expect(errors.some((i) => i.code === 'selection.packNameClash' && i.params?.pack === 'pack')).toBe(true);
+    expect(errors.some((i) => i.code === 'selection.pluginFileClash' && i.params?.path === 'items/pack/waffen/waffen.yml')).toBe(true);
+    const warnings = multi.issues.filter((i) => i.level === 'warning' && !i.projectId);
+    expect(
+      warnings.some((i) => i.code === 'selection.assetFileClash' && i.params?.path === 'assets/shared/models/item/waffen/ruby_sword.json'),
+    ).toBe(true);
   });
 
   it('tags messages with the project', () => {
@@ -117,7 +119,9 @@ describe('Export of multiple projects', () => {
     b.glyphs = [];
     const multi = planMultiExport([{ project: a }, { project: b }]);
     const info = multi.issues.find((i) => i.projectId === b.id && i.itemId);
-    expect(info?.message.startsWith('[Beta] ')).toBe(true);
+    expect(info?.code).toBe('context.project');
+    expect(info?.params).toEqual({ project: 'Beta' });
+    expect(info?.detail?.itemId).toBe(info?.itemId);
   });
 
   it('behaves exactly like the normal export with a single project', () => {

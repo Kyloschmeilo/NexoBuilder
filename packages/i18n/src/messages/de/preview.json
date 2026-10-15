@@ -1,1 +1,20 @@
-{}
+{
+  "display": {
+    "label": "Ansicht",
+    "none": "Modell",
+    "gui": "Inventar (GUI)",
+    "thirdperson_righthand": "In der Hand (3. Person)",
+    "firstperson_righthand": "In der Hand (1. Person)",
+    "head": "Auf dem Kopf",
+    "ground": "Auf dem Boden",
+    "fixed": "Rahmen / Möbel (fixed)",
+    "notDefined": "{label} (nicht definiert)"
+  },
+  "resetView": "Ansicht zurücksetzen",
+  "webglUnavailable": "3D-Vorschau nicht verfügbar (WebGL wird von diesem Browser nicht unterstützt).",
+  "notes": {
+    "vanillaParent": "Keine Vorschau: Das Modell nutzt das Parent-Modell „{parent}“ aus Minecraft.",
+    "noElements": "Das Modell enthält keine Elemente.",
+    "noLayer0": "Keine Textur-Ebene (layer0) gefunden."
+  }
+}

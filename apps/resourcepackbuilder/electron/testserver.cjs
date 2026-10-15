@@ -16,6 +16,7 @@ const fs = require('node:fs');
 const fsp = fs.promises;
 const path = require('node:path');
 const zlib = require('node:zlib');
+const { t } = require('./messages.cjs');
 
 const PAPER_API = 'https://fill.papermc.io/v3/projects/paper';
 const ADOPTIUM_API = 'https://api.adoptium.net/v3';
@@ -149,13 +150,13 @@ async function fetchJson(url) {
   } catch {
     // not a JSON response
   }
-  if (!res.ok) throw new Error(data?.message ? `${data.message} (${res.status})` : `Anfrage fehlgeschlagen (${res.status}): ${url}`);
+  if (!res.ok) throw new Error(data?.message ? `${data.message} (${res.status})` : t('ts.requestFailed', { status: res.status, url }));
   return data;
 }
 
 async function download(url, dest, label, expectedSha256) {
   const res = await net.fetch(url, { headers: { 'User-Agent': userAgent() } });
-  if (!res.ok || !res.body) throw new Error(`Download fehlgeschlagen (${res.status}): ${label}`);
+  if (!res.ok || !res.body) throw new Error(t('ts.downloadFailed', { status: res.status, label }));
   const total = Number(res.headers.get('content-length')) || 0;
   await fsp.mkdir(path.dirname(dest), { recursive: true });
   const tmp = `${dest}.part`;
@@ -174,7 +175,7 @@ async function download(url, dest, label, expectedSha256) {
       const percent = total ? Math.floor((received / total) * 100) : null;
       if (percent !== lastPercent) {
         lastPercent = percent;
-        setState({ message: `${label} wird heruntergeladen …${percent !== null ? ` ${percent} %` : ''}`, progress: percent });
+        setState({ message: percent !== null ? t('ts.downloadingPercent', { label, percent }) : t('ts.downloading', { label }), progress: percent });
       }
     }
     await new Promise((resolve, reject) => file.end((err) => (err ? reject(err) : resolve())));
@@ -185,7 +186,7 @@ async function download(url, dest, label, expectedSha256) {
   }
   if (expectedSha256 && hash.digest('hex') !== String(expectedSha256).toLowerCase()) {
     await fsp.rm(tmp, { force: true });
-    throw new Error(`${label}: Prüfsumme stimmt nicht – Download beschädigt. Bitte erneut versuchen.`);
+    throw new Error(t('ts.checksumMismatch', { label }));
   }
   await fsp.rename(tmp, dest);
   setState({ progress: null });
@@ -220,15 +221,15 @@ async function ensurePaper(version) {
   const testJar = process.env.RESOURCEPACKBUILDER_TEST_PAPER_JAR; // automated tests only
   if (testJar) return { jar: testJar, version: version || 'test', build: 0, javaMin: 17 };
 
-  setState({ message: `Suche Paper ${version} …` });
+  setState({ message: t('ts.searchingPaper', { version }) });
   const builds = await fetchJson(`${PAPER_API}/versions/${encodeURIComponent(version)}/builds`);
-  if (!Array.isArray(builds) || builds.length === 0) throw new Error(`Für Minecraft ${version} gibt es keinen Paper-Build.`);
+  if (!Array.isArray(builds) || builds.length === 0) throw new Error(t('ts.noPaperBuild', { version }));
   const stable = builds.filter((b) => b && b.channel === 'STABLE');
   const pool = stable.length ? stable : builds;
   const pick = pool.reduce((best, b) => (!best || Number(b.id) > Number(best.id) ? b : best), null);
   const dl = pick?.downloads?.['server:default'];
-  if (!dl?.url) throw new Error(`Paper ${version}: kein Download gefunden.`);
-  if (!stable.length) info(`Hinweis: Für Paper ${version} gibt es nur einen experimentellen Build (#${pick.id}).`);
+  if (!dl?.url) throw new Error(t('ts.noPaperDownload', { version }));
+  if (!stable.length) info(t('ts.experimentalBuild', { version, build: pick.id }));
 
   let javaMin = guessJavaFor(version);
   try {
@@ -242,7 +243,7 @@ async function ensurePaper(version) {
   const name = typeof dl.name === 'string' && /^[\w.-]+\.jar$/.test(dl.name) ? dl.name : `paper-${version}-${pick.id}.jar`;
   const dest = path.join(downloadsDir(), name);
   if (!fs.existsSync(dest)) {
-    info(`Lade Paper ${version} (Build ${pick.id}) herunter …`);
+    info(t('ts.downloadingPaper', { version, build: pick.id }));
     await download(dl.url, dest, `Paper ${version}`, dl.checksums?.sha256);
   }
   return { jar: dest, version, build: pick.id, javaMin };
@@ -300,8 +301,8 @@ async function ensureJava(minVersion) {
   // Download a matching Java (Eclipse Temurin)
   const osName = { win32: 'windows', linux: 'linux', darwin: 'mac' }[process.platform];
   const arch = { x64: 'x64', arm64: 'aarch64' }[process.arch];
-  if (!osName || !arch) throw new Error(`Java ${minVersion} wird benötigt. Bitte selbst installieren.`);
-  setState({ message: `Suche Java ${minVersion} …` });
+  if (!osName || !arch) throw new Error(t('ts.javaRequired', { version: minVersion }));
+  setState({ message: t('ts.searchingJava', { version: minVersion }) });
   let pkg = null;
   try {
     const assets = await fetchJson(
@@ -314,10 +315,10 @@ async function ensureJava(minVersion) {
   const url = pkg?.link || `${ADOPTIUM_API}/binary/latest/${minVersion}/ga/${osName}/${arch}/jre/hotspot/normal/eclipse`;
   const archiveName = typeof pkg?.name === 'string' && /^[\w.+-]+$/.test(pkg.name) ? pkg.name : `java-${minVersion}${osName === 'windows' ? '.zip' : '.tar.gz'}`;
   const archive = path.join(downloadsDir(), archiveName);
-  info(`Java ${minVersion} wurde nicht gefunden – lade Eclipse Temurin ${minVersion} herunter …`);
+  info(t('ts.javaNotFound', { version: minVersion }));
   await download(url, archive, `Java ${minVersion}`, pkg?.checksum);
 
-  setState({ message: `Java ${minVersion} wird entpackt …` });
+  setState({ message: t('ts.extractingJava', { version: minVersion }) });
   const target = path.join(javaDir(), String(minVersion));
   await fsp.rm(target, { recursive: true, force: true });
   await fsp.mkdir(target, { recursive: true });
@@ -325,13 +326,13 @@ async function ensureJava(minVersion) {
   const tar = process.platform === 'win32' ? path.join(process.env.SystemRoot || 'C:\\Windows', 'System32', 'tar.exe') : 'tar';
   await new Promise((resolve, reject) =>
     execFile(tar, ['-xf', archive, '-C', target], { windowsHide: true, timeout: 5 * 60_000 }, (err, _out, stderr) =>
-      err ? reject(new Error(`Java konnte nicht entpackt werden: ${stderr || err.message}`)) : resolve(),
+      err ? reject(new Error(t('ts.javaExtractFailed', { error: stderr || err.message }))) : resolve(),
     ),
   );
   await fsp.rm(archive, { force: true });
   const javaPath = await findJavaIn(target);
   const version = javaPath ? await javaVersionOf(javaPath) : null;
-  if (!javaPath || !version) throw new Error('Das heruntergeladene Java funktioniert nicht.');
+  if (!javaPath || !version) throw new Error(t('ts.javaBroken'));
   return { path: javaPath, version };
 }
 
@@ -381,9 +382,9 @@ async function chooseNexoJar(win) {
   let source = process.env.RESOURCEPACKBUILDER_TEST_NEXO_JAR; // automated tests only
   if (!source) {
     const result = await dialog.showOpenDialog(win, {
-      title: 'Nexo-Plugin (JAR) auswählen',
-      buttonLabel: 'Auswählen',
-      filters: [{ name: 'Minecraft-Plugin', extensions: ['jar'] }],
+      title: t('ts.chooseNexoJar'),
+      buttonLabel: t('ts.choose'),
+      filters: [{ name: t('ts.pluginFilter'), extensions: ['jar'] }],
       properties: ['openFile'],
     });
     if (result.canceled || !result.filePaths[0]) return null;
@@ -391,8 +392,8 @@ async function chooseNexoJar(win) {
   }
   const buffer = await fsp.readFile(source);
   const plugin = inspectPluginJar(buffer);
-  if (!plugin) throw new Error('Das ist keine gültige Plugin-Datei (paper-plugin.yml fehlt).');
-  if (plugin.name.toLowerCase() !== 'nexo') throw new Error(`Das ist nicht Nexo, sondern „${plugin.name}“.`);
+  if (!plugin) throw new Error(t('ts.notAPlugin'));
+  if (plugin.name.toLowerCase() !== 'nexo') throw new Error(t('ts.notNexo', { name: plugin.name }));
   const file = `Nexo-${plugin.version.replace(/[^\w.-]/g, '_') || 'unbekannt'}.jar`;
   await fsp.rm(pluginStore(), { recursive: true, force: true });
   await fsp.mkdir(pluginStore(), { recursive: true });
@@ -400,7 +401,7 @@ async function chooseNexoJar(win) {
   state.config = { ...state.config, nexoJar: { file, name: plugin.name, version: plugin.version } };
   await saveConfig();
   setState({});
-  info(`Nexo ${plugin.version} ausgewählt.`);
+  info(t('ts.nexoSelected', { version: plugin.version }));
   return state.config.nexoJar;
 }
 
@@ -445,7 +446,7 @@ async function prepareServerFiles() {
     const patched = text.replace(/^(\s+disable-(?:noteblock|tripwire|chorus-plant)-updates:)\s*false\s*$/gm, '$1 true');
     if (patched !== text) {
       await fsp.writeFile(paperGlobal, patched);
-      info('Paper-Einstellungen für Nexo angepasst (Notenblock-, Stolperdraht- und Chorus-Updates aus).');
+      info(t('ts.paperSettingsPatched'));
     }
   }
   // Cache of the obfuscated pack; can be corrupted after aborted runs
@@ -461,7 +462,7 @@ async function prepareServerFiles() {
   }
   if (wanted) {
     const source = path.join(pluginStore(), wanted);
-    if (!fs.existsSync(source)) throw new Error('Die Nexo-JAR fehlt. Bitte erneut auswählen.');
+    if (!fs.existsSync(source)) throw new Error(t('ts.nexoJarMissing'));
     await fsp.copyFile(source, path.join(pluginsDir, wanted));
   }
 }
@@ -481,7 +482,7 @@ function setPack(status, message = null) {
   packTimer = null;
   if (status === 'building') {
     packTimer = setTimeout(() => {
-      info('Nexo hat sich nicht zurückgemeldet – das Resourcepack gilt als fertig.');
+      info(t('ts.packTimeout'));
       setPack('idle');
     }, PACK_BUILD_TIMEOUT_MS);
   }
@@ -496,19 +497,19 @@ function setPack(status, message = null) {
 function requestReload() {
   if (state.status !== 'running' || !proc) return false;
   if (state.pack.status === 'building') {
-    if (!reloadPending) info('Nexo erstellt gerade das Resourcepack – neu geladen wird, sobald es fertig ist.');
+    if (!reloadPending) info(t('ts.reloadQueued'));
     reloadPending = true;
     return false;
   }
   const sent = sendCommand('nexo reload all');
-  if (sent && state.config.nexoJar) setPack('building', 'Nexo lädt neu und erstellt das Resourcepack …');
+  if (sent && state.config.nexoJar) setPack('building', t('ts.packReloading'));
   return sent;
 }
 
 function watchNexoPack(line) {
   if (!/Nexo/.test(line)) return;
   if (/Generating resourcepack/i.test(line)) {
-    if (state.pack.status !== 'building') setPack('building', 'Nexo erstellt das Resourcepack …');
+    if (state.pack.status !== 'building') setPack('building', t('ts.packBuilding'));
     return;
   }
   const uploaded = /Resourcepack uploaded and will be dispatched with publicAddress\s*(\S*)|ResourcePack uploaded:\s*(\S*)/i.exec(line);
@@ -517,7 +518,7 @@ function watchNexoPack(line) {
     return;
   }
   const failed = /Failed to build and send the finished ResourcePack:\s*(.*)|Upload failed:\s*(.*)|could not be uploaded(.*)/i.exec(line);
-  if (failed) setPack('failed', (failed[1] || failed[2] || failed[3] || '').trim() || 'Unbekannter Fehler');
+  if (failed) setPack('failed', (failed[1] || failed[2] || failed[3] || '').trim() || t('ts.unknownError'));
 }
 
 function handleLine(line) {
@@ -528,7 +529,7 @@ function handleLine(line) {
     if (state.config.playerName) sendCommand(`op ${state.config.playerName}`);
   }
   if (/FAILED TO BIND TO PORT/i.test(line)) {
-    setState({ message: `Port ${state.config.port} ist belegt – läuft schon ein anderer Minecraft-Server?` });
+    setState({ message: t('ts.portInUse', { port: state.config.port }) });
   }
 }
 
@@ -548,10 +549,10 @@ function attachOutput(stream, kind) {
 async function start() {
   await loadConfig();
   if (proc || ['preparing', 'starting', 'running', 'stopping'].includes(state.status)) return publicState();
-  if (!state.config.eulaAccepted) throw new Error('Bitte zuerst die Minecraft-EULA akzeptieren.');
-  if (!state.config.paperVersion) throw new Error('Bitte eine Minecraft-Version wählen.');
+  if (!state.config.eulaAccepted) throw new Error(t('ts.eulaRequired'));
+  if (!state.config.paperVersion) throw new Error(t('ts.versionRequired'));
   stopRequested = false;
-  setState({ status: 'preparing', message: 'Bereite den Testserver vor …', progress: null });
+  setState({ status: 'preparing', message: t('ts.preparing'), progress: null });
   try {
     const paper = await ensurePaper(state.config.paperVersion);
     const java = await ensureJava(paper.javaMin);
@@ -559,11 +560,11 @@ async function start() {
     await saveConfig();
     await prepareServerFiles();
 
-    info(`Starte Paper ${paper.version} mit Java ${java.version} (${state.config.ramGb} GB RAM) …`);
+    info(t('ts.startingPaper', { version: paper.version, java: java.version, ram: state.config.ramGb }));
     reloadPending = false;
-    setState({ status: 'starting', message: 'Server startet …' });
+    setState({ status: 'starting', message: t('ts.starting') });
     // Nexo builds the pack on startup; no reload until then
-    if (state.config.nexoJar) setPack('building', 'Nexo erstellt beim Start das Resourcepack …');
+    if (state.config.nexoJar) setPack('building', t('ts.packBuildingOnStart'));
     else setPack('idle');
     const args = ['-Xms512M', `-Xmx${state.config.ramGb}G`, '-Dfile.encoding=UTF-8', '-jar', paper.jar, '--nogui'];
     const child = spawn(java.path, args, { cwd: serverDir(), windowsHide: true, stdio: ['pipe', 'pipe', 'pipe'] });
@@ -572,17 +573,17 @@ async function start() {
     attachOutput(child.stderr, 'err');
     child.stdin.on('error', () => undefined);
     child.on('error', (err) => {
-      pushLog(`Server konnte nicht gestartet werden: ${err.message}`, 'err');
+      pushLog(t('ts.startFailed', { error: err.message }), 'err');
     });
     child.on('exit', (code) => {
       if (proc === child) proc = null;
       const expected = stopRequested;
       stopRequested = false;
-      info(`Server beendet${code !== null ? ` (Code ${code})` : ''}.`);
+      info(code !== null ? t('ts.exitedCode', { code }) : t('ts.exited'));
       reloadPending = false;
       setPack('idle');
       if (expected || code === 0) setState({ status: 'stopped', message: null, startedAt: null, progress: null });
-      else setState({ status: 'error', message: state.message || `Der Server wurde unerwartet beendet (Code ${code}). Details in der Konsole.`, startedAt: null });
+      else setState({ status: 'error', message: state.message || t('ts.crashed', { code }), startedAt: null });
     });
   } catch (err) {
     pushLog(err.message, 'err');
@@ -606,11 +607,11 @@ async function stop() {
     return;
   }
   stopRequested = true;
-  setState({ status: 'stopping', message: 'Server wird gestoppt (Welt wird gespeichert) …' });
+  setState({ status: 'stopping', message: t('ts.stopping') });
   sendCommand('stop');
   await new Promise((resolve) => {
     const timer = setTimeout(() => {
-      pushLog('Server reagiert nicht – wird beendet.', 'err');
+      pushLog(t('ts.notResponding'), 'err');
       child.kill('SIGKILL');
       resolve();
     }, STOP_TIMEOUT_MS);
@@ -632,9 +633,9 @@ const SYNC_PATH = /^((items|recipes|glyphs|pack\/external_packs)\/.+|sounds\.yml
 const SAFE_SEGMENT = /^[A-Za-z0-9_.+-]+$/;
 
 function syncTarget(rel) {
-  if (typeof rel !== 'string' || !SYNC_PATH.test(rel)) throw new Error(`Ungültiger Pfad: ${rel}`);
+  if (typeof rel !== 'string' || !SYNC_PATH.test(rel)) throw new Error(t('ts.invalidPath', { path: rel }));
   const segments = rel.split('/');
-  if (segments.some((s) => !SAFE_SEGMENT.test(s) || s === '.' || s === '..')) throw new Error(`Ungültiger Pfad: ${rel}`);
+  if (segments.some((s) => !SAFE_SEGMENT.test(s) || s === '.' || s === '..')) throw new Error(t('ts.invalidPath', { path: rel }));
   return path.join(nexoDir(), ...segments);
 }
 
@@ -664,7 +665,7 @@ async function pruneEmptyDirs(dir) {
  * missing (deleted items, a different project) is removed. Other files are left untouched.
  */
 async function syncFiles(files, options = {}) {
-  if (!Array.isArray(files)) throw new Error('Ungültige Dateien');
+  if (!Array.isArray(files)) throw new Error(t('ts.invalidFiles'));
   let manifest = {};
   try {
     manifest = JSON.parse(await fsp.readFile(manifestFile(), 'utf8'));
@@ -681,7 +682,7 @@ async function syncFiles(files, options = {}) {
       target = syncTarget(file.path);
     } catch {
       skipped++;
-      pushLog(`Übersprungen (ungültiger Dateiname): ${String(file.path)}`, 'err');
+      pushLog(t('ts.skippedFile', { path: String(file.path) }), 'err');
       continue;
     }
     const data = typeof file.data === 'string' ? Buffer.from(file.data, 'utf8') : Buffer.from(file.data);
@@ -719,7 +720,7 @@ async function syncFiles(files, options = {}) {
   if (changed && options.reload && state.status === 'running') {
     reloaded = requestReload() || reloadPending;
   }
-  if (changed) info(`Projekt übertragen: ${written} geschrieben, ${deleted} entfernt${settingsChanged ? ', Einstellungen angepasst' : ''}.`);
+  if (changed) info(t(settingsChanged ? 'ts.syncedSettings' : 'ts.synced', { written, deleted }));
   state.lastSync = Date.now();
   setState({});
   return { written, deleted, skipped, settingsChanged, reloaded, total: files.length };
@@ -759,7 +760,7 @@ function registerTestServerHandlers() {
     const sent = sendCommand(command);
     // A manually entered reload also rebuilds the pack
     if (sent && state.config.nexoJar && /^\/?(nexo|n)\s+(reload|rl)\b/i.test(String(command).trim())) {
-      setPack('building', 'Nexo lädt neu und erstellt das Resourcepack …');
+      setPack('building', t('ts.packReloading'));
     }
     return sent;
   });

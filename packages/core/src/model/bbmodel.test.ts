@@ -102,7 +102,7 @@ describe('convertBBModel', () => {
     const faces = result.json.elements![0].faces;
     expect(Object.keys(faces).sort()).toEqual(['north', 'south']);
     expect(faces.south!.texture).toBe('#missing');
-    expect(result.issues.some((i) => i.level === 'warning' && i.message.includes('keine Textur'))).toBe(true);
+    expect(result.issues.some((i) => i.level === 'warning' && i.code === 'model.facesWithoutTexture')).toBe(true);
   });
 
   it('writes single-axis rotations classically and free angles with a version hint', () => {
@@ -164,13 +164,13 @@ describe('convertBBModel', () => {
 
   it('reports cubes outside -16 to 32 as errors', () => {
     const result = convertBBModel(bbmodel({ elements: [cube({ uuid: 'c1', from: [-20, 0, 0], to: [0, 1, 1] })] }), 'x');
-    expect(result.issues.some((i) => i.level === 'error' && i.message.includes('-16 bis 32'))).toBe(true);
+    expect(result.issues.some((i) => i.level === 'error' && i.code === 'model.cubesOutOfBounds')).toBe(true);
   });
 
   it('resolves non-embedded textures via additionally dropped PNGs', () => {
     const missing = convertBBModel(bbmodel({ textures: [texture({ source: undefined, internal: false })] }), 'x');
     expect(missing.textures[0].dataUrl).toBe('');
-    expect(missing.issues.some((i) => i.level === 'error' && i.message.includes('nicht in der .bbmodel'))).toBe(true);
+    expect(missing.issues.some((i) => i.level === 'error' && i.code === 'model.textureNotEmbedded')).toBe(true);
 
     const resolved = convertBBModel(bbmodel({ textures: [texture({ source: undefined, internal: false })] }), 'x', [
       { name: 'Ruby.PNG', dataUrl: PNG_32 },
@@ -196,7 +196,7 @@ describe('convertBBModel', () => {
     const el = result.json.elements![0];
     expect(el.from).toEqual([4, 0, 4]);
     expect(el.to).toEqual([12, 8, 12]);
-    expect(result.issues.some((i) => i.level === 'warning' && i.message.includes('Generic Model'))).toBe(true);
+    expect(result.issues.some((i) => i.level === 'warning' && i.code === 'model.nonJavaFormat' && i.params?.format === 'Generic Model')).toBe(true);
   });
 
   it('takes over display settings, parent and GUI light', () => {
@@ -233,7 +233,7 @@ describe('convertBBModel', () => {
   });
 
   it('throws an understandable error for invalid files', () => {
-    expect(() => convertBBModel('{broken', 'x.bbmodel')).toThrow(/keine gültige/);
-    expect(() => convertBBModel('{"foo":1}', 'x.bbmodel')).toThrow(/kein Blockbench-Modell/);
+    expect(() => convertBBModel('{broken', 'x.bbmodel')).toThrow('model.invalidBbmodel');
+    expect(() => convertBBModel('{"foo":1}', 'x.bbmodel')).toThrow('model.noBlockbenchModel');
   });
 });

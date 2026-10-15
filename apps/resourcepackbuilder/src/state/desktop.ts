@@ -42,13 +42,17 @@ export interface TestServerConfig {
 
 export interface TestServerState {
   status: TestServerStatus;
+  /** Already translated by the main process (in the language last passed to `setLocale`) */
   message: string | null;
   progress: number | null;
   config: TestServerConfig;
   installed: { paperVersion: string; paperBuild: number; javaPath: string; javaVersion: number } | null;
   startedAt: number | null;
   lastSync: number | null;
-  /** State of the Nexo resource pack (read from the server output) */
+  /**
+   * State of the Nexo resource pack (read from the server output). `message` is translated by the main
+   * process while building; for `ready` it is the pack URL, for `failed` Nexo's own error text.
+   */
   pack: { status: 'idle' | 'building' | 'ready' | 'failed'; message: string | null; at: number | null };
   serverDir: string;
   /** Address for Minecraft (direct connection) */
@@ -92,10 +96,20 @@ export interface DesktopTestServerApi {
   onEvent(callback: (event: TestServerEvent) => void): () => void;
 }
 
+/** App-wide functions of the desktop program. */
+export interface DesktopAppApi {
+  /** Tells the main process the UI language (menus, native dialogs, test-server messages). */
+  setLocale(locale: string): Promise<void>;
+}
+
 declare global {
   interface Window {
-    nexoDesktop?: { share?: DesktopShareApi; testServer?: DesktopTestServerApi };
+    nexoDesktop?: { app?: DesktopAppApi; share?: DesktopShareApi; testServer?: DesktopTestServerApi };
   }
+}
+
+export function desktopApp(): DesktopAppApi | null {
+  return (typeof window !== 'undefined' && window.nexoDesktop?.app) || null;
 }
 
 export function desktopShare(): DesktopShareApi | null {

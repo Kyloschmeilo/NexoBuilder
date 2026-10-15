@@ -2,19 +2,16 @@ import { useEffect, useMemo, useRef, useState } from 'react';
 import * as THREE from 'three';
 import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 import { RotateCcw } from 'lucide-react';
+import { useTranslations } from 'next-intl';
+import { Button } from '@resourcepackbuilder/ui/components/button';
+import { NativeSelect, NativeSelectOption } from '@resourcepackbuilder/ui/components/native-select';
+import { Tooltip, TooltipContent, TooltipTrigger } from '@resourcepackbuilder/ui/components/tooltip';
 import type { ImportedModel, JavaDisplayTransform } from '@resourcepackbuilder/core/types';
 import { buildPreviewModel, type PreviewModel } from './modelGeometry';
 import { createModelObject } from './threeModel';
 
-const DISPLAY_OPTIONS: Array<{ value: string; label: string }> = [
-  { value: 'none', label: 'Modell' },
-  { value: 'gui', label: 'Inventar (GUI)' },
-  { value: 'thirdperson_righthand', label: 'In der Hand (3. Person)' },
-  { value: 'firstperson_righthand', label: 'In der Hand (1. Person)' },
-  { value: 'head', label: 'Auf dem Kopf' },
-  { value: 'ground', label: 'Auf dem Boden' },
-  { value: 'fixed', label: 'Rahmen / Möbel (fixed)' },
-];
+/** Display slots that can be previewed; labels live in the `preview.display` messages. */
+const DISPLAY_OPTIONS = ['none', 'gui', 'thirdperson_righthand', 'firstperson_righthand', 'head', 'ground', 'fixed'] as const;
 
 interface ModelPreviewProps {
   model: ImportedModel;
@@ -23,10 +20,11 @@ interface ModelPreviewProps {
 }
 
 export function ModelPreview({ model, height = 340, showToolbar = true }: ModelPreviewProps) {
+  const t = useTranslations('preview');
   const containerRef = useRef<HTMLDivElement>(null);
   const [display, setDisplay] = useState('none');
   const [resetCounter, setResetCounter] = useState(0);
-  const [error, setError] = useState<string | null>(null);
+  const [webglError, setWebglError] = useState(false);
   const preview = useMemo<PreviewModel>(() => buildPreviewModel(model), [model]);
   const displayTransform = display === 'none' ? undefined : (model.json.display?.[display] as JavaDisplayTransform | undefined);
 
@@ -37,10 +35,10 @@ export function ModelPreview({ model, height = 340, showToolbar = true }: ModelP
     try {
       renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
     } catch {
-      setError('3D-Vorschau nicht verfügbar (WebGL wird von diesem Browser nicht unterstützt).');
+      setWebglError(true);
       return;
     }
-    setError(null);
+    setWebglError(false);
     let disposed = false;
     renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
     renderer.outputColorSpace = THREE.SRGBColorSpace;
@@ -119,24 +117,45 @@ export function ModelPreview({ model, height = 340, showToolbar = true }: ModelP
 
   const hasDisplay = (slot: string) => slot === 'none' || !!model.json.display?.[slot];
 
+  const note = webglError
+    ? t('webglUnavailable')
+    : preview.kind === 'empty' && preview.note
+      ? t(`notes.${preview.note.code}`, preview.note.params)
+      : null;
+
   return (
-    <div className="preview-3d" style={{ height }}>
-      <div ref={containerRef} style={{ position: 'absolute', inset: 0 }} />
-      {(preview.kind === 'empty' || error) && <div className="preview-note">{error ?? preview.note}</div>}
-      {showToolbar && preview.kind !== 'empty' && !error && (
-        <div className="preview-toolbar">
-          <select className="select" value={display} onChange={(e) => setDisplay(e.target.value)} title="Ansicht">
-            {DISPLAY_OPTIONS.map((o) => (
-              <option key={o.value} value={o.value} disabled={!hasDisplay(o.value)}>
-                {o.label}
-                {!hasDisplay(o.value) ? ' (nicht definiert)' : ''}
-              </option>
+    <div className="relative overflow-hidden rounded-lg border border-border bg-background" style={{ height }}>
+      <div ref={containerRef} className="absolute inset-0 [&>canvas]:block [&>canvas]:size-full" />
+      {(preview.kind === 'empty' || webglError) && (
+        <div className="absolute inset-0 grid place-items-center p-5 text-center text-[13px] text-muted-foreground">{note}</div>
+      )}
+      {showToolbar && preview.kind !== 'empty' && !webglError && (
+        <div className="pointer-events-none absolute inset-x-2 top-2 flex items-center gap-1.5 [&>*]:pointer-events-auto">
+          <NativeSelect
+            size="sm"
+            className="max-w-[220px] bg-card [&_select]:text-xs"
+            value={display}
+            onChange={(e) => setDisplay(e.target.value)}
+            title={t('display.label')}
+            aria-label={t('display.label')}
+          >
+            {DISPLAY_OPTIONS.map((slot) => (
+              <NativeSelectOption key={slot} value={slot} disabled={!hasDisplay(slot)}>
+                {hasDisplay(slot) ? t(`display.${slot}`) : t('display.notDefined', { label: t(`display.${slot}`) })}
+              </NativeSelectOption>
             ))}
-          </select>
-          <span className="spacer" />
-          <button className="btn small icon" title="Ansicht zurücksetzen" onClick={() => setResetCounter((c) => c + 1)}>
-            <RotateCcw size={14} />
-          </button>
+          </NativeSelect>
+          <span className="flex-1" />
+          <Tooltip>
+            <TooltipTrigger
+              render={
+                <Button variant="outline" size="icon-sm" className="bg-card" aria-label={t('resetView')} onClick={() => setResetCounter((c) => c + 1)} />
+              }
+            >
+              <RotateCcw />
+            </TooltipTrigger>
+            <TooltipContent>{t('resetView')}</TooltipContent>
+          </Tooltip>
         </div>
       )}
     </div>

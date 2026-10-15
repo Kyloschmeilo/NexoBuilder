@@ -3,8 +3,6 @@ import type {} from '@resourcepackbuilder/i18n';
 export * from './DropZone';
 export * from './IssueList';
 export * from './MiniMessage';
-export * from './Modal';
-export * from './Popover';
 export * from './YamlView';
 export * from './files';
 export * from './form/FieldRenderer';

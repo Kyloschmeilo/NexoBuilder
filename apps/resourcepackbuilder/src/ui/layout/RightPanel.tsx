@@ -1,17 +1,19 @@
 import { Code } from 'lucide-react';
+import { useTranslations } from 'next-intl';
 import type { ExportPlan } from '@resourcepackbuilder/core/export/plan';
 import { issuesForItem } from '@resourcepackbuilder/core/export/plan';
+import { IssueList, CopyButton, YamlView } from '@resourcepackbuilder/ui';
+import { ScrollArea } from '@resourcepackbuilder/ui/components/scroll-area';
 import { useStore } from '../../state/store';
-import { IssueList } from '@resourcepackbuilder/ui';
-import { CopyButton, YamlView } from '@resourcepackbuilder/ui';
 import { itemYamlPreview } from '../item/YamlTab';
 
 /** Right panel: live YAML of the selected item or the folder file. */
 export function RightPanel({ plan }: { plan: ExportPlan | null }) {
+  const t = useTranslations('layout.rightPanel');
   const project = useStore((s) => s.project)!;
   const selection = useStore((s) => s.selection);
 
-  let title = 'YAML-Vorschau';
+  let title = t('title');
   let text = '';
   let issues = null as ReturnType<typeof issuesForItem> | null;
 
@@ -37,33 +39,29 @@ export function RightPanel({ plan }: { plan: ExportPlan | null }) {
   }
 
   return (
-    <aside className="rightpanel">
-      <div className="rightpanel-header">
-        <Code size={16} />
-        <span className="grow mono small" style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }} title={title}>
+    <aside className="flex min-h-0 w-[400px] flex-col border-l border-sidebar-border bg-sidebar text-sidebar-foreground">
+      <div className="flex items-center gap-2 border-b border-sidebar-border px-4 py-3 font-heading text-[13px] leading-4 font-semibold tracking-[0.08em] uppercase">
+        <Code className="size-4 shrink-0" />
+        <span className="min-w-0 flex-1 truncate font-mono text-xs tracking-normal normal-case" title={title}>
           {title}
         </span>
         {text && <CopyButton text={text} />}
       </div>
-      <div className="rightpanel-body">
+      <ScrollArea className="min-h-0 flex-1">
         {text ? (
-          <div style={{ padding: 10 }}>
+          <div className="p-2.5">
             <YamlView text={text} />
           </div>
         ) : (
-          <div className="empty-state small">
-            <div>Wähle ein Item, um hier das fertige Nexo-YAML zu sehen.</div>
-          </div>
+          <div className="p-8 text-center text-xs text-muted-foreground">{t('empty')}</div>
         )}
         {issues && issues.length > 0 && (
-          <div style={{ padding: '0 10px 14px' }}>
-            <div className="field-label" style={{ margin: '6px 0 8px' }}>
-              Prüfung
-            </div>
+          <div className="px-2.5 pb-3.5">
+            <div className="mt-1.5 mb-2 text-xs font-medium text-muted-foreground">{t('checks')}</div>
             <IssueList issues={issues} onOpenItem={undefined} />
           </div>
         )}
-      </div>
+      </ScrollArea>
     </aside>
   );
 }

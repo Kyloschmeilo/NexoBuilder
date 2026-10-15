@@ -54,9 +54,16 @@ export interface BuildContext {
   extraConfig?: Array<{ path: string[]; value: unknown; ifMissing?: boolean }>;
 }
 
+/**
+ * Problem with the item's additional YAML (YAML tab):
+ * - `syntax`: the YAML does not parse; `message` is the YAML library's error text (English, not translated)
+ * - `notAMapping`: the YAML is valid but not a key-value mapping (e.g. "Mechanics: ...")
+ */
+export type RawYamlError = { kind: 'syntax'; message: string } | { kind: 'notAMapping' };
+
 export interface BuildResult {
   config: Record<string, unknown>;
-  rawYamlError: string | null;
+  rawYamlError: RawYamlError | null;
 }
 
 export function buildItemConfig(ctx: BuildContext): BuildResult {
@@ -140,13 +147,13 @@ export function buildItemConfig(ctx: BuildContext): BuildResult {
   }
 
   // 4. Overlay custom YAML
-  let rawYamlError: string | null = null;
+  let rawYamlError: RawYamlError | null = null;
   if (item.rawYaml.trim()) {
     const parsed = parseYaml(item.rawYaml);
     if (parsed.error) {
-      rawYamlError = parsed.error;
+      rawYamlError = { kind: 'syntax', message: parsed.error };
     } else if (parsed.value !== null && !isPlainObject(parsed.value)) {
-      rawYamlError = 'Das zusätzliche YAML muss aus Schlüssel-Wert-Paaren bestehen (z.B. "Mechanics: ...").';
+      rawYamlError = { kind: 'notAMapping' };
     } else if (isPlainObject(parsed.value)) {
       return { config: deepMerge(result, parsed.value), rawYamlError: null };
     }

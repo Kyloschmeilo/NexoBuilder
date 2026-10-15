@@ -65,9 +65,9 @@ describe('recipes', () => {
     const empty = createRecipe('shaped', 'x');
     expect(validateRecipe(empty, project, 'k').some((i) => i.level === 'error')).toBe(true);
     const furnace = createRecipe('furnace', 'y');
-    expect(validateRecipe(furnace, project, 'k').some((i) => i.message.includes('keine Zutat'))).toBe(true);
+    expect(validateRecipe(furnace, project, 'k').some((i) => i.detail?.code === 'recipe.ingredientMissing')).toBe(true);
     furnace.input = { source: 'minecraft', id: 'RAW IRON' };
-    expect(validateRecipe(furnace, project, 'k').some((i) => i.message.includes('kein gültiger'))).toBe(true);
+    expect(validateRecipe(furnace, project, 'k').some((i) => i.detail?.code === 'recipe.materialInvalid')).toBe(true);
     furnace.input = { source: 'minecraft', id: 'RAW_IRON' };
     expect(validateRecipe(furnace, project, 'k')).toEqual([]);
   });

@@ -1,6 +1,7 @@
 import { createTranslator } from 'next-intl';
 import { create } from 'zustand';
 import { messagesByLocale, readStoredLocale, writeStoredLocale, type Messages, type SupportedLocale } from '@resourcepackbuilder/i18n';
+import { desktopApp } from '../state/desktop';
 
 interface LocaleState {
   /** The language the app is shown in, persisted on this device. */
@@ -17,6 +18,17 @@ export const useLocaleStore = create<LocaleState>((set) => ({
     set({ locale });
   },
 }));
+
+/** Keeps the desktop program's menus, native dialogs and test-server messages in the app's language. */
+function syncDesktopLocale(locale: SupportedLocale) {
+  void desktopApp()
+    ?.setLocale(locale)
+    .catch(() => undefined);
+}
+syncDesktopLocale(useLocaleStore.getState().locale);
+useLocaleStore.subscribe((state, prev) => {
+  if (state.locale !== prev.locale) syncDesktopLocale(state.locale);
+});
 
 /** The time zone next-intl formats dates in: the device's own. */
 export const timeZone = Intl.DateTimeFormat().resolvedOptions().timeZone;

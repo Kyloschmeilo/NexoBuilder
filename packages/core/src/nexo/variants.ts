@@ -3,6 +3,7 @@
  * drawing a bow, loaded crossbow, shield blocking, fishing rod cast, damage, dyed …
  * The keys match the Pack options from the Nexo docs (configuration/items/item-appearance).
  */
+import type { MessageParams } from '../errors';
 import type { ImportedModel, Item } from '../types';
 
 /** Variants that Nexo itself builds into the ItemModel via Pack.<slot> */
@@ -35,8 +36,12 @@ export type VariantKind = 'pack' | 'definition' | 'furniture' | 'block';
 export interface VariantDef {
   slot: VariantSlot;
   kind: VariantKind;
+  /** Message key in the `schema` namespace */
   label: string;
+  /** Message key in the `schema` namespace */
   description: string;
+  /** ICU arguments for `label`, `description` and `hint` (e.g. the state name) */
+  params?: MessageParams;
   /** Several models (list) instead of a single one */
   multiple: boolean;
   /** Part of the file name in the pack, e.g. "<id>-pulling_0" */
@@ -45,6 +50,7 @@ export interface VariantDef {
   firstIndex?: number;
   /** Materials for which Minecraft knows this state */
   materials?: string[];
+  /** Message key in the `schema` namespace */
   hint?: string;
 }
 
@@ -52,8 +58,8 @@ export const VARIANTS: VariantDef[] = [
   {
     slot: 'pulling_models',
     kind: 'pack',
-    label: 'Pulling Models',
-    description: 'Bogen/Armbrust: Modelle, während gespannt wird – meist 3 Stufen.',
+    label: 'variants.pullingModels.label',
+    description: 'variants.pullingModels.description',
     multiple: true,
     suffix: 'pulling',
     firstIndex: 0,
@@ -62,8 +68,8 @@ export const VARIANTS: VariantDef[] = [
   {
     slot: 'charged_model',
     kind: 'pack',
-    label: 'Charged Model',
-    description: 'Armbrust: gespannt mit Pfeil.',
+    label: 'variants.chargedModel.label',
+    description: 'variants.chargedModel.description',
     multiple: false,
     suffix: 'charged',
     materials: ['CROSSBOW'],
@@ -71,8 +77,8 @@ export const VARIANTS: VariantDef[] = [
   {
     slot: 'firework_model',
     kind: 'pack',
-    label: 'Firework Model',
-    description: 'Armbrust: mit Feuerwerksrakete geladen (optional).',
+    label: 'variants.fireworkModel.label',
+    description: 'variants.fireworkModel.description',
     multiple: false,
     suffix: 'firework',
     materials: ['CROSSBOW'],
@@ -80,18 +86,18 @@ export const VARIANTS: VariantDef[] = [
   {
     slot: 'blocking_model',
     kind: 'pack',
-    label: 'Blocking Model',
-    description: 'Schild: während geblockt wird.',
+    label: 'variants.blockingModel.label',
+    description: 'variants.blockingModel.description',
     multiple: false,
     suffix: 'blocking',
     materials: ['SHIELD'],
-    hint: 'Alternativ zum Material SHIELD kann ab 1.21.5 die Component „Blocks Attacks“ verwendet werden.',
+    hint: 'variants.blockingModel.hint',
   },
   {
     slot: 'cast_model',
     kind: 'pack',
-    label: 'Cast Model',
-    description: 'Angel: Schnur ausgeworfen.',
+    label: 'variants.castModel.label',
+    description: 'variants.castModel.description',
     multiple: false,
     suffix: 'cast',
     materials: ['FISHING_ROD'],
@@ -99,37 +105,37 @@ export const VARIANTS: VariantDef[] = [
   {
     slot: 'throwing_model',
     kind: 'pack',
-    label: 'Throwing Model',
-    description: 'Dreizack: beim Ausholen zum Werfen – meist das gedrehte Hauptmodell.',
+    label: 'variants.throwingModel.label',
+    description: 'variants.throwingModel.description',
     multiple: false,
     suffix: 'throwing',
     materials: ['TRIDENT'],
-    hint: 'Flug-Aussehen, Schaden und Sounds stellst du unter „Mechanics → Trident“ ein.',
+    hint: 'variants.throwingModel.hint',
   },
   {
     slot: 'damaged_models',
     kind: 'pack',
-    label: 'Damaged Models',
-    description: 'Modelle, die mit sinkender Haltbarkeit nacheinander angezeigt werden.',
+    label: 'variants.damagedModels.label',
+    description: 'variants.damagedModels.description',
     multiple: true,
     suffix: 'damaged',
     firstIndex: 1,
-    hint: 'Das Item braucht Haltbarkeit (Material mit Haltbarkeit oder die Component „Max Damage“).',
+    hint: 'variants.damagedModels.hint',
   },
   {
     slot: 'dyeable_model',
     kind: 'pack',
-    label: 'Dyeable Model',
-    description: 'Modell, das angezeigt wird, wenn das Item eingefärbt wurde (/nexo dye).',
+    label: 'variants.dyeableModel.label',
+    description: 'variants.dyeableModel.description',
     multiple: false,
     suffix: 'dyeable',
-    hint: 'Für die Färbung müssen die Flächen im Modell „Tint“ aktiviert haben (Blockbench: Paint-Tab → Tint).',
+    hint: 'variants.dyeableModel.hint',
   },
   {
     slot: 'composite_models',
     kind: 'pack',
-    label: 'Composite Models',
-    description: 'Mehrere Modelle, die übereinander gezeichnet werden (z.B. Hintergrund, Item, Overlay).',
+    label: 'variants.compositeModels.label',
+    description: 'variants.compositeModels.description',
     multiple: true,
     suffix: 'composite',
     firstIndex: 1,
@@ -137,25 +143,25 @@ export const VARIANTS: VariantDef[] = [
   {
     slot: 'gui_model',
     kind: 'definition',
-    label: 'GUI Model',
-    description: 'Anderes Modell im Inventar (z.B. flaches 2D-Bild), während in der Hand, auf dem Kopf oder als Furniture das Hauptmodell zu sehen ist.',
+    label: 'variants.guiModel.label',
+    description: 'variants.guiModel.description',
     multiple: false,
     suffix: 'gui',
-    hint: 'ResourcepackBuilder erzeugt dafür ein eigenes ItemModel (ab Minecraft 1.21.4). Pulling, Blocking & Co. wirken dann nicht mehr.',
+    hint: 'variants.guiModel.hint',
   },
 ];
 
 /** Models for furniture features – shown in the model tab when the furniture mechanic is active */
 export const FURNITURE_MODEL_SLOTS: VariantDef[] = [
-  { slot: 'connect_straight', kind: 'furniture', label: 'Straight', description: 'Mittelstück zwischen linkem und rechtem Ende', multiple: false, suffix: 'straight' },
-  { slot: 'connect_left', kind: 'furniture', label: 'Left', description: 'Linkes Ende', multiple: false, suffix: 'left' },
-  { slot: 'connect_right', kind: 'furniture', label: 'Right', description: 'Rechtes Ende', multiple: false, suffix: 'right' },
-  { slot: 'connect_inner', kind: 'furniture', label: 'Inner', description: 'Ecke nach innen', multiple: false, suffix: 'inner' },
-  { slot: 'connect_outer', kind: 'furniture', label: 'Outer', description: 'Ecke nach außen', multiple: false, suffix: 'outer' },
-  { slot: 'placement_floor', kind: 'furniture', label: 'Floor', description: 'Auf einen Block gestellt', multiple: false, suffix: 'floor' },
-  { slot: 'placement_wall', kind: 'furniture', label: 'Wall', description: 'An die Seite eines Blocks gesetzt', multiple: false, suffix: 'wall' },
-  { slot: 'placement_roof', kind: 'furniture', label: 'Roof', description: 'Unter einen Block gehängt', multiple: false, suffix: 'roof' },
-  { slot: 'light_on', kind: 'furniture', label: 'Toggled (Light On)', description: 'Modell, wenn das Licht eingeschaltet ist', multiple: false, suffix: 'light_on' },
+  { slot: 'connect_straight', kind: 'furniture', label: 'variants.connectStraight.label', description: 'variants.connectStraight.description', multiple: false, suffix: 'straight' },
+  { slot: 'connect_left', kind: 'furniture', label: 'variants.connectLeft.label', description: 'variants.connectLeft.description', multiple: false, suffix: 'left' },
+  { slot: 'connect_right', kind: 'furniture', label: 'variants.connectRight.label', description: 'variants.connectRight.description', multiple: false, suffix: 'right' },
+  { slot: 'connect_inner', kind: 'furniture', label: 'variants.connectInner.label', description: 'variants.connectInner.description', multiple: false, suffix: 'inner' },
+  { slot: 'connect_outer', kind: 'furniture', label: 'variants.connectOuter.label', description: 'variants.connectOuter.description', multiple: false, suffix: 'outer' },
+  { slot: 'placement_floor', kind: 'furniture', label: 'variants.placementFloor.label', description: 'variants.placementFloor.description', multiple: false, suffix: 'floor' },
+  { slot: 'placement_wall', kind: 'furniture', label: 'variants.placementWall.label', description: 'variants.placementWall.description', multiple: false, suffix: 'wall' },
+  { slot: 'placement_roof', kind: 'furniture', label: 'variants.placementRoof.label', description: 'variants.placementRoof.description', multiple: false, suffix: 'roof' },
+  { slot: 'light_on', kind: 'furniture', label: 'variants.lightOn.label', description: 'variants.lightOn.description', multiple: false, suffix: 'light_on' },
 ];
 
 export const CONNECT_SLOTS: Array<{ slot: ConnectSlot; state: string }> = [
@@ -176,8 +182,8 @@ export const PLACEMENT_SLOTS: Array<{ slot: PlacementSlot; placement: 'floor' | 
 export const STACK_MODELS: VariantDef = {
   slot: 'stack_models',
   kind: 'block',
-  label: 'Stackable',
-  description: 'Weitere Modelle, wenn derselbe Block mehrfach auf eine Stelle gesetzt wird (wie Blütenteppich).',
+  label: 'variants.stackModels.label',
+  description: 'variants.stackModels.description',
   multiple: true,
   suffix: 'stack',
   firstIndex: 1,
@@ -191,8 +197,9 @@ export function stateDef(name: string): VariantDef {
   return {
     slot: stateSlot(name),
     kind: 'furniture',
-    label: name,
-    description: `Modell im Zustand „${name}“`,
+    label: 'variants.state.label',
+    description: 'variants.state.description',
+    params: { name },
     multiple: false,
     suffix: `state_${name.toLowerCase().replace(/[^a-z0-9_]/g, '_') || 'zustand'}`,
   };

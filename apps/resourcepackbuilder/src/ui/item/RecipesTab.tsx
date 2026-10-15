@@ -1,5 +1,7 @@
-import { useMemo, useRef, useState } from 'react';
+import { useMemo } from 'react';
+import { useTranslations } from 'next-intl';
 import { Plus, Trash2 } from 'lucide-react';
+import { cn } from 'cn';
 import type { Item } from '@resourcepackbuilder/core/types';
 import {
   createRecipe,
@@ -20,10 +22,19 @@ import { uid } from '@resourcepackbuilder/core/util';
 import { updateItem } from '../../state/actions';
 import { useStore } from '../../state/store';
 import { IssueList } from '@resourcepackbuilder/ui';
-import { MenuItem, Popover } from '@resourcepackbuilder/ui';
 import { NumberInput, TextInput } from '@resourcepackbuilder/ui';
+import { Badge } from '@resourcepackbuilder/ui/components/badge';
+import { Button } from '@resourcepackbuilder/ui/components/button';
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@resourcepackbuilder/ui/components/dropdown-menu';
+import { Field, FieldDescription, FieldTitle } from '@resourcepackbuilder/ui/components/field';
+import { NativeSelect, NativeSelectOption } from '@resourcepackbuilder/ui/components/native-select';
+import { EditorCard, EmptyCard, Hint, SectionTitle, Tip } from './parts';
+
+const codeClass = 'rounded-sm bg-muted px-1 py-0.5 font-mono text-[12px] text-foreground';
 
 export function RecipesTab({ item }: { item: Item }) {
+  const t = useTranslations('item');
+  const ts = useTranslations('schema');
   const project = useStore((s) => s.project)!;
   const recipes = item.recipes ?? [];
   const keys = recipeKeys(item);
@@ -40,252 +51,237 @@ export function RecipesTab({ item }: { item: Item }) {
 
   return (
     <div>
-      <div className="section-title">
-        <span>Rezepte</span>
-        <span className="spacer" />
-        <AddRecipeButton onAdd={(type) => updateItem(item.id, (d) => d.recipes.push(createRecipe(type, uid('r_'))))} />
-      </div>
-      {recipes.length === 0 && (
-        <div className="card">
-          <div className="card-body faint small" style={{ textAlign: 'center', padding: 22 }}>
-            Noch keine Rezepte. Über <strong>„Hinzufügen“</strong> legst du fest, wie dieses Item hergestellt werden kann.
-          </div>
-        </div>
-      )}
+      <SectionTitle actions={<AddRecipeButton onAdd={(type) => updateItem(item.id, (d) => d.recipes.push(createRecipe(type, uid('r_'))))} />}>
+        {t('recipes.title')}
+      </SectionTitle>
+      {recipes.length === 0 && <EmptyCard>{t.rich('recipes.empty', { b: (chunks) => <strong>{chunks}</strong> })}</EmptyCard>}
       {recipes.map((recipe) => {
         const key = keys.get(recipe.id) ?? recipe.type;
         const info = getRecipeTypeInfo(recipe.type);
         const issues = validateRecipe(recipe, project, key);
         return (
-          <div className="card" key={recipe.id}>
-            <div className="card-header">
-              <div className="card-title-group">
-                <div className="row">
-                  <h3>{info.label}</h3>
-                  <span className="badge mono" title="Schlüssel des Rezepts">
-                    {key}
-                  </span>
-                </div>
-                <div className="desc">
-                  {info.description} Datei: <span className="mono">{recipeFilePath(project, recipe.type)}</span>
-                </div>
-              </div>
-              <button
-                className="btn ghost icon small danger"
-                title="Rezept entfernen"
-                onClick={() => updateItem(item.id, (d) => (d.recipes = d.recipes.filter((r) => r.id !== recipe.id)))}
-              >
-                <Trash2 size={15} />
-              </button>
-            </div>
-            <div className="card-body">
-              {info.kind === 'shaped' && <ShapedEditor recipe={recipe} update={(fn, k) => update(recipe.id, fn, k)} />}
-              {info.kind === 'shapeless' && <ShapelessEditor recipe={recipe} update={(fn, k) => update(recipe.id, fn, k)} />}
-              {(info.kind === 'cooking' || info.kind === 'stonecutting') && (
-                <div className="col" style={{ gap: 12 }}>
-                  <div className="field">
-                    <span className="field-label">Eingabe</span>
-                    <IngredientRow
-                      value={recipe.input ?? { source: 'minecraft', id: '' }}
-                      onChange={(ing) => update(recipe.id, (r) => (r.input = ing), `${recipe.id}:input`)}
-                    />
-                  </div>
-                  {info.kind === 'cooking' && (
-                    <div className="field-grid">
-                      <label className="field">
-                        <span className="field-label">Garzeit in Ticks ({(recipe.cookingTime / 20).toLocaleString('de-DE')} s)</span>
-                        <NumberInput
-                          value={recipe.cookingTime}
-                          integer
-                          min={1}
-                          onChange={(v) => update(recipe.id, (r) => (r.cookingTime = v ?? 0), `${recipe.id}:time`)}
-                        />
-                      </label>
-                      <label className="field">
-                        <span className="field-label">Erfahrung</span>
-                        <NumberInput
-                          value={recipe.experience}
-                          min={0}
-                          onChange={(v) => update(recipe.id, (r) => (r.experience = v ?? 0), `${recipe.id}:xp`)}
-                        />
-                      </label>
-                    </div>
-                  )}
-                </div>
-              )}
-              <div className="row" style={{ marginTop: 14, gap: 10 }}>
-                <span className="field-label">Ergebnis:</span>
-                <div style={{ width: 80 }}>
-                  <NumberInput
-                    value={recipe.resultAmount}
-                    integer
-                    min={1}
-                    max={99}
-                    onChange={(v) => update(recipe.id, (r) => (r.resultAmount = v ?? 1), `${recipe.id}:amount`)}
+          <EditorCard
+            key={recipe.id}
+            title={ts(info.label as never)}
+            badges={
+              <Tip label={t('recipes.key')}>
+                <Badge variant="outline" className="font-mono">
+                  {key}
+                </Badge>
+              </Tip>
+            }
+            description={
+              <>
+                {ts(info.description as never)} {t('recipes.file')} <span className="font-mono">{recipeFilePath(project, recipe.type)}</span>
+              </>
+            }
+            actions={
+              <Tip label={t('recipes.remove')}>
+                <Button
+                  variant="ghost"
+                  size="icon-sm"
+                  className="text-destructive hover:text-destructive"
+                  aria-label={t('recipes.remove')}
+                  onClick={() => updateItem(item.id, (d) => (d.recipes = d.recipes.filter((r) => r.id !== recipe.id)))}
+                >
+                  <Trash2 />
+                </Button>
+              </Tip>
+            }
+          >
+            {info.kind === 'shaped' && <ShapedEditor recipe={recipe} update={(fn, k) => update(recipe.id, fn, k)} />}
+            {info.kind === 'shapeless' && <ShapelessEditor recipe={recipe} update={(fn, k) => update(recipe.id, fn, k)} />}
+            {(info.kind === 'cooking' || info.kind === 'stonecutting') && (
+              <div className="flex flex-col gap-3">
+                <Field className="gap-1.5">
+                  <FieldTitle>{t('recipes.input')}</FieldTitle>
+                  <IngredientRow
+                    value={recipe.input ?? { source: 'minecraft', id: '' }}
+                    onChange={(ing) => update(recipe.id, (r) => (r.input = ing), `${recipe.id}:input`)}
                   />
-                </div>
-                <span className="muted">× {item.displayName ? <span className="mono">{item.nexoId}</span> : item.nexoId}</span>
+                </Field>
+                {info.kind === 'cooking' && (
+                  <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+                    <Field className="gap-1.5">
+                      <FieldTitle>{t('recipes.cookingTime', { seconds: recipe.cookingTime / 20 })}</FieldTitle>
+                      <NumberInput
+                        value={recipe.cookingTime}
+                        integer
+                        min={1}
+                        onChange={(v) => update(recipe.id, (r) => (r.cookingTime = v ?? 0), `${recipe.id}:time`)}
+                      />
+                    </Field>
+                    <Field className="gap-1.5">
+                      <FieldTitle>{t('recipes.experience')}</FieldTitle>
+                      <NumberInput value={recipe.experience} min={0} onChange={(v) => update(recipe.id, (r) => (r.experience = v ?? 0), `${recipe.id}:xp`)} />
+                    </Field>
+                  </div>
+                )}
               </div>
-              {issues.length > 0 && (
-                <div style={{ marginTop: 12 }}>
-                  <IssueList issues={issues} />
-                </div>
-              )}
+            )}
+            <div className="mt-3.5 flex items-center gap-2.5">
+              <span className="text-sm font-medium">{t('recipes.result')}</span>
+              <div className="w-20">
+                <NumberInput
+                  value={recipe.resultAmount}
+                  integer
+                  min={1}
+                  max={99}
+                  onChange={(v) => update(recipe.id, (r) => (r.resultAmount = v ?? 1), `${recipe.id}:amount`)}
+                />
+              </div>
+              <span className="text-muted-foreground">× {item.displayName ? <span className="font-mono">{item.nexoId}</span> : item.nexoId}</span>
             </div>
-          </div>
+            {issues.length > 0 && (
+              <div className="mt-3">
+                <IssueList issues={issues} />
+              </div>
+            )}
+          </EditorCard>
         );
       })}
-      <div className="hint">
-        Rezepte werden nach <code className="code-inline">plugins/Nexo/recipes/&lt;typ&gt;/</code> exportiert und mit{' '}
-        <code className="code-inline">/nexo reload all</code> geladen.
-      </div>
+      <Hint>
+        {t.rich('recipes.exportHint', {
+          path: `plugins/Nexo/recipes/<${t('recipes.typePlaceholder')}>/`,
+          command: '/nexo reload all',
+          code: (chunks) => <code className={codeClass}>{chunks}</code>,
+        })}
+      </Hint>
     </div>
   );
 }
 
 function AddRecipeButton({ onAdd }: { onAdd: (type: RecipeType) => void }) {
-  const [open, setOpen] = useState(false);
-  const anchor = useRef<HTMLButtonElement>(null);
+  const tc = useTranslations('common');
+  const ts = useTranslations('schema');
   return (
-    <>
-      <button ref={anchor} className="btn small primary" onClick={() => setOpen((o) => !o)}>
-        <Plus size={14} /> Hinzufügen
-      </button>
-      <Popover anchor={anchor.current} open={open} onClose={() => setOpen(false)} align="right" width={330}>
-        {RECIPE_TYPES.map((t) => (
-          <MenuItem
-            key={t.type}
-            label={t.label}
-            description={t.description}
-            onClick={() => {
-              onAdd(t.type);
-              setOpen(false);
-            }}
-          />
+    <DropdownMenu>
+      <DropdownMenuTrigger render={<Button size="sm" />}>
+        <Plus /> {tc('add')}
+      </DropdownMenuTrigger>
+      <DropdownMenuContent align="end" className="w-[330px]">
+        {RECIPE_TYPES.map((type) => (
+          <DropdownMenuItem key={type.type} className="flex-col items-start gap-0.5" onClick={() => onAdd(type.type)}>
+            <span className="font-medium">{ts(type.label as never)}</span>
+            <span className="text-xs text-muted-foreground">{ts(type.description as never)}</span>
+          </DropdownMenuItem>
         ))}
-      </Popover>
-    </>
+      </DropdownMenuContent>
+    </DropdownMenu>
   );
 }
 
 type Updater = (fn: (r: Recipe) => void, historyKey?: string) => void;
 
-function ingredientLabel(ing: RecipeIngredient | undefined): string {
-  if (!ing?.id) return '(leer)';
+function ingredientLabel(ing: RecipeIngredient | undefined, emptyLabel: string): string {
+  if (!ing?.id) return emptyLabel;
   const prefix = ing.source === 'nexo' ? 'Nexo: ' : ing.source === 'tag' ? '#' : '';
   return `${prefix}${ing.id}${ing.amount && ing.amount > 1 ? ` ×${ing.amount}` : ''}`;
 }
 
-function ShapedEditor({ recipe, update }: { recipe: Recipe; update: Updater }) {
+function IngredientList({ recipe, update, shaped }: { recipe: Recipe; update: Updater; shaped: boolean }) {
+  const t = useTranslations('item');
   const letters = INGREDIENT_LETTERS.filter((l) => recipe.ingredients[l]);
   const nextLetter = INGREDIENT_LETTERS.find((l) => !recipe.ingredients[l]);
   return (
-    <div style={{ display: 'grid', gridTemplateColumns: 'auto minmax(0, 1fr)', gap: 20, alignItems: 'start' }}>
-      <div className="field">
-        <span className="field-label">Raster</span>
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 96px)', gap: 6 }}>
-          {recipe.grid.map((slot, i) => (
-            <select
-              key={i}
-              className="select"
-              style={{ height: 56, textAlign: 'center', fontWeight: 700, fontSize: 15, background: slot ? 'var(--accent-soft)' : undefined }}
-              value={slot}
-              title={slot ? ingredientLabel(recipe.ingredients[slot]) : 'leer'}
-              onChange={(e) => update((r) => (r.grid[i] = e.target.value), `${recipe.id}:grid`)}
-            >
-              <option value="">–</option>
-              {letters.map((l) => (
-                <option key={l} value={l}>
-                  {l}
-                </option>
-              ))}
-            </select>
-          ))}
-        </div>
-        <span className="field-help">Leere Ränder werden automatisch entfernt.</span>
-      </div>
-      <div className="field">
-        <span className="field-label">Zutaten</span>
-        <div className="list-editor">
-          {letters.map((letter) => (
-            <div key={letter} className="list-row">
-              <span className="badge accent mono" style={{ width: 28, justifyContent: 'center', height: 32 }}>
-                {letter}
-              </span>
-              <div className="grow">
-                <IngredientRow
-                  value={recipe.ingredients[letter]}
-                  onChange={(ing) => update((r) => (r.ingredients[letter] = ing), `${recipe.id}:${letter}`)}
-                />
-              </div>
-              <button
-                className="btn ghost icon small danger"
-                title="Zutat entfernen"
-                onClick={() =>
-                  update((r) => {
-                    delete r.ingredients[letter];
-                    r.grid = r.grid.map((s) => (s === letter ? '' : s));
-                  })
-                }
-              >
-                <Trash2 size={14} />
-              </button>
-            </div>
-          ))}
-          {nextLetter && (
-            <button
-              className="btn small"
-              style={{ alignSelf: 'flex-start' }}
-              onClick={() => update((r) => (r.ingredients[nextLetter] = { source: 'minecraft', id: '' }))}
-            >
-              <Plus size={14} /> Zutat hinzufügen
-            </button>
+    <div className="flex flex-col gap-2">
+      {letters.map((letter) => (
+        <div key={letter} className="flex items-start gap-2">
+          {shaped && (
+            <Badge variant="outline" className="h-8 w-7 shrink-0 border-primary bg-primary/10 font-mono text-primary">
+              {letter}
+            </Badge>
           )}
+          <div className="min-w-0 flex-1">
+            <IngredientRow
+              value={recipe.ingredients[letter]}
+              onChange={(ing) => update((r) => (r.ingredients[letter] = ing), `${recipe.id}:${letter}`)}
+            />
+          </div>
+          <Tip label={t('recipes.removeIngredient')}>
+            <Button
+              variant="ghost"
+              size="icon-sm"
+              className="text-destructive hover:text-destructive"
+              aria-label={t('recipes.removeIngredient')}
+              onClick={() =>
+                update((r) => {
+                  delete r.ingredients[letter];
+                  if (shaped) r.grid = r.grid.map((s) => (s === letter ? '' : s));
+                })
+              }
+            >
+              <Trash2 />
+            </Button>
+          </Tip>
         </div>
-      </div>
+      ))}
+      {nextLetter && (
+        <Button
+          variant="outline"
+          size="sm"
+          className="self-start"
+          onClick={() => update((r) => (r.ingredients[nextLetter] = { source: 'minecraft', id: '' }))}
+        >
+          <Plus /> {t('recipes.addIngredient')}
+        </Button>
+      )}
+    </div>
+  );
+}
+
+function ShapedEditor({ recipe, update }: { recipe: Recipe; update: Updater }) {
+  const t = useTranslations('item');
+  const letters = INGREDIENT_LETTERS.filter((l) => recipe.ingredients[l]);
+  return (
+    <div className="grid grid-cols-[auto_minmax(0,1fr)] items-start gap-5">
+      <Field className="gap-1.5">
+        <FieldTitle>{t('recipes.grid')}</FieldTitle>
+        <div className="grid grid-cols-[repeat(3,96px)] gap-1.5">
+          {recipe.grid.map((slot, i) => (
+            <Tip key={i} label={slot ? ingredientLabel(recipe.ingredients[slot], t('recipes.emptyIngredient')) : t('recipes.emptySlot')}>
+              <NativeSelect
+                className={cn(
+                  'w-full [&_select]:h-14 [&_select]:pl-8 [&_select]:text-center [&_select]:text-[15px] [&_select]:font-bold',
+                  slot && '[&_select]:bg-primary/10',
+                )}
+                value={slot}
+                aria-label={t('recipes.grid')}
+                onChange={(e) => update((r) => (r.grid[i] = e.target.value), `${recipe.id}:grid`)}
+              >
+                <NativeSelectOption value="">–</NativeSelectOption>
+                {letters.map((l) => (
+                  <NativeSelectOption key={l} value={l}>
+                    {l}
+                  </NativeSelectOption>
+                ))}
+              </NativeSelect>
+            </Tip>
+          ))}
+        </div>
+        <FieldDescription className="text-xs">{t('recipes.gridHelp')}</FieldDescription>
+      </Field>
+      <Field className="gap-1.5">
+        <FieldTitle>{t('recipes.ingredients')}</FieldTitle>
+        <IngredientList recipe={recipe} update={update} shaped />
+      </Field>
     </div>
   );
 }
 
 function ShapelessEditor({ recipe, update }: { recipe: Recipe; update: Updater }) {
-  const letters = INGREDIENT_LETTERS.filter((l) => recipe.ingredients[l]);
-  const nextLetter = INGREDIENT_LETTERS.find((l) => !recipe.ingredients[l]);
+  const t = useTranslations('item');
   return (
-    <div className="field">
-      <span className="field-label">Zutaten (beliebige Anordnung, max. 9)</span>
-      <div className="list-editor">
-        {letters.map((letter) => (
-          <div key={letter} className="list-row">
-            <div className="grow">
-              <IngredientRow
-                value={recipe.ingredients[letter]}
-                onChange={(ing) => update((r) => (r.ingredients[letter] = ing), `${recipe.id}:${letter}`)}
-              />
-            </div>
-            <button
-              className="btn ghost icon small danger"
-              title="Zutat entfernen"
-              onClick={() => update((r) => delete r.ingredients[letter])}
-            >
-              <Trash2 size={14} />
-            </button>
-          </div>
-        ))}
-        {nextLetter && (
-          <button
-            className="btn small"
-            style={{ alignSelf: 'flex-start' }}
-            onClick={() => update((r) => (r.ingredients[nextLetter] = { source: 'minecraft', id: '' }))}
-          >
-            <Plus size={14} /> Zutat hinzufügen
-          </button>
-        )}
-      </div>
-    </div>
+    <Field className="gap-1.5">
+      <FieldTitle>{t('recipes.shapelessIngredients')}</FieldTitle>
+      <IngredientList recipe={recipe} update={update} shaped={false} />
+    </Field>
   );
 }
 
 function IngredientRow({ value, onChange }: { value: RecipeIngredient; onChange: (v: RecipeIngredient) => void }) {
+  const t = useTranslations('item');
+  const ts = useTranslations('schema');
   const project = useStore((s) => s.project)!;
   const nexoItems = useMemo<Option[]>(
     () => Object.values(project.items).map((i) => ({ value: i.nexoId, label: i.displayName || undefined })),
@@ -293,43 +289,50 @@ function IngredientRow({ value, onChange }: { value: RecipeIngredient; onChange:
   );
   const suggestions = value.source === 'minecraft' ? CRAFTING_MATERIALS : value.source === 'nexo' ? nexoItems : ITEM_TAGS;
   return (
-    <div className="row" style={{ gap: 6 }}>
-      <select
-        className="select"
-        style={{ width: 150, flex: 'none' }}
+    <div className="flex items-center gap-1.5">
+      <NativeSelect
+        className="w-[150px] flex-none"
         value={value.source}
         onChange={(e) => onChange({ ...value, source: e.target.value as IngredientSource })}
       >
         {INGREDIENT_SOURCES.map((s) => (
-          <option key={s.value} value={s.value}>
-            {s.label}
-          </option>
+          <NativeSelectOption key={s.value} value={s.value}>
+            {ts(s.label as never)}
+          </NativeSelectOption>
         ))}
-      </select>
-      <div className="grow">
+      </NativeSelect>
+      <div className="min-w-0 flex-1">
         <TextInput
           value={value.id}
           mono
           suggestions={suggestions}
-          placeholder={value.source === 'minecraft' ? 'z.B. DIAMOND' : value.source === 'nexo' ? 'Item-ID' : 'z.B. planks'}
+          placeholder={
+            value.source === 'minecraft'
+              ? t('recipes.placeholderMinecraft')
+              : value.source === 'nexo'
+                ? t('recipes.placeholderNexo')
+                : t('recipes.placeholderTag')
+          }
           onChange={(v) => onChange({ ...value, id: value.source === 'minecraft' ? (v ?? '').toUpperCase() : (v ?? '') })}
         />
       </div>
-      <div style={{ width: 70, flex: 'none' }} title="Benötigte Anzahl pro Feld (optional)">
-        <NumberInput
-          value={value.amount}
-          integer
-          min={1}
-          max={64}
-          placeholder="1×"
-          onChange={(v) => {
-            const next = { ...value };
-            if (v && v > 1) next.amount = v;
-            else delete next.amount;
-            onChange(next);
-          }}
-        />
-      </div>
+      <Tip label={t('recipes.amount')}>
+        <div className="w-[70px] flex-none">
+          <NumberInput
+            value={value.amount}
+            integer
+            min={1}
+            max={64}
+            placeholder="1×"
+            onChange={(v) => {
+              const next = { ...value };
+              if (v && v > 1) next.amount = v;
+              else delete next.amount;
+              onChange(next);
+            }}
+          />
+        </div>
+      </Tip>
     </div>
   );
 }

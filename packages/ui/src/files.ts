@@ -7,7 +7,7 @@ export function readAsDataUrl(file: Blob): Promise<string> {
   return new Promise((resolve, reject) => {
     const reader = new FileReader();
     reader.onload = () => resolve(String(reader.result));
-    reader.onerror = () => reject(reader.error ?? new Error('Datei konnte nicht gelesen werden'));
+    reader.onerror = () => reject(reader.error ?? new Error(`Could not read file`));
     reader.readAsDataURL(file);
   });
 }
@@ -16,7 +16,7 @@ export function readAsText(file: Blob): Promise<string> {
   return new Promise((resolve, reject) => {
     const reader = new FileReader();
     reader.onload = () => resolve(String(reader.result));
-    reader.onerror = () => reject(reader.error ?? new Error('Datei konnte nicht gelesen werden'));
+    reader.onerror = () => reject(reader.error ?? new Error(`Could not read file`));
     reader.readAsText(file);
   });
 }

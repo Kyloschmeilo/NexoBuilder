@@ -7,10 +7,14 @@ import type { Option } from './options';
 interface BaseField {
   /** Key within the parent object. "*" = all remaining keys (map only) */
   key: string;
-  /** German description (as tooltip) – the original English name is displayed, see fieldName() */
+  /**
+   * Description (as tooltip) – message key in the `schema` namespace. The original English name is
+   * displayed as the title, see fieldName(). May be '' for the value object of a map entry.
+   */
   label: string;
-  /** Original English name, if it cannot be derived from the key */
+  /** Original English name, if it cannot be derived from the key (not translated) */
   name?: string;
+  /** Help text below the field – message key in the `schema` namespace */
   help?: string;
   /** Only show the field if a sibling field has one of these values */
   showIf?: { key: string; values: Array<string | boolean | number> };
@@ -20,6 +24,7 @@ interface BaseField {
 
 export interface TextField extends BaseField {
   type: 'text';
+  /** Placeholder text – message key in the `schema` namespace */
   placeholder?: string;
   suggestions?: Option[];
   /** Additional meaning for display and validation */
@@ -33,6 +38,7 @@ export interface NumberField extends BaseField {
   min?: number;
   max?: number;
   step?: number;
+  /** Placeholder text – message key in the `schema` namespace */
   placeholder?: string;
 }
 
@@ -47,12 +53,14 @@ export interface SelectField extends BaseField {
   type: 'select';
   options: Option[];
   allowCustom?: boolean;
+  /** Placeholder text – message key in the `schema` namespace */
   placeholder?: string;
 }
 
 /** List of strings. With `singleAsString`, a single value is written when there is exactly one entry. */
 export interface StringListField extends BaseField {
   type: 'stringList';
+  /** Placeholder text – message key in the `schema` namespace */
   placeholder?: string;
   suggestions?: Option[];
   format?: TextField['format'];
@@ -74,6 +82,7 @@ export interface ObjectField extends BaseField {
 export interface ObjectListField extends BaseField {
   type: 'objectList';
   fields: Field[];
+  /** Name of one entry (e.g. on the add button) – message key in the `schema` namespace */
   itemLabel: string;
   /** Field whose value is shown as the title of an entry */
   titleKey?: string;
@@ -82,8 +91,10 @@ export interface ObjectListField extends BaseField {
 
 export interface MapField extends BaseField {
   type: 'map';
+  /** Label of the entry key – message key in the `schema` namespace */
   keyLabel: string;
   keyOptions?: Option[];
+  /** Placeholder of the entry key – message key in the `schema` namespace */
   keyPlaceholder?: string;
   /** Field for the value of an entry (key is ignored) */
   value: Field;
@@ -94,6 +105,7 @@ export interface MapField extends BaseField {
 
 export interface YamlField extends BaseField {
   type: 'yaml';
+  /** Placeholder text – message key in the `schema` namespace */
   placeholder?: string;
 }
 
@@ -130,23 +142,27 @@ const VECTOR = /^\s*-?\d+(\.\d+)?\s*,\s*-?\d+(\.\d+)?\s*,\s*-?\d+(\.\d+)?\s*$/;
 const COLOR = /^\s*(\d{1,3})\s*,\s*(\d{1,3})\s*,\s*(\d{1,3})\s*$/;
 const RANGE = /^-?\d+(\.\d+)?(\.\.-?\d+(\.\d+)?)?$/;
 
+/**
+ * Checks a text value against its format.
+ * @returns null if valid, otherwise a message key in the `schema` namespace (`validation.*`)
+ */
 export function validateTextFormat(format: TextField['format'], value: string): string | null {
   // "@model" = the item's model (replaced on export)
   if (!value || value === '@model') return null;
   switch (format) {
     case 'duration':
-      return DURATION.test(value.trim()) ? null : 'Erwartet eine Dauer wie 20t, 1.5s, 2m';
+      return DURATION.test(value.trim()) ? null : 'validation.duration';
     case 'vector':
-      return VECTOR.test(value) ? null : 'Erwartet x,y,z – z.B. 0,0.5,0';
+      return VECTOR.test(value) ? null : 'validation.vector';
     case 'color': {
       const m = COLOR.exec(value);
-      if (!m) return 'Erwartet R, G, B – z.B. 255, 128, 0';
-      return [m[1], m[2], m[3]].every((n) => Number(n) <= 255) ? null : 'Werte müssen zwischen 0 und 255 liegen';
+      if (!m) return 'validation.color';
+      return [m[1], m[2], m[3]].every((n) => Number(n) <= 255) ? null : 'validation.colorRange';
     }
     case 'range':
-      return RANGE.test(value.trim()) ? null : 'Erwartet eine Zahl oder einen Bereich wie 1..3';
+      return RANGE.test(value.trim()) ? null : 'validation.range';
     case 'resource':
-      return /^([a-z0-9_.-]+:)?[a-z0-9_./-]+$/.test(value.trim()) ? null : 'Erwartet einen Schlüssel wie namespace:pfad (nur Kleinbuchstaben)';
+      return /^([a-z0-9_.-]+:)?[a-z0-9_./-]+$/.test(value.trim()) ? null : 'validation.resource';
     default:
       return null;
   }
@@ -166,7 +182,10 @@ export function englishName(key: string): string {
     .join(' ');
 }
 
-/** Name of a field as it appears in the Nexo docs (English) */
+/**
+ * Name of a field as it appears in the Nexo docs (English, not translated).
+ * Falls back to `label` (a `schema` message key) only for fields without name and key.
+ */
 export function fieldName(field: { key: string; label: string; name?: string }): string {
   if (field.name) return field.name;
   if (field.key && field.key !== '*') return englishName(field.key);

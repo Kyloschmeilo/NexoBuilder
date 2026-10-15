@@ -1,1 +1,50 @@
-{}
+{
+  "defaults": {
+    "newFolder": "Neuer Ordner",
+    "copyName": "{name} (Kopie)",
+    "paintingsFolder": "Gemälde",
+    "musicFolder": "Musik",
+    "newProjectName": "Mein Pack",
+    "importedName": "{name} (importiert)",
+    "unknownUser": "Unbekannt",
+    "someone": "Jemand",
+    "sharedProjectFolder": "ResourcepackBuilder-Projekt"
+  },
+  "clipboard": {
+    "copied": "Eigenschaften von „{name}“ kopiert. Zum Einfügen im Menü eines anderen Items „Eigenschaften einfügen“ wählen.",
+    "nothingCopied": "Zuerst bei einem Item „Eigenschaften kopieren“ wählen."
+  },
+  "persistence": {
+    "storageUnavailable": "IndexedDB ist nicht verfügbar",
+    "invalidProjectFile": "Die Datei ist keine gültige ResourcepackBuilder-Projektdatei.",
+    "notAProjectFile": "Die Datei ist keine ResourcepackBuilder-Projektdatei.",
+    "invalidProject": "Ungültiges Projekt",
+    "invalidProjectNoName": "Ungültiges Projekt (Name fehlt)",
+    "autosaveFailed": "Automatisches Speichern im Browser ist nicht möglich. Bitte das Projekt regelmäßig als Datei speichern."
+  },
+  "share": {
+    "remoteChanged": "{name} hat {what} geändert.",
+    "remoteDeleted": "{name} hat {what} gelöscht.",
+    "entryCount": "{count, plural, one {# Eintrag} other {# Einträge}}",
+    "quoted": "„{label}“",
+    "andMore": "{list} und {count} weitere",
+    "offline": "Der geteilte Ordner ist gerade nicht erreichbar. Änderungen werden nachgeholt.",
+    "desktopOnly": "Teilen funktioniert nur im Windows-Programm (ResourcepackBuilder.exe).",
+    "folderHasOtherProject": "In diesem Ordner liegt schon das geteilte Projekt „{name}“. Wähle einen anderen Ordner oder öffne es über „Geteiltes Projekt öffnen“.",
+    "folderHasSeveralProjects": "In diesem Ordner liegen mehrere geteilte Projekte ({names}). Bitte direkt den Ordner des Projekts wählen.",
+    "folderHasNoProject": "In diesem Ordner liegt kein geteiltes ResourcepackBuilder-Projekt (project.json fehlt).",
+    "unreadable": "Das geteilte Projekt konnte nicht gelesen werden. Ist der Ordner schon vollständig heruntergeladen?"
+  },
+  "testServer": {
+    "desktopOnly": "Der Testserver funktioniert nur im Windows-Programm (ResourcepackBuilder.exe).",
+    "notRunning": "Der Testserver läuft nicht.",
+    "playerNameMissing": "Bitte im Testserver-Tab deinen Minecraft-Namen eintragen."
+  },
+  "project": {
+    "created": "Projekt „{name}“ wurde angelegt.",
+    "loadFailed": "Das Projekt konnte nicht geladen werden.",
+    "fileSaved": "Projektdatei gespeichert.",
+    "opened": "Projekt „{name}“ geöffnet.",
+    "sharedOpened": "Geteiltes Projekt „{name}“ geöffnet. Änderungen werden jetzt automatisch abgeglichen."
+  }
+}

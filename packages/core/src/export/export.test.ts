@@ -5,7 +5,7 @@ import { createFolder, createItem, createProject, insertFolder, insertItem } fro
 import { createTextureModel } from '../model/textureModel';
 import { convertBBModel } from '../model/bbmodel';
 import { planExport } from './plan';
-import { buildExportZip } from './zip';
+import { buildExportZip, INSTALL_GUIDE_FILE } from './zip';
 import { createTexture } from '../model/textures';
 import { makePngDataUrl } from '../test/png';
 import type { Project } from '../types';
@@ -190,13 +190,14 @@ describe('planExport', () => {
     dup.rawYaml = 'foo: [';
     insertItem(project, dup);
     const plan = planExport(project);
-    const errors = plan.issues.filter((i) => i.level === 'error' && i.itemId === dup.id).map((i) => i.message);
-    expect(errors.some((m) => m.includes('bereits von'))).toBe(true);
-    expect(errors.some((m) => m.includes('nicht gleichzeitig'))).toBe(true);
-    expect(errors.some((m) => m.includes('1–1149'))).toBe(true);
-    expect(errors.some((m) => m.includes('zusätzlichen YAML'))).toBe(true);
-    const warnings = plan.issues.filter((i) => i.level === 'warning' && i.itemId === dup.id).map((i) => i.message);
-    expect(warnings.some((m) => m.includes('Dauer'))).toBe(true);
+    const errors = plan.issues.filter((i) => i.level === 'error' && i.itemId === dup.id);
+    expect(errors.some((i) => i.code === 'plan.itemIdDuplicate' && i.params?.other === '<red>Rubin-Schwert')).toBe(true);
+    expect(errors.some((i) => i.code === 'plan.propertyConflict')).toBe(true);
+    expect(errors.some((i) => i.code === 'plan.blockVariationRange' && i.params?.max === 1149)).toBe(true);
+    expect(errors.some((i) => i.code === 'plan.rawYamlError')).toBe(true);
+    expect(errors.every((i) => i.params?.item === 'Kopie')).toBe(true);
+    const warnings = plan.issues.filter((i) => i.level === 'warning' && i.itemId === dup.id);
+    expect(warnings.some((i) => i.code === 'plan.fieldFormat' && i.params?.value === 'zwei Sekunden' && i.texts?.error)).toBe(true);
   });
 
   it('uses the model for custom blocks and places block textures under textures/block', () => {
@@ -262,7 +263,7 @@ describe('buildExportZip', () => {
     expect(paths).toContain('items/waffen/waffen.yml');
     expect(paths).toContain('pack/external_packs/mein_pack/pack.mcmeta');
     expect(paths).toContain('pack/external_packs/mein_pack/assets/meinpack/models/item/moebel/oak_table.json');
-    expect(paths).toContain('ANLEITUNG.txt');
+    expect(paths).toContain(INSTALL_GUIDE_FILE);
     expect(paths).toEqual(result.paths);
     expect(text(files.get('items/waffen/waffen.yml'))).toBe(plan.itemFiles.get('items/waffen/waffen.yml'));
     const png = files.get('pack/external_packs/mein_pack/assets/meinpack/textures/item/waffen/ruby_sword/ruby_sword.png')!;
@@ -325,8 +326,10 @@ describe('Variant models', () => {
     insertItem(project, shield);
     insertItem(project, noModel);
     const plan = planExport(project);
-    expect(plan.issues.some((i) => i.itemId === shield.id && i.level === 'warning' && i.message.includes('SHIELD'))).toBe(true);
-    expect(plan.issues.some((i) => i.itemId === noModel.id && i.level === 'error' && i.message.includes('Hauptmodell'))).toBe(true);
+    expect(
+      plan.issues.some((i) => i.itemId === shield.id && i.level === 'warning' && i.code === 'plan.variantWrongMaterial' && String(i.params?.materials).includes('SHIELD')),
+    ).toBe(true);
+    expect(plan.issues.some((i) => i.itemId === noModel.id && i.level === 'error' && i.code === 'plan.variantNeedsMainModel')).toBe(true);
     const yaml = parse(plan.itemFiles.get('items/a/a.yml')!, { version: '1.1' });
     expect(yaml.shield.Pack.blocking_model).toBe('test:item/a/shield-blocking');
   });

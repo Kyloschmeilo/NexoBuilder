@@ -32,6 +32,7 @@ function quoteIfNeeded(node: Scalar) {
 
 export interface YamlParseResult {
   value: unknown;
+  /** The YAML library's error text (first line, English, not translated) – null if the text parses */
   error: string | null;
 }
 

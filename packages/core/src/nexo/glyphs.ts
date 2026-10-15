@@ -3,6 +3,7 @@
  * Export: plugins/Nexo/glyphs/<project>.yml + textures in the external pack
  * (assets/<ns>/textures/glyphs/<id>.png or .gif).
  */
+import type { MessageParams } from '../errors';
 import type { Issue, Project } from '../types';
 import { base64ToBytes, ITEM_ID_PATTERN, readPngInfoFromDataUrl, slugify } from '../util';
 import { itemsToYaml } from './yaml';
@@ -133,7 +134,7 @@ export function buildGlyphFile(project: Project): string | null {
   if (glyphs.length === 0) return null;
   return itemsToYaml(
     glyphs.map((g) => ({ id: g.glyphId, config: glyphToYaml(project, g) })),
-    `# Erstellt mit ResourcepackBuilder – Glyphen von "${project.name}"`,
+    `# Created with ResourcepackBuilder – glyphs of "${project.name}"`,
   );
 }
 
@@ -145,57 +146,60 @@ export function validateGlyphs(project: Project): Array<Issue & { glyphId: strin
   const seen = new Map<string, Glyph>();
   const placeholderOwner = new Map<string, string>();
   for (const glyph of glyphs) {
-    const add = (level: Issue['level'], message: string) =>
-      issues.push({ level, message: `Glyph „${glyph.glyphId || '?'}“: ${message}`, glyphId: glyph.id });
-    if (!ITEM_ID_PATTERN.test(glyph.glyphId)) add('error', 'Die ID darf nur Kleinbuchstaben, Zahlen und _ enthalten.');
-    if (seen.has(glyph.glyphId)) add('error', 'Diese ID wird von einem anderen Glyph bereits verwendet.');
+    const add = (level: Issue['level'], code: string, params?: MessageParams) =>
+      issues.push({
+        level,
+        code: 'context.glyph',
+        params: { glyph: glyph.glyphId || '?' },
+        detail: { level, code, params },
+        glyphId: glyph.id,
+      });
+    if (!ITEM_ID_PATTERN.test(glyph.glyphId)) add('error', 'glyph.idInvalid');
+    if (seen.has(glyph.glyphId)) add('error', 'glyph.idDuplicate');
     seen.set(glyph.glyphId, glyph);
     for (const p of glyph.placeholders.map((x) => x.trim()).filter(Boolean)) {
       const owner = placeholderOwner.get(p);
-      if (owner && owner !== glyph.glyphId) add('warning', `Der Platzhalter „${p}“ wird auch von „${owner}“ verwendet.`);
+      if (owner && owner !== glyph.glyphId) add('warning', 'glyph.placeholderShared', { placeholder: p, owner });
       placeholderOwner.set(p, glyph.glyphId);
     }
 
     if (glyph.kind === 'reference') {
       if (!glyph.reference) {
-        add('error', 'Es ist kein Glyph angegeben, auf den verwiesen wird.');
+        add('error', 'glyph.referenceMissing');
       } else {
         const target = glyphs.find((g) => g.glyphId === glyph.reference);
         if (!target) {
-          add('info', `Der Glyph „${glyph.reference}“ ist nicht in diesem Projekt – er muss auf dem Server existieren.`);
+          add('info', 'glyph.referenceNotInProject', { reference: glyph.reference });
         } else if (target.kind !== 'image' || target.rows * target.columns <= 1) {
-          add('warning', `„${glyph.reference}“ ist kein Multi-Bitmap-Glyph (Zeilen × Spalten > 1).`);
+          add('warning', 'glyph.referenceNotMultiBitmap', { reference: glyph.reference });
         } else if (glyph.index < 1 || glyph.index > target.rows * target.columns) {
-          add('error', `Der Index muss zwischen 1 und ${target.rows * target.columns} liegen.`);
+          add('error', 'glyph.indexRange', { max: target.rows * target.columns });
         }
       }
       continue;
     }
 
     if (!glyph.file) {
-      add('error', glyph.kind === 'gif' ? 'Es wurde noch keine GIF-Datei hochgeladen.' : 'Es wurde noch keine PNG-Textur hochgeladen.');
+      add('error', glyph.kind === 'gif' ? 'glyph.gifMissing' : 'glyph.pngMissing');
       continue;
     }
-    if (!Number.isInteger(glyph.height) || glyph.height < 1) add('error', 'Die Höhe muss eine ganze Zahl ab 1 sein.');
-    if (!Number.isInteger(glyph.ascent)) add('error', 'Ascent muss eine ganze Zahl sein.');
-    if (glyph.ascent > glyph.height) add('error', `Ascent (${glyph.ascent}) darf nicht größer als die Höhe (${glyph.height}) sein.`);
+    if (!Number.isInteger(glyph.height) || glyph.height < 1) add('error', 'glyph.heightInvalid');
+    if (!Number.isInteger(glyph.ascent)) add('error', 'glyph.ascentNotInteger');
+    if (glyph.ascent > glyph.height) add('error', 'glyph.ascentTooLarge', { ascent: glyph.ascent, height: glyph.height });
     if (glyph.kind === 'image') {
       const rows = Math.max(1, glyph.rows);
       const columns = Math.max(1, glyph.columns);
       if (glyph.file.width % columns !== 0 || glyph.file.height % rows !== 0) {
-        add('error', `Das Bild (${glyph.file.width}×${glyph.file.height}) lässt sich nicht gleichmäßig in ${rows} Zeile(n) × ${columns} Spalte(n) teilen.`);
+        add('error', 'glyph.gridUneven', { width: glyph.file.width, height: glyph.file.height, rows, columns });
       }
       const cellW = glyph.file.width / columns;
       const cellH = glyph.file.height / rows;
       if (cellW > MAX_GLYPH_CELL || cellH > MAX_GLYPH_CELL) {
-        add(
-          'error',
-          `Ein Glyph-Feld ist ${Math.round(cellW)}×${Math.round(cellH)} groß (maximal ${MAX_GLYPH_CELL}×${MAX_GLYPH_CELL}). Bild verkleinern oder in Zeilen/Spalten aufteilen.`,
-        );
+        add('error', 'glyph.cellTooLarge', { width: Math.round(cellW), height: Math.round(cellH), max: MAX_GLYPH_CELL });
       }
-      if (glyph.font.trim() && !FONT_PATTERN.test(glyph.font.trim())) add('error', 'Die Schriftart muss wie namespace:name aussehen.');
+      if (glyph.font.trim() && !FONT_PATTERN.test(glyph.font.trim())) add('error', 'glyph.fontInvalid');
     } else {
-      add('info', 'Animierte Glyphen nutzen Core-Shader und können bei Minecraft-Updates kaputtgehen.');
+      add('info', 'glyph.animatedShaders');
     }
   }
   return issues;

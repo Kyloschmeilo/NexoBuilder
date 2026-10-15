@@ -3,6 +3,7 @@
  * assets/<ns>/textures/painting/<id>.png plus an entry in plugins/Nexo/paintings.yml.
  * From Minecraft 1.21.5 on, Nexo generates the required datapack from it.
  */
+import type { MessageParams } from '../errors';
 import type { Issue, Project } from '../types';
 import { compareVersions, ITEM_ID_PATTERN } from '../util';
 
@@ -87,38 +88,45 @@ export function validatePaintings(project: Project): Array<Issue & { paintingId:
   const issues: Array<Issue & { paintingId: string }> = [];
   const paintings = project.paintings ?? [];
   if (paintings.length > 0 && compareVersions(project.settings.minecraftVersion, '1.21.5') < 0) {
-    issues.push({
-      level: 'warning',
-      message: 'Nexo erzeugt das Datapack für eigene Gemälde erst ab Minecraft 1.21.5 – für ältere Versionen musst du es selbst anlegen.',
-      paintingId: paintings[0].id,
-    });
+    issues.push({ level: 'warning', code: 'painting.datapackNeedsVersion', paintingId: paintings[0].id });
   }
   const seen = new Set<string>();
   for (const painting of paintings) {
-    const add = (level: Issue['level'], message: string) =>
-      issues.push({ level, message: `Gemälde „${painting.paintingId || '?'}“: ${message}`, paintingId: painting.id });
-    if (!ITEM_ID_PATTERN.test(painting.paintingId)) add('error', 'Die ID darf nur Kleinbuchstaben, Zahlen und _ enthalten.');
-    if (seen.has(painting.paintingId)) add('error', 'Diese ID hat schon ein anderes Gemälde.');
+    const add = (level: Issue['level'], code: string, params?: MessageParams) =>
+      issues.push({
+        level,
+        code: 'context.painting',
+        params: { painting: painting.paintingId || '?' },
+        detail: { level, code, params },
+        paintingId: painting.id,
+      });
+    if (!ITEM_ID_PATTERN.test(painting.paintingId)) add('error', 'painting.idInvalid');
+    if (seen.has(painting.paintingId)) add('error', 'painting.idDuplicate');
     seen.add(painting.paintingId);
-    for (const [label, value] of [
-      ['Breite', painting.width],
-      ['Höhe', painting.height],
+    for (const [code, value] of [
+      ['painting.widthRange', painting.width],
+      ['painting.heightRange', painting.height],
     ] as const) {
-      if (!Number.isInteger(value) || value < 1 || value > 16) add('error', `Die ${label} muss zwischen 1 und 16 Blöcken liegen.`);
+      if (!Number.isInteger(value) || value < 1 || value > 16) add('error', code);
     }
     if (!painting.file) {
-      add('error', 'Es wurde noch kein Bild (PNG) hochgeladen.');
+      add('error', 'painting.imageMissing');
       continue;
     }
     const frame = paintingFrameSize(painting);
     if (painting.animated) {
       if (!frame || frame.frames < 2 || painting.file.height % frame.height !== 0) {
-        add('error', `Für eine Animation müssen mehrere Bilder im Seitenverhältnis ${painting.width}:${painting.height} untereinander liegen.`);
+        add('error', 'painting.animationFrames', { width: painting.width, height: painting.height });
       }
     } else {
       const expected = painting.file.width / painting.width;
       if (Math.abs(painting.file.height / painting.height - expected) > 0.01) {
-        add('warning', `Das Bild (${painting.file.width}×${painting.file.height}) passt nicht zum Seitenverhältnis ${painting.width}×${painting.height} Blöcke – es wird verzerrt.`);
+        add('warning', 'painting.aspectMismatch', {
+          imageWidth: painting.file.width,
+          imageHeight: painting.file.height,
+          width: painting.width,
+          height: painting.height,
+        });
       }
     }
   }

@@ -3,25 +3,22 @@
  * display name, item ID, model (incl. variants), folder and model data
  * such as custom_model_data.
  */
+import type { MessageParams } from '../errors';
 import type { ConfigObject, ConfigValue, Item, ModelTexture, Project } from '../types';
 import { deepClone, isPlainObject, uid } from '../util';
 import { deletePath, getPath, setPath } from './configPath';
 import { ASSET_TOKEN_PREFIX, MANAGED_TOP_LEVEL_KEYS, PROPERTIES, PROPERTY_GROUPS, type PropertyDef, type PropertyGroup } from './schema';
-import type { Recipe } from './recipes';
+import { getRecipeTypeInfo, type Recipe } from './recipes';
 
 export type CopyCategory = 'material' | PropertyGroup | 'other' | 'rawYaml' | 'recipes';
 
+/** `label` and `description` are message keys in the `schema` namespace. */
 export const COPY_CATEGORIES: Array<{ id: CopyCategory; label: string; description: string; defaultOn: boolean }> = [
-  { id: 'material', label: 'Material', description: 'Basis-Material (z.B. DIAMOND_SWORD)', defaultOn: true },
+  { id: 'material', label: 'copy.categories.material.label', description: 'copy.categories.material.description', defaultOn: true },
   ...PROPERTY_GROUPS.map((g) => ({ id: g.id as CopyCategory, label: g.label, description: g.description, defaultOn: true })),
-  { id: 'other', label: 'Sonstige Werte', description: 'Werte ohne eigenes Formular (z.B. aus importierten Configs)', defaultOn: true },
-  { id: 'rawYaml', label: 'Zusätzliches YAML (YAML-Tab)', description: 'Der Inhalt des YAML-Tabs', defaultOn: true },
-  {
-    id: 'recipes',
-    label: 'Recipes',
-    description: 'Crafting-Rezepte – Achtung: gleiche Rezepte für mehrere Items stören sich im Spiel',
-    defaultOn: false,
-  },
+  { id: 'other', label: 'copy.categories.other.label', description: 'copy.categories.other.description', defaultOn: true },
+  { id: 'rawYaml', label: 'copy.categories.rawYaml.label', description: 'copy.categories.rawYaml.description', defaultOn: true },
+  { id: 'recipes', label: 'copy.categories.recipes.label', description: 'copy.categories.recipes.description', defaultOn: false },
 ];
 
 /** Values that are never copied: they belong to the model and must be unique per item. */
@@ -82,22 +79,29 @@ function otherNestedPaths(config: ConfigObject): string[][] {
   return result;
 }
 
+/**
+ * One entry of a clipboard summary: literal text that is shown as is (material, YAML key, path),
+ * or a message key in the `schema` namespace with optional ICU arguments.
+ */
+export type SummaryEntry = { text: string } | { key: string; params?: MessageParams };
+
 export interface CategorySummary {
   id: CopyCategory;
-  /** Names of the contained properties (for display) */
-  entries: string[];
+  /** What the category contains (for display) */
+  entries: SummaryEntry[];
 }
 
 /** What the clipboard contains per category. */
 export function summarizeClipboard(clip: ItemConfigClipboard): CategorySummary[] {
   const config = clip.config;
   return COPY_CATEGORIES.map(({ id }) => {
-    let entries: string[] = [];
-    if (id === 'material') entries = typeof config.material === 'string' ? [config.material] : [];
-    else if (id === 'other') entries = [...otherKeys(config), ...otherNestedPaths(config).map((p) => p.join('.'))];
-    else if (id === 'rawYaml') entries = clip.rawYaml.trim() ? [`${clip.rawYaml.trim().split('\n').length} Zeile(n)`] : [];
-    else if (id === 'recipes') entries = clip.recipes.map((r) => r.type);
-    else entries = copyableProperties(id).filter((p) => getPath(config, p.path) !== undefined).map((p) => p.label);
+    const text = (t: string): SummaryEntry => ({ text: t });
+    let entries: SummaryEntry[] = [];
+    if (id === 'material') entries = typeof config.material === 'string' ? [text(config.material)] : [];
+    else if (id === 'other') entries = [...otherKeys(config), ...otherNestedPaths(config).map((p) => p.join('.'))].map(text);
+    else if (id === 'rawYaml') entries = clip.rawYaml.trim() ? [{ key: 'copy.rawYamlLines', params: { count: clip.rawYaml.trim().split('\n').length } }] : [];
+    else if (id === 'recipes') entries = clip.recipes.map((r) => ({ key: getRecipeTypeInfo(r.type).label }));
+    else entries = copyableProperties(id).filter((p) => getPath(config, p.path) !== undefined).map((p) => ({ key: p.label }));
     return { id, entries };
   });
 }

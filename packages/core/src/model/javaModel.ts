@@ -39,38 +39,35 @@ export function isVanillaReference(ref: string): boolean {
 
 export function convertJavaModel(files: DroppedFile[]): ImportedModel {
   const jsonFiles = files.filter((f) => /\.json$/i.test(f.name) && typeof f.text === 'string');
-  if (jsonFiles.length === 0) throw new ModelConversionError('Es wurde keine Modell-Datei (.json) gefunden.');
+  if (jsonFiles.length === 0) throw new ModelConversionError('model.noJsonFile');
 
   const parsed: ParsedJson[] = jsonFiles.map((file) => {
     let json: unknown;
     try {
       json = JSON.parse(stripJsonComments(file.text ?? ''));
     } catch (err) {
-      throw new ModelConversionError(`„${file.name}“ ist kein gültiges JSON: ${(err as Error).message}`);
+      throw new ModelConversionError('model.invalidJson', { file: file.name, error: (err as Error).message });
     }
-    if (!isPlainObject(json)) throw new ModelConversionError(`„${file.name}“ ist kein Minecraft-Modell.`);
+    if (!isPlainObject(json)) throw new ModelConversionError('model.notMinecraftModel', { file: file.name });
     return { name: file.name, json: json as JavaModelJson };
   });
 
   const issues: Issue[] = [];
   const main = pickMainModel(parsed);
   if (!main.json.elements && !main.json.parent && !main.json.textures) {
-    throw new ModelConversionError(`„${main.name}“ ist kein Minecraft-Modell (weder "elements", "parent" noch "textures" vorhanden).`);
+    throw new ModelConversionError('model.notMinecraftModelEmpty', { file: main.name });
   }
   const merged = mergeParents(main, parsed, issues);
   if ('overrides' in merged) {
     delete merged.overrides;
-    issues.push({
-      level: 'info',
-      message: 'Der Abschnitt "overrides" (alte CustomModelData-Methode) wurde entfernt – Nexo erzeugt die Item-Zuordnung selbst.',
-    });
+    issues.push({ level: 'info', code: 'model.overridesRemoved' });
   }
   delete merged.groups;
 
   const pngFiles = files.filter((f) => isPngDataUrl(f.dataUrl));
   const nonPngImages = files.filter((f) => /\.(jpe?g|gif|webp|bmp|tga)$/i.test(f.name));
   for (const f of nonPngImages) {
-    issues.push({ level: 'error', message: `„${f.name}“ ist kein PNG. Minecraft unterstützt nur PNG-Texturen.` });
+    issues.push({ level: 'error', code: 'model.fileNotPng', params: { file: f.name } });
   }
 
   const textures: ModelTexture[] = [];
@@ -117,26 +114,20 @@ export function convertJavaModel(files: DroppedFile[]): ImportedModel {
     const id = addTexture(png, ref);
     for (const key of unresolved.get(ref) ?? []) texturesJson[key] = texturePlaceholder(id);
     unresolved.delete(ref);
-    issues.push({ level: 'info', message: `„${png.name}“ wurde automatisch der Textur „${ref}“ zugeordnet.` });
+    issues.push({ level: 'info', code: 'model.textureAutoAssigned', params: { file: png.name, ref } });
   }
 
   for (const [ref, keys] of unresolved) {
-    const label = keys.map((k) => `„${k}“`).join(', ');
+    const params = { keys: keys.join(', '), ref };
     if (isVanillaReference(ref)) {
-      issues.push({
-        level: 'info',
-        message: `Textur ${label} verweist auf die Vanilla-Textur „${ref}“ und wird so übernommen.`,
-      });
+      issues.push({ level: 'info', code: 'model.vanillaTexture', params });
     } else {
-      issues.push({
-        level: 'error',
-        message: `Für die Textur ${label} („${ref}“) wurde keine PNG gefunden. Bitte die passende PNG ablegen oder im Modell-Tab zuweisen.`,
-      });
+      issues.push({ level: 'error', code: 'model.texturePngMissing', params });
     }
   }
   const unusedPngs = pngFiles.filter((p) => !usedPngs.has(p));
   for (const png of unusedPngs) {
-    issues.push({ level: 'warning', message: `„${png.name}“ wird vom Modell nicht verwendet und wurde ignoriert.` });
+    issues.push({ level: 'warning', code: 'model.unusedPng', params: { file: png.name } });
   }
 
   const json: JavaModelJson = { ...merged };
@@ -184,7 +175,7 @@ function mergeParents(main: ParsedJson, all: ParsedJson[], issues: Issue[]): Jav
   }
   for (const m of all) {
     if (!used.has(m)) {
-      issues.push({ level: 'warning', message: `„${m.name}“ gehört nicht zur Parent-Kette des Modells „${main.name}“ und wurde ignoriert.` });
+      issues.push({ level: 'warning', code: 'model.notInParentChain', params: { file: m.name, model: main.name } });
     }
   }
   if (stack.length === 1) return structuredCloneJson(main.json);
@@ -206,7 +197,7 @@ function mergeParents(main: ParsedJson, all: ParsedJson[], issues: Issue[]): Jav
   }
   const last = stack[stack.length - 1];
   if (typeof last.parent === 'string') merged.parent = last.parent;
-  issues.push({ level: 'info', message: `${stack.length - 1} Parent-Modell(e) wurden in das Modell übernommen.` });
+  issues.push({ level: 'info', code: 'model.parentsMerged', params: { count: stack.length - 1 } });
   return merged;
 }
 
@@ -290,15 +281,12 @@ export function analyseElements(json: JavaModelJson, issues: Issue[]): string | 
       if (f && typeof f.rotation === 'number' && f.rotation % 90 !== 0) badUvRotation++;
     }
   }
-  if (invalid > 0) issues.push({ level: 'error', message: `${invalid} Element(e) haben ungültige "from"/"to"-Angaben.` });
+  if (invalid > 0) issues.push({ level: 'error', code: 'model.invalidElements', params: { count: invalid } });
   if (outOfBounds > 0) {
-    issues.push({
-      level: 'error',
-      message: `${outOfBounds} Element(e) liegen außerhalb des erlaubten Bereichs von -16 bis 32. Minecraft lädt solche Modelle nicht.`,
-    });
+    issues.push({ level: 'error', code: 'model.elementsOutOfBounds', params: { count: outOfBounds } });
   }
   if (badUvRotation > 0) {
-    issues.push({ level: 'error', message: `${badUvRotation} Fläche(n) haben eine UV-Rotation, die kein Vielfaches von 90° ist.` });
+    issues.push({ level: 'error', code: 'model.invalidUvRotation', params: { count: badUvRotation } });
   }
   return requiresVersion;
 }
@@ -307,12 +295,9 @@ function checkParent(json: JavaModelJson, issues: Issue[]) {
   if (typeof json.parent !== 'string') return;
   const parent = stripMinecraftNamespace(json.parent);
   if (!isVanillaReference(json.parent)) {
-    issues.push({
-      level: 'warning',
-      message: `Das Modell nutzt das Parent-Modell „${json.parent}“. Dieses muss ebenfalls im Pack vorhanden sein – am besten die Parent-JSON mit ablegen.`,
-    });
+    issues.push({ level: 'warning', code: 'model.customParent', params: { parent: json.parent } });
   } else if (!json.elements && !ITEM_PARENTS.includes(parent) && !parent.startsWith('block/') && !parent.startsWith('item/')) {
-    issues.push({ level: 'info', message: `Parent-Modell „${json.parent}“ wird aus Minecraft verwendet.` });
+    issues.push({ level: 'info', code: 'model.vanillaParent', params: { parent: json.parent } });
   }
 }
 

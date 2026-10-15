@@ -1,4 +1,5 @@
 import type { Project } from '@resourcepackbuilder/core/types';
+import { NativeSelect, NativeSelectOption } from '@resourcepackbuilder/ui/components/native-select';
 import { useStore } from '../../state/store';
 
 /** All folders as an indented list (for select fields). */
@@ -14,18 +15,18 @@ export function flattenFolders(project: Project): Array<{ id: string; label: str
   return result;
 }
 
-export function FolderSelect({ value, onChange }: { value: string; onChange: (folderId: string) => void }) {
+export function FolderSelect({ id, value, onChange }: { id?: string; value: string; onChange: (folderId: string) => void }) {
   const project = useStore((s) => s.project);
   if (!project) return null;
   return (
-    <select className="select" value={value} onChange={(e) => onChange(e.target.value)}>
+    <NativeSelect id={id} className="w-full" value={value} onChange={(e) => onChange(e.target.value)}>
       {flattenFolders(project).map((f) => (
-        <option key={f.id} value={f.id}>
+        <NativeSelectOption key={f.id} value={f.id}>
           {'   '.repeat(f.depth)}
           {f.depth > 0 ? '└ ' : ''}
           {f.label}
-        </option>
+        </NativeSelectOption>
       ))}
-    </select>
+    </NativeSelect>
   );
 }

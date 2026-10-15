@@ -1,1 +1,20 @@
-{}
+{
+  "display": {
+    "label": "View",
+    "none": "Model",
+    "gui": "Inventory (GUI)",
+    "thirdperson_righthand": "In hand (third person)",
+    "firstperson_righthand": "In hand (first person)",
+    "head": "On the head",
+    "ground": "On the ground",
+    "fixed": "Item frame / furniture (fixed)",
+    "notDefined": "{label} (not defined)"
+  },
+  "resetView": "Reset view",
+  "webglUnavailable": "3D preview unavailable (this browser does not support WebGL).",
+  "notes": {
+    "vanillaParent": "No preview: the model uses the parent model “{parent}” from Minecraft.",
+    "noElements": "The model contains no elements.",
+    "noLayer0": "No texture layer (layer0) found."
+  }
+}

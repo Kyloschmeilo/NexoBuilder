@@ -21,6 +21,11 @@ import { MoveItemDialog } from './ui/dialogs/MoveItemDialog';
 import { ShareDialog } from './ui/dialogs/ShareDialog';
 import { PasteConfigDialog } from './ui/dialogs/PasteConfigDialog';
 import { filesFromDataTransfer } from '@resourcepackbuilder/ui';
+import { Button } from '@resourcepackbuilder/ui/components/button';
+import { Empty, EmptyContent, EmptyDescription, EmptyHeader, EmptyMedia, EmptyTitle } from '@resourcepackbuilder/ui/components/empty';
+import { useTranslations } from 'next-intl';
+import { cn } from 'cn';
+import { translator } from './i18n/locale';
 
 function DialogHost() {
   const dialog = useStore((s) => s.dialog);
@@ -77,7 +82,7 @@ function useShortcuts() {
   }, []);
 }
 
-/** Files dropped anywhere in the window open the "Neues Item" dialog instead of navigating the browser away. */
+/** Files dropped anywhere in the window open the "New item" dialog instead of navigating the browser away. */
 function useWindowDrop() {
   useEffect(() => {
     const onDragOver = (e: DragEvent) => {
@@ -95,7 +100,7 @@ function useWindowDrop() {
             ? project.items[selection.id]?.folderId
             : project.rootFolderIds[0];
       if (!folderId || !project.folders[folderId]) {
-        toast('warning', 'Lege zuerst einen Ordner an – darin werden die Items erstellt.');
+        toast('warning', translator('layout')('main.dropNeedsFolder'));
         return;
       }
       const files = await filesFromDataTransfer(e.dataTransfer);
@@ -111,6 +116,7 @@ function useWindowDrop() {
 }
 
 function MainArea({ plan }: { plan: ExportPlan | null }) {
+  const t = useTranslations('layout.main');
   const project = useStore((s) => s.project)!;
   const selection = useStore((s) => s.selection);
   let content;
@@ -129,25 +135,31 @@ function MainArea({ plan }: { plan: ExportPlan | null }) {
   } else {
     const hasFolders = project.rootFolderIds.length > 0;
     content = (
-      <div className="empty-state">
-        <div>
-          {hasFolders ? <MousePointerClick size={36} className="faint" /> : <FolderPlus size={36} className="faint" />}
-          <h2>{hasFolders ? 'Wähle links einen Ordner oder ein Item' : 'Leg los mit einem Ordner'}</h2>
-          <p>
-            {hasFolders
-              ? 'Über das + neben einem Ordner erstellst du ein neues Item. Du kannst Modelle auch direkt auf einen Ordner ziehen.'
-              : 'Ordner werden zu Unterordnern in plugins/Nexo/items. Darin legst du deine Items an.'}
-          </p>
-          {!hasFolders && (
-            <button className="btn primary large" onClick={() => promptNewFolder(null)}>
-              <FolderPlus size={17} /> Ordner anlegen
-            </button>
-          )}
-        </div>
-      </div>
+      <Empty className="h-full p-8">
+        <EmptyHeader className="max-w-[460px]">
+          <EmptyMedia>
+            {hasFolders ? (
+              <MousePointerClick className="size-9 text-muted-foreground" />
+            ) : (
+              <FolderPlus className="size-9 text-muted-foreground" />
+            )}
+          </EmptyMedia>
+          <EmptyTitle className="font-heading text-xl tracking-[0.04em] uppercase">
+            {hasFolders ? t('pickTitle') : t('startTitle')}
+          </EmptyTitle>
+          <EmptyDescription>{hasFolders ? t('pickDescription') : t('startDescription')}</EmptyDescription>
+        </EmptyHeader>
+        {!hasFolders && (
+          <EmptyContent>
+            <Button size="lg" onClick={() => promptNewFolder(null)}>
+              <FolderPlus /> {t('createFolder')}
+            </Button>
+          </EmptyContent>
+        )}
+      </Empty>
     );
   }
-  return <main className="main">{content}</main>;
+  return <main className="min-h-0 min-w-0 overflow-auto">{content}</main>;
 }
 
 export default function App() {
@@ -158,10 +170,15 @@ export default function App() {
   useWindowDrop();
 
   return (
-    <div className="app">
+    <div className="grid h-screen grid-rows-[56px_minmax(0,1fr)] overflow-hidden bg-background text-foreground">
       <TopBar plan={plan} />
       {project ? (
-        <div className="workspace" style={rightPanel ? undefined : { gridTemplateColumns: '290px 1fr' }}>
+        <div
+          className={cn(
+            'grid min-h-0',
+            rightPanel ? 'grid-cols-[300px_minmax(0,1fr)_auto]' : 'grid-cols-[290px_minmax(0,1fr)]',
+          )}
+        >
           <Sidebar plan={plan} />
           <MainArea plan={plan} />
           {rightPanel && <RightPanel plan={plan} />}

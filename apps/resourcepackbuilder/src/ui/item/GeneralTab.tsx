@@ -1,3 +1,4 @@
+import { useTranslations } from 'next-intl';
 import type { Item } from '@resourcepackbuilder/core/types';
 import { MATERIALS } from '@resourcepackbuilder/core/nexo/options';
 import { ITEM_ID_PATTERN } from '@resourcepackbuilder/core/util';
@@ -5,83 +6,82 @@ import { moveItem, updateItem } from '../../state/actions';
 import { useStore } from '../../state/store';
 import { ItemTooltip } from '@resourcepackbuilder/ui';
 import { TextInput } from '@resourcepackbuilder/ui';
+import { Field, FieldDescription, FieldError, FieldLabel, FieldTitle } from '@resourcepackbuilder/ui/components/field';
+import { Input } from '@resourcepackbuilder/ui/components/input';
 import { FolderSelect } from '../dialogs/FolderSelect';
 import { PropertiesPanel } from './PropertiesPanel';
+import { EditorCard } from './parts';
 
 export function GeneralTab({ item }: { item: Item }) {
+  const t = useTranslations('item');
   const project = useStore((s) => s.project)!;
   const duplicate = Object.values(project.items).find((i) => i.id !== item.id && i.nexoId === item.nexoId);
   const idError = !item.nexoId
-    ? 'Die ID darf nicht leer sein.'
+    ? t('general.idEmpty')
     : !ITEM_ID_PATTERN.test(item.nexoId)
-      ? 'Nur Kleinbuchstaben, Zahlen und _ erlaubt.'
+      ? t('general.idInvalid')
       : duplicate
-        ? `Diese ID wird bereits von „${duplicate.displayName || duplicate.nexoId}“ verwendet.`
+        ? t('general.idDuplicate', { name: duplicate.displayName || duplicate.nexoId })
         : null;
   const material = typeof item.config.material === 'string' ? item.config.material : 'PAPER';
   const lore = Array.isArray(item.config.lore) ? (item.config.lore as unknown[]).map((l) => String(l ?? '')) : undefined;
+  const displayNameId = `item-${item.id}-display-name`;
+  const nexoIdId = `item-${item.id}-nexo-id`;
 
   return (
     <div>
-      <div className="card">
-        <div className="card-header">
-          <div className="card-title-group">
-            <h3>Grunddaten</h3>
-            <div className="desc">Name, ID und Basis-Material des Items</div>
+      <EditorCard title={t('general.title')} description={t('general.description')}>
+        <div className="flex flex-wrap gap-5">
+          <div className="grid min-w-0 flex-[1_1_380px] grid-cols-1 gap-4 sm:grid-cols-2">
+            <Field className="gap-1.5 sm:col-span-2">
+              <FieldLabel htmlFor={displayNameId}>{t('general.displayName')}</FieldLabel>
+              <Input
+                id={displayNameId}
+                value={item.displayName}
+                placeholder={t('general.displayNamePlaceholder', { tag: '<gradient:#ff5555:#ffaa00>' })}
+                onChange={(e) => updateItem(item.id, (d) => (d.displayName = e.target.value), 'displayName')}
+              />
+              <FieldDescription className="text-xs">
+                {t('general.displayNameHelp', {
+                  colors: '<red>, <#ff8800>, <gradient:#ff0000:#0000ff>',
+                  formatting: '<bold>, <italic>, <!italic>',
+                })}
+              </FieldDescription>
+            </Field>
+            <Field className="gap-1.5" data-invalid={idError ? true : undefined}>
+              <FieldLabel htmlFor={nexoIdId}>{t('general.itemId')}</FieldLabel>
+              <Input
+                id={nexoIdId}
+                className="font-mono"
+                aria-invalid={idError ? true : undefined}
+                value={item.nexoId}
+                onChange={(e) => updateItem(item.id, (d) => (d.nexoId = e.target.value.toLowerCase().replace(/[^a-z0-9_]/g, '_')), 'nexoId')}
+              />
+              {idError && <FieldError className="text-xs">{idError}</FieldError>}
+            </Field>
+            <Field className="gap-1.5">
+              <FieldTitle>{t('general.material')}</FieldTitle>
+              <TextInput
+                value={material}
+                suggestions={MATERIALS}
+                mono
+                onChange={(v) => updateItem(item.id, (d) => (d.config.material = (v ?? '').toUpperCase().replace(/[^A-Z0-9_]/g, '_')), 'material')}
+              />
+              <FieldDescription className="text-xs">{t('general.materialHelp')}</FieldDescription>
+            </Field>
+            <Field className="gap-1.5">
+              <FieldTitle>{t('general.folder')}</FieldTitle>
+              <FolderSelect value={item.folderId} onChange={(folderId) => moveItem(item.id, folderId)} />
+            </Field>
+          </div>
+          <div className="flex max-w-[340px] flex-[1_1_220px] flex-col gap-1.5">
+            <span className="text-sm font-medium">{t('general.tooltipPreview')}</span>
+            <ItemTooltip name={item.displayName || item.nexoId} lore={lore} />
+            <span className="text-xs text-muted-foreground">{t('general.tooltipHelp')}</span>
           </div>
         </div>
-        <div className="card-body">
-          <div className="general-grid">
-            <div className="field-grid general-fields">
-              <label className="field wide">
-                <span className="field-label">Anzeigename (itemname, MiniMessage)</span>
-                <input
-                  className="input"
-                  value={item.displayName}
-                  placeholder="z.B. <gradient:#ff5555:#ffaa00>Feuerschwert"
-                  onChange={(e) => updateItem(item.id, (d) => (d.displayName = e.target.value), 'displayName')}
-                />
-                <span className="field-help">
-                  Farben: &lt;red&gt;, &lt;#ff8800&gt;, &lt;gradient:#ff0000:#0000ff&gt; · Formatierung: &lt;bold&gt;, &lt;italic&gt;, &lt;!italic&gt;
-                </span>
-              </label>
-              <label className="field">
-                <span className="field-label">Item-ID (für /nexo give)</span>
-                <input
-                  className={`input mono ${idError ? 'invalid' : ''}`}
-                  value={item.nexoId}
-                  onChange={(e) =>
-                    updateItem(item.id, (d) => (d.nexoId = e.target.value.toLowerCase().replace(/[^a-z0-9_]/g, '_')), 'nexoId')
-                  }
-                />
-                {idError && <span className="field-error">{idError}</span>}
-              </label>
-              <label className="field">
-                <span className="field-label">Material</span>
-                <TextInput
-                  value={material}
-                  suggestions={MATERIALS}
-                  mono
-                  onChange={(v) =>
-                    updateItem(item.id, (d) => (d.config.material = (v ?? '').toUpperCase().replace(/[^A-Z0-9_]/g, '_')), 'material')
-                  }
-                />
-                <span className="field-help">Basis-Item in Minecraft. Standard ist PAPER; für Werkzeuge/Rüstung das passende Material.</span>
-              </label>
-              <label className="field">
-                <span className="field-label">Ordner</span>
-                <FolderSelect value={item.folderId} onChange={(folderId) => moveItem(item.id, folderId)} />
-              </label>
-            </div>
-            <div className="col general-preview" style={{ gap: 6 }}>
-              <span className="field-label">Tooltip-Vorschau</span>
-              <ItemTooltip name={item.displayName || item.nexoId} lore={lore} />
-              <span className="field-help">Ohne eigene Farbe zeigt Minecraft die Lore lila und kursiv an.</span>
-            </div>
-          </div>
-        </div>
-      </div>
-      <PropertiesPanel item={item} groups={['general']} title="General" emptyText="Noch nichts hinzugefügt (z.B. Lore)." />
+      </EditorCard>
+      <PropertiesPanel item={item} groups={['general']} title={t('properties.titles.general')} emptyText={t('properties.empty.general')} />
     </div>
   );
 }

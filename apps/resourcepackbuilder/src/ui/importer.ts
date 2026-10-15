@@ -9,6 +9,7 @@ import { createTextureModel, getTextureTemplate, suggestSlotAssignment, TEXTURE_
 import { isPngDataUrl, normalizeTextureName, type DroppedFile } from '@resourcepackbuilder/core/model/textures';
 import { fileBaseName, isPlainObject } from '@resourcepackbuilder/core/util';
 import { prettyNameFromFile } from '@resourcepackbuilder/ui';
+import { errorMessage } from '../i18n/errors';
 
 export type ImportKind = 'bbmodel' | 'json' | 'png';
 
@@ -105,7 +106,7 @@ export function runDraft(input: Omit<ImportDraft, 'key' | 'model' | 'error'> & {
       draft.model = createTextureModel(draft.template ?? 'generated', draft.assignment ?? {}, draft.files);
     }
   } catch (err) {
-    draft.error = (err as Error).message;
+    draft.error = errorMessage(err);
   }
   return draft;
 }

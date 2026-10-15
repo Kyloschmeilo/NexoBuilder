@@ -1,4 +1,3 @@
-import { useRef, useState } from 'react';
 import {
   ChevronDown,
   CircleAlert,
@@ -7,188 +6,236 @@ import {
   FolderOpen,
   FolderSync,
   FilePlus2,
+  Monitor,
+  Moon,
   PanelRight,
   PanelRightClose,
   Redo2,
   Save,
   Settings,
+  Sun,
   TriangleAlert,
   Undo2,
   Upload,
   Users,
   X,
 } from 'lucide-react';
+import { useTranslations } from 'next-intl';
 import type { ExportPlan } from '@resourcepackbuilder/core/export/plan';
 import { countIssues } from '@resourcepackbuilder/core/export/plan';
+import { Button } from '@resourcepackbuilder/ui/components/button';
+import { Kbd } from '@resourcepackbuilder/ui/components/kbd';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuGroup,
+  DropdownMenuLabel,
+  DropdownMenuRadioGroup,
+  DropdownMenuRadioItem,
+  DropdownMenuTrigger,
+} from '@resourcepackbuilder/ui/components/dropdown-menu';
 import { useStore } from '../../state/store';
-import { MenuItem, Popover } from '@resourcepackbuilder/ui';
 import { closeProject, openProjectFile, openSharedProjectFromFolder, saveProjectFile } from '../projectActions';
-import { isShareAvailable, useShareStore } from '../../state/share';
-import { SHARE_STATUS_TEXT, shareStatusClass } from '../dialogs/ShareDialog';
+import { isShareAvailable, useShareStore, type ShareStatus } from '../../state/share';
+import { useTheme } from '../../theme/ThemeProvider';
+import type { ThemeChoice } from '../../theme/theme';
+import { MenuEntries, StatusDot, Tip, type DotTone, type MenuEntry } from './parts';
+
+function shareTone(status: ShareStatus): DotTone {
+  return status === 'synced' ? 'success' : status === 'error' ? 'error' : status === 'off' ? 'neutral' : 'warning';
+}
 
 function ShareChip() {
+  const t = useTranslations('layout.topBar');
   const projectId = useStore((s) => s.project?.id);
   const share = useShareStore();
   const shared = share.projectId === projectId && share.status !== 'off';
   return (
-    <button
-      className="btn ghost share-chip"
-      title={shared ? `Geteilt über ${share.folder} – ${SHARE_STATUS_TEXT[share.status]}` : 'Projekt mit anderen teilen'}
-      onClick={() => useStore.getState().openDialog({ type: 'share' })}
-    >
-      {shared ? (
-        <>
-          <span className={`share-dot ${shareStatusClass(share.status)}`} /> Geteilt
-        </>
-      ) : (
-        <>
-          <Users size={15} /> Teilen
-        </>
-      )}
-    </button>
+    <Tip label={shared ? t('share.sharedHint', { folder: share.folder ?? '', status: t(`shareStatus.${share.status}`) }) : t('share.hint')}>
+      <Button variant="ghost" onClick={() => useStore.getState().openDialog({ type: 'share' })}>
+        {shared ? (
+          <>
+            <StatusDot tone={shareTone(share.status)} /> {t('share.shared')}
+          </>
+        ) : (
+          <>
+            <Users /> {t('share.button')}
+          </>
+        )}
+      </Button>
+    </Tip>
+  );
+}
+
+const THEME_ICONS: Record<ThemeChoice, typeof Sun> = { light: Sun, dark: Moon, system: Monitor };
+
+/** Quick switch between light, dark and system appearance. */
+function ThemeMenu() {
+  const tc = useTranslations('common');
+  const { choice, setTheme } = useTheme();
+  const Icon = THEME_ICONS[choice];
+  return (
+    <DropdownMenu>
+      <Tip label={tc('theme')}>
+        <DropdownMenuTrigger render={<Button variant="ghost" size="icon" aria-label={tc('theme')} />}>
+          <Icon />
+        </DropdownMenuTrigger>
+      </Tip>
+      <DropdownMenuContent align="end" className="w-40">
+        <DropdownMenuGroup>
+          <DropdownMenuLabel>{tc('theme')}</DropdownMenuLabel>
+          <DropdownMenuRadioGroup value={choice} onValueChange={(value) => setTheme(value as ThemeChoice)}>
+            {(['light', 'dark', 'system'] as const).map((c) => {
+              const ChoiceIcon = THEME_ICONS[c];
+              return (
+                <DropdownMenuRadioItem key={c} value={c}>
+                  <ChoiceIcon /> {tc(`themeNames.${c}`)}
+                </DropdownMenuRadioItem>
+              );
+            })}
+          </DropdownMenuRadioGroup>
+        </DropdownMenuGroup>
+      </DropdownMenuContent>
+    </DropdownMenu>
+  );
+}
+
+function ProjectMenu({ name }: { name: string }) {
+  const t = useTranslations('layout.topBar');
+  const open = useStore.getState().openDialog;
+  const entries: MenuEntry[] = [
+    {
+      icon: <Settings />,
+      label: t('projectMenu.settings'),
+      description: t('projectMenu.settingsDescription'),
+      onSelect: () => open({ type: 'settings' }),
+    },
+    {
+      icon: <Users />,
+      label: t('projectMenu.share'),
+      description: t('projectMenu.shareDescription'),
+      onSelect: () => open({ type: 'share' }),
+    },
+    'separator',
+    {
+      icon: <Save />,
+      label: t('projectMenu.saveFile'),
+      description: t('projectMenu.saveFileDescription'),
+      onSelect: () => saveProjectFile(),
+    },
+    { icon: <Upload />, label: t('projectMenu.openFile'), onSelect: () => void openProjectFile() },
+    { icon: <FolderOpen />, label: t('projectMenu.switchProjects'), onSelect: () => open({ type: 'projects' }) },
+    ...(isShareAvailable()
+      ? [{ icon: <FolderSync />, label: t('projectMenu.openShared'), onSelect: () => void openSharedProjectFromFolder() }]
+      : []),
+    { icon: <FilePlus2 />, label: t('projectMenu.newProject'), onSelect: () => open({ type: 'newProject' }) },
+    'separator',
+    { icon: <X />, label: t('projectMenu.close'), onSelect: () => void closeProject() },
+  ];
+  return (
+    <DropdownMenu>
+      <DropdownMenuTrigger render={<Button variant="ghost" className="max-w-[280px]" />}>
+        <span className="truncate">{name || t('untitled')}</span>
+        <ChevronDown className="size-3.5" />
+      </DropdownMenuTrigger>
+      <DropdownMenuContent className="w-65">
+        <MenuEntries kind="dropdown" entries={entries} />
+      </DropdownMenuContent>
+    </DropdownMenu>
   );
 }
 
 export function TopBar({ plan }: { plan: ExportPlan | null }) {
+  const t = useTranslations('layout.topBar');
   const project = useStore((s) => s.project);
   const canUndo = useStore((s) => s.past.length > 0);
   const canRedo = useStore((s) => s.future.length > 0);
   const saveStatus = useStore((s) => s.saveStatus);
   const rightPanel = useStore((s) => s.rightPanel);
-  const [menuOpen, setMenuOpen] = useState(false);
-  const anchor = useRef<HTMLButtonElement>(null);
   const counts = plan ? countIssues(plan.issues) : null;
   const open = useStore.getState().openDialog;
 
   return (
-    <header className="topbar">
-      <div className="brand">
-        <div className="brand-logo">R</div>
+    <header className="flex min-w-0 items-center gap-3 border-b border-border bg-background px-4">
+      <div className="flex items-center gap-2.5 font-heading text-[17px] leading-5 font-bold tracking-[0.04em] whitespace-nowrap text-foreground uppercase">
+        <div className="grid size-7 place-items-center rounded-sm bg-primary font-heading text-[17px] leading-none font-bold text-primary-foreground">
+          R
+        </div>
         ResourcepackBuilder
       </div>
       {project && (
         <>
-          <button ref={anchor} className="btn ghost" onClick={() => setMenuOpen((o) => !o)} style={{ maxWidth: 280 }}>
-            <span style={{ overflow: 'hidden', textOverflow: 'ellipsis' }}>{project.name || 'Unbenannt'}</span>
-            <ChevronDown size={14} />
-          </button>
-          <Popover anchor={anchor.current} open={menuOpen} onClose={() => setMenuOpen(false)} width={260}>
-            <MenuItem
-              icon={<Settings size={15} />}
-              label="Projekt-Einstellungen"
-              description="Name, Namespace, Version, Pack-Icon"
-              onClick={() => {
-                setMenuOpen(false);
-                open({ type: 'settings' });
-              }}
-            />
-            <MenuItem
-              icon={<Users size={15} />}
-              label="Projekt teilen …"
-              description="Mit anderen gemeinsam bearbeiten"
-              onClick={() => {
-                setMenuOpen(false);
-                open({ type: 'share' });
-              }}
-            />
-            <div className="menu-sep" />
-            <MenuItem
-              icon={<Save size={15} />}
-              label="Projektdatei speichern"
-              description="Sicherung / zum Weitergeben (.resourcepackbuilder.json)"
-              onClick={() => {
-                setMenuOpen(false);
-                saveProjectFile();
-              }}
-            />
-            <MenuItem
-              icon={<Upload size={15} />}
-              label="Projektdatei öffnen"
-              onClick={() => {
-                setMenuOpen(false);
-                void openProjectFile();
-              }}
-            />
-            <MenuItem
-              icon={<FolderOpen size={15} />}
-              label="Projekte wechseln …"
-              onClick={() => {
-                setMenuOpen(false);
-                open({ type: 'projects' });
-              }}
-            />
-            {isShareAvailable() && (
-              <MenuItem
-                icon={<FolderSync size={15} />}
-                label="Geteiltes Projekt öffnen …"
-                onClick={() => {
-                  setMenuOpen(false);
-                  void openSharedProjectFromFolder();
-                }}
-              />
-            )}
-            <MenuItem
-              icon={<FilePlus2 size={15} />}
-              label="Neues Projekt"
-              onClick={() => {
-                setMenuOpen(false);
-                open({ type: 'newProject' });
-              }}
-            />
-            <div className="menu-sep" />
-            <MenuItem
-              icon={<X size={15} />}
-              label="Projekt schließen"
-              onClick={() => {
-                setMenuOpen(false);
-                void closeProject();
-              }}
-            />
-          </Popover>
-          <div className="row" style={{ gap: 2 }}>
-            <button className="btn ghost icon" title="Rückgängig (Strg+Z)" disabled={!canUndo} onClick={() => useStore.getState().undo()}>
-              <Undo2 size={16} />
-            </button>
-            <button className="btn ghost icon" title="Wiederholen (Strg+Y)" disabled={!canRedo} onClick={() => useStore.getState().redo()}>
-              <Redo2 size={16} />
-            </button>
+          <ProjectMenu name={project.name} />
+          <div className="flex items-center gap-0.5">
+            <Tip
+              label={
+                <>
+                  {t('undo')} <Kbd>{t('undoShortcut')}</Kbd>
+                </>
+              }
+            >
+              <Button variant="ghost" size="icon" aria-label={t('undo')} disabled={!canUndo} onClick={() => useStore.getState().undo()}>
+                <Undo2 />
+              </Button>
+            </Tip>
+            <Tip
+              label={
+                <>
+                  {t('redo')} <Kbd>{t('redoShortcut')}</Kbd>
+                </>
+              }
+            >
+              <Button variant="ghost" size="icon" aria-label={t('redo')} disabled={!canRedo} onClick={() => useStore.getState().redo()}>
+                <Redo2 />
+              </Button>
+            </Tip>
           </div>
-          <span className="faint small nowrap" title="Projekte werden automatisch im Browser gespeichert">
-            {saveStatus === 'saving' ? 'Speichert …' : saveStatus === 'saved' ? 'Gespeichert' : saveStatus === 'error' ? 'Nicht gespeichert!' : ''}
-          </span>
+          {saveStatus !== 'idle' && (
+            <Tip label={t('saveStatus.hint')}>
+              <span className={saveStatus === 'error' ? 'text-xs whitespace-nowrap text-destructive' : 'text-xs whitespace-nowrap text-muted-foreground'}>
+                {saveStatus === 'saving' ? t('saveStatus.saving') : saveStatus === 'saved' ? t('saveStatus.saved') : t('saveStatus.error')}
+              </span>
+            </Tip>
+          )}
           <ShareChip />
         </>
       )}
-      <span className="topbar-spacer" />
+      <span className="flex-1" />
       {project && counts && (
-        <button className="btn ghost" title="Prüfung anzeigen" onClick={() => open({ type: 'export' })}>
-          {counts.error > 0 ? (
-            <>
-              <CircleAlert size={16} style={{ color: 'var(--ember)' }} /> {counts.error} Fehler
-            </>
-          ) : counts.warning > 0 ? (
-            <>
-              <TriangleAlert size={16} style={{ color: 'var(--gold)' }} /> {counts.warning} {counts.warning === 1 ? 'Warnung' : 'Warnungen'}
-            </>
-          ) : (
-            <>
-              <CircleCheck size={16} style={{ color: 'var(--accent)' }} /> Alles ok
-            </>
-          )}
-        </button>
+        <Tip label={t('checks.hint')}>
+          <Button variant="ghost" onClick={() => open({ type: 'export' })}>
+            {counts.error > 0 ? (
+              <>
+                <CircleAlert className="text-destructive" /> {t('checks.errors', { count: counts.error })}
+              </>
+            ) : counts.warning > 0 ? (
+              <>
+                <TriangleAlert className="text-warning" /> {t('checks.warnings', { count: counts.warning })}
+              </>
+            ) : (
+              <>
+                <CircleCheck className="text-success" /> {t('checks.ok')}
+              </>
+            )}
+          </Button>
+        </Tip>
       )}
+      <ThemeMenu />
       {project && (
         <>
-          <button
-            className="btn ghost icon"
-            title={rightPanel ? 'Vorschau ausblenden' : 'Vorschau einblenden'}
-            onClick={() => useStore.getState().setRightPanel(!rightPanel)}
-          >
-            {rightPanel ? <PanelRightClose size={17} /> : <PanelRight size={17} />}
-          </button>
-          <button className="btn primary" onClick={() => open({ type: 'export' })}>
-            <Download size={16} /> Exportieren
-          </button>
+          <Tip label={rightPanel ? t('preview.hide') : t('preview.show')}>
+            <Button
+              variant="ghost"
+              size="icon"
+              aria-label={rightPanel ? t('preview.hide') : t('preview.show')}
+              onClick={() => useStore.getState().setRightPanel(!rightPanel)}
+            >
+              {rightPanel ? <PanelRightClose /> : <PanelRight />}
+            </Button>
+          </Tip>
+          <Button onClick={() => open({ type: 'export' })}>
+            <Download /> {t('export')}
+          </Button>
         </>
       )}
     </header>

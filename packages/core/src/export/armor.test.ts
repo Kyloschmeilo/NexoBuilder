@@ -61,7 +61,7 @@ describe('Worn textures', () => {
   it('reports layers that do not exist yet in the target version', () => {
     const { project: p, add } = project('1.21.4');
     add('geschirr', 'PAPER', { set: 'ghast', mob: { harness: '@asset:tex' } });
-    expect(planExport(p).issues.some((i) => i.level === 'error' && i.message.includes('1.21.6'))).toBe(true);
+    expect(planExport(p).issues.some((i) => i.level === 'error' && i.code === 'plan.armorLayerNeedsVersion' && i.params?.version === '1.21.6')).toBe(true);
   });
 
   it('leaves player armor as before', () => {

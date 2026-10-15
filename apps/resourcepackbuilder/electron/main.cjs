@@ -3,9 +3,10 @@
  * Loads the static Next.js export (out/) via the custom app:// protocol in its own window.
  * Projects are saved automatically, just like in the browser (IndexedDB in the app data folder).
  */
-const { app, BrowserWindow, Menu, dialog, net, protocol, session, shell } = require('electron');
+const { app, BrowserWindow, Menu, dialog, ipcMain, net, protocol, session, shell } = require('electron');
 const path = require('node:path');
 const { pathToFileURL } = require('node:url');
+const { onLocaleChange, setLocale, t } = require('./messages.cjs');
 const { registerShareHandlers } = require('./share.cjs');
 const { isTestServerRunning, registerTestServerHandlers, stopTestServer } = require('./testserver.cjs');
 
@@ -90,38 +91,36 @@ function createWindow() {
 function buildMenu() {
   const template = [
     {
-      label: 'Datei',
-      submenu: [{ role: 'quit', label: 'Beenden' }],
+      label: t('menu.file'),
+      submenu: [{ role: 'quit', label: t('menu.quit') }],
     },
     {
-      label: 'Ansicht',
+      label: t('menu.view'),
       submenu: [
-        { role: 'reload', label: 'Neu laden' },
-        { role: 'toggleDevTools', label: 'Entwicklertools' },
+        { role: 'reload', label: t('menu.reload') },
+        { role: 'toggleDevTools', label: t('menu.devTools') },
         { type: 'separator' },
-        { role: 'resetZoom', label: 'Originalgröße' },
-        { role: 'zoomIn', label: 'Vergrößern' },
-        { role: 'zoomOut', label: 'Verkleinern' },
+        { role: 'resetZoom', label: t('menu.resetZoom') },
+        { role: 'zoomIn', label: t('menu.zoomIn') },
+        { role: 'zoomOut', label: t('menu.zoomOut') },
         { type: 'separator' },
-        { role: 'togglefullscreen', label: 'Vollbild' },
+        { role: 'togglefullscreen', label: t('menu.fullscreen') },
       ],
     },
     {
-      label: 'Hilfe',
+      label: t('menu.help'),
       submenu: [
-        { label: 'Nexo-Dokumentation', click: () => void shell.openExternal('https://docs.nexomc.com/') },
+        { label: t('menu.nexoDocs'), click: () => void shell.openExternal('https://docs.nexomc.com/') },
         { label: 'Blockbench', click: () => void shell.openExternal('https://www.blockbench.net/') },
         { type: 'separator' },
         {
-          label: `Über ${APP_NAME}`,
+          label: t('menu.about', { app: APP_NAME }),
           click: () =>
             void dialog.showMessageBox({
               type: 'info',
-              title: `Über ${APP_NAME}`,
+              title: t('menu.about', { app: APP_NAME }),
               message: `${APP_NAME} ${app.getVersion()}`,
-              detail:
-                'Erstellt fertige Nexo-Items mit Resourcepack aus Blockbench-Modellen, Java-Modellen und Texturen.\n\n' +
-                `Projekte werden automatisch gespeichert in:\n${app.getPath('userData')}`,
+              detail: t('about.detail', { path: app.getPath('userData') }),
             }),
         },
       ],
@@ -139,6 +138,13 @@ app.on('second-instance', () => {
 app.whenReady().then(() => {
   registerAppProtocol();
   buildMenu();
+  // The UI reports its language on startup and on every change; menus are rebuilt in that language
+  onLocaleChange(() => buildMenu());
+  ipcMain.handle('app:set-locale', (event, locale) => {
+    const url = event.senderFrame?.url ?? '';
+    if (!url.startsWith('app://bundle/')) throw new Error('Not allowed');
+    setLocale(locale);
+  });
   registerShareHandlers();
   registerTestServerHandlers();
 
@@ -150,7 +156,7 @@ app.whenReady().then(() => {
       return;
     }
     item.setSaveDialogOptions({
-      title: 'Speichern unter',
+      title: t('dialog.saveAs'),
       defaultPath: path.join(app.getPath('downloads'), item.getFilename()),
     });
   });

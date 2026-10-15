@@ -3,6 +3,7 @@
  * plugins/Nexo/sounds.yml. With "Musik-CD", Nexo additionally registers the sound as a jukebox song
  * that an item can play via the "Schallplatte" component (jukebox_playable).
  */
+import type { MessageParams } from '../errors';
 import type { Issue, Project } from '../types';
 import { base64ToBytes } from '../util';
 
@@ -91,21 +92,27 @@ export function validateSounds(project: Project): Array<Issue & { soundId: strin
   const issues: Array<Issue & { soundId: string }> = [];
   const seen = new Set<string>();
   for (const sound of project.sounds ?? []) {
-    const add = (level: Issue['level'], message: string) =>
-      issues.push({ level, message: `Sound „${sound.soundId || '?'}“: ${message}`, soundId: sound.id });
-    if (!SOUND_ID_PATTERN.test(sound.soundId)) add('error', 'Der Name darf nur Kleinbuchstaben, Zahlen sowie _ . - enthalten (z.B. block.rubin.place).');
-    if (seen.has(sound.soundId)) add('error', 'Diesen Namen hat schon ein anderer Sound.');
+    const add = (level: Issue['level'], code: string, params?: MessageParams) =>
+      issues.push({
+        level,
+        code: 'context.sound',
+        params: { sound: sound.soundId || '?' },
+        detail: { level, code, params },
+        soundId: sound.id,
+      });
+    if (!SOUND_ID_PATTERN.test(sound.soundId)) add('error', 'sound.idInvalid');
+    if (seen.has(sound.soundId)) add('error', 'sound.idDuplicate');
     seen.add(sound.soundId);
-    if (sound.files.length === 0) add('error', 'Es wurde noch keine OGG-Datei hochgeladen.');
+    if (sound.files.length === 0) add('error', 'sound.fileMissing');
     for (const file of sound.files) {
-      if (!isOgg(file.dataUrl)) add('error', `„${file.name}“ ist keine OGG-Datei. Minecraft spielt nur .ogg (Vorbis) ab.`);
+      if (!isOgg(file.dataUrl)) add('error', 'sound.notOgg', { file: file.name });
     }
-    if (sound.volume !== null && (sound.volume <= 0 || sound.volume > 10)) add('warning', 'Die Lautstärke sollte zwischen 0 und 1 liegen (größer als 1 erhöht nur die Reichweite).');
+    if (sound.volume !== null && (sound.volume <= 0 || sound.volume > 10)) add('warning', 'sound.volumeRange');
     if (sound.jukebox) {
-      if (!DURATION_PATTERN.test(sound.jukebox.duration)) add('error', 'Bei der Musik-CD fehlt die Länge des Liedes (z.B. 2m 30s oder 150s).');
+      if (!DURATION_PATTERN.test(sound.jukebox.duration)) add('error', 'sound.jukeboxDurationMissing');
       const output = sound.jukebox.comparatorOutput;
-      if (output !== null && (output < 0 || output > 15 || !Number.isInteger(output))) add('error', 'Das Komparator-Signal muss zwischen 0 und 15 liegen.');
-      if (!sound.stream && sound.files.some((f) => f.size > 1_000_000)) add('info', 'Lange Lieder besser „streamen“ – dann lädt Minecraft sie nicht komplett in den Speicher.');
+      if (output !== null && (output < 0 || output > 15 || !Number.isInteger(output))) add('error', 'sound.comparatorRange');
+      if (!sound.stream && sound.files.some((f) => f.size > 1_000_000)) add('info', 'sound.streamLongSongs');
     }
   }
   return issues;

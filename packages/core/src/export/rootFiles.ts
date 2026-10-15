@@ -18,7 +18,7 @@ export function buildRootFiles(plans: RootEntries[]): Map<string, string> {
   if (sounds.length > 0) {
     files.set(
       SOUNDS_FILE,
-      '# Erstellt mit ResourcepackBuilder – ersetzt eine vorhandene sounds.yml. Eigene Einträge von dort bitte hier ergänzen.\n' +
+      '# Created with ResourcepackBuilder – replaces an existing sounds.yml. Please add your own entries from there here.\n' +
         toYaml({ sounds }),
     );
   }
@@ -26,7 +26,7 @@ export function buildRootFiles(plans: RootEntries[]): Map<string, string> {
   if (Object.keys(paintings).length > 0) {
     files.set(
       PAINTINGS_FILE,
-      '# Erstellt mit ResourcepackBuilder – ersetzt eine vorhandene paintings.yml. Neue Gemälde brauchen einen Server-Neustart.\n' +
+      '# Created with ResourcepackBuilder – replaces an existing paintings.yml. New paintings need a server restart.\n' +
         toYaml({ paintings }),
     );
   }

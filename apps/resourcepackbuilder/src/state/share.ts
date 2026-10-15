@@ -25,6 +25,8 @@ import {
   setExtraSaveProvider,
   type ShareConfig,
 } from './persistence';
+import { errorMessage } from '../i18n/errors';
+import { translator } from '../i18n/locale';
 import { useStore } from './store';
 
 const POLL_MS = 2500;
@@ -91,9 +93,10 @@ const lastAnnounced = new Map<string, number>();
 
 /** Short notice of what the others changed (repeated changes to the same entry only every 15 s) */
 function announce(changes: RemoteChange[]) {
+  const t = translator('state');
   const byPerson = new Map<string, RemoteChange[]>();
   for (const change of changes) {
-    const name = change.byName || 'Jemand';
+    const name = change.byName || t('defaults.someone');
     byPerson.set(name, [...(byPerson.get(name) ?? []), change]);
   }
   const now = Date.now();
@@ -105,14 +108,15 @@ function announce(changes: RemoteChange[]) {
     if (now - (lastAnnounced.get(key) ?? 0) < ANNOUNCE_QUIET_MS) continue;
     lastAnnounced.set(key, now);
     const labels = [...new Set(list.map((c) => c.label).filter(Boolean))];
+    const quote = (label: string) => t('share.quoted', { label });
     const what =
       labels.length === 0
-        ? `${list.length} ${list.length === 1 ? 'Eintrag' : 'Einträge'}`
+        ? t('share.entryCount', { count: list.length })
         : labels.length <= 3
-          ? labels.map((l) => `„${l}“`).join(', ')
-          : `${labels.slice(0, 2).map((l) => `„${l}“`).join(', ')} und ${labels.length - 2} weitere`;
-    const verb = list.every((c) => c.deleted) ? 'gelöscht' : 'geändert';
-    useStore.getState().toast('info', `${name} hat ${what} ${verb}.`);
+          ? labels.map(quote).join(', ')
+          : t('share.andMore', { list: labels.slice(0, 2).map(quote).join(', '), count: labels.length - 2 });
+    const deleted = list.every((c) => c.deleted);
+    useStore.getState().toast('info', t(deleted ? 'share.remoteDeleted' : 'share.remoteChanged', { name, what }));
   }
 }
 
@@ -137,11 +141,11 @@ async function runSync(s: Session): Promise<void> {
   } catch (err) {
     if (s.stopped) return;
     if (err instanceof ShareFolderError) {
-      setStatus({ status: 'error', message: err.message });
+      setStatus({ status: 'error', message: errorMessage(err) });
       stopSession(s);
     } else {
       console.warn('Sync failed', err);
-      setStatus({ status: 'offline', message: 'Der geteilte Ordner ist gerade nicht erreichbar. Änderungen werden nachgeholt.' });
+      setStatus({ status: 'offline', message: translator('state')('share.offline') });
     }
   } finally {
     s.running = false;
@@ -251,7 +255,7 @@ async function ensureConnected(projectId: string) {
 
 function requireApi(): DesktopShareApi {
   const api = desktopShare();
-  if (!api) throw new Error('Teilen funktioniert nur im Windows-Programm (ResourcepackBuilder.exe).');
+  if (!api) throw new Error(translator('state')('share.desktopOnly'));
   return api;
 }
 
@@ -271,17 +275,15 @@ export async function shareCurrentProject(userName: string): Promise<string | nu
   const info = await api.inspect(chosen);
   if (info.project) {
     if (info.project.id !== project.id) {
-      throw new Error(
-        `In diesem Ordner liegt schon das geteilte Projekt „${info.project.name}“. Wähle einen anderen Ordner oder öffne es über „Geteiltes Projekt öffnen“.`,
-      );
+      throw new Error(translator('state')('share.folderHasOtherProject', { name: info.project.name }));
     }
   } else {
     const same = info.children.find((c) => c.projectId === project.id);
     if (same) folder = same.path;
-    else if (!info.empty) folder = await api.createSubfolder(chosen, project.name || 'ResourcepackBuilder-Projekt');
+    else if (!info.empty) folder = await api.createSubfolder(chosen, project.name || translator('state')('defaults.sharedProjectFolder'));
   }
   await api.write(folder, README_FILE, README_TEXT);
-  await saveShareConfig(project.id, { folder, userName: userName.trim() || 'Unbekannt' });
+  await saveShareConfig(project.id, { folder, userName: userName.trim() || translator('state')('defaults.unknownUser') });
   await switchTo(project.id);
   return folder;
 }
@@ -297,14 +299,14 @@ export async function openSharedProject(): Promise<string | null> {
     if (info.children.length === 1) folder = info.children[0].path;
     else if (info.children.length > 1) {
       throw new Error(
-        `In diesem Ordner liegen mehrere geteilte Projekte (${info.children.map((c) => c.projectName || c.name).join(', ')}). Bitte direkt den Ordner des Projekts wählen.`,
+        translator('state')('share.folderHasSeveralProjects', { names: info.children.map((c) => c.projectName || c.name).join(', ') }),
       );
     } else {
-      throw new Error('In diesem Ordner liegt kein geteiltes ResourcepackBuilder-Projekt (project.json fehlt).');
+      throw new Error(translator('state')('share.folderHasNoProject'));
     }
   }
   const shared = await readShareFolder(makeFs(api, folder));
-  if (!shared) throw new Error('Das geteilte Projekt konnte nicht gelesen werden. Ist der Ordner schon vollständig heruntergeladen?');
+  if (!shared) throw new Error(translator('state')('share.unreadable'));
   const projectId = shared.project.id;
   await flushNow();
   const existing = await loadShareConfig(projectId);
@@ -315,7 +317,7 @@ export async function openSharedProject(): Promise<string | null> {
     await ensureConnected(projectId);
     return project?.name ?? shared.project.name;
   }
-  const userName = existing?.userName || (await defaultUserName()) || 'Unbekannt';
+  const userName = existing?.userName || (await defaultUserName()) || translator('state')('defaults.unknownUser');
   const project: Project = migrateProject(deepClone(shared.project));
   await saveProject(project, [[`sync:${projectId}`, shared.state]]);
   await saveShareConfig(projectId, { folder, userName });
@@ -334,7 +336,7 @@ export async function stopSharing(): Promise<void> {
 }
 
 export async function setShareUserName(userName: string): Promise<void> {
-  const name = userName.trim() || 'Unbekannt';
+  const name = userName.trim() || translator('state')('defaults.unknownUser');
   const s = session;
   if (!s) return;
   s.engine.setUserName(name);
@@ -348,7 +350,7 @@ export function openShareFolder() {
   if (folder) void desktopShare()?.openFolder(folder);
 }
 
-/** Check immediately ("Jetzt abgleichen" button) */
+/** Check immediately ("Sync now" button) */
 export function syncNow() {
   if (session) void runSync(session);
 }

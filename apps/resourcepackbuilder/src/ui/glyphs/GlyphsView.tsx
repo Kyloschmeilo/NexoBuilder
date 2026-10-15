@@ -1,13 +1,19 @@
 import { Link2, RefreshCw, Smile, Trash2 } from 'lucide-react';
+import { useTranslations } from 'next-intl';
 import type { ExportPlan } from '@resourcepackbuilder/core/export/plan';
 import { glyphFileFromDataUrl, glyphFilePath, type Glyph } from '@resourcepackbuilder/core/nexo/glyphs';
+import { Badge } from '@resourcepackbuilder/ui/components/badge';
+import { Button } from '@resourcepackbuilder/ui/components/button';
+import { Card, CardContent } from '@resourcepackbuilder/ui/components/card';
+import { Input } from '@resourcepackbuilder/ui/components/input';
+import { Tooltip, TooltipContent, TooltipTrigger } from '@resourcepackbuilder/ui/components/tooltip';
+import { CopyButton, DropZone, IssueList, NumberInput, TextInput, pickFiles, readAsDataUrl } from '@resourcepackbuilder/ui';
+import { translator } from '../../i18n/locale';
 import { addGlyph, deleteGlyph, updateGlyph } from '../../state/actions';
 import { useStore } from '../../state/store';
-import { DropZone } from '@resourcepackbuilder/ui';
-import { IssueList } from '@resourcepackbuilder/ui';
-import { CopyButton } from '@resourcepackbuilder/ui';
-import { NumberInput, TextInput } from '@resourcepackbuilder/ui';
-import { pickFiles, readAsDataUrl } from '@resourcepackbuilder/ui';
+import { CheckRow, Code, FieldGrid, FormField, Hint, IconAction, ViewHeader, ViewShell } from '../media/layout';
+
+const ACCEPT = '.png,.gif,image/png,image/gif';
 
 async function readGlyphFiles(files: File[]) {
   const toast = useStore.getState().toast;
@@ -16,7 +22,7 @@ async function readGlyphFiles(files: File[]) {
     const dataUrl = await readAsDataUrl(f);
     const file = glyphFileFromDataUrl(f.name, dataUrl.replace(/^data:application\/octet-stream/, f.name.toLowerCase().endsWith('.gif') ? 'data:image/gif' : 'data:image/png'));
     if (!file) {
-      toast('error', `„${f.name}“ ist kein PNG oder GIF.`);
+      toast('error', translator('media')('glyphs.notImage', { name: f.name }));
       continue;
     }
     result.push({ name: f.name.replace(/\.[^.]+$/, ''), file, gif: file.dataUrl.startsWith('data:image/gif') });
@@ -25,110 +31,104 @@ async function readGlyphFiles(files: File[]) {
 }
 
 export function GlyphsView({ plan }: { plan: ExportPlan | null }) {
+  const t = useTranslations('media.glyphs');
   const project = useStore((s) => s.project)!;
   const glyphs = project.glyphs ?? [];
 
   return (
-    <div className="editor">
-      <div className="editor-header">
-        <div className="editor-thumb">
-          <Smile size={30} />
-        </div>
-        <div className="editor-title">
-          <h1>Glyphs</h1>
-          <div className="editor-meta">
-            <span className="badge">{glyphs.length} Glyph(s)</span>
-            <span className="badge mono">plugins/Nexo/{glyphFilePath(project)}</span>
-          </div>
-        </div>
-        <button
-          className="btn"
-          onClick={() => {
-            addGlyph('referenz', null, 'reference');
-          }}
-          title="Verweist auf ein Feld eines Multi-Bitmap-Glyphs"
-        >
-          <Link2 size={15} /> Reference Glyph
-        </button>
-      </div>
-      <div className="hint">
-        Glyphs sind eigene Zeichen für Chat, Lore, Item-Namen, Titel und GUIs. Verwendung überall mit{' '}
-        <code className="code-inline">&lt;glyph:id&gt;</code>, z.B. in der Lore eines Items.
-      </div>
+    <ViewShell>
+      <ViewHeader
+        icon={<Smile className="size-7" />}
+        title={t('title')}
+        meta={
+          <>
+            <Badge variant="secondary">{t('count', { count: glyphs.length })}</Badge>
+            <Badge variant="outline" className="font-mono">
+              plugins/Nexo/{glyphFilePath(project)}
+            </Badge>
+          </>
+        }
+        actions={
+          <Tooltip>
+            <TooltipTrigger render={<Button variant="outline" onClick={() => addGlyph(t('defaultReferenceId'), null, 'reference')} />}>
+              <Link2 /> {t('referenceGlyph')}
+            </TooltipTrigger>
+            <TooltipContent>{t('referenceGlyphHelp')}</TooltipContent>
+          </Tooltip>
+        }
+      />
+      <Hint>
+        <div>{t.rich('hint', { tag: '<glyph:id>', code: (chunks) => <Code>{chunks}</Code> })}</div>
+      </Hint>
       <DropZone
         onFiles={async (files) => {
           for (const entry of await readGlyphFiles(files)) addGlyph(entry.name, entry.file, entry.gif ? 'gif' : 'image');
         }}
-        accept=".png,.gif,image/png,image/gif"
-        title="PNG- oder GIF-Dateien hier ablegen"
-        subtitle="Jede Datei wird ein eigener Glyph – z.B. Emojis (8×8) oder GUI-Hintergründe (bis 256×256)"
+        accept={ACCEPT}
+        title={t('dropTitle')}
+        subtitle={t('dropSubtitle')}
         formats={['.png', '.gif']}
         compact
       />
-      <div style={{ marginTop: 16 }}>
-        {glyphs.map((glyph) => (
-          <GlyphCard key={glyph.id} glyph={glyph} glyphs={glyphs} plan={plan} />
-        ))}
-      </div>
-    </div>
+      {glyphs.length > 0 && (
+        <div className="mt-2 flex flex-col gap-4">
+          {glyphs.map((glyph) => (
+            <GlyphCard key={glyph.id} glyph={glyph} glyphs={glyphs} plan={plan} />
+          ))}
+        </div>
+      )}
+    </ViewShell>
   );
 }
 
 function GlyphCard({ glyph, glyphs, plan }: { glyph: Glyph; glyphs: Glyph[]; plan: ExportPlan | null }) {
+  const t = useTranslations('media.glyphs');
+  const tShared = useTranslations('media.shared');
   const update = (fn: (g: Glyph) => void, key?: string) => updateGlyph(glyph.id, fn, key);
   const issues = plan?.issues.filter((i) => i.glyphId === glyph.id) ?? [];
   const multi = glyph.kind === 'image' && glyph.rows * glyph.columns > 1;
   const usage = multi ? `<glyph:${glyph.glyphId}:1>` : `<glyph:${glyph.glyphId}>`;
-  const kindLabel = { image: 'Image', gif: 'Animated (GIF)', reference: 'Reference' }[glyph.kind];
   const multiBitmaps = glyphs.filter((g) => g.kind === 'image' && g.rows * g.columns > 1 && g.id !== glyph.id);
 
   return (
-    <div className="card">
-      <div className="card-header">
-        <div className="card-title-group">
-          <div className="row">
-            <h3 className="mono">{glyph.glyphId}</h3>
-            <span className="badge">{kindLabel}</span>
-            {glyph.file && (
-              <span className="badge">
-                {glyph.file.width}×{glyph.file.height} px
-              </span>
-            )}
-          </div>
+    <Card size="sm" className="gap-0 py-0">
+      <div className="flex items-center gap-2 border-b border-border px-4 py-2.5">
+        <div className="flex min-w-0 flex-1 items-center gap-2">
+          <h3 className="truncate font-mono text-sm font-medium">{glyph.glyphId}</h3>
+          <Badge variant="secondary">{t(`kinds.${glyph.kind}`)}</Badge>
+          {glyph.file && <Badge variant="secondary">{t('pixelSize', { width: glyph.file.width, height: glyph.file.height })}</Badge>}
         </div>
-        <span className="mono small faint">{usage}</span>
-        <CopyButton text={usage} label="Tag kopieren" />
+        <span className="truncate font-mono text-xs text-muted-foreground">{usage}</span>
+        <CopyButton text={usage} label={t('copyTag')} />
         {glyph.kind !== 'reference' && (
-          <button
-            className="btn ghost icon small"
-            title="Bild ersetzen"
+          <IconAction
+            label={tShared('replaceImage')}
             onClick={async () => {
-              const files = await pickFiles('.png,.gif,image/png,image/gif', false);
+              const files = await pickFiles(ACCEPT, false);
               const [entry] = await readGlyphFiles(files);
               if (entry) update((g) => ((g.file = entry.file), (g.kind = entry.gif ? 'gif' : 'image')));
             }}
           >
-            <RefreshCw size={14} />
-          </button>
+            <RefreshCw />
+          </IconAction>
         )}
-        <button className="btn ghost icon small danger" title="Glyph löschen" onClick={() => deleteGlyph(glyph.id)}>
-          <Trash2 size={15} />
-        </button>
+        <IconAction label={t('delete')} destructive onClick={() => deleteGlyph(glyph.id)}>
+          <Trash2 />
+        </IconAction>
       </div>
-      <div className="card-body">
-        <div style={{ display: 'grid', gridTemplateColumns: glyph.kind === 'reference' ? '1fr' : '170px minmax(0, 1fr)', gap: 16 }}>
+      <CardContent className="py-4">
+        <div className={glyph.kind === 'reference' ? 'grid grid-cols-1 gap-4' : 'grid grid-cols-[170px_minmax(0,1fr)] gap-4'}>
           {glyph.kind !== 'reference' && (
-            <div className="col" style={{ gap: 8 }}>
-              <div className="texture-thumb" style={{ width: 170, height: 130 }}>
+            <div className="flex flex-col gap-2">
+              <div className="grid h-[130px] w-[170px] place-items-center rounded-md border border-border bg-background">
                 {glyph.file && (
                   <img
                     src={glyph.file.dataUrl}
                     alt=""
+                    className="max-h-[110px] max-w-[150px] [image-rendering:pixelated]"
                     style={{
                       width: glyph.file.width >= glyph.file.height ? 150 : undefined,
                       height: glyph.file.height > glyph.file.width ? 110 : undefined,
-                      maxWidth: 150,
-                      maxHeight: 110,
                     }}
                   />
                 )}
@@ -136,123 +136,106 @@ function GlyphCard({ glyph, glyphs, plan }: { glyph: Glyph; glyphs: Glyph[]; pla
               {glyph.file && <ChatPreview glyph={glyph} />}
             </div>
           )}
-          <div className="col" style={{ gap: 12 }}>
-            <div className="field-grid">
-              <label className="field">
-                <span className="field-label">ID</span>
-                <input
-                  className="input mono"
+          <div className="flex flex-col gap-3">
+            <FieldGrid>
+              <FormField label="ID">
+                <Input
+                  className="font-mono"
                   value={glyph.glyphId}
                   onChange={(e) => update((g) => (g.glyphId = e.target.value.toLowerCase().replace(/[^a-z0-9_]/g, '_')), 'id')}
                 />
-              </label>
+              </FormField>
               {glyph.kind === 'reference' ? (
                 <>
-                  <label className="field">
-                    <span className="field-label" title="Verweist auf einen Multi-Bitmap-Glyph">Reference</span>
+                  <FormField label="Reference" help={t('referenceHelp')}>
                     <TextInput
                       value={glyph.reference}
                       mono
                       suggestions={multiBitmaps.map((g) => ({ value: g.glyphId }))}
                       onChange={(v) => update((g) => (g.reference = v ?? ''), 'reference')}
                     />
-                  </label>
-                  <label className="field">
-                    <span className="field-label" title="Feld-Nummer, ab 1">Index</span>
+                  </FormField>
+                  <FormField label="Index" help={t('indexHelp')}>
                     <NumberInput value={glyph.index} integer min={1} onChange={(v) => update((g) => (g.index = v ?? 1), 'index')} />
-                  </label>
+                  </FormField>
                 </>
               ) : (
                 <>
-                  <label className="field">
-                    <span className="field-label" title="Höhe (Skalierung)">Height</span>
+                  <FormField label="Height" help={t('heightHelp')}>
                     <NumberInput value={glyph.height} integer min={1} onChange={(v) => update((g) => (g.height = v ?? 8), 'height')} />
-                  </label>
-                  <label className="field">
-                    <span className="field-label" title="Verschiebung nach oben">Ascent</span>
+                  </FormField>
+                  <FormField label="Ascent" help={t('ascentHelp')}>
                     <NumberInput value={glyph.ascent} integer onChange={(v) => update((g) => (g.ascent = v ?? 0), 'ascent')} />
-                  </label>
+                  </FormField>
                 </>
               )}
               {glyph.kind === 'image' && (
                 <>
-                  <label className="field">
-                    <span className="field-label" title="Zeilen (Multi-Bitmap)">Rows</span>
+                  <FormField label="Rows" help={t('rowsHelp')}>
                     <NumberInput value={glyph.rows} integer min={1} onChange={(v) => update((g) => (g.rows = v ?? 1), 'rows')} />
-                  </label>
-                  <label className="field">
-                    <span className="field-label" title="Spalten (Multi-Bitmap)">Columns</span>
+                  </FormField>
+                  <FormField label="Columns" help={t('columnsHelp')}>
                     <NumberInput value={glyph.columns} integer min={1} onChange={(v) => update((g) => (g.columns = v ?? 1), 'columns')} />
-                  </label>
-                  <label className="field">
-                    <span className="field-label" title="Schriftart (optional)">Font</span>
+                  </FormField>
+                  <FormField label="Font" help={t('fontHelp')}>
                     <TextInput
                       value={glyph.font}
                       mono
-                      placeholder="Standard aus settings.yml"
+                      placeholder={t('defaultFromSettings')}
                       suggestions={[{ value: 'minecraft:default' }]}
                       onChange={(v) => update((g) => (g.font = v ?? ''), 'font')}
                     />
-                  </label>
+                  </FormField>
                 </>
               )}
               {glyph.kind === 'gif' && (
                 <>
-                  <label className="field">
-                    <span className="field-label" title="Max. Bilder (optional)">Frame Count</span>
+                  <FormField label="Frame Count" help={t('frameCountHelp')}>
                     <NumberInput value={glyph.frameCount} integer min={1} onChange={(v) => update((g) => (g.frameCount = v ?? null), 'frames')} />
-                  </label>
-                  <label className="field">
-                    <span className="field-label" title="optional">Offset</span>
+                  </FormField>
+                  <FormField label="Offset" help={tShared('optional')}>
                     <NumberInput value={glyph.offset} integer onChange={(v) => update((g) => (g.offset = v ?? null), 'offset')} />
-                  </label>
+                  </FormField>
                 </>
               )}
-              <label className="field">
-                <span className="field-label" title="optional">Permission</span>
-                <input
-                  className="input mono"
+              <FormField label="Permission" help={tShared('optional')}>
+                <Input
+                  className="font-mono"
                   value={glyph.permission}
-                  placeholder="Standard aus settings.yml"
+                  placeholder={t('defaultFromSettings')}
                   onChange={(e) => update((g) => (g.permission = e.target.value), 'permission')}
                 />
-              </label>
-              <label className="field">
-                <span className="field-label" title="Chat-Kürzel, durch Komma getrennt">Placeholders</span>
-                <input
-                  className="input mono"
+              </FormField>
+              <FormField label="Placeholders" help={t('placeholdersHelp')}>
+                <Input
+                  className="font-mono"
                   value={glyph.placeholders.join(', ')}
-                  placeholder="z.B. <3, :herz:"
+                  placeholder={t('placeholdersPlaceholder', { heart: '<3' })}
                   onChange={(e) => update((g) => (g.placeholders = e.target.value.split(',').map((p) => p.trim())), 'placeholders')}
                 />
-              </label>
+              </FormField>
+            </FieldGrid>
+            <div className="flex flex-wrap gap-x-5 gap-y-2">
+              <CheckRow checked={glyph.isEmoji} onChange={(checked) => update((g) => (g.isEmoji = checked))} label="Is Emoji" hint={t('isEmojiHint')} />
+              <CheckRow
+                checked={glyph.tabcomplete}
+                onChange={(checked) => update((g) => (g.tabcomplete = checked))}
+                label="Tab Complete"
+                hint={t('tabCompleteHint')}
+              />
             </div>
-            <div className="row wrap" style={{ gap: 18 }}>
-              <label className="row small" style={{ gap: 6, cursor: 'pointer' }}>
-                <input type="checkbox" checked={glyph.isEmoji} onChange={(e) => update((g) => (g.isEmoji = e.target.checked))} />
-                Is Emoji <span className="faint">(in /nexo emojis)</span>
-              </label>
-              <label className="row small" style={{ gap: 6, cursor: 'pointer' }}>
-                <input type="checkbox" checked={glyph.tabcomplete} onChange={(e) => update((g) => (g.tabcomplete = e.target.checked))} />
-                Tab Complete <span className="faint">(im Chat)</span>
-              </label>
-            </div>
-            {glyph.kind !== 'reference' && (
-              <div className="field-help">
-                Höhe = Größe im Spiel (Chat-Text ist 8 hoch). Ascent schiebt den Glyph nach oben und darf nicht größer als die Höhe sein.
-                Bilder über 256×256 in Zeilen/Spalten aufteilen.
-              </div>
-            )}
+            {glyph.kind !== 'reference' && <p className="text-xs leading-relaxed text-muted-foreground">{t('sizeHelp')}</p>}
             {issues.length > 0 && <IssueList issues={issues} />}
           </div>
         </div>
-      </div>
-    </div>
+      </CardContent>
+    </Card>
   );
 }
 
 /** Approximate preview in chat (2 screen pixels per Minecraft pixel). */
 function ChatPreview({ glyph }: { glyph: Glyph }) {
+  const t = useTranslations('media.glyphs');
   if (!glyph.file) return null;
   const scale = 2;
   const cellH = glyph.file.height / Math.max(1, glyph.rows);
@@ -261,23 +244,21 @@ function ChatPreview({ glyph }: { glyph: Glyph }) {
   const w = (cellW / cellH) * h;
   // Default font: ascent 7 – deviations shift the glyph up/down
   const offset = (7 - glyph.ascent) * scale;
-  if (h > 120) return <span className="faint small">Großer Glyph (z.B. GUI) – keine Chat-Vorschau.</span>;
+  if (h > 120) return <span className="text-xs text-muted-foreground">{t('largeNoPreview')}</span>;
   return (
-    <div className="mc-text" style={{ fontSize: 16, minWidth: 0, display: 'flex', alignItems: 'flex-start', gap: 4, lineHeight: '18px' }}>
-      <span>Hallo</span>
+    <div className="flex max-w-full min-w-0 items-start gap-1 rounded-sm border-2 border-input bg-background px-2.5 py-1.5 text-base leading-[18px] text-foreground">
+      <span>{t('previewBefore')}</span>
       <span
+        className="inline-block [background-position:0_0] [image-rendering:pixelated]"
         style={{
-          display: 'inline-block',
           width: w,
           height: h,
           marginTop: offset,
           backgroundImage: `url(${glyph.file.dataUrl})`,
           backgroundSize: `${glyph.columns * 100}% ${glyph.rows * 100}%`,
-          backgroundPosition: '0 0',
-          imageRendering: 'pixelated',
         }}
       />
-      <span>Welt</span>
+      <span>{t('previewAfter')}</span>
     </div>
   );
 }

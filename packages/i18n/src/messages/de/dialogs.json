@@ -1,1 +1,207 @@
-{}
+{
+  "prompt": {
+    "nameRequired": "Bitte einen Namen eingeben."
+  },
+  "toast": {
+    "dismiss": "Ausblenden"
+  },
+  "selection": {
+    "title": "Auswahl",
+    "all": "Alle",
+    "none": "Keine"
+  },
+  "issues": {
+    "errors": "{count} Fehler",
+    "warnings": "{count, plural, one {# Warnung} other {# Warnungen}}",
+    "allGood": "Alles in Ordnung",
+    "showInfo": "{count, plural, one {# Hinweis} other {# Hinweise}} anzeigen"
+  },
+  "moveItem": {
+    "title": "Item verschieben",
+    "targetFolder": "Zielordner",
+    "confirm": "Verschieben"
+  },
+  "settings": {
+    "project": {
+      "title": "Projekt",
+      "description": "Wird mit dem Projekt gespeichert."
+    },
+    "device": {
+      "title": "Dieses Gerät",
+      "description": "Gilt nur auf diesem Gerät, für alle Projekte."
+    },
+    "languageHelp": "Die Sprache, in der ResourcepackBuilder angezeigt wird.",
+    "themeHelp": "„System“ folgt der Einstellung deines Betriebssystems.",
+    "projectName": "Projektname",
+    "minecraftVersion": "Minecraft-Version des Servers",
+    "minecraftVersionHelp": "Bestimmt, welche Komponenten verfügbar sind und welche Modell-Features erlaubt sind.",
+    "namespace": "Namespace im Resourcepack",
+    "namespaceInvalid": "Nur Kleinbuchstaben, Zahlen sowie _ . - erlaubt.",
+    "namespaceMinecraft": "„minecraft“ ist nicht erlaubt.",
+    "namespaceHelp": "Dateien landen unter assets/{namespace}/…",
+    "packName": "Name des external packs",
+    "packNameInvalid": "Nur Buchstaben, Zahlen sowie _ . - erlaubt.",
+    "packDescription": "Pack-Beschreibung (pack.mcmeta)",
+    "packIcon": "Pack-Icon (pack.png, optional)",
+    "packIconHint": "Quadratisches PNG, z.B. 128×128",
+    "upload": "Hochladen",
+    "replace": "Ersetzen",
+    "invalidPng": "Die Datei ist kein gültiges PNG.",
+    "useItemModel": "ItemModel-Komponente setzen (empfohlen)",
+    "useItemModelHelp": "Setzt <code>{component}</code>. So bekommt jedes Item ein eigenes ItemModel statt CustomModelData – das vermeidet Konflikte (Minecraft 1.21.4+). Wird bei Items mit fester CustomModelData automatisch weggelassen."
+  },
+  "newItem": {
+    "title": "Neues Item",
+    "readFailed": "Dateien konnten nicht gelesen werden: {error}",
+    "idRequired": "Bitte eine ID angeben.",
+    "idInvalid": "Nur Kleinbuchstaben, Zahlen und _ erlaubt.",
+    "idExists": "Diese ID gibt es im Projekt bereits.",
+    "idDuplicate": "Diese ID wird mehrfach verwendet.",
+    "created": "{count, plural, one {Item erstellt.} other {# Items erstellt.}}",
+    "target": "Ziel: <b>{folder}</b>",
+    "create": "{count, plural, one {Item erstellen} other {# Items erstellen}}",
+    "folder": "Ordner",
+    "dropTitle": "Modell hier ablegen",
+    "dropTitleMore": "Weitere Dateien hinzufügen",
+    "dropSubtitle": "Blockbench-Projekt (.bbmodel), Java-Modell (.json) mit PNG-Texturen oder nur PNG-Texturen. Mehrere Modelle ergeben mehrere Items.",
+    "dropSubtitleMore": "z.B. fehlende Texturen oder weitere Modelle",
+    "reading": "Dateien werden gelesen …",
+    "ignored": "Nicht unterstützte Dateien werden ignoriert: {files}",
+    "noModel": "Kein Modell zur Hand?",
+    "createWithoutModel": "Item ohne Modell erstellen",
+    "withoutModelTitle": "Item ohne Modell",
+    "withoutModelDescription": "Das Item nutzt das Aussehen des gewählten Materials. Ein Modell kann später hinzugefügt werden.",
+    "useModel": "Doch ein Modell ablegen",
+    "multiplePngs": "Mehrere PNGs:",
+    "pngSeparate": "Ein Item pro PNG",
+    "pngCombined": "Alle PNGs für ein Item (Ebenen / Blockseiten)",
+    "displayName": "Anzeigename (MiniMessage möglich)",
+    "displayNamePlaceholder": "z.B. {tag}Rubin-Schwert",
+    "itemId": "Item-ID",
+    "material": "Material",
+    "source": {
+      "bbmodel": "Blockbench (.bbmodel)",
+      "json": "Java-Modell (.json)",
+      "png": "Textur (.png)"
+    },
+    "textures": "{count, plural, one {# Textur} other {# Texturen}}",
+    "cubes": "{count} Würfel",
+    "dontImport": "Nicht importieren",
+    "modelKind": "Art des Modells",
+    "noTexture": "– keine –"
+  },
+  "export": {
+    "title": "Exportieren",
+    "modes": {
+      "full": {
+        "title": "Für den Nexo-Ordner",
+        "description": "items/ + pack/external_packs/ – einfach in plugins/Nexo entpacken."
+      },
+      "pack": {
+        "title": "Nur Resourcepack",
+        "description": "Das external pack als ZIP (pack.mcmeta + assets). Mehrere Projekte: ein Ordner pro Pack."
+      },
+      "items": {
+        "title": "Nur Configs",
+        "description": "Nur die YAML-Dateien (items/, recipes/, glyphs/) ohne Resourcepack."
+      }
+    },
+    "created": "{file} wurde erstellt ({count, plural, one {# Datei} other {# Dateien}}).",
+    "failed": "Export fehlgeschlagen: {error}",
+    "confirmErrors": {
+      "title": "Trotz Fehlern exportieren?",
+      "message": "Es gibt noch {count} Fehler. Betroffene Items oder Modelle funktionieren in Nexo/Minecraft wahrscheinlich nicht richtig.",
+      "confirm": "Trotzdem exportieren"
+    },
+    "summary": {
+      "items": "<mono>{count}</mono> {count, plural, one {Item} other {Items}}",
+      "glyphs": "<mono>{count}</mono> {count, plural, one {Glyph} other {Glyphen}}",
+      "fromProjects": "aus <mono>{count}</mono> Projekten",
+      "namespace": "Namespace <mono>{namespace}</mono>",
+      "minecraft": "Minecraft {version}"
+    },
+    "busy": "Wird erstellt …",
+    "download": "ZIP herunterladen",
+    "severalProjects": "Mehrere Projekte: Jedes Projekt bekommt einen eigenen Ordner unter items/ und einen eigenen Resourcepack. Andere Projekte verwenden ihre eigenen Export-Einstellungen.",
+    "contents": "Inhalt · <mono>{count}</mono> Dateien",
+    "nothingSelected": "Nichts ausgewählt.",
+    "options": "Optionen für „{name}“",
+    "externalPackAsZip": "External pack als .zip",
+    "externalPackAsZipHelp": "Statt eines Ordners pack/external_packs/{packName}/ eine ZIP-Datei.",
+    "itemsInProjectFolder": "Items in eigenen Projektordner",
+    "itemsInProjectFolderSeveral": "Bei mehreren Projekten immer aktiv.",
+    "itemsInProjectFolderHelp": "items/{project}/… statt direkt items/…",
+    "projectPlaceholder": "projekt",
+    "yamlFiles": "YAML-Dateien",
+    "yamlPerFolder": "Eine Datei pro Ordner (z.B. items/waffen/waffen.yml)",
+    "yamlPerItem": "Eine Datei pro Item (z.B. items/waffen/ruby_sword.yml)",
+    "check": "Prüfung",
+    "noIssues": "Keine Fehler oder Warnungen.",
+    "install": "Installation: ZIP in <code>plugins/Nexo/</code> entpacken, dann <code>/nexo reload all</code> ausführen. Eine Anleitung liegt als INSTALL.txt bei."
+  },
+  "exportSelection": {
+    "folder": "Ordner {name}",
+    "project": "Projekt {name}",
+    "glyphs": "Glyphs",
+    "sounds": "Sounds",
+    "paintings": "Paintings",
+    "noItems": "Keine Items.",
+    "emptyProject": "Das Projekt ist leer.",
+    "open": "geöffnet",
+    "selectedItems": "{selected}/{total} Items",
+    "glyphCount": "{count} Glyphs",
+    "soundCount": "{count} Sounds",
+    "paintingCount": "{count} Paintings",
+    "itemCount": "{count} Items"
+  },
+  "share": {
+    "status": {
+      "off": "Nicht geteilt",
+      "connecting": "Verbinde …",
+      "synced": "Aktuell",
+      "syncing": "Überträgt …",
+      "offline": "Ordner nicht erreichbar",
+      "error": "Fehler"
+    },
+    "title": "Projekt teilen",
+    "yourName": "Dein Name",
+    "namePlaceholder": "z.B. Kylo",
+    "nameHelp": "Die anderen sehen ihn, wenn du etwas änderst.",
+    "started": "Projekt wird geteilt: {folder}",
+    "stopConfirm": {
+      "title": "Teilen beenden?",
+      "message": "Deine Änderungen werden danach nicht mehr in den geteilten Ordner übertragen und Änderungen der anderen kommen nicht mehr an.\nDeine Kopie des Projekts und der Ordner bleiben erhalten."
+    },
+    "stop": "Teilen beenden",
+    "stopped": "Das Projekt wird nicht mehr geteilt.",
+    "desktopOnly": "Teilen funktioniert nur im Windows-Programm (ResourcepackBuilder.exe), weil dafür auf einen Ordner auf deinem PC zugegriffen werden muss. In der Browser-Version kannst du das Projekt über „Projektdatei speichern“ weitergeben.",
+    "lastSync": "zuletzt abgeglichen {time}",
+    "syncNowTitle": "Sofort nach Änderungen schauen",
+    "syncNow": "Jetzt abgleichen",
+    "sharedFolder": "Geteilter Ordner",
+    "openFolder": "Öffnen",
+    "sharedHint": "Alle, die diesen Ordner in ResourcepackBuilder geöffnet haben, sehen deine Änderungen nach wenigen Sekunden – und du ihre. Ändern zwei Personen gleichzeitig dasselbe Item, gilt die zuletzt gespeicherte Änderung. „Rückgängig“ betrifft nur deine eigenen Änderungen.",
+    "intro": "Teile das Projekt über einen Ordner, den ihr gemeinsam nutzt. Änderungen kommen dann automatisch bei allen an – in beide Richtungen.",
+    "step1": "Lege in <b>OneDrive</b>, <b>Google Drive</b> oder <b>Dropbox</b> einen Ordner an und gib ihn für deine Freunde frei.",
+    "step2": "Klicke unten auf <b>Ordner wählen und teilen</b> und wähle diesen Ordner. ResourcepackBuilder legt das Projekt darin ab.",
+    "step3": "Deine Freunde öffnen den Ordner in ResourcepackBuilder über <b>Geteiltes Projekt öffnen</b>.",
+    "start": "Ordner wählen und teilen"
+  },
+  "pasteConfig": {
+    "title": "Eigenschaften einfügen",
+    "pasted": "Eigenschaften von „{name}“ in {count, plural, one {# Item} other {# Items}} eingefügt. Strg+Z macht es rückgängig.",
+    "source": "Quelle: <b>{name}</b> <mono>({id})</mono>",
+    "otherProject": "aus einem anderen Projekt",
+    "apply": "In {count, plural, one {# Item} other {# Items}} einfügen",
+    "what": "Was übernehmen?",
+    "emptyReplace": "Bei der Quelle leer – entfernt die Werte dieser Kategorie beim Ziel.",
+    "emptyMerge": "Bei der Quelle leer.",
+    "existing": "Vorhandene Werte im Ziel",
+    "replace": "Ersetzen",
+    "merge": "Ergänzen",
+    "replaceHelp": "Die Ziel-Items bekommen in den gewählten Kategorien genau die Werte der Quelle.",
+    "mergeHelp": "Nur hinzufügen und überschreiben – Werte, die es nur beim Ziel gibt, bleiben erhalten.",
+    "neverCopied": "Nie kopiert: Anzeigename, Item-ID, Modell und Varianten, Ordner sowie custom_model_data. Eigene Blöcke bekommen bei Bedarf eine freie Variation.",
+    "targets": "Ziel-Items · <mono>{count}</mono>"
+  }
+}

@@ -1,14 +1,26 @@
 /** Paste copied item properties into one or more items. */
 import { useMemo, useState } from 'react';
+import { useTranslations } from 'next-intl';
 import { ClipboardPaste } from 'lucide-react';
-import { COPY_CATEGORIES, summarizeClipboard, type CopyCategory } from '@resourcepackbuilder/core/nexo/copyConfig';
+import { COPY_CATEGORIES, summarizeClipboard, type CopyCategory, type SummaryEntry } from '@resourcepackbuilder/core/nexo/copyConfig';
 import { selectFromProject } from '@resourcepackbuilder/core/export/selection';
+import { Alert, AlertDescription } from '@resourcepackbuilder/ui/components/alert';
+import { Button } from '@resourcepackbuilder/ui/components/button';
+import { Checkbox } from '@resourcepackbuilder/ui/components/checkbox';
+import { Field, FieldContent, FieldDescription, FieldLabel } from '@resourcepackbuilder/ui/components/field';
+import { ToggleGroup, ToggleGroupItem } from '@resourcepackbuilder/ui/components/toggle-group';
 import { clipboardLabel, pasteItemProperties, useItemClipboard } from '../../state/clipboard';
 import { useStore } from '../../state/store';
-import { Modal } from '@resourcepackbuilder/ui';
+import { AppDialog, SectionLabel, richTags, useSchemaText } from './AppDialog';
 import { SelectionTree } from './ExportSelection';
 
 export function PasteConfigDialog({ targetItemIds }: { targetItemIds: string[] }) {
+  const t = useTranslations('dialogs.pasteConfig');
+  const tSel = useTranslations('dialogs.selection');
+  const tc = useTranslations('common');
+  const schemaText = useSchemaText();
+  const ts = useTranslations('schema');
+  const entryText = (entry: SummaryEntry) => ('text' in entry ? entry.text : ts(entry.key as never, entry.params as never));
   const project = useStore((s) => s.project)!;
   const close = useStore((s) => s.closeDialog);
   const clip = useItemClipboard((s) => s.clip);
@@ -28,7 +40,7 @@ export function PasteConfigDialog({ targetItemIds }: { targetItemIds: string[] }
 
   const apply = () => {
     const count = pasteItemProperties(targets, { categories, mode });
-    useStore.getState().toast('success', `Eigenschaften von „${clipboardLabel(clip)}“ in ${count} Item(s) eingefügt. Strg+Z macht es rückgängig.`);
+    useStore.getState().toast('success', t('pasted', { name: clipboardLabel(clip), count }));
     close();
   };
 
@@ -41,84 +53,88 @@ export function PasteConfigDialog({ targetItemIds }: { targetItemIds: string[] }
     });
 
   return (
-    <Modal
-      title="Eigenschaften einfügen"
-      icon={<ClipboardPaste size={20} />}
-      onClose={close}
+    <AppDialog
+      title={t('title')}
+      icon={<ClipboardPaste />}
       size="wide"
+      footerStart={
+        <>
+          {t.rich('source', { ...richTags, name: clipboardLabel(clip), id: clip.sourceNexoId })}
+          {clip.projectId !== project.id && ` · ${t('otherProject')}`}
+        </>
+      }
       footer={
         <>
-          <span className="left">
-            Quelle: <b>{clipboardLabel(clip)}</b> <span className="mono">({clip.sourceNexoId})</span>
-            {clip.projectId !== project.id && ' · aus einem anderen Projekt'}
-          </span>
-          <button className="btn" onClick={close}>
-            Abbrechen
-          </button>
-          <button className="btn primary" disabled={targets.length === 0 || categories.size === 0} onClick={apply}>
-            <ClipboardPaste size={16} /> In {targets.length} Item(s) einfügen
-          </button>
+          <Button variant="outline" onClick={close}>
+            {tc('cancel')}
+          </Button>
+          <Button disabled={targets.length === 0 || categories.size === 0} onClick={apply}>
+            <ClipboardPaste /> {t('apply', { count: targets.length })}
+          </Button>
         </>
       }
     >
-      <div className="export-grid">
-        <div className="col" style={{ gap: 12 }}>
-          <div className="label-caps">Was übernehmen?</div>
-          <div className="col" style={{ gap: 2 }}>
+      <div className="grid items-start gap-5 md:grid-cols-2">
+        <div className="flex flex-col gap-3">
+          <SectionLabel>{t('what')}</SectionLabel>
+          <div className="flex flex-col gap-0.5">
             {COPY_CATEGORIES.map((c) => {
               const entries = summary.find((s) => s.id === c.id)?.entries ?? [];
+              const id = `paste-category-${c.id}`;
               return (
-                <label key={c.id} className="toggle-row">
-                  <input type="checkbox" className="check" checked={categories.has(c.id)} onChange={() => toggle(c.id)} />
-                  <span className="grow">
-                    {c.label} <span className="mono faint small">{entries.length > 0 ? entries.length : '–'}</span>
-                    <div className="tr-desc">
-                      {entries.length > 0
-                        ? entries.join(', ')
-                        : mode === 'replace'
-                          ? 'Bei der Quelle leer – entfernt die Werte dieser Kategorie beim Ziel.'
-                          : 'Bei der Quelle leer.'}
-                    </div>
-                  </span>
-                </label>
+                <Field key={c.id} orientation="horizontal" className="py-1.5">
+                  <Checkbox id={id} checked={categories.has(c.id)} onCheckedChange={() => toggle(c.id)} />
+                  <FieldContent>
+                    <FieldLabel htmlFor={id} className="font-normal">
+                      {schemaText(c.label)}
+                      <span className="font-mono text-xs text-muted-foreground">{entries.length > 0 ? entries.length : '–'}</span>
+                    </FieldLabel>
+                    <FieldDescription className="text-xs">
+                      {entries.length > 0 ? entries.map(entryText).join(', ') : mode === 'replace' ? t('emptyReplace') : t('emptyMerge')}
+                    </FieldDescription>
+                  </FieldContent>
+                </Field>
               );
             })}
           </div>
-          <div className="col" style={{ gap: 6 }}>
-            <div className="label-caps">Vorhandene Werte im Ziel</div>
-            <div className="tabs-inline" role="radiogroup">
-              <button className={`seg ${mode === 'replace' ? 'active' : ''}`} role="radio" aria-checked={mode === 'replace'} onClick={() => setMode('replace')}>
-                Ersetzen
-              </button>
-              <button className={`seg ${mode === 'merge' ? 'active' : ''}`} role="radio" aria-checked={mode === 'merge'} onClick={() => setMode('merge')}>
-                Ergänzen
-              </button>
-            </div>
-            <div className="field-help">
-              {mode === 'replace'
-                ? 'Die Ziel-Items bekommen in den gewählten Kategorien genau die Werte der Quelle.'
-                : 'Nur hinzufügen und überschreiben – Werte, die es nur beim Ziel gibt, bleiben erhalten.'}
-            </div>
+          <div className="flex flex-col gap-1.5">
+            <SectionLabel>{t('existing')}</SectionLabel>
+            <ToggleGroup
+              variant="outline"
+              size="sm"
+              spacing={0}
+              aria-label={t('existing')}
+              value={[mode]}
+              onValueChange={(value) => {
+                const next = value[0] as typeof mode | undefined;
+                if (next) setMode(next);
+              }}
+            >
+              <ToggleGroupItem value="replace" className="px-3">
+                {t('replace')}
+              </ToggleGroupItem>
+              <ToggleGroupItem value="merge" className="px-3">
+                {t('merge')}
+              </ToggleGroupItem>
+            </ToggleGroup>
+            <p className="m-0 text-xs text-muted-foreground">{mode === 'replace' ? t('replaceHelp') : t('mergeHelp')}</p>
           </div>
-          <div className="hint">
-            Nie kopiert: Anzeigename, Item-ID, Modell und Varianten, Ordner sowie custom_model_data. Eigene Blöcke bekommen bei Bedarf eine freie
-            Variation.
-          </div>
+          <Alert>
+            <AlertDescription className="text-xs">{t('neverCopied')}</AlertDescription>
+          </Alert>
         </div>
-        <div className="col" style={{ gap: 8 }}>
-          <div className="row">
-            <div className="label-caps">
-              Ziel-Items · <span className="mono">{targets.length}</span>
-            </div>
-            <span className="spacer" />
-            <button className="btn ghost small" onClick={() => setExcluded([])}>
-              Alle
-            </button>
-            <button className="btn ghost small" onClick={() => setExcluded(Object.keys(project.items))}>
-              Keine
-            </button>
+        <div className="flex flex-col gap-2">
+          <div className="flex items-center gap-1">
+            <SectionLabel>{t.rich('targets', { ...richTags, count: targets.length })}</SectionLabel>
+            <span className="flex-1" />
+            <Button variant="ghost" size="sm" onClick={() => setExcluded([])}>
+              {tSel('all')}
+            </Button>
+            <Button variant="ghost" size="sm" onClick={() => setExcluded(Object.keys(project.items))}>
+              {tSel('none')}
+            </Button>
           </div>
-          <div className="picker-project active">
+          <div className="rounded-md border border-primary/50">
             <SelectionTree
               project={treeProject}
               itemsOnly
@@ -128,6 +144,6 @@ export function PasteConfigDialog({ targetItemIds }: { targetItemIds: string[] }
           </div>
         </div>
       </div>
-    </Modal>
+    </AppDialog>
   );
 }

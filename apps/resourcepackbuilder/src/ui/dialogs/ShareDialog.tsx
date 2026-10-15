@@ -1,5 +1,14 @@
 import { useEffect, useState } from 'react';
-import { FolderOpen, FolderSync, LoaderCircle, RefreshCw, Unplug, Users } from 'lucide-react';
+import { useFormatter, useTranslations } from 'next-intl';
+import { FolderOpen, FolderSync, LoaderCircle, RefreshCw, TriangleAlert, Unplug, Users } from 'lucide-react';
+import { cn } from 'cn';
+import { Alert, AlertDescription } from '@resourcepackbuilder/ui/components/alert';
+import { Badge } from '@resourcepackbuilder/ui/components/badge';
+import { Button } from '@resourcepackbuilder/ui/components/button';
+import { Field, FieldDescription, FieldLabel, FieldTitle } from '@resourcepackbuilder/ui/components/field';
+import { Input } from '@resourcepackbuilder/ui/components/input';
+import { translator } from '../../i18n/locale';
+import { errorMessage } from '../../i18n/errors';
 import { useStore } from '../../state/store';
 import {
   defaultUserName,
@@ -12,42 +21,72 @@ import {
   useShareStore,
   type ShareStatus,
 } from '../../state/share';
-import { Modal } from '@resourcepackbuilder/ui';
+import { AppDialog, richTags } from './AppDialog';
 
-export const SHARE_STATUS_TEXT: Record<ShareStatus, string> = {
-  off: 'Nicht geteilt',
-  connecting: 'Verbinde …',
-  synced: 'Aktuell',
-  syncing: 'Überträgt …',
-  offline: 'Ordner nicht erreichbar',
-  error: 'Fehler',
-};
+/** Message key (in `dialogs`) of the text for each share status. */
+export const SHARE_STATUS_KEYS = {
+  off: 'share.status.off',
+  connecting: 'share.status.connecting',
+  synced: 'share.status.synced',
+  syncing: 'share.status.syncing',
+  offline: 'share.status.offline',
+  error: 'share.status.error',
+} as const satisfies Record<ShareStatus, string>;
+
+/** The share status text in the current language, for components (re-renders on a language change). */
+export function useShareStatusText(): (status: ShareStatus) => string {
+  const t = useTranslations('dialogs');
+  return (status) => t(SHARE_STATUS_KEYS[status]);
+}
+
+/**
+ * @deprecated use {@link useShareStatusText} (components) or {@link SHARE_STATUS_KEYS}. Kept so existing callers
+ * still get the text in the current language.
+ */
+export const SHARE_STATUS_TEXT: Readonly<Record<ShareStatus, string>> = new Proxy({} as Record<ShareStatus, string>, {
+  get: (_, status) => translator('dialogs')(SHARE_STATUS_KEYS[status as ShareStatus]),
+});
 
 export function shareStatusClass(status: ShareStatus): string {
   return status === 'synced' ? 'success' : status === 'error' ? 'danger' : status === 'off' ? '' : 'warning';
 }
 
+const STATUS_BADGE: Record<ShareStatus, string> = {
+  off: 'border-border bg-transparent text-muted-foreground',
+  connecting: 'bg-warning/15 text-warning',
+  synced: 'bg-success/15 text-success',
+  syncing: 'bg-warning/15 text-warning',
+  offline: 'bg-warning/15 text-warning',
+  error: 'bg-destructive/15 text-destructive',
+};
+
 function NameField({ value, onChange, onCommit }: { value: string; onChange: (v: string) => void; onCommit?: () => void }) {
+  const t = useTranslations('dialogs.share');
   return (
-    <label className="field">
-      <span className="field-label">Dein Name</span>
-      <input
-        className="input"
+    <Field>
+      <FieldLabel htmlFor="share-user-name">{t('yourName')}</FieldLabel>
+      <Input
+        id="share-user-name"
+        className="max-w-sm"
         value={value}
         maxLength={40}
-        placeholder="z.B. Kylo"
+        placeholder={t('namePlaceholder')}
         onChange={(e) => onChange(e.target.value)}
         onBlur={onCommit}
         onKeyDown={(e) => {
           if (e.key === 'Enter') onCommit?.();
         }}
       />
-      <span className="field-help">Die anderen sehen ihn, wenn du etwas änderst.</span>
-    </label>
+      <FieldDescription>{t('nameHelp')}</FieldDescription>
+    </Field>
   );
 }
 
 export function ShareDialog() {
+  const t = useTranslations('dialogs.share');
+  const tc = useTranslations('common');
+  const statusText = useShareStatusText();
+  const format = useFormatter();
   const close = useStore((s) => s.closeDialog);
   const toast = useStore((s) => s.toast);
   const project = useStore((s) => s.project)!;
@@ -66,9 +105,9 @@ export function ShareDialog() {
     setBusy(true);
     try {
       const folder = await shareCurrentProject(name);
-      if (folder) toast('success', `Projekt wird geteilt: ${folder}`);
+      if (folder) toast('success', t('started', { folder }));
     } catch (err) {
-      toast('error', (err as Error).message);
+      toast('error', errorMessage(err));
     } finally {
       setBusy(false);
     }
@@ -77,93 +116,77 @@ export function ShareDialog() {
   const confirmStop = () =>
     useStore.getState().openDialog({
       type: 'confirm',
-      title: 'Teilen beenden?',
-      message:
-        'Deine Änderungen werden danach nicht mehr in den geteilten Ordner übertragen und Änderungen der anderen kommen nicht mehr an.\nDeine Kopie des Projekts und der Ordner bleiben erhalten.',
-      confirmLabel: 'Teilen beenden',
+      title: t('stopConfirm.title'),
+      message: t('stopConfirm.message'),
+      confirmLabel: t('stop'),
       danger: true,
       onConfirm: () =>
         void stopSharing().then(() => {
-          toast('info', 'Das Projekt wird nicht mehr geteilt.');
+          toast('info', translator('dialogs')('share.stopped'));
           useStore.getState().openDialog({ type: 'share' });
         }),
     });
 
   return (
-    <Modal
-      title="Projekt teilen"
-      icon={<Users size={20} />}
-      onClose={close}
-      footer={
-        <button className="btn primary" onClick={close}>
-          Fertig
-        </button>
-      }
-    >
+    <AppDialog title={t('title')} icon={<Users />} footer={<Button onClick={close}>{tc('done')}</Button>}>
       {!available ? (
-        <div className="hint warning">
-          Teilen funktioniert nur im Windows-Programm (ResourcepackBuilder.exe), weil dafür auf einen Ordner auf deinem PC zugegriffen werden
-          muss. In der Browser-Version kannst du das Projekt über „Projektdatei speichern“ weitergeben.
-        </div>
+        <Alert className="border-warning/50 bg-warning/10">
+          <TriangleAlert className="text-warning" />
+          <AlertDescription className="text-foreground">{t('desktopOnly')}</AlertDescription>
+        </Alert>
       ) : shared ? (
-        <div className="col" style={{ gap: 14 }}>
-          <div className="share-status">
-            <span className={`badge ${shareStatusClass(share.status)}`}>
-              {share.status === 'syncing' || share.status === 'connecting' ? <LoaderCircle size={12} className="spin" /> : null}
-              {SHARE_STATUS_TEXT[share.status]}
+        <div className="flex flex-col gap-4">
+          <div className="flex items-center gap-2.5">
+            <Badge variant="outline" className={cn('gap-1 border-transparent', STATUS_BADGE[share.status])}>
+              {share.status === 'syncing' || share.status === 'connecting' ? <LoaderCircle className="animate-spin" /> : null}
+              {statusText(share.status)}
+            </Badge>
+            <span className="text-xs text-muted-foreground">
+              {share.lastSync ? t('lastSync', { time: format.dateTime(new Date(share.lastSync), { timeStyle: 'medium' }) }) : ''}
             </span>
-            <span className="faint small">
-              {share.lastSync ? `zuletzt abgeglichen ${new Date(share.lastSync).toLocaleTimeString('de-DE')}` : ''}
-            </span>
-            <span className="grow" />
-            <button className="btn small" onClick={syncNow} title="Sofort nach Änderungen schauen">
-              <RefreshCw size={14} /> Jetzt abgleichen
-            </button>
+            <span className="flex-1" />
+            <Button variant="outline" size="sm" onClick={syncNow} title={t('syncNowTitle')}>
+              <RefreshCw /> {t('syncNow')}
+            </Button>
           </div>
-          {share.message && <div className={`hint ${share.status === 'error' ? 'warning' : ''}`}>{share.message}</div>}
-          <div className="field">
-            <span className="field-label">Geteilter Ordner</span>
-            <div className="row" style={{ gap: 8 }}>
-              <code className="share-path grow" title={share.folder ?? ''}>
+          {share.message && (
+            <Alert className={cn(share.status === 'error' && 'border-warning/50 bg-warning/10')}>
+              <AlertDescription className="text-foreground">{share.message}</AlertDescription>
+            </Alert>
+          )}
+          <Field>
+            <FieldTitle>{t('sharedFolder')}</FieldTitle>
+            <div className="flex items-center gap-2">
+              <code className="min-w-0 flex-1 truncate rounded-md border border-border bg-muted px-2 py-1.5 font-mono text-xs" title={share.folder ?? ''}>
                 {share.folder}
               </code>
-              <button className="btn small" onClick={openShareFolder}>
-                <FolderOpen size={14} /> Öffnen
-              </button>
+              <Button variant="outline" size="sm" onClick={openShareFolder}>
+                <FolderOpen /> {t('openFolder')}
+              </Button>
             </div>
-          </div>
+          </Field>
           <NameField value={name} onChange={setName} onCommit={() => void setShareUserName(name)} />
-          <div className="hint">
-            Alle, die diesen Ordner in ResourcepackBuilder geöffnet haben, sehen deine Änderungen nach wenigen Sekunden – und du ihre. Ändern zwei
-            Personen gleichzeitig dasselbe Item, gilt die zuletzt gespeicherte Änderung. „Rückgängig“ betrifft nur deine eigenen Änderungen.
-          </div>
-          <button className="btn ghost danger" style={{ alignSelf: 'flex-start' }} onClick={confirmStop}>
-            <Unplug size={15} /> Teilen beenden
-          </button>
+          <Alert>
+            <AlertDescription>{t('sharedHint')}</AlertDescription>
+          </Alert>
+          <Button variant="ghost" className="self-start text-destructive hover:text-destructive" onClick={confirmStop}>
+            <Unplug /> {t('stop')}
+          </Button>
         </div>
       ) : (
-        <div className="col" style={{ gap: 14 }}>
-          <p className="muted" style={{ margin: 0 }}>
-            Teile das Projekt über einen Ordner, den ihr gemeinsam nutzt. Änderungen kommen dann automatisch bei allen an – in beide
-            Richtungen.
-          </p>
-          <ol className="share-steps">
-            <li>
-              Lege in <b>OneDrive</b>, <b>Google Drive</b> oder <b>Dropbox</b> einen Ordner an und gib ihn für deine Freunde frei.
-            </li>
-            <li>
-              Klicke unten auf <b>Ordner wählen und teilen</b> und wähle diesen Ordner. ResourcepackBuilder legt das Projekt darin ab.
-            </li>
-            <li>
-              Deine Freunde öffnen den Ordner in ResourcepackBuilder über <b>Geteiltes Projekt öffnen</b>.
-            </li>
+        <div className="flex flex-col gap-4">
+          <p className="m-0 text-muted-foreground">{t('intro')}</p>
+          <ol className="m-0 flex list-decimal flex-col gap-1.5 pl-5 text-sm">
+            <li>{t.rich('step1', richTags)}</li>
+            <li>{t.rich('step2', richTags)}</li>
+            <li>{t.rich('step3', richTags)}</li>
           </ol>
           <NameField value={name} onChange={setName} />
-          <button className="btn primary large" style={{ alignSelf: 'flex-start' }} disabled={busy} onClick={() => void startSharing()}>
-            {busy ? <LoaderCircle size={17} className="spin" /> : <FolderSync size={17} />} Ordner wählen und teilen
-          </button>
+          <Button size="lg" className="self-start" disabled={busy} onClick={() => void startSharing()}>
+            {busy ? <LoaderCircle className="animate-spin" /> : <FolderSync />} {t('start')}
+          </Button>
         </div>
       )}
-    </Modal>
+    </AppDialog>
   );
 }

@@ -10,7 +10,9 @@ import { createTexture, findMcmetaFor, isPngDataUrl, type DroppedFile } from './
 export interface TextureTemplate {
   id: string;
   parent: string;
+  /** Message key in the `schema` namespace (`textureTemplates.<id>.label`) */
   label: string;
+  /** Message key in the `schema` namespace (`textureTemplates.<id>.description`) */
   description: string;
   /** Texture keys that must be assigned */
   slots: string[];
@@ -27,72 +29,72 @@ export const TEXTURE_TEMPLATES: TextureTemplate[] = [
   {
     id: 'generated',
     parent: 'minecraft:item/generated',
-    label: '2D-Item',
-    description: 'Flaches Item wie Papier oder Edelsteine. Weitere PNGs werden als zusätzliche Ebenen übereinandergelegt.',
+    label: 'textureTemplates.generated.label',
+    description: 'textureTemplates.generated.description',
     slots: ['layer0'],
     multiLayer: true,
   },
   {
     id: 'handheld',
     parent: 'minecraft:item/handheld',
-    label: '2D-Werkzeug / Waffe',
-    description: 'Wie item/generated, wird aber wie ein Schwert oder eine Spitzhacke schräg in der Hand gehalten.',
+    label: 'textureTemplates.handheld.label',
+    description: 'textureTemplates.handheld.description',
     slots: ['layer0'],
     multiLayer: true,
   },
   {
     id: 'handheld_rod',
     parent: 'minecraft:item/handheld_rod',
-    label: '2D-Stab / Angel',
-    description: 'Wird wie eine Angel bzw. ein Stock in der Hand gehalten.',
+    label: 'textureTemplates.handheldRod.label',
+    description: 'textureTemplates.handheldRod.description',
     slots: ['layer0'],
     multiLayer: true,
   },
   {
     id: 'cube_all',
     parent: 'minecraft:block/cube_all',
-    label: 'Block – eine Textur',
-    description: 'Würfel mit derselben Textur auf allen Seiten (z.B. Erz, Stein).',
+    label: 'textureTemplates.cubeAll.label',
+    description: 'textureTemplates.cubeAll.description',
     slots: ['all'],
     block: true,
   },
   {
     id: 'cube_column',
     parent: 'minecraft:block/cube_column',
-    label: 'Block – Säule',
-    description: 'Oben/unten (end) und Seiten (side), z.B. Holzstämme.',
+    label: 'textureTemplates.cubeColumn.label',
+    description: 'textureTemplates.cubeColumn.description',
     slots: ['end', 'side'],
     block: true,
   },
   {
     id: 'cube_bottom_top',
     parent: 'minecraft:block/cube_bottom_top',
-    label: 'Block – oben/unten/Seite',
-    description: 'Eigene Texturen für oben, unten und die Seiten (z.B. Sandstein).',
+    label: 'textureTemplates.cubeBottomTop.label',
+    description: 'textureTemplates.cubeBottomTop.description',
     slots: ['top', 'bottom', 'side'],
     block: true,
   },
   {
     id: 'orientable',
     parent: 'minecraft:block/orientable',
-    label: 'Block – mit Vorderseite',
-    description: 'Vorderseite, Seiten und Oberseite (z.B. Ofen).',
+    label: 'textureTemplates.orientable.label',
+    description: 'textureTemplates.orientable.description',
     slots: ['front', 'side', 'top'],
     block: true,
   },
   {
     id: 'cube',
     parent: 'minecraft:block/cube',
-    label: 'Block – sechs Seiten',
-    description: 'Jede Seite bekommt eine eigene Textur.',
+    label: 'textureTemplates.cube.label',
+    description: 'textureTemplates.cube.description',
     slots: ['north', 'east', 'south', 'west', 'up', 'down'],
     block: true,
   },
   {
     id: 'cross',
     parent: 'minecraft:block/cross',
-    label: 'Pflanze (Kreuz)',
-    description: 'Zwei gekreuzte Flächen wie bei Blumen – ideal für StringBlocks.',
+    label: 'textureTemplates.cross.label',
+    description: 'textureTemplates.cross.description',
     slots: ['cross'],
     block: true,
   },
@@ -146,7 +148,7 @@ export function createTextureModel(
 ): ImportedModel {
   const template = getTextureTemplate(templateId);
   const pngs = files.filter((f) => isPngDataUrl(f.dataUrl));
-  if (pngs.length === 0) throw new ModelConversionError('Es wurde keine PNG-Textur abgelegt.');
+  if (pngs.length === 0) throw new ModelConversionError('model.noPngDropped');
 
   const issues: Issue[] = [];
   const textures: ModelTexture[] = [];
@@ -165,12 +167,12 @@ export function createTextureModel(
     const file = fileName ? pngs.find((p) => p.name === fileName) : undefined;
     if (!file) {
       if (!template.multiLayer) {
-        issues.push({ level: 'error', message: `Für „${slot}“ wurde keine Textur zugewiesen.` });
+        issues.push({ level: 'error', code: 'model.slotUnassigned', params: { slot } });
       }
       continue;
     }
     if (template.multiLayer && layerIndex >= MAX_ITEM_LAYERS) {
-      issues.push({ level: 'warning', message: `Minecraft unterstützt maximal ${MAX_ITEM_LAYERS} Ebenen – „${file.name}“ wird ignoriert.` });
+      issues.push({ level: 'warning', code: 'model.tooManyLayers', params: { max: MAX_ITEM_LAYERS, file: file.name } });
       continue;
     }
     let id = idByFile.get(file.name);
@@ -182,14 +184,14 @@ export function createTextureModel(
     const key = template.multiLayer ? `layer${layerIndex++}` : slot;
     texturesJson[key] = texturePlaceholder(id);
   }
-  if (textures.length === 0) throw new ModelConversionError('Es wurde keine Textur zugewiesen.');
+  if (textures.length === 0) throw new ModelConversionError('model.noTextureAssigned');
   if (template.id === 'cube' && !texturesJson.particle) {
     texturesJson.particle = texturesJson.north ?? Object.values(texturesJson)[0];
   }
 
   const unused = pngs.filter((p) => !idByFile.has(p.name));
   for (const png of unused) {
-    issues.push({ level: 'warning', message: `„${png.name}“ wurde keinem Textur-Schlüssel zugewiesen und wird ignoriert.` });
+    issues.push({ level: 'warning', code: 'model.pngUnassigned', params: { file: png.name } });
   }
 
   const json: JavaModelJson = {

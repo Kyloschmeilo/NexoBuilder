@@ -5,6 +5,9 @@ import type { ExportMode, ExportPlan, FileContent } from './plan';
 import type { MultiExportPlan, PlannedProject } from './selection';
 import { buildRootFiles, PAINTINGS_FILE, SOUNDS_FILE } from './rootFiles';
 
+/** Installation guide put into a full export (English – the exported pack is not localised) */
+export const INSTALL_GUIDE_FILE = 'INSTALL.txt';
+
 export interface ExportResult {
   fileName: string;
   data: Uint8Array;
@@ -75,7 +78,7 @@ export function listMultiExportPaths(multi: MultiExportPlan, mode: ExportMode): 
     }
   }
   if (mode !== 'pack') for (const p of buildRootFiles(multi.projects.map((e) => e.plan)).keys()) paths.add(p);
-  if (mode === 'full' && multi.projects.length > 0) paths.add('ANLEITUNG.txt');
+  if (mode === 'full' && multi.projects.length > 0) paths.add(INSTALL_GUIDE_FILE);
   return [...paths].sort();
 }
 
@@ -107,7 +110,7 @@ export async function buildMultiExportZip(multi: MultiExportPlan, mode: ExportMo
   if (mode === 'full' && multi.projects.length > 0) {
     const guide =
       multi.projects.length === 1 ? installGuide(multi.projects[0].project, multi.projects[0].plan) : multiInstallGuide(multi);
-    zip.file('ANLEITUNG.txt', guide, { date: FIXED_DATE });
+    zip.file(INSTALL_GUIDE_FILE, guide, { date: FIXED_DATE });
   }
 
   const data = await generate(zip);
@@ -118,64 +121,64 @@ export async function buildMultiExportZip(multi: MultiExportPlan, mode: ExportMo
 function rootFileLines(plans: ExportPlan[]): string[] {
   const lines: string[] = [];
   const files = buildRootFiles(plans);
-  if (files.has(SOUNDS_FILE)) lines.push('   sounds.yml                -> die Sounds (OGG-Dateien liegen im Resourcepack)');
-  if (files.has(PAINTINGS_FILE)) lines.push('   paintings.yml             -> die Paintings (danach den Server neu starten)');
+  if (files.has(SOUNDS_FILE)) lines.push('   sounds.yml                -> the sounds (the OGG files are in the resource pack)');
+  if (files.has(PAINTINGS_FILE)) lines.push('   paintings.yml             -> the paintings (restart the server afterwards)');
   if (lines.length > 0) {
-    lines.push('   ACHTUNG: sounds.yml/paintings.yml ersetzen vorhandene Dateien – eigene Einträge vorher sichern und übernehmen.');
+    lines.push('   WARNING: sounds.yml/paintings.yml replace existing files – back up your own entries first and copy them over.');
   }
   return lines;
 }
 
 const USAGE = [
-  '2. Im Spiel oder in der Konsole ausführen:',
+  '2. Run in game or in the console:',
   '      /nexo reload all',
-  '   (lädt Items, Rezepte und den Resourcepack neu – alternativ den Server neu starten)',
+  '   (reloads items, recipes and the resource pack – or restart the server)',
   '',
-  '3. Items erhalten:',
-  '      /nexo give <item_id> [anzahl] [spieler]   (z.B. /nexo give ruby_sword 1 Steve)',
-  '   oder über das Nexo-Inventar:  /nexo inventory',
+  '3. Get the items:',
+  '      /nexo give <item_id> [amount] [player]   (e.g. /nexo give ruby_sword 1 Steve)',
+  '   or via the Nexo inventory:  /nexo inventory',
 ];
 
 export function installGuide(project: Project, plan: ExportPlan): string {
   const location = packLocation(project);
   const ids = plan.items.map((p) => `  - ${p.item.nexoId}`).join('\n');
   return [
-    `ResourcepackBuilder – Projekt "${project.name}"`,
+    `ResourcepackBuilder – project "${project.name}"`,
     '==========================================',
     '',
     'Installation',
     '------------',
-    '1. Den Inhalt dieses ZIP-Archivs in den Ordner  plugins/Nexo/  deines Servers entpacken.',
-    '   Die Ordner "items" und "pack" werden dabei mit den vorhandenen Ordnern zusammengeführt.',
+    '1. Extract the contents of this ZIP archive into the folder  plugins/Nexo/  of your server.',
+    '   The folders "items" and "pack" are merged with the existing folders.',
     '',
-    '   items/...                 -> die Item-Konfigurationen',
-    ...(plan.recipeFiles.size > 0 ? ['   recipes/...               -> die Crafting-Rezepte'] : []),
-    ...(plan.glyphFiles.size > 0 ? ['   glyphs/...                -> die Glyphs (Nutzung: <glyph:id>)'] : []),
+    '   items/...                 -> the item configurations',
+    ...(plan.recipeFiles.size > 0 ? ['   recipes/...               -> the crafting recipes'] : []),
+    ...(plan.glyphFiles.size > 0 ? ['   glyphs/...                -> the glyphs (usage: <glyph:id>)'] : []),
     ...rootFileLines([plan]),
-    `   ${location.padEnd(25)} -> der Resourcepack (wird von Nexo automatisch eingebunden)`,
+    `   ${location.padEnd(25)} -> the resource pack (Nexo includes it automatically)`,
     '',
     ...USAGE,
     '',
-    `Namespace des Resourcepacks: ${project.namespace}`,
-    `Ziel-Version: Minecraft ${project.settings.minecraftVersion}`,
+    `Resource pack namespace: ${project.namespace}`,
+    `Target version: Minecraft ${project.settings.minecraftVersion}`,
     '',
-    'Enthaltene Items',
-    '----------------',
-    ids || '  (keine)',
+    'Included items',
+    '--------------',
+    ids || '  (none)',
     '',
   ].join('\n');
 }
 
 export function multiInstallGuide(multi: MultiExportPlan): string {
   const lines = [
-    `ResourcepackBuilder – ${multi.projects.length} Projekte`,
+    `ResourcepackBuilder – ${multi.projects.length} projects`,
     '==========================================',
     '',
     'Installation',
     '------------',
-    '1. Den Inhalt dieses ZIP-Archivs in den Ordner  plugins/Nexo/  deines Servers entpacken.',
-    '   Die Ordner "items" und "pack" werden dabei mit den vorhandenen Ordnern zusammengeführt.',
-    '   Jedes Projekt hat einen eigenen Ordner unter items/ und einen eigenen Resourcepack:',
+    '1. Extract the contents of this ZIP archive into the folder  plugins/Nexo/  of your server.',
+    '   The folders "items" and "pack" are merged with the existing folders.',
+    '   Each project has its own folder under items/ and its own resource pack:',
     '',
   ];
   const extra = rootFileLines(multi.projects.map((p) => p.plan));
@@ -185,13 +188,13 @@ export function multiInstallGuide(multi: MultiExportPlan): string {
   if (extra.length > 0) lines.push('', ...extra);
   lines.push('', ...USAGE, '');
   for (const { project, plan } of multi.projects) {
-    const title = `Projekt "${project.name}"`;
+    const title = `Project "${project.name}"`;
     lines.push(
       title,
       '-'.repeat(title.length),
       `Namespace: ${project.namespace} · Minecraft ${project.settings.minecraftVersion}`,
-      ...(plan.items.length > 0 ? plan.items.map((p) => `  - ${p.item.nexoId}`) : ['  (keine Items)']),
-      ...(project.glyphs.length > 0 ? [`  + ${project.glyphs.length} Glyph(en)`] : []),
+      ...(plan.items.length > 0 ? plan.items.map((p) => `  - ${p.item.nexoId}`) : ['  (no items)']),
+      ...(project.glyphs.length > 0 ? [`  + ${project.glyphs.length} glyph(s)`] : []),
       '',
     );
   }

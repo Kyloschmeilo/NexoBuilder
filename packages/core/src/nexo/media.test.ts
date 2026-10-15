@@ -4,12 +4,15 @@ import { parse } from 'yaml';
 import { createProject } from '../project/factory';
 import { planExport } from '../export/plan';
 import { planMultiExport } from '../export/selection';
-import { buildExportZip, buildMultiExportZip } from '../export/zip';
+import { buildExportZip, buildMultiExportZip, INSTALL_GUIDE_FILE } from '../export/zip';
 import { nexoFolderFiles } from '../testserver/files';
 import { makePngDataUrl } from '../test/png';
 import { createSound } from './sounds';
 import { createPainting } from './paintings';
-import type { Project } from '../types';
+import type { Issue, Project } from '../types';
+
+/** The codes of an issue and its nested details, outermost first. */
+const issueCodes = (issue: Issue): string[] => [issue.code, ...(issue.detail ? issueCodes(issue.detail) : [])];
 
 const OGG = 'data:audio/ogg;base64,' + btoa('OggS' + '\0'.repeat(20));
 
@@ -65,7 +68,7 @@ describe('sounds and paintings', () => {
     });
     const paintings = parse(await zip.file('paintings.yml')!.async('string'));
     expect(paintings.paintings['klang:sonne']).toEqual({ title: 'Sonne', asset_id: 'klang:sonne', width: 2, height: 1 });
-    const guide = await zip.file('ANLEITUNG.txt')!.async('string');
+    const guide = await zip.file(INSTALL_GUIDE_FILE)!.async('string');
     expect(guide).toContain('sounds.yml');
   });
 
@@ -75,11 +78,11 @@ describe('sounds and paintings', () => {
     project.sounds[1].jukebox!.duration = '';
     project.paintings[0].width = 20;
     project.settings.minecraftVersion = '1.21.4';
-    const messages = planExport(project).issues.map((i) => `${i.level}: ${i.message}`);
-    expect(messages.some((m) => m.startsWith('error') && m.includes('keine OGG-Datei'))).toBe(true);
-    expect(messages.some((m) => m.startsWith('error') && m.includes('Länge des Liedes'))).toBe(true);
-    expect(messages.some((m) => m.startsWith('error') && m.includes('zwischen 1 und 16'))).toBe(true);
-    expect(messages.some((m) => m.startsWith('warning') && m.includes('1.21.5'))).toBe(true);
+    const codes = planExport(project).issues.map((i) => `${i.level}: ${issueCodes(i).join(' > ')}`);
+    expect(codes).toContain('error: context.sound > sound.notOgg');
+    expect(codes).toContain('error: context.sound > sound.jukeboxDurationMissing');
+    expect(codes).toContain('error: context.painting > painting.widthRange');
+    expect(codes).toContain('warning: painting.datapackNeedsVersion');
   });
 
   it('merges sounds.yml of several projects and reports duplicate IDs', async () => {
@@ -92,8 +95,8 @@ describe('sounds and paintings', () => {
     expect(sounds.map((s) => s.id)).toEqual(['klang:block.glocke.ding', 'klang:music.lied', 'andere:block.glocke.ding', 'andere:music.lied']);
 
     const same = planMultiExport([{ project: a }, { project: mediaProject('Kopie', 'klang') }]);
-    expect(same.issues.some((i) => i.message.includes('Den Sound „klang:music.lied“'))).toBe(true);
-    expect(same.issues.some((i) => i.message.includes('Das Gemälde „klang:sonne“'))).toBe(true);
+    expect(same.issues.some((i) => issueCodes(i).includes('selection.soundIdClash') && JSON.stringify(i).includes('klang:music.lied'))).toBe(true);
+    expect(same.issues.some((i) => issueCodes(i).includes('selection.paintingIdClash') && JSON.stringify(i).includes('klang:sonne'))).toBe(true);
   });
 
   it('also transfers sounds.yml and paintings.yml to the test server', () => {

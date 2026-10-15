@@ -8,12 +8,13 @@ import { deepClone, slugify, uid } from '@resourcepackbuilder/core/util';
 import { createGlyph, type Glyph, type GlyphFile, type GlyphKind } from '@resourcepackbuilder/core/nexo/glyphs';
 import { createSound, type Sound, type SoundFile } from '@resourcepackbuilder/core/nexo/sounds';
 import { createPainting, type Painting, type PaintingFile } from '@resourcepackbuilder/core/nexo/paintings';
+import { translator } from '../i18n/locale';
 import { useStore } from './store';
 
 const mutate = (recipe: (draft: Project) => void, key?: string) => useStore.getState().mutate(recipe, key);
 
 export function addFolder(name: string, parentId: string | null): string {
-  const folder = createFolder(name.trim() || 'Neuer Ordner', parentId);
+  const folder = createFolder(name.trim() || translator('state')('defaults.newFolder'), parentId);
   mutate((draft) => insertFolder(draft, folder));
   const state = useStore.getState();
   state.setExpanded(folder.id, true);
@@ -163,7 +164,7 @@ export function duplicateItem(itemId: string): string | null {
   const copy: Item = deepClone(original);
   copy.id = uid('i_');
   copy.recipes = (copy.recipes ?? []).map((r) => ({ ...r, id: uid('r_') }));
-  copy.displayName = original.displayName ? `${original.displayName} (Kopie)` : '';
+  copy.displayName = original.displayName ? translator('state')('defaults.copyName', { name: original.displayName }) : '';
   copy.createdAt = Date.now();
   copy.updatedAt = Date.now();
   mutate((draft) => {
@@ -279,7 +280,7 @@ export function addPaintingItem(painting: Painting): string | null {
   const project = useStore.getState().project;
   if (!project) return null;
   let folderId = project.rootFolderIds[0];
-  if (!folderId) folderId = addFolder('Gemälde', null);
+  if (!folderId) folderId = addFolder(translator('state')('defaults.paintingsFolder'), null);
   const itemId = addItem({ displayName: painting.title || painting.paintingId, nexoId: painting.paintingId, folderId, material: 'PAINTING', model: null });
   updateItem(itemId, (item) => {
     item.config.Components = { painting_variant: `${project.namespace}:${painting.paintingId}` };
@@ -292,7 +293,7 @@ export function addMusicDiscItem(sound: Sound): string | null {
   const project = useStore.getState().project;
   if (!project) return null;
   let folderId = project.rootFolderIds[0];
-  if (!folderId) folderId = addFolder('Musik', null);
+  if (!folderId) folderId = addFolder(translator('state')('defaults.musicFolder'), null);
   const nexoId = `${sound.soundId.replace(/[^a-z0-9_]+/g, '_')}_disc`;
   const itemId = addItem({ displayName: sound.jukebox?.description || sound.soundId, nexoId, folderId, material: 'PAPER', model: null });
   updateItem(itemId, (item) => {

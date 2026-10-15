@@ -58,7 +58,7 @@ export function patchNexoSettings(current: string | null, options: NexoServerSet
     // Don't make a broken file worse: only write our values fresh
     return patchNexoSettings(null, options);
   }
-  if (!current?.trim()) doc.commentBefore = ' Von ResourcepackBuilder angelegt – Nexo ergänzt die übrigen Einstellungen beim Start.';
+  if (!current?.trim()) doc.commentBefore = ' Created by ResourcepackBuilder – Nexo adds the remaining settings on startup.';
   let changed = !current?.trim();
   for (const [path, value] of settingsOverrides(options)) {
     if (sameSetting(doc.getIn(path), value)) continue;

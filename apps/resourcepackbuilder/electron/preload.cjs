@@ -1,10 +1,13 @@
 /**
  * Bridge between the UI and the desktop program. The UI only gets these few
- * functions (shared folders, local test server), no general file access.
+ * functions (UI language, shared folders, local test server), no general file access.
  */
 const { contextBridge, ipcRenderer } = require('electron');
 
 contextBridge.exposeInMainWorld('nexoDesktop', {
+  app: {
+    setLocale: (locale) => ipcRenderer.invoke('app:set-locale', locale),
+  },
   share: {
     chooseFolder: (purpose) => ipcRenderer.invoke('share:choose-folder', purpose),
     inspect: (folder) => ipcRenderer.invoke('share:inspect', folder),

@@ -5,6 +5,7 @@
 import { create } from 'zustand';
 import { copyItemConfig, pasteItemConfig, type ItemConfigClipboard, type PasteOptions } from '@resourcepackbuilder/core/nexo/copyConfig';
 import { stripMiniMessage } from '@resourcepackbuilder/ui';
+import { translator } from '../i18n/locale';
 import { useStore } from './store';
 
 export const useItemClipboard = create<{ clip: ItemConfigClipboard | null }>(() => ({ clip: null }));
@@ -19,13 +20,13 @@ export function copyItemProperties(itemId: string) {
   if (!project || !item) return;
   const clip = copyItemConfig(item, project.id);
   useItemClipboard.setState({ clip });
-  toast('success', `Eigenschaften von „${clipboardLabel(clip)}“ kopiert. Zum Einfügen im Menü eines anderen Items „Eigenschaften einfügen“ wählen.`);
+  toast('success', translator('state')('clipboard.copied', { name: clipboardLabel(clip) }));
 }
 
 export function openPasteDialog(targetItemIds: string[]) {
   const { toast, openDialog } = useStore.getState();
   if (!useItemClipboard.getState().clip) {
-    toast('info', 'Zuerst bei einem Item „Eigenschaften kopieren“ wählen.');
+    toast('info', translator('state')('clipboard.nothingCopied'));
     return;
   }
   openDialog({ type: 'pasteConfig', targetItemIds });

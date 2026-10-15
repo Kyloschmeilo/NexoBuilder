@@ -1,1 +1,50 @@
-{}
+{
+  "defaults": {
+    "newFolder": "New folder",
+    "copyName": "{name} (copy)",
+    "paintingsFolder": "Paintings",
+    "musicFolder": "Music",
+    "newProjectName": "My pack",
+    "importedName": "{name} (imported)",
+    "unknownUser": "Unknown",
+    "someone": "Someone",
+    "sharedProjectFolder": "ResourcepackBuilder project"
+  },
+  "clipboard": {
+    "copied": "Copied the properties of “{name}”. To paste them, choose “Paste properties” in another item’s menu.",
+    "nothingCopied": "First choose “Copy properties” on an item."
+  },
+  "persistence": {
+    "storageUnavailable": "IndexedDB is not available",
+    "invalidProjectFile": "The file is not a valid ResourcepackBuilder project file.",
+    "notAProjectFile": "The file is not a ResourcepackBuilder project file.",
+    "invalidProject": "Invalid project",
+    "invalidProjectNoName": "Invalid project (name missing)",
+    "autosaveFailed": "Projects can’t be saved automatically in the browser. Please save the project as a file regularly."
+  },
+  "share": {
+    "remoteChanged": "{name} changed {what}.",
+    "remoteDeleted": "{name} deleted {what}.",
+    "entryCount": "{count, plural, one {# entry} other {# entries}}",
+    "quoted": "“{label}”",
+    "andMore": "{list} and {count} more",
+    "offline": "The shared folder can’t be reached right now. Changes will be synced later.",
+    "desktopOnly": "Sharing only works in the Windows app (ResourcepackBuilder.exe).",
+    "folderHasOtherProject": "This folder already contains the shared project “{name}”. Choose another folder or open it via “Open shared project”.",
+    "folderHasSeveralProjects": "This folder contains several shared projects ({names}). Please choose the project’s own folder.",
+    "folderHasNoProject": "This folder contains no shared ResourcepackBuilder project (project.json is missing).",
+    "unreadable": "The shared project could not be read. Has the folder finished downloading?"
+  },
+  "testServer": {
+    "desktopOnly": "The test server only works in the Windows app (ResourcepackBuilder.exe).",
+    "notRunning": "The test server is not running.",
+    "playerNameMissing": "Please enter your Minecraft name in the Test server tab."
+  },
+  "project": {
+    "created": "Project “{name}” created.",
+    "loadFailed": "The project could not be loaded.",
+    "fileSaved": "Project file saved.",
+    "opened": "Project “{name}” opened.",
+    "sharedOpened": "Shared project “{name}” opened. Changes are now synced automatically."
+  }
+}

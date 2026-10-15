@@ -32,8 +32,14 @@ export interface PreviewElement {
 export interface PreviewModel {
   elements: PreviewElement[];
   kind: 'elements' | 'generated' | 'empty';
-  note?: string;
+  /** Why nothing can be shown (kind 'empty'); the UI translates it via the `preview.notes` messages. */
+  note?: PreviewNote;
 }
+
+export type PreviewNote =
+  | { code: 'vanillaParent'; params: { parent: string } }
+  | { code: 'noElements'; params?: undefined }
+  | { code: 'noLayer0'; params?: undefined };
 
 const FACE_ORDER: FaceName[] = ['east', 'west', 'up', 'down', 'south', 'north'];
 /** Brightness like Minecraft blocks (directional light) */
@@ -192,11 +198,11 @@ export function buildPreviewModel(model: ImportedModel): PreviewModel {
       return {
         elements: [],
         kind: 'empty',
-        note: `Keine Vorschau: Das Modell nutzt das Parent-Modell „${json.parent}“ aus Minecraft.`,
+        note: { code: 'vanillaParent', params: { parent: String(json.parent) } },
       };
     }
   }
-  if (!elements || elements.length === 0) return { elements: [], kind: 'empty', note: 'Das Modell enthält keine Elemente.' };
+  if (!elements || elements.length === 0) return { elements: [], kind: 'empty', note: { code: 'noElements' } };
 
   const result: PreviewElement[] = [];
   for (const el of elements) {
@@ -295,6 +301,6 @@ function buildGeneratedModel(model: ImportedModel): PreviewModel {
       ],
     });
   }
-  if (elements.length === 0) return { elements, kind: 'empty', note: 'Keine Textur-Ebene (layer0) gefunden.' };
+  if (elements.length === 0) return { elements, kind: 'empty', note: { code: 'noLayer0' } };
   return { elements, kind: 'generated' };
 }

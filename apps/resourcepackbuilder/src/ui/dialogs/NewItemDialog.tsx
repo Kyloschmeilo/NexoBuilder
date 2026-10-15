@@ -1,20 +1,26 @@
-import { useEffect, useMemo, useState } from 'react';
-import { Box, FilePlus2, Image as ImageIcon, PackagePlus, Trash2 } from 'lucide-react';
+import { useEffect, useId, useMemo, useState } from 'react';
+import { useTranslations } from 'next-intl';
+import { Box, FilePlus2, Image as ImageIcon, PackagePlus, Trash2, TriangleAlert } from 'lucide-react';
 import type { DroppedFile } from '@resourcepackbuilder/core/model/textures';
 import { MAX_ITEM_LAYERS, TEXTURE_TEMPLATES, getTextureTemplate, suggestSlotAssignment } from '@resourcepackbuilder/core/model/textureModel';
 import { MATERIALS } from '@resourcepackbuilder/core/nexo/options';
 import { ITEM_ID_PATTERN, slugify } from '@resourcepackbuilder/core/util';
 import { getFolderPathLabel } from '@resourcepackbuilder/core/project/tree';
+import { DropZone, IconButton, IssueList, TextInput, readDroppedFiles, stripMiniMessage } from '@resourcepackbuilder/ui';
+import { Alert, AlertDescription } from '@resourcepackbuilder/ui/components/alert';
+import { Badge } from '@resourcepackbuilder/ui/components/badge';
+import { Button } from '@resourcepackbuilder/ui/components/button';
+import { Card, CardAction, CardContent, CardDescription, CardHeader, CardTitle } from '@resourcepackbuilder/ui/components/card';
+import { Field, FieldDescription, FieldError, FieldLabel, FieldTitle } from '@resourcepackbuilder/ui/components/field';
+import { Input } from '@resourcepackbuilder/ui/components/input';
+import { NativeSelect, NativeSelectOption } from '@resourcepackbuilder/ui/components/native-select';
+import { ToggleGroup, ToggleGroupItem } from '@resourcepackbuilder/ui/components/toggle-group';
+import { ModelPreview } from '@resourcepackbuilder/preview';
+import { errorMessage } from '../../i18n/errors';
 import { addItem } from '../../state/actions';
 import { useStore } from '../../state/store';
-import { DropZone } from '@resourcepackbuilder/ui';
-import { IssueList } from '@resourcepackbuilder/ui';
-import { stripMiniMessage } from '@resourcepackbuilder/ui';
-import { Modal } from '@resourcepackbuilder/ui';
-import { readDroppedFiles } from '@resourcepackbuilder/ui';
 import { createDrafts, isPng, runDraft, unsupportedFiles, type ImportDraft } from '../importer';
-import { TextInput } from '@resourcepackbuilder/ui';
-import { ModelPreview } from '@resourcepackbuilder/preview';
+import { AppDialog, richTags, useSchemaText } from './AppDialog';
 import { FolderSelect } from './FolderSelect';
 
 interface DraftMeta {
@@ -26,12 +32,26 @@ interface DraftMeta {
 
 const ACCEPT = '.bbmodel,.json,.png,.mcmeta';
 
+type IdError = 'idRequired' | 'idInvalid' | 'idExists' | 'idDuplicate';
+
 /** Stable key of a draft (main file) so inputs are kept when rebuilding. */
 function sourceKey(draft: ImportDraft): string {
   return `${draft.kind}:${draft.files[0]?.name ?? draft.key}`;
 }
 
+function WarningHint({ children }: { children: React.ReactNode }) {
+  return (
+    <Alert className="border-warning/50 bg-warning/10">
+      <TriangleAlert className="text-warning" />
+      <AlertDescription className="text-foreground">{children}</AlertDescription>
+    </Alert>
+  );
+}
+
 export function NewItemDialog({ folderId, initialFiles }: { folderId: string; initialFiles?: File[] }) {
+  const t = useTranslations('dialogs.newItem');
+  const tc = useTranslations('common');
+  const folderFieldId = useId();
   const project = useStore((s) => s.project)!;
   const close = useStore((s) => s.closeDialog);
   const toast = useStore((s) => s.toast);
@@ -55,7 +75,7 @@ export function NewItemDialog({ folderId, initialFiles }: { folderId: string; in
       rebuild(next, pngMode);
       setWithoutModel(false);
     } catch (err) {
-      toast('error', `Dateien konnten nicht gelesen werden: ${(err as Error).message}`);
+      toast('error', t('readFailed', { error: errorMessage(err) }));
     } finally {
       setLoading(false);
     }
@@ -82,15 +102,15 @@ export function NewItemDialog({ folderId, initialFiles }: { folderId: string; in
   const entries = withoutModel ? [] : drafts;
   const allMeta = withoutModel ? [plainMeta] : entries.map((d) => meta[sourceKey(d)]).filter(Boolean);
 
-  const idErrors = useMemo(() => {
+  const idErrors = useMemo((): Array<IdError | null> => {
     const existing = new Set(Object.values(project.items).map((i) => i.nexoId));
     const counts = new Map<string, number>();
     for (const m of allMeta) counts.set(m.nexoId, (counts.get(m.nexoId) ?? 0) + 1);
     return allMeta.map((m) => {
-      if (!m.nexoId) return 'Bitte eine ID angeben.';
-      if (!ITEM_ID_PATTERN.test(m.nexoId)) return 'Nur Kleinbuchstaben, Zahlen und _ erlaubt.';
-      if (existing.has(m.nexoId)) return 'Diese ID gibt es im Projekt bereits.';
-      if ((counts.get(m.nexoId) ?? 0) > 1) return 'Diese ID wird mehrfach verwendet.';
+      if (!m.nexoId) return 'idRequired';
+      if (!ITEM_ID_PATTERN.test(m.nexoId)) return 'idInvalid';
+      if (existing.has(m.nexoId)) return 'idExists';
+      if ((counts.get(m.nexoId) ?? 0) > 1) return 'idDuplicate';
       return null;
     });
   }, [allMeta, project.items]);
@@ -118,7 +138,7 @@ export function NewItemDialog({ folderId, initialFiles }: { folderId: string; in
     }
     close();
     const count = withoutModel ? 1 : entries.length;
-    toast('success', count === 1 ? 'Item erstellt.' : `${count} Items erstellt.`);
+    toast('success', t('created', { count }));
     if (lastId) useStore.getState().setActiveTab('general');
   };
 
@@ -137,75 +157,64 @@ export function NewItemDialog({ folderId, initialFiles }: { folderId: string; in
   const onlyPngs = pngCount > 0 && drafts.every((d) => d.kind === 'png');
 
   return (
-    <Modal
-      title="Neues Item"
-      icon={<PackagePlus size={20} />}
-      onClose={close}
+    <AppDialog
+      title={t('title')}
+      icon={<PackagePlus />}
       size="wide"
       sticky={drafts.length > 0}
+      footerStart={t.rich('target', { ...richTags, folder: getFolderPathLabel(project, targetFolder) })}
       footer={
         <>
-          <span className="left">
-            Ziel: <strong>{getFolderPathLabel(project, targetFolder)}</strong>
-          </span>
-          <button className="btn" onClick={close}>
-            Abbrechen
-          </button>
-          <button className="btn primary" disabled={blocking} onClick={create}>
-            <FilePlus2 size={16} />
-            {withoutModel || entries.length <= 1 ? 'Item erstellen' : `${entries.length} Items erstellen`}
-          </button>
+          <Button variant="outline" onClick={close}>
+            {tc('cancel')}
+          </Button>
+          <Button disabled={blocking} onClick={create}>
+            <FilePlus2 />
+            {t('create', { count: withoutModel ? 1 : Math.max(entries.length, 1) })}
+          </Button>
         </>
       }
     >
-      <div className="col" style={{ gap: 14 }}>
-        <div className="row wrap" style={{ gap: 12 }}>
-          <label className="field" style={{ minWidth: 260 }}>
-            <span className="field-label">Ordner</span>
-            <FolderSelect value={targetFolder} onChange={setTargetFolder} />
-          </label>
-        </div>
+      <div className="flex flex-col gap-3.5">
+        <Field className="max-w-[260px] min-w-[260px]">
+          <FieldLabel htmlFor={folderFieldId}>{t('folder')}</FieldLabel>
+          <FolderSelect id={folderFieldId} value={targetFolder} onChange={setTargetFolder} />
+        </Field>
 
         {!withoutModel && (
           <DropZone
             onFiles={(f) => void addFiles(f)}
             accept={ACCEPT}
-            title={drafts.length ? 'Weitere Dateien hinzufügen' : 'Modell hier ablegen'}
-            subtitle={
-              drafts.length
-                ? 'z.B. fehlende Texturen oder weitere Modelle'
-                : 'Blockbench-Projekt (.bbmodel), Java-Modell (.json) mit PNG-Texturen oder nur PNG-Texturen. Mehrere Modelle ergeben mehrere Items.'
-            }
+            title={drafts.length ? t('dropTitleMore') : t('dropTitle')}
+            subtitle={drafts.length ? t('dropSubtitleMore') : t('dropSubtitle')}
             formats={drafts.length ? undefined : ['.bbmodel', '.json + .png', '.png', '.png.mcmeta']}
             compact={drafts.length > 0}
           />
         )}
-        {loading && <div className="faint small">Dateien werden gelesen …</div>}
-        {ignored.length > 0 && (
-          <div className="hint warning">Nicht unterstützte Dateien werden ignoriert: {ignored.join(', ')}</div>
-        )}
+        {loading && <div className="text-xs text-muted-foreground">{t('reading')}</div>}
+        {ignored.length > 0 && <WarningHint>{t('ignored', { files: ignored.join(', ') })}</WarningHint>}
 
         {drafts.length === 0 && !withoutModel && (
-          <div className="row">
-            <span className="faint small">Kein Modell zur Hand?</span>
-            <button className="btn small" onClick={() => setWithoutModel(true)}>
-              <Box size={14} /> Item ohne Modell erstellen
-            </button>
+          <div className="flex items-center gap-2">
+            <span className="text-xs text-muted-foreground">{t('noModel')}</span>
+            <Button variant="outline" size="sm" onClick={() => setWithoutModel(true)}>
+              <Box /> {t('createWithoutModel')}
+            </Button>
           </div>
         )}
 
         {withoutModel && (
-          <div className="card mb-0">
-            <div className="card-header">
-              <div className="card-title-group">
-                <h3>Item ohne Modell</h3>
-                <div className="desc">Das Item nutzt das Aussehen des gewählten Materials. Ein Modell kann später hinzugefügt werden.</div>
-              </div>
-              <button className="btn small" onClick={() => setWithoutModel(false)}>
-                Doch ein Modell ablegen
-              </button>
-            </div>
-            <div className="card-body">
+          <Card size="sm" className="rounded-lg">
+            <CardHeader>
+              <CardTitle className="font-heading">{t('withoutModelTitle')}</CardTitle>
+              <CardDescription>{t('withoutModelDescription')}</CardDescription>
+              <CardAction>
+                <Button variant="outline" size="sm" onClick={() => setWithoutModel(false)}>
+                  {t('useModel')}
+                </Button>
+              </CardAction>
+            </CardHeader>
+            <CardContent>
               <MetaFields
                 meta={plainMeta}
                 idError={idErrors[0]}
@@ -217,33 +226,32 @@ export function NewItemDialog({ folderId, initialFiles }: { folderId: string; in
                   })
                 }
               />
-            </div>
-          </div>
+            </CardContent>
+          </Card>
         )}
 
         {onlyPngs && pngCount > 1 && (
-          <div className="row wrap">
-            <span className="small muted">Mehrere PNGs:</span>
-            <div className="tristate">
-              <button
-                className={drafts.length > 1 ? 'active' : ''}
-                onClick={() => {
-                  setPngMode('separate');
-                  rebuild(files, 'separate');
-                }}
-              >
-                Ein Item pro PNG
-              </button>
-              <button
-                className={drafts.length === 1 ? 'active' : ''}
-                onClick={() => {
-                  setPngMode('combined');
-                  rebuild(files, 'combined');
-                }}
-              >
-                Alle PNGs für ein Item (Ebenen / Blockseiten)
-              </button>
-            </div>
+          <div className="flex flex-wrap items-center gap-2">
+            <span className="text-sm text-muted-foreground">{t('multiplePngs')}</span>
+            <ToggleGroup
+              variant="outline"
+              size="sm"
+              spacing={0}
+              value={[drafts.length > 1 ? 'separate' : 'combined']}
+              onValueChange={(value) => {
+                const next = value[0] as 'separate' | 'combined' | undefined;
+                if (!next) return;
+                setPngMode(next);
+                rebuild(files, next);
+              }}
+            >
+              <ToggleGroupItem value="separate" className="px-3">
+                {t('pngSeparate')}
+              </ToggleGroupItem>
+              <ToggleGroupItem value="combined" className="px-3">
+                {t('pngCombined')}
+              </ToggleGroupItem>
+            </ToggleGroup>
           </div>
         )}
 
@@ -262,34 +270,39 @@ export function NewItemDialog({ folderId, initialFiles }: { folderId: string; in
           />
         ))}
       </div>
-    </Modal>
+    </AppDialog>
   );
 }
 
-function MetaFields({ meta, idError, onChange }: { meta: DraftMeta; idError: string | null; onChange: (patch: Partial<DraftMeta>) => void }) {
+function MetaFields({ meta, idError, onChange }: { meta: DraftMeta; idError: IdError | null; onChange: (patch: Partial<DraftMeta>) => void }) {
+  const t = useTranslations('dialogs.newItem');
+  const nameId = useId();
+  const idId = useId();
   return (
-    <div className="field-grid">
-      <label className="field">
-        <span className="field-label">Anzeigename (MiniMessage möglich)</span>
-        <input
-          className="input"
+    <div className="grid gap-4 sm:grid-cols-2">
+      <Field>
+        <FieldLabel htmlFor={nameId}>{t('displayName')}</FieldLabel>
+        <Input
+          id={nameId}
           value={meta.displayName}
-          placeholder="z.B. <red>Rubin-Schwert"
+          placeholder={t('displayNamePlaceholder', { tag: '<red>' })}
           autoFocus
           onChange={(e) => onChange({ displayName: e.target.value })}
         />
-      </label>
-      <label className="field">
-        <span className="field-label">Item-ID</span>
-        <input
-          className={`input mono ${idError ? 'invalid' : ''}`}
+      </Field>
+      <Field data-invalid={!!idError}>
+        <FieldLabel htmlFor={idId}>{t('itemId')}</FieldLabel>
+        <Input
+          id={idId}
+          className="font-mono"
+          aria-invalid={!!idError}
           value={meta.nexoId}
           onChange={(e) => onChange({ nexoId: e.target.value.toLowerCase().replace(/[^a-z0-9_]/g, '_'), idEdited: true })}
         />
-        {idError && <span className="field-error">{idError}</span>}
-      </label>
-      <label className="field">
-        <span className="field-label">Material</span>
+        {idError && <FieldError>{t(idError)}</FieldError>}
+      </Field>
+      <label className="flex flex-col gap-2">
+        <FieldTitle>{t('material')}</FieldTitle>
         <TextInput
           value={meta.material}
           suggestions={MATERIALS}
@@ -304,7 +317,7 @@ function MetaFields({ meta, idError, onChange }: { meta: DraftMeta; idError: str
 interface DraftCardProps {
   draft: ImportDraft;
   meta: DraftMeta | undefined;
-  idError: string | null;
+  idError: IdError | null;
   single: boolean;
   onMeta: (patch: Partial<DraftMeta>) => void;
   onDraft: (patch: Partial<ImportDraft>) => void;
@@ -312,75 +325,82 @@ interface DraftCardProps {
 }
 
 function DraftCard({ draft, meta, idError, single, onMeta, onDraft, onRemove }: DraftCardProps) {
+  const t = useTranslations('dialogs.newItem');
+  const tIssues = useTranslations('dialogs.issues');
+  const schemaText = useSchemaText();
+  const templateFieldId = useId();
   if (!meta) return null;
   const pngs = draft.files.filter(isPng);
   const template = draft.template ? getTextureTemplate(draft.template) : null;
-  const sourceLabel = { bbmodel: 'Blockbench (.bbmodel)', json: 'Java-Modell (.json)', png: 'Textur (.png)' }[draft.kind];
   const errorCount = draft.model?.issues.filter((i) => i.level === 'error').length ?? 0;
+  const description = [
+    t(`source.${draft.kind}`),
+    draft.model ? t('textures', { count: draft.model.textures.length }) : null,
+    draft.model?.json.elements ? t('cubes', { count: draft.model.json.elements.length }) : null,
+  ]
+    .filter(Boolean)
+    .join(' · ');
   return (
-    <div className="card mb-0">
-      <div className="card-header">
-        {draft.kind === 'png' ? <ImageIcon size={18} /> : <Box size={18} />}
-        <div className="card-title-group">
-          <h3>{draft.model?.fileName ?? draft.files[0]?.name}</h3>
-          <div className="desc">
-            {sourceLabel}
-            {draft.model && ` · ${draft.model.textures.length} Textur(en)`}
-            {draft.model?.json.elements && ` · ${draft.model.json.elements.length} Würfel`}
-          </div>
+    <Card size="sm" className="rounded-lg">
+      <CardHeader className="flex items-center gap-2.5">
+        {draft.kind === 'png' ? <ImageIcon className="size-[18px] shrink-0" /> : <Box className="size-[18px] shrink-0" />}
+        <div className="flex min-w-0 flex-1 flex-col gap-0.5">
+          <CardTitle className="truncate">{draft.model?.fileName ?? draft.files[0]?.name}</CardTitle>
+          <CardDescription className="text-xs">{description}</CardDescription>
         </div>
-        {errorCount > 0 && <span className="badge danger">{errorCount} Fehler</span>}
+        {errorCount > 0 && <Badge variant="destructive">{tIssues('errors', { count: errorCount })}</Badge>}
         {!single && (
-          <button className="btn ghost icon small danger" title="Nicht importieren" onClick={onRemove}>
-            <Trash2 size={14} />
-          </button>
+          <IconButton label={t('dontImport')} danger onClick={onRemove}>
+            <Trash2 />
+          </IconButton>
         )}
-      </div>
-      <div className="card-body">
+      </CardHeader>
+      <CardContent>
         {draft.error ? (
-          <div className="hint warning">{draft.error}</div>
+          <WarningHint>{draft.error}</WarningHint>
         ) : (
-          <div style={{ display: 'grid', gridTemplateColumns: single ? '320px 1fr' : '200px 1fr', gap: 16 }}>
+          <div className="grid gap-4" style={{ gridTemplateColumns: single ? '320px 1fr' : '200px 1fr' }}>
             {draft.model && <ModelPreview model={draft.model} height={single ? 300 : 200} showToolbar={single} />}
-            <div className="col" style={{ gap: 12 }}>
+            <div className="flex min-w-0 flex-col gap-3">
               <MetaFields meta={meta} idError={idError} onChange={onMeta} />
               {draft.kind === 'png' && template && (
-                <div className="col" style={{ gap: 8 }}>
-                  <label className="field">
-                    <span className="field-label">Art des Modells</span>
-                    <select
-                      className="select"
+                <div className="flex flex-col gap-2">
+                  <Field>
+                    <FieldLabel htmlFor={templateFieldId}>{t('modelKind')}</FieldLabel>
+                    <NativeSelect
+                      id={templateFieldId}
+                      className="w-full"
                       value={template.id}
                       onChange={(e) => {
-                        const t = getTextureTemplate(e.target.value);
-                        onDraft({ template: t.id, assignment: suggestSlotAssignment(t, pngs) });
+                        const next = getTextureTemplate(e.target.value);
+                        onDraft({ template: next.id, assignment: suggestSlotAssignment(next, pngs) });
                       }}
                     >
-                      {TEXTURE_TEMPLATES.map((t) => (
-                        <option key={t.id} value={t.id}>
-                          {t.label}
-                        </option>
+                      {TEXTURE_TEMPLATES.map((tpl) => (
+                        <NativeSelectOption key={tpl.id} value={tpl.id}>
+                          {schemaText(tpl.label)}
+                        </NativeSelectOption>
                       ))}
-                    </select>
-                    <span className="field-help">{template.description}</span>
-                  </label>
+                    </NativeSelect>
+                    <FieldDescription>{schemaText(template.description)}</FieldDescription>
+                  </Field>
                   {(!template.multiLayer || pngs.length > 1) && (
-                    <div className="field-grid">
+                    <div className="grid gap-4 sm:grid-cols-2">
                       {(template.multiLayer ? Array.from({ length: Math.min(pngs.length, MAX_ITEM_LAYERS) }, (_, i) => `layer${i}`) : template.slots).map((slot) => (
-                        <label key={slot} className="field">
-                          <span className="field-label mono">{slot}</span>
-                          <select
-                            className="select"
+                        <label key={slot} className="flex flex-col gap-2">
+                          <FieldTitle className="font-mono">{slot}</FieldTitle>
+                          <NativeSelect
+                            className="w-full"
                             value={draft.assignment?.[slot] ?? ''}
                             onChange={(e) => onDraft({ assignment: { ...draft.assignment, [slot]: e.target.value } })}
                           >
-                            <option value="">– keine –</option>
+                            <NativeSelectOption value="">{t('noTexture')}</NativeSelectOption>
                             {pngs.map((p) => (
-                              <option key={p.name} value={p.name}>
+                              <NativeSelectOption key={p.name} value={p.name}>
                                 {p.name}
-                              </option>
+                              </NativeSelectOption>
                             ))}
-                          </select>
+                          </NativeSelect>
                         </label>
                       ))}
                     </div>
@@ -391,7 +411,7 @@ function DraftCard({ draft, meta, idError, single, onMeta, onDraft, onRemove }: 
             </div>
           </div>
         )}
-      </div>
-    </div>
+      </CardContent>
+    </Card>
   );
 }

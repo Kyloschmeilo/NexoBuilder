@@ -1,4 +1,5 @@
 /** General helper functions without DOM dependencies (also run in tests under Node). */
+import { CoreError } from './errors';
 
 export function uid(prefix = ''): string {
   const random =
@@ -110,7 +111,7 @@ export function bytesToBase64(bytes: Uint8Array): string {
 
 export function dataUrlToBytes(dataUrl: string): Uint8Array {
   const comma = dataUrl.indexOf(',');
-  if (!dataUrl.startsWith('data:') || comma < 0) throw new Error('Ungültige Data-URL');
+  if (!dataUrl.startsWith('data:') || comma < 0) throw new CoreError('file.invalidDataUrl');
   const header = dataUrl.slice(5, comma);
   const payload = dataUrl.slice(comma + 1);
   if (header.endsWith(';base64')) return base64ToBytes(payload);

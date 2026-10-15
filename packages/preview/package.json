@@ -2,7 +2,7 @@
   "name": "@resourcepackbuilder/preview",
   "private": true,
   "version": "0.0.0",
-  "description": "3D-Vorschau und Vorschaubilder für Minecraft-Modelle (three.js).",
+  "description": "3D preview and thumbnails for Minecraft models (three.js).",
   "type": "module",
   "exports": {
     ".": "./src/index.ts",
@@ -16,7 +16,8 @@
     "lucide-react": "^1.52.0",
     "next-intl": "^4.14.9",
     "three": "^0.186.1",
-    "@resourcepackbuilder/i18n": "*"
+    "@resourcepackbuilder/i18n": "*",
+    "@resourcepackbuilder/ui": "*"
   },
   "devDependencies": {
     "@resourcepackbuilder/config": "*",

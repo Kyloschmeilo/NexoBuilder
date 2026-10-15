@@ -29,8 +29,8 @@ describe('convertJavaModel', () => {
       { name: 'y.png', dataUrl: PNG },
     ]);
     expect(result.json.textures).toEqual({ all: 'minecraft:block/stone', other: 'mypack:block/missing' });
-    expect(result.issues.some((i) => i.level === 'error' && i.message.includes('mypack:block/missing'))).toBe(true);
-    expect(result.issues.some((i) => i.level === 'info' && i.message.includes('minecraft:block/stone'))).toBe(true);
+    expect(result.issues.some((i) => i.level === 'error' && i.code === 'model.texturePngMissing' && i.params?.ref === 'mypack:block/missing')).toBe(true);
+    expect(result.issues.some((i) => i.level === 'info' && i.code === 'model.vanillaTexture' && i.params?.ref === 'minecraft:block/stone')).toBe(true);
   });
 
   it('automatically assigns a single PNG to the only open reference', () => {
@@ -40,7 +40,7 @@ describe('convertJavaModel', () => {
       { name: 'other_name.png', dataUrl: PNG },
     ]);
     expect(result.json.textures).toEqual({ layer0: '$tex:t0' });
-    expect(result.issues.some((i) => i.message.includes('automatisch'))).toBe(true);
+    expect(result.issues.some((i) => i.code === 'model.textureAutoAssigned')).toBe(true);
   });
 
   it('merges parent models dropped along and removes overrides', () => {
@@ -81,15 +81,15 @@ describe('convertJavaModel', () => {
       { name: 'a.json', text: JSON.stringify(model) },
       { name: 'a.png', dataUrl: PNG },
     ]);
-    expect(result.issues.some((i) => i.level === 'error' && i.message.includes('-16 bis 32'))).toBe(true);
+    expect(result.issues.some((i) => i.level === 'error' && i.code === 'model.elementsOutOfBounds')).toBe(true);
     expect(result.requiresVersion).toBe('1.21.11');
   });
 
   it('accepts JSON with comments and rejects non-models', () => {
     const withComments = '{\n // comment\n "parent": "item/generated", /* x */ "textures": {"layer0": "item/a"}}';
     expect(() => convertJavaModel([{ name: 'a.json', text: withComments }])).not.toThrow();
-    expect(() => convertJavaModel([{ name: 'a.json', text: '{"foo": 1}' }])).toThrow(/kein Minecraft-Modell/);
-    expect(() => convertJavaModel([{ name: 'a.json', text: '[' }])).toThrow(/kein gültiges JSON/);
+    expect(() => convertJavaModel([{ name: 'a.json', text: '{"foo": 1}' }])).toThrow('model.notMinecraftModelEmpty');
+    expect(() => convertJavaModel([{ name: 'a.json', text: '[' }])).toThrow('model.invalidJson');
   });
 
   it('takes over matching .png.mcmeta files', () => {

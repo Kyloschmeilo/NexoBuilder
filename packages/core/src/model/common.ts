@@ -1,8 +1,10 @@
 /** Shared helpers for the model importers. */
+import { CoreError, type MessageParams } from '../errors';
 
-export class ModelConversionError extends Error {
-  constructor(message: string) {
-    super(message);
+/** A model file could not be imported at all; `code` is a key in the `issues` namespace. */
+export class ModelConversionError extends CoreError {
+  constructor(code: string, params: MessageParams = {}) {
+    super(code, params);
     this.name = 'ModelConversionError';
   }
 }

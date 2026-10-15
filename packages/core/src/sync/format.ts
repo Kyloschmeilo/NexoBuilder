@@ -291,10 +291,11 @@ export function hashData(data: EntityData | undefined): string {
   return data === undefined ? 'deleted' : hashString(JSON.stringify(data));
 }
 
-export const README_TEXT = `Dieser Ordner enthält ein geteiltes ResourcepackBuilder-Projekt.
+/** Written into the share folder for people browsing it (English – it is shared between users of any language). */
+export const README_TEXT = `This folder contains a shared ResourcepackBuilder project.
 
-Öffnen: ResourcepackBuilder starten → „Geteiltes Projekt öffnen“ → diesen Ordner wählen.
-Alle, die den Ordner geöffnet haben, sehen Änderungen der anderen automatisch.
+To open it: start ResourcepackBuilder → "Open shared project" → choose this folder.
+Everyone who has opened the folder sees the others' changes automatically.
 
-Bitte die Dateien hier nicht von Hand ändern, umbenennen oder löschen.
+Please do not edit, rename or delete the files here by hand.
 `;

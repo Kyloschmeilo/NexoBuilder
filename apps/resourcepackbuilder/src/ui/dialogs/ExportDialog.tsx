@@ -1,37 +1,32 @@
 import { useDeferredValue, useEffect, useMemo, useState, type ReactNode } from 'react';
+import { useTranslations } from 'next-intl';
 import { ChevronRight, Download, FileArchive, FolderTree, Package, ScrollText } from 'lucide-react';
 import type { Project } from '@resourcepackbuilder/core/types';
 import { countIssues, type ExportMode } from '@resourcepackbuilder/core/export/plan';
 import { planMultiExport, SELECT_ALL, type ExportEntry, type ExportSelection } from '@resourcepackbuilder/core/export/selection';
 import { buildMultiExportZip, listMultiExportPaths } from '@resourcepackbuilder/core/export/zip';
 import { getMcVersion } from '@resourcepackbuilder/core/minecraft/versions';
+import { IssueList, downloadBytes } from '@resourcepackbuilder/ui';
+import { Alert, AlertDescription } from '@resourcepackbuilder/ui/components/alert';
+import { Badge } from '@resourcepackbuilder/ui/components/badge';
+import { Button } from '@resourcepackbuilder/ui/components/button';
+import { Checkbox } from '@resourcepackbuilder/ui/components/checkbox';
+import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@resourcepackbuilder/ui/components/collapsible';
+import { Field, FieldContent, FieldDescription, FieldLabel, FieldTitle } from '@resourcepackbuilder/ui/components/field';
+import { NativeSelect, NativeSelectOption } from '@resourcepackbuilder/ui/components/native-select';
+import { RadioGroup, RadioGroupItem } from '@resourcepackbuilder/ui/components/radio-group';
+import { errorMessage } from '../../i18n/errors';
+import { translator } from '../../i18n/locale';
 import { updateProjectSettings } from '../../state/actions';
 import { listProjects, loadProject, type ProjectSummary } from '../../state/persistence';
 import { useStore } from '../../state/store';
-import { IssueList } from '@resourcepackbuilder/ui';
-import { Modal } from '@resourcepackbuilder/ui';
-import { downloadBytes } from '@resourcepackbuilder/ui';
+import { AppDialog, SectionLabel, richTags } from './AppDialog';
 import { ProjectPicker, type ProjectChoice } from './ExportSelection';
 
-const MODES: Array<{ id: ExportMode; title: string; desc: string; icon: ReactNode }> = [
-  {
-    id: 'full',
-    title: 'Für den Nexo-Ordner',
-    desc: 'items/ + pack/external_packs/ – einfach in plugins/Nexo entpacken.',
-    icon: <FolderTree size={16} />,
-  },
-  {
-    id: 'pack',
-    title: 'Nur Resourcepack',
-    desc: 'Das external pack als ZIP (pack.mcmeta + assets). Mehrere Projekte: ein Ordner pro Pack.',
-    icon: <Package size={16} />,
-  },
-  {
-    id: 'items',
-    title: 'Nur Configs',
-    desc: 'Nur die YAML-Dateien (items/, recipes/, glyphs/) ohne Resourcepack.',
-    icon: <ScrollText size={16} />,
-  },
+const MODES: Array<{ id: ExportMode; icon: ReactNode }> = [
+  { id: 'full', icon: <FolderTree /> },
+  { id: 'pack', icon: <Package /> },
+  { id: 'items', icon: <ScrollText /> },
 ];
 
 /** Last chosen selection – kept as long as ResourcepackBuilder is open */
@@ -40,21 +35,26 @@ const remembered: { included: string[] | null; selections: Record<string, Export
 /** Builds the ZIP and starts the download. */
 async function runExport(entries: ExportEntry[], mode: ExportMode): Promise<boolean> {
   const { toast } = useStore.getState();
+  const t = translator('dialogs');
   if (entries.length === 0) return false;
   try {
     const multi = planMultiExport(entries, { includeBinaries: true });
     const result = await buildMultiExportZip(multi, mode);
     downloadBytes(result.data, result.fileName, 'application/zip');
-    toast('success', `${result.fileName} wurde erstellt (${result.paths.length} Dateien).`);
+    toast('success', t('export.created', { file: result.fileName, count: result.paths.length }));
     return true;
   } catch (err) {
     console.error(err);
-    toast('error', `Export fehlgeschlagen: ${(err as Error).message}`);
+    toast('error', t('export.failed', { error: errorMessage(err) }));
     return false;
   }
 }
 
 export function ExportDialog() {
+  const t = useTranslations('dialogs.export');
+  const tSel = useTranslations('dialogs.selection');
+  const tIssues = useTranslations('dialogs.issues');
+  const tc = useTranslations('common');
   const project = useStore((s) => s.project)!;
   const close = useStore((s) => s.closeDialog);
   const select = useStore((s) => s.select);
@@ -133,9 +133,9 @@ export function ExportDialog() {
     if (counts.error > 0) {
       useStore.getState().openDialog({
         type: 'confirm',
-        title: 'Trotz Fehlern exportieren?',
-        message: `Es gibt noch ${counts.error} Fehler. Betroffene Items oder Modelle funktionieren in Nexo/Minecraft wahrscheinlich nicht richtig.`,
-        confirmLabel: 'Trotzdem exportieren',
+        title: t('confirmErrors.title'),
+        message: t('confirmErrors.message', { count: counts.error }),
+        confirmLabel: t('confirmErrors.confirm'),
         danger: true,
         onConfirm: () => void runExport(entriesFor(useStore.getState().project ?? project), mode),
       });
@@ -154,74 +154,86 @@ export function ExportDialog() {
     if (include) setExpanded(id);
   };
 
+  const first = multi.projects[0];
+  const summaryParts: ReactNode[] = [t.rich('summary.items', { ...richTags, count: itemCount })];
+  if (glyphCount > 0) summaryParts.push(t.rich('summary.glyphs', { ...richTags, count: glyphCount }));
+  const footerStart = (
+    <>
+      {summaryParts.map((part, i) => (
+        <span key={i}>
+          {i > 0 && ' · '}
+          {part}
+        </span>
+      ))}
+      {several ? (
+        <> {t.rich('summary.fromProjects', { ...richTags, count: multi.projects.length })}</>
+      ) : (
+        first && (
+          <>
+            {' · '}
+            {t.rich('summary.namespace', { ...richTags, namespace: first.project.namespace })}
+            {' · '}
+            {t('summary.minecraft', { version: getMcVersion(first.project.settings.minecraftVersion).label })}
+          </>
+        )
+      )}
+    </>
+  );
+
+  const selectionDisabled = !expanded || !included.has(expanded);
+
   return (
-    <Modal
-      title="Exportieren"
-      icon={<FileArchive size={20} />}
-      onClose={close}
+    <AppDialog
+      title={t('title')}
+      icon={<FileArchive />}
       size="wide"
+      footerStart={footerStart}
       footer={
         <>
-          <span className="left">
-            <span className="mono">{itemCount}</span> Item(s)
-            {glyphCount > 0 && (
-              <>
-                {' '}
-                · <span className="mono">{glyphCount}</span> Glyph(en)
-              </>
-            )}
-            {several ? (
-              <>
-                {' '}
-                aus <span className="mono">{multi.projects.length}</span> Projekten
-              </>
-            ) : (
-              multi.projects[0] && (
-                <>
-                  {' '}
-                  · Namespace <span className="mono">{multi.projects[0].project.namespace}</span> · Minecraft{' '}
-                  {getMcVersion(multi.projects[0].project.settings.minecraftVersion).label}
-                </>
-              )
-            )}
-          </span>
-          <button className="btn" onClick={close}>
-            Abbrechen
-          </button>
-          <button className="btn primary" disabled={busy || loading || empty} onClick={confirmAndExport}>
-            <Download size={16} /> {busy ? 'Wird erstellt …' : 'ZIP herunterladen'}
-          </button>
+          <Button variant="outline" onClick={close}>
+            {tc('cancel')}
+          </Button>
+          <Button disabled={busy || loading || empty} onClick={confirmAndExport}>
+            <Download /> {busy ? t('busy') : t('download')}
+          </Button>
         </>
       }
     >
-      <div className="col" style={{ gap: 16 }}>
-        <div className="radio-cards">
+      <div className="flex flex-col gap-4">
+        <RadioGroup value={mode} onValueChange={(value) => setMode(value as ExportMode)} className="grid gap-2 sm:grid-cols-3">
           {MODES.map((m) => (
-            <div key={m.id} className={`radio-card ${mode === m.id ? 'active' : ''}`} onClick={() => setMode(m.id)} role="radio" aria-checked={mode === m.id}>
-              <span className="rc-title">
-                {m.icon}
-                {m.title}
-              </span>
-              <span className="rc-desc">{m.desc}</span>
-            </div>
+            <FieldLabel key={m.id} htmlFor={`export-mode-${m.id}`}>
+              <Field orientation="horizontal">
+                <FieldContent>
+                  <FieldTitle className="[&_svg]:size-4 [&_svg]:text-primary">
+                    {m.icon}
+                    {t(`modes.${m.id}.title`)}
+                  </FieldTitle>
+                  <FieldDescription className="text-xs">{t(`modes.${m.id}.description`)}</FieldDescription>
+                </FieldContent>
+                <RadioGroupItem id={`export-mode-${m.id}`} value={m.id} />
+              </Field>
+            </FieldLabel>
           ))}
-        </div>
+        </RadioGroup>
 
-        <div className="export-grid">
-          <div className="col" style={{ gap: 8 }}>
-            <div className="row">
-              <div className="label-caps">Auswahl</div>
-              <span className="spacer" />
-              <button
-                className="btn ghost small"
+        <div className="grid items-start gap-5 md:grid-cols-2">
+          <div className="flex min-w-0 flex-col gap-2">
+            <div className="flex items-center gap-1">
+              <SectionLabel>{tSel('title')}</SectionLabel>
+              <span className="flex-1" />
+              <Button
+                variant="ghost"
+                size="sm"
                 onClick={() => setSelections((prev) => ({ ...prev, [expanded ?? project.id]: SELECT_ALL }))}
-                disabled={!expanded || !included.has(expanded)}
+                disabled={selectionDisabled}
               >
-                Alle
-              </button>
-              <button
-                className="btn ghost small"
-                disabled={!expanded || !included.has(expanded)}
+                {tSel('all')}
+              </Button>
+              <Button
+                variant="ghost"
+                size="sm"
+                disabled={selectionDisabled}
                 onClick={() => {
                   const target = choices.find((c) => c.summary.id === expanded)?.project;
                   if (!target) return;
@@ -236,8 +248,8 @@ export function ExportDialog() {
                   }));
                 }}
               >
-                Keine
-              </button>
+                {tSel('none')}
+              </Button>
             </div>
             <ProjectPicker
               choices={choices}
@@ -248,89 +260,87 @@ export function ExportDialog() {
               onExpand={setExpanded}
               onSelectionChange={(id, next) => setSelections((prev) => ({ ...prev, [id]: next }))}
             />
-            {several && (
-              <div className="field-help">
-                Mehrere Projekte: Jedes Projekt bekommt einen eigenen Ordner unter items/ und einen eigenen Resourcepack. Andere Projekte
-                verwenden ihre eigenen Export-Einstellungen.
-              </div>
-            )}
+            {several && <p className="m-0 text-xs text-muted-foreground">{t('severalProjects')}</p>}
           </div>
-          <div className="col" style={{ gap: 8 }}>
-            <div className="label-caps">
-              Inhalt · <span className="mono">{paths.length}</span> Dateien
-            </div>
-            <div className="file-list">
+          <div className="flex min-w-0 flex-col gap-2">
+            <SectionLabel className="flex h-7 items-center">{t.rich('contents', { ...richTags, count: paths.length })}</SectionLabel>
+            <div className="max-h-80 overflow-auto rounded-md border border-border bg-background px-3 py-2 font-mono text-xs leading-5 whitespace-nowrap text-muted-foreground">
               {paths.map((p) => (
                 <div key={p}>{p}</div>
               ))}
-              {paths.length === 0 && <div className="faint">Nichts ausgewählt.</div>}
+              {paths.length === 0 && <div>{t('nothingSelected')}</div>}
             </div>
           </div>
         </div>
 
-        <details className="subsection">
-          <summary>
-            <ChevronRight size={14} className="chev" />
-            Optionen für „{project.name}“
-          </summary>
-          <div className="subsection-body export-options">
-            <label className="toggle-row">
-              <input
-                type="checkbox"
-                checked={project.settings.externalPackAsZip}
-                disabled={mode !== 'full'}
-                onChange={(e) => updateProjectSettings((p) => (p.settings.externalPackAsZip = e.target.checked))}
-              />
-              <span>
-                External pack als .zip
-                <div className="tr-desc">Statt eines Ordners pack/external_packs/{project.settings.packName}/ eine ZIP-Datei.</div>
-              </span>
-            </label>
-            <label className="toggle-row">
-              <input
-                type="checkbox"
-                checked={project.settings.itemsInProjectFolder || several}
-                disabled={mode === 'pack' || several}
-                onChange={(e) => updateProjectSettings((p) => (p.settings.itemsInProjectFolder = e.target.checked))}
-              />
-              <span>
-                Items in eigenen Projektordner
-                <div className="tr-desc">{several ? 'Bei mehreren Projekten immer aktiv.' : 'items/<projekt>/… statt direkt items/…'}</div>
-              </span>
-            </label>
-            <label className="field">
-              <span className="field-label">YAML-Dateien</span>
-              <select
-                className="select"
-                value={project.settings.yamlFileMode}
-                disabled={mode === 'pack'}
-                onChange={(e) => updateProjectSettings((p) => (p.settings.yamlFileMode = e.target.value as 'folder' | 'item'))}
-              >
-                <option value="folder">Eine Datei pro Ordner (z.B. items/waffen/waffen.yml)</option>
-                <option value="item">Eine Datei pro Item (z.B. items/waffen/ruby_sword.yml)</option>
-              </select>
-            </label>
-          </div>
-        </details>
+        <Collapsible className="rounded-md border border-border">
+          <CollapsibleTrigger className="group flex w-full cursor-pointer items-center gap-2 rounded-md px-3 py-2 text-left text-sm font-medium hover:bg-muted">
+            <ChevronRight className="size-3.5 text-muted-foreground transition-transform group-data-[panel-open]:rotate-90" />
+            {t('options', { name: project.name })}
+          </CollapsibleTrigger>
+          <CollapsibleContent>
+            <div className="flex flex-col gap-3 border-t border-border px-3 py-3">
+              <Field orientation="horizontal" data-disabled={mode !== 'full'}>
+                <Checkbox
+                  id="export-external-zip"
+                  checked={project.settings.externalPackAsZip}
+                  disabled={mode !== 'full'}
+                  onCheckedChange={(checked) => updateProjectSettings((p) => (p.settings.externalPackAsZip = checked))}
+                />
+                <FieldContent>
+                  <FieldLabel htmlFor="export-external-zip">{t('externalPackAsZip')}</FieldLabel>
+                  <FieldDescription className="text-xs">{t('externalPackAsZipHelp', { packName: project.settings.packName })}</FieldDescription>
+                </FieldContent>
+              </Field>
+              <Field orientation="horizontal" data-disabled={mode === 'pack' || several}>
+                <Checkbox
+                  id="export-items-folder"
+                  checked={project.settings.itemsInProjectFolder || several}
+                  disabled={mode === 'pack' || several}
+                  onCheckedChange={(checked) => updateProjectSettings((p) => (p.settings.itemsInProjectFolder = checked))}
+                />
+                <FieldContent>
+                  <FieldLabel htmlFor="export-items-folder">{t('itemsInProjectFolder')}</FieldLabel>
+                  <FieldDescription className="text-xs">
+                    {several ? t('itemsInProjectFolderSeveral') : t('itemsInProjectFolderHelp', { project: `<${t('projectPlaceholder')}>` })}
+                  </FieldDescription>
+                </FieldContent>
+              </Field>
+              <Field className="max-w-md" data-disabled={mode === 'pack'}>
+                <FieldLabel htmlFor="export-yaml-mode">{t('yamlFiles')}</FieldLabel>
+                <NativeSelect
+                  id="export-yaml-mode"
+                  className="w-full"
+                  value={project.settings.yamlFileMode}
+                  disabled={mode === 'pack'}
+                  onChange={(e) => updateProjectSettings((p) => (p.settings.yamlFileMode = e.target.value as 'folder' | 'item'))}
+                >
+                  <NativeSelectOption value="folder">{t('yamlPerFolder')}</NativeSelectOption>
+                  <NativeSelectOption value="item">{t('yamlPerItem')}</NativeSelectOption>
+                </NativeSelect>
+              </Field>
+            </div>
+          </CollapsibleContent>
+        </Collapsible>
 
-        <div>
-          <div className="row" style={{ marginBottom: 8 }}>
-            <div className="label-caps">Prüfung</div>
-            {counts.error > 0 && <span className="badge danger">{counts.error} Fehler</span>}
-            {counts.warning > 0 && <span className="badge warning">{counts.warning} {counts.warning === 1 ? 'Warnung' : 'Warnungen'}</span>}
-            {counts.error === 0 && counts.warning === 0 && <span className="badge success">Alles in Ordnung</span>}
-            <span className="spacer" />
+        <div className="flex flex-col gap-2">
+          <div className="flex items-center gap-2">
+            <SectionLabel>{t('check')}</SectionLabel>
+            {counts.error > 0 && <Badge variant="destructive">{tIssues('errors', { count: counts.error })}</Badge>}
+            {counts.warning > 0 && <Badge className="bg-warning/15 text-warning">{tIssues('warnings', { count: counts.warning })}</Badge>}
+            {counts.error === 0 && counts.warning === 0 && <Badge className="bg-success/15 text-success">{tIssues('allGood')}</Badge>}
+            <span className="flex-1" />
             {counts.info > 0 && (
-              <label className="row small faint" style={{ gap: 5, cursor: 'pointer' }}>
-                <input type="checkbox" className="check" checked={showInfo} onChange={(e) => setShowInfo(e.target.checked)} /> {counts.info}{' '}
-                {counts.info === 1 ? 'Hinweis' : 'Hinweise'} anzeigen
+              <label className="flex cursor-pointer items-center gap-1.5 text-xs text-muted-foreground">
+                <Checkbox checked={showInfo} onCheckedChange={setShowInfo} />
+                {tIssues('showInfo', { count: counts.info })}
               </label>
             )}
           </div>
           <IssueList
             issues={multi.issues}
             hideInfo={!showInfo}
-            empty="Keine Fehler oder Warnungen."
+            empty={t('noIssues')}
             canOpen={(issue) => !('projectId' in issue) || !issue.projectId || issue.projectId === project.id}
             onOpenItem={(itemId) => {
               close();
@@ -344,12 +354,11 @@ export function ExportDialog() {
         </div>
 
         {mode === 'full' && (
-          <div className="hint">
-            Installation: ZIP in <code className="code-inline">plugins/Nexo/</code> entpacken, dann <code className="code-inline">/nexo reload all</code>{' '}
-            ausführen. Eine Anleitung liegt als ANLEITUNG.txt bei.
-          </div>
+          <Alert>
+            <AlertDescription className="text-xs">{t.rich('install', richTags)}</AlertDescription>
+          </Alert>
         )}
       </div>
-    </Modal>
+    </AppDialog>
   );
 }

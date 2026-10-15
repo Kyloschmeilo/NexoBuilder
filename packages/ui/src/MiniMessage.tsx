@@ -3,6 +3,8 @@
  * as used in Nexo for itemname and lore.
  */
 import type { CSSProperties, ReactNode } from 'react';
+import { useTranslations } from 'next-intl';
+import { cn } from 'cn';
 
 const NAMED_COLORS: Record<string, string> = {
   black: '#000000',
@@ -196,31 +198,49 @@ export function MiniMessageLine({
       chars.forEach((ch, j) => {
         const color = seg.style.rainbow ? `hsl(${Math.round((j / Math.max(1, chars.length)) * 360)}, 90%, 62%)` : gradientAt(seg.style.gradient!, j / n);
         nodes.push(
-          <span key={`${i}-${j}`} style={cssFor({ ...seg.style, color }, fallbackColor, defaultItalic)} className={seg.style.obfuscated ? 'obf' : undefined}>
+          <span key={`${i}-${j}`} style={cssFor({ ...seg.style, color }, fallbackColor, defaultItalic)} className={seg.style.obfuscated ? 'blur-[1.5px]' : undefined}>
             {ch}
           </span>,
         );
       });
     } else {
       nodes.push(
-        <span key={i} style={cssFor(seg.style, fallbackColor, defaultItalic)} className={seg.style.obfuscated ? 'obf' : undefined}>
+        <span key={i} style={cssFor(seg.style, fallbackColor, defaultItalic)} className={seg.style.obfuscated ? 'blur-[1.5px]' : undefined}>
           {seg.text}
         </span>,
       );
     }
   });
-  return <div className="line">{nodes.length ? nodes : ' '}</div>;
+  return <div className="min-h-[1.4em] break-words whitespace-pre-wrap">{nodes.length ? nodes : ' '}</div>;
+}
+
+/**
+ * Dark, Minecraft-tooltip-like box for MiniMessage lines. It always uses the dark theme tokens
+ * (scoped `dark` class) because Minecraft text colours are designed for a dark background.
+ */
+export function MiniMessageBox({ children, className }: { children: ReactNode; className?: string }) {
+  return (
+    <div
+      className={cn(
+        'dark inline-block max-w-full min-w-40 rounded-sm border-2 border-input bg-background px-2.5 py-1.5 font-sans text-sm leading-5 text-foreground',
+        className,
+      )}
+    >
+      {children}
+    </div>
+  );
 }
 
 /** Tooltip-like preview from name and lore. */
 export function ItemTooltip({ name, lore }: { name: string; lore?: string[] }) {
+  const t = useTranslations('ui');
   return (
-    <div className="mc-text">
-      <MiniMessageLine text={name || 'Unbenannt'} />
+    <MiniMessageBox>
+      <MiniMessageLine text={name || t('miniMessage.unnamed')} />
       {lore?.map((line, i) => (
         <MiniMessageLine key={i} text={line} fallbackColor="#AA00AA" defaultItalic />
       ))}
-    </div>
+    </MiniMessageBox>
   );
 }
 

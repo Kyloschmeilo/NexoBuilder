@@ -3,11 +3,11 @@
  * custom inventory icon, connectable furniture, placement, light and state models of furniture
  * as well as stack stages of blocks. The matching values in the item configuration are supplied too.
  */
-import type { ConfigObject, IssueLevel, Item, JavaModelJson, Project } from '../types';
+import type { ConfigObject, Item, JavaModelJson, Project } from '../types';
 import { getPath } from '../nexo/configPath';
 import { CONNECT_SLOTS, PLACEMENT_SLOTS, stateDef, type VariantSlot } from '../nexo/variants';
 import { compareVersions, isPlainObject } from '../util';
-import type { FileContent } from './plan';
+import type { AddItemIssue, FileContent, ModelScope } from './plan';
 
 export interface ExtraConfig {
   path: string[];
@@ -30,9 +30,9 @@ interface ExtraModelsContext {
   /** Path of the main model, e.g. item/moebel/sofa */
   modelPath: string;
   folderSlugs: string[];
-  writeModel: (model: NonNullable<Item['model']>, modelPath: string, what: string) => { key: string; json: JavaModelJson };
+  writeModel: (model: NonNullable<Item['model']>, modelPath: string, scope: ModelScope) => { key: string; json: JavaModelJson };
   packFiles: Map<string, FileContent>;
-  add: (level: IssueLevel, message: string) => void;
+  add: AddItemIssue;
   variantKeys: Partial<Record<VariantSlot, string | string[]>>;
 }
 
@@ -56,9 +56,10 @@ export function planExtraModels(ctx: ExtraModelsContext): ExtraModelsResult {
     packFiles.set(`assets/${ns}/items/${path}.json`, json({ model, ...extra }));
     return `${ns}:${path}`;
   };
+  // `what` names the model in issues (Nexo terms, not translated)
   const writeSlot = (slot: VariantSlot, suffix: string, what: string): string | null => {
     const model = variants[slot]?.[0];
-    return model ? ctx.writeModel(model, `${modelPath}-${suffix}`, what).key : null;
+    return model ? ctx.writeModel(model, `${modelPath}-${suffix}`, [what]).key : null;
   };
 
   const stateSlots = (Object.keys(variants) as VariantSlot[]).filter((s) => s.startsWith('state:') && has(s));
@@ -71,7 +72,7 @@ export function planExtraModels(ctx: ExtraModelsContext): ExtraModelsResult {
   const used = [...furnitureSlots, ...(has('gui_model') ? ['gui_model' as const] : []), ...(has('stack_models') ? ['stack_models' as const] : [])];
   if (used.length === 0) return result;
   if (!modelKey) {
-    add('error', 'GUI Model, Furniture-Modelle und Stackable brauchen ein Hauptmodell. Bitte zuerst ein Modell importieren.');
+    add('error', 'plan.extraModelsNeedMainModel');
     return result;
   }
 
@@ -79,7 +80,7 @@ export function planExtraModels(ctx: ExtraModelsContext): ExtraModelsResult {
   const furniture = getPath(config, ['Mechanics', 'furniture']);
   const furnitureActive = isPlainObject(furniture);
   if (furnitureSlots.length > 0 && !furnitureActive) {
-    add('warning', 'Es sind Furniture-Modelle hochgeladen, aber die Mechanic „Furniture“ fehlt – sie werden nicht exportiert.');
+    add('warning', 'plan.furnitureMechanicMissing');
   }
 
   /* ------------------------------------------------ Main ItemModel: connectable + inventory icon */
@@ -89,13 +90,13 @@ export function planExtraModels(ctx: ExtraModelsContext): ExtraModelsResult {
       (c): c is typeof c & { key: string } => c.key !== null,
     );
     if (connect.length > 0) {
-      if (!atLeast('1.21.4')) add('error', 'Connectable mit eigenen Modellen braucht mindestens Minecraft 1.21.4.');
+      if (!atLeast('1.21.4')) add('error', 'plan.connectableNeedsVersion', { version: '1.21.4' });
       if (connect.length < CONNECT_SLOTS.length) {
-        add('info', `Connectable: ${CONNECT_SLOTS.length - connect.length} von 5 Modellen fehlen – dort wird das Hauptmodell angezeigt.`);
+        add('info', 'plan.connectableIncomplete', { missing: CONNECT_SLOTS.length - connect.length, total: CONNECT_SLOTS.length });
       }
       const userType = isPlainObject(furniture) && isPlainObject(furniture.connectable) ? furniture.connectable.type : undefined;
       if (userType && userType !== 'ITEM_MODEL') {
-        add('warning', `Connectable ist auf „${String(userType)}“ eingestellt – für die hochgeladenen Modelle wird ITEM_MODEL verwendet.`);
+        add('warning', 'plan.connectableTypeOverridden', { type: String(userType) });
       }
       result.config.push({ path: ['Mechanics', 'furniture', 'connectable', 'type'], value: 'ITEM_MODEL' });
       main = {
@@ -119,10 +120,10 @@ export function planExtraModels(ctx: ExtraModelsContext): ExtraModelsResult {
     }
   }
   if (main) {
-    if (!atLeast('1.21.4')) add('error', 'Ein GUI Model braucht mindestens Minecraft 1.21.4 (ItemModels).');
+    if (!atLeast('1.21.4')) add('error', 'plan.guiModelNeedsVersion', { version: '1.21.4' });
     const packVariants = Object.keys(ctx.variantKeys);
     if (packVariants.length > 0) {
-      add('warning', `Mit GUI Model bzw. Connectable-Modellen wirken ${packVariants.join(', ')} nicht mehr.`);
+      add('warning', 'plan.guiModelDisablesVariants', { variants: packVariants.join(', ') });
     }
     const oversized = getPath(config, ['Pack', 'oversized_in_gui']) === true ? { oversized_in_gui: true } : {};
     result.itemModel = writeDefinition(defBase, main, oversized);
@@ -131,7 +132,7 @@ export function planExtraModels(ctx: ExtraModelsContext): ExtraModelsResult {
   /* ------------------------------------------------ Furniture: placement, light, states */
   if (furnitureActive) {
     const needItemModel = (what: string) => {
-      if (!atLeast('1.21.2')) add('error', `${what}: eigene Furniture-Modelle brauchen mindestens Minecraft 1.21.2.`);
+      if (!atLeast('1.21.2')) add('error', 'plan.furnitureModelsNeedVersion', { model: what, version: '1.21.2' });
     };
     for (const { slot, placement } of PLACEMENT_SLOTS) {
       if (!has(slot)) continue;
@@ -156,17 +157,17 @@ export function planExtraModels(ctx: ExtraModelsContext): ExtraModelsResult {
       const def = stateDef(name);
       const state = states[name];
       if (!isPlainObject(state)) {
-        add('warning', `Für den State „${name}“ ist ein Modell hochgeladen, den State gibt es aber nicht mehr – das Modell wird nicht exportiert.`);
+        add('warning', 'plan.stateMissing', { state: name });
         continue;
       }
       const type = typeof state.type === 'string' ? state.type : undefined;
       if (type && type !== 'ITEM_MODEL' && type !== 'FURNITURE') {
-        add('warning', `State „${name}“ ist vom Typ ${type} – das hochgeladene Modell wird dafür nicht verwendet.`);
+        add('warning', 'plan.stateTypeUnused', { state: name, type });
         continue;
       }
-      const key = writeSlot(slot, def.suffix, `State „${name}“`);
+      const key = writeSlot(slot, def.suffix, `State "${name}"`);
       if (!key) continue;
-      needItemModel(`State „${name}“`);
+      needItemModel(`State "${name}"`);
       const itemModel = writeDefinition(`${defBase}-${def.suffix}`, modelRef(key));
       result.config.push({ path: ['Mechanics', 'furniture', 'states', name, 'type'], value: 'ITEM_MODEL', ifMissing: true });
       result.config.push({ path: ['Mechanics', 'furniture', 'states', name, 'item_model'], value: itemModel, ifMissing: true });
@@ -177,10 +178,10 @@ export function planExtraModels(ctx: ExtraModelsContext): ExtraModelsResult {
   if (has('stack_models')) {
     const block = getPath(config, ['Mechanics', 'custom_block']);
     if (!isPlainObject(block)) {
-      add('warning', 'Es sind Stackable-Modelle hochgeladen, aber die Mechanic „Custom Block“ fehlt – sie werden nicht exportiert.');
+      add('warning', 'plan.customBlockMechanicMissing');
     } else {
-      if (block.type !== 'STRINGBLOCK') add('warning', 'Stackable funktioniert nur mit dem Block-Typ STRINGBLOCK.');
-      const keys = (variants.stack_models ?? []).map((m, i) => ctx.writeModel(m, `${modelPath}-stack_${i + 1}`, `Stackable ${i + 1}`).key);
+      if (block.type !== 'STRINGBLOCK') add('warning', 'plan.stackableNeedsStringblock');
+      const keys = (variants.stack_models ?? []).map((m, i) => ctx.writeModel(m, `${modelPath}-stack_${i + 1}`, [`Stackable ${i + 1}`]).key);
       result.config.push({ path: ['Mechanics', 'custom_block', 'stackable'], value: keys.map((model) => ({ model })), ifMissing: true });
     }
   }

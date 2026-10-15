@@ -11,3 +11,4 @@ release
 .next
 out
 next-env.d.ts
+.playwright-mcp

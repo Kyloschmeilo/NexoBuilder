@@ -9,6 +9,8 @@ import { create } from 'zustand';
 import { planExport } from '@resourcepackbuilder/core/export/plan';
 import { nexoFolderFiles, nexoGiveCommand, patchNexoSettings } from '@resourcepackbuilder/core/testserver/files';
 import { desktopTestServer, type TestServerConfig, type TestServerLogLine, type TestServerState, type TestServerSyncResult } from './desktop';
+import { errorMessage } from '../i18n/errors';
+import { translator } from '../i18n/locale';
 import { useStore } from './store';
 
 const AUTO_SYNC_DELAY_MS = 1200;
@@ -40,7 +42,7 @@ export function isTestServerAvailable(): boolean {
 
 const api = () => {
   const testServer = desktopTestServer();
-  if (!testServer) throw new Error('Der Testserver funktioniert nur im Windows-Programm (ResourcepackBuilder.exe).');
+  if (!testServer) throw new Error(translator('state')('testServer.desktopOnly'));
   return testServer;
 };
 
@@ -72,7 +74,7 @@ export async function syncProject(reload: boolean): Promise<TestServerSyncResult
       });
       return result;
     } catch (err) {
-      useTestServerStore.setState({ syncError: (err as Error).message });
+      useTestServerStore.setState({ syncError: errorMessage(err) });
       return null;
     } finally {
       useTestServerStore.setState({ syncing: false });
@@ -195,8 +197,8 @@ export function loadPaperVersions() {
 export async function giveInTestServer(nexoId: string, amount = 1): Promise<string> {
   const state = useTestServerStore.getState().state;
   const player = state?.config.playerName;
-  if (!state || state.status !== 'running') throw new Error('Der Testserver läuft nicht.');
-  if (!player) throw new Error('Bitte im Testserver-Tab deinen Minecraft-Namen eintragen.');
+  if (!state || state.status !== 'running') throw new Error(translator('state')('testServer.notRunning'));
+  if (!player) throw new Error(translator('state')('testServer.playerNameMissing'));
   // Transfer the latest files first so the item is sure to exist (Nexo reloads in the background)
   const result = await syncProject(true);
   if (result?.reloaded) await new Promise((resolve) => window.setTimeout(resolve, 2500));

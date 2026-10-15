@@ -101,10 +101,10 @@ describe('copy properties', () => {
   it('summarizes the clipboard contents per category', () => {
     const { project, source } = setup();
     const summary = Object.fromEntries(summarizeClipboard(copyItemConfig(source, project.id)).map((s) => [s.id, s.entries]));
-    expect(summary.material).toEqual(['DIAMOND_SWORD']);
+    expect(summary.material).toEqual([{ text: 'DIAMOND_SWORD' }]);
     expect(summary.general.length).toBe(1);
     expect(summary.appearance.length).toBe(2); // oversized_in_gui + armor, not custom_model_data
-    expect(summary.other).toEqual(['custom_root', 'Components.some_new_component']);
-    expect(summary.recipes).toEqual(['shaped']);
+    expect(summary.other).toEqual([{ text: 'custom_root' }, { text: 'Components.some_new_component' }]);
+    expect(summary.recipes).toEqual([{ key: 'recipes.types.shaped.label' }]);
   });
 });

@@ -110,7 +110,7 @@ const FORMAT_LABELS: Record<string, string> = {
   free: 'Generic Model',
   bedrock: 'Bedrock Entity',
   bedrock_block: 'Bedrock Block',
-  bedrock_old: 'Bedrock Entity (alt)',
+  bedrock_old: 'Bedrock Entity (legacy)',
   modded_entity: 'Modded Entity',
   optifine_entity: 'OptiFine Entity',
   optifine_part: 'OptiFine Part',
@@ -143,10 +143,10 @@ export function convertBBModel(text: string, fileName: string, extraFiles: Dropp
   try {
     raw = JSON.parse(text);
   } catch (err) {
-    throw new ModelConversionError(`„${fileName}“ ist keine gültige .bbmodel-Datei (JSON-Fehler: ${(err as Error).message}).`);
+    throw new ModelConversionError('model.invalidBbmodel', { file: fileName, error: (err as Error).message });
   }
   if (!isPlainObject(raw) || (!Array.isArray(raw.elements) && !Array.isArray(raw.textures))) {
-    throw new ModelConversionError(`„${fileName}“ enthält kein Blockbench-Modell.`);
+    throw new ModelConversionError('model.noBlockbenchModel', { file: fileName });
   }
   const model = raw as BBModel;
 
@@ -156,13 +156,7 @@ export function convertBBModel(text: string, fileName: string, extraFiles: Dropp
   const centered = CENTERED_FORMATS.has(format);
   const perTextureUv = PER_TEXTURE_UV_FORMATS.has(format);
   if (!isJava) {
-    issues.push({
-      level: 'warning',
-      message:
-        `Das Modell ist im Blockbench-Format „${FORMAT_LABELS[format] ?? format}“ und nicht „Java Block/Item“. ` +
-        'Würfel werden umgerechnet, Gruppen-Rotationen, Meshes und Animationen gehen dabei verloren. ' +
-        'Für ein exaktes Ergebnis das Modell in Blockbench über „Datei → Projekt konvertieren“ nach „Java Block/Item“ umwandeln.',
-    });
+    issues.push({ level: 'warning', code: 'model.nonJavaFormat', params: { format: FORMAT_LABELS[format] ?? format } });
   }
   const javaVersion = typeof model.java_block_version === 'string' ? model.java_block_version : undefined;
   const usesShadeOverride = !!javaVersion && compareVersions(javaVersion, '26.3') >= 0;
@@ -176,7 +170,7 @@ export function convertBBModel(text: string, fileName: string, extraFiles: Dropp
     const displayName = tex.name || fileBaseName(tex.path ?? tex.relative_path ?? '') || `texture_${index}`;
     let dataUrl = isPngDataUrl(tex.source) ? tex.source : undefined;
     if (!dataUrl && tex.source?.startsWith('data:')) {
-      issues.push({ level: 'error', message: `Die Textur „${displayName}“ ist kein PNG. Minecraft unterstützt nur PNG-Texturen.` });
+      issues.push({ level: 'error', code: 'model.textureNotPng', params: { name: displayName } });
     }
     if (!dataUrl) {
       const match = findPngByName(extraFiles, tex.name, tex.path && fileBaseName(tex.path), tex.relative_path && fileBaseName(tex.relative_path));
@@ -308,34 +302,22 @@ export function convertBBModel(text: string, fileName: string, extraFiles: Dropp
   }
 
   if (skippedNonCubes > 0) {
-    issues.push({
-      level: 'warning',
-      message: `${skippedNonCubes} Element(e) sind keine Würfel (z.B. Meshes) und können im Java-Format nicht exportiert werden. Sie wurden übersprungen.`,
-    });
+    issues.push({ level: 'warning', code: 'model.skippedNonCubes', params: { count: skippedNonCubes } });
   }
   if (missingFaceCount > 0) {
-    issues.push({
-      level: 'warning',
-      message: `${missingFaceCount} Fläche(n) haben keine Textur und werden in Minecraft lila/schwarz angezeigt. In Blockbench eine Textur zuweisen oder die Fläche deaktivieren.`,
-    });
+    issues.push({ level: 'warning', code: 'model.facesWithoutTexture', params: { count: missingFaceCount } });
   }
   if (outOfBounds > 0) {
-    issues.push({
-      level: 'error',
-      message: `${outOfBounds} Würfel liegen außerhalb des erlaubten Bereichs von -16 bis 32. Minecraft lädt solche Modelle nicht. In Blockbench das Modell verkleinern (z.B. über die Display-Skalierung) oder verschieben.`,
-    });
+    issues.push({ level: 'error', code: 'model.cubesOutOfBounds', params: { count: outOfBounds } });
   }
   if (invalidUvRotation > 0) {
-    issues.push({ level: 'error', message: `${invalidUvRotation} Fläche(n) haben eine UV-Rotation, die kein Vielfaches von 90° ist.` });
+    issues.push({ level: 'error', code: 'model.invalidUvRotation', params: { count: invalidUvRotation } });
   }
   if (!isJava && hasRotatedGroups(model.outliner)) {
-    issues.push({ level: 'warning', message: 'Das Modell enthält rotierte Gruppen. Diese Rotationen werden im Java-Format nicht übernommen.' });
+    issues.push({ level: 'warning', code: 'model.rotatedGroups' });
   }
   if (requiresVersion) {
-    issues.push({
-      level: 'info',
-      message: `Das Modell nutzt Rotationen/Features, die mindestens Minecraft ${requiresVersion} benötigen.`,
-    });
+    issues.push({ level: 'info', code: 'model.requiresVersion', params: { version: requiresVersion } });
   }
 
   /* ------------------------------------------------------------ Assemble textures */
@@ -355,10 +337,7 @@ export function convertBBModel(text: string, fileName: string, extraFiles: Dropp
     const texture = createTexture(id, entry.displayName, entry.dataUrl ?? '', mcmeta);
     textures.push(texture);
     if (!entry.dataUrl) {
-      issues.push({
-        level: 'error',
-        message: `Die Textur „${entry.displayName}“ ist nicht in der .bbmodel-Datei eingebettet. Bitte die PNG-Datei zusätzlich ablegen oder im Modell-Tab zuweisen.`,
-      });
+      issues.push({ level: 'error', code: 'model.textureNotEmbedded', params: { name: entry.displayName } });
     }
     if (used || isTexturesOnlyModel) {
       texturesJson[textureKey(entry.tex, entry.index, textureEntries)] = texturePlaceholder(id);
@@ -371,7 +350,7 @@ export function convertBBModel(text: string, fileName: string, extraFiles: Dropp
   }
   const unused = textureEntries.length - textures.length;
   if (unused > 0) {
-    issues.push({ level: 'info', message: `${unused} ungenutzte Textur(en) wurden nicht übernommen.` });
+    issues.push({ level: 'info', code: 'model.unusedTextures', params: { count: unused } });
   }
 
   /* ------------------------------------------------------------ Model JSON */
@@ -391,7 +370,7 @@ export function convertBBModel(text: string, fileName: string, extraFiles: Dropp
   }
 
   if (elements.length === 0 && !json.parent) {
-    issues.push({ level: 'error', message: 'Das Modell enthält keine exportierbaren Würfel.' });
+    issues.push({ level: 'error', code: 'model.noExportableCubes' });
   }
 
   return {

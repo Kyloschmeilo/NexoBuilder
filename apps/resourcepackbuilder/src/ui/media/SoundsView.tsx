@@ -1,14 +1,17 @@
 /** Custom sounds and music discs (plugins/Nexo/sounds.yml + OGG files in the resource pack). */
 import { Disc3, Music, Plus, Trash2 } from 'lucide-react';
+import { useTranslations } from 'next-intl';
 import type { ExportPlan } from '@resourcepackbuilder/core/export/plan';
 import { soundFilePath, soundKey, type Sound, type SoundFile } from '@resourcepackbuilder/core/nexo/sounds';
+import { Badge } from '@resourcepackbuilder/ui/components/badge';
+import { Button } from '@resourcepackbuilder/ui/components/button';
+import { Card, CardContent } from '@resourcepackbuilder/ui/components/card';
+import { Input } from '@resourcepackbuilder/ui/components/input';
+import { CopyButton, DropZone, IssueList, NumberInput, pickFiles, readAsDataUrl } from '@resourcepackbuilder/ui';
+import { translator } from '../../i18n/locale';
 import { addMusicDiscItem, addSound, deleteSound, updateSound } from '../../state/actions';
 import { useStore } from '../../state/store';
-import { DropZone } from '@resourcepackbuilder/ui';
-import { IssueList } from '@resourcepackbuilder/ui';
-import { CopyButton } from '@resourcepackbuilder/ui';
-import { NumberInput } from '@resourcepackbuilder/ui';
-import { pickFiles, readAsDataUrl } from '@resourcepackbuilder/ui';
+import { CheckRow, Code, FieldGrid, FormField, Hint, IconAction, ViewHeader, ViewShell } from './layout';
 
 const ACCEPT = '.ogg,audio/ogg';
 
@@ -16,7 +19,7 @@ async function readSoundFiles(files: File[]): Promise<Array<{ name: string; file
   const result: Array<{ name: string; file: SoundFile }> = [];
   for (const f of files) {
     if (!f.name.toLowerCase().endsWith('.ogg')) {
-      useStore.getState().toast('error', `„${f.name}“ ist keine OGG-Datei. Minecraft spielt nur .ogg ab (z.B. mit Audacity umwandeln).`);
+      useStore.getState().toast('error', translator('media')('sounds.notOgg', { name: f.name }));
       continue;
     }
     const dataUrl = (await readAsDataUrl(f)).replace(/^data:[^;,]*/, 'data:audio/ogg');
@@ -28,163 +31,147 @@ async function readSoundFiles(files: File[]): Promise<Array<{ name: string; file
 const formatSize = (bytes: number) => (bytes > 1_000_000 ? `${(bytes / 1_000_000).toFixed(1)} MB` : `${Math.max(1, Math.round(bytes / 1000))} KB`);
 
 export function SoundsView({ plan }: { plan: ExportPlan | null }) {
+  const t = useTranslations('media.sounds');
   const sounds = useStore((s) => s.project?.sounds ?? []);
   return (
-    <div className="editor">
-      <div className="editor-header">
-        <div className="editor-thumb">
-          <Music size={30} />
-        </div>
-        <div className="editor-title">
-          <h1>Sounds</h1>
-          <div className="editor-meta">
-            <span className="badge">{sounds.length} Sound(s)</span>
-            <span className="badge mono">plugins/Nexo/sounds.yml</span>
-          </div>
-        </div>
-      </div>
-      <div className="hint">
-        Eigene Geräusche und Musik. Die ID (z.B. <code className="code-inline">namespace:block.rubin.place</code>) kannst du überall eintragen, wo ein
-        Sound verlangt wird – etwa bei Block-Sounds, Türen oder <code className="code-inline">/playsound</code>. Mit „Jukebox Playable“ wird der Sound zur
-        Musik-CD. Achtung: Die exportierte <code className="code-inline">sounds.yml</code> ersetzt eine vorhandene Datei auf dem Server.
-      </div>
+    <ViewShell>
+      <ViewHeader
+        icon={<Music className="size-7" />}
+        title={t('title')}
+        meta={
+          <>
+            <Badge variant="secondary">{t('count', { count: sounds.length })}</Badge>
+            <Badge variant="outline" className="font-mono">
+              plugins/Nexo/sounds.yml
+            </Badge>
+          </>
+        }
+      />
+      <Hint>
+        <div>{t.rich('hint', { code: (chunks) => <Code>{chunks}</Code> })}</div>
+      </Hint>
       <DropZone
         onFiles={async (files) => {
           for (const entry of await readSoundFiles(files)) addSound(entry.name, [entry.file]);
         }}
         accept={ACCEPT}
-        title="OGG-Dateien hier ablegen"
-        subtitle="Jede Datei wird ein eigener Sound. Weitere Varianten (zufällig abgespielt) fügst du im Sound hinzu."
+        title={t('dropTitle')}
+        subtitle={t('dropSubtitle')}
         formats={['.ogg']}
         compact
       />
-      <div style={{ marginTop: 16 }}>
-        {sounds.map((sound) => (
-          <SoundCard key={sound.id} sound={sound} plan={plan} />
-        ))}
-      </div>
-    </div>
+      {sounds.length > 0 && (
+        <div className="mt-2 flex flex-col gap-4">
+          {sounds.map((sound) => (
+            <SoundCard key={sound.id} sound={sound} plan={plan} />
+          ))}
+        </div>
+      )}
+    </ViewShell>
   );
 }
 
 function SoundCard({ sound, plan }: { sound: Sound; plan: ExportPlan | null }) {
+  const t = useTranslations('media.sounds');
+  const tShared = useTranslations('media.shared');
   const project = useStore((s) => s.project)!;
   const update = (fn: (s: Sound) => void, key?: string) => updateSound(sound.id, fn, key);
   const issues = plan?.issues.filter((i) => i.soundId === sound.id) ?? [];
   const key = soundKey(project, sound);
   return (
-    <div className="card">
-      <div className="card-header">
-        <div className="card-title-group">
-          <div className="row">
-            <h3 className="mono">{sound.soundId}</h3>
-            {sound.jukebox && <span className="badge accent">Jukebox Song</span>}
-          </div>
+    <Card size="sm" className="gap-0 py-0">
+      <div className="flex items-center gap-2 border-b border-border px-4 py-2.5">
+        <div className="flex min-w-0 flex-1 items-center gap-2">
+          <h3 className="truncate font-mono text-sm font-medium">{sound.soundId}</h3>
+          {sound.jukebox && <Badge>{t('jukeboxSong')}</Badge>}
         </div>
-        <span className="mono small faint">{key}</span>
-        <CopyButton text={key} label="ID kopieren" />
-        <button className="btn ghost icon small danger" title="Sound löschen" onClick={() => deleteSound(sound.id)}>
-          <Trash2 size={15} />
-        </button>
+        <span className="truncate font-mono text-xs text-muted-foreground">{key}</span>
+        <CopyButton text={key} label={tShared('copyId')} />
+        <IconAction label={t('delete')} destructive onClick={() => deleteSound(sound.id)}>
+          <Trash2 />
+        </IconAction>
       </div>
-      <div className="card-body col" style={{ gap: 14 }}>
-        <div className="field-grid">
-          <label className="field">
-            <span className="field-label" title="Name des Sounds">ID</span>
-            <input
-              className="input mono"
+      <CardContent className="flex flex-col gap-3.5 py-4">
+        <FieldGrid>
+          <FormField label="ID" help={t('idHelp')}>
+            <Input
+              className="font-mono"
               value={sound.soundId}
               onChange={(e) => update((s) => (s.soundId = e.target.value.toLowerCase().replace(/[^a-z0-9_.-]/g, '_')), 'id')}
             />
-          </label>
-          <label className="field">
-            <span className="field-label" title="Lautstärke, Standard 1">Volume</span>
+          </FormField>
+          <FormField label="Volume" help={t('volumeHelp')}>
             <NumberInput value={sound.volume} min={0} onChange={(v) => update((s) => (s.volume = v ?? null), 'volume')} />
-          </label>
-          <label className="field">
-            <span className="field-label" title="Tonhöhe, Standard 1">Pitch</span>
+          </FormField>
+          <FormField label="Pitch" help={t('pitchHelp')}>
             <NumberInput value={sound.pitch} min={0} onChange={(v) => update((s) => (s.pitch = v ?? null), 'pitch')} />
-          </label>
-          <label className="field">
-            <span className="field-label" title="Reichweite in Blöcken, Standard 16">Attenuation Distance</span>
+          </FormField>
+          <FormField label="Attenuation Distance" help={t('distanceHelp')}>
             <NumberInput value={sound.distance} integer min={1} onChange={(v) => update((s) => (s.distance = v ?? null), 'distance')} />
-          </label>
-        </div>
+          </FormField>
+        </FieldGrid>
 
-        <div className="col" style={{ gap: 6 }}>
-          <span className="field-label">Sounds {sound.files.length > 1 && <span className="faint">(eine Datei wird zufällig abgespielt)</span>}</span>
+        <div className="flex flex-col gap-1.5">
+          <span className="text-xs font-medium text-muted-foreground">
+            {t('files')} {sound.files.length > 1 && <span className="font-normal">{t('filesRandom')}</span>}
+          </span>
           {sound.files.map((file, i) => (
-            <div key={i} className="sound-file">
-              <audio controls preload="none" src={file.dataUrl} />
-              <span className="mono small grow" style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }} title={file.name}>
+            <div key={i} className="flex items-center gap-3 rounded-lg border border-border bg-muted/50 px-2 py-1.5">
+              <audio controls preload="none" src={file.dataUrl} className="h-8 w-[260px] flex-none" />
+              <span className="min-w-0 flex-1 truncate font-mono text-xs" title={file.name}>
                 {soundFilePath(sound, i)}.ogg
               </span>
-              <span className="faint small">{formatSize(file.size)}</span>
-              <button
-                className="btn ghost icon small danger"
-                title="Datei entfernen"
-                onClick={() => update((s) => (s.files = s.files.filter((_, j) => j !== i)))}
-              >
-                <Trash2 size={14} />
-              </button>
+              <span className="text-xs text-muted-foreground">{formatSize(file.size)}</span>
+              <IconAction label={t('removeFile')} destructive onClick={() => update((s) => (s.files = s.files.filter((_, j) => j !== i)))}>
+                <Trash2 />
+              </IconAction>
             </div>
           ))}
           <div>
-            <button
-              className="btn small"
+            <Button
+              variant="outline"
+              size="sm"
               onClick={async () => {
                 const entries = await readSoundFiles(await pickFiles(ACCEPT));
                 if (entries.length) update((s) => (s.files = [...s.files, ...entries.map((e) => e.file)]));
               }}
             >
-              <Plus size={14} /> Datei hinzufügen
-            </button>
+              <Plus /> {t('addFile')}
+            </Button>
           </div>
         </div>
 
-        <div className="row wrap" style={{ gap: 18 }}>
-          <label className="row small" style={{ gap: 6, cursor: 'pointer' }}>
-            <input type="checkbox" className="check" checked={sound.stream} onChange={(e) => update((s) => (s.stream = e.target.checked))} />
-            Stream <span className="faint">(für lange Musik)</span>
-          </label>
-          <label className="row small" style={{ gap: 6, cursor: 'pointer' }}>
-            <input
-              type="checkbox"
-              className="check"
-              checked={!!sound.jukebox}
-              onChange={(e) =>
-                update((s) => {
-                  s.jukebox = e.target.checked ? { duration: '', description: '', comparatorOutput: null, range: null } : null;
-                  if (e.target.checked) s.stream = true;
-                })
-              }
-            />
-            Jukebox Playable <span className="faint">(als Musik-CD registrieren)</span>
-          </label>
+        <div className="flex flex-wrap gap-x-5 gap-y-2">
+          <CheckRow checked={sound.stream} onChange={(checked) => update((s) => (s.stream = checked))} label="Stream" hint={t('streamHint')} />
+          <CheckRow
+            checked={!!sound.jukebox}
+            onChange={(checked) =>
+              update((s) => {
+                s.jukebox = checked ? { duration: '', description: '', comparatorOutput: null, range: null } : null;
+                if (checked) s.stream = true;
+              })
+            }
+            label="Jukebox Playable"
+            hint={t('jukeboxHint')}
+          />
         </div>
 
         {sound.jukebox && (
-          <div className="subsection" style={{ padding: 12 }}>
-            <div className="field-grid">
-              <label className="field">
-                <span className="field-label" title="Länge des Liedes">Duration</span>
-                <input
-                  className={`input mono ${sound.jukebox.duration.trim() ? '' : 'invalid'}`}
+          <div className="flex flex-col gap-2.5 rounded-lg border border-border p-3">
+            <FieldGrid>
+              <FormField label="Duration" help={t('durationHelp')}>
+                <Input
+                  className="font-mono"
+                  aria-invalid={!sound.jukebox.duration.trim()}
                   value={sound.jukebox.duration}
-                  placeholder="z.B. 2m 30s"
+                  placeholder={t('durationPlaceholder')}
                   onChange={(e) => update((s) => (s.jukebox!.duration = e.target.value), 'duration')}
                 />
-              </label>
-              <label className="field wide">
-                <span className="field-label" title="MiniMessage, z.B. Interpret – Titel">Description</span>
-                <input
-                  className="input"
-                  value={sound.jukebox.description}
-                  onChange={(e) => update((s) => (s.jukebox!.description = e.target.value), 'description')}
-                />
-              </label>
-              <label className="field">
-                <span className="field-label" title="Komparator-Signal 0–15">Comparator Output</span>
+              </FormField>
+              <FormField label="Description" help={t('descriptionHelp')} wide>
+                <Input value={sound.jukebox.description} onChange={(e) => update((s) => (s.jukebox!.description = e.target.value), 'description')} />
+              </FormField>
+              <FormField label="Comparator Output" help={t('comparatorHelp')}>
                 <NumberInput
                   value={sound.jukebox.comparatorOutput}
                   integer
@@ -192,28 +179,28 @@ function SoundCard({ sound, plan }: { sound: Sound; plan: ExportPlan | null }) {
                   max={15}
                   onChange={(v) => update((s) => (s.jukebox!.comparatorOutput = v ?? null), 'comparator')}
                 />
-              </label>
-              <label className="field">
-                <span className="field-label" title="Hörweite in Blöcken (optional)">Range</span>
+              </FormField>
+              <FormField label="Range" help={t('rangeHelp')}>
                 <NumberInput value={sound.jukebox.range} integer min={1} onChange={(v) => update((s) => (s.jukebox!.range = v ?? null), 'range')} />
-              </label>
-            </div>
-            <div className="row" style={{ marginTop: 10 }}>
-              <button
-                className="btn small"
+              </FormField>
+            </FieldGrid>
+            <div className="flex flex-wrap items-center gap-2">
+              <Button
+                variant="outline"
+                size="sm"
                 onClick={() => {
                   const id = addMusicDiscItem(sound);
-                  if (id) useStore.getState().toast('success', 'Musik-CD-Item angelegt – Modell oder Textur kannst du noch hinzufügen.');
+                  if (id) useStore.getState().toast('success', t('discCreated'));
                 }}
               >
-                <Disc3 size={14} /> Musik-CD-Item anlegen
-              </button>
-              <span className="faint small">Ein neues Item mit der Component „Jukebox Playable“ für diesen Song.</span>
+                <Disc3 /> {t('createDisc')}
+              </Button>
+              <span className="text-xs text-muted-foreground">{t('createDiscHint')}</span>
             </div>
           </div>
         )}
         <IssueList issues={issues} />
-      </div>
-    </div>
+      </CardContent>
+    </Card>
   );
 }
