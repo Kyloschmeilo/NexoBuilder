@@ -11,7 +11,7 @@ const fs = require('node:fs');
 const fsp = fs.promises;
 const os = require('node:os');
 const path = require('node:path');
-const { errorCode, LOCKED_CODES, openPath, writeFileAtomic } = require('./fileHelpers.cjs');
+const { errorCode, LOCKED_CODES, openPath, TEMP_SUFFIX, writeFileAtomic } = require('./fileHelpers.cjs');
 const { t } = require('./i18n.cjs');
 const { handle, send } = require('./ipc.cjs');
 const { testHooks } = require('./testHooks.cjs');
@@ -267,7 +267,7 @@ async function watch(sender, folder) {
   }
   try {
     const watcher = fs.watch(dir, { recursive: true }, (_event, filename) => {
-      if (filename?.endsWith('.tmp')) return;
+      if (filename?.endsWith(TEMP_SUFFIX)) return;
       clearTimeout(entry.timer);
       entry.timer = setTimeout(() => send(entry.sender, 'share:changed', dir), WATCH_DEBOUNCE_MS);
     });

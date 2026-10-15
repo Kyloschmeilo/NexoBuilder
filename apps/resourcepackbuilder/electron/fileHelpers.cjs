@@ -8,6 +8,8 @@ const path = require('node:path');
 /** Error codes of a target that is briefly locked on Windows (cloud service, virus scanner, another reader). */
 const LOCKED_CODES = new Set(['EPERM', 'EBUSY', 'EACCES']);
 const RENAME_ATTEMPTS = 7;
+/** Suffix of the temporary files written by writeFileAtomic; watchers ignore files ending in it. */
+const TEMP_SUFFIX = '.tmp';
 
 /** @param {number} ms */
 const delay = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
@@ -26,7 +28,7 @@ function errorCode(err) {
  */
 async function writeFileAtomic(target, data) {
   await fsp.mkdir(path.dirname(target), { recursive: true });
-  const tempPath = path.join(path.dirname(target), `.${path.basename(target)}.${crypto.randomBytes(4).toString('hex')}.tempPath`);
+  const tempPath = path.join(path.dirname(target), `.${path.basename(target)}.${crypto.randomBytes(4).toString('hex')}${TEMP_SUFFIX}`);
   await fsp.writeFile(tempPath, data);
   for (let attempt = 1; ; attempt++) {
     try {
@@ -52,4 +54,4 @@ async function openPath(dir) {
   if (error) throw new Error(error);
 }
 
-module.exports = { LOCKED_CODES, errorCode, writeFileAtomic, openPath };
+module.exports = { LOCKED_CODES, TEMP_SUFFIX, errorCode, writeFileAtomic, openPath };
