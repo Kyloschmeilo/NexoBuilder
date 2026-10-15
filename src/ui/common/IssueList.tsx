@@ -35,7 +35,7 @@ export function IssueList({ issues, onOpenItem, onOpenGlyphs, empty, hideInfo, c
           )}
           {onOpenGlyphs && canOpen(issue) && 'glyphId' in issue && issue.glyphId && (
             <button className="link" onClick={onOpenGlyphs}>
-              Zu den Glyphen
+              Glyphs öffnen
             </button>
           )}
         </div>

@@ -21,6 +21,7 @@ const TOP_LEVEL_ORDER = [
   'color',
   'unbreakable',
   'excludeFromInventory',
+  'excludeFromCommands',
   'Pack',
   'Components',
   'AttributeModifiers',
@@ -43,8 +44,14 @@ export interface BuildContext {
   modelKey: string | null;
   /** Equipment-Asset für Rüstungen (namespace:set) */
   armorAssetId?: string | null;
+  /** Aus den Layern des Sets (Elytra → CHEST, Tier-Rüstung → BODY, Sattel → SADDLE) */
+  armor?: { slot: string | null; entities: string[]; glider: boolean } | null;
   /** Modell-Schlüssel der Varianten (z.B. pulling_models → [...]) */
   variantKeys?: Record<string, string | string[] | undefined>;
+  /** Von NexoBuilder erzeugtes ItemModel (Inventar-Symbol, verbindbare Möbel) */
+  itemModel?: string | null;
+  /** Werte, die zusätzliche Modelle in der Konfiguration brauchen (z.B. placements.wall.item_model) */
+  extraConfig?: Array<{ path: string[]; value: unknown; ifMissing?: boolean }>;
 }
 
 export interface BuildResult {
@@ -95,19 +102,36 @@ export function buildItemConfig(ctx: BuildContext): BuildResult {
       }
     }
   }
+  if (ctx.itemModel) {
+    const components = isPlainObject(resolved.Components) ? resolved.Components : {};
+    resolved.Components = { ...components, item_model: ctx.itemModel };
+  }
+  for (const extra of ctx.extraConfig ?? []) {
+    if (extra.ifMissing && getPath(resolved as ConfigObject, extra.path) !== undefined) continue;
+    setPath(resolved as ConfigObject, extra.path, deepClone(extra.value) as ConfigValue);
+  }
   if (ctx.armorAssetId) {
     const components = isPlainObject(resolved.Components) ? resolved.Components : {};
     const equippable = isPlainObject(components.equippable) ? components.equippable : {};
+    const slot = equippable.slot ?? slotForMaterial(material) ?? ctx.armor?.slot ?? 'HEAD';
+    const entities = ctx.armor?.entities ?? [];
+    const withEntities =
+      (slot === 'BODY' || slot === 'SADDLE') && entities.length > 0 && equippable.allowed_entity_types === undefined
+        ? { allowed_entity_types: entities }
+        : {};
     resolved.Components = {
       ...components,
       equippable: {
-        slot: equippable.slot ?? slotForMaterial(material) ?? 'HEAD',
+        slot,
         asset_id: equippable.asset_id ?? ctx.armorAssetId,
+        ...withEntities,
         ...equippable,
       },
     };
+    // Elytra-Flügel ohne Material ELYTRA brauchen die Gleiter-Komponente, sonst kann man nicht fliegen
+    const comps = resolved.Components as Record<string, unknown>;
+    if (ctx.armor?.glider && material.toUpperCase() !== 'ELYTRA' && comps.glider === undefined) comps.glider = true;
   }
-
   for (const key of TOP_LEVEL_ORDER) {
     if (resolved[key] !== undefined && result[key] === undefined) result[key] = resolved[key];
   }
@@ -137,7 +161,8 @@ export function slotForMaterial(material: string): string | null {
   if (m.endsWith('_CHESTPLATE') || m === 'ELYTRA') return 'CHEST';
   if (m.endsWith('_LEGGINGS')) return 'LEGS';
   if (m.endsWith('_BOOTS')) return 'FEET';
-  if (m.endsWith('_HORSE_ARMOR') || m === 'WOLF_ARMOR') return 'BODY';
+  if (m.endsWith('_HORSE_ARMOR') || m === 'WOLF_ARMOR' || m.endsWith('_NAUTILUS_ARMOR') || m.endsWith('_HARNESS')) return 'BODY';
+  if (m === 'SADDLE') return 'SADDLE';
   return null;
 }
 

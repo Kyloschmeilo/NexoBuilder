@@ -43,13 +43,13 @@ export interface RecipeTypeInfo {
 }
 
 export const RECIPE_TYPES: RecipeTypeInfo[] = [
-  { type: 'shaped', label: 'Werkbank (mit Form)', description: 'Zutaten müssen in einem bestimmten Muster liegen.', kind: 'shaped' },
-  { type: 'shapeless', label: 'Werkbank (ohne Form)', description: 'Zutaten können beliebig im Raster liegen.', kind: 'shapeless' },
-  { type: 'furnace', label: 'Ofen', description: 'Schmelzen im normalen Ofen.', kind: 'cooking', defaultCookingTime: 200 },
-  { type: 'blasting', label: 'Schmelzofen', description: 'Schmelzen im Schmelzofen.', kind: 'cooking', defaultCookingTime: 100 },
-  { type: 'smoking', label: 'Räucherofen', description: 'Garen im Räucherofen.', kind: 'cooking', defaultCookingTime: 100 },
-  { type: 'campfire', label: 'Lagerfeuer', description: 'Garen auf dem Lagerfeuer.', kind: 'cooking', defaultCookingTime: 600 },
-  { type: 'stonecutting', label: 'Steinsäge', description: 'Eine Zutat wird in der Steinsäge verarbeitet.', kind: 'stonecutting' },
+  { type: 'shaped', label: 'Shaped', description: 'Werkbank: Zutaten müssen in einem bestimmten Muster liegen.', kind: 'shaped' },
+  { type: 'shapeless', label: 'Shapeless', description: 'Werkbank: Zutaten können beliebig im Raster liegen.', kind: 'shapeless' },
+  { type: 'furnace', label: 'Furnace', description: 'Schmelzen im normalen Ofen.', kind: 'cooking', defaultCookingTime: 200 },
+  { type: 'blasting', label: 'Blasting', description: 'Schmelzen im Schmelzofen.', kind: 'cooking', defaultCookingTime: 100 },
+  { type: 'smoking', label: 'Smoking', description: 'Garen im Räucherofen.', kind: 'cooking', defaultCookingTime: 100 },
+  { type: 'campfire', label: 'Campfire', description: 'Garen auf dem Lagerfeuer.', kind: 'cooking', defaultCookingTime: 600 },
+  { type: 'stonecutting', label: 'Stonecutting', description: 'Eine Zutat wird in der Steinsäge verarbeitet.', kind: 'stonecutting' },
 ];
 
 export function getRecipeTypeInfo(type: RecipeType): RecipeTypeInfo {

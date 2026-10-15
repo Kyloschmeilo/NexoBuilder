@@ -8,6 +8,8 @@ import { promptNewFolder, Sidebar } from './ui/layout/Sidebar';
 import { RightPanel } from './ui/layout/RightPanel';
 import { FolderView } from './ui/layout/FolderView';
 import { GlyphsView } from './ui/glyphs/GlyphsView';
+import { SoundsView } from './ui/media/SoundsView';
+import { PaintingsView } from './ui/media/PaintingsView';
 import { TestServerView } from './ui/testserver/TestServerView';
 import { ProjectsDialog, Welcome } from './ui/layout/Welcome';
 import { ItemEditor } from './ui/item/ItemEditor';
@@ -85,7 +87,7 @@ function useWindowDrop() {
       if (!e.dataTransfer?.types.includes('Files')) return;
       e.preventDefault();
       const { project, dialog, selection, openDialog, toast } = useStore.getState();
-      if (!project || dialog || selection?.kind === 'glyphs' || selection?.kind === 'testserver') return;
+      if (!project || dialog || selection?.kind === 'glyphs' || selection?.kind === 'sounds' || selection?.kind === 'paintings' || selection?.kind === 'testserver') return;
       const folderId =
         selection?.kind === 'folder'
           ? selection.id
@@ -118,6 +120,10 @@ function MainArea({ plan }: { plan: ExportPlan | null }) {
     content = <FolderView folderId={selection.id} plan={plan} />;
   } else if (selection?.kind === 'glyphs') {
     content = <GlyphsView plan={plan} />;
+  } else if (selection?.kind === 'sounds') {
+    content = <SoundsView plan={plan} />;
+  } else if (selection?.kind === 'paintings') {
+    content = <PaintingsView plan={plan} />;
   } else if (selection?.kind === 'testserver') {
     content = <TestServerView plan={plan} />;
   } else {

@@ -7,7 +7,10 @@ import type { Option } from './options';
 interface BaseField {
   /** Schlüssel innerhalb des übergeordneten Objekts. "*" = alle übrigen Schlüssel (nur bei map) */
   key: string;
+  /** Deutsche Beschreibung (als Tooltip) – angezeigt wird der englische Originalname, siehe fieldName() */
   label: string;
+  /** Englischer Originalname, falls er sich nicht aus dem Schlüssel ergibt */
+  name?: string;
   help?: string;
   /** Feld nur anzeigen, wenn ein Geschwisterfeld einen dieser Werte hat */
   showIf?: { key: string; values: Array<string | boolean | number> };
@@ -147,4 +150,25 @@ export function validateTextFormat(format: TextField['format'], value: string): 
     default:
       return null;
   }
+}
+
+const ACRONYMS: Record<string, string> = { id: 'ID', gui: 'GUI', uuid: 'UUID', xp: 'XP', ui: 'UI', nbt: 'NBT' };
+
+/** Englischer Anzeigename aus einem YAML-Schlüssel: max_stack_size → Max Stack Size, layer1 → Layer 1 */
+export function englishName(key: string): string {
+  return key
+    .replace(/^\$/, '')
+    .replace(/([a-z0-9])([A-Z])/g, '$1_$2')
+    .replace(/([a-zA-Z])(\d)/g, '$1_$2')
+    .split(/[_\s.-]+/)
+    .filter(Boolean)
+    .map((w) => ACRONYMS[w.toLowerCase()] ?? w.charAt(0).toUpperCase() + w.slice(1).toLowerCase())
+    .join(' ');
+}
+
+/** Name eines Feldes, wie er in der Nexo-Doku steht (englisch) */
+export function fieldName(field: { key: string; label: string; name?: string }): string {
+  if (field.name) return field.name;
+  if (field.key && field.key !== '*') return englishName(field.key);
+  return field.label;
 }

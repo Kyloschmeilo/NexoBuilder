@@ -9,6 +9,8 @@
 import type { Recipe } from './nexo/recipes';
 import type { VariantSlot } from './nexo/variants';
 import type { Glyph } from './nexo/glyphs';
+import type { Sound } from './nexo/sounds';
+import type { Painting } from './nexo/paintings';
 
 export type DataUrl = string;
 
@@ -174,6 +176,10 @@ export interface Project {
   rootFolderIds: string[];
   /** Glyphen (plugins/Nexo/glyphs) */
   glyphs: Glyph[];
+  /** Eigene Sounds (plugins/Nexo/sounds.yml + OGG im Pack) */
+  sounds: Sound[];
+  /** Eigene Gemälde (plugins/Nexo/paintings.yml + Textur im Pack) */
+  paintings: Painting[];
   createdAt: number;
   updatedAt: number;
 }

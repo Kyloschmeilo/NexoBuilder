@@ -11,6 +11,8 @@ import {
   FolderInput,
   FolderOpen,
   FolderPlus,
+  Frame,
+  Music,
   Pencil,
   Plus,
   Search,
@@ -168,7 +170,7 @@ export function Sidebar({ plan }: { plan: ExportPlan | null }) {
           ))
         )}
       </div>
-      <GlyphsEntry plan={plan} />
+      <ResourceEntries plan={plan} />
       {isTestServerAvailable() && <TestServerEntry />}
     </aside>
   );
@@ -197,26 +199,56 @@ function TestServerEntry() {
   );
 }
 
-function GlyphsEntry({ plan }: { plan: ExportPlan | null }) {
-  const count = useStore((s) => s.project?.glyphs?.length ?? 0);
-  const selected = useStore((s) => s.selection?.kind === 'glyphs');
-  const glyphIssues = plan?.issues.filter((i) => i.glyphId && i.level !== 'info') ?? [];
-  const state = glyphIssues.some((i) => i.level === 'error') ? 'error' : glyphIssues.length ? 'warning' : null;
+/** Projektweite Listen unter dem Baum: Glyphen, Sounds, Gemälde */
+function ResourceEntries({ plan }: { plan: ExportPlan | null }) {
+  const project = useStore((s) => s.project)!;
+  const selection = useStore((s) => s.selection);
+  const entries = [
+    {
+      kind: 'glyphs' as const,
+      label: 'Glyphs',
+      icon: <Smile size={16} />,
+      count: project.glyphs?.length ?? 0,
+      issueKey: 'glyphId' as const,
+      title: 'Glyphs: Emojis und GUI-Texturen für Chat, Lore und Titel',
+    },
+    {
+      kind: 'sounds' as const,
+      label: 'Sounds',
+      icon: <Music size={16} />,
+      count: project.sounds?.length ?? 0,
+      issueKey: 'soundId' as const,
+      title: 'Sounds: eigene Geräusche und Jukebox Songs (Musik-CDs)',
+    },
+    {
+      kind: 'paintings' as const,
+      label: 'Paintings',
+      icon: <Frame size={16} />,
+      count: project.paintings?.length ?? 0,
+      issueKey: 'paintingId' as const,
+      title: 'Paintings: eigene Gemälde zum Aufhängen',
+    },
+  ];
   return (
     <div style={{ borderTop: '1px solid var(--border)', padding: '6px 6px 8px' }}>
-      <div
-        className={`tree-row ${selected ? 'selected' : ''}`}
-        style={{ paddingLeft: 8 }}
-        onClick={() => useStore.getState().select({ kind: 'glyphs' })}
-        title="Glyphen (Emojis, GUI-Texturen) für Chat, Lore und Titel"
-      >
-        <span className="tree-icon">
-          <Smile size={16} />
-        </span>
-        <span className="tree-label">Glyphen</span>
-        {state && <span className={`status-dot ${state}`} />}
-        <span className="tree-badge">{count}</span>
-      </div>
+      {entries.map((entry) => {
+        const relevant = plan?.issues.filter((i) => i[entry.issueKey] && i.level !== 'info') ?? [];
+        const state = relevant.some((i) => i.level === 'error') ? 'error' : relevant.length ? 'warning' : null;
+        return (
+          <div
+            key={entry.kind}
+            className={`tree-row ${selection?.kind === entry.kind ? 'selected' : ''}`}
+            style={{ paddingLeft: 8 }}
+            onClick={() => useStore.getState().select({ kind: entry.kind })}
+            title={entry.title}
+          >
+            <span className="tree-icon">{entry.icon}</span>
+            <span className="tree-label">{entry.label}</span>
+            {state && <span className={`status-dot ${state}`} />}
+            <span className="tree-badge">{entry.count}</span>
+          </div>
+        );
+      })}
     </div>
   );
 }

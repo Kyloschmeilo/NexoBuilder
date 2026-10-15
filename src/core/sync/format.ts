@@ -9,12 +9,16 @@
  *   folders/<id>.json     ein Ordner
  *   items/<id>.json       ein Item (inkl. Modell und Texturen)
  *   glyphs/<id>.json      eine Glyphe
+ *   sounds/<id>.json      ein Sound (inkl. OGG-Dateien)
+ *   paintings/<id>.json   ein Gemälde (inkl. Bild)
  *
  * Jede Datei ist ein „Umschlag“ mit Versionsnummer (rev) und Absender. Gelöschte Einträge bleiben als
  * kleiner Grabstein (deleted: true) liegen, damit das Löschen bei allen ankommt.
  */
 import type { Folder, Item, Project, ProjectSettings } from '../types';
 import type { Glyph } from '../nexo/glyphs';
+import type { Sound } from '../nexo/sounds';
+import type { Painting } from '../nexo/paintings';
 import { isPlainObject } from '../util';
 
 export const SHARE_FORMAT = 'nexobuilder-share';
@@ -22,14 +26,29 @@ export const SHARE_VERSION = 1;
 export const PROJECT_FILE = 'project.json';
 export const README_FILE = 'LIESMICH.txt';
 
-export type EntityKind = 'project' | 'folder' | 'item' | 'glyph';
+export type EntityKind = 'project' | 'folder' | 'item' | ListKind;
 
-const DIRS = { folder: 'folders', item: 'items', glyph: 'glyphs' } as const;
-const KIND_BY_DIR: Record<string, EntityKind> = { folders: 'folder', items: 'item', glyphs: 'glyph' };
+/** Projekt-Listen, deren Einträge eine eigene Datei bekommen (Reihenfolge steht in project.json) */
+export type ListKind = 'glyph' | 'sound' | 'painting';
+type ListEntry = Glyph | Sound | Painting;
+
+export const LIST_KINDS: Record<ListKind, { field: 'glyphs' | 'sounds' | 'paintings'; order: 'glyphOrder' | 'soundOrder' | 'paintingOrder'; label: string }> = {
+  glyph: { field: 'glyphs', order: 'glyphOrder', label: 'glyphId' },
+  sound: { field: 'sounds', order: 'soundOrder', label: 'soundId' },
+  painting: { field: 'paintings', order: 'paintingOrder', label: 'paintingId' },
+};
+export const LIST_KIND_NAMES = Object.keys(LIST_KINDS) as ListKind[];
+
+export function listOf(project: Project, kind: ListKind): ListEntry[] {
+  return (project[LIST_KINDS[kind].field] ?? []) as ListEntry[];
+}
+
+const DIRS = { folder: 'folders', item: 'items', glyph: 'glyphs', sound: 'sounds', painting: 'paintings' } as const;
+const KIND_BY_DIR: Record<string, EntityKind> = { folders: 'folder', items: 'item', glyphs: 'glyph', sounds: 'sound', paintings: 'painting' };
 
 /** Erlaubte IDs für Dateinamen (alles, was NexoBuilder selbst erzeugt). */
 export const ENTITY_ID_PATTERN = /^[A-Za-z0-9_-]{1,64}$/;
-const ENTITY_PATH_PATTERN = /^(folders|items|glyphs)\/([A-Za-z0-9_-]{1,64})\.json$/;
+const ENTITY_PATH_PATTERN = /^(folders|items|glyphs|sounds|paintings)\/([A-Za-z0-9_-]{1,64})\.json$/;
 
 /** Projektweite Daten ohne Items/Ordner/Glyphen (und ohne updatedAt, das sich bei jeder Änderung ändert). */
 export interface ProjectMeta {
@@ -40,10 +59,13 @@ export interface ProjectMeta {
   settings: ProjectSettings;
   rootFolderIds: string[];
   glyphOrder: string[];
+  /** Ab 1.4 – ältere Versionen kennen keine Sounds/Gemälde */
+  soundOrder?: string[];
+  paintingOrder?: string[];
   createdAt: number;
 }
 
-export type EntityData = ProjectMeta | Folder | Item | Glyph;
+export type EntityData = ProjectMeta | Folder | Item | ListEntry;
 
 export interface Envelope {
   format: typeof SHARE_FORMAT;
@@ -95,6 +117,8 @@ export function projectMeta(project: Project): ProjectMeta {
     settings: project.settings,
     rootFolderIds: project.rootFolderIds,
     glyphOrder: project.glyphs.map((g) => g.id),
+    soundOrder: (project.sounds ?? []).map((g) => g.id),
+    paintingOrder: (project.paintings ?? []).map((g) => g.id),
     createdAt: project.createdAt,
   };
 }
@@ -109,8 +133,8 @@ export function localEntity(project: Project, key: string): EntityData | undefin
       return project.folders[id];
     case 'item':
       return project.items[id];
-    case 'glyph':
-      return project.glyphs.find((g) => g.id === id);
+    default:
+      return listOf(project, kind).find((g) => g.id === id);
   }
 }
 
@@ -119,7 +143,9 @@ export function entityKeys(project: Project): string[] {
   const keys = ['project'];
   for (const id of Object.keys(project.folders)) if (ENTITY_ID_PATTERN.test(id)) keys.push(entityKey('folder', id));
   for (const id of Object.keys(project.items)) if (ENTITY_ID_PATTERN.test(id)) keys.push(entityKey('item', id));
-  for (const glyph of project.glyphs) if (ENTITY_ID_PATTERN.test(glyph.id)) keys.push(entityKey('glyph', glyph.id));
+  for (const kind of LIST_KIND_NAMES) {
+    for (const entry of listOf(project, kind)) if (ENTITY_ID_PATTERN.test(entry.id)) keys.push(entityKey(kind, entry.id));
+  }
   return keys;
 }
 
@@ -142,9 +168,12 @@ export function changedEntityKeys(prev: Project, next: Project): string[] {
     prev.settings !== next.settings ||
     prev.createdAt !== next.createdAt ||
     !sameIds(prev.rootFolderIds, next.rootFolderIds) ||
-    !sameIds(
-      prev.glyphs.map((g) => g.id),
-      next.glyphs.map((g) => g.id),
+    LIST_KIND_NAMES.some(
+      (kind) =>
+        !sameIds(
+          listOf(prev, kind).map((g) => g.id),
+          listOf(next, kind).map((g) => g.id),
+        ),
     )
   ) {
     keys.push('project');
@@ -159,11 +188,14 @@ export function changedEntityKeys(prev: Project, next: Project): string[] {
       if (prev.items[id] !== next.items[id]) add(entityKey('item', id), id);
     }
   }
-  if (prev.glyphs !== next.glyphs) {
-    const before = new Map(prev.glyphs.map((g) => [g.id, g]));
-    const after = new Map(next.glyphs.map((g) => [g.id, g]));
+  for (const kind of LIST_KIND_NAMES) {
+    const a = listOf(prev, kind);
+    const b = listOf(next, kind);
+    if (a === b) continue;
+    const before = new Map(a.map((g) => [g.id, g]));
+    const after = new Map(b.map((g) => [g.id, g]));
     for (const id of new Set([...before.keys(), ...after.keys()])) {
-      if (before.get(id) !== after.get(id)) add(entityKey('glyph', id), id);
+      if (before.get(id) !== after.get(id)) add(entityKey(kind, id), id);
     }
   }
   return keys;
@@ -234,6 +266,10 @@ function isValidData(kind: EntityKind, id: string, data: Record<string, unknown>
       return data.id === id && typeof data.nexoId === 'string' && typeof data.folderId === 'string' && isPlainObject(data.config);
     case 'glyph':
       return data.id === id && typeof data.glyphId === 'string';
+    case 'sound':
+      return data.id === id && typeof data.soundId === 'string' && Array.isArray(data.files);
+    case 'painting':
+      return data.id === id && typeof data.paintingId === 'string';
   }
 }
 

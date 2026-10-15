@@ -29,16 +29,28 @@ und exportierst alles als ZIP, das du direkt in `plugins/Nexo/` entpackst.
   - Attribute & Verzauberungen
   - Komponenten: Essen, Verbrauchbar, Werkzeug, Waffe, Ausrüstbar, Gleiter, Haltbarkeit, Stapelgröße, Cooldown,
     Todesschutz, Schallplatte, Tooltip, Reichweite, Brennstoff … (mit Versionshinweisen)
-  - Mechaniken: Möbel (Hitbox, Sitze, Betten, Licht, Türen, Speicher, Drops …), eigene Blöcke
-    (NoteBlock/StringBlock/ChorusBlock), Rucksack, Befehle, Custom-Aktionen, Rüstungs-Effekte, Ernten, Schmelzen …
-  - Rüstungs-Texturen (getragen) → erzeugt Equipment-Modelle im Pack
+  - Mechanics: Furniture (Hitbox, Seats, Beds, Lights, Door, Storage, Drops, States, Placements, Connectable,
+    Text Entities …), Custom Block (NoteBlock/StringBlock/ChorusBlock, Directional, Log Strip, Sapling, Stackable),
+    Backpack, Commands, Custom Mechanic, Armor Effects, Trident, Repair, Harvesting, Smelting …
+  - CustomArmor (getragen): Spieler-Rüstung, Elytra, Wolf/Horse/Llama/Nautilus Armor, Harness und Saddles
+    → erzeugt Equipment-Modelle im Pack und setzt Equippable automatisch
   - Für alles andere: zusätzliches YAML pro Item
+  - Alle Features heißen wie in der Nexo-/Minecraft-Doku (Components, Mechanics, Max Stack Size …),
+    die deutsche Erklärung steht daneben bzw. erscheint beim Darüberfahren
 - **Rezepte** – Werkbank (mit/ohne Form), Ofen, Schmelzofen, Räucherofen, Lagerfeuer und Steinsäge
   → `recipes/<typ>/<projekt>.yml`
-- **Varianten-Modelle** – Bogen/Armbrust (Spann-Stufen, geladen, Feuerwerk), Schild (blocken), Angel (ausgeworfen),
-  Beschädigungs-Stufen, gefärbt und kombinierte Modelle (`Pack.pulling_models`, `Pack.blocking_model` …)
-- **Glyphen** – Emojis und GUI-Texturen (PNG, animierte GIFs, Multi-Bitmap, Referenz-Glyphen) mit Chat-Vorschau
+- **Special Item Appearance** – Pulling/Charged/Firework (Bogen, Armbrust), Blocking (Schild), Cast (Angel),
+  Throwing (Dreizack), Damaged, Dyeable und Composite Models (`Pack.pulling_models`, `Pack.blocking_model` …)
+  sowie ein eigenes **GUI Model** (anderes Modell im Inventar)
+- **Furniture-Modelle** – Connectable (Straight/Left/Right/Inner/Outer), Placements (Floor/Wall/Roof), Lights
+  (eingeschaltet) und States – NexoBuilder schreibt die nötigen ItemModels selbst
+- **Shade & Ambient Occlusion** pro Modell ein- und ausschaltbar
+- **Glyphs** – Emojis und GUI-Texturen (PNG, animierte GIFs, Multi-Bitmap, Reference-Glyphs) mit Chat-Vorschau
   → `glyphs/<projekt>.yml`, verwendbar überall mit `<glyph:id>`
+- **Sounds** – OGG-Dateien mit Volume, Pitch, Stream; als **Jukebox Playable** auch Musik-CDs (Item per Klick)
+  → `sounds.yml` + `assets/<ns>/sounds/…`
+- **Paintings** – eigene (auch animierte) Gemälde inkl. Item zum Aufhängen → `paintings.yml` + `textures/painting/…`
+  (ab Minecraft 1.21.5; `sounds.yml`/`paintings.yml` ersetzen vorhandene Dateien auf dem Server)
 - **Prüfung vor dem Export** – doppelte IDs, ungültige Werte, Modelle außerhalb des erlaubten Bereichs,
   fehlende Texturen, Versionskonflikte usw.
 - **Export als ZIP**

@@ -10,6 +10,8 @@ export type Selection =
   | { kind: 'item'; id: string }
   | { kind: 'folder'; id: string }
   | { kind: 'glyphs' }
+  | { kind: 'sounds' }
+  | { kind: 'paintings' }
   | { kind: 'testserver' }
   | null;
 
@@ -176,7 +178,7 @@ function fixSelection() {
   const { selection, project } = useStore.getState();
   if (!selection || !project) return;
   const exists =
-    selection.kind === 'glyphs' || selection.kind === 'testserver' ? true : selection.kind === 'item' ? !!project.items[selection.id] : !!project.folders[selection.id];
+    selection.kind === 'glyphs' || selection.kind === 'sounds' || selection.kind === 'paintings' || selection.kind === 'testserver' ? true : selection.kind === 'item' ? !!project.items[selection.id] : !!project.folders[selection.id];
   if (!exists) useStore.setState({ selection: null });
 }
 

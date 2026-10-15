@@ -16,6 +16,7 @@ import { createDrafts } from '../importer';
 import { ModelPreview } from '../preview/ModelPreview';
 import { PropertiesPanel } from './PropertiesPanel';
 import { VariantsSection } from './VariantsSection';
+import { BlockModelsSection, FurnitureModelsSection } from './ModelSlots';
 
 const ITEM_PARENTS = [
   { value: 'minecraft:item/generated', label: '2D-Item (item/generated)' },
@@ -77,7 +78,7 @@ export function ModelTab({ item, plan }: { item: Item; plan: ExportPlan | null }
             />
           </div>
         </div>
-        <PropertiesPanel item={item} groups={['appearance']} title="Aussehen" emptyText="Keine Aussehens-Optionen." />
+        <PropertiesPanel item={item} groups={['appearance']} title="Pack & Appearance" emptyText="Noch keine Pack-Optionen (z.B. CustomArmor, Color)." />
       </div>
     );
   }
@@ -160,6 +161,7 @@ export function ModelTab({ item, plan }: { item: Item; plan: ExportPlan | null }
                   </select>
                 </label>
               )}
+              <ShadingOptions model={model} onChange={updateModel} />
               <div>
                 <div className="field-label" style={{ marginBottom: 6 }}>
                   Prüfung
@@ -218,8 +220,71 @@ export function ModelTab({ item, plan }: { item: Item; plan: ExportPlan | null }
       </div>
 
       <VariantsSection item={item} />
+      <FurnitureModelsSection item={item} />
+      <BlockModelsSection item={item} />
 
-      <PropertiesPanel item={item} groups={['appearance']} title="Aussehen" emptyText="Keine Aussehens-Optionen." />
+      <PropertiesPanel item={item} groups={['appearance']} title="Pack & Appearance" emptyText="Noch keine Pack-Optionen (z.B. CustomArmor, Color)." />
+    </div>
+  );
+}
+
+/** ambientocclusion (ganzes Modell) und shade (je Würfel) – wie in Blockbench */
+function ShadingOptions({ model, onChange }: { model: ImportedModel; onChange: (recipe: (m: ImportedModel) => void) => void }) {
+  const elements = model.json.elements ?? [];
+  const unshaded = elements.filter((el) => el.shade === false).length;
+  const shadeState = unshaded === 0 ? 'all' : unshaded === elements.length ? 'none' : 'some';
+  const usesOverride = elements.some((el) => el.shade_direction_override !== undefined);
+  return (
+    <div className="col" style={{ gap: 4 }}>
+      <label className="toggle-row">
+        <input
+          type="checkbox"
+          className="check"
+          checked={model.json.ambientocclusion !== false}
+          onChange={(e) =>
+            onChange((m) => {
+              if (e.target.checked) delete m.json.ambientocclusion;
+              else m.json.ambientocclusion = false;
+            })
+          }
+        />
+        <span>
+          Ambient Occlusion
+          <div className="tr-desc">Weiche Schatten in Ecken und Kanten (ambientocclusion). Aus für flache oder leuchtende Modelle.</div>
+        </span>
+      </label>
+      {elements.length > 0 && (
+        <label className="toggle-row">
+          <input
+            type="checkbox"
+            className="check"
+            ref={(el) => {
+              if (el) el.indeterminate = shadeState === 'some';
+            }}
+            checked={shadeState === 'all'}
+            disabled={usesOverride}
+            onChange={() =>
+              onChange((m) => {
+                const on = shadeState !== 'all';
+                for (const el of m.json.elements ?? []) {
+                  if (on) delete el.shade;
+                  else el.shade = false;
+                }
+              })
+            }
+          />
+          <span>
+            Shade
+            <div className="tr-desc">
+              {usesOverride
+                ? 'Das Modell nutzt shade_direction_override (aus Blockbench) – bitte dort ändern.'
+                : shadeState === 'some'
+                  ? `Richtungs-Schattierung der Würfel (shade) – bei ${unshaded} von ${elements.length} Würfeln aus.`
+                  : 'Richtungs-Schattierung der Würfel (shade). Aus = alle Seiten gleich hell.'}
+            </div>
+          </span>
+        </label>
+      )}
     </div>
   );
 }

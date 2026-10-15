@@ -30,6 +30,8 @@ export function createProject(name: string, namespace?: string, minecraftVersion
     items: {},
     rootFolderIds: [],
     glyphs: [],
+    sounds: [],
+    paintings: [],
     createdAt: now,
     updatedAt: now,
   };

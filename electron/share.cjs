@@ -3,7 +3,7 @@
  *
  * Die Oberfläche darf nur Ordner benutzen, die die Person selbst im Dialog gewählt hat
  * (gemerkt in <AppDaten>/shared-folders.json), und darin nur die Dateien eines geteilten
- * Projekts: project.json, LIESMICH.txt, folders/*.json, items/*.json, glyphs/*.json.
+ * Projekts: project.json, LIESMICH.txt, folders/*.json, items/*.json, glyphs/*.json, sounds/*.json, paintings/*.json.
  */
 const { app, BrowserWindow, dialog, ipcMain, shell } = require('electron');
 const fs = require('node:fs');
@@ -12,8 +12,8 @@ const os = require('node:os');
 const path = require('node:path');
 const crypto = require('node:crypto');
 
-const FILE_PATTERN = /^(project\.json|LIESMICH\.txt|(folders|items|glyphs)\/[A-Za-z0-9_-]{1,64}\.json)$/;
-const ENTITY_DIRS = ['folders', 'items', 'glyphs'];
+const FILE_PATTERN = /^(project\.json|LIESMICH\.txt|(folders|items|glyphs|sounds|paintings)\/[A-Za-z0-9_-]{1,64}\.json)$/;
+const ENTITY_DIRS = ['folders', 'items', 'glyphs', 'sounds', 'paintings'];
 const IGNORED_NAMES = new Set(['desktop.ini', 'Thumbs.db', '.DS_Store']);
 
 /* ------------------------------------------------------------------ freigegebene Ordner */

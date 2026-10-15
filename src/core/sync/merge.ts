@@ -7,8 +7,7 @@
  */
 import { produce, type Draft } from 'immer';
 import type { Folder, Item, Project } from '../types';
-import type { Glyph } from '../nexo/glyphs';
-import type { Envelope, ProjectMeta } from './format';
+import { LIST_KIND_NAMES, LIST_KINDS, type Envelope, type ListKind, type ProjectMeta } from './format';
 
 /** Ordner für Items, deren Ordner von jemand anderem gelöscht wurde, während sie angelegt wurden. */
 export const RECOVERY_FOLDER_ID = 'f_wiederhergestellt';
@@ -97,15 +96,19 @@ export function normalizeTree(draft: Draft<Project>): void {
     if (!sameList(folder.itemIds, nextItems)) folder.itemIds = nextItems;
   }
 
-  // Doppelte Glyphen (gleiche interne ID) entfernen
-  const glyphIds = draft.glyphs.map((g) => g.id);
-  if (new Set(glyphIds).size !== glyphIds.length) {
-    const seen = new Set<string>();
-    draft.glyphs = draft.glyphs.filter((g) => {
-      if (seen.has(g.id)) return false;
-      seen.add(g.id);
-      return true;
-    });
+  // Doppelte Glyphen, Sounds, Gemälde (gleiche interne ID) entfernen
+  for (const kind of LIST_KIND_NAMES) {
+    const field = LIST_KINDS[kind].field;
+    const list = (draft[field] ?? []) as Array<{ id: string }>;
+    const ids = list.map((g) => g.id);
+    if (new Set(ids).size !== ids.length) {
+      const seen = new Set<string>();
+      (draft as unknown as Record<string, unknown>)[field] = list.filter((g) => {
+        if (seen.has(g.id)) return false;
+        seen.add(g.id);
+        return true;
+      });
+    }
   }
 }
 
@@ -114,8 +117,12 @@ export function normalizeTree(draft: Draft<Project>): void {
  * dieselben Objekte (wichtig für Undo/Redo und die Änderungserkennung).
  */
 export function applyRemoteEntities(project: Project, envelopes: Envelope[]): Project {
-  let glyphOrder: string[] | null = null;
+  const orders: Partial<Record<ListKind, string[]>> = {};
   const overlaid = produce(project, (draft) => {
+    for (const kind of LIST_KIND_NAMES) {
+      const field = LIST_KINDS[kind].field;
+      if (!Array.isArray(draft[field])) (draft as unknown as Record<string, unknown>)[field] = [];
+    }
     for (const env of envelopes) {
       switch (env.kind) {
         case 'project': {
@@ -126,7 +133,10 @@ export function applyRemoteEntities(project: Project, envelopes: Envelope[]): Pr
           draft.settings = meta.settings as Draft<Project['settings']>;
           draft.rootFolderIds = [...meta.rootFolderIds];
           if (typeof meta.createdAt === 'number') draft.createdAt = meta.createdAt;
-          glyphOrder = meta.glyphOrder;
+          for (const kind of LIST_KIND_NAMES) {
+            const order = meta[LIST_KINDS[kind].order];
+            if (Array.isArray(order)) orders[kind] = order;
+          }
           break;
         }
         case 'folder':
@@ -137,12 +147,13 @@ export function applyRemoteEntities(project: Project, envelopes: Envelope[]): Pr
           if (env.deleted) delete draft.items[env.id];
           else draft.items[env.id] = env.data as Draft<Item>;
           break;
-        case 'glyph': {
-          const index = draft.glyphs.findIndex((g) => g.id === env.id);
+        default: {
+          const list = draft[LIST_KINDS[env.kind].field] as Array<{ id: string }>;
+          const index = list.findIndex((g) => g.id === env.id);
           if (env.deleted) {
-            if (index >= 0) draft.glyphs.splice(index, 1);
-          } else if (index >= 0) draft.glyphs[index] = env.data as Glyph;
-          else draft.glyphs.push(env.data as Glyph);
+            if (index >= 0) list.splice(index, 1);
+          } else if (index >= 0) list[index] = env.data as { id: string };
+          else list.push(env.data as { id: string });
           break;
         }
       }
@@ -150,12 +161,14 @@ export function applyRemoteEntities(project: Project, envelopes: Envelope[]): Pr
   });
   // Zweiter Durchgang: übernommene Objekte sind jetzt Teil des Projekts und dürfen angepasst werden
   return produce(overlaid, (draft) => {
-    if (glyphOrder) {
-      const order = new Map(glyphOrder.map((id, i) => [id, i]));
-      const sorted = [...draft.glyphs].sort(
-        (a, b) => (order.get(a.id) ?? Number.MAX_SAFE_INTEGER) - (order.get(b.id) ?? Number.MAX_SAFE_INTEGER),
-      );
-      if (sorted.some((g, i) => g.id !== draft.glyphs[i].id)) draft.glyphs = sorted;
+    for (const kind of LIST_KIND_NAMES) {
+      const wanted = orders[kind];
+      if (!wanted) continue;
+      const field = LIST_KINDS[kind].field;
+      const list = draft[field] as Array<{ id: string }>;
+      const order = new Map(wanted.map((id, i) => [id, i]));
+      const sorted = [...list].sort((a, b) => (order.get(a.id) ?? Number.MAX_SAFE_INTEGER) - (order.get(b.id) ?? Number.MAX_SAFE_INTEGER));
+      if (sorted.some((g, i) => g.id !== list[i].id)) (draft as unknown as Record<string, unknown>)[field] = sorted;
     }
     normalizeTree(draft);
     draft.updatedAt = Math.max(draft.updatedAt, Date.now());
@@ -175,6 +188,8 @@ export function projectFromEnvelopes(meta: Envelope, envelopes: Envelope[]): Pro
     items: {},
     rootFolderIds: [...data.rootFolderIds],
     glyphs: [],
+    sounds: [],
+    paintings: [],
     createdAt: typeof data.createdAt === 'number' ? data.createdAt : Date.now(),
     updatedAt: Date.now(),
   };

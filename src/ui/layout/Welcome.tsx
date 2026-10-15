@@ -177,7 +177,7 @@ export function Welcome() {
           <div className="step">
             <div className="step-num">3</div>
             <b>Eigenschaften hinzufügen</b>
-            Attribute, Komponenten, Möbel, Blöcke, Rüstung und mehr.
+            Components, Mechanics (Furniture, Custom Block …), CustomArmor und mehr.
           </div>
           <div className="step">
             <div className="step-num">4</div>

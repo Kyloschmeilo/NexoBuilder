@@ -38,7 +38,7 @@ describe('Export-Auswahl in einem Projekt', () => {
     expect(Object.values(subset.items).map((i) => i.nexoId)).toEqual(['ruby_sword']);
     expect(Object.values(subset.folders).map((f) => f.name)).toEqual(['Waffen']);
     expect(subset.glyphs).toEqual([]);
-    expect(countSelected(p, selection)).toEqual({ items: 1, glyphs: 0 });
+    expect(countSelected(p, selection)).toEqual({ items: 1, glyphs: 0, sounds: 0, paintings: 0 });
 
     const plan = planExport(subset);
     const paths = listExportPaths(subset, plan, 'full');

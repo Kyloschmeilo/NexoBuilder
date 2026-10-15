@@ -35,9 +35,9 @@ export function GlyphsView({ plan }: { plan: ExportPlan | null }) {
           <Smile size={30} />
         </div>
         <div className="editor-title">
-          <h1>Glyphen</h1>
+          <h1>Glyphs</h1>
           <div className="editor-meta">
-            <span className="badge">{glyphs.length} Glyph(en)</span>
+            <span className="badge">{glyphs.length} Glyph(s)</span>
             <span className="badge mono">plugins/Nexo/{glyphFilePath(project)}</span>
           </div>
         </div>
@@ -48,11 +48,11 @@ export function GlyphsView({ plan }: { plan: ExportPlan | null }) {
           }}
           title="Verweist auf ein Feld eines Multi-Bitmap-Glyphs"
         >
-          <Link2 size={15} /> Referenz-Glyph
+          <Link2 size={15} /> Reference Glyph
         </button>
       </div>
       <div className="hint">
-        Glyphen sind eigene Zeichen für Chat, Lore, Item-Namen, Titel und GUIs. Verwendung überall mit{' '}
+        Glyphs sind eigene Zeichen für Chat, Lore, Item-Namen, Titel und GUIs. Verwendung überall mit{' '}
         <code className="code-inline">&lt;glyph:id&gt;</code>, z.B. in der Lore eines Items.
       </div>
       <DropZone
@@ -79,7 +79,7 @@ function GlyphCard({ glyph, glyphs, plan }: { glyph: Glyph; glyphs: Glyph[]; pla
   const issues = plan?.issues.filter((i) => i.glyphId === glyph.id) ?? [];
   const multi = glyph.kind === 'image' && glyph.rows * glyph.columns > 1;
   const usage = multi ? `<glyph:${glyph.glyphId}:1>` : `<glyph:${glyph.glyphId}>`;
-  const kindLabel = { image: 'Bild', gif: 'Animiert (GIF)', reference: 'Referenz' }[glyph.kind];
+  const kindLabel = { image: 'Image', gif: 'Animated (GIF)', reference: 'Reference' }[glyph.kind];
   const multiBitmaps = glyphs.filter((g) => g.kind === 'image' && g.rows * g.columns > 1 && g.id !== glyph.id);
 
   return (
@@ -149,7 +149,7 @@ function GlyphCard({ glyph, glyphs, plan }: { glyph: Glyph; glyphs: Glyph[]; pla
               {glyph.kind === 'reference' ? (
                 <>
                   <label className="field">
-                    <span className="field-label">Verweist auf (Multi-Bitmap-Glyph)</span>
+                    <span className="field-label" title="Verweist auf einen Multi-Bitmap-Glyph">Reference</span>
                     <TextInput
                       value={glyph.reference}
                       mono
@@ -158,18 +158,18 @@ function GlyphCard({ glyph, glyphs, plan }: { glyph: Glyph; glyphs: Glyph[]; pla
                     />
                   </label>
                   <label className="field">
-                    <span className="field-label">Index (Feld-Nummer, ab 1)</span>
+                    <span className="field-label" title="Feld-Nummer, ab 1">Index</span>
                     <NumberInput value={glyph.index} integer min={1} onChange={(v) => update((g) => (g.index = v ?? 1), 'index')} />
                   </label>
                 </>
               ) : (
                 <>
                   <label className="field">
-                    <span className="field-label">Höhe (Skalierung)</span>
+                    <span className="field-label" title="Höhe (Skalierung)">Height</span>
                     <NumberInput value={glyph.height} integer min={1} onChange={(v) => update((g) => (g.height = v ?? 8), 'height')} />
                   </label>
                   <label className="field">
-                    <span className="field-label">Ascent (Verschiebung nach oben)</span>
+                    <span className="field-label" title="Verschiebung nach oben">Ascent</span>
                     <NumberInput value={glyph.ascent} integer onChange={(v) => update((g) => (g.ascent = v ?? 0), 'ascent')} />
                   </label>
                 </>
@@ -177,15 +177,15 @@ function GlyphCard({ glyph, glyphs, plan }: { glyph: Glyph; glyphs: Glyph[]; pla
               {glyph.kind === 'image' && (
                 <>
                   <label className="field">
-                    <span className="field-label">Zeilen (Multi-Bitmap)</span>
+                    <span className="field-label" title="Zeilen (Multi-Bitmap)">Rows</span>
                     <NumberInput value={glyph.rows} integer min={1} onChange={(v) => update((g) => (g.rows = v ?? 1), 'rows')} />
                   </label>
                   <label className="field">
-                    <span className="field-label">Spalten (Multi-Bitmap)</span>
+                    <span className="field-label" title="Spalten (Multi-Bitmap)">Columns</span>
                     <NumberInput value={glyph.columns} integer min={1} onChange={(v) => update((g) => (g.columns = v ?? 1), 'columns')} />
                   </label>
                   <label className="field">
-                    <span className="field-label">Schriftart (optional)</span>
+                    <span className="field-label" title="Schriftart (optional)">Font</span>
                     <TextInput
                       value={glyph.font}
                       mono
@@ -199,17 +199,17 @@ function GlyphCard({ glyph, glyphs, plan }: { glyph: Glyph; glyphs: Glyph[]; pla
               {glyph.kind === 'gif' && (
                 <>
                   <label className="field">
-                    <span className="field-label">Max. Bilder (frame_count, optional)</span>
+                    <span className="field-label" title="Max. Bilder (optional)">Frame Count</span>
                     <NumberInput value={glyph.frameCount} integer min={1} onChange={(v) => update((g) => (g.frameCount = v ?? null), 'frames')} />
                   </label>
                   <label className="field">
-                    <span className="field-label">Offset (optional)</span>
+                    <span className="field-label" title="optional">Offset</span>
                     <NumberInput value={glyph.offset} integer onChange={(v) => update((g) => (g.offset = v ?? null), 'offset')} />
                   </label>
                 </>
               )}
               <label className="field">
-                <span className="field-label">Permission (optional)</span>
+                <span className="field-label" title="optional">Permission</span>
                 <input
                   className="input mono"
                   value={glyph.permission}
@@ -218,7 +218,7 @@ function GlyphCard({ glyph, glyphs, plan }: { glyph: Glyph; glyphs: Glyph[]; pla
                 />
               </label>
               <label className="field">
-                <span className="field-label">Chat-Kürzel (durch Komma getrennt)</span>
+                <span className="field-label" title="Chat-Kürzel, durch Komma getrennt">Placeholders</span>
                 <input
                   className="input mono"
                   value={glyph.placeholders.join(', ')}
@@ -230,11 +230,11 @@ function GlyphCard({ glyph, glyphs, plan }: { glyph: Glyph; glyphs: Glyph[]; pla
             <div className="row wrap" style={{ gap: 18 }}>
               <label className="row small" style={{ gap: 6, cursor: 'pointer' }}>
                 <input type="checkbox" checked={glyph.isEmoji} onChange={(e) => update((g) => (g.isEmoji = e.target.checked))} />
-                In /nexo emojis anzeigen
+                Is Emoji <span className="faint">(in /nexo emojis)</span>
               </label>
               <label className="row small" style={{ gap: 6, cursor: 'pointer' }}>
                 <input type="checkbox" checked={glyph.tabcomplete} onChange={(e) => update((g) => (g.tabcomplete = e.target.checked))} />
-                Tab-Vervollständigung im Chat
+                Tab Complete <span className="faint">(im Chat)</span>
               </label>
             </div>
             {glyph.kind !== 'reference' && (
