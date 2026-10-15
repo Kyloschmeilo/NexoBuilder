@@ -75,7 +75,6 @@ export function FolderNode({ folderId, depth, tree }: { folderId: string; depth:
     <Collapsible open={isOpen}>
       <TreeRow
         entries={entries}
-        tip={folder.name}
         isSelected={isSelected}
         drop={drop}
         role="treeitem"

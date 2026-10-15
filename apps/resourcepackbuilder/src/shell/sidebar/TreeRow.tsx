@@ -24,8 +24,6 @@ interface TreeRowProps extends Omit<ComponentProps<typeof ContextMenuTrigger>, '
   entries: MenuEntry[];
   /** Hover actions before the "more" button */
   actions?: ReactNode;
-  /** Tooltip of the row (e.g. the full name) */
-  tip: string;
   isSelected: boolean;
   /** Drop target state and handlers of the whole row */
   drop: { isOver: boolean; handlers: Record<'onDragOver' | 'onDragLeave' | 'onDrop', (e: DragEvent) => void> };
@@ -37,16 +35,14 @@ interface TreeRowProps extends Omit<ComponentProps<typeof ContextMenuTrigger>, '
  * actions with a "more" dropdown offering the same entries. The actions are siblings of the row, so their clicks
  * never reach it.
  */
-export function TreeRow({ entries, actions, tip, isSelected, drop, children, ...rowProps }: TreeRowProps) {
+export function TreeRow({ entries, actions, isSelected, drop, children, ...rowProps }: TreeRowProps) {
   const t = useTranslations('layout.sidebar');
   return (
     <div className={rowClass(isSelected, drop.isOver)} data-selected={isSelected || undefined} {...drop.handlers}>
       <ContextMenu>
-        <Tip label={tip} side="right">
-          <ContextMenuTrigger data-testid="tree-row" aria-selected={isSelected} className={rowButton} {...rowProps}>
-            {children}
-          </ContextMenuTrigger>
-        </Tip>
+        <ContextMenuTrigger data-testid="tree-row" aria-selected={isSelected} className={rowButton} {...rowProps}>
+          {children}
+        </ContextMenuTrigger>
         <ContextMenuContent className="w-68">
           <MenuEntries kind="context" entries={entries} />
         </ContextMenuContent>

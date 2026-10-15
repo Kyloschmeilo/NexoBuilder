@@ -55,7 +55,6 @@ export function ItemNode({ itemId, depth, tree }: { itemId: string; depth: numbe
   return (
     <TreeRow
       entries={entries}
-      tip={`${itemLabel(item)} (${item.nexoId})`}
       isSelected={isSelected}
       drop={drop}
       role="treeitem"
