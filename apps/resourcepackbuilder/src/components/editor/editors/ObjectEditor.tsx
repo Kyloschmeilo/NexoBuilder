@@ -12,7 +12,15 @@ import type { EditorProps } from '../types';
 import { countSetValues, isWideField, objectOrUndefined, unknownEntries, withKey, withUnknownEntries } from '../values';
 
 /** The fields of an object: simple ones in a grid, wide ones (lists, nested objects…) below at full width. */
-export function ObjectFields({ field, value, onChange }: { field: ObjectField; value: unknown; onChange: (value: Record<string, unknown>) => void }) {
+export function ObjectFields({
+  field,
+  value,
+  onChange,
+}: {
+  field: ObjectField;
+  value: unknown;
+  onChange: (value: Record<string, unknown>) => void;
+}) {
   const obj = isPlainObject(value) ? value : {};
   const known = new Set(field.fields.map((f) => f.key));
   const simple = field.fields.filter((f) => !isWideField(f));
@@ -29,7 +37,13 @@ export function ObjectFields({ field, value, onChange }: { field: ObjectField; v
       {wide.map((f) =>
         // "*" edits all keys no other field claims
         f.key === '*' ? (
-          <FieldRenderer key="*" field={f} value={unknownEntries(obj, known)} siblings={obj} onChange={(rest) => onChange(withUnknownEntries(obj, known, rest))} />
+          <FieldRenderer
+            key="*"
+            field={f}
+            value={unknownEntries(obj, known)}
+            siblings={obj}
+            onChange={(rest) => onChange(withUnknownEntries(obj, known, rest))}
+          />
         ) : (
           <FieldRenderer key={f.key} field={f} value={obj[f.key]} siblings={obj} onChange={(v) => onChange(withKey(obj, f.key, v))} />
         ),

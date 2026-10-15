@@ -34,7 +34,9 @@ export function TextureEditor({ field, value, onChange, hideLabel }: EditorProps
               </span>
             </>
           ) : (
-            <span className="text-muted-foreground">{field.sizeHint ? t('field.noTextureHint', { size: field.sizeHint }) : t('field.noTexture')}</span>
+            <span className="text-muted-foreground">
+              {field.sizeHint ? t('field.noTextureHint', { size: field.sizeHint }) : t('field.noTexture')}
+            </span>
           )}
           <div className="flex flex-wrap items-center gap-2">
             <Button type="button" variant="outline" size="sm" onClick={() => void upload()}>

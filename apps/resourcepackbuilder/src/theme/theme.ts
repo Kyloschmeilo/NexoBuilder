@@ -42,10 +42,7 @@ export function readStoredThemeChoice(storage: Pick<Storage, 'getItem'> | undefi
  * @param storage the storage to write to, or `undefined` when unavailable
  * @param choice the choice to persist
  */
-export function writeStoredThemeChoice(
-  storage: Pick<Storage, 'setItem'> | undefined,
-  choice: ThemeChoice,
-): void {
+export function writeStoredThemeChoice(storage: Pick<Storage, 'setItem'> | undefined, choice: ThemeChoice): void {
   if (!storage) {
     return;
   }

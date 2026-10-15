@@ -40,7 +40,9 @@ export function TriState({ value, onChange, allowUnset = true, defaultHint }: Tr
       {allowUnset && (
         <Tip label={t('inputs.defaultTooltip')}>
           <ToggleGroupItem value="unset" className={ITEM}>
-            {defaultHint === undefined ? t('inputs.default') : t('inputs.defaultWithHint', { value: defaultHint ? common('yes') : common('no') })}
+            {defaultHint === undefined
+              ? t('inputs.default')
+              : t('inputs.defaultWithHint', { value: defaultHint ? common('yes') : common('no') })}
           </ToggleGroupItem>
         </Tip>
       )}

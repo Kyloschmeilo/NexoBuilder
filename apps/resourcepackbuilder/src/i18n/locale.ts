@@ -1,43 +1,26 @@
-import { createTranslator } from 'next-intl';
 import { create } from 'zustand';
-import { messagesByLocale, readStoredLocale, writeStoredLocale, type Messages, type SupportedLocale } from '@resourcepackbuilder/i18n';
-import { desktopApp } from '../state/desktop';
+import { readStoredLocale, supportedLocales, writeStoredLocale, type SupportedLocale } from '@resourcepackbuilder/i18n';
 
 interface LocaleState {
   /** The language the app is shown in, persisted on this device. */
   locale: SupportedLocale;
-  /** Persists a new language and switches the app to it immediately. */
-  setLocale: (locale: SupportedLocale) => void;
 }
 
-/** The device's language choice. The app only ever runs in the browser (no prerendering), so storage is read eagerly. */
-export const useLocaleStore = create<LocaleState>((set) => ({
-  locale: readStoredLocale(window.localStorage),
-  setLocale: (locale) => {
-    writeStoredLocale(window.localStorage, locale);
-    set({ locale });
-  },
-}));
+/** The device's language choice; `loadStoredLocale()` reads it at startup. */
+export const useLocaleStore = create<LocaleState>(() => ({ locale: supportedLocales[0] }));
 
-/** Keeps the desktop program's menus, native dialogs and test-server messages in the app's language. */
-function syncDesktopLocale(locale: SupportedLocale) {
-  void desktopApp()
-    ?.setLocale(locale)
-    .catch(() => undefined);
+/** Applies the language stored on this device (called once at startup). */
+export function loadStoredLocale(): void {
+  useLocaleStore.setState({ locale: readStoredLocale(window.localStorage) });
 }
-syncDesktopLocale(useLocaleStore.getState().locale);
-useLocaleStore.subscribe((state, prev) => {
-  if (state.locale !== prev.locale) syncDesktopLocale(state.locale);
-});
+
+/** Persists a new language and switches the app to it immediately. */
+export function setLocale(locale: SupportedLocale): void {
+  writeStoredLocale(window.localStorage, locale);
+  useLocaleStore.setState({ locale });
+}
 
 /** The time zone next-intl formats dates in: the device's own. */
-export const timeZone = Intl.DateTimeFormat().resolvedOptions().timeZone;
-
-/**
- * Translator for code outside React components (store actions, controllers), bound to the current
- * language at call time. Components use `useTranslations` instead so they re-render on a language change.
- */
-export function translator<Namespace extends keyof Messages>(namespace: Namespace) {
-  const { locale } = useLocaleStore.getState();
-  return createTranslator({ locale, messages: messagesByLocale[locale], namespace, timeZone });
+export function deviceTimeZone(): string {
+  return Intl.DateTimeFormat().resolvedOptions().timeZone;
 }

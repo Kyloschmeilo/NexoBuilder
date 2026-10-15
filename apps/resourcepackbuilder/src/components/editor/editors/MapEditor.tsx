@@ -18,7 +18,11 @@ import { ObjectFields } from './ObjectEditor';
 
 /** The key of a map entry; a rename is applied when the input loses focus. */
 function KeyInput({ value, onRename, listId }: { value: string; onRename: (key: string) => void; listId: string }) {
-  const { draft, setDraft, reset } = useDraft(value, (text) => ({ value: text.trim() }), (key) => key);
+  const { draft, setDraft, reset } = useDraft(
+    value,
+    (text) => ({ value: text.trim() }),
+    (key) => key,
+  );
   return (
     <Input
       className="w-[220px] flex-none font-mono"

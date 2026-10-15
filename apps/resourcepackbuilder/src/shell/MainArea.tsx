@@ -1,0 +1,78 @@
+import type { ComponentType } from 'react';
+import { FolderPlus, MousePointerClick } from 'lucide-react';
+import { useTranslations } from 'next-intl';
+import { Button } from '@resourcepackbuilder/ui/components/button';
+import { Empty, EmptyContent, EmptyDescription, EmptyHeader, EmptyMedia, EmptyTitle } from '@resourcepackbuilder/ui/components/empty';
+import { FolderView } from '../features/folder/FolderView';
+import { useFolderActions } from '../features/folder/useFolderActions';
+import { GlyphsView } from '../features/glyphs/GlyphsView';
+import { ItemEditor } from '../features/item/ItemEditor';
+import { PaintingsView } from '../features/paintings/PaintingsView';
+import { SoundsView } from '../features/sounds/SoundsView';
+import { TestServerView } from '../features/testServer/TestServerView';
+import { useOpenProject } from '../store/project';
+import { selectionExists, useUiStore, type ViewName } from '../store/ui';
+
+/** The page of each project-wide view. */
+const VIEWS: Record<ViewName, ComponentType> = {
+  glyphs: GlyphsView,
+  sounds: SoundsView,
+  paintings: PaintingsView,
+  testServer: TestServerView,
+};
+
+/** Shown while nothing is selected: pick something, or create the first folder. */
+function NothingSelected() {
+  const t = useTranslations('layout.main');
+  const project = useOpenProject();
+  const folders = useFolderActions();
+  const hasFolders = project.rootFolderIds.length > 0;
+  return (
+    <Empty className="h-full p-8">
+      <EmptyHeader className="max-w-[460px]">
+        <EmptyMedia>
+          {hasFolders ? (
+            <MousePointerClick className="size-9 text-muted-foreground" />
+          ) : (
+            <FolderPlus className="size-9 text-muted-foreground" />
+          )}
+        </EmptyMedia>
+        <EmptyTitle className="font-heading text-xl tracking-[0.04em] uppercase">
+          {hasFolders ? t('pickTitle') : t('startTitle')}
+        </EmptyTitle>
+        <EmptyDescription>{hasFolders ? t('pickDescription') : t('startDescription')}</EmptyDescription>
+      </EmptyHeader>
+      {!hasFolders && (
+        <EmptyContent>
+          <Button size="lg" onClick={() => void folders.create(null)}>
+            <FolderPlus /> {t('createFolder')}
+          </Button>
+        </EmptyContent>
+      )}
+    </Empty>
+  );
+}
+
+function SelectedPage() {
+  const project = useOpenProject();
+  const selection = useUiStore((s) => s.selection);
+  if (!selection || !selectionExists(project, selection)) return <NothingSelected />;
+  switch (selection.kind) {
+    case 'item':
+      return <ItemEditor itemId={selection.id} />;
+    case 'folder':
+      return <FolderView folderId={selection.id} />;
+    case 'view': {
+      const View = VIEWS[selection.view];
+      return <View />;
+    }
+  }
+}
+
+export function MainArea() {
+  return (
+    <main className="min-h-0 min-w-0 overflow-auto">
+      <SelectedPage />
+    </main>
+  );
+}

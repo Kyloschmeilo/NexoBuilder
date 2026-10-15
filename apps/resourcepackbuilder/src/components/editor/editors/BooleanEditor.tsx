@@ -6,7 +6,12 @@ import type { EditorProps } from '../types';
 export function BooleanEditor({ field, value, onChange, root, hideLabel }: EditorProps<BooleanField>) {
   return (
     <FieldShell field={field} hideLabel={hideLabel}>
-      <TriState value={typeof value === 'boolean' ? value : undefined} onChange={onChange} allowUnset={!root} defaultHint={field.defaultHint} />
+      <TriState
+        value={typeof value === 'boolean' ? value : undefined}
+        onChange={onChange}
+        allowUnset={!root}
+        defaultHint={field.defaultHint}
+      />
     </FieldShell>
   );
 }

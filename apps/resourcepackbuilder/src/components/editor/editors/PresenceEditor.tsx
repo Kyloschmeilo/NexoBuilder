@@ -12,7 +12,11 @@ export function PresenceEditor({ field, value, onChange }: EditorProps<PresenceF
   const help = text(field.help);
   return (
     <Label className="col-span-full cursor-pointer items-start gap-2.5 py-1.5 text-sm leading-5 font-normal">
-      <Checkbox className="mt-0.5" checked={isPlainObject(value) || value === true} onCheckedChange={(checked) => onChange(checked ? {} : undefined)} />
+      <Checkbox
+        className="mt-0.5"
+        checked={isPlainObject(value) || value === true}
+        onCheckedChange={(checked) => onChange(checked ? {} : undefined)}
+      />
       <span className="flex min-w-0 flex-col">
         <FieldName field={field} />
         {help && <span className="text-xs leading-4 text-muted-foreground">{help}</span>}

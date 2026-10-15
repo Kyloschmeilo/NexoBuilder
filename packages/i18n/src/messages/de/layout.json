@@ -195,11 +195,17 @@
     "delete": "Projekt löschen",
     "deleteTitle": "Projekt löschen?",
     "deleteMessage": "„{name}“ wird aus diesem Browser gelöscht. Das kann nicht rückgängig gemacht werden.\nTipp: Vorher über „Projektdatei speichern“ sichern.",
-    "deleteConfirm": "Endgültig löschen"
+    "deleteConfirm": "Endgültig löschen",
+    "replaceTitle": "Geöffnetes Projekt ersetzen?",
+    "replaceMessage": "Die Datei enthält „{name}“, das gerade geöffnete Projekt. Durch die Version aus der Datei ersetzen? Änderungen seitdem gehen verloren.",
+    "replaceConfirm": "Ersetzen"
   },
   "projectsDialog": {
     "title": "Projekte",
     "openTab": "Öffnen",
     "newTab": "Neues Projekt"
+  },
+  "boot": {
+    "failedTitle": "ResourcepackBuilder konnte nicht starten"
   }
 }

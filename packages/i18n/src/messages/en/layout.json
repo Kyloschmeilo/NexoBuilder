@@ -195,11 +195,17 @@
     "delete": "Delete project",
     "deleteTitle": "Delete project?",
     "deleteMessage": "“{name}” will be deleted from this browser. This cannot be undone.\nTip: back it up first via “Save project file”.",
-    "deleteConfirm": "Delete permanently"
+    "deleteConfirm": "Delete permanently",
+    "replaceTitle": "Replace the open project?",
+    "replaceMessage": "The file contains “{name}”, the project that is open right now. Replace it with the version from the file? Changes made since then are lost.",
+    "replaceConfirm": "Replace"
   },
   "projectsDialog": {
     "title": "Projects",
     "openTab": "Open",
     "newTab": "New project"
+  },
+  "boot": {
+    "failedTitle": "ResourcepackBuilder could not start"
   }
 }

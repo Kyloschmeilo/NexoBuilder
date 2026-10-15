@@ -23,7 +23,9 @@ export function SelectInput({ value, onChange, options, allowCustom, placeholder
   const known = options.some((o) => o.value === value);
   return (
     <NativeSelect className="w-full" value={value ?? ''} onChange={(e) => onChange(e.target.value || undefined)}>
-      <NativeSelectOption value="">{placeholder ? t('inputs.placeholderOption', { placeholder }) : t('inputs.notSetOption')}</NativeSelectOption>
+      <NativeSelectOption value="">
+        {placeholder ? t('inputs.placeholderOption', { placeholder }) : t('inputs.notSetOption')}
+      </NativeSelectOption>
       {!known && value && <NativeSelectOption value={value}>{value}</NativeSelectOption>}
       {options.map((o) => (
         <NativeSelectOption key={o.value} value={o.value}>

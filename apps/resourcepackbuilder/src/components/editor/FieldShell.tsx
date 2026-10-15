@@ -35,7 +35,10 @@ export function MinVersionBadge({ field }: { field: Field }) {
   if (!field.minVersion) return null;
   return (
     <Tip label={tooLow ? t('field.minVersionTooLow', { version: field.minVersion }) : undefined}>
-      <Badge variant="outline" className={cn('font-mono font-normal normal-case', tooLow ? 'border-warning/50 text-warning' : 'text-muted-foreground')}>
+      <Badge
+        variant="outline"
+        className={cn('font-mono font-normal normal-case', tooLow ? 'border-warning/50 text-warning' : 'text-muted-foreground')}
+      >
         {t('field.minVersion', { version: field.minVersion })}
       </Badge>
     </Tip>

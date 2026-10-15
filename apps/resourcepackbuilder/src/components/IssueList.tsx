@@ -75,7 +75,11 @@ export function IssueList({ issues, onOpen, canOpen = () => true, empty, hideInf
         const openLabel = target && OPEN_LABELS[target.kind];
         const open = onOpen && target && openLabel && canOpen(issue) ? { target, label: openLabel } : null;
         return (
-          <Alert key={i} role="listitem" className={cn('items-start rounded-md py-1.5 text-[13px] leading-5', LEVEL_CLASSES[issue.level], open && 'pr-28')}>
+          <Alert
+            key={i}
+            role="listitem"
+            className={cn('items-start rounded-md py-1.5 text-[13px] leading-5', LEVEL_CLASSES[issue.level], open && 'pr-28')}
+          >
             <Icon aria-label={t(`issueList.level.${issue.level}`)} />
             <div className="col-start-2 text-foreground">{text(issue)}</div>
             {open && onOpen && (
