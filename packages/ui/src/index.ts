@@ -5,6 +5,7 @@ export { DropZone } from './DropZone';
 export { downloadBytes, fileStem, filesFromDataTransfer, pickFiles, readAsDataUrl, readAsText, readPngAsDataUrl } from './files';
 export { IconButton } from './IconButton';
 export { PageHeader, PageShell } from './PageHeader';
+export { SectionCard } from './SectionCard';
 export { SectionLabel } from './SectionLabel';
 export { StatusBadge } from './StatusBadge';
 export { StatusDot } from './StatusDot';

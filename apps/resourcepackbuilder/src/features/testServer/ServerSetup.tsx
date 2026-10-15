@@ -2,12 +2,11 @@ import { useId } from 'react';
 import { Upload } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 import { Button } from '@resourcepackbuilder/ui/components/button';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@resourcepackbuilder/ui/components/card';
 import { Checkbox } from '@resourcepackbuilder/ui/components/checkbox';
 import { Field, FieldContent, FieldDescription, FieldLabel } from '@resourcepackbuilder/ui/components/field';
 import { Input } from '@resourcepackbuilder/ui/components/input';
 import { NativeSelect, NativeSelectOption } from '@resourcepackbuilder/ui/components/native-select';
-import { AutoGrid, StatusBadge } from '@resourcepackbuilder/ui';
+import { AutoGrid, SectionCard, StatusBadge } from '@resourcepackbuilder/ui';
 import { useDraft } from '../../components/editor/useDraft';
 import { FormField, FormHelp } from '../../components/FormField';
 import type { TestServerConfig } from '../../platform/desktopApi';
@@ -30,45 +29,44 @@ export function ServerSetup({ config, isLocked }: { config: TestServerConfig; is
   const setConfig = useSetConfig();
 
   return (
-    <Card size="sm" className="gap-0 py-0">
-      <CardHeader className="border-b border-border py-3">
-        <CardTitle className="font-heading">{t('title')}</CardTitle>
-        <CardDescription className="text-xs">{isLocked ? t('lockedDescription') : t('description')}</CardDescription>
-      </CardHeader>
-      <CardContent className="flex flex-col gap-4 py-4">
-        <AutoGrid min="15rem" fit>
-          <NexoJarField config={config} />
-          <VersionSelect paperVersion={config.paperVersion} isLocked={isLocked} />
-          <PlayerNameField playerName={config.playerName} />
-          <FormField label={t('ram')} description={<FormHelp>{t('ramHelp')}</FormHelp>}>
-            <NativeSelect
-              className="w-full"
-              value={config.ramGb}
-              disabled={isLocked}
-              onChange={(e) => setConfig({ ramGb: Number(e.target.value) })}
-            >
-              {RAM_OPTIONS_GB.map((gb) => (
-                <NativeSelectOption key={gb} value={gb}>
-                  {t('ramOption', { gb })}
-                </NativeSelectOption>
-              ))}
-            </NativeSelect>
-          </FormField>
-          <FormField label={t('port')} description={<FormHelp>{t('portHelp', { packPort: config.packPort })}</FormHelp>}>
-            <Input
-              className="font-mono"
-              type="number"
-              min={MIN_PORT}
-              max={MAX_PORT}
-              value={config.port}
-              disabled={isLocked}
-              onChange={(e) => setConfig({ port: Number(e.target.value) })}
-            />
-          </FormField>
-        </AutoGrid>
-        <EulaField isAccepted={config.eulaAccepted} />
-      </CardContent>
-    </Card>
+    <SectionCard
+      size="sm"
+      title={t('title')}
+      description={isLocked ? t('lockedDescription') : t('description')}
+      contentClassName="flex flex-col gap-4"
+    >
+      <AutoGrid min="15rem" fit>
+        <NexoJarField config={config} />
+        <VersionSelect paperVersion={config.paperVersion} isLocked={isLocked} />
+        <PlayerNameField playerName={config.playerName} />
+        <FormField label={t('ram')} description={<FormHelp>{t('ramHelp')}</FormHelp>}>
+          <NativeSelect
+            className="w-full"
+            value={config.ramGb}
+            disabled={isLocked}
+            onChange={(e) => setConfig({ ramGb: Number(e.target.value) })}
+          >
+            {RAM_OPTIONS_GB.map((gb) => (
+              <NativeSelectOption key={gb} value={gb}>
+                {t('ramOption', { gb })}
+              </NativeSelectOption>
+            ))}
+          </NativeSelect>
+        </FormField>
+        <FormField label={t('port')} description={<FormHelp>{t('portHelp', { packPort: config.packPort })}</FormHelp>}>
+          <Input
+            className="font-mono"
+            type="number"
+            min={MIN_PORT}
+            max={MAX_PORT}
+            value={config.port}
+            disabled={isLocked}
+            onChange={(e) => setConfig({ port: Number(e.target.value) })}
+          />
+        </FormField>
+      </AutoGrid>
+      <EulaField isAccepted={config.eulaAccepted} />
+    </SectionCard>
   );
 }
 

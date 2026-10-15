@@ -3,13 +3,13 @@ import { useTranslations } from 'next-intl';
 import type { ObjectField, ObjectListField } from '@resourcepackbuilder/core/nexo/fields';
 import { isPlainObject } from '@resourcepackbuilder/core/object';
 import { IconButton } from '@resourcepackbuilder/ui';
+import { Card, CardContent, CardHeader } from '@resourcepackbuilder/ui/components/card';
 import { useSchemaText } from '../../useSchemaText';
 import { FieldShell } from '../FieldShell';
 import { AddButton, ListControls } from '../inputs/ListControls';
 import type { EditorProps } from '../types';
 import { useRowKeys } from '../useRowKeys';
 import { insertAt, listOrUndefined, moveInArray, removeAt, replaceAt } from '../values';
-import { EntryCard } from './EntryCard';
 import { ObjectFields } from './ObjectEditor';
 
 /** Text of an entry's title field, if it has one. */
@@ -35,9 +35,8 @@ export function ObjectListEditor({ field, value, onChange, hideLabel }: EditorPr
           const entryObject = isPlainObject(entry) ? entry : {};
           const title = entryTitle(field, entryObject);
           return (
-            <EntryCard
-              key={rows.keys[i]}
-              header={
+            <Card key={rows.keys[i]} variant="muted" size="sm" className="gap-0 py-0">
+              <CardHeader className="flex items-center gap-1.5 border-b py-1.5 pr-2 font-semibold [.border-b]:pb-1.5">
                 <>
                   <span className="min-w-0 flex-1 truncate">
                     {itemLabel} {i + 1}
@@ -65,10 +64,11 @@ export function ObjectListEditor({ field, value, onChange, hideLabel }: EditorPr
                     }}
                   />
                 </>
-              }
-            >
-              <ObjectFields field={entryField} value={entryObject} onChange={(next) => commit(replaceAt(list, i, next))} />
-            </EntryCard>
+              </CardHeader>
+              <CardContent className="py-3">
+                <ObjectFields field={entryField} value={entryObject} onChange={(next) => commit(replaceAt(list, i, next))} />
+              </CardContent>
+            </Card>
           );
         })}
         <AddButton

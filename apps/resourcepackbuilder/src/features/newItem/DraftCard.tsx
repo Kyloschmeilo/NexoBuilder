@@ -4,10 +4,9 @@ import { Box, Image as ImageIcon, Trash2, TriangleAlert } from 'lucide-react';
 import { isPngDataUrl } from '@resourcepackbuilder/core/binary/png';
 import type { ImportDraft } from '@resourcepackbuilder/core/model/drafts';
 import { getTextureTemplate } from '@resourcepackbuilder/core/model/textureModel';
-import { IconButton } from '@resourcepackbuilder/ui';
+import { IconButton, SectionCard } from '@resourcepackbuilder/ui';
 import { Alert, AlertDescription } from '@resourcepackbuilder/ui/components/alert';
 import { Badge } from '@resourcepackbuilder/ui/components/badge';
-import { Card, CardAction, CardContent, CardDescription, CardHeader, CardTitle } from '@resourcepackbuilder/ui/components/card';
 import { ModelPreview } from '@resourcepackbuilder/preview';
 import { IssueList } from '../../components/IssueList';
 import { useErrorMessage } from '../../i18n/errors';
@@ -53,41 +52,40 @@ export function DraftCard({ draft, meta, idError, isSingle, onMetaChange, onDraf
   const errorCount = draft.model?.issues.filter((i) => i.level === 'error').length ?? 0;
   const Icon = draft.kind === 'png' ? ImageIcon : Box;
   return (
-    <Card size="sm" className="rounded-lg">
-      <CardHeader>
-        <CardTitle className="flex min-w-0 items-center gap-2.5">
-          <Icon className="size-4.5 shrink-0" />
-          <span className="truncate">{draft.model?.fileName ?? draft.files[0]?.name}</span>
-        </CardTitle>
-        <CardDescription className="text-xs">{description}</CardDescription>
-        <CardAction className="flex items-center gap-2">
+    <SectionCard
+      size="sm"
+      icon={<Icon className="size-4.5 shrink-0" />}
+      title={draft.model?.fileName ?? draft.files[0]?.name}
+      titleClassName="truncate font-sans tracking-normal normal-case"
+      description={description}
+      actions={
+        <>
           {errorCount > 0 && <Badge variant="destructive">{tIssues('errors', { count: errorCount })}</Badge>}
           {!isSingle && (
             <IconButton label={t('dontImport')} tone="destructive" onClick={onRemove}>
               <Trash2 />
             </IconButton>
           )}
-        </CardAction>
-      </CardHeader>
-      <CardContent>
-        {draft.error ? (
-          <Alert variant="warning">
-            <TriangleAlert />
-            <AlertDescription>{errorMessage(draft.error)}</AlertDescription>
-          </Alert>
-        ) : (
-          <div className={isSingle ? 'grid gap-4 @3xl/dialog:grid-cols-[20rem_1fr]' : 'grid gap-4 @3xl/dialog:grid-cols-[12.5rem_1fr]'}>
-            {draft.model && (
-              <ModelPreview model={draft.model} height={isSingle ? PREVIEW_HEIGHT_SINGLE_PX : PREVIEW_HEIGHT_PX} showToolbar={isSingle} />
-            )}
-            <div className="flex min-w-0 flex-col gap-3">
-              <ItemMetaFields meta={meta} idError={idError} onChange={onMetaChange} />
-              {draft.kind === 'png' && template && <TextureSlots draft={draft} template={template} pngs={pngs} onChange={onDraftChange} />}
-              {draft.model && <IssueList issues={draft.model.issues} />}
-            </div>
+        </>
+      }
+    >
+      {draft.error ? (
+        <Alert variant="warning">
+          <TriangleAlert />
+          <AlertDescription>{errorMessage(draft.error)}</AlertDescription>
+        </Alert>
+      ) : (
+        <div className={isSingle ? 'grid gap-4 @3xl/dialog:grid-cols-[20rem_1fr]' : 'grid gap-4 @3xl/dialog:grid-cols-[12.5rem_1fr]'}>
+          {draft.model && (
+            <ModelPreview model={draft.model} height={isSingle ? PREVIEW_HEIGHT_SINGLE_PX : PREVIEW_HEIGHT_PX} showToolbar={isSingle} />
+          )}
+          <div className="flex min-w-0 flex-col gap-3">
+            <ItemMetaFields meta={meta} idError={idError} onChange={onMetaChange} />
+            {draft.kind === 'png' && template && <TextureSlots draft={draft} template={template} pngs={pngs} onChange={onDraftChange} />}
+            {draft.model && <IssueList issues={draft.model.issues} />}
           </div>
-        )}
-      </CardContent>
-    </Card>
+        </div>
+      )}
+    </SectionCard>
   );
 }

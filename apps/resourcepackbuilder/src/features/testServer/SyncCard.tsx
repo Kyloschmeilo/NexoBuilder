@@ -3,7 +3,7 @@ import { useFormatter, useTranslations } from 'next-intl';
 import { countIssues } from '@resourcepackbuilder/core/issues';
 import { Alert, AlertDescription } from '@resourcepackbuilder/ui/components/alert';
 import { Button } from '@resourcepackbuilder/ui/components/button';
-import { Card, CardAction, CardContent, CardDescription, CardHeader, CardTitle } from '@resourcepackbuilder/ui/components/card';
+import { SectionCard } from '@resourcepackbuilder/ui';
 import { Spinner } from '@resourcepackbuilder/ui/components/spinner';
 import { CheckboxField } from '../../components/CheckboxField';
 import { useErrorMessage } from '../../i18n/errors';
@@ -29,38 +29,37 @@ export function SyncCard({ server }: { server: TestServerState }) {
   const summary = useSummaryText(syncSummary({ lastResult, lastCheck, syncError }, isRunning));
 
   return (
-    <Card size="sm" className="gap-0 py-0">
-      <CardHeader className="border-b border-border py-3">
-        <CardTitle className="font-heading">{t('title')}</CardTitle>
-        <CardDescription className="text-xs">{t('description')}</CardDescription>
-        <CardAction>
-          <Button variant="outline" size="sm" disabled={!isRunning || isSyncing} onClick={() => void testServer.sync(true)}>
-            {isSyncing ? <Spinner /> : <RefreshCw />} {t('now')}
-          </Button>
-        </CardAction>
-      </CardHeader>
-      <CardContent className="flex flex-col gap-2 py-4">
-        <CheckboxField
-          checked={server.config.autoUpdate}
-          onChange={(checked) => setConfig({ autoUpdate: checked })}
-          label={t('auto')}
-          description={t('autoHint')}
-        />
-        {summary && <div className="text-xs text-muted-foreground">{summary}</div>}
-        {syncError !== null && (
-          <Alert variant="warning">
-            <TriangleAlert />
-            <AlertDescription>{t('failed', { error: errorMessage(syncError) })}</AlertDescription>
-          </Alert>
-        )}
-        {errorCount > 0 && (
-          <Alert variant="warning">
-            <TriangleAlert />
-            <AlertDescription>{t('projectErrors', { count: errorCount })}</AlertDescription>
-          </Alert>
-        )}
-      </CardContent>
-    </Card>
+    <SectionCard
+      size="sm"
+      title={t('title')}
+      description={t('description')}
+      actions={
+        <Button variant="outline" size="sm" disabled={!isRunning || isSyncing} onClick={() => void testServer.sync(true)}>
+          {isSyncing ? <Spinner /> : <RefreshCw />} {t('now')}
+        </Button>
+      }
+      contentClassName="flex flex-col gap-2"
+    >
+      <CheckboxField
+        checked={server.config.autoUpdate}
+        onChange={(checked) => setConfig({ autoUpdate: checked })}
+        label={t('auto')}
+        description={t('autoHint')}
+      />
+      {summary && <div className="text-xs text-muted-foreground">{summary}</div>}
+      {syncError !== null && (
+        <Alert variant="warning">
+          <TriangleAlert />
+          <AlertDescription>{t('failed', { error: errorMessage(syncError) })}</AlertDescription>
+        </Alert>
+      )}
+      {errorCount > 0 && (
+        <Alert variant="warning">
+          <TriangleAlert />
+          <AlertDescription>{t('projectErrors', { count: errorCount })}</AlertDescription>
+        </Alert>
+      )}
+    </SectionCard>
   );
 }
 

@@ -4,7 +4,7 @@ import type { ImportedModel } from '@resourcepackbuilder/core/model/types';
 import type { Item } from '@resourcepackbuilder/core/project/types';
 import { compareVersions, getMcVersion } from '@resourcepackbuilder/core/minecraft/versions';
 import { issuesFor } from '@resourcepackbuilder/core/issues';
-import { CollapsibleSection, pickFiles } from '@resourcepackbuilder/ui';
+import { CollapsibleSection, pickFiles, SectionCard } from '@resourcepackbuilder/ui';
 import { Alert, AlertDescription } from '@resourcepackbuilder/ui/components/alert';
 import { Button } from '@resourcepackbuilder/ui/components/button';
 import { ModelPreview } from '@resourcepackbuilder/preview';
@@ -13,7 +13,6 @@ import { IssueList } from '../../../components/IssueList';
 import { confirm } from '../../../store/dialogs';
 import { usePlan } from '../../../store/PlanProvider';
 import { useOpenProject } from '../../../store/project';
-import { EditorCard } from '../EditorCard';
 import { ModelParentSelect } from './ModelParentSelect';
 import { ShadingOptions } from './ShadingOptions';
 import { MODEL_ACCEPT } from './modelFiles';
@@ -90,7 +89,7 @@ export function ModelCard({ item, model }: { item: Item; model: ImportedModel })
   const summary = useModelSummary(model);
   const issues = plan ? issuesFor(plan.issues, { kind: 'item', id: item.id }).filter((i) => i.code !== 'plan.missingModel') : [];
   return (
-    <EditorCard
+    <SectionCard
       icon={<Box className="size-4.5" />}
       title={model.fileName}
       description={summary}
@@ -113,6 +112,6 @@ export function ModelCard({ item, model }: { item: Item; model: ImportedModel })
           )}
         </div>
       </div>
-    </EditorCard>
+    </SectionCard>
   );
 }

@@ -1,7 +1,6 @@
 import type { ReactNode } from 'react';
 import { Trash2 } from 'lucide-react';
-import { Card, CardContent } from '@resourcepackbuilder/ui/components/card';
-import { CopyButton, IconButton } from '@resourcepackbuilder/ui';
+import { CopyButton, IconButton, SectionCard } from '@resourcepackbuilder/ui';
 
 interface MediaCardProps {
   /** The entry's ID, shown as the heading. */
@@ -22,32 +21,32 @@ interface MediaCardProps {
 /** Card of one glyph, sound or painting: heading with usage and actions, optional preview and the form. */
 export function MediaCard({ title, badges, usage, copyLabel, actions, deleteLabel, onDelete, preview, children }: MediaCardProps) {
   return (
-    <Card size="sm" className="@container/media-card gap-0 py-0">
-      <div className="flex flex-wrap items-center gap-x-2 gap-y-1.5 border-b border-border px-4 py-2.5">
-        <div className="flex min-w-0 flex-[1_1_10rem] flex-wrap items-center gap-2">
-          <h3 className="max-w-full truncate font-mono text-sm font-medium">{title}</h3>
-          {badges}
-        </div>
-        <div className="ml-auto flex min-w-0 items-center gap-2">
+    <SectionCard
+      size="sm"
+      className="@container/media-card"
+      title={title}
+      titleClassName="truncate font-mono text-sm font-medium tracking-normal normal-case"
+      badges={badges}
+      actions={
+        <>
           <span className="min-w-0 truncate font-mono text-xs text-muted-foreground">{usage}</span>
           <CopyButton text={usage} label={copyLabel} />
           {actions}
           <IconButton label={deleteLabel} tone="destructive" onClick={onDelete}>
             <Trash2 />
           </IconButton>
+        </>
+      }
+    >
+      {preview ? (
+        <div className="grid gap-4 @lg/media-card:grid-cols-[auto_minmax(0,1fr)]">
+          <div className="flex flex-col gap-2">{preview}</div>
+          <div className="flex min-w-0 flex-col gap-3">{children}</div>
         </div>
-      </div>
-      <CardContent className="py-4">
-        {preview ? (
-          <div className="grid gap-4 @lg/media-card:grid-cols-[auto_minmax(0,1fr)]">
-            <div className="flex flex-col gap-2">{preview}</div>
-            <div className="flex min-w-0 flex-col gap-3">{children}</div>
-          </div>
-        ) : (
-          <div className="flex flex-col gap-3">{children}</div>
-        )}
-      </CardContent>
-    </Card>
+      ) : (
+        <div className="flex flex-col gap-3">{children}</div>
+      )}
+    </SectionCard>
   );
 }
 

@@ -5,13 +5,12 @@ import { toConfigValue } from '@resourcepackbuilder/core/project/configValue';
 import { getPropertyValue } from '@resourcepackbuilder/core/nexo/properties';
 import type { PropertyDef } from '@resourcepackbuilder/core/nexo/schema';
 import { versionSupport } from '@resourcepackbuilder/core/minecraft/versions';
-import { IconButton, Tip } from '@resourcepackbuilder/ui';
+import { IconButton, SectionCard, Tip } from '@resourcepackbuilder/ui';
 import { Alert, AlertDescription } from '@resourcepackbuilder/ui/components/alert';
 import { Badge } from '@resourcepackbuilder/ui/components/badge';
 import { removeProperty, setItemProperty } from '../../../commands/items';
 import { FieldRenderer } from '../../../components/editor';
 import { useOpenProject } from '../../../store/project';
-import { EditorCard } from '../EditorCard';
 import { VersionBadges } from './VersionBadges';
 
 /** The value a property keeps when its editor is cleared: the property stays on the item until it is removed. */
@@ -61,7 +60,7 @@ export function PropertyCard({ item, def }: { item: Item; def: PropertyDef }) {
   const tSchema = useTranslations('schema');
   const version = useOpenProject().settings.minecraftVersion;
   return (
-    <EditorCard
+    <SectionCard
       title={tSchema(def.label as never)}
       badges={
         <>
@@ -97,6 +96,6 @@ export function PropertyCard({ item, def }: { item: Item; def: PropertyDef }) {
           onChange={(value) => setItemProperty(item.id, def, toConfigValue(value) ?? emptyValueFor(def))}
         />
       </div>
-    </EditorCard>
+    </SectionCard>
   );
 }

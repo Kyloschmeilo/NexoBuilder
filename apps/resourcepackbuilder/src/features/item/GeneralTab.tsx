@@ -6,6 +6,7 @@ import { DEFAULT_MATERIAL, normalizeTypedMaterial } from '@resourcepackbuilder/c
 import { normalizeTypedId } from '@resourcepackbuilder/core/minecraft/resourceLocation';
 import { validateItemId, type ItemIdError } from '@resourcepackbuilder/core/project/ids';
 import { itemLabel } from '@resourcepackbuilder/core/project/labels';
+import { SectionCard } from '@resourcepackbuilder/ui';
 import { Field, FieldDescription, FieldError, FieldLabel } from '@resourcepackbuilder/ui/components/field';
 import { Input } from '@resourcepackbuilder/ui/components/input';
 import { moveItem, updateItem } from '../../commands/items';
@@ -13,7 +14,6 @@ import { TextInput, toStringList } from '../../components/editor';
 import { FolderSelect } from '../../components/FolderSelect';
 import { ItemTooltip } from '../../components/miniMessage/ItemTooltip';
 import { useOpenProject } from '../../store/project';
-import { EditorCard } from './EditorCard';
 import { PropertiesPanel } from './properties/PropertiesPanel';
 
 /** Example tags shown in the display-name help (MiniMessage syntax, not translated). */
@@ -50,7 +50,7 @@ export function GeneralTab({ item }: { item: Item }) {
 
   return (
     <div className="flex flex-col gap-6">
-      <EditorCard title={t('general.title')} description={t('general.description')}>
+      <SectionCard title={t('general.title')} description={t('general.description')}>
         <div className="grid gap-5 @4xl:grid-cols-[minmax(0,1fr)_minmax(0,20rem)]">
           <div className="grid min-w-0 grid-cols-1 gap-4 @xl:grid-cols-2">
             <Field className="gap-1.5 @xl:col-span-2">
@@ -123,7 +123,7 @@ export function GeneralTab({ item }: { item: Item }) {
             <span className="text-xs text-muted-foreground">{t('general.tooltipHelp')}</span>
           </div>
         </div>
-      </EditorCard>
+      </SectionCard>
       <PropertiesPanel item={item} group="general" />
     </div>
   );

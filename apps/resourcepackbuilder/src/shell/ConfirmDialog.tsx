@@ -25,7 +25,7 @@ export function ConfirmDialog({ question: { options, resolve } }: { question: Ex
     >
       <AlertDialogContent initialFocus={confirmRef}>
         <AlertDialogHeader>
-          <AlertDialogTitle className="font-heading">{options.title}</AlertDialogTitle>
+          <AlertDialogTitle>{options.title}</AlertDialogTitle>
           <AlertDialogDescription className="whitespace-pre-line">{options.message}</AlertDialogDescription>
         </AlertDialogHeader>
         <AlertDialogFooter>

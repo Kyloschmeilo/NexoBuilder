@@ -3,13 +3,12 @@ import type { Item } from '@resourcepackbuilder/core/project/types';
 import type { ExportPlan } from '@resourcepackbuilder/core/export/types';
 import { parseYaml, toYaml } from '@resourcepackbuilder/core/nexo/yaml';
 import { isPlainObject } from '@resourcepackbuilder/core/object';
-import { CopyButton } from '@resourcepackbuilder/ui';
+import { CopyButton, SectionCard } from '@resourcepackbuilder/ui';
 import { FieldDescription, FieldError } from '@resourcepackbuilder/ui/components/field';
 import { Textarea } from '@resourcepackbuilder/ui/components/textarea';
 import { updateItem } from '../../commands/items';
 import { YamlView } from '../../components/YamlView';
 import { usePlan } from '../../store/PlanProvider';
-import { EditorCard } from './EditorCard';
 
 const INDENT = '  ';
 const EXAMPLE = 'Mechanics:\n  furniture:\n    placements:\n      wall:\n        properties:\n          translation: 0,0.3,-0.3';
@@ -47,7 +46,7 @@ export function YamlTab({ item }: { item: Item }) {
 
   return (
     <div className="flex flex-col gap-6">
-      <EditorCard title={t('yaml.extraTitle')} description={t('yaml.extraDescription')}>
+      <SectionCard title={t('yaml.extraTitle')} description={t('yaml.extraDescription')}>
         <Textarea
           className="min-h-0 font-mono text-xs leading-5 [tab-size:2]"
           aria-invalid={error ? true : undefined}
@@ -66,15 +65,15 @@ export function YamlTab({ item }: { item: Item }) {
         />
         {error && <FieldError className="mt-1.5 text-xs">{t('yaml.error', { error })}</FieldError>}
         <FieldDescription className="mt-1.5 text-xs">{t('yaml.keyHint', { id: item.nexoId })}</FieldDescription>
-      </EditorCard>
+      </SectionCard>
 
-      <EditorCard
+      <SectionCard
         title={t('yaml.finalTitle')}
         description={t('yaml.finalDescription', { file: yamlFile })}
         actions={<CopyButton text={preview} label={tCommon('copy')} />}
       >
         <YamlView text={preview || t('yaml.computing')} />
-      </EditorCard>
+      </SectionCard>
     </div>
   );
 }

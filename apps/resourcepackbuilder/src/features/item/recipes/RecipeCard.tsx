@@ -4,14 +4,13 @@ import type { Item } from '@resourcepackbuilder/core/project/types';
 import { getRecipeTypeInfo, MAX_RESULT_AMOUNT, type Recipe } from '@resourcepackbuilder/core/nexo/recipes/model';
 import { recipeFilePath } from '@resourcepackbuilder/core/nexo/recipes/files';
 import { validateRecipe } from '@resourcepackbuilder/core/nexo/recipes/validate';
-import { IconButton, Tip } from '@resourcepackbuilder/ui';
+import { IconButton, SectionCard, Tip } from '@resourcepackbuilder/ui';
 import { Badge } from '@resourcepackbuilder/ui/components/badge';
 import { Field, FieldDescription, FieldTitle } from '@resourcepackbuilder/ui/components/field';
 import { removeRecipe, updateRecipe } from '../../../commands/items';
 import { NumberInput } from '../../../components/editor';
 import { IssueList } from '../../../components/IssueList';
 import { useOpenProject } from '../../../store/project';
-import { EditorCard } from '../EditorCard';
 import { IngredientList } from './IngredientList';
 import { IngredientRow } from './IngredientRow';
 import { sortRecipeIssues } from './recipeIssues';
@@ -39,7 +38,7 @@ export function RecipeCard({ item, recipe, recipeKey }: RecipeCardProps) {
   const update: RecipeUpdater = (change, historyKey) => updateRecipe(item.id, recipe.id, change, historyKey);
 
   return (
-    <EditorCard
+    <SectionCard
       title={tSchema(info.label as never)}
       badges={
         <Tip label={t('recipes.key')}>
@@ -141,6 +140,6 @@ export function RecipeCard({ item, recipe, recipeKey }: RecipeCardProps) {
         </div>
         <IssueList issues={issues.recipe} />
       </div>
-    </EditorCard>
+    </SectionCard>
   );
 }

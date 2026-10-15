@@ -16,7 +16,7 @@ export function PackStatus({ pack, player }: { pack: TestServerState['pack']; pl
   const detail = pack.status === 'failed' || pack.status === 'ready' ? pack.message : null;
 
   return (
-    <div className="flex flex-wrap items-center gap-2.5 border-t border-border px-4 py-3">
+    <div className="flex flex-wrap items-center gap-2.5">
       <StatusBadge tone={PACK_STATUS_TONE[pack.status]}>
         {pack.status === 'building' && <Spinner />}
         {t(pack.status)}

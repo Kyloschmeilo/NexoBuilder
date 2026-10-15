@@ -4,6 +4,7 @@ import { useTranslations } from 'next-intl';
 import type { MapField } from '@resourcepackbuilder/core/nexo/fields';
 import { isPlainObject } from '@resourcepackbuilder/core/object';
 import { IconButton } from '@resourcepackbuilder/ui';
+import { Card, CardContent, CardHeader } from '@resourcepackbuilder/ui/components/card';
 import { Button } from '@resourcepackbuilder/ui/components/button';
 import { Input } from '@resourcepackbuilder/ui/components/input';
 import { useSchemaText } from '../../useSchemaText';
@@ -13,7 +14,6 @@ import { Datalist } from '../inputs/TextInput';
 import type { EditorProps } from '../types';
 import { useDraft } from '../useDraft';
 import { isWideField, objectOrUndefined, renameKey, withKey } from '../values';
-import { EntryCard } from './EntryCard';
 import { ObjectFields } from './ObjectEditor';
 
 /** The key of a map entry; a rename is applied when the input loses focus. */
@@ -77,22 +77,22 @@ export function MapEditor({ field, value, onChange, hideLabel }: EditorProps<Map
       <div className="flex flex-col gap-2">
         {entries.map(([key, entry]) =>
           isWideField(valueField) ? (
-            <EntryCard
-              key={key}
-              header={
+            <Card key={key} variant="muted" size="sm" className="gap-0 py-0">
+              <CardHeader className="flex items-center gap-1.5 border-b py-1.5 pr-2 font-semibold [.border-b]:pb-1.5">
                 <>
                   <KeyInput value={key} onRename={(k) => rename(key, k)} listId={listId} />
                   <span className="flex-1" />
                   {removeButton(key)}
                 </>
-              }
-            >
-              {valueField.type === 'object' ? (
-                <ObjectFields field={valueField} value={entry} onChange={(v) => commit({ ...map, [key]: v })} />
-              ) : (
-                <FieldRenderer field={valueField} value={entry} hideLabel onChange={(v) => commit({ ...map, [key]: v })} />
-              )}
-            </EntryCard>
+              </CardHeader>
+              <CardContent className="py-3">
+                {valueField.type === 'object' ? (
+                  <ObjectFields field={valueField} value={entry} onChange={(v) => commit({ ...map, [key]: v })} />
+                ) : (
+                  <FieldRenderer field={valueField} value={entry} hideLabel onChange={(v) => commit({ ...map, [key]: v })} />
+                )}
+              </CardContent>
+            </Card>
           ) : (
             <div key={key} className="flex items-start gap-2">
               <KeyInput value={key} onRename={(k) => rename(key, k)} listId={listId} />
