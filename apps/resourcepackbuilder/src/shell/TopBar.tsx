@@ -38,9 +38,7 @@ import { redo, undo, useProjectStore } from '../store/project';
 import { useSaveStore } from '../store/save';
 import { isProjectShared, useShareStore } from '../store/share';
 import { setRightPanelOpen, useUiStore } from '../store/ui';
-import { THEME_CHOICES, THEME_ICONS } from '../theme/choices';
-import { useTheme } from '../theme/ThemeProvider';
-import { isThemeChoice } from '../theme/theme';
+import { THEME_CHOICES, useThemeChoice } from '../theme/useThemeChoice';
 
 /** Opens the share dialog; shows the share status while the open project is shared. */
 function ShareButton() {
@@ -99,8 +97,7 @@ function ChecksButton({ onClick }: { onClick: () => void }) {
 /** Quick switch between light, dark and system appearance. */
 function ThemeMenu() {
   const tCommon = useTranslations('common');
-  const { choice, setTheme } = useTheme();
-  const Icon = THEME_ICONS[choice];
+  const { choice, icon: Icon, setChoice } = useThemeChoice();
   return (
     <DropdownMenu>
       <Tip label={tCommon('theme')}>
@@ -111,12 +108,7 @@ function ThemeMenu() {
       <DropdownMenuContent align="end" className="w-40">
         <DropdownMenuGroup>
           <DropdownMenuLabel>{tCommon('theme')}</DropdownMenuLabel>
-          <DropdownMenuRadioGroup
-            value={choice}
-            onValueChange={(value) => {
-              if (isThemeChoice(value)) setTheme(value);
-            }}
-          >
+          <DropdownMenuRadioGroup value={choice} onValueChange={setChoice}>
             {THEME_CHOICES.map(({ id, icon: ChoiceIcon }) => (
               <DropdownMenuRadioItem key={id} value={id}>
                 <ChoiceIcon /> {tCommon(`themeNames.${id}`)}

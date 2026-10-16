@@ -7,7 +7,6 @@ import { BrandMark } from '../components/BrandMark';
 import { I18nProvider } from '../i18n/I18nProvider';
 import { bootstrap, type AppServices } from '../services/bootstrap';
 import { ServicesContext } from '../services/servicesContext';
-import { ThemeProvider } from '../theme/ThemeProvider';
 import { AppShell } from './AppShell';
 
 type BootState = { kind: 'booting' } | { kind: 'ready'; services: AppServices } | { kind: 'failed'; error: unknown };
@@ -61,18 +60,16 @@ export default function Root() {
   }, []);
 
   return (
-    <ThemeProvider>
-      <I18nProvider>
-        <TooltipProvider>
-          {boot.kind === 'booting' && <Booting />}
-          {boot.kind === 'ready' && (
-            <ServicesContext.Provider value={boot.services}>
-              <AppShell />
-            </ServicesContext.Provider>
-          )}
-          {boot.kind === 'failed' && <BootFailed error={boot.error} />}
-        </TooltipProvider>
-      </I18nProvider>
-    </ThemeProvider>
+    <I18nProvider>
+      <TooltipProvider>
+        {boot.kind === 'booting' && <Booting />}
+        {boot.kind === 'ready' && (
+          <ServicesContext.Provider value={boot.services}>
+            <AppShell />
+          </ServicesContext.Provider>
+        )}
+        {boot.kind === 'failed' && <BootFailed error={boot.error} />}
+      </TooltipProvider>
+    </I18nProvider>
   );
 }
