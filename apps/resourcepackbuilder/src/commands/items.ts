@@ -1,14 +1,13 @@
 /** Creating, changing, moving and deleting items. */
 import { produce } from 'immer';
-import type { ConfigValue, Item, Project } from '@resourcepackbuilder/core/project/types';
+import type { ConfigValue, Item } from '@resourcepackbuilder/core/project/types';
 import type { ImportedModel, ModelTexture } from '@resourcepackbuilder/core/model/types';
-import { createItem, insertItem, type NewItemInput } from '@resourcepackbuilder/core/project/factory';
+import type { NewItemInput } from '@resourcepackbuilder/core/project/factory';
+import * as operations from '@resourcepackbuilder/core/project/operations';
 import { uid } from '@resourcepackbuilder/core/id';
-import { uniqueNexoId } from '@resourcepackbuilder/core/project/ids';
 import { pruneUnusedAssets } from '@resourcepackbuilder/core/project/assets';
 import { createTexture, withTextureAnimation, type TextureAnimationSettings } from '@resourcepackbuilder/core/model/textures';
 import { assetToken, texturePlaceholder } from '@resourcepackbuilder/core/tokens';
-import { deepClone } from '@resourcepackbuilder/core/object';
 import { setPath } from '@resourcepackbuilder/core/nexo/configPath';
 import { PROPERTY_BY_ID, type PropertyDef } from '@resourcepackbuilder/core/nexo/schema';
 import { setPropertyValue } from '@resourcepackbuilder/core/nexo/properties';
@@ -17,20 +16,11 @@ import { createRecipe, type Recipe, type RecipeType } from '@resourcepackbuilder
 import { getProject, mutate } from '../store/project';
 import { select, setExpanded } from '../store/ui';
 
-/** Adds the item to the draft with a unique item id (for commands that create items). */
-export function insertNewItem(draft: Project, input: NewItemInput, configure?: (item: Item) => void): Item {
-  const item = createItem(input);
-  item.nexoId = uniqueNexoId(draft, item.nexoId);
-  configure?.(item);
-  insertItem(draft, item);
-  return item;
-}
-
 /** Creates items (one undo step) and selects the last one. */
 export function addItems(inputs: NewItemInput[]): void {
   const created: Item[] = [];
   mutate((draft) => {
-    for (const input of inputs) created.push(insertNewItem(draft, input));
+    for (const input of inputs) created.push(operations.insertNewItem(draft, input));
   });
   const last = created.at(-1);
   if (last) showItem(last.folderId, last.id);
@@ -199,50 +189,24 @@ export function updateRecipe(itemId: string, recipeId: string, recipe: (draft: R
 }
 
 export function deleteItem(itemId: string): void {
-  mutate((draft) => {
-    const item = draft.items[itemId];
-    if (!item) return;
-    const folder = draft.folders[item.folderId];
-    if (folder) folder.itemIds = folder.itemIds.filter((id) => id !== itemId);
-    delete draft.items[itemId];
-  });
+  mutate((draft) => operations.deleteItem(draft, itemId));
 }
 
 /** Moves an item into a folder, optionally before another item. */
 export function moveItem(itemId: string, folderId: string, beforeItemId?: string): void {
-  mutate((draft) => {
-    const item = draft.items[itemId];
-    const target = draft.folders[folderId];
-    if (!item || !target) return;
-    const source = draft.folders[item.folderId];
-    if (source) source.itemIds = source.itemIds.filter((id) => id !== itemId);
-    item.folderId = folderId;
-    const index = beforeItemId ? target.itemIds.indexOf(beforeItemId) : -1;
-    if (index >= 0) target.itemIds.splice(index, 0, itemId);
-    else target.itemIds.push(itemId);
-  });
+  mutate((draft) => void operations.moveItem(draft, itemId, folderId, beforeItemId));
   setExpanded(folderId, true);
 }
 
 /** Copies an item next to the original and selects the copy; `displayName` is the copy's name. */
 export function duplicateItem(itemId: string, displayName: string): string | null {
-  const original = getProject()?.items[itemId];
-  if (!original) return null;
-  const now = Date.now();
-  const copy: Item = {
-    ...deepClone(original),
-    id: uid('i_'),
-    displayName,
-    recipes: original.recipes.map((r) => ({ ...deepClone(r), id: uid('r_') })),
-    createdAt: now,
-    updatedAt: now,
-  };
+  const created: Item[] = [];
   mutate((draft) => {
-    copy.nexoId = uniqueNexoId(draft, `${original.nexoId}_copy`);
-    draft.items[copy.id] = copy;
-    const folder = draft.folders[copy.folderId];
-    if (folder) folder.itemIds.splice(folder.itemIds.indexOf(itemId) + 1, 0, copy.id);
+    const copy = operations.duplicateItem(draft, itemId, displayName);
+    if (copy) created.push(copy);
   });
+  const [copy] = created;
+  if (!copy) return null;
   select({ kind: 'item', id: copy.id });
   return copy.id;
 }

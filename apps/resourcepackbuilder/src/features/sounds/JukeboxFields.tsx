@@ -4,12 +4,11 @@ import type { JukeboxSong, Sound } from '@resourcepackbuilder/core/nexo/sounds/m
 import { Button } from '@resourcepackbuilder/ui/components/button';
 import { Input } from '@resourcepackbuilder/ui/components/input';
 import { AutoGrid } from '@resourcepackbuilder/ui';
-import { addMusicDiscItem, updateJukeboxSong } from '../../commands/media';
+import { updateJukeboxSong } from '../../commands/media';
 import { NumberInput } from '../../components/editor';
 import { FormField } from '../../components/FormField';
-import { notify } from '../../shell/notify';
-import { useOpenProject } from '../../store/project';
 import { NexoKey } from '../media/NexoKey';
+import { useMediaActions } from '../media/useMediaActions';
 
 /** Strongest redstone signal a comparator can output. */
 const MAX_COMPARATOR_OUTPUT = 15;
@@ -17,14 +16,8 @@ const MAX_COMPARATOR_OUTPUT = 15;
 /** Options of a sound registered as a jukebox song, and the button that creates a music disc for it. */
 export function JukeboxFields({ sound, song }: { sound: Sound; song: JukeboxSong }) {
   const t = useTranslations('media.sounds');
-  const tApp = useTranslations('app');
-  const { namespace } = useOpenProject();
+  const media = useMediaActions();
   const update = (recipe: (draft: JukeboxSong) => void, historyKey: string) => updateJukeboxSong(sound.id, recipe, historyKey);
-
-  const createDisc = () => {
-    addMusicDiscItem(sound, namespace, tApp('defaults.musicFolder'));
-    notify('success', t('discCreated'));
-  };
 
   return (
     <div className="flex flex-col gap-2.5 rounded-lg border border-border p-3">
@@ -55,7 +48,7 @@ export function JukeboxFields({ sound, song }: { sound: Sound; song: JukeboxSong
         </FormField>
       </AutoGrid>
       <div className="flex flex-wrap items-center gap-2">
-        <Button variant="outline" size="sm" onClick={createDisc}>
+        <Button variant="outline" size="sm" onClick={() => media.createMusicDisc(sound)}>
           <Disc3 /> {t('createDisc')}
         </Button>
         <span className="text-xs text-muted-foreground">{t('createDiscHint')}</span>

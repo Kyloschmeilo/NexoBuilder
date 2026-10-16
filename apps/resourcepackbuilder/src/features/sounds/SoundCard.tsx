@@ -34,7 +34,7 @@ export function SoundCard({ sound, plan }: { sound: Sound; plan: ExportPlan | nu
       usage={mediaKey(project, sound.soundId)}
       copyLabel={tShared('copyId')}
       deleteLabel={t('delete')}
-      onDelete={() => void media.removeSound(sound)}
+      onDelete={() => void media.remove('sound', sound)}
     >
       <AutoGrid>
         <FormField label={<NexoKey>ID</NexoKey>} help={t('idHelp')}>

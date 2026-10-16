@@ -51,7 +51,7 @@ export function GlyphCard({ glyph, glyphs, plan }: { glyph: Glyph; glyphs: Glyph
         )
       }
       deleteLabel={t('delete')}
-      onDelete={() => void media.removeGlyph(glyph)}
+      onDelete={() => void media.remove('glyph', glyph)}
       preview={
         glyph.kind !== 'reference' && (
           <>

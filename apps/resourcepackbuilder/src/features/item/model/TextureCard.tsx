@@ -3,7 +3,7 @@ import { useTranslations } from 'next-intl';
 import { ImageUp, Pencil } from 'lucide-react';
 import { cn } from 'cn';
 import type { ModelTexture } from '@resourcepackbuilder/core/model/types';
-import { getAnimation, getFrameSize } from '@resourcepackbuilder/core/model/textures';
+import { DEFAULT_ANIMATION_FRAMETIME, getAnimation, getFrameSize } from '@resourcepackbuilder/core/model/textures';
 import { IconButton, pickFiles, Thumb } from '@resourcepackbuilder/ui';
 import { Button } from '@resourcepackbuilder/ui/components/button';
 import { Item, ItemContent, ItemMedia } from '@resourcepackbuilder/ui/components/item';
@@ -13,9 +13,6 @@ import { Label } from '@resourcepackbuilder/ui/components/label';
 import { setTextureAnimation, updateModelTexture } from '../../../commands/items';
 import { NumberInput } from '../../../components/editor';
 import { PNG_ACCEPT, usePngReader } from '../usePngReader';
-
-/** Ticks per frame of a newly animated texture. */
-const DEFAULT_FRAMETIME = 2;
 
 /** The texture name, editable in place. */
 function TextureName({ itemId, texture }: { itemId: string; texture: ModelTexture }) {
@@ -67,7 +64,7 @@ function TextureAnimationOptions({ itemId, texture }: { itemId: string; texture:
           id={animatedId}
           checked={!!animation}
           onCheckedChange={(checked) =>
-            setTextureAnimation(itemId, texture.id, checked ? { frametime: DEFAULT_FRAMETIME, interpolate: false } : null)
+            setTextureAnimation(itemId, texture.id, checked ? { frametime: DEFAULT_ANIMATION_FRAMETIME, interpolate: false } : null)
           }
         />
         <Label htmlFor={animatedId} className="cursor-pointer text-xs font-normal text-foreground">

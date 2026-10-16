@@ -52,6 +52,9 @@ export function getAnimation(texture: ModelTexture): TextureAnimation | null {
   };
 }
 
+/** Ticks per frame of a newly animated texture or painting. */
+export const DEFAULT_ANIMATION_FRAMETIME = 2;
+
 /** The animation values the user edits; everything else of the .mcmeta animation (frames, size) is kept. */
 export interface TextureAnimationSettings {
   frametime: number;

@@ -37,3 +37,13 @@ export interface JukeboxSong {
 export function createSound(id: string, soundId: string, files: SoundFile[]): Sound {
   return { id, soundId, files, stream: false, volume: null, pitch: null, distance: null, jukebox: null };
 }
+
+export function createJukeboxSong(): JukeboxSong {
+  return { duration: '', description: '', comparatorOutput: null, range: null };
+}
+
+/** Registers the sound as a jukebox song – streamed, because music is long – or unregisters it (mutates). */
+export function setSoundJukebox(sound: Sound, enabled: boolean): void {
+  sound.jukebox = enabled ? (sound.jukebox ?? createJukeboxSong()) : null;
+  if (enabled) sound.stream = true;
+}

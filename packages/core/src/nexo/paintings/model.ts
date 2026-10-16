@@ -3,6 +3,7 @@
  * assets/<ns>/textures/painting/<id>.png plus an entry in plugins/Nexo/paintings.yml.
  * From Minecraft 1.21.5 on, Nexo generates the required datapack from it.
  */
+import { DEFAULT_ANIMATION_FRAMETIME } from '../../model/textures';
 import type { MediaFile } from '../media/entry';
 
 /** Largest painting side in blocks. */
@@ -40,7 +41,7 @@ export function createPainting(id: string, paintingId: string, file: MediaFile |
     randomPlace: false,
     file,
     animated: false,
-    frametime: 2,
+    frametime: DEFAULT_ANIMATION_FRAMETIME,
   };
 }
 
