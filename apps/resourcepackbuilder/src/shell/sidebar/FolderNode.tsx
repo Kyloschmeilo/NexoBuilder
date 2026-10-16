@@ -2,24 +2,33 @@ import { ClipboardPaste, Folder as FolderIcon, FolderOpen, FolderPlus, Pencil, P
 import { useTranslations } from 'next-intl';
 import { cn } from 'cn';
 import { itemIdsInFolder } from '@resourcepackbuilder/core/project/tree';
-import { filesFromDataTransfer, IconButton, type MenuEntry, TREE_INDENT_PX, TreeChevron, treeRowSlots } from '@resourcepackbuilder/ui';
+import { clipboardLabel } from '@resourcepackbuilder/core/nexo/copyConfig';
+import {
+  FILES_DRAG_TYPE,
+  filesFromDataTransfer,
+  IconButton,
+  type MenuEntry,
+  TREE_INDENT_PX,
+  TreeChevron,
+  treeRowSlots,
+} from '@resourcepackbuilder/ui';
 import { Collapsible, CollapsibleContent } from '@resourcepackbuilder/ui/components/collapsible';
 import { moveFolder } from '../../commands/folders';
 import { moveItem } from '../../commands/items';
 import { useFolderActions } from '../../features/folder/useFolderActions';
 import { useItemActions } from '../../features/item/useItemActions';
-import { clipboardLabel, useClipboardStore } from '../../store/clipboard';
-import { openDialog } from '../../store/dialogs';
+import { newItemDialog } from '../../features/newItem/NewItemDialog';
+import { useClipboardStore } from '../../store/clipboard';
 import { select, setExpanded, useUiStore } from '../../store/ui';
 import { ItemNode } from './ItemNode';
 import { FOLDER_ICON_PADDING_PX, FOLDER_PADDING_PX } from './rowStyles';
 import type { SidebarTree } from './treeIndex';
 import { activateOnKey, TreeRow } from './TreeRow';
-import { DRAG_FILES, DRAG_FOLDER, DRAG_ITEM, useDropTarget } from './useDropTarget';
+import { DRAG_FOLDER, DRAG_ITEM, useDropTarget } from './useDropTarget';
 
 /** Accepts items and folders moved onto it, and files that become new items in it. */
 function useFolderDrop(folderId: string) {
-  return useDropTarget([DRAG_ITEM, DRAG_FOLDER, DRAG_FILES], (data) => {
+  return useDropTarget([DRAG_ITEM, DRAG_FOLDER, FILES_DRAG_TYPE], (data) => {
     const itemId = data.getData(DRAG_ITEM);
     const draggedFolderId = data.getData(DRAG_FOLDER);
     if (itemId) moveItem(itemId, folderId);
@@ -27,7 +36,7 @@ function useFolderDrop(folderId: string) {
       if (draggedFolderId !== folderId) moveFolder(draggedFolderId, folderId);
     } else {
       void filesFromDataTransfer(data).then((files) => {
-        if (files.length) openDialog({ id: 'newItem', props: { folderId, files } });
+        if (files.length) newItemDialog.openWithPayload({ folderId, files });
       });
     }
   });
@@ -48,7 +57,7 @@ export function FolderNode({ folderId, depth, tree }: { folderId: string; depth:
 
   const isOpen = search !== null || isExpanded;
   const count = tree.itemCounts.get(folderId) ?? 0;
-  const newItem = () => openDialog({ id: 'newItem', props: { folderId } });
+  const newItem = () => newItemDialog.openWithPayload({ folderId });
   const activate = () => {
     select({ kind: 'folder', id: folderId });
     if (!search) setExpanded(folderId, !isExpanded);

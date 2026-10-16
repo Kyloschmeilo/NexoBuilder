@@ -10,7 +10,7 @@ import { Button } from '@resourcepackbuilder/ui/components/button';
 import { ModelPreview } from '@resourcepackbuilder/preview';
 import { setItemModel } from '../../../commands/items';
 import { IssueList } from '../../../components/IssueList';
-import { usePlan } from '../../../store/PlanProvider';
+import { usePlan } from '../../../shell/PlanProvider';
 import { useOpenProject } from '../../../store/project';
 import { ModelParentSelect } from './ModelParentSelect';
 import { ShadingOptions } from './ShadingOptions';

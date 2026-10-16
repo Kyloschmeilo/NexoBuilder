@@ -1,11 +1,13 @@
 /**
  * Dialogs. Simple questions (`confirm`, `prompt`) return promises and stack, so a question asked from inside a
- * dialog never replaces the one underneath. Feature dialogs (export, settings …) are opened by id; the shell renders
- * them from its registry. At most one feature dialog is open at a time; a dialog that belongs to the open project
- * closes when that project is closed or another one is opened.
+ * dialog never replaces the one underneath.
+ *
+ * Feature dialogs (export, settings …) are Base UI dialogs opened through their handle (`exportDialog.open(null)`,
+ * `moveItemDialog.openWithPayload({ itemId })`); each one renders its root once in the shell and registers here, so
+ * `isAnyDialogOpen` sees them and `closeProjectDialogs` can close the ones that belong to the open project.
  */
 import { create } from 'zustand';
-import { getProject, useProjectStore } from './project';
+import type { DialogHandle } from '@resourcepackbuilder/ui/components/dialog';
 
 export interface ConfirmOptions {
   title: string;
@@ -28,31 +30,12 @@ export type Question =
   | { id: number; kind: 'confirm'; options: ConfirmOptions; resolve: (confirmed: boolean) => void }
   | { id: number; kind: 'prompt'; options: PromptOptions; resolve: (value: string | null) => void };
 
-/** Every feature dialog with the props it is opened with. */
-export interface FeatureDialogProps {
-  newItem: { folderId: string; files?: File[] };
-  export: Record<string, never>;
-  settings: Record<string, never>;
-  projects: { tab: 'open' | 'new' };
-  moveItem: { itemId: string };
-  share: Record<string, never>;
-  pasteConfig: { targetItemIds: string[] };
-}
-
-export type FeatureDialogId = keyof FeatureDialogProps;
-
-export type OpenFeatureDialog = { [K in FeatureDialogId]: { id: K; props: FeatureDialogProps[K] } }[FeatureDialogId];
-
-/** Feature dialogs that work without an open project; all others belong to the project they were opened for. */
-const PROJECT_INDEPENDENT_DIALOGS: ReadonlySet<FeatureDialogId> = new Set(['projects']);
-
 interface DialogState {
   questions: Question[];
-  feature: OpenFeatureDialog | null;
   nextId: number;
 }
 
-export const useDialogStore = create<DialogState>(() => ({ questions: [], feature: null, nextId: 1 }));
+export const useDialogStore = create<DialogState>(() => ({ questions: [], nextId: 1 }));
 
 function ask<T>(create: (id: number, resolve: (value: T) => void) => Question): Promise<T> {
   return new Promise<T>((resolve) => {
@@ -77,26 +60,21 @@ export function prompt(options: PromptOptions): Promise<string | null> {
   return ask<string | null>((id, resolve) => ({ id, kind: 'prompt', options, resolve }));
 }
 
-/**
- * Opens a feature dialog, e.g. `openDialog({ id: 'moveItem', props: { itemId } })`; replaces an open one. A project
- * dialog needs an open project.
- */
-export function openDialog(dialog: OpenFeatureDialog): void {
-  if (!PROJECT_INDEPENDENT_DIALOGS.has(dialog.id) && !getProject()) return;
-  useDialogStore.setState({ feature: dialog });
+/** Mounted feature dialogs; `true` for the ones that belong to the open project. */
+const featureDialogs = new Map<DialogHandle<never>, boolean>();
+
+/** Called by a mounted feature dialog root; returns the function that unregisters it. */
+export function registerFeatureDialog(handle: DialogHandle<never>, isProjectBound: boolean): () => void {
+  featureDialogs.set(handle, isProjectBound);
+  return () => featureDialogs.delete(handle);
 }
 
-export function closeDialog(): void {
-  useDialogStore.setState({ feature: null });
+/** Closes every feature dialog that belongs to the open project (it was closed or another one was opened). */
+export function closeProjectDialogs(): void {
+  for (const [handle, isProjectBound] of featureDialogs) if (isProjectBound && handle.isOpen) handle.close();
 }
 
 /** Whether a question or a feature dialog is open (window-level drops then stay out of the way). */
 export function isAnyDialogOpen(): boolean {
-  const { questions, feature } = useDialogStore.getState();
-  return questions.length > 0 || feature !== null;
+  return useDialogStore.getState().questions.length > 0 || [...featureDialogs.keys()].some((handle) => handle.isOpen);
 }
-
-useProjectStore.subscribe(({ project }, { project: previous }) => {
-  const { feature } = useDialogStore.getState();
-  if (project?.id !== previous?.id && feature && !PROJECT_INDEPENDENT_DIALOGS.has(feature.id)) closeDialog();
-});

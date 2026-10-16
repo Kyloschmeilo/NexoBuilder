@@ -1,4 +1,4 @@
-import type { TestServerUiState } from '../../store/testServer';
+import type { TestServerUiState } from '../../services/testServerStore';
 
 /** One sentence of the transfer summary; the UI words it with `media.testServer.sync.<key>`. */
 export type SyncSummaryPart =

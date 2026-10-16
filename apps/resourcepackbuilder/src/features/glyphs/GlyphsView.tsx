@@ -5,7 +5,7 @@ import { Button } from '@resourcepackbuilder/ui/components/button';
 import { Tip } from '@resourcepackbuilder/ui';
 import { addGlyph } from '../../commands/media';
 import { richTags } from '../../i18n/richTags';
-import { usePlan } from '../../store/PlanProvider';
+import { usePlan } from '../../shell/PlanProvider';
 import { useOpenProject } from '../../store/project';
 import { MediaPage } from '../media/MediaPage';
 import { GlyphCard } from './GlyphCard';

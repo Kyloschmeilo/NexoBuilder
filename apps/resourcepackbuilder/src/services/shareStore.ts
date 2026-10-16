@@ -8,8 +8,8 @@ export interface ShareState {
   folder: string | null;
   userName: string;
   status: ShareStatus;
-  /** Why syncing stopped (status `error`); translated by the UI */
-  error: unknown;
+  /** Why syncing stopped (status `error`); worded by `useErrorMessage` */
+  error: Error | null;
   lastSync: number | null;
 }
 

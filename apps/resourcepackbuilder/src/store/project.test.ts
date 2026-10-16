@@ -2,7 +2,7 @@ import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { createFolder, createItem, createProject, insertFolder, insertItem } from '@resourcepackbuilder/core/project/factory';
 import type { Project } from '@resourcepackbuilder/core/project/types';
 import { applyRemote, mutate, redo, setProject, undo, useProjectStore } from './project';
-import { select, useUiStore } from './ui';
+import { followOpenProject, select, useUiStore } from './ui';
 
 function projectWithItem(): { project: Project; folderId: string; itemId: string } {
   const project = createProject('Test');
@@ -15,13 +15,17 @@ function projectWithItem(): { project: Project; folderId: string; itemId: string
 
 const state = () => useProjectStore.getState();
 
+let stopFollowing = () => {};
+
 beforeEach(() => {
   vi.useFakeTimers();
   vi.setSystemTime(new Date(2026, 0, 1));
+  stopFollowing = followOpenProject();
 });
 
 afterEach(() => {
   setProject(null);
+  stopFollowing();
   vi.useRealTimers();
 });
 

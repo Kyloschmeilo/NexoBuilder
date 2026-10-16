@@ -7,8 +7,8 @@ import { Empty, EmptyDescription } from '@resourcepackbuilder/ui/components/empt
 import { Item, ItemActions, ItemContent, ItemDescription, ItemMedia, ItemTitle } from '@resourcepackbuilder/ui/components/item';
 import { Spinner } from '@resourcepackbuilder/ui/components/spinner';
 import { richTags } from '../../i18n/richTags';
-import { useServices } from '../../services/servicesContext';
-import type { ProjectSummary } from '../../services/projectRepository';
+import { useServices } from '../../services/bootstrap';
+import type { ProjectSummary } from '@resourcepackbuilder/core/project/summary';
 import { useProjectStore } from '../../store/project';
 import { useProjectActions } from './useProjectActions';
 

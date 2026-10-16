@@ -2,15 +2,17 @@ import { useId, useState } from 'react';
 import { useTranslations } from 'next-intl';
 import { FolderInput } from 'lucide-react';
 import { Button } from '@resourcepackbuilder/ui/components/button';
+import { createDialogHandle } from '@resourcepackbuilder/ui/components/dialog';
 import { Field, FieldLabel } from '@resourcepackbuilder/ui/components/field';
 import { moveItem } from '../../commands/items';
-import { DialogFrame } from '../../components/DialogFrame';
+import { DialogFrame, FeatureDialog } from '../../components/DialogFrame';
 import { FolderSelect } from '../../components/FolderSelect';
-import { closeDialog, type FeatureDialogProps } from '../../store/dialogs';
 import { useOpenProject } from '../../store/project';
 
-/** Moves an item into another folder. */
-export function MoveItemDialog({ itemId }: FeatureDialogProps['moveItem']) {
+/** Opens "Move item" for an item of the open project. */
+export const moveItemDialog = createDialogHandle<{ itemId: string }>();
+
+function MoveItemFrame({ itemId }: { itemId: string }) {
   const t = useTranslations('dialogs.moveItem');
   const tCommon = useTranslations('common');
   const project = useOpenProject();
@@ -25,13 +27,13 @@ export function MoveItemDialog({ itemId }: FeatureDialogProps['moveItem']) {
       size="narrow"
       footer={
         <>
-          <Button variant="outline" onClick={closeDialog}>
+          <Button variant="outline" onClick={() => moveItemDialog.close()}>
             {tCommon('cancel')}
           </Button>
           <Button
             onClick={() => {
               moveItem(itemId, target);
-              closeDialog();
+              moveItemDialog.close();
             }}
           >
             {t('confirm')}
@@ -45,4 +47,9 @@ export function MoveItemDialog({ itemId }: FeatureDialogProps['moveItem']) {
       </Field>
     </DialogFrame>
   );
+}
+
+/** Moves an item into another folder. */
+export function MoveItemDialog() {
+  return <FeatureDialog handle={moveItemDialog}>{({ itemId }) => <MoveItemFrame itemId={itemId} />}</FeatureDialog>;
 }

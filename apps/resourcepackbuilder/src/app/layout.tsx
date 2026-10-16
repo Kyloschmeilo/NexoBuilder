@@ -1,6 +1,6 @@
 import type { Metadata, Viewport } from 'next';
 import type { ReactNode } from 'react';
-import { THEME_INIT_SCRIPT } from '../theme/themeScript';
+import { ThemeProvider } from 'next-themes';
 import './globals.css';
 
 export const metadata: Metadata = {
@@ -14,14 +14,14 @@ export const viewport: Viewport = {
 };
 
 export default function RootLayout({ children }: { children: ReactNode }) {
-  // `lang` and the `dark` class are set on the client: the language by I18nProvider, the theme by the inline script before first paint.
+  // `lang` and the `dark` class are set on the client: the language by I18nProvider, the theme by next-themes' inline
+  // script before first paint ('theme' in localStorage: 'light', 'dark' or 'system').
   return (
     <html lang="en" suppressHydrationWarning>
-      <head>
-        <script dangerouslySetInnerHTML={{ __html: THEME_INIT_SCRIPT }} />
-      </head>
       <body>
-        <div id="root">{children}</div>
+        <ThemeProvider attribute="class" defaultTheme="system" enableSystem storageKey="theme" disableTransitionOnChange>
+          {children}
+        </ThemeProvider>
       </body>
     </html>
   );

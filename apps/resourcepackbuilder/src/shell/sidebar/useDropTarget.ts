@@ -3,7 +3,6 @@ import { useState, type DragEvent } from 'react';
 /** Drag payload types of the sidebar tree. */
 export const DRAG_ITEM = 'application/x-resourcepackbuilder-item';
 export const DRAG_FOLDER = 'application/x-resourcepackbuilder-folder';
-export const DRAG_FILES = 'Files';
 
 /**
  * Highlight state and handlers of an element that accepts drops of the given payload types. Drop targets nest: an

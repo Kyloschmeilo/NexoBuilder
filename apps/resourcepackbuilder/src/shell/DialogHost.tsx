@@ -1,28 +1,15 @@
-import type { ComponentType } from 'react';
-import { useDialogStore, type FeatureDialogId, type FeatureDialogProps } from '../store/dialogs';
-import { DIALOGS } from './dialogRegistry';
+import { useDialogStore } from '../store/dialogs';
 import { ConfirmDialog } from './ConfirmDialog';
 import { PromptDialog } from './PromptDialog';
 
-function FeatureDialog<K extends FeatureDialogId>({ id, props }: { id: K; props: FeatureDialogProps[K] }) {
-  const Dialog: ComponentType<FeatureDialogProps[K]> = DIALOGS[id];
-  return <Dialog {...props} />;
-}
-
-/** Renders the open feature dialog and, above it, the stack of open questions. */
+/** Renders the stack of open questions (`confirm`, `prompt`); the newest is on top. */
 export function DialogHost() {
-  const feature = useDialogStore((s) => s.feature);
   const questions = useDialogStore((s) => s.questions);
-  return (
-    <>
-      {feature && <FeatureDialog key={feature.id} id={feature.id} props={feature.props} />}
-      {questions.map((question) =>
-        question.kind === 'confirm' ? (
-          <ConfirmDialog key={question.id} question={question} />
-        ) : (
-          <PromptDialog key={question.id} question={question} />
-        ),
-      )}
-    </>
+  return questions.map((question) =>
+    question.kind === 'confirm' ? (
+      <ConfirmDialog key={question.id} question={question} />
+    ) : (
+      <PromptDialog key={question.id} question={question} />
+    ),
   );
 }

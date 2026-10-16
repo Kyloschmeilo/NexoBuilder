@@ -55,6 +55,12 @@ export default defineConfig(
       '@next/next/no-img-element': 'off',
     },
   },
+  // The renderer: a forgotten rejection is an unhandled error in the window (ignore one explicitly with `void`)
+  {
+    files: [`${APP}/src/**/*.{ts,tsx}`],
+    languageOptions: { parserOptions: { projectService: true, tsconfigRootDir: path.join(import.meta.dirname, APP) } },
+    rules: { '@typescript-eslint/no-floating-promises': 'error' },
+  },
 
   // Node: Electron main process and preload script, the S3 package (bundled into the main process)
   {

@@ -2,7 +2,17 @@ export { AutoGrid } from './AutoGrid';
 export { CollapsibleSection } from './CollapsibleSection';
 export { CopyButton } from './CopyButton';
 export { DropZone } from './DropZone';
-export { downloadBytes, fileStem, filesFromDataTransfer, pickFiles, readAsDataUrl, readAsText, readPngAsDataUrl } from './files';
+export {
+  carriesFiles,
+  downloadBytes,
+  FILES_DRAG_TYPE,
+  fileStem,
+  filesFromDataTransfer,
+  pickFiles,
+  readAsDataUrl,
+  readAsText,
+  readPngAsDataUrl,
+} from './files';
 export { IconButton } from './IconButton';
 export { MenuEntries, type MenuEntry } from './MenuEntries';
 export { PageHeader, PageShell } from './PageHeader';

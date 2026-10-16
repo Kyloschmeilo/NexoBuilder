@@ -3,9 +3,9 @@ import { useTranslations } from 'next-intl';
 import { Settings } from 'lucide-react';
 import { Button } from '@resourcepackbuilder/ui/components/button';
 import { Card, CardContent } from '@resourcepackbuilder/ui/components/card';
+import { createDialogHandle } from '@resourcepackbuilder/ui/components/dialog';
 import { FieldDescription, FieldLegend, FieldSet } from '@resourcepackbuilder/ui/components/field';
-import { DialogFrame } from '../../components/DialogFrame';
-import { closeDialog } from '../../store/dialogs';
+import { DialogFrame, FeatureDialog } from '../../components/DialogFrame';
 import { DeviceSettings } from './DeviceSettings';
 import { ProjectSettings } from './ProjectSettings';
 
@@ -21,12 +21,18 @@ function SettingsGroup({ title, description, children }: { title: string; descri
   );
 }
 
-/** Settings of the open project and of this device. */
-export function SettingsDialog() {
+/** Opens the settings of the open project and of this device. */
+export const settingsDialog = createDialogHandle<void>();
+
+function SettingsFrame() {
   const t = useTranslations('dialogs.settings');
   const tCommon = useTranslations('common');
   return (
-    <DialogFrame title={tCommon('settings')} icon={<Settings />} footer={<Button onClick={closeDialog}>{tCommon('done')}</Button>}>
+    <DialogFrame
+      title={tCommon('settings')}
+      icon={<Settings />}
+      footer={<Button onClick={() => settingsDialog.close()}>{tCommon('done')}</Button>}
+    >
       <div className="flex flex-col gap-6">
         <SettingsGroup title={t('project.title')} description={t('project.description')}>
           <ProjectSettings />
@@ -41,4 +47,9 @@ export function SettingsDialog() {
       </div>
     </DialogFrame>
   );
+}
+
+/** Settings of the open project and of this device. */
+export function SettingsDialog() {
+  return <FeatureDialog handle={settingsDialog}>{() => <SettingsFrame />}</FeatureDialog>;
 }

@@ -5,37 +5,14 @@ import type { SyncState } from '@resourcepackbuilder/core/sync/engine';
 import type { Autosave } from '../services/autosave';
 import type { AppServices } from '../services/bootstrap';
 import { createEvents } from '../services/events';
-import type { ProjectRepository, ShareConfig } from '../services/projectRepository';
+import { memoryRepository } from '../services/memoryRepository';
+import type { ProjectRepository } from '../services/projectRepository';
 import type { SharedFolderProject, ShareSync } from '../services/shareSync';
 import { getProject, setProject } from '../store/project';
 import { openSharedProject } from './projects';
 
 const FOLDER = 'C:/Shared/Pack';
 const SYNC_STATE: SyncState = { clock: 1, versions: {}, files: {} };
-
-/** In-memory repository holding projects and share configs. */
-function memoryRepository() {
-  const projects = new Map<string, Project>();
-  const shares = new Map<string, ShareConfig>();
-  const unused = () => Promise.reject(new Error('not used in this test'));
-  const repository: ProjectRepository = {
-    available: true,
-    load: async (id) => projects.get(id) ?? null,
-    save: async (project) => void projects.set(project.id, project),
-    loadShareConfig: async (id) => shares.get(id) ?? null,
-    saveShareConfig: async (id, config) => void shares.set(id, config),
-    list: unused,
-    remove: unused,
-    lastProjectId: unused,
-    clearLastProjectId: unused,
-    removeShare: unused,
-    sharedProjectIds: unused,
-    loadSyncState: unused,
-    saveSyncState: unused,
-    clientId: unused,
-  };
-  return { repository, projects, shares };
-}
 
 function fakeServices(repository: ProjectRepository, picked: SharedFolderProject) {
   const connect = vi.fn(async () => undefined);
@@ -48,14 +25,14 @@ function fakeServices(repository: ProjectRepository, picked: SharedFolderProject
     setUserName: async () => undefined,
     syncNow: () => undefined,
     openFolder: () => undefined,
-    syncStateFor: () => null,
     events: createEvents(),
     dispose: () => undefined,
   };
   const autosave: Autosave = {
     flush: async () => undefined,
     requestSave: () => undefined,
-    events: createEvents(),
+    saveSyncState: () => undefined,
+    attachSyncState: () => () => undefined,
     dispose: () => undefined,
   };
   const services: AppServices = { repository, autosave, share, testServer: null, dispose: () => undefined };

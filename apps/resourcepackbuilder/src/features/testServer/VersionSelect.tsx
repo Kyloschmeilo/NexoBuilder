@@ -7,7 +7,7 @@ import { FormField, FormHelp } from '../../components/FormField';
 import { useErrorMessage } from '../../i18n/errors';
 import { notify } from '../../shell/notify';
 import { useOpenProject } from '../../store/project';
-import { useTestServerStore } from '../../store/testServer';
+import { useTestServerStore } from '../../services/testServerStore';
 import { useSetConfig, useTestServer } from './useTestServer';
 
 /** The Minecraft (Paper) version of the server; the service loads the versions and picks the default. */

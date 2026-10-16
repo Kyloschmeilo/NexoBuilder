@@ -30,17 +30,18 @@ import {
   DropdownMenuTrigger,
 } from '@resourcepackbuilder/ui/components/dropdown-menu';
 import { BrandMark } from '../components/BrandMark';
+import { exportDialog } from '../features/export/ExportDialog';
+import { projectsDialog } from '../features/projects/ProjectsDialog';
 import { useProjectActions } from '../features/projects/useProjectActions';
+import { settingsDialog } from '../features/settings/SettingsDialog';
+import { shareDialog } from '../features/share/ShareDialog';
 import { SHARE_STATUS_TONE, useShareStatusText } from '../features/share/ShareStatusBadge';
-import { openDialog } from '../store/dialogs';
-import { usePlan } from '../store/PlanProvider';
+import { usePlan } from './PlanProvider';
 import { redo, undo, useProjectStore } from '../store/project';
-import { useSaveStore } from '../store/save';
-import { isProjectShared, useShareStore } from '../store/share';
+import { useSaveStore } from '../services/autosaveStore';
+import { isProjectShared, useShareStore } from '../services/shareStore';
 import { setRightPanelOpen, useUiStore } from '../store/ui';
-import { THEME_CHOICES, THEME_ICONS } from '../theme/choices';
-import { useTheme } from '../theme/ThemeProvider';
-import { isThemeChoice } from '../theme/theme';
+import { THEME_CHOICES, useThemeChoice } from '../theme/useThemeChoice';
 
 /** Opens the share dialog; shows the share status while the open project is shared. */
 function ShareButton() {
@@ -51,7 +52,7 @@ function ShareButton() {
   const isShared = isProjectShared(share, projectId);
   return (
     <Tip label={isShared ? t('sharedHint', { folder: share.folder ?? '', status: statusText(share.status) }) : t('hint')}>
-      <Button variant="ghost" data-testid="share-button" onClick={() => openDialog({ id: 'share', props: {} })}>
+      <Button variant="ghost" data-testid="share-button" onClick={() => shareDialog.open(null)}>
         {isShared ? <StatusDot tone={SHARE_STATUS_TONE[share.status]} /> : <Users />}
         <span className="hidden @3xl/top:inline">{isShared ? t('shared') : t('button')}</span>
       </Button>
@@ -99,8 +100,7 @@ function ChecksButton({ onClick }: { onClick: () => void }) {
 /** Quick switch between light, dark and system appearance. */
 function ThemeMenu() {
   const tCommon = useTranslations('common');
-  const { choice, setTheme } = useTheme();
-  const Icon = THEME_ICONS[choice];
+  const { choice, icon: Icon, setChoice } = useThemeChoice();
   return (
     <DropdownMenu>
       <Tip label={tCommon('theme')}>
@@ -111,12 +111,7 @@ function ThemeMenu() {
       <DropdownMenuContent align="end" className="w-40">
         <DropdownMenuGroup>
           <DropdownMenuLabel>{tCommon('theme')}</DropdownMenuLabel>
-          <DropdownMenuRadioGroup
-            value={choice}
-            onValueChange={(value) => {
-              if (isThemeChoice(value)) setTheme(value);
-            }}
-          >
+          <DropdownMenuRadioGroup value={choice} onValueChange={setChoice}>
             {THEME_CHOICES.map(({ id, icon: ChoiceIcon }) => (
               <DropdownMenuRadioItem key={id} value={id}>
                 <ChoiceIcon /> {tCommon(`themeNames.${id}`)}
@@ -137,13 +132,13 @@ function ProjectMenu({ name }: { name: string }) {
       icon: <Settings />,
       label: t('projectMenu.settings'),
       description: t('projectMenu.settingsDescription'),
-      onSelect: () => openDialog({ id: 'settings', props: {} }),
+      onSelect: () => settingsDialog.open(null),
     },
     {
       icon: <Users />,
       label: t('projectMenu.share'),
       description: t('projectMenu.shareDescription'),
-      onSelect: () => openDialog({ id: 'share', props: {} }),
+      onSelect: () => shareDialog.open(null),
     },
     'separator',
     {
@@ -156,12 +151,12 @@ function ProjectMenu({ name }: { name: string }) {
     {
       icon: <FolderOpen />,
       label: t('projectMenu.switchProjects'),
-      onSelect: () => openDialog({ id: 'projects', props: { tab: 'open' } }),
+      onSelect: () => projectsDialog.openWithPayload({ tab: 'open' }),
     },
     ...(actions.isShareAvailable
       ? [{ icon: <FolderSync />, label: t('projectMenu.openShared'), onSelect: () => void actions.openShared() }]
       : []),
-    { icon: <FilePlus2 />, label: t('projectMenu.newProject'), onSelect: () => openDialog({ id: 'projects', props: { tab: 'new' } }) },
+    { icon: <FilePlus2 />, label: t('projectMenu.newProject'), onSelect: () => projectsDialog.openWithPayload({ tab: 'new' }) },
     'separator',
     { icon: <X />, label: t('projectMenu.close'), onSelect: () => void actions.close() },
   ];
@@ -184,7 +179,7 @@ export function TopBar() {
   const canUndo = useProjectStore((s) => s.past.length > 0);
   const canRedo = useProjectStore((s) => s.future.length > 0);
   const isRightPanelOpen = useUiStore((s) => s.isRightPanelOpen);
-  const openExport = () => openDialog({ id: 'export', props: {} });
+  const openExport = () => exportDialog.open(null);
   const previewLabel = isRightPanelOpen ? t('preview.hide') : t('preview.show');
 
   return (

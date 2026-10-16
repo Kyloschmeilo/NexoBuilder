@@ -1,8 +1,9 @@
 import { useEffect } from 'react';
 import { useTranslations } from 'next-intl';
 import type { Project } from '@resourcepackbuilder/core/project/types';
-import { filesFromDataTransfer } from '@resourcepackbuilder/ui';
-import { isAnyDialogOpen, openDialog } from '../store/dialogs';
+import { carriesFiles, filesFromDataTransfer } from '@resourcepackbuilder/ui';
+import { newItemDialog } from '../features/newItem/NewItemDialog';
+import { isAnyDialogOpen } from '../store/dialogs';
 import { notify } from './notify';
 import { getProject } from '../store/project';
 import { useUiStore, type Selection } from '../store/ui';
@@ -19,10 +20,6 @@ function dropFolderId(project: Project, selection: Selection): string | undefine
   }
 }
 
-function carriesFiles(e: DragEvent): boolean {
-  return e.dataTransfer?.types.includes('Files') ?? false;
-}
-
 /**
  * Files dropped anywhere in the window (and not already taken by a drop target) open the "New item" dialog for the
  * selected folder, instead of letting the browser navigate away.
@@ -31,10 +28,10 @@ export function useWindowDrop(): void {
   const t = useTranslations('layout.main');
   useEffect(() => {
     const handleDragOver = (e: DragEvent) => {
-      if (carriesFiles(e)) e.preventDefault();
+      if (carriesFiles(e.dataTransfer)) e.preventDefault();
     };
-    const handleDrop = async (e: DragEvent) => {
-      if (!carriesFiles(e) || !e.dataTransfer) return;
+    const handleDrop = (e: DragEvent) => {
+      if (!e.dataTransfer || !carriesFiles(e.dataTransfer)) return;
       const isTaken = e.defaultPrevented;
       e.preventDefault();
       const project = getProject();
@@ -45,8 +42,12 @@ export function useWindowDrop(): void {
         notify('warning', t('dropNeedsFolder'));
         return;
       }
-      const files = await filesFromDataTransfer(e.dataTransfer);
-      if (files.length) openDialog({ id: 'newItem', props: { folderId, files } });
+      filesFromDataTransfer(e.dataTransfer).then(
+        (files) => {
+          if (files.length) newItemDialog.openWithPayload({ folderId, files });
+        },
+        (err: unknown) => console.warn('Could not read the dropped files', err),
+      );
     };
     window.addEventListener('dragover', handleDragOver);
     window.addEventListener('drop', handleDrop);

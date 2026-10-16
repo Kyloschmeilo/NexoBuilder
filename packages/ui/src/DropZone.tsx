@@ -1,8 +1,8 @@
-import { useState, type ComponentProps, type DragEvent, type ReactNode } from 'react';
+import { useState, type ComponentProps, type ReactNode } from 'react';
 import { Upload } from 'lucide-react';
 import { cn } from 'cn';
 import { Badge } from './components/badge';
-import { filesFromDataTransfer, pickFiles } from './files';
+import { carriesFiles, filesFromDataTransfer, pickFiles } from './files';
 
 /** Other props (data attributes, aria) go to the zone element. */
 interface DropZoneProps extends Omit<
@@ -19,8 +19,6 @@ interface DropZoneProps extends Omit<
   multiple?: boolean;
   compact?: boolean;
 }
-
-const carriesFiles = (e: DragEvent) => e.dataTransfer.types.includes('Files');
 
 /**
  * Area that accepts dropped files (including folders) and opens the file picker on click. A handled drop
@@ -52,7 +50,7 @@ export function DropZone({ onFiles, accept, title, subtitle, formats, multiple =
         }
       }}
       onDragOver={(e) => {
-        if (!carriesFiles(e)) return;
+        if (!carriesFiles(e.dataTransfer)) return;
         e.preventDefault();
         e.dataTransfer.dropEffect = 'copy';
         setIsDragging(true);
@@ -62,7 +60,7 @@ export function DropZone({ onFiles, accept, title, subtitle, formats, multiple =
         if (!(e.relatedTarget instanceof Node && e.currentTarget.contains(e.relatedTarget))) setIsDragging(false);
       }}
       onDrop={async (e) => {
-        if (!carriesFiles(e)) return;
+        if (!carriesFiles(e.dataTransfer)) return;
         e.preventDefault();
         setIsDragging(false);
         const files = await filesFromDataTransfer(e.dataTransfer);

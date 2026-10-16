@@ -146,7 +146,14 @@ function DialogDescription({
   )
 }
 
+/** Creates a handle that opens and closes a `Dialog` (passed as its `handle`) from anywhere. */
+const createDialogHandle = DialogPrimitive.createHandle
+
+type DialogHandle<Payload> = DialogPrimitive.Handle<Payload>
+
 export {
+  createDialogHandle,
+  type DialogHandle,
   Dialog,
   DialogClose,
   DialogContent,

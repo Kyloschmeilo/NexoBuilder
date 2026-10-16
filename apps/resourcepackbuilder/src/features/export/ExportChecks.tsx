@@ -7,7 +7,7 @@ import { Checkbox } from '@resourcepackbuilder/ui/components/checkbox';
 import { Field, FieldLabel } from '@resourcepackbuilder/ui/components/field';
 import { IssueCountBadges } from '../../components/IssueCountBadges';
 import { IssueList } from '../../components/IssueList';
-import { closeDialog } from '../../store/dialogs';
+import { exportDialog } from './ExportDialog';
 import { selectTarget } from '../../store/ui';
 
 export function ExportChecks({ issues, openProjectId }: { issues: Issue[]; openProjectId: string }) {
@@ -36,7 +36,7 @@ export function ExportChecks({ issues, openProjectId }: { issues: Issue[]; openP
         empty={t('noIssues')}
         canOpen={(issue) => !issue.projectId || issue.projectId === openProjectId}
         onOpen={(target) => {
-          closeDialog();
+          exportDialog.close();
           selectTarget(target);
         }}
       />

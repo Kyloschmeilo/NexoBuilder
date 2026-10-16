@@ -6,26 +6,9 @@ import { createStore, del, delMany, get, keys, set, setMany, type UseStore } fro
 import type { SyncState } from '@resourcepackbuilder/core/sync/engine';
 import { uid } from '@resourcepackbuilder/core/project/ids';
 import { migrateProject } from '@resourcepackbuilder/core/project/migrate';
+import { summarizeProject, type ProjectSummary } from '@resourcepackbuilder/core/project/summary';
 import type { Project } from '@resourcepackbuilder/core/project/types';
-
-export interface ProjectSummary {
-  id: string;
-  name: string;
-  namespace: string;
-  itemCount: number;
-  updatedAt: number;
-}
-
-/** The index entry of a project. */
-export function summarizeProject(project: Project): ProjectSummary {
-  return {
-    id: project.id,
-    name: project.name,
-    namespace: project.namespace,
-    itemCount: Object.keys(project.items).length,
-    updatedAt: project.updatedAt,
-  };
-}
+import { AppError } from '../i18n/errors';
 
 /** Where a shared project lives and under which name this user edits it. */
 export interface ShareConfig {
@@ -66,19 +49,12 @@ const shareKey = (id: string) => `share:${id}`;
 const syncKey = (id: string) => `sync:${id}`;
 const SHARE_PREFIX = 'share:';
 
-export class StorageUnavailableError extends Error {
-  constructor() {
-    super('IndexedDB is not available');
-    this.name = 'StorageUnavailableError';
-  }
-}
-
 /** The repository backed by IndexedDB; without IndexedDB every read is empty and every write fails. */
 export function createProjectRepository(): ProjectRepository {
   const db: UseStore | null = typeof indexedDB === 'undefined' ? null : createStore('resourcepackbuilder', 'projects');
 
   const requireDb = (): UseStore => {
-    if (!db) throw new StorageUnavailableError();
+    if (!db) throw new AppError('storage.unavailable');
     return db;
   };
   const read = async <T>(key: string): Promise<T | null> => (db ? (((await get(key, db)) as T | undefined) ?? null) : null);

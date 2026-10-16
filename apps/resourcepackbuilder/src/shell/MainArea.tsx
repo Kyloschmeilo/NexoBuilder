@@ -11,7 +11,7 @@ import { PaintingsView } from '../features/paintings/PaintingsView';
 import { SoundsView } from '../features/sounds/SoundsView';
 import { TestServerView } from '../features/testServer/TestServerView';
 import { useOpenProject } from '../store/project';
-import { selectionExists, useUiStore, type ViewName } from '../store/ui';
+import { useUiStore, type ViewName } from '../store/ui';
 
 /** The page of each project-wide view. */
 const VIEWS: Record<ViewName, ComponentType> = {
@@ -51,10 +51,10 @@ function NothingSelected() {
   );
 }
 
+/** Shows the selected entry; the UI store drops a selection whose entry no longer exists. */
 function SelectedPage() {
-  const project = useOpenProject();
   const selection = useUiStore((s) => s.selection);
-  if (!selection || !selectionExists(project, selection)) return <NothingSelected />;
+  if (!selection) return <NothingSelected />;
   switch (selection.kind) {
     case 'item':
       return <ItemEditor itemId={selection.id} />;
