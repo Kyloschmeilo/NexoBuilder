@@ -3,7 +3,7 @@ import { Trash2 } from 'lucide-react';
 import type { ImportedModel } from '@resourcepackbuilder/core/model/types';
 import type { Item } from '@resourcepackbuilder/core/project/types';
 import { itemMaterial } from '@resourcepackbuilder/core/nexo/material';
-import { variantPathSuffix, type VariantDef } from '@resourcepackbuilder/core/nexo/variants';
+import { variantConfigPath, variantPathSuffix, type VariantDef } from '@resourcepackbuilder/core/nexo/variants';
 import { DropZone, IconButton, pickFiles, SectionCard, Tip } from '@resourcepackbuilder/ui';
 import { Alert, AlertDescription } from '@resourcepackbuilder/ui/components/alert';
 import { Badge } from '@resourcepackbuilder/ui/components/badge';
@@ -18,30 +18,21 @@ import { VariantModelRow } from './VariantModelRow';
 /** Where the variant ends up: a Pack option, an own ItemModel or the custom block's stack stages. */
 function VariantKindBadge({ def }: { def: VariantDef }) {
   const t = useTranslations('item');
-  switch (def.kind) {
-    case 'pack':
-      return (
-        <Tip label={t('properties.pathInYaml')}>
-          <Badge variant="outline" className="font-mono">
-            Pack.{def.slot}
-          </Badge>
-        </Tip>
-      );
-    case 'definition':
-      return (
+  const path = variantConfigPath(def);
+  if (path) {
+    return (
+      <Tip label={t('properties.pathInYaml')}>
         <Badge variant="outline" className="font-mono">
-          {t('variants.ownItemModel')}
+          {path.join('.')}
         </Badge>
-      );
-    case 'block':
-      return (
-        <Badge variant="outline" className="font-mono">
-          custom_block.stackable
-        </Badge>
-      );
-    default:
-      return null;
+      </Tip>
+    );
   }
+  return def.kind === 'definition' ? (
+    <Badge variant="outline" className="font-mono">
+      {t('variants.ownItemModel')}
+    </Badge>
+  ) : null;
 }
 
 /** Warning when the variant only exists for other materials, with a button to switch to the first of them. */

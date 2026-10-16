@@ -1,7 +1,7 @@
 import { Box, FolderOpen, FolderPlus, Pencil, Plus, Trash2 } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 import type { Item as ProjectItem } from '@resourcepackbuilder/core/project/types';
-import { folderYamlFile } from '@resourcepackbuilder/core/export/paths';
+import { folderYamlFile, nexoPluginPath } from '@resourcepackbuilder/core/export/paths';
 import { issuesFor } from '@resourcepackbuilder/core/issues';
 import { itemLabel } from '@resourcepackbuilder/core/project/labels';
 import { getFolderPathLabel } from '@resourcepackbuilder/core/project/tree';
@@ -38,7 +38,7 @@ export function FolderView({ folderId }: { folderId: string }) {
             <Badge variant="outline">{getFolderPathLabel(project, folderId)}</Badge>
             <Tip label={t('targetHint')}>
               <Badge variant="outline" className="max-w-full font-mono">
-                <span className="truncate">plugins/Nexo/{folderYamlFile(project, folderId)}</span>
+                <span className="truncate">{nexoPluginPath(folderYamlFile(project, folderId))}</span>
               </Badge>
             </Tip>
             <Badge variant="outline">{t('itemCount', { count: items.length })}</Badge>

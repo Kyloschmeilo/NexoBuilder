@@ -2,17 +2,17 @@ import type { ReactNode } from 'react';
 import { useTranslations } from 'next-intl';
 import { Plus } from 'lucide-react';
 import type { Item } from '@resourcepackbuilder/core/project/types';
-import { getPath } from '@resourcepackbuilder/core/nexo/configPath';
 import {
   CONNECT_SLOTS,
+  furnitureConfig,
+  furnitureStateNames,
   FURNITURE_MODEL_SLOTS,
   PLACEMENT_SLOTS,
-  RESERVED_STATE_KEYS,
-  STATE_NAME_PATTERN,
   stateDef,
+  stateNameError,
+  type StateNameError,
   type VariantSlot,
 } from '@resourcepackbuilder/core/nexo/variants';
-import { isPlainObject } from '@resourcepackbuilder/core/object';
 import { Button } from '@resourcepackbuilder/ui/components/button';
 import { Card, CardContent } from '@resourcepackbuilder/ui/components/card';
 import { AutoGrid } from '@resourcepackbuilder/ui';
@@ -25,6 +25,13 @@ const CONNECT_DEFS = FURNITURE_MODEL_SLOTS.filter((def) => CONNECT_SLOTS.some((c
 const PLACEMENT_DEFS = FURNITURE_MODEL_SLOTS.filter((def) => PLACEMENT_SLOTS.some((p) => p.slot === def.slot));
 const LIGHT_SLOT: VariantSlot = 'light_on';
 const LIGHT_DEFS = FURNITURE_MODEL_SLOTS.filter((def) => def.slot === LIGHT_SLOT);
+
+/** Message key below `item.slots` per state name error. */
+const STATE_NAME_ERROR_KEYS = {
+  required: 'nameRequired',
+  invalid: 'nameInvalid',
+  taken: 'nameTaken',
+} as const satisfies Record<StateNameError, string>;
 
 function SlotGroup({ title, description, children }: { title: string; description: string; children: ReactNode }) {
   return (
@@ -40,9 +47,8 @@ function SlotGroup({ title, description, children }: { title: string; descriptio
 export function FurnitureModelsSection({ item }: { item: Item }) {
   const t = useTranslations('item');
   const tCommon = useTranslations('common');
-  const furniture = getPath(item.config, ['Mechanics', 'furniture']);
-  if (!isPlainObject(furniture)) return null;
-  const states = isPlainObject(furniture.states) ? Object.keys(furniture.states).filter((key) => !RESERVED_STATE_KEYS.includes(key)) : [];
+  if (!furnitureConfig(item.config)) return null;
+  const states = furnitureStateNames(item.config);
 
   const addState = async () => {
     const name = await prompt({
@@ -51,11 +57,8 @@ export function FurnitureModelsSection({ item }: { item: Item }) {
       initial: '',
       confirmLabel: tCommon('create'),
       validate: (value) => {
-        const trimmed = value.trim();
-        if (!trimmed) return t('slots.nameRequired');
-        if (!STATE_NAME_PATTERN.test(trimmed)) return t('slots.nameInvalid');
-        if (RESERVED_STATE_KEYS.includes(trimmed) || states.includes(trimmed)) return t('slots.nameTaken');
-        return null;
+        const error = stateNameError(item.config, value);
+        return error && t(`slots.${STATE_NAME_ERROR_KEYS[error]}`);
       },
     });
     if (name !== null) addFurnitureState(item.id, name.trim());

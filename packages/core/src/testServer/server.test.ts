@@ -5,7 +5,7 @@ import { planExport } from '../export/plan';
 import { createFolder, createItem, createProject, insertFolder, insertItem } from '../project/factory';
 import { createTextureModel } from '../model/textureModel';
 import { makePngDataUrl } from '../../test-utils/png';
-import { isNexoReloadCommand, NEXO_RELOAD_COMMAND, opCommand } from './commands';
+import { consoleCommandText, isNexoReloadCommand, NEXO_RELOAD_COMMAND, opCommand } from './commands';
 import { cleanPlayerName, DEFAULT_TEST_SERVER_CONFIG, NEXO_JAR_FILE_PATTERN, nexoJarFileName } from './config';
 import { nexoFolderFiles, nexoGiveCommand, nexoPackCommand } from './files';
 import { guessJavaFor, parseJavaVersion } from './java';
@@ -67,6 +67,8 @@ describe('Test server: commands', () => {
   });
 
   it('recognises a typed Nexo reload', () => {
+    expect(consoleCommandText(' /give a\r\nb ')).toBe('give a b');
+    expect(consoleCommandText(' / ')).toBe('');
     expect(isNexoReloadCommand(NEXO_RELOAD_COMMAND)).toBe(true);
     expect(isNexoReloadCommand(' /n rl items')).toBe(true);
     expect(isNexoReloadCommand('nexo give ruby 1 Steve')).toBe(false);

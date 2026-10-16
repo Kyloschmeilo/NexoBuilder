@@ -2,7 +2,9 @@
  * The project lists of glyphs, sounds and paintings. Everything that treats them alike (sync,
  * export selection, migration) iterates this registry instead of spelling out each kind.
  */
+import { SOUND_ID_CHARS } from '../../minecraft/resourceLocation';
 import type { Project } from '../../project/types';
+import { slugify, toIdentifier } from '../../text';
 import type { Glyph } from '../glyphs/model';
 import type { Painting } from '../paintings/model';
 import type { Sound } from '../sounds/model';
@@ -29,6 +31,10 @@ interface MediaKindInfo<K extends MediaKind> {
   excludedKey: 'excludedGlyphIds' | 'excludedSoundIds' | 'excludedPaintingIds';
   /** ID that must be unique across all exported projects (glyph IDs have no namespace in Nexo) */
   globalId: (project: Pick<Project, 'namespace'>, entry: MediaEntryByKind[K]) => string;
+  /** Prefix of the internal IDs of new entries */
+  uidPrefix: string;
+  /** The user-facing ID suggested for a name (e.g. a file name); not yet unique */
+  idFromName: (name: string) => string;
 }
 
 export const MEDIA_KINDS: { [K in MediaKind]: MediaKindInfo<K> } = {
@@ -38,6 +44,8 @@ export const MEDIA_KINDS: { [K in MediaKind]: MediaKindInfo<K> } = {
     orderField: 'glyphOrder',
     excludedKey: 'excludedGlyphIds',
     globalId: (_, glyph) => glyph.glyphId,
+    uidPrefix: 'g_',
+    idFromName: (name) => slugify(name, 'glyph'),
   },
   sound: {
     list: 'sounds',
@@ -45,6 +53,8 @@ export const MEDIA_KINDS: { [K in MediaKind]: MediaKindInfo<K> } = {
     orderField: 'soundOrder',
     excludedKey: 'excludedSoundIds',
     globalId: (project, sound) => mediaKey(project, sound.soundId),
+    uidPrefix: 's_',
+    idFromName: (name) => toIdentifier(name, SOUND_ID_CHARS, 'sound'),
   },
   painting: {
     list: 'paintings',
@@ -52,6 +62,8 @@ export const MEDIA_KINDS: { [K in MediaKind]: MediaKindInfo<K> } = {
     orderField: 'paintingOrder',
     excludedKey: 'excludedPaintingIds',
     globalId: (project, painting) => mediaKey(project, painting.paintingId),
+    uidPrefix: 'p_',
+    idFromName: (name) => slugify(name, 'painting'),
   },
 };
 

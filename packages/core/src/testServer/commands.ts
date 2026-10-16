@@ -33,6 +33,14 @@ export function opCommand(player: string): string {
   return `op ${player}`;
 }
 
+/** A console command as typed (with or without "/") as the console takes it: one line without the slash; '' if empty. */
+export function consoleCommandText(command: string): string {
+  return command
+    .replace(/[\r\n]+/g, ' ')
+    .trim()
+    .replace(/^\//, '');
+}
+
 /** Whether a command typed by the user reloads Nexo (and so rebuilds the resource pack). */
 export function isNexoReloadCommand(command: string): boolean {
   return RELOAD_COMMAND_PATTERN.test(command.trim());

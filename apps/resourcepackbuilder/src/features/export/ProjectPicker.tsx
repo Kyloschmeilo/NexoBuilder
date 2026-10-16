@@ -2,6 +2,7 @@
 import { useTranslations } from 'next-intl';
 import { cn } from 'cn';
 import { countSelected, SELECT_ALL, type ExportSelection } from '@resourcepackbuilder/core/export/selection';
+import { MEDIA_KIND_LIST, MEDIA_KINDS, type MediaKind } from '@resourcepackbuilder/core/nexo/media/kinds';
 import { treeRowSlots } from '@resourcepackbuilder/ui';
 import { Badge } from '@resourcepackbuilder/ui/components/badge';
 import { Spinner } from '@resourcepackbuilder/ui/components/spinner';
@@ -19,6 +20,13 @@ interface ProjectPickerProps {
   onSelectionChange: (projectId: string, selection: ExportSelection) => void;
 }
 
+/** Message key below `dialogs.exportSelection` of the count of each media kind. */
+const MEDIA_COUNT_KEYS = {
+  glyph: 'glyphCount',
+  sound: 'soundCount',
+  painting: 'paintingCount',
+} as const satisfies Record<MediaKind, string>;
+
 /** What is selected of a project, e.g. "12/14 items · 3 glyphs". */
 function useSelectionSummary() {
   const t = useTranslations('dialogs.exportSelection');
@@ -27,9 +35,10 @@ function useSelectionSummary() {
     const counts = countSelected(project, selection);
     return [
       t('selectedItems', { selected: counts.items, total: Object.keys(project.items).length }),
-      counts.glyphs ? t('glyphCount', { count: counts.glyphs }) : null,
-      counts.sounds ? t('soundCount', { count: counts.sounds }) : null,
-      counts.paintings ? t('paintingCount', { count: counts.paintings }) : null,
+      ...MEDIA_KIND_LIST.map((kind) => {
+        const count = counts[MEDIA_KINDS[kind].list];
+        return count ? t(MEDIA_COUNT_KEYS[kind], { count }) : null;
+      }),
     ]
       .filter(Boolean)
       .join(' · ');

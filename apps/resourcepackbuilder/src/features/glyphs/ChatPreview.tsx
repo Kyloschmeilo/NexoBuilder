@@ -1,5 +1,6 @@
 import { useTranslations } from 'next-intl';
-import { DEFAULT_FONT_ASCENT, type Glyph, type GlyphFile } from '@resourcepackbuilder/core/nexo/glyphs/model';
+import { DEFAULT_FONT_ASCENT, type Glyph } from '@resourcepackbuilder/core/nexo/glyphs/model';
+import type { MediaFile } from '@resourcepackbuilder/core/nexo/media/entry';
 
 /** Screen pixels per Minecraft pixel in the preview. */
 const PREVIEW_SCALE = 2;
@@ -7,7 +8,7 @@ const PREVIEW_SCALE = 2;
 const MAX_PREVIEW_HEIGHT = 120;
 
 /** Approximate look of the glyph between chat text (first cell of a multi-bitmap). */
-export function ChatPreview({ glyph, file }: { glyph: Glyph; file: GlyphFile }) {
+export function ChatPreview({ glyph, file }: { glyph: Glyph; file: MediaFile }) {
   const t = useTranslations('media.glyphs');
   const cellHeight = file.height / Math.max(1, glyph.rows);
   const cellWidth = file.width / Math.max(1, glyph.columns);

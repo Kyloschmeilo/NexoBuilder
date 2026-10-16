@@ -6,8 +6,8 @@ import { Button } from '@resourcepackbuilder/ui/components/button';
 import { Item, ItemActions, ItemContent, ItemMedia, ItemTitle } from '@resourcepackbuilder/ui/components/item';
 import { IconButton, Tip, pickFiles } from '@resourcepackbuilder/ui';
 import { addSoundFiles, removeSoundFile } from '../../commands/media';
-import { SOUND_ACCEPT } from './soundFiles';
-import { useSoundFileReader } from './useSoundFileReader';
+import { useMediaFileReader } from '../../hooks/useFileReaders';
+import { MEDIA_FILES } from '../../lib/mediaFiles';
 
 const BYTES_PER_KB = 1000;
 const BYTES_PER_MB = 1_000_000;
@@ -16,7 +16,7 @@ const BYTES_PER_MB = 1_000_000;
 export function SoundFileList({ sound }: { sound: Sound }) {
   const t = useTranslations('media.sounds');
   const format = useFormatter();
-  const readFiles = useSoundFileReader();
+  const readFiles = useMediaFileReader('sound');
 
   const fileSize = (bytes: number) =>
     bytes > BYTES_PER_MB
@@ -24,7 +24,7 @@ export function SoundFileList({ sound }: { sound: Sound }) {
       : format.number(Math.max(1, Math.round(bytes / BYTES_PER_KB)), { style: 'unit', unit: 'kilobyte' });
 
   const addFiles = async () => {
-    const entries = await readFiles(await pickFiles(SOUND_ACCEPT));
+    const entries = await readFiles(await pickFiles(MEDIA_FILES.sound.accept));
     if (entries.length)
       addSoundFiles(
         sound.id,

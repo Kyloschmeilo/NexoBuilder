@@ -1,6 +1,7 @@
 /** Export of paintings: animation metadata and the paintings.yml entry (texture: see export/paths). */
 import type { Project } from '../../project/types';
-import { paintingFrameSize, paintingKey, type Painting } from './model';
+import { mediaKey } from '../media/entry';
+import { paintingFrameSize, type Painting } from './model';
 
 export function paintingMcmeta(painting: Painting): Record<string, unknown> | null {
   if (!painting.animated) return null;
@@ -14,7 +15,7 @@ export function paintingToYaml(project: Project, painting: Painting): Record<str
   const out: Record<string, unknown> = {};
   if (painting.author.trim()) out.author = painting.author.trim();
   if (painting.title.trim()) out.title = painting.title.trim();
-  out.asset_id = paintingKey(project, painting);
+  out.asset_id = mediaKey(project, painting.paintingId);
   out.width = painting.width;
   out.height = painting.height;
   if (painting.randomPlace) out.random_place = true;

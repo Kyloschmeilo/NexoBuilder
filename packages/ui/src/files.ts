@@ -31,6 +31,9 @@ export async function readAsDataUrl(file: Blob, mime: string): Promise<string> {
   return dataUrl.replace(/^data:[^;,]*/, `data:${mime}`);
 }
 
+/** What file pickers and drop zones accept for PNG images. */
+export const PNG_ACCEPT = '.png,image/png';
+
 /** Reads a PNG file as an `image/png` data URL. */
 export function readPngAsDataUrl(file: Blob): Promise<string> {
   return readAsDataUrl(file, 'image/png');

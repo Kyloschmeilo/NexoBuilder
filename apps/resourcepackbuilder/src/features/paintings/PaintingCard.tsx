@@ -3,47 +3,40 @@ import { useTranslations } from 'next-intl';
 import type { ExportPlan } from '@resourcepackbuilder/core/export/types';
 import { issuesFor } from '@resourcepackbuilder/core/issues';
 import { normalizeTypedId } from '@resourcepackbuilder/core/minecraft/resourceLocation';
-import { MAX_PAINTING_BLOCKS, paintingFrameSize, paintingKey, type Painting } from '@resourcepackbuilder/core/nexo/paintings/model';
+import { MAX_PAINTING_BLOCKS, paintingFrameSize, type Painting } from '@resourcepackbuilder/core/nexo/paintings/model';
+import { mediaKey } from '@resourcepackbuilder/core/nexo/media/entry';
+import { DEFAULT_ANIMATION_FRAMETIME } from '@resourcepackbuilder/core/model/textures';
 import { Badge } from '@resourcepackbuilder/ui/components/badge';
 import { Button } from '@resourcepackbuilder/ui/components/button';
 import { Input } from '@resourcepackbuilder/ui/components/input';
 import { AutoGrid, IconButton, pickFiles } from '@resourcepackbuilder/ui';
-import { addPaintingItem, updatePainting } from '../../commands/media';
+import { updatePainting } from '../../commands/media';
 import { NumberInput } from '../../components/editor';
 import { CheckboxField } from '../../components/CheckboxField';
 import { FormField } from '../../components/FormField';
 import { IssueList } from '../../components/IssueList';
-import { notify } from '../../shell/notify';
+import { useMediaFileReader } from '../../hooks/useFileReaders';
+import { MEDIA_FILES } from '../../lib/mediaFiles';
 import { useOpenProject } from '../../store/project';
 import { MediaCard, PreviewFrame } from '../media/MediaCard';
 import { useMediaActions } from '../media/useMediaActions';
 import { NexoKey } from '../media/NexoKey';
-import { PAINTING_ACCEPT } from './paintingFiles';
 import { PaintingPreview } from './PaintingPreview';
-import { usePaintingFileReader } from './usePaintingFileReader';
-
-/** Frame time Nexo uses when none is set (ticks per frame). */
-const DEFAULT_FRAMETIME = 2;
 
 export function PaintingCard({ painting, plan }: { painting: Painting; plan: ExportPlan | null }) {
   const t = useTranslations('media.paintings');
   const media = useMediaActions();
   const tShared = useTranslations('media.shared');
-  const tApp = useTranslations('app');
   const project = useOpenProject();
-  const readFiles = usePaintingFileReader();
+  const readFiles = useMediaFileReader('painting');
   const update = (recipe: (draft: Painting) => void, historyKey?: string) => updatePainting(painting.id, recipe, historyKey);
   const issues = plan ? issuesFor(plan.issues, { kind: 'painting', id: painting.id }) : [];
   const { file } = painting;
   const frames = painting.animated ? (paintingFrameSize(painting)?.frames ?? 1) : 1;
 
   const replaceImage = async () => {
-    const [entry] = await readFiles(await pickFiles(PAINTING_ACCEPT, false));
+    const [entry] = await readFiles(await pickFiles(MEDIA_FILES.painting.accept, false));
     if (entry) update((p) => (p.file = entry.file));
-  };
-  const createItem = () => {
-    addPaintingItem(painting, project.namespace, tApp('defaults.paintingsFolder'));
-    notify('success', t('itemCreated'));
   };
 
   return (
@@ -55,7 +48,7 @@ export function PaintingCard({ painting, plan }: { painting: Painting; plan: Exp
           {painting.animated && <Badge>{t('animated')}</Badge>}
         </>
       }
-      usage={paintingKey(project, painting)}
+      usage={mediaKey(project, painting.paintingId)}
       copyLabel={tShared('copyId')}
       actions={
         <IconButton label={tShared('replaceImage')} onClick={() => void replaceImage()}>
@@ -63,7 +56,7 @@ export function PaintingCard({ painting, plan }: { painting: Painting; plan: Exp
         </IconButton>
       }
       deleteLabel={t('delete')}
-      onDelete={() => void media.removePainting(painting)}
+      onDelete={() => void media.remove('painting', painting)}
       preview={
         <>
           <PreviewFrame>{file && <PaintingPreview painting={painting} file={file} frames={Math.max(1, frames)} />}</PreviewFrame>
@@ -114,7 +107,7 @@ export function PaintingCard({ painting, plan }: { painting: Painting; plan: Exp
               value={painting.frametime}
               integer
               min={1}
-              onChange={(v) => update((p) => (p.frametime = v ?? DEFAULT_FRAMETIME), 'frametime')}
+              onChange={(v) => update((p) => (p.frametime = v ?? DEFAULT_ANIMATION_FRAMETIME), 'frametime')}
             />
           </FormField>
         )}
@@ -134,7 +127,7 @@ export function PaintingCard({ painting, plan }: { painting: Painting; plan: Exp
         />
       </div>
       <div className="flex flex-wrap items-center gap-2">
-        <Button variant="outline" size="sm" onClick={createItem}>
+        <Button variant="outline" size="sm" onClick={() => media.createPaintingItem(painting)}>
           <ImagePlus /> {t('createItem')}
         </Button>
         <span className="text-xs text-muted-foreground">{t('createItemHint')}</span>

@@ -4,8 +4,6 @@ import { forEachLeaf } from '../object';
 import { parseAssetToken } from '../tokens';
 import type { Item } from './types';
 
-export { assetToken } from '../tokens';
-
 /** The asset a value refers to, if it is an asset token. */
 export function resolveAsset(item: Item, value: unknown): ModelTexture | undefined {
   const id = parseAssetToken(value);

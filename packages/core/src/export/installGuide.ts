@@ -1,6 +1,7 @@
 /** The installation guide put into a full export (English – the exported pack is not localised). */
 import type { Project } from '../project/types';
-import { packLocation } from './paths';
+import { NEXO_RELOAD_COMMAND } from '../testServer/commands';
+import { NEXO_PLUGIN_DIR, packLocation } from './paths';
 import { PAINTINGS_FILE, SOUNDS_FILE } from './rootFiles';
 import type { MultiExportPlan } from './selection';
 import type { ExportPlan } from './types';
@@ -20,7 +21,7 @@ function rootFileLines(rootFiles: Map<string, string>): string[] {
 
 const USAGE = [
   '2. Run in game or in the console:',
-  '      /nexo reload all',
+  `      /${NEXO_RELOAD_COMMAND}`,
   '   (reloads items, recipes and the resource pack – or restart the server)',
   '',
   '3. Get the items:',
@@ -43,7 +44,7 @@ function singleGuide(project: Project, plan: ExportPlan, rootFiles: Map<string, 
     '',
     'Installation',
     '------------',
-    '1. Extract the contents of this ZIP archive into the folder  plugins/Nexo/  of your server.',
+    `1. Extract the contents of this ZIP archive into the folder  ${NEXO_PLUGIN_DIR}/  of your server.`,
     '   The folders "items" and "pack" are merged with the existing folders.',
     '',
     '   items/...                 -> the item configurations',
@@ -71,7 +72,7 @@ function multiGuide(multi: MultiExportPlan, rootFiles: Map<string, string>): str
     '',
     'Installation',
     '------------',
-    '1. Extract the contents of this ZIP archive into the folder  plugins/Nexo/  of your server.',
+    `1. Extract the contents of this ZIP archive into the folder  ${NEXO_PLUGIN_DIR}/  of your server.`,
     '   The folders "items" and "pack" are merged with the existing folders.',
     '   Each project has its own folder under items/ and its own resource pack:',
     '',

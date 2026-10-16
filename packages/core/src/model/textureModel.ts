@@ -28,8 +28,6 @@ export interface TextureTemplate {
   block?: boolean;
 }
 
-export { MAX_ITEM_LAYERS };
-
 export const TEXTURE_TEMPLATES: TextureTemplate[] = [
   {
     id: 'generated',
@@ -115,6 +113,11 @@ export function getTextureTemplate(id: TextureTemplateId): TextureTemplate {
   const template = TEXTURE_TEMPLATES.find((t) => t.id === id);
   if (!template) throw new Error(`Unknown texture template ${id}`);
   return template;
+}
+
+/** The texture keys to fill: the template's own, or one layer per PNG (up to the limit) for multi-layer items. */
+export function templateSlots(template: TextureTemplate, pngCount: number): string[] {
+  return template.multiLayer ? Array.from({ length: Math.min(pngCount, MAX_ITEM_LAYERS) }, (_, i) => `layer${i}`) : template.slots;
 }
 
 /** Suggests a PNG → texture key assignment based on the file names. */

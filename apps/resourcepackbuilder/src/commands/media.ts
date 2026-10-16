@@ -1,63 +1,65 @@
 /** Glyphs, sounds and paintings, and the items that use sounds and paintings. */
-import { createFolder, insertFolder } from '@resourcepackbuilder/core/project/factory';
-import { uid, uniqueId } from '@resourcepackbuilder/core/project/ids';
-import type { Item, Project } from '@resourcepackbuilder/core/project/types';
-import { slugify, toIdentifier } from '@resourcepackbuilder/core/text';
-import { ID_CHARS, SOUND_ID_CHARS } from '@resourcepackbuilder/core/minecraft/resourceLocation';
-import { DEFAULT_MATERIAL } from '@resourcepackbuilder/core/nexo/material';
-import { createGlyph, type Glyph, type GlyphFile, type GlyphKind } from '@resourcepackbuilder/core/nexo/glyphs/model';
-import { createPainting, type Painting, type PaintingFile } from '@resourcepackbuilder/core/nexo/paintings/model';
-import { createSound, type JukeboxSong, type Sound, type SoundFile } from '@resourcepackbuilder/core/nexo/sounds/model';
+import type { MediaFile } from '@resourcepackbuilder/core/nexo/media/entry';
+import type { MediaItemInput } from '@resourcepackbuilder/core/nexo/media/items';
+import type { MediaEntryByKind, MediaKind } from '@resourcepackbuilder/core/nexo/media/kinds';
+import { addMediaEntry, deleteMediaEntry, findMediaEntry } from '@resourcepackbuilder/core/nexo/media/operations';
+import { createGlyph, type GlyphKind } from '@resourcepackbuilder/core/nexo/glyphs/model';
+import { createPainting } from '@resourcepackbuilder/core/nexo/paintings/model';
+import { createSound, setSoundJukebox as setJukebox, type JukeboxSong, type SoundFile } from '@resourcepackbuilder/core/nexo/sounds/model';
+import { firstRootFolder, insertNewItem } from '@resourcepackbuilder/core/project/operations';
+import type { Item } from '@resourcepackbuilder/core/project/types';
 import { mutate } from '../store/project';
-import { insertNewItem, showItem } from './items';
+import { showItem } from './items';
+
+/** Add, update and delete for one media list; the same for glyphs, sounds and paintings. */
+function mediaCommands<K extends MediaKind>(kind: K) {
+  type Entry = MediaEntryByKind[K];
+  return {
+    /** Adds an entry with a unique ID derived from `name`; `create` builds it. Returns its internal ID. */
+    add(name: string, create: (id: string, mediaId: string) => Entry): string | null {
+      const created: Entry[] = [];
+      mutate((draft) => {
+        created.push(addMediaEntry(draft, kind, name, create));
+      });
+      return created[0]?.id ?? null;
+    },
+    /** Changes an entry; equal `historyKey`s in quick succession form one undo step. */
+    update(id: string, recipe: (entry: Entry) => void, historyKey?: string): void {
+      mutate(
+        (draft) => {
+          const entry = findMediaEntry(draft, kind, id);
+          if (entry) recipe(entry);
+        },
+        historyKey === undefined ? undefined : `${kind}:${id}:${historyKey}`,
+      );
+    },
+    remove(id: string): void {
+      mutate((draft) => deleteMediaEntry(draft, kind, id));
+    },
+  };
+}
+
+export const MEDIA_COMMANDS = {
+  glyph: mediaCommands('glyph'),
+  sound: mediaCommands('sound'),
+  painting: mediaCommands('painting'),
+};
 
 /* ------------------------------------------------------------------ glyphs */
 
-export function addGlyph(name: string, file: GlyphFile | null, kind: GlyphKind): string {
-  const id = uid('g_');
-  mutate((draft) => {
-    const glyphId = uniqueId(slugify(name, 'glyph'), new Set(draft.glyphs.map((g) => g.glyphId)));
-    draft.glyphs.push(createGlyph(id, glyphId, file, kind));
-  });
-  return id;
+export function addGlyph(name: string, file: MediaFile | null, kind: GlyphKind): string | null {
+  return MEDIA_COMMANDS.glyph.add(name, (id, glyphId) => createGlyph(id, glyphId, file, kind));
 }
 
-export function updateGlyph(glyphId: string, recipe: (glyph: Glyph) => void, historyKey?: string): void {
-  mutate(
-    (draft) => {
-      const glyph = draft.glyphs.find((g) => g.id === glyphId);
-      if (glyph) recipe(glyph);
-    },
-    historyKey === undefined ? undefined : `glyph:${glyphId}:${historyKey}`,
-  );
-}
-
-export function deleteGlyph(glyphId: string): void {
-  mutate((draft) => {
-    draft.glyphs = draft.glyphs.filter((g) => g.id !== glyphId);
-  });
-}
+export const updateGlyph = MEDIA_COMMANDS.glyph.update;
 
 /* ------------------------------------------------------------------ sounds */
 
-export function addSound(name: string, files: SoundFile[]): string {
-  const id = uid('s_');
-  mutate((draft) => {
-    const soundId = uniqueId(toIdentifier(name, SOUND_ID_CHARS, 'sound'), new Set(draft.sounds.map((s) => s.soundId)));
-    draft.sounds.push(createSound(id, soundId, files));
-  });
-  return id;
+export function addSound(name: string, files: SoundFile[]): string | null {
+  return MEDIA_COMMANDS.sound.add(name, (id, soundId) => createSound(id, soundId, files));
 }
 
-export function updateSound(soundId: string, recipe: (sound: Sound) => void, historyKey?: string): void {
-  mutate(
-    (draft) => {
-      const sound = draft.sounds.find((s) => s.id === soundId);
-      if (sound) recipe(sound);
-    },
-    historyKey === undefined ? undefined : `sound:${soundId}:${historyKey}`,
-  );
-}
+export const updateSound = MEDIA_COMMANDS.sound.update;
 
 /** Adds variants to a sound; one of its files is played at random. */
 export function addSoundFiles(soundId: string, files: SoundFile[]): void {
@@ -72,12 +74,9 @@ export function removeSoundFile(soundId: string, index: number): void {
   });
 }
 
-/** Registers the sound as a jukebox song (music disc), streamed because music is long – or unregisters it. */
+/** Registers the sound as a jukebox song (music disc) or unregisters it. */
 export function setSoundJukebox(soundId: string, enabled: boolean): void {
-  updateSound(soundId, (sound) => {
-    sound.jukebox = enabled ? { duration: '', description: '', comparatorOutput: null, range: null } : null;
-    if (enabled) sound.stream = true;
-  });
+  updateSound(soundId, (sound) => setJukebox(sound, enabled));
 }
 
 /** Changes the jukebox song of a sound that is registered as one. */
@@ -91,79 +90,26 @@ export function updateJukeboxSong(soundId: string, recipe: (song: JukeboxSong) =
   );
 }
 
-export function deleteSound(soundId: string): void {
-  mutate((draft) => {
-    draft.sounds = draft.sounds.filter((s) => s.id !== soundId);
-  });
-}
-
 /* ------------------------------------------------------------------ paintings */
 
-export function addPainting(name: string, file: PaintingFile | null): string {
-  const id = uid('p_');
-  mutate((draft) => {
-    const paintingId = uniqueId(slugify(name, 'painting'), new Set(draft.paintings.map((p) => p.paintingId)));
-    draft.paintings.push(createPainting(id, paintingId, file));
-  });
-  return id;
+export function addPainting(name: string, file: MediaFile | null): string | null {
+  return MEDIA_COMMANDS.painting.add(name, (id, paintingId) => createPainting(id, paintingId, file));
 }
 
-export function updatePainting(paintingId: string, recipe: (painting: Painting) => void, historyKey?: string): void {
-  mutate(
-    (draft) => {
-      const painting = draft.paintings.find((p) => p.id === paintingId);
-      if (painting) recipe(painting);
-    },
-    historyKey === undefined ? undefined : `painting:${paintingId}:${historyKey}`,
-  );
-}
-
-export function deletePainting(paintingId: string): void {
-  mutate((draft) => {
-    draft.paintings = draft.paintings.filter((p) => p.id !== paintingId);
-  });
-}
+export const updatePainting = MEDIA_COMMANDS.painting.update;
 
 /* ------------------------------------------------------------------ items for media */
 
-/** The first top-level folder, created with `name` when the project has none. */
-function firstFolder(draft: Project, name: string): string {
-  const existing = draft.rootFolderIds.find((id) => draft.folders[id]);
-  if (existing) return existing;
-  const folder = createFolder(name, null);
-  insertFolder(draft, folder);
-  return folder.id;
-}
-
-/** Creates an item in the first folder (or a new folder named `folderName`) – one undo step – and selects it. */
-function addMediaItem(
-  folderName: string,
-  input: { displayName: string; nexoId: string; material: string },
-  configure: (item: Item) => void,
-): void {
+/**
+ * Creates an item for a painting or sound (see core nexo/media/items) in the first folder – or a new folder
+ * named `folderName` – as one undo step, and selects it. Returns whether an item was created.
+ */
+export function addMediaItem({ configure, ...input }: MediaItemInput, folderName: string): boolean {
   const created: Item[] = [];
   mutate((draft) => {
-    created.push(insertNewItem(draft, { ...input, folderId: firstFolder(draft, folderName), model: null }, configure));
+    created.push(insertNewItem(draft, { ...input, folderId: firstRootFolder(draft, folderName), model: null }, configure));
   });
   const [item] = created;
   if (item) showItem(item.folderId, item.id);
-}
-
-/** Creates an item that hangs this painting (material PAINTING + painting_variant). */
-export function addPaintingItem(painting: Painting, namespace: string, folderName: string): void {
-  addMediaItem(
-    folderName,
-    { displayName: painting.title || painting.paintingId, nexoId: painting.paintingId, material: 'PAINTING' },
-    (item) => {
-      item.config.Components = { painting_variant: `${namespace}:${painting.paintingId}` };
-    },
-  );
-}
-
-/** Creates an item that plays this sound as a music disc in the jukebox. */
-export function addMusicDiscItem(sound: Sound, namespace: string, folderName: string): void {
-  const nexoId = `${toIdentifier(sound.soundId, ID_CHARS, 'sound')}_disc`;
-  addMediaItem(folderName, { displayName: sound.jukebox?.description || sound.soundId, nexoId, material: DEFAULT_MATERIAL }, (item) => {
-    item.config.Components = { max_stack_size: 1, jukebox_playable: { song_key: `${namespace}:${sound.soundId}` } };
-  });
+  return Boolean(item);
 }

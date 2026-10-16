@@ -1,8 +1,8 @@
 import { useTranslations } from 'next-intl';
 import { ExternalLink, Trash2 } from 'lucide-react';
-import type { ConfigValue, Item } from '@resourcepackbuilder/core/project/types';
+import type { Item } from '@resourcepackbuilder/core/project/types';
 import { toConfigValue } from '@resourcepackbuilder/core/project/configValue';
-import { getPropertyValue } from '@resourcepackbuilder/core/nexo/properties';
+import { emptyPropertyValue, getPropertyValue, propertyYamlPath } from '@resourcepackbuilder/core/nexo/properties';
 import type { PropertyDef } from '@resourcepackbuilder/core/nexo/schema';
 import { versionSupport } from '@resourcepackbuilder/core/minecraft/versions';
 import { IconButton, SectionCard, Tip } from '@resourcepackbuilder/ui';
@@ -13,22 +13,6 @@ import { FieldRenderer } from '../../../components/editor';
 import { useOpenProject } from '../../../store/project';
 import { useSchemaText } from '../../../components/useSchemaText';
 import { VersionBadges } from './VersionBadges';
-
-/** The value a property keeps when its editor is cleared: the property stays on the item until it is removed. */
-function emptyValueFor(def: PropertyDef): ConfigValue {
-  switch (def.field.type) {
-    case 'object':
-    case 'map':
-    case 'presence':
-      return {};
-    case 'objectList':
-    case 'stringList':
-    case 'multiSelect':
-      return [];
-    default:
-      return null;
-  }
-}
 
 function PropertyHints({ def, version }: { def: PropertyDef; version: string }) {
   const t = useTranslations('item');
@@ -68,7 +52,7 @@ export function PropertyCard({ item, def }: { item: Item; def: PropertyDef }) {
           <VersionBadges def={def} version={version} />
           <Tip label={t('properties.pathInYaml')}>
             <Badge variant="outline" className="font-mono">
-              {def.storage === 'config' ? def.path.join('.') : 'ResourcepackBuilder'}
+              {propertyYamlPath(def) ?? 'ResourcepackBuilder'}
             </Badge>
           </Tip>
         </>
@@ -94,7 +78,7 @@ export function PropertyCard({ item, def }: { item: Item; def: PropertyDef }) {
           value={getPropertyValue(item, def)}
           root
           hideLabel={def.field.type !== 'object'}
-          onChange={(value) => setItemProperty(item.id, def, toConfigValue(value) ?? emptyValueFor(def))}
+          onChange={(value) => setItemProperty(item.id, def, toConfigValue(value) ?? emptyPropertyValue(def))}
         />
       </div>
     </SectionCard>

@@ -1,6 +1,6 @@
 import { useTranslations } from 'next-intl';
 import type { TextureField } from '@resourcepackbuilder/core/nexo/fields';
-import { pickFiles } from '@resourcepackbuilder/ui';
+import { pickFiles, PNG_ACCEPT } from '@resourcepackbuilder/ui';
 import { ImageUploadField } from '../../ImageUploadField';
 import { useFieldContext } from '../fieldContext';
 import { FieldShell } from '../FieldShell';
@@ -13,7 +13,7 @@ export function TextureEditor({ field, value, onChange, hideLabel }: EditorProps
   const texture = typeof value === 'string' ? getAsset(value) : undefined;
 
   const upload = async () => {
-    const [file] = await pickFiles('.png,image/png', false);
+    const [file] = await pickFiles(PNG_ACCEPT, false);
     if (!file) return;
     const token = await uploadAsset(file);
     if (token) onChange(token);

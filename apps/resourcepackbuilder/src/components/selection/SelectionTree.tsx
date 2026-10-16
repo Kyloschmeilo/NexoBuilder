@@ -1,10 +1,12 @@
 /** Folders, items and resource lists of a project to check and uncheck (export selection, paste targets). */
 import { useState, type ReactNode } from 'react';
 import { useTranslations } from 'next-intl';
-import { Folder as FolderIcon, Frame, Music, Smile } from 'lucide-react';
+import { Folder as FolderIcon, Frame, Music, Smile, type LucideIcon } from 'lucide-react';
 import { cn } from 'cn';
 import type { Project } from '@resourcepackbuilder/core/project/types';
 import { itemLabel } from '@resourcepackbuilder/core/project/labels';
+import { glyphTag } from '@resourcepackbuilder/core/nexo/glyphs/model';
+import { MEDIA_KIND_LIST, MEDIA_KINDS, mediaId, mediaList, type MediaKind } from '@resourcepackbuilder/core/nexo/media/kinds';
 import { itemIdsInFolder } from '@resourcepackbuilder/core/project/tree';
 import {
   selectionState,
@@ -24,6 +26,8 @@ const OPEN_ALL_UP_TO_ITEMS = 40;
 const FOLDER_PADDING_PX = 4;
 /** Extra left padding of an item row relative to its folder (past the folder's checkbox and chevron). */
 const ITEM_PADDING_PX = 24;
+
+const MEDIA_ICONS: Record<MediaKind, LucideIcon> = { glyph: Smile, sound: Music, painting: Frame };
 
 interface ResourceList {
   key: ListSelectionKey;
@@ -108,26 +112,18 @@ export function SelectionTree({ project, selection, onChange, itemsOnly }: Selec
 
   const lists: ResourceList[] = itemsOnly
     ? []
-    : [
-        {
-          key: 'excludedGlyphIds',
-          label: t('glyphs'),
-          icon: <Smile className={treeRowSlots.icon} />,
-          entries: project.glyphs.map((g) => ({ id: g.id, label: `<glyph:${g.glyphId}>` })),
-        },
-        {
-          key: 'excludedSoundIds',
-          label: t('sounds'),
-          icon: <Music className={treeRowSlots.icon} />,
-          entries: project.sounds.map((s) => ({ id: s.id, label: s.soundId })),
-        },
-        {
-          key: 'excludedPaintingIds',
-          label: t('paintings'),
-          icon: <Frame className={treeRowSlots.icon} />,
-          entries: project.paintings.map((p) => ({ id: p.id, label: p.paintingId })),
-        },
-      ];
+    : MEDIA_KIND_LIST.map((kind) => {
+        const Icon = MEDIA_ICONS[kind];
+        return {
+          key: MEDIA_KINDS[kind].excludedKey,
+          label: t(MEDIA_KINDS[kind].list),
+          icon: <Icon className={treeRowSlots.icon} />,
+          entries:
+            kind === 'glyph'
+              ? project.glyphs.map((glyph) => ({ id: glyph.id, label: glyphTag(glyph) }))
+              : mediaList(project, kind).map((entry) => ({ id: entry.id, label: mediaId(kind, entry) })),
+        };
+      });
   const isEmpty = itemCount === 0 && lists.every((l) => l.entries.length === 0);
   const visited = new Set<string>();
 

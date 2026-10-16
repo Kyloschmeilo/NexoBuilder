@@ -12,7 +12,8 @@ import { setEditorTab, useUiStore, type EditorTab } from '../../store/ui';
 import { GeneralTab } from './GeneralTab';
 import { ItemHeader } from './ItemHeader';
 import { ModelTab } from './model/ModelTab';
-import { countActiveProperties, PropertiesPanel } from './properties/PropertiesPanel';
+import { activeProperties } from '@resourcepackbuilder/core/nexo/properties';
+import { PropertiesPanel } from './properties/PropertiesPanel';
 import { RecipesTab } from './recipes/RecipesTab';
 import { useItemFieldContext } from './useItemFieldContext';
 import { YamlTab } from './YamlTab';
@@ -25,9 +26,9 @@ const PROPERTY_TABS = ['attributes', 'components', 'mechanics'] as const;
 /** Number shown on a tab: how many entries it has. */
 function tabCounts(item: Item): Partial<Record<EditorTab, number>> {
   return {
-    attributes: countActiveProperties(item, 'attributes'),
-    components: countActiveProperties(item, 'components'),
-    mechanics: countActiveProperties(item, 'mechanics'),
+    attributes: activeProperties(item, 'attributes').length,
+    components: activeProperties(item, 'components').length,
+    mechanics: activeProperties(item, 'mechanics').length,
     recipes: item.recipes.length,
   };
 }

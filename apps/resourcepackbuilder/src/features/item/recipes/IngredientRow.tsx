@@ -7,6 +7,7 @@ import {
   type IngredientSource,
   type RecipeIngredient,
 } from '@resourcepackbuilder/core/nexo/recipes/model';
+import { withIngredientAmount, withIngredientId } from '@resourcepackbuilder/core/nexo/recipes/operations';
 import { CRAFTING_MATERIALS, ITEM_TAGS } from '@resourcepackbuilder/core/nexo/options';
 import { itemLabel } from '@resourcepackbuilder/core/project/labels';
 import { NativeSelect, NativeSelectOption } from '@resourcepackbuilder/ui/components/native-select';
@@ -57,7 +58,7 @@ export function IngredientRow({ value, onChange }: { value: RecipeIngredient; on
         mono
         suggestions={suggestions}
         placeholder={placeholder}
-        onChange={(id) => onChange({ ...value, id: value.source === 'minecraft' ? (id ?? '').toUpperCase() : (id ?? '') })}
+        onChange={(id) => onChange(withIngredientId(value, id ?? ''))}
       />
       <NumberInput
         label={t('recipes.amount')}
@@ -66,12 +67,7 @@ export function IngredientRow({ value, onChange }: { value: RecipeIngredient; on
         min={1}
         max={MAX_INGREDIENT_AMOUNT}
         placeholder="1×"
-        onChange={(amount) => {
-          const next = { ...value };
-          if (amount && amount > 1) next.amount = amount;
-          else delete next.amount;
-          onChange(next);
-        }}
+        onChange={(amount) => onChange(withIngredientAmount(value, amount))}
       />
     </div>
   );

@@ -1,5 +1,5 @@
 import { useTranslations } from 'next-intl';
-import { CHAT_TEXT_HEIGHT, type Glyph } from '@resourcepackbuilder/core/nexo/glyphs/model';
+import { CHAT_TEXT_HEIGHT, isMultiBitmap, type Glyph } from '@resourcepackbuilder/core/nexo/glyphs/model';
 import { normalizeTypedId } from '@resourcepackbuilder/core/minecraft/resourceLocation';
 import { Input } from '@resourcepackbuilder/ui/components/input';
 import { AutoGrid } from '@resourcepackbuilder/ui';
@@ -8,7 +8,6 @@ import { NumberInput, TextInput } from '../../components/editor';
 import { CheckboxField } from '../../components/CheckboxField';
 import { FormField } from '../../components/FormField';
 import { NexoKey } from '../media/NexoKey';
-import { isMultiBitmap } from './glyphTag';
 
 const DEFAULT_FONT = 'minecraft:default';
 

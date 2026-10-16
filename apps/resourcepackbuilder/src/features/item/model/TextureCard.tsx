@@ -3,8 +3,8 @@ import { useTranslations } from 'next-intl';
 import { ImageUp, Pencil } from 'lucide-react';
 import { cn } from 'cn';
 import type { ModelTexture } from '@resourcepackbuilder/core/model/types';
-import { getAnimation, getFrameSize } from '@resourcepackbuilder/core/model/textures';
-import { IconButton, pickFiles, Thumb } from '@resourcepackbuilder/ui';
+import { DEFAULT_ANIMATION_FRAMETIME, getAnimation, getFrameSize } from '@resourcepackbuilder/core/model/textures';
+import { IconButton, Thumb } from '@resourcepackbuilder/ui';
 import { Button } from '@resourcepackbuilder/ui/components/button';
 import { Item, ItemContent, ItemMedia } from '@resourcepackbuilder/ui/components/item';
 import { Checkbox } from '@resourcepackbuilder/ui/components/checkbox';
@@ -12,10 +12,7 @@ import { Input } from '@resourcepackbuilder/ui/components/input';
 import { Label } from '@resourcepackbuilder/ui/components/label';
 import { setTextureAnimation, updateModelTexture } from '../../../commands/items';
 import { NumberInput } from '../../../components/editor';
-import { PNG_ACCEPT, usePngReader } from '../usePngReader';
-
-/** Ticks per frame of a newly animated texture. */
-const DEFAULT_FRAMETIME = 2;
+import { usePngPicker } from '../../../hooks/useFileReaders';
 
 /** The texture name, editable in place. */
 function TextureName({ itemId, texture }: { itemId: string; texture: ModelTexture }) {
@@ -67,7 +64,7 @@ function TextureAnimationOptions({ itemId, texture }: { itemId: string; texture:
           id={animatedId}
           checked={!!animation}
           onCheckedChange={(checked) =>
-            setTextureAnimation(itemId, texture.id, checked ? { frametime: DEFAULT_FRAMETIME, interpolate: false } : null)
+            setTextureAnimation(itemId, texture.id, checked ? { frametime: DEFAULT_ANIMATION_FRAMETIME, interpolate: false } : null)
           }
         />
         <Label htmlFor={animatedId} className="cursor-pointer text-xs font-normal text-foreground">
@@ -103,11 +100,10 @@ function TextureAnimationOptions({ itemId, texture }: { itemId: string; texture:
 /** One texture of the model: preview, size and frames, replace and animation settings. */
 export function TextureCard({ itemId, texture, isUsed }: { itemId: string; texture: ModelTexture; isUsed: boolean }) {
   const t = useTranslations('item');
-  const readPng = usePngReader();
+  const pickPng = usePngPicker();
   const animation = getAnimation(texture);
   const replace = async () => {
-    const [file] = await pickFiles(PNG_ACCEPT, false);
-    const png = file && (await readPng(file));
+    const png = await pickPng();
     if (!png) return;
     updateModelTexture(itemId, texture.id, (draft) => {
       draft.dataUrl = png.dataUrl;

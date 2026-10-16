@@ -58,6 +58,7 @@
     "idEmpty": "The ID must not be empty.",
     "idInvalid": "Only lowercase letters, numbers and _ are allowed.",
     "idDuplicate": "This ID is already used by “{name}”.",
+    "idRepeated": "This ID is used by several of the new items.",
     "material": "Material",
     "materialHelp": "Base item in Minecraft. Default is PAPER; for tools/armor use the matching material.",
     "folder": "Folder",

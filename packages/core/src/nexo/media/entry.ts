@@ -2,6 +2,7 @@
  * What glyphs, sounds and paintings have in common: a user-facing ID inside the project's
  * namespace, an uploaded file and per-entry checks with the same frame and ID rules.
  */
+import { readPngInfoFromDataUrl } from '../../binary/png';
 import { mediaFrame } from '../../issueFrames';
 import { issueReporter, type Issue, type ReportIssue } from '../../issues';
 import { formatResourceLocation } from '../../minecraft/resourceLocation';
@@ -14,6 +15,12 @@ export interface MediaFile {
   dataUrl: string;
   width: number;
   height: number;
+}
+
+/** An uploaded PNG with its size; `null` when `dataUrl` holds no valid PNG. */
+export function pngMediaFile(name: string, dataUrl: string): MediaFile | null {
+  const info = readPngInfoFromDataUrl(dataUrl);
+  return info ? { name, dataUrl, width: info.width, height: info.height } : null;
 }
 
 /** Full ID of an entry as Nexo and item configs use it: "<namespace>:<id>". */

@@ -8,6 +8,7 @@
  */
 import type { ShareFileInfo } from '@resourcepackbuilder/core/sync/engine';
 import type { NexoJarInfo, TestServerConfig } from '@resourcepackbuilder/core/testServer/config';
+import type { PackStatus, TestServerStatus } from '@resourcepackbuilder/core/testServer/status';
 import type { ServerFile } from '@resourcepackbuilder/core/testServer/files';
 import type { SupportedLocale } from '@resourcepackbuilder/i18n/locale';
 
@@ -28,7 +29,7 @@ export interface ShareFolderInfo {
 
 /* ------------------------------------------------------------------ test server */
 
-export type TestServerStatus = 'stopped' | 'preparing' | 'starting' | 'running' | 'stopping' | 'error';
+export type { PackStatus, TestServerStatus };
 
 /** The settings the UI may change directly (the Nexo JAR is chosen through `chooseNexoJar`). */
 export type TestServerConfigPatch = Partial<Omit<TestServerConfig, 'nexoJar'>>;
@@ -39,8 +40,6 @@ export interface TestServerInstallation {
   javaPath: string;
   javaVersion: number;
 }
-
-export type PackStatus = 'idle' | 'building' | 'ready' | 'failed';
 
 export interface TestServerState {
   status: TestServerStatus;

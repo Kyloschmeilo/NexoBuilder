@@ -44,17 +44,12 @@
     "packIconHint": "Quadratisches PNG, z.B. 128×128",
     "upload": "Hochladen",
     "replace": "Ersetzen",
-    "invalidPng": "Die Datei ist kein gültiges PNG.",
     "useItemModel": "ItemModel-Komponente setzen (empfohlen)",
     "useItemModelHelp": "Setzt <code>{component}</code>. So bekommt jedes Item ein eigenes ItemModel statt CustomModelData – das vermeidet Konflikte (Minecraft 1.21.4+). Wird bei Items mit fester CustomModelData automatisch weggelassen."
   },
   "newItem": {
     "title": "Neues Item",
     "readFailed": "Dateien konnten nicht gelesen werden: {error}",
-    "idRequired": "Bitte eine ID angeben.",
-    "idInvalid": "Nur Kleinbuchstaben, Zahlen und _ erlaubt.",
-    "idExists": "Diese ID gibt es im Projekt bereits.",
-    "idDuplicate": "Diese ID wird mehrfach verwendet.",
     "created": "{count, plural, one {Item erstellt.} other {# Items erstellt.}}",
     "target": "Ziel: <b>{folder}</b>",
     "create": "{count, plural, one {Item erstellen} other {# Items erstellen}}",
@@ -73,10 +68,6 @@
     "multiplePngs": "Mehrere PNGs:",
     "pngSeparate": "Ein Item pro PNG",
     "pngCombined": "Alle PNGs für ein Item (Ebenen / Blockseiten)",
-    "displayName": "Anzeigename (MiniMessage möglich)",
-    "displayNamePlaceholder": "z.B. {tag}Rubin-Schwert",
-    "itemId": "Item-ID",
-    "material": "Material",
     "source": {
       "bbmodel": "Blockbench (.bbmodel)",
       "json": "Java-Modell (.json)",

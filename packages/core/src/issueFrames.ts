@@ -25,19 +25,26 @@ export function mediaFrame(kind: MediaKind, id: string): IssueContext {
   return { code: `context.${kind}`, args: { [kind]: id || '?' } };
 }
 
+/** Codes of the recipe frames; each carries the recipe key as `recipe` (the ingredient frame also `letter`). */
+export const RECIPE_FRAME_CODES = {
+  recipe: 'context.recipe',
+  ingredient: 'context.recipeIngredient',
+  input: 'context.recipeInput',
+} as const;
+
 /** A recipe; `key` is its unique key (see recipeKeys). */
 export function recipeFrame(key: string): IssueContext {
-  return { code: 'context.recipe', args: { recipe: key } };
+  return { code: RECIPE_FRAME_CODES.recipe, args: { recipe: key } };
 }
 
 /** The ingredient with `letter` of a crafting recipe. */
 export function recipeIngredientFrame(key: string, letter: string): IssueContext {
-  return { code: 'context.recipeIngredient', args: { recipe: key, letter } };
+  return { code: RECIPE_FRAME_CODES.ingredient, args: { recipe: key, letter } };
 }
 
 /** The single input of a furnace, stonecutter … recipe. */
 export function recipeInputFrame(key: string): IssueContext {
-  return { code: 'context.recipeInput', args: { recipe: key } };
+  return { code: RECIPE_FRAME_CODES.input, args: { recipe: key } };
 }
 
 /** A configuration property; `label` is a message key in the `schema` namespace. */

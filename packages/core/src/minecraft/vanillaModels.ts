@@ -17,6 +17,17 @@ export const GENERATED_ITEM_PARENTS: readonly string[] = [
   'builtin/generated',
 ];
 
+/** The parents a flat item model can switch between (how the item is held). */
+export const HOLD_STYLE_PARENTS = ['item/generated', 'item/handheld', 'item/handheld_rod'] as const;
+export type HoldStyleParent = (typeof HOLD_STYLE_PARENTS)[number];
+
+/** The hold style of a flat item model, or null for models with their own elements or another parent. */
+export function holdStyleParent(model: { parent?: string; elements?: unknown }): HoldStyleParent | null {
+  if (model.elements) return null;
+  const parent = stripMinecraftNamespace(model.parent ?? '');
+  return HOLD_STYLE_PARENTS.find((candidate) => candidate === parent) ?? null;
+}
+
 /** Parents of items that need no elements of their own (2D items and entity-rendered items). */
 export const ELEMENTLESS_ITEM_PARENTS: readonly string[] = [...GENERATED_ITEM_PARENTS, 'builtin/entity'];
 

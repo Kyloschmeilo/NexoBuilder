@@ -5,7 +5,7 @@ import { buildMultiExportZip } from '../../export/zip';
 import { singleExport } from '../../../test-utils/export';
 import { createProject } from '../../project/factory';
 import { makePngDataUrl } from '../../../test-utils/png';
-import { createGlyph, glyphFileFromDataUrl } from './model';
+import { createGlyph, glyphFileFromDataUrl, glyphKindOf, glyphTag, isMultiBitmap } from './model';
 import { validateGlyphs } from './validate';
 
 // Minimal GIF (1×1) with width/height in the header
@@ -74,5 +74,20 @@ describe('glyphs', () => {
       target: { kind: 'glyph', id: 'd' },
       context: [{ code: 'context.glyph', args: { glyph: 'empty' } }],
     });
+  });
+});
+
+describe('glyph tags', () => {
+  it('addresses the first cell of a multi-bitmap', () => {
+    const glyph = createGlyph('g_1', 'smile', null);
+    expect(glyphTag(glyph)).toBe('<glyph:smile>');
+    expect(glyphTag({ ...glyph, rows: 2, columns: 2 })).toBe('<glyph:smile:1>');
+    expect(isMultiBitmap({ ...glyph, kind: 'gif', rows: 2 })).toBe(false);
+  });
+
+  it('makes GIFs animated glyphs', () => {
+    const png = glyphFileFromDataUrl('a.png', makePngDataUrl(8, 8))!;
+    expect(glyphKindOf(png)).toBe('image');
+    expect(glyphKindOf({ ...png, dataUrl: 'data:image/gif;base64,' })).toBe('gif');
   });
 });

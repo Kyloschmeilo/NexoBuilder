@@ -1,7 +1,7 @@
 /** Folder actions that ask the user first (sidebar, folder view, empty main area). */
 import { useTranslations } from 'next-intl';
 import type { Folder } from '@resourcepackbuilder/core/project/types';
-import { getDescendantFolderIds } from '@resourcepackbuilder/core/project/tree';
+import { getDescendantFolderIds, itemIdsInFolder } from '@resourcepackbuilder/core/project/tree';
 import { addFolder, deleteFolder, renameFolder } from '../../commands/folders';
 import { confirm, prompt } from '../../store/dialogs';
 import { getProject } from '../../store/project';
@@ -37,7 +37,7 @@ export function useFolderActions() {
       const project = getProject();
       if (!project) return;
       const ids = getDescendantFolderIds(project, folder.id);
-      const itemCount = ids.reduce((n, id) => n + (project.folders[id]?.itemIds.length ?? 0), 0);
+      const itemCount = itemIdsInFolder(project, folder.id).length;
       const confirmed = await confirm({
         title: t('deleteTitle'),
         message:

@@ -1,26 +1,26 @@
 import { useTranslations } from 'next-intl';
 import { Trash2 } from 'lucide-react';
 import type { Item } from '@resourcepackbuilder/core/project/types';
-import { getRecipeTypeInfo, MAX_RESULT_AMOUNT, type Recipe } from '@resourcepackbuilder/core/nexo/recipes/model';
+import { issuesFor } from '@resourcepackbuilder/core/issues';
+import { emptyIngredient, getRecipeTypeInfo, MAX_RESULT_AMOUNT, type Recipe } from '@resourcepackbuilder/core/nexo/recipes/model';
+import { recipeIssues } from '@resourcepackbuilder/core/nexo/recipes/issues';
+import { TICKS_PER_SECOND } from '@resourcepackbuilder/core/nexo/recipes/operations';
 import { recipeFilePath } from '@resourcepackbuilder/core/nexo/recipes/files';
-import { validateRecipe } from '@resourcepackbuilder/core/nexo/recipes/validate';
 import { IconButton, SectionCard, Tip } from '@resourcepackbuilder/ui';
 import { Badge } from '@resourcepackbuilder/ui/components/badge';
 import { Field, FieldDescription, FieldTitle } from '@resourcepackbuilder/ui/components/field';
 import { removeRecipe, updateRecipe } from '../../../commands/items';
 import { NumberInput } from '../../../components/editor';
 import { IssueList } from '../../../components/IssueList';
+import { usePlan } from '../../../shell/PlanProvider';
 import { useOpenProject } from '../../../store/project';
 import { useSchemaText } from '../../../components/useSchemaText';
 import { IngredientList } from './IngredientList';
 import { IngredientRow } from './IngredientRow';
-import { sortRecipeIssues } from './recipeIssues';
 import { ShapedGrid } from './ShapedGrid';
 
 /** Changes the recipe; equal history keys in quick succession form one undo step. */
 export type RecipeUpdater = (recipe: (draft: Recipe) => void, historyKey?: string) => void;
-
-const TICKS_PER_SECOND = 20;
 
 interface RecipeCardProps {
   item: Item;
@@ -35,7 +35,9 @@ export function RecipeCard({ item, recipe, recipeKey }: RecipeCardProps) {
   const tSchema = useSchemaText();
   const project = useOpenProject();
   const info = getRecipeTypeInfo(recipe.type);
-  const issues = sortRecipeIssues(validateRecipe(recipe, project, recipeKey), Object.keys(recipe.ingredients));
+  const plan = usePlan();
+  const itemIssues = plan ? issuesFor(plan.issues, { kind: 'item', id: item.id }) : [];
+  const issues = recipeIssues(itemIssues, recipeKey, Object.keys(recipe.ingredients));
   const update: RecipeUpdater = (change, historyKey) => updateRecipe(item.id, recipe.id, change, historyKey);
 
   return (
@@ -84,7 +86,7 @@ export function RecipeCard({ item, recipe, recipeKey }: RecipeCardProps) {
           <Field className="gap-1.5">
             <FieldTitle>{t('recipes.input')}</FieldTitle>
             <IngredientRow
-              value={recipe.input ?? { source: 'minecraft', id: '' }}
+              value={recipe.input ?? emptyIngredient()}
               onChange={(input) =>
                 update((r) => {
                   r.input = input;

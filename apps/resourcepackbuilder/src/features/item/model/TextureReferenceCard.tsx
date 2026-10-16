@@ -1,11 +1,12 @@
 import { useTranslations } from 'next-intl';
 import { ImageUp } from 'lucide-react';
 import { cn } from 'cn';
-import { pickFiles, Thumb } from '@resourcepackbuilder/ui';
+import { Thumb } from '@resourcepackbuilder/ui';
 import { Button } from '@resourcepackbuilder/ui/components/button';
 import { Item, ItemContent, ItemDescription, ItemMedia, ItemTitle } from '@resourcepackbuilder/ui/components/item';
 import { assignTextureReference } from '../../../commands/items';
-import { PNG_ACCEPT, usePngReader } from '../usePngReader';
+import { isVanillaReference } from '@resourcepackbuilder/core/minecraft/resourceLocation';
+import { usePngPicker } from '../../../hooks/useFileReaders';
 
 interface TextureReferenceCardProps {
   itemId: string;
@@ -18,12 +19,11 @@ interface TextureReferenceCardProps {
 /** A texture the model takes from elsewhere: Minecraft's own textures work, others are missing in the pack. */
 export function TextureReferenceCard({ itemId, textureKey, reference }: TextureReferenceCardProps) {
   const t = useTranslations('item');
-  const readPng = usePngReader();
-  const isVanilla = !reference.includes(':') || reference.startsWith('minecraft:');
+  const pickPng = usePngPicker();
+  const isVanilla = isVanillaReference(reference);
   const assign = async () => {
-    const [file] = await pickFiles(PNG_ACCEPT, false);
-    const png = file && (await readPng(file));
-    if (png) assignTextureReference(itemId, reference, file.name, png.dataUrl);
+    const png = await pickPng();
+    if (png) assignTextureReference(itemId, reference, png.name, png.dataUrl);
   };
   return (
     <Item variant="muted" className={cn('flex-nowrap items-start gap-3 border-border p-3', !isVanilla && 'border-destructive')}>

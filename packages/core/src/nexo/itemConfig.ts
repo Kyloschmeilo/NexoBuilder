@@ -66,6 +66,15 @@ export interface BuildContext {
  */
 export type RawYamlError = { kind: 'syntax'; message: string } | { kind: 'notAMapping' };
 
+/** The item's additional YAML as a mapping, or why it cannot be used; blank text is an empty overlay. */
+export function parseRawYaml(text: string): { value: Record<string, unknown> | null; error: RawYamlError | null } {
+  if (!text.trim()) return { value: null, error: null };
+  const parsed = parseYaml(text);
+  if (parsed.error) return { value: null, error: { kind: 'syntax', message: parsed.error } };
+  if (parsed.value !== null && !isPlainObject(parsed.value)) return { value: null, error: { kind: 'notAMapping' } };
+  return { value: isPlainObject(parsed.value) ? parsed.value : null, error: null };
+}
+
 export interface BuildResult {
   config: Record<string, unknown>;
   rawYamlError: RawYamlError | null;
@@ -149,18 +158,8 @@ export function buildItemConfig(context: BuildContext): BuildResult {
   }
 
   // 4. Overlay custom YAML
-  let rawYamlError: RawYamlError | null = null;
-  if (item.rawYaml.trim()) {
-    const parsed = parseYaml(item.rawYaml);
-    if (parsed.error) {
-      rawYamlError = { kind: 'syntax', message: parsed.error };
-    } else if (parsed.value !== null && !isPlainObject(parsed.value)) {
-      rawYamlError = { kind: 'notAMapping' };
-    } else if (isPlainObject(parsed.value)) {
-      return { config: deepMerge(result, parsed.value), rawYamlError: null };
-    }
-  }
-  return { config: result, rawYamlError };
+  const raw = parseRawYaml(item.rawYaml);
+  return { config: raw.value ? deepMerge(result, raw.value) : result, rawYamlError: raw.error };
 }
 
 /** The object at `key` (a YAML section such as Pack or Components), or an empty one. */

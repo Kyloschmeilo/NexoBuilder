@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest';
-import { TEXTURE_TEMPLATES } from '../model/textureModel';
+import { getTextureTemplate, TEXTURE_TEMPLATES, templateSlots } from '../model/textureModel';
 import { followTextureRef } from '../model/textureRefs';
-import { isGeneratedItemParent, vanillaParentElements, vanillaParentTextureKeys } from './vanillaModels';
+import { isGeneratedItemParent, MAX_ITEM_LAYERS, vanillaParentElements, vanillaParentTextureKeys } from './vanillaModels';
 
 describe('vanilla models', () => {
   it('knows the texture keys of every texture template parent', () => {
@@ -26,5 +26,12 @@ describe('vanilla models', () => {
     expect(followTextureRef({ a: '#b', b: '#a' }, '#a')).toBeNull();
     expect(followTextureRef({}, '#a')).toBeNull();
     expect(followTextureRef(undefined, 'item/x')).toBe('item/x');
+  });
+
+  it('offers one layer per PNG for multi-layer templates, up to the limit', () => {
+    const generated = getTextureTemplate('generated');
+    expect(templateSlots(generated, 2)).toEqual(['layer0', 'layer1']);
+    expect(templateSlots(generated, 99)).toHaveLength(MAX_ITEM_LAYERS);
+    expect(templateSlots(getTextureTemplate('cube_column'), 1)).toEqual(getTextureTemplate('cube_column').slots);
   });
 });

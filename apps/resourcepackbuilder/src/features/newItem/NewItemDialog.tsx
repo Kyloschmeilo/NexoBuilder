@@ -3,7 +3,8 @@ import { useTranslations } from 'next-intl';
 import { Box, FilePlus2, PackagePlus, TriangleAlert } from 'lucide-react';
 import { isPngDataUrl } from '@resourcepackbuilder/core/binary/png';
 import { getFolderPathLabel } from '@resourcepackbuilder/core/project/tree';
-import { DropZone, SectionCard, SegmentedControl } from '@resourcepackbuilder/ui';
+import { ignoredFileNames, sourceKey, type NewItemAction, type NewItemState } from '@resourcepackbuilder/core/model/newItems';
+import { AutoGrid, DropZone, SectionCard, SegmentedControl } from '@resourcepackbuilder/ui';
 import { Alert, AlertDescription } from '@resourcepackbuilder/ui/components/alert';
 import { Button } from '@resourcepackbuilder/ui/components/button';
 import { createDialogHandle } from '@resourcepackbuilder/ui/components/dialog';
@@ -18,8 +19,7 @@ import { useOpenProject } from '../../store/project';
 import { setEditorTab } from '../../store/ui';
 import { MODEL_ACCEPT, MODEL_FORMATS } from '../../components/modelFiles';
 import { DraftCard } from './DraftCard';
-import { ItemMetaFields } from './ItemMetaFields';
-import { ignoredFileNames, sourceKey, type NewItemAction, type NewItemState } from './newItemState';
+import { ItemIdentityFields } from '../../components/ItemIdentityFields';
 import { useNewItems } from './useNewItems';
 
 /** With several PNGs only: one item per PNG, or all PNGs for one item. */
@@ -134,11 +134,15 @@ function NewItemFrame({ folderId, files: initialFiles }: { folderId: string; fil
               </Button>
             }
           >
-            <ItemMetaFields
-              meta={state.plainMeta}
-              idError={entries[0]?.idError ?? null}
-              onChange={(patch) => dispatch({ type: 'metaChanged', sourceKey: null, patch })}
-            />
+            <AutoGrid fit>
+              <ItemIdentityFields
+                value={state.plainMeta}
+                idError={entries[0]?.idError ?? null}
+                onChange={(patch) => dispatch({ type: 'metaChanged', sourceKey: null, patch })}
+                autoFocus
+                displayNameTestId="new-item-display-name"
+              />
+            </AutoGrid>
           </SectionCard>
         )}
 
