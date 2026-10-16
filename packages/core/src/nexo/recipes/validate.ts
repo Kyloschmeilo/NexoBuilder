@@ -1,10 +1,10 @@
-import type { Issue, IssueContext } from '../../issues';
+import { itemFrame, itemTarget, recipeFrame, recipeIngredientFrame, recipeInputFrame } from '../../issueFrames';
+import { inContext, issueReporter, type Issue, type IssueContext } from '../../issues';
 import { RESOURCE_LOCATION_PATTERN } from '../../minecraft/resourceLocation';
-import type { Project } from '../../project/types';
-import { issueReporter } from '../issueReporter';
+import type { Item, Project } from '../../project/types';
+import { recipeKeys } from './files';
+import { MATERIAL_PATTERN } from '../material';
 import { getRecipeTypeInfo, MAX_INGREDIENT_AMOUNT, MAX_RESULT_AMOUNT, type Recipe, type RecipeIngredient } from './model';
-
-const MATERIAL_PATTERN = /^[A-Za-z0-9_]+$/;
 
 function validateIngredient(ingredient: RecipeIngredient | null | undefined, context: IssueContext, project: Project, issues: Issue[]) {
   const add = issueReporter(issues, { context: [context] });
@@ -13,7 +13,7 @@ function validateIngredient(ingredient: RecipeIngredient | null | undefined, con
     add('error', 'recipe.ingredientMissing');
     return;
   }
-  if (ingredient.source === 'minecraft' && !MATERIAL_PATTERN.test(id)) add('error', 'recipe.materialInvalid', { id });
+  if (ingredient.source === 'minecraft' && !MATERIAL_PATTERN.test(id.toUpperCase())) add('error', 'recipe.materialInvalid', { id });
   if (ingredient.source === 'tag' && !RESOURCE_LOCATION_PATTERN.test(id)) add('error', 'recipe.tagInvalid', { id });
   if (ingredient.source === 'nexo' && !Object.values(project.items).some((i) => i.nexoId === id)) {
     add('info', 'recipe.nexoItemNotInProject', { id });
@@ -33,8 +33,8 @@ function validateIngredient(ingredient: RecipeIngredient | null | undefined, con
 export function validateRecipe(recipe: Recipe, project: Project, key: string): Issue[] {
   const issues: Issue[] = [];
   const info = getRecipeTypeInfo(recipe.type);
-  const add = issueReporter(issues, { context: [{ code: 'context.recipe', args: { recipe: key } }] });
-  const ingredientContext = (letter: string): IssueContext => ({ code: 'context.recipeIngredient', args: { recipe: key, letter } });
+  const add = issueReporter(issues, { context: [recipeFrame(key)] });
+  const ingredientContext = (letter: string) => recipeIngredientFrame(key, letter);
   if (!Number.isInteger(recipe.resultAmount) || recipe.resultAmount < 1 || recipe.resultAmount > MAX_RESULT_AMOUNT) {
     add('error', 'recipe.resultAmountRange');
   }
@@ -49,11 +49,23 @@ export function validateRecipe(recipe: Recipe, project: Project, key: string): I
       validateIngredient(ingredient, ingredientContext(letter), project, issues);
     }
   } else {
-    validateIngredient(recipe.input, { code: 'context.recipeInput', args: { recipe: key } }, project, issues);
+    validateIngredient(recipe.input, recipeInputFrame(key), project, issues);
     if (info.kind === 'cooking') {
       if (!Number.isFinite(recipe.cookingTime) || recipe.cookingTime < 1) add('error', 'recipe.cookingTimeInvalid');
       if (!Number.isFinite(recipe.experience) || recipe.experience < 0) add('error', 'recipe.experienceNegative');
     }
   }
   return issues;
+}
+
+/** Checks the recipes of all `items`; each issue targets its item and carries its `context.item` frame first. */
+export function validateRecipes(project: Project, items: Item[]): Issue[] {
+  return items.flatMap((item) => {
+    const keys = recipeKeys(item);
+    return (item.recipes ?? []).flatMap((recipe) =>
+      validateRecipe(recipe, project, keys.get(recipe.id) ?? recipe.type).map((issue) =>
+        inContext(issue, [itemFrame(item)], itemTarget(item)),
+      ),
+    );
+  });
 }

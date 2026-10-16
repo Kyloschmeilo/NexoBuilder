@@ -12,13 +12,13 @@
  * The converted model is then checked like every other model (see analyseElements).
  */
 import { CoreError, type Issue } from '../issues';
-import { compareVersions } from '../minecraft/versions';
+import { compareVersions, FEATURE_VERSIONS } from '../minecraft/versions';
 import { isPlainObject } from '../object';
 import { convertDisplay } from './bbmodel/display';
 import { convertElements, hasRotatedGroups } from './bbmodel/elements';
 import { buildTextureMcmeta, readTextureEntries } from './bbmodel/textures';
 import { positiveNumber, type BBModel, type BBTexture } from './bbmodel/types';
-import { texturePlaceholder } from './common';
+import { texturePlaceholder } from '../tokens';
 import { analyseElements } from './javaModel';
 import { createTexture, findMcmetaFor } from './textures';
 import type { ImportedModel, ImportFile, JavaModelJson, ModelTexture } from './types';
@@ -51,9 +51,6 @@ const FORMAT_LABELS: Record<string, string> = {
   image: 'Image',
 };
 
-/** Blockbench writes shade_direction_override instead of shade:false from this Java version on */
-const SHADE_OVERRIDE_SINCE = '26.3';
-
 export function convertBBModel(text: string, fileName: string, extraFiles: ImportFile[] = []): ImportedModel {
   const model = parseBBModel(text, fileName);
   const issues: Issue[] = [];
@@ -72,7 +69,7 @@ export function convertBBModel(text: string, fileName: string, extraFiles: Impor
     uv,
     perTextureUv,
     centered: CENTERED_FORMATS.has(format),
-    usesShadeOverride: !!javaVersion && compareVersions(javaVersion, SHADE_OVERRIDE_SINCE) >= 0,
+    usesShadeOverride: !!javaVersion && compareVersions(javaVersion, FEATURE_VERSIONS.shadeDirectionOverride) >= 0,
   });
   const { elements } = converted;
   if (converted.skippedNonCubes > 0)

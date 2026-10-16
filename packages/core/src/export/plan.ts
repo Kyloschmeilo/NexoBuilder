@@ -1,20 +1,24 @@
 /**
  * Plans the complete export of a project: item YAMLs, models, textures, armor and all checks.
  * The result contains finished file contents and can be zipped directly (see paths.ts for the layout).
+ *
+ * Convention: each domain owns its checks (nexo/<domain>/validate.ts, export/validate/* for what only
+ * exists in the export); this module only calls them and puts their issues into the item's context.
  */
-import { inContext, type Issue, type IssueContext } from '../issues';
+import { inContext, issueReporter, type Issue, type IssueContext } from '../issues';
 import { buildPackMcmeta } from '../minecraft/versions';
-import { getPath } from '../nexo/configPath';
 import { buildItemConfig } from '../nexo/itemConfig';
-import { DEFAULT_MATERIAL } from '../nexo/material';
-import { buildRecipeFiles, recipeKeys } from '../nexo/recipes/files';
-import { validateRecipe } from '../nexo/recipes/validate';
+import { itemMaterial } from '../nexo/material';
+import { buildRecipeFiles } from '../nexo/recipes/files';
+import { validateRecipes } from '../nexo/recipes/validate';
 import { VARIANTS, variantPathSuffix, type VariantSlot } from '../nexo/variants';
 import { itemsToYaml } from '../nexo/yaml';
+import { getPath, groupBy } from '../object';
 import { getFolderSlugs, getItemsInTreeOrder } from '../project/tree';
 import type { Item, Project } from '../project/types';
-import { collectArmorSets, itemArmor, writeArmorSets, type ItemArmor } from './armor';
-import { itemFrame, itemTarget, variantFrame } from './frames';
+import type { ItemArmor } from '../nexo/armor';
+import { collectArmorSets, itemArmor, writeArmorSets } from './equipment';
+import { itemFrame, itemTarget, variantFrame } from '../issueFrames';
 import { writeItemModels } from './itemModels';
 import { writeMedia } from './media';
 import { writeModel } from './models';
@@ -53,6 +57,7 @@ export function planExport(project: Project, options: PlanOptions = {}): ExportP
   if (project.settings.packIcon) writer.binary('pack.png', project.settings.packIcon, { level: 'warning' });
 
   const media = writeMedia(writer, project, issues);
+  issues.push(...validateRecipes(project, items));
 
   issues.push(...writer.issues, ...writer.duplicateIssues());
   return {
@@ -81,7 +86,7 @@ function planItem(project: Project, item: Item, writer: PackWriter, issues: Issu
     writer,
     modelPath: modelPathFor(project, item),
     folderSlugs: getFolderSlugs(project, item.folderId),
-    report: (level, code, args, context) => reportIn({ level, code, ...(args && { args }) }, context),
+    report: issueReporter(issues, { target, context: [frame] }),
     reportIn,
     writeModel: (model, modelPath, modelFrame) =>
       writeModel(writer, project, model, modelPath, (issue) => reportIn(issue, modelFrame ? [modelFrame] : [])),
@@ -97,7 +102,6 @@ function planItem(project: Project, item: Item, writer: PackWriter, issues: Issu
     project,
     item,
     modelKey: main?.key ?? null,
-    armorAssetId: shared.armor?.assetId ?? null,
     armor: shared.armor,
     variantKeys,
     itemModel: itemModels.itemModel,
@@ -106,10 +110,6 @@ function planItem(project: Project, item: Item, writer: PackWriter, issues: Issu
   if (built.rawYamlError?.kind === 'syntax') itemExport.report('error', 'plan.rawYamlError', { error: built.rawYamlError.message });
   else if (built.rawYamlError) itemExport.report('error', 'plan.rawYamlNotMapping');
   validateItemConfig(itemExport, { config: built.config, usedVariations: shared.usedVariations, armorSlot: shared.armor?.slot ?? null });
-  const keys = recipeKeys(item);
-  for (const recipe of item.recipes) {
-    for (const issue of validateRecipe(recipe, project, keys.get(recipe.id) ?? recipe.type)) reportIn(issue);
-  }
 
   return {
     item,
@@ -147,17 +147,11 @@ function writeVariants(itemExport: ItemExport, hasMainModel: boolean): Partial<R
       return itemExport.writeModel(model, `${itemExport.modelPath}-${suffix}`, variantFrame(def, suffix)).key;
     });
     keys[def.slot] = def.multiple ? written : written[0];
-    const material = String(item.config.material ?? DEFAULT_MATERIAL).toUpperCase();
+    const material = itemMaterial(item);
     const blocksAttacks = def.slot === 'blocking_model' && getPath(item.config, ['Components', 'blocks_attacks']) !== undefined;
     if (def.materials && !def.materials.includes(material) && !blocksAttacks) {
       itemExport.report('warning', 'plan.variantWrongMaterial', { materials: def.materials.join(' / '), material }, [frame]);
     }
   }
   return keys;
-}
-
-function groupBy<T>(values: T[], key: (value: T) => string): Map<string, T[]> {
-  const groups = new Map<string, T[]>();
-  for (const value of values) groups.set(key(value), [...(groups.get(key(value)) ?? []), value]);
-  return groups;
 }

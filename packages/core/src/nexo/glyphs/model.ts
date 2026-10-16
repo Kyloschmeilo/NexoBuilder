@@ -3,17 +3,13 @@
  * Export: plugins/Nexo/glyphs/<project>.yml + textures in the external pack
  * (assets/<ns>/textures/glyphs/<id>.png or .gif).
  */
-import { dataUrlHead } from '../../binary/dataUrl';
+import { readGifInfoFromDataUrl } from '../../binary/gif';
 import { readPngInfoFromDataUrl } from '../../binary/png';
+import type { MediaFile } from '../media/entry';
 
 export type GlyphKind = 'image' | 'gif' | 'reference';
 
-export interface GlyphFile {
-  name: string;
-  dataUrl: string;
-  width: number;
-  height: number;
-}
+export type GlyphFile = MediaFile;
 
 export interface Glyph {
   id: string;
@@ -46,15 +42,6 @@ export const DEFAULT_FONT_ASCENT = 7;
 /** Maximum size of a single glyph cell (otherwise use multi-bitmap). */
 export const MAX_GLYPH_CELL = 256;
 
-/** Reads width/height from a GIF header; null if the data URL is no GIF. */
-export function readGifInfo(dataUrl: string): { width: number; height: number } | null {
-  const bytes = dataUrl.startsWith('data:image/gif') ? dataUrlHead(dataUrl, 10) : null;
-  if (!bytes || bytes.length < 10) return null;
-  const header = String.fromCharCode(...bytes.slice(0, 6));
-  if (header !== 'GIF87a' && header !== 'GIF89a') return null;
-  return { width: bytes[6] | (bytes[7] << 8), height: bytes[8] | (bytes[9] << 8) };
-}
-
 export function createGlyph(id: string, glyphId: string, file: GlyphFile | null, kind: GlyphKind = 'image'): Glyph {
   // Small images are usually emojis (as high as chat text), large images GUI backgrounds
   const small = !file || (file.width <= 32 && file.height <= 32);
@@ -84,7 +71,7 @@ export function createGlyph(id: string, glyphId: string, file: GlyphFile | null,
 export function glyphFileFromDataUrl(name: string, dataUrl: string): GlyphFile | null {
   const png = readPngInfoFromDataUrl(dataUrl);
   if (png) return { name, dataUrl, ...png };
-  const gif = readGifInfo(dataUrl);
+  const gif = readGifInfoFromDataUrl(dataUrl);
   if (gif) return { name, dataUrl, ...gif };
   return null;
 }

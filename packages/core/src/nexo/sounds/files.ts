@@ -1,4 +1,5 @@
 /** Export of sounds: OGG file paths and the sounds.yml entry. */
+import { formatResourceLocation } from '../../minecraft/resourceLocation';
 import type { Project } from '../../project/types';
 import { soundKey, type Sound } from './model';
 
@@ -11,7 +12,7 @@ export function soundFilePath(sound: Sound, index: number): string {
 /** Entry for sounds.yml */
 export function soundToYaml(project: Project, sound: Sound): Record<string, unknown> {
   const ns = project.namespace;
-  const refs = sound.files.map((_, i) => `${ns}:${soundFilePath(sound, i)}`);
+  const refs = sound.files.map((_, i) => formatResourceLocation(ns, soundFilePath(sound, i)));
   const out: Record<string, unknown> = { id: soundKey(project, sound) };
   if (refs.length === 1) out.sound = refs[0];
   else out.sounds = refs;

@@ -95,6 +95,8 @@ export const FEATURE_VERSIONS = {
   freeAngle: '1.21.6',
   /** Rotation on multiple axes or angles above 45° */
   multiAxisRotation: '1.21.11',
-  /** shade_direction_override on elements */
+  /** shade_direction_override on elements (Blockbench writes it instead of shade:false from here on) */
   shadeDirectionOverride: '26.3',
+  /** Nexo generates the datapack that registers custom paintings */
+  paintingDatapack: '1.21.5',
 } as const;

@@ -5,13 +5,16 @@
  * Migrations:
  *  - armor settings moved from `item.config.$armor` to `item.armor`
  *  - issues stored with imported models: `params` became `args`
+ * Afterwards the folder tree is repaired (see repair.ts), e.g. items without a folder are rescued.
  */
 import { CoreError, type Issue, type IssueLevel, type MessageArgs } from '../issues';
 import type { ImportedModel, JavaModelJson, ModelSource } from '../model/types';
 import { toArmorSettings, type ArmorSettings } from '../nexo/armor';
+import { MEDIA_KINDS, mapMediaLists } from '../nexo/media/kinds';
 import { isPlainObject } from '../object';
-import { defaultSettings } from './factory';
-import { uid } from './ids';
+import { defaultSettings, DEFAULT_PACK_NAME } from './factory';
+import { uid } from '../id';
+import { repairProject } from './repair';
 import type { ConfigObject, Folder, Item, Project, ProjectSettings } from './types';
 
 /** Former location of the armor settings inside the item configuration */
@@ -36,25 +39,25 @@ export function migrateProject(raw: unknown, now = Date.now()): Project {
   const folders: Record<string, Folder> = {};
   if (isPlainObject(raw.folders)) {
     for (const [id, value] of Object.entries(raw.folders)) {
-      const folder = migrateFolder(value, id, items);
+      const folder = migrateFolder(value, id);
       if (folder) folders[id] = folder;
     }
   }
-  return {
+  const project: Project = {
     formatVersion: 1,
     id: string(raw.id, uid('p_')),
     name: raw.name,
-    namespace: string(raw.namespace, 'resourcepackbuilder'),
+    namespace: string(raw.namespace, DEFAULT_PACK_NAME),
     settings: migrateSettings(raw.settings, raw.name),
     folders,
     items,
     rootFolderIds: strings(raw.rootFolderIds),
-    glyphs: list(raw.glyphs),
-    sounds: list(raw.sounds),
-    paintings: list(raw.paintings),
+    ...mapMediaLists((kind) => list(raw[MEDIA_KINDS[kind].list])),
     createdAt: number(raw.createdAt, now),
     updatedAt: number(raw.updatedAt, now),
   };
+  repairProject(project);
+  return project;
 }
 
 function migrateSettings(raw: unknown, projectName: string): ProjectSettings {
@@ -72,14 +75,14 @@ function migrateSettings(raw: unknown, projectName: string): ProjectSettings {
   };
 }
 
-function migrateFolder(raw: unknown, id: string, items: Record<string, Item>): Folder | null {
+function migrateFolder(raw: unknown, id: string): Folder | null {
   if (!isPlainObject(raw)) return null;
   return {
     id,
     name: string(raw.name, ''),
     parentId: typeof raw.parentId === 'string' ? raw.parentId : null,
     folderIds: strings(raw.folderIds),
-    itemIds: strings(raw.itemIds).filter((itemId) => items[itemId]),
+    itemIds: strings(raw.itemIds),
   };
 }
 

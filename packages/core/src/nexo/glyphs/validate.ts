@@ -1,23 +1,14 @@
 import type { Issue } from '../../issues';
 import { ITEM_ID_PATTERN, RESOURCE_LOCATION_PATTERN } from '../../minecraft/resourceLocation';
 import type { Project } from '../../project/types';
-import { issueReporter } from '../issueReporter';
-import { MAX_GLYPH_CELL, type Glyph } from './model';
+import { validateEntries } from '../media/entry';
+import { MAX_GLYPH_CELL } from './model';
 
 /** Checks all glyphs of the project; each issue targets its glyph and carries a `context.glyph` frame. */
 export function validateGlyphs(project: Project): Issue[] {
-  const issues: Issue[] = [];
   const glyphs = project.glyphs ?? [];
-  const seen = new Map<string, Glyph>();
   const placeholderOwner = new Map<string, string>();
-  for (const glyph of glyphs) {
-    const add = issueReporter(issues, {
-      target: { kind: 'glyph', id: glyph.id },
-      context: [{ code: 'context.glyph', args: { glyph: glyph.glyphId || '?' } }],
-    });
-    if (!ITEM_ID_PATTERN.test(glyph.glyphId)) add('error', 'glyph.idInvalid');
-    if (seen.has(glyph.glyphId)) add('error', 'glyph.idDuplicate');
-    seen.set(glyph.glyphId, glyph);
+  return validateEntries(glyphs, { kind: 'glyph', idOf: (g) => g.glyphId, pattern: ITEM_ID_PATTERN }, (glyph, add) => {
     for (const p of glyph.placeholders.map((x) => x.trim()).filter(Boolean)) {
       const owner = placeholderOwner.get(p);
       if (owner && owner !== glyph.glyphId) add('warning', 'glyph.placeholderShared', { placeholder: p, owner });
@@ -37,12 +28,12 @@ export function validateGlyphs(project: Project): Issue[] {
           add('error', 'glyph.indexRange', { max: target.rows * target.columns });
         }
       }
-      continue;
+      return;
     }
 
     if (!glyph.file) {
       add('error', glyph.kind === 'gif' ? 'glyph.gifMissing' : 'glyph.pngMissing');
-      continue;
+      return;
     }
     if (!Number.isInteger(glyph.height) || glyph.height < 1) add('error', 'glyph.heightInvalid');
     if (!Number.isInteger(glyph.ascent)) add('error', 'glyph.ascentNotInteger');
@@ -62,6 +53,5 @@ export function validateGlyphs(project: Project): Issue[] {
     } else {
       add('info', 'glyph.animatedShaders');
     }
-  }
-  return issues;
+  });
 }

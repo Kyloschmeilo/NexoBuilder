@@ -4,16 +4,14 @@
  * From Minecraft 1.21.5 on, Nexo generates the required datapack from it.
  */
 import type { Project } from '../../project/types';
+import { mediaKey, type MediaFile } from '../media/entry';
 
 /** Largest painting side in blocks. */
 export const MAX_PAINTING_BLOCKS = 16;
+/** Pixels of a vanilla painting texture per block */
+const PIXELS_PER_BLOCK = 16;
 
-export interface PaintingFile {
-  name: string;
-  dataUrl: string;
-  width: number;
-  height: number;
-}
+export type PaintingFile = MediaFile;
 
 export interface Painting {
   id: string;
@@ -34,7 +32,7 @@ export interface Painting {
 
 export function createPainting(id: string, paintingId: string, file: PaintingFile | null): Painting {
   // Estimate size in blocks from the image (16 pixels per block)
-  const blocks = (px: number) => Math.min(16, Math.max(1, Math.round(px / 16)));
+  const blocks = (px: number) => Math.min(MAX_PAINTING_BLOCKS, Math.max(1, Math.round(px / PIXELS_PER_BLOCK)));
   return {
     id,
     paintingId,
@@ -50,7 +48,7 @@ export function createPainting(id: string, paintingId: string, file: PaintingFil
 }
 
 export function paintingKey(project: Project, painting: Painting): string {
-  return `${project.namespace}:${painting.paintingId}`;
+  return mediaKey(project, painting.paintingId);
 }
 
 /** Size of a single frame for animated paintings (same aspect ratio as the painting) */

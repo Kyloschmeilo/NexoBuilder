@@ -115,9 +115,9 @@ export function createModelObject(preview: PreviewModel, display?: JavaDisplayTr
 
   // Display transformation (like in Blockbench display mode)
   if (display) {
-    const [tx, ty, tz] = (display.translation as number[] | undefined) ?? [0, 0, 0];
-    const [rx, ry, rz] = (display.rotation as number[] | undefined) ?? [0, 0, 0];
-    const [sx, sy, sz] = (display.scale as number[] | undefined) ?? [1, 1, 1];
+    const [tx, ty, tz] = display.translation ?? [0, 0, 0];
+    const [rx, ry, rz] = display.rotation ?? [0, 0, 0];
+    const [sx, sy, sz] = display.scale ?? [1, 1, 1];
     root.position.set(tx, ty, tz);
     root.rotation.order = 'XYZ';
     root.rotation.set(THREE.MathUtils.degToRad(rx), THREE.MathUtils.degToRad(ry), THREE.MathUtils.degToRad(rz));

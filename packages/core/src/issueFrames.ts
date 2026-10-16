@@ -1,8 +1,12 @@
-/** Context frames ("where") of export issues; each code is a message key in the `issues` namespace. */
-import { labelArg, type IssueContext, type IssueTarget } from '../issues';
-import type { VariantDef } from '../nexo/variants';
-import { itemLabel } from '../project/labels';
-import type { Item, Project } from '../project/types';
+/**
+ * Targets and context frames ("where") of issues; each frame code is a message key in the `issues`
+ * namespace. All `context.*` frames are built here so the app can rely on their codes and args.
+ */
+import { labelArg, type IssueContext, type IssueTarget } from './issues';
+import type { MediaKind } from './nexo/media/kinds';
+import type { VariantDef } from './nexo/variants';
+import { itemLabel } from './project/labels';
+import type { Item, Project } from './project/types';
 
 export function itemTarget(item: Item): IssueTarget {
   return { kind: 'item', id: item.id };
@@ -14,6 +18,26 @@ export function itemFrame(item: Item): IssueContext {
 
 export function projectFrame(project: Project): IssueContext {
   return { code: 'context.project', args: { project: project.name } };
+}
+
+/** A glyph, sound or painting, named by its user-facing ID (`context.glyph` with `{ glyph }` …). */
+export function mediaFrame(kind: MediaKind, id: string): IssueContext {
+  return { code: `context.${kind}`, args: { [kind]: id || '?' } };
+}
+
+/** A recipe; `key` is its unique key (see recipeKeys). */
+export function recipeFrame(key: string): IssueContext {
+  return { code: 'context.recipe', args: { recipe: key } };
+}
+
+/** The ingredient with `letter` of a crafting recipe. */
+export function recipeIngredientFrame(key: string, letter: string): IssueContext {
+  return { code: 'context.recipeIngredient', args: { recipe: key, letter } };
+}
+
+/** The single input of a furnace, stonecutter … recipe. */
+export function recipeInputFrame(key: string): IssueContext {
+  return { code: 'context.recipeInput', args: { recipe: key } };
 }
 
 /** A configuration property; `label` is a message key in the `schema` namespace. */

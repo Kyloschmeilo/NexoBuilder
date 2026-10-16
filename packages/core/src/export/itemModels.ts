@@ -3,8 +3,9 @@
  * custom inventory icon, connectable furniture, placement, light and state models of furniture
  * as well as stack stages of blocks. The matching values in the item configuration are returned too.
  */
+import { formatResourceLocation } from '../minecraft/resourceLocation';
 import { compareVersions, FEATURE_VERSIONS } from '../minecraft/versions';
-import { getPath } from '../nexo/configPath';
+import type { ConfigAddition } from '../nexo/itemConfig';
 import {
   CONNECT_SLOTS,
   FURNITURE_MODEL_SLOTS,
@@ -16,17 +17,10 @@ import {
   type VariantDef,
   type VariantSlot,
 } from '../nexo/variants';
-import { isPlainObject } from '../object';
-import { variantFrame } from './frames';
+import { getPath, isPlainObject } from '../object';
+import { variantFrame } from '../issueFrames';
 import { itemModelDefinitionFile } from './paths';
 import type { ItemExport } from './types';
-
-export interface ConfigAddition {
-  path: string[];
-  value: unknown;
-  /** Only set if the user has not entered anything there themselves */
-  ifMissing?: boolean;
-}
 
 export interface ItemModelsResult {
   /** Custom item model of the item (Components.item_model) */
@@ -58,7 +52,7 @@ export function writeItemModels(itemExport: ItemExport, modelKey: string | null,
   const definitionBase = [...itemExport.folderSlugs, item.nexoId].join('/');
   const writeDefinition = (path: string, model: ItemModelNode, extra: Record<string, unknown> = {}) => {
     writer.json(itemModelDefinitionFile(ns, path), { model, ...extra });
-    return `${ns}:${path}`;
+    return formatResourceLocation(ns, path);
   };
   /** Writes the first model of a slot as "<main model path>-<suffix>" and returns its key. */
   const writeSlot = (slot: VariantSlot, suffix: string): string | null => {

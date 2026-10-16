@@ -6,7 +6,8 @@ import { createTextureModel } from '../model/textureModel';
 import { convertBBModel } from '../model/bbmodel';
 import { planExport } from './plan';
 import { INSTALL_GUIDE_FILE } from './installGuide';
-import { buildExportZip } from './zip';
+import { buildMultiExportZip } from './zip';
+import { singleExport } from '../test/export';
 import { createTexture } from '../model/textures';
 import { makePngDataUrl } from '../test/png';
 import type { Project } from '../project/types';
@@ -203,6 +204,20 @@ describe('planExport', () => {
     expect(warnings.some((i) => i.code === 'plan.fieldFormat' && i.args?.value === 'zwei Sekunden' && i.args?.error)).toBe(true);
   });
 
+  it('exports the material in upper case and rejects invalid names', () => {
+    const project = buildProject();
+    const folderId = project.rootFolderIds[0];
+    const lower = createItem({ displayName: 'Lower', nexoId: 'lower', folderId, material: ' diamond_axe ', model: null });
+    const broken = createItem({ displayName: 'Broken', nexoId: 'broken', folderId, model: null });
+    broken.rawYaml = 'material: diamond axe';
+    insertItem(project, lower);
+    insertItem(project, broken);
+    const plan = planExport(project);
+    expect(plan.items.find((p) => p.item.id === lower.id)?.config.material).toBe('DIAMOND_AXE');
+    const invalid = plan.issues.filter((i) => i.code === 'plan.materialInvalid').map((i) => i.target?.id);
+    expect(invalid).toEqual([broken.id]);
+  });
+
   it('uses the model for custom blocks and places block textures under textures/block', () => {
     const project = createProject('Blöcke', 'bloecke', '26.3');
     const folder = createFolder('Erze', null);
@@ -262,11 +277,11 @@ describe('planExport', () => {
   });
 });
 
-describe('buildExportZip', () => {
+describe('buildMultiExportZip (one project)', () => {
   it('places items and the external pack into the Nexo folder structure', async () => {
     const project = buildProject();
     const plan = planExport(project);
-    const result = await buildExportZip(project, plan, 'full');
+    const result = await buildMultiExportZip(singleExport(project, plan), 'full');
     const files = await unzip(result.data);
     const paths = [...files.keys()].sort();
     expect(paths).toContain('items/waffen/waffen.yml');
@@ -283,7 +298,7 @@ describe('buildExportZip', () => {
     const project = buildProject();
     project.settings.externalPackAsZip = true;
     const plan = planExport(project);
-    const files = await unzip((await buildExportZip(project, plan, 'full')).data);
+    const files = await unzip((await buildMultiExportZip(singleExport(project, plan), 'full')).data);
     const inner = await unzip(files.get('pack/external_packs/mein_pack.zip')!);
     expect(inner.has('pack.mcmeta')).toBe(true);
     expect(inner.has('assets/meinpack/models/item/waffen/ruby_sword.json')).toBe(true);
@@ -292,7 +307,7 @@ describe('buildExportZip', () => {
   it('exports only the resource pack', async () => {
     const project = buildProject();
     const plan = planExport(project);
-    const files = await unzip((await buildExportZip(project, plan, 'pack')).data);
+    const files = await unzip((await buildMultiExportZip(singleExport(project, plan), 'pack')).data);
     expect([...files.keys()].every((p) => p === 'pack.mcmeta' || p.startsWith('assets/'))).toBe(true);
   });
 });

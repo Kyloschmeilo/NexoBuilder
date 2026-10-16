@@ -2,16 +2,16 @@
 import { labelArg, type IssueContext, type MessageArgs } from '../../issues';
 import { versionSupport } from '../../minecraft/versions';
 import { slotForMaterial } from '../../nexo/armor';
-import { getPath } from '../../nexo/configPath';
 import { validateTextFormat } from '../../nexo/fieldFormat';
 import type { Field } from '../../nexo/fields';
 import { getPropertyValue } from '../../nexo/properties';
+import { MATERIAL_PATTERN } from '../../nexo/material';
 import { PROPERTIES } from '../../nexo/schema';
-import { MODEL_TOKEN } from '../../nexo/tokens';
-import { isPlainObject } from '../../object';
+import { MODEL_TOKEN } from '../../tokens';
+import { getPath, isPlainObject } from '../../object';
 import { itemLabel } from '../../project/labels';
 import type { Item } from '../../project/types';
-import { fieldFrame, listEntryFrame, mapKeyFrame, propertyFrame } from '../frames';
+import { fieldFrame, listEntryFrame, mapKeyFrame, propertyFrame } from '../../issueFrames';
 import type { ItemExport } from '../types';
 
 /** Highest custom_variation per block type (Nexo limits) */
@@ -30,7 +30,7 @@ export function validateItemConfig(itemExport: ItemExport, { config, usedVariati
   const { item, report } = itemExport;
   const targetVersion = itemExport.project.settings.minecraftVersion;
   const material = config.material;
-  if (typeof material !== 'string' || !/^[A-Z0-9_]+$/.test(material)) {
+  if (typeof material !== 'string' || !MATERIAL_PATTERN.test(material)) {
     report('error', 'plan.materialInvalid', { material: String(material) });
   }
 

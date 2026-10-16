@@ -1,13 +1,2 @@
-/** Texture placeholders shared by the model importers and the export. */
-
-const PLACEHOLDER_PREFIX = '$tex:';
-
-/** Placeholder for an imported texture in the model JSON (replaced on export). */
-export function texturePlaceholder(textureId: string): string {
-  return PLACEHOLDER_PREFIX + textureId;
-}
-
-/** Returns the texture ID if `value` is a placeholder. */
-export function parseTexturePlaceholder(value: unknown): string | null {
-  return typeof value === 'string' && value.startsWith(PLACEHOLDER_PREFIX) ? value.slice(PLACEHOLDER_PREFIX.length) : null;
-}
+/** Texture placeholders of imported models; kept as a module because the app imports them from here (see ../tokens). */
+export { parseTexturePlaceholder, texturePlaceholder } from '../tokens';

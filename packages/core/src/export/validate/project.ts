@@ -1,6 +1,7 @@
 /** Project-wide checks: namespace, pack settings, folder names and item IDs. */
-import type { Issue, MessageArgs } from '../../issues';
-import { itemFrame, itemTarget } from '../frames';
+import { isPngDataUrl } from '../../binary/png';
+import { createIssue, issueReporter, type Issue, type MessageArgs } from '../../issues';
+import { itemFrame, itemTarget } from '../../issueFrames';
 import { itemIdSyntaxError, namespaceError, PACK_NAME_PATTERN } from '../../minecraft/resourceLocation';
 import { itemLabel } from '../../project/labels';
 import { folderSlug } from '../../project/tree';
@@ -15,12 +16,15 @@ const NAMESPACE_ISSUES = {
 export function validateProjectSettings(project: Project): Issue[] {
   const issues: Issue[] = [];
   const nsError = namespaceError(project.namespace);
-  if (nsError) issues.push({ ...NAMESPACE_ISSUES[nsError], args: { namespace: project.namespace } });
-  if (!PACK_NAME_PATTERN.test(project.settings.packName)) {
-    issues.push({ level: 'error', code: 'plan.packNameInvalid', args: { name: project.settings.packName } });
+  if (nsError) {
+    const { level, code } = NAMESPACE_ISSUES[nsError];
+    issues.push(createIssue(level, code, { namespace: project.namespace }));
   }
-  if (project.settings.packIcon && !project.settings.packIcon.startsWith('data:image/png')) {
-    issues.push({ level: 'warning', code: 'plan.packIconNotPng' });
+  if (!PACK_NAME_PATTERN.test(project.settings.packName)) {
+    issues.push(createIssue('error', 'plan.packNameInvalid', { name: project.settings.packName }));
+  }
+  if (project.settings.packIcon && !isPngDataUrl(project.settings.packIcon)) {
+    issues.push(createIssue('warning', 'plan.packIconNotPng'));
   }
   return issues;
 }
@@ -38,12 +42,8 @@ export function validateFolders(project: Project): Issue[] {
       const slug = folderSlug(folder);
       const other = seen.get(slug);
       if (other) {
-        issues.push({
-          level: 'error',
-          code: 'plan.folderSlugClash',
-          args: { first: project.folders[other].name, second: folder.name, slug },
-          target: { kind: 'folder', id },
-        });
+        const args = { first: project.folders[other].name, second: folder.name, slug };
+        issues.push(createIssue('error', 'plan.folderSlugClash', args, { target: { kind: 'folder', id } }));
       } else {
         seen.set(slug, id);
       }
@@ -53,7 +53,7 @@ export function validateFolders(project: Project): Issue[] {
   checkSiblings(project.rootFolderIds);
   for (const folder of Object.values(project.folders)) {
     if (folder.itemIds.length === 0 && folder.folderIds.length === 0) {
-      issues.push({ level: 'info', code: 'plan.folderEmpty', args: { folder: folder.name }, target: { kind: 'folder', id: folder.id } });
+      issues.push(createIssue('info', 'plan.folderEmpty', { folder: folder.name }, { target: { kind: 'folder', id: folder.id } }));
     }
   }
   return issues;
@@ -64,8 +64,8 @@ export function validateItemIds(items: Item[]): Issue[] {
   const issues: Issue[] = [];
   const seen = new Map<string, Item>();
   for (const item of items) {
-    const report = (code: string, args: MessageArgs = {}) =>
-      issues.push({ level: 'error', code, args, target: itemTarget(item), context: [itemFrame(item)] });
+    const add = issueReporter(issues, { target: itemTarget(item), context: [itemFrame(item)] });
+    const report = (code: string, args?: MessageArgs) => add('error', code, args);
     const syntax = itemIdSyntaxError(item.nexoId);
     if (syntax === 'missing') {
       report('plan.itemIdMissing');

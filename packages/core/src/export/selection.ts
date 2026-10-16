@@ -5,9 +5,10 @@
  * For the selection, a sub-project with the same folders (just without the deselected
  * items) is created – paths and file names thus stay exactly as in the full export.
  */
-import { inContext, type Issue, type MessageArgs } from '../issues';
+import { inContext, issueReporter, type Issue, type MessageArgs } from '../issues';
+import { MEDIA_KIND_LIST, MEDIA_KINDS, mapMediaLists, mediaGlobalId, mediaList, type MediaKind } from '../nexo/media/kinds';
 import type { Project } from '../project/types';
-import { projectFrame } from './frames';
+import { projectFrame } from '../issueFrames';
 import { projectFileName } from '../nexo/projectFiles';
 import { planExport } from './plan';
 import type { ExportPlan, PlanOptions } from './types';
@@ -22,39 +23,40 @@ export interface ExportSelection {
 
 export const SELECT_ALL: ExportSelection = { excludedItemIds: [], excludedGlyphIds: [] };
 
+/** The deselected IDs of one media list. */
+function excludedIds(selection: ExportSelection | undefined, kind: MediaKind): Set<string> {
+  return new Set(selection?.[MEDIA_KINDS[kind].excludedKey] ?? []);
+}
+
+/** The entries of one media list that the selection keeps. */
+function selectedEntries<K extends MediaKind>(project: Project, selection: ExportSelection | undefined, kind: K) {
+  const excluded = excludedIds(selection, kind);
+  return mediaList(project, kind).filter((entry) => !excluded.has(entry.id));
+}
+
 /** A selection that leaves out everything of `project`. */
 export function selectNothing(project: Project): ExportSelection {
-  return {
-    excludedItemIds: Object.keys(project.items),
-    excludedGlyphIds: project.glyphs.map((g) => g.id),
-    excludedSoundIds: project.sounds.map((s) => s.id),
-    excludedPaintingIds: project.paintings.map((p) => p.id),
-  };
+  const selection: ExportSelection = { excludedItemIds: Object.keys(project.items), excludedGlyphIds: [] };
+  for (const kind of MEDIA_KIND_LIST) selection[MEDIA_KINDS[kind].excludedKey] = mediaList(project, kind).map((e) => e.id);
+  return selection;
 }
 
 function isEverythingSelected(selection: ExportSelection): boolean {
-  return (
-    selection.excludedItemIds.length === 0 &&
-    selection.excludedGlyphIds.length === 0 &&
-    !selection.excludedSoundIds?.length &&
-    !selection.excludedPaintingIds?.length
-  );
+  return selection.excludedItemIds.length === 0 && MEDIA_KIND_LIST.every((kind) => !selection[MEDIA_KINDS[kind].excludedKey]?.length);
 }
 
-/** Number of selected items and glyphs. */
+/** Number of selected items, glyphs, sounds and paintings. */
 export function countSelected(
   project: Project,
   selection: ExportSelection | undefined,
 ): { items: number; glyphs: number; sounds: number; paintings: number } {
   const excludedItems = new Set(selection?.excludedItemIds ?? []);
-  const excludedGlyphs = new Set(selection?.excludedGlyphIds ?? []);
-  const excludedSounds = new Set(selection?.excludedSoundIds ?? []);
-  const excludedPaintings = new Set(selection?.excludedPaintingIds ?? []);
+  const lists = mapMediaLists((kind) => selectedEntries(project, selection, kind));
   return {
     items: Object.keys(project.items).filter((id) => !excludedItems.has(id)).length,
-    glyphs: project.glyphs.filter((g) => !excludedGlyphs.has(g.id)).length,
-    sounds: project.sounds.filter((g) => !excludedSounds.has(g.id)).length,
-    paintings: project.paintings.filter((g) => !excludedPaintings.has(g.id)).length,
+    glyphs: lists.glyphs.length,
+    sounds: lists.sounds.length,
+    paintings: lists.paintings.length,
   };
 }
 
@@ -65,9 +67,6 @@ export function countSelected(
 export function selectFromProject(project: Project, selection: ExportSelection | undefined): Project {
   if (!selection || isEverythingSelected(selection)) return project;
   const excludedItems = new Set(selection.excludedItemIds);
-  const excludedGlyphs = new Set(selection.excludedGlyphIds);
-  const excludedSounds = new Set(selection.excludedSoundIds ?? []);
-  const excludedPaintings = new Set(selection.excludedPaintingIds ?? []);
 
   const items: Project['items'] = {};
   for (const [id, item] of Object.entries(project.items)) {
@@ -104,9 +103,7 @@ export function selectFromProject(project: Project, selection: ExportSelection |
     items,
     folders,
     rootFolderIds: project.rootFolderIds.filter((id) => keep.get(id)),
-    glyphs: project.glyphs.filter((g) => !excludedGlyphs.has(g.id)),
-    sounds: project.sounds.filter((g) => !excludedSounds.has(g.id)),
-    paintings: project.paintings.filter((g) => !excludedPaintings.has(g.id)),
+    ...mapMediaLists((kind) => selectedEntries(project, selection, kind)),
   };
 }
 
@@ -156,7 +153,8 @@ export function planMultiExport(entries: ExportEntry[], options: PlanOptions = {
 
 function crossProjectIssues(projects: PlannedProject[]): Issue[] {
   const issues: Issue[] = [];
-  const error = (code: string, args: MessageArgs) => issues.push({ level: 'error', code, args });
+  const report = issueReporter(issues);
+  const error = (code: string, args: MessageArgs) => report('error', code, args);
 
   // Remembers the first project (index) per key and returns its name on overlap
   const firstOwner = <K>(map: Map<K, number>, key: K, owner: number): string | null => {
@@ -167,9 +165,7 @@ function crossProjectIssues(projects: PlannedProject[]): Issue[] {
 
   const packNames = new Map<string, number>();
   const nexoIds = new Map<string, number>();
-  const glyphIds = new Map<string, number>();
-  const soundIds = new Map<string, number>();
-  const paintingIds = new Map<string, number>();
+  const mediaIds: Record<MediaKind, Map<string, number>> = { glyph: new Map(), sound: new Map(), painting: new Map() };
   const pluginFiles = new Map<string, number>();
   const assetFiles = new Map<string, number>();
   const reportedAssets = new Set<string>();
@@ -186,18 +182,12 @@ function crossProjectIssues(projects: PlannedProject[]): Issue[] {
       const other = firstOwner(nexoIds, item.nexoId, index);
       if (other) error('selection.itemIdClash', { id: item.nexoId, first: other, second: name });
     }
-    for (const glyph of project.glyphs) {
-      const other = firstOwner(glyphIds, glyph.glyphId, index);
-      if (other) error('selection.glyphIdClash', { id: glyph.glyphId, first: other, second: name });
-    }
-    for (const entry of plan.soundEntries) {
-      const id = String(entry.id);
-      const other = firstOwner(soundIds, id, index);
-      if (other) error('selection.soundIdClash', { id, first: other, second: name });
-    }
-    for (const id of Object.keys(plan.paintingEntries)) {
-      const other = firstOwner(paintingIds, id, index);
-      if (other) error('selection.paintingIdClash', { id, first: other, second: name });
+    for (const kind of MEDIA_KIND_LIST) {
+      for (const entry of mediaList(project, kind)) {
+        const id = mediaGlobalId(project, kind, entry);
+        const other = firstOwner(mediaIds[kind], id, index);
+        if (other) error(`selection.${kind}IdClash`, { id, first: other, second: name });
+      }
     }
     for (const path of [...plan.itemFiles.keys(), ...plan.recipeFiles.keys(), ...plan.glyphFiles.keys()]) {
       const other = firstOwner(pluginFiles, path, index);
@@ -213,7 +203,7 @@ function crossProjectIssues(projects: PlannedProject[]): Issue[] {
       const other = firstOwner(assetFiles, path, index);
       if (other && !reportedAssets.has(path)) {
         reportedAssets.add(path);
-        issues.push({ level: 'warning', code: 'selection.assetFileClash', args: { first: other, second: name, path } });
+        report('warning', 'selection.assetFileClash', { first: other, second: name, path });
       }
     }
   });
@@ -232,7 +222,7 @@ export function setItemsSelected(selection: ExportSelection, itemIds: string[], 
   return { ...selection, excludedItemIds: [...excluded] };
 }
 
-export type ListSelectionKey = 'excludedGlyphIds' | 'excludedSoundIds' | 'excludedPaintingIds';
+export type ListSelectionKey = (typeof MEDIA_KINDS)[MediaKind]['excludedKey'];
 
 export function setListSelected(selection: ExportSelection, key: ListSelectionKey, ids: string[], selected: boolean): ExportSelection {
   const excluded = new Set(selection[key] ?? []);

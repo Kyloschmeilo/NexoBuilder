@@ -5,7 +5,8 @@ import { createProject } from '../project/factory';
 import { INSTALL_GUIDE_FILE } from './installGuide';
 import { planExport } from './plan';
 import { planMultiExport } from './selection';
-import { buildExportZip, buildMultiExportZip } from './zip';
+import { buildMultiExportZip } from './zip';
+import { singleExport } from '../test/export';
 import { nexoFolderFiles } from '../testServer/files';
 import { makePngDataUrl } from '../test/png';
 import type { Issue } from '../issues';
@@ -52,7 +53,7 @@ describe('sounds and paintings', () => {
       animation: { width: 16, height: 16, frametime: 4 },
     });
 
-    const result = await buildExportZip(project, plan, 'full');
+    const result = await buildMultiExportZip(singleExport(project, plan), 'full');
     expect(result.paths).toContain('sounds.yml');
     expect(result.paths).toContain('paintings.yml');
     const zip = await JSZip.loadAsync(result.data);
@@ -85,6 +86,14 @@ describe('sounds and paintings', () => {
     expect(codes).toContain('error: context.sound > sound.jukeboxDurationMissing');
     expect(codes).toContain('error: context.painting > painting.widthRange');
     expect(codes).toContain('warning: painting.datapackNeedsVersion');
+  });
+
+  it('reports unreadable media files with the entry as target and context', () => {
+    const project = mediaProject();
+    project.sounds[0].files[0].dataUrl = 'not a data url';
+    const unreadable = planExport(project).issues.find((i) => i.code === 'plan.fileUnreadable');
+    expect(unreadable?.target).toEqual({ kind: 'sound', id: 's1' });
+    expect(unreadable?.context).toEqual([{ code: 'context.sound', args: { sound: 'block.glocke.ding' } }]);
   });
 
   it('merges sounds.yml of several projects and reports duplicate IDs', async () => {

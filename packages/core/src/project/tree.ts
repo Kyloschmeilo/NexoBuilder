@@ -1,5 +1,5 @@
 /** Helpers around the folder structure of a project (all guarded against folder cycles). */
-import { hasPath } from '../nexo/configPath';
+import { hasPath } from '../object';
 import { slugify } from '../text';
 import type { Folder, Item, Project } from './types';
 

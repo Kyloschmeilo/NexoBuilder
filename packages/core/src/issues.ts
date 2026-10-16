@@ -53,6 +53,32 @@ export function labelArg(key: string, args?: Record<string, string | number>): L
   return args ? { key, args } : { key };
 }
 
+/** Where an issue belongs: the entry it targets and the frames shown in front of its message. */
+export interface IssueWhere {
+  target?: IssueTarget;
+  context?: IssueContext[];
+}
+
+/** Reports an issue; `context` frames are appended after the reporter's own ones. */
+export type ReportIssue = (level: IssueLevel, code: string, args?: MessageArgs, context?: IssueContext[]) => void;
+
+/** Builds an issue (args and context are left out when empty). */
+export function createIssue(level: IssueLevel, code: string, args?: MessageArgs, where: IssueWhere = {}): Issue {
+  return {
+    level,
+    code,
+    ...(args && { args }),
+    ...(where.target && { target: where.target }),
+    ...(where.context?.length && { context: where.context }),
+  };
+}
+
+/** Reports issues into `issues` that all share the same target and context frames (e.g. one glyph or item). */
+export function issueReporter(issues: Issue[], where: IssueWhere = {}): ReportIssue {
+  return (level, code, args, context = []) =>
+    issues.push(createIssue(level, code, args, { target: where.target, context: [...(where.context ?? []), ...context] }));
+}
+
 /** Returns the issue with `frames` put in front of its context (and the target, if it has none). */
 export function inContext(issue: Issue, frames: IssueContext[], target?: IssueTarget): Issue {
   return {

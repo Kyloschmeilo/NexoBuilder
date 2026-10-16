@@ -3,9 +3,8 @@
  * plus the Nexo settings so that the resource pack is served locally (localhost).
  */
 import { Document, isMap, parseDocument } from 'yaml';
-import { packLocation } from '../export/paths';
-import { buildRootFiles } from '../export/rootFiles';
 import type { ExportPlan, FileContent } from '../export/types';
+import { nexoFolderEntries } from '../export/zip';
 import type { Project } from '../project/types';
 import { assertCommandArg, assertPlayerName } from './commands';
 
@@ -17,13 +16,9 @@ export interface ServerFile {
 
 /** All project files for plugins/Nexo (resource pack always as a folder, which syncs faster). */
 export function nexoFolderFiles(project: Project, plan: ExportPlan): ServerFile[] {
-  const packFolder = packLocation(project, false);
+  const entries = nexoFolderEntries({ projects: [{ project, plan }], issues: plan.issues }, { packAsFolder: true });
   const files: ServerFile[] = [];
-  for (const map of [plan.itemFiles, plan.recipeFiles, plan.glyphFiles]) {
-    for (const [path, data] of map) files.push({ path, data });
-  }
-  for (const [path, data] of plan.packFiles) files.push({ path: packFolder + path, data });
-  for (const [path, data] of buildRootFiles([plan])) files.push({ path, data });
+  for (const [path, entry] of entries) if ('content' in entry) files.push({ path, data: entry.content });
   return files.sort((a, b) => (a.path < b.path ? -1 : a.path > b.path ? 1 : 0));
 }
 

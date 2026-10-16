@@ -1,9 +1,11 @@
 /** Writes imported models with their textures into the pack. */
 import type { Issue } from '../issues';
-import { parseTexturePlaceholder } from '../model/common';
+import { formatResourceLocation } from '../minecraft/resourceLocation';
+import { parseTexturePlaceholder } from '../tokens';
 import { validateTexture } from '../model/textures';
 import type { ImportedModel, JavaModelJson } from '../model/types';
 import { deepClone } from '../object';
+import { uniqueId } from '../id';
 import type { Project } from '../project/types';
 import { slugify } from '../text';
 import type { PackWriter } from './packWriter';
@@ -26,12 +28,10 @@ export function writeModel(
   const textureRefs = new Map<string, string>();
   const usedNames = new Set<string>();
   for (const texture of model.textures) {
-    const base = slugify(texture.name, 'texture');
-    let name = base;
-    for (let n = 2; usedNames.has(name); n++) name = `${base}_${n}`;
+    const name = uniqueId(slugify(texture.name, 'texture'), usedNames);
     usedNames.add(name);
     const texturePath = `${modelPath}/${name}`;
-    textureRefs.set(texture.id, `${ns}:${texturePath}`);
+    textureRefs.set(texture.id, formatResourceLocation(ns, texturePath));
     validateTexture(texture).forEach(report);
     if (texture.dataUrl) writer.texture(textureFile(ns, texturePath), texture, { report });
   }
@@ -39,7 +39,7 @@ export function writeModel(
   validateModel(json, project.settings.minecraftVersion, new Set(textureRefs.values())).forEach(report);
   const file = modelFile(ns, modelPath);
   writer.json(file, json);
-  return { key: `${ns}:${modelPath}`, file, json };
+  return { key: formatResourceLocation(ns, modelPath), file, json };
 }
 
 /** Replaces the texture placeholders in the model with the final paths (unknown ones are removed). */

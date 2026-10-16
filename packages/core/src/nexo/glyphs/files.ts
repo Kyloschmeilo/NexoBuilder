@@ -1,14 +1,9 @@
-/** Export of glyphs: texture paths and the glyph file. */
+/** Export of glyphs: the glyph file (textures: see export/paths). */
+import { formatResourceLocation } from '../../minecraft/resourceLocation';
 import type { Project } from '../../project/types';
 import { projectFileName } from '../projectFiles';
 import { itemsToYaml } from '../yaml';
 import type { Glyph } from './model';
-
-export function glyphTexturePath(project: Project, glyph: Glyph): string | null {
-  if (!glyph.file || glyph.kind === 'reference') return null;
-  const ext = glyph.kind === 'gif' ? 'gif' : 'png';
-  return `assets/${project.namespace}/textures/glyphs/${glyph.glyphId}.${ext}`;
-}
 
 function glyphToYaml(project: Project, glyph: Glyph): Record<string, unknown> {
   const out: Record<string, unknown> = {};
@@ -17,8 +12,8 @@ function glyphToYaml(project: Project, glyph: Glyph): Record<string, unknown> {
     out.reference = glyph.reference;
     out.index = glyph.index;
   } else {
-    if (glyph.kind === 'gif') out.gif = `${ns}:glyphs/${glyph.glyphId}.gif`;
-    else out.texture = `${ns}:glyphs/${glyph.glyphId}`;
+    if (glyph.kind === 'gif') out.gif = formatResourceLocation(ns, `glyphs/${glyph.glyphId}.gif`);
+    else out.texture = formatResourceLocation(ns, `glyphs/${glyph.glyphId}`);
     out.ascent = glyph.ascent;
     out.height = glyph.height;
     if (glyph.kind === 'image') {
