@@ -1,6 +1,7 @@
 import { useMemo } from 'react';
 import { Code } from 'lucide-react';
 import { useTranslations } from 'next-intl';
+import { findItemPlan, itemYamlPreview } from '@resourcepackbuilder/core/export/itemPreview';
 import type { ExportPlan } from '@resourcepackbuilder/core/export/types';
 import { issuesFor, type Issue } from '@resourcepackbuilder/core/issues';
 import type { Project } from '@resourcepackbuilder/core/project/types';
@@ -8,7 +9,6 @@ import { Tip } from '@resourcepackbuilder/ui';
 import { ScrollArea } from '@resourcepackbuilder/ui/components/scroll-area';
 import { IssueList } from '../components/IssueList';
 import { YamlCode } from '../components/YamlCode';
-import { itemYamlPreview } from '../features/item/YamlTab';
 import { usePlan } from '../store/PlanProvider';
 import { useOpenProject } from '../store/project';
 import { useUiStore, type Selection } from '../store/ui';
@@ -30,8 +30,11 @@ function previewFor(project: Project, plan: ExportPlan | null, selection: Select
     case 'item': {
       const item = project.items[selection.id];
       if (!item) return NOTHING;
-      const entry = plan.items.find((p) => p.item.id === item.id);
-      return { file: entry?.yamlFile ?? null, text: itemYamlPreview(plan, item), issues: issuesFor(plan.issues, selection) };
+      return {
+        file: findItemPlan(plan, item.id)?.yamlFile ?? null,
+        text: itemYamlPreview(plan, item.id),
+        issues: issuesFor(plan.issues, selection),
+      };
     }
     case 'folder': {
       const itemIds = new Set(project.folders[selection.id]?.itemIds);

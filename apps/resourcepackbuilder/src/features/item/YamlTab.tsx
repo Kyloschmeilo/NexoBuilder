@@ -1,8 +1,8 @@
 import { useTranslations } from 'next-intl';
 import type { Item } from '@resourcepackbuilder/core/project/types';
-import type { ExportPlan } from '@resourcepackbuilder/core/export/types';
-import { parseYaml, toYaml } from '@resourcepackbuilder/core/nexo/yaml';
-import { isPlainObject } from '@resourcepackbuilder/core/object';
+import { findItemPlan, itemYamlPreview } from '@resourcepackbuilder/core/export/itemPreview';
+import { nexoPluginPath } from '@resourcepackbuilder/core/export/paths';
+import { parseRawYaml } from '@resourcepackbuilder/core/nexo/itemConfig';
 import { SectionCard } from '@resourcepackbuilder/ui';
 import { FieldDescription, FieldError } from '@resourcepackbuilder/ui/components/field';
 import { Textarea } from '@resourcepackbuilder/ui/components/textarea';
@@ -13,27 +13,21 @@ import { usePlan } from '../../store/PlanProvider';
 const INDENT = '  ';
 const EXAMPLE = 'Mechanics:\n  furniture:\n    placements:\n      wall:\n        properties:\n          translation: 0,0.3,-0.3';
 /** Shown while the export plan does not know the item's file yet. */
-const DEFAULT_YAML_FILE = 'plugins/Nexo/items/…';
-
-/** The item's final Nexo YAML as the export writes it ('' while the plan is not ready). */
-export function itemYamlPreview(plan: ExportPlan | null, item: Item): string {
-  const entry = plan?.items.find((p) => p.item.id === item.id);
-  return entry ? toYaml({ [item.nexoId || 'item']: entry.config }) : '';
-}
+const DEFAULT_YAML_FILE = 'items/…';
 
 function useRawYamlError(text: string): string | null {
   const t = useTranslations('item');
-  const parsed = parseYaml(text);
-  if (parsed.error) return parsed.error;
-  return parsed.value !== null && !isPlainObject(parsed.value) ? t('yaml.notObject') : null;
+  const { error } = parseRawYaml(text);
+  if (!error) return null;
+  return error.kind === 'syntax' ? error.message : t('yaml.notObject');
 }
 
 export function YamlTab({ item }: { item: Item }) {
   const t = useTranslations('item');
   const plan = usePlan();
   const error = useRawYamlError(item.rawYaml);
-  const preview = itemYamlPreview(plan, item);
-  const yamlFile = plan?.items.find((p) => p.item.id === item.id)?.yamlFile ?? DEFAULT_YAML_FILE;
+  const preview = itemYamlPreview(plan, item.id);
+  const yamlFile = nexoPluginPath(findItemPlan(plan, item.id)?.yamlFile ?? DEFAULT_YAML_FILE);
   const setRawYaml = (rawYaml: string) =>
     updateItem(
       item.id,

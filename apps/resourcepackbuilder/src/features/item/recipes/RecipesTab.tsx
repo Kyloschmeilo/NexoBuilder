@@ -2,6 +2,8 @@ import { useTranslations } from 'next-intl';
 import type { Item } from '@resourcepackbuilder/core/project/types';
 import { RECIPE_TYPES } from '@resourcepackbuilder/core/nexo/recipes/model';
 import { recipeKeys } from '@resourcepackbuilder/core/nexo/recipes/files';
+import { nexoPluginPath } from '@resourcepackbuilder/core/export/paths';
+import { NEXO_RELOAD_COMMAND } from '@resourcepackbuilder/core/testServer/commands';
 import { Alert, AlertDescription } from '@resourcepackbuilder/ui/components/alert';
 import { richTags } from '../../../i18n/richTags';
 import { addRecipe } from '../../../commands/items';
@@ -9,9 +11,6 @@ import { AddMenuButton } from '../../../components/AddMenuButton';
 import { Section } from '../../../components/Section';
 import { useSchemaText } from '../../../components/useSchemaText';
 import { RecipeCard } from './RecipeCard';
-
-/** The command that loads exported recipes on the server. */
-const RELOAD_COMMAND = '/nexo reload all';
 
 function AddRecipeButton({ itemId }: { itemId: string }) {
   const tCommon = useTranslations('common');
@@ -45,8 +44,8 @@ export function RecipesTab({ item }: { item: Item }) {
         <AlertDescription>
           {t.rich('recipes.exportHint', {
             ...richTags,
-            path: `plugins/Nexo/recipes/<${t('recipes.typePlaceholder')}>/`,
-            command: RELOAD_COMMAND,
+            path: nexoPluginPath(`recipes/<${t('recipes.typePlaceholder')}>/`),
+            command: `/${NEXO_RELOAD_COMMAND}`,
           })}
         </AlertDescription>
       </Alert>

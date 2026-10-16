@@ -3,6 +3,7 @@ import { useId } from 'react';
 import { useTranslations } from 'next-intl';
 import { MC_VERSIONS } from '@resourcepackbuilder/core/minecraft/versions';
 import { PACK_NAME_PATTERN } from '@resourcepackbuilder/core/minecraft/resourceLocation';
+import { nexoPluginPath, packLocation } from '@resourcepackbuilder/core/export/paths';
 import { Field, FieldDescription, FieldError, FieldLabel } from '@resourcepackbuilder/ui/components/field';
 import { Input } from '@resourcepackbuilder/ui/components/input';
 import { NativeSelect, NativeSelectOption } from '@resourcepackbuilder/ui/components/native-select';
@@ -66,9 +67,7 @@ export function ProjectSettings() {
             onChange={(e) => updateProjectSettings((p) => (p.settings.packName = e.target.value))}
           />
           {isPackNameValid ? (
-            <FieldDescription className="font-mono text-xs break-all">
-              plugins/Nexo/pack/external_packs/{settings.packName}
-            </FieldDescription>
+            <FieldDescription className="font-mono text-xs break-all">{nexoPluginPath(packLocation(project, false))}</FieldDescription>
           ) : (
             <FieldError>{t('packNameInvalid')}</FieldError>
           )}
