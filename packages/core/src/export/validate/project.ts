@@ -1,4 +1,5 @@
 /** Project-wide checks: namespace, pack settings, folder names and item IDs. */
+import { isPngDataUrl } from '../../binary/png';
 import type { Issue, MessageArgs } from '../../issues';
 import { itemFrame, itemTarget } from '../frames';
 import { itemIdSyntaxError, namespaceError, PACK_NAME_PATTERN } from '../../minecraft/resourceLocation';
@@ -19,7 +20,7 @@ export function validateProjectSettings(project: Project): Issue[] {
   if (!PACK_NAME_PATTERN.test(project.settings.packName)) {
     issues.push({ level: 'error', code: 'plan.packNameInvalid', args: { name: project.settings.packName } });
   }
-  if (project.settings.packIcon && !project.settings.packIcon.startsWith('data:image/png')) {
+  if (project.settings.packIcon && !isPngDataUrl(project.settings.packIcon)) {
     issues.push({ level: 'warning', code: 'plan.packIconNotPng' });
   }
   return issues;

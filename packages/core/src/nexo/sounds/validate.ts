@@ -1,15 +1,10 @@
-import { dataUrlHead } from '../../binary/dataUrl';
+import { isOggDataUrl } from '../../binary/ogg';
 import type { Issue } from '../../issues';
 import type { Project } from '../../project/types';
 import { issueReporter } from '../issueReporter';
 
 const SOUND_ID_PATTERN = /^[a-z0-9_.-]+$/;
 const DURATION_PATTERN = /^\s*\d+(\.\d+)?\s*[tsmhd]?(\s+\d+(\.\d+)?\s*[tsmhd])*\s*$/;
-
-function isOgg(dataUrl: string): boolean {
-  const head = dataUrlHead(dataUrl, 4);
-  return !!head && String.fromCharCode(...head) === 'OggS';
-}
 
 /** Checks all sounds of the project; each issue targets its sound and carries a `context.sound` frame. */
 export function validateSounds(project: Project): Issue[] {
@@ -25,7 +20,7 @@ export function validateSounds(project: Project): Issue[] {
     seen.add(sound.soundId);
     if (sound.files.length === 0) add('error', 'sound.fileMissing');
     for (const file of sound.files) {
-      if (!isOgg(file.dataUrl)) add('error', 'sound.notOgg', { file: file.name });
+      if (!isOggDataUrl(file.dataUrl)) add('error', 'sound.notOgg', { file: file.name });
     }
     if (sound.volume !== null && (sound.volume <= 0 || sound.volume > 10)) add('warning', 'sound.volumeRange');
     if (sound.jukebox) {
