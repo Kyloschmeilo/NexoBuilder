@@ -4,6 +4,7 @@ import { useTranslations } from 'next-intl';
 import { ClipboardPaste } from 'lucide-react';
 import { selectFromProject } from '@resourcepackbuilder/core/export/selection';
 import {
+  clipboardLabel,
   COPY_CATEGORIES,
   summarizeClipboard,
   type CopyCategory,
@@ -16,7 +17,7 @@ import { pasteItemProperties } from '../../commands/clipboard';
 import { DialogFrame, FeatureDialog } from '../../components/DialogFrame';
 import { SelectionHeader, SelectionTree } from '../../components/selection/SelectionTree';
 import { richTags } from '../../i18n/richTags';
-import { clipboardLabel, useClipboardStore } from '../../store/clipboard';
+import { useClipboardStore } from '../../store/clipboard';
 import { notify } from '../../shell/notify';
 import { useOpenProject } from '../../store/project';
 

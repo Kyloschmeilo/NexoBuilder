@@ -5,7 +5,7 @@
 import { createContext, useContext, useDeferredValue, useMemo, type ReactNode } from 'react';
 import { planExport } from '@resourcepackbuilder/core/export/plan';
 import type { ExportPlan } from '@resourcepackbuilder/core/export/types';
-import { useProjectStore } from './project';
+import { useProjectStore } from '../store/project';
 
 const PlanContext = createContext<ExportPlan | null>(null);
 

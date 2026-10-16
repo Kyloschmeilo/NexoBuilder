@@ -9,7 +9,7 @@ import { ScrollArea } from '@resourcepackbuilder/ui/components/scroll-area';
 import { IssueList } from '../components/IssueList';
 import { YamlCode } from '../components/YamlCode';
 import { itemYamlPreview } from '../features/item/YamlTab';
-import { usePlan } from '../store/PlanProvider';
+import { usePlan } from './PlanProvider';
 import { useOpenProject } from '../store/project';
 import { useUiStore, type Selection } from '../store/ui';
 

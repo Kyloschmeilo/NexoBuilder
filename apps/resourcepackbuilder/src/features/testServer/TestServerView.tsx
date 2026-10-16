@@ -8,7 +8,7 @@ import { Spinner } from '@resourcepackbuilder/ui/components/spinner';
 import { PageHeader, PageShell, StatusBadge } from '@resourcepackbuilder/ui';
 import type { TestServerState } from '../../platform/desktopApi';
 import { useServices } from '../../services/bootstrap';
-import { useTestServerStore } from '../../store/testServer';
+import { useTestServerStore } from '../../services/testServerStore';
 import { ConnectCard } from './ConnectCard';
 import { ServerConsole } from './ServerConsole';
 import { ServerControls } from './ServerControls';

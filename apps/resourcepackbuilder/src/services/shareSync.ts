@@ -21,7 +21,7 @@ import { AppError } from '../i18n/errors';
 import { asError } from '../lib/asError';
 import type { DesktopShareApi } from '../platform/desktopApi';
 import { applyRemote, useProjectStore } from '../store/project';
-import { DISCONNECTED, useShareStore, type ShareState } from '../store/share';
+import { DISCONNECTED, useShareStore, type ShareState } from './shareStore';
 import type { Autosave } from './autosave';
 import { createEvents, type Events } from './events';
 import type { ProjectRepository } from './projectRepository';

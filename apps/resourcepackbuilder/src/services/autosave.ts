@@ -9,7 +9,7 @@
 import type { SyncState } from '@resourcepackbuilder/core/sync/engine';
 import type { Project } from '@resourcepackbuilder/core/project/types';
 import { useProjectStore } from '../store/project';
-import { useSaveStore } from '../store/save';
+import { useSaveStore } from './autosaveStore';
 import type { ProjectRepository } from './projectRepository';
 import { createSerialTask } from './serialTask';
 import { watchOpenProject } from './watchOpenProject';

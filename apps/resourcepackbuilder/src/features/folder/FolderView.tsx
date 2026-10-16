@@ -12,7 +12,7 @@ import { Item, ItemContent, ItemDescription, ItemMedia, ItemTitle } from '@resou
 import { useThumbnail } from '@resourcepackbuilder/preview';
 import { IssueCountBadges } from '../../components/IssueCountBadges';
 import { Section } from '../../components/Section';
-import { usePlan } from '../../store/PlanProvider';
+import { usePlan } from '../../shell/PlanProvider';
 import { newItemDialog } from '../newItem/NewItemDialog';
 import { useOpenProject } from '../../store/project';
 import { select } from '../../store/ui';

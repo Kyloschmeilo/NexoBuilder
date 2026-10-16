@@ -17,7 +17,7 @@ import { confirm } from '../../store/dialogs';
 import { useBusyAction } from '../../hooks/useBusyAction';
 import { notify } from '../../shell/notify';
 import { useOpenProject } from '../../store/project';
-import { isProjectShared, useShareStore } from '../../store/share';
+import { isProjectShared, useShareStore } from '../../services/shareStore';
 import { ShareStatusBadge } from './ShareStatusBadge';
 
 /** Longest name shown to the others. */

@@ -10,7 +10,7 @@ import { ScrollArea } from '@resourcepackbuilder/ui/components/scroll-area';
 import { moveFolder } from '../../commands/folders';
 import { useFolderActions } from '../../features/folder/useFolderActions';
 import { useServices } from '../../services/bootstrap';
-import { usePlan } from '../../store/PlanProvider';
+import { usePlan } from '../PlanProvider';
 import { useOpenProject } from '../../store/project';
 import { FolderNode } from './FolderNode';
 import { countItemsPerFolder, foldersContaining, levelsByTarget, searchItems, type SidebarTree } from './treeIndex';

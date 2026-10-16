@@ -36,10 +36,10 @@ import { useProjectActions } from '../features/projects/useProjectActions';
 import { settingsDialog } from '../features/settings/SettingsDialog';
 import { shareDialog } from '../features/share/ShareDialog';
 import { SHARE_STATUS_TONE, useShareStatusText } from '../features/share/ShareStatusBadge';
-import { usePlan } from '../store/PlanProvider';
+import { usePlan } from './PlanProvider';
 import { redo, undo, useProjectStore } from '../store/project';
-import { useSaveStore } from '../store/save';
-import { isProjectShared, useShareStore } from '../store/share';
+import { useSaveStore } from '../services/autosaveStore';
+import { isProjectShared, useShareStore } from '../services/shareStore';
 import { setRightPanelOpen, useUiStore } from '../store/ui';
 import { THEME_CHOICES, useThemeChoice } from '../theme/useThemeChoice';
 

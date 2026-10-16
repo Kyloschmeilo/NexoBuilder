@@ -3,7 +3,7 @@ import { Music } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 import { addSound } from '../../commands/media';
 import { richTags } from '../../i18n/richTags';
-import { usePlan } from '../../store/PlanProvider';
+import { usePlan } from '../../shell/PlanProvider';
 import { useOpenProject } from '../../store/project';
 import { MediaPage } from '../media/MediaPage';
 import { SoundCard } from './SoundCard';

@@ -1,7 +1,7 @@
 /** How the share status is shown: one tone and one text per status, used by the top bar and the share dialog. */
 import { useTranslations } from 'next-intl';
 import { StatusBadge, type Tone } from '@resourcepackbuilder/ui';
-import type { ShareStatus } from '../../store/share';
+import type { ShareStatus } from '../../services/shareStore';
 
 export const SHARE_STATUS_TONE: Record<ShareStatus, Tone> = {
   off: 'neutral',

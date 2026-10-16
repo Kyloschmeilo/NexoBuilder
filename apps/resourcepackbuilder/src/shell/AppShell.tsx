@@ -6,7 +6,7 @@ import { ProjectsDialog } from '../features/projects/ProjectsDialog';
 import { Welcome } from '../features/projects/Welcome';
 import { SettingsDialog } from '../features/settings/SettingsDialog';
 import { ShareDialog } from '../features/share/ShareDialog';
-import { PlanProvider } from '../store/PlanProvider';
+import { PlanProvider } from './PlanProvider';
 import { useProjectStore } from '../store/project';
 import { useUiStore } from '../store/ui';
 import { DialogHost } from './DialogHost';

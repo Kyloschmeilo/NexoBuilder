@@ -2,6 +2,7 @@ import { ClipboardPaste, Folder as FolderIcon, FolderOpen, FolderPlus, Pencil, P
 import { useTranslations } from 'next-intl';
 import { cn } from 'cn';
 import { itemIdsInFolder } from '@resourcepackbuilder/core/project/tree';
+import { clipboardLabel } from '@resourcepackbuilder/core/nexo/copyConfig';
 import {
   FILES_DRAG_TYPE,
   filesFromDataTransfer,
@@ -17,7 +18,7 @@ import { moveItem } from '../../commands/items';
 import { useFolderActions } from '../../features/folder/useFolderActions';
 import { useItemActions } from '../../features/item/useItemActions';
 import { newItemDialog } from '../../features/newItem/NewItemDialog';
-import { clipboardLabel, useClipboardStore } from '../../store/clipboard';
+import { useClipboardStore } from '../../store/clipboard';
 import { select, setExpanded, useUiStore } from '../../store/ui';
 import { ItemNode } from './ItemNode';
 import { FOLDER_ICON_PADDING_PX, FOLDER_PADDING_PX } from './rowStyles';

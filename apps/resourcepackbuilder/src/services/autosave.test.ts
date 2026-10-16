@@ -2,7 +2,7 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { createProject } from '@resourcepackbuilder/core/project/factory';
 import { mutate, setProject } from '../store/project';
-import { useSaveStore } from '../store/save';
+import { useSaveStore } from './autosaveStore';
 import { createAutosave, type Autosave } from './autosave';
 import { memoryRepository } from './memoryRepository';
 

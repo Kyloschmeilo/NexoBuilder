@@ -2,7 +2,7 @@ import { useEffect, useRef } from 'react';
 import { useTranslations } from 'next-intl';
 import type { RemoteChange } from '@resourcepackbuilder/core/sync/engine';
 import { useServices } from '../services/bootstrap';
-import { useSaveStore } from '../store/save';
+import { useSaveStore } from '../services/autosaveStore';
 import { notify } from './notify';
 
 /** Repeated changes to the same entries by the same person are announced at most this often. */

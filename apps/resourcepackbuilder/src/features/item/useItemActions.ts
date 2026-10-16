@@ -2,9 +2,10 @@
 import { useTranslations } from 'next-intl';
 import type { Item } from '@resourcepackbuilder/core/project/types';
 import { itemLabel } from '@resourcepackbuilder/core/project/labels';
+import { clipboardLabel } from '@resourcepackbuilder/core/nexo/copyConfig';
 import { copyItemProperties } from '../../commands/clipboard';
 import { deleteItem, duplicateItem, setItemModel } from '../../commands/items';
-import { clipboardLabel, useClipboardStore } from '../../store/clipboard';
+import { useClipboardStore } from '../../store/clipboard';
 import { confirm } from '../../store/dialogs';
 import { pasteConfigDialog } from '../pasteConfig/PasteConfigDialog';
 import { notify } from '../../shell/notify';

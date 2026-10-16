@@ -12,7 +12,7 @@ import { AppError } from '../i18n/errors';
 import { asError } from '../lib/asError';
 import type { DesktopTestServerApi, NexoJarInfo, TestServerConfigPatch, TestServerSyncResult } from '../platform/desktopApi';
 import { useProjectStore } from '../store/project';
-import { useTestServerStore } from '../store/testServer';
+import { useTestServerStore } from './testServerStore';
 import { createSerialTask } from './serialTask';
 import { watchOpenProject } from './watchOpenProject';
 
