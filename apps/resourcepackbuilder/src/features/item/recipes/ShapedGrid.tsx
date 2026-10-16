@@ -1,6 +1,7 @@
 import { useTranslations } from 'next-intl';
 import { cn } from 'cn';
-import { INGREDIENT_LETTERS, type Recipe, type RecipeIngredient } from '@resourcepackbuilder/core/nexo/recipes/model';
+import type { Recipe, RecipeIngredient } from '@resourcepackbuilder/core/nexo/recipes/model';
+import { ingredientLetters } from '@resourcepackbuilder/core/nexo/recipes/operations';
 import { Tip } from '@resourcepackbuilder/ui';
 import { NativeSelect, NativeSelectOption } from '@resourcepackbuilder/ui/components/native-select';
 import type { RecipeUpdater } from './RecipeCard';
@@ -16,7 +17,7 @@ function ingredientText(ingredient: RecipeIngredient | undefined): string | null
 /** The 3×3 crafting grid of a shaped recipe; each slot holds an ingredient letter or nothing. */
 export function ShapedGrid({ recipe, update }: { recipe: Recipe; update: RecipeUpdater }) {
   const t = useTranslations('item');
-  const letters = INGREDIENT_LETTERS.filter((letter) => recipe.ingredients[letter]);
+  const letters = ingredientLetters(recipe);
   return (
     <div className="grid w-full max-w-80 grid-cols-3 gap-1.5">
       {recipe.grid.map((slot, index) => (

@@ -79,14 +79,19 @@ export const INGREDIENT_SOURCES: Array<{ value: IngredientSource; label: string 
 
 export const INGREDIENT_LETTERS = 'ABCDEFGHI'.split('');
 
+/** An ingredient the user has yet to fill in. */
+export function emptyIngredient(): RecipeIngredient {
+  return { source: 'minecraft', id: '' };
+}
+
 export function createRecipe(type: RecipeType, id: string): Recipe {
   return {
     id,
     type,
     resultAmount: 1,
     grid: Array(9).fill(''),
-    ingredients: type === 'shaped' || type === 'shapeless' ? { A: { source: 'minecraft', id: '' } } : {},
-    input: type === 'shaped' || type === 'shapeless' ? null : { source: 'minecraft', id: '' },
+    ingredients: type === 'shaped' || type === 'shapeless' ? { A: emptyIngredient() } : {},
+    input: type === 'shaped' || type === 'shapeless' ? null : emptyIngredient(),
     cookingTime: getRecipeTypeInfo(type).defaultCookingTime ?? 200,
     experience: 0.1,
   };
