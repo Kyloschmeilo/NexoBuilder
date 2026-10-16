@@ -6,15 +6,18 @@
  *   they are merged into one model (like Blockbench "Resolve parent").
  * - References to vanilla textures (minecraft:...) without a matching PNG are kept.
  */
+import { z } from 'zod';
 import { isPngDataUrl } from '../binary/png';
 import { CoreError, type Issue } from '../issues';
+import { parseJson, unwrapJson, type JsonResult } from '../json';
 import { isVanillaReference, resourceBaseName, stripMinecraftNamespace } from '../minecraft/resourceLocation';
 import { ELEMENTLESS_ITEM_PARENTS } from '../minecraft/vanillaModels';
 import { FEATURE_VERSIONS, maxVersion } from '../minecraft/versions';
-import { deepClone, isPlainObject } from '../object';
+import { deepClone } from '../object';
 import { fileBaseName } from '../text';
 import { texturePlaceholder } from '../tokens';
 import { FACE_NAMES, isOutOfBounds } from './geometry';
+import { JavaModelSchema } from './schema';
 import { createTexture, findMcmetaFor, normalizeTextureName } from './textures';
 import type { ImportedModel, ImportFile, JavaModelElement, JavaModelJson, ModelTexture } from './types';
 
@@ -27,18 +30,15 @@ export function convertJavaModel(files: ImportFile[]): ImportedModel {
   const jsonFiles = files.filter((f) => /\.json$/i.test(f.name) && typeof f.text === 'string');
   if (jsonFiles.length === 0) throw new CoreError('model.noJsonFile');
 
+  const issues: Issue[] = [];
+  let invalidElements = 0;
   const parsed: ParsedJson[] = jsonFiles.map((file) => {
-    let json: JavaModelJson | null;
-    try {
-      json = parseModelJson(file.text ?? '');
-    } catch (err) {
-      throw new CoreError('model.invalidJson', { file: file.name, error: err instanceof Error ? err.message : String(err) });
-    }
-    if (!json) throw new CoreError('model.notMinecraftModel', { file: file.name });
+    const { json, droppedElements } = unwrapJson(parseModelJson(file.text ?? '', file.name));
+    invalidElements += droppedElements;
     return { name: file.name, json };
   });
+  if (invalidElements > 0) issues.push({ level: 'error', code: 'model.invalidElements', args: { count: invalidElements } });
 
-  const issues: Issue[] = [];
   const main = pickMainModel(parsed);
   if (!main.json.elements && !main.json.parent && !main.json.textures) {
     throw new CoreError('model.notMinecraftModelEmpty', { file: main.name });
@@ -71,7 +71,6 @@ export function convertJavaModel(files: ImportFile[]): ImportedModel {
   };
 
   for (const [key, value] of Object.entries(merged.textures ?? {})) {
-    if (typeof value !== 'string') continue;
     if (value.startsWith('#')) {
       texturesJson[key] = value;
       continue;
@@ -134,13 +133,28 @@ export function convertJavaModel(files: ImportFile[]): ImportedModel {
   };
 }
 
+export interface ParsedModelJson {
+  json: JavaModelJson;
+  /** Elements that were dropped because they are no valid element (e.g. no "from"/"to") */
+  droppedElements: number;
+}
+
+/** A JSON object read as model: invalid parts are dropped (see JavaModelSchema), counting the dropped elements. */
+const ModelFileSchema = z.looseObject({ elements: z.array(z.unknown()).optional().catch(undefined) }).transform((raw): ParsedModelJson => {
+  const json = JavaModelSchema.parse(raw);
+  return { json, droppedElements: (raw.elements?.length ?? 0) - (json.elements?.length ?? 0) };
+});
+
 /**
- * Parses the text of a model JSON file (comments allowed). Null if it is no JSON object;
- * throws the parser's SyntaxError if it is no JSON at all.
+ * Parses the text of a model JSON file (comments allowed). Fails with `model.invalidJson` if it is no JSON and with
+ * `model.notMinecraftModel` if it is no JSON object.
  */
-export function parseModelJson(text: string): JavaModelJson | null {
-  const json: unknown = JSON.parse(stripJsonComments(text));
-  return isPlainObject(json) ? (json as JavaModelJson) : null;
+export function parseModelJson(text: string, fileName: string): JsonResult<ParsedModelJson> {
+  return parseJson(stripJsonComments(text), ModelFileSchema, {
+    syntax: 'model.invalidJson',
+    shape: 'model.notMinecraftModel',
+    args: { file: fileName },
+  });
 }
 
 /** Normalised file name of the model's parent ("minecraft:item/foo" → "foo"), matching dropped file names. */
@@ -253,15 +267,11 @@ export interface ElementAnalysis {
 export function analyseElements(json: JavaModelJson): ElementAnalysis {
   const issues: Issue[] = [];
   let requiresVersion: string | undefined;
-  const elements: JavaModelElement[] = Array.isArray(json.elements) ? json.elements : [];
+  // Elements without valid "from"/"to" never get here: the model schema drops them (reported on import)
+  const elements: JavaModelElement[] = json.elements ?? [];
   let outOfBounds = 0;
   let badUvRotation = 0;
-  let invalid = 0;
   for (const el of elements) {
-    if (!Array.isArray(el.from) || !Array.isArray(el.to) || el.from.length !== 3 || el.to.length !== 3) {
-      invalid++;
-      continue;
-    }
     if (isOutOfBounds([...el.from, ...el.to])) outOfBounds++;
     const rot = el.rotation;
     if (rot) {
@@ -283,7 +293,6 @@ export function analyseElements(json: JavaModelJson): ElementAnalysis {
       if (f && typeof f.rotation === 'number' && f.rotation % 90 !== 0) badUvRotation++;
     }
   }
-  if (invalid > 0) issues.push({ level: 'error', code: 'model.invalidElements', args: { count: invalid } });
   if (outOfBounds > 0) issues.push({ level: 'error', code: 'model.elementsOutOfBounds', args: { count: outOfBounds } });
   if (badUvRotation > 0) issues.push({ level: 'error', code: 'model.invalidUvRotation', args: { count: badUvRotation } });
   return { issues, requiresVersion };

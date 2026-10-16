@@ -94,6 +94,23 @@ describe('convertJavaModel', () => {
     expect(() => convertJavaModel([{ name: 'a.json', text: withComments }])).not.toThrow();
     expect(() => convertJavaModel([{ name: 'a.json', text: '{"foo": 1}' }])).toThrow('model.notMinecraftModelEmpty');
     expect(() => convertJavaModel([{ name: 'a.json', text: '[' }])).toThrow('model.invalidJson');
+    expect(() => convertJavaModel([{ name: 'a.json', text: '[1]' }])).toThrow('model.notMinecraftModel');
+  });
+
+  it('drops invalid elements and reports them', () => {
+    const model = {
+      parent: 'block/block',
+      textures: { all: 5, side: '#all' },
+      elements: [
+        null,
+        { from: [0, 0], to: [1, 1, 1] },
+        { from: [0, 0, 0], to: [16, 16, 16], faces: { up: null, down: { texture: '#side' } } },
+      ],
+    };
+    const result = convertJavaModel([{ name: 'a.json', text: JSON.stringify(model) }]);
+    expect(result.json.elements).toEqual([{ from: [0, 0, 0], to: [16, 16, 16], faces: { down: { texture: '#side' } } }]);
+    expect(result.json.textures).toEqual({ side: '#all' });
+    expect(result.issues).toContainEqual({ level: 'error', code: 'model.invalidElements', args: { count: 2 } });
   });
 
   it('takes over matching .png.mcmeta files', () => {
