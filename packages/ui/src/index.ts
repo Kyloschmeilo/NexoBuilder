@@ -20,6 +20,7 @@ export { SectionLabel } from './SectionLabel';
 export { SegmentedControl, type SegmentedOption } from './SegmentedControl';
 export { StatusBadge } from './StatusBadge';
 export { StatusDot } from './StatusDot';
+export { SuggestInput, type Suggestion } from './SuggestInput';
 export { Thumb } from './Thumb';
 export { Tip } from './Tip';
 export { TREE_INDENT_PX, TreeChevron, treeRow, treeRowSlots } from './tree';
