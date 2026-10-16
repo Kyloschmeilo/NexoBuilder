@@ -44,6 +44,11 @@ export function forEachLeaf(value: unknown, visit: (value: unknown) => void): vo
   else visit(value);
 }
 
+/** Whether two lists have the same entries in the same order, compared by `key` (default: the entries themselves). */
+export function sameList<T>(a: readonly T[], b: readonly T[], key: (value: T) => unknown = (value) => value): boolean {
+  return a.length === b.length && a.every((value, i) => key(value) === key(b[i]));
+}
+
 /**
  * Recursively merges `patch` into `base` (objects are merged, everything else is replaced).
  * Returns a new object; the inputs are not modified.

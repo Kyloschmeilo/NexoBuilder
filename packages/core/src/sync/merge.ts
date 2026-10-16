@@ -2,17 +2,14 @@
  * Applies changes from the shared folder to a project and then repairs the folder structure.
  *
  * Because each entry is synced individually, lists can contradict each other – e.g. when two people
- * put an item into the same folder at the same time. Therefore `item.folderId` and `folder.parentId`
- * are always authoritative; the order lists are completed or cleaned up from them.
+ * put an item into the same folder at the same time (see project/repair for how that is resolved).
  */
 import { produce, type Draft } from 'immer';
-import type { Item, Project } from '../project/types';
+import { migrateProject } from '../project/migrate';
+import { repairProject } from '../project/repair';
+import type { Project } from '../project/types';
 import { MEDIA_KIND_LIST, MEDIA_KINDS, mediaList, setMediaList, type MediaEntry, type MediaKind } from '../nexo/media/kinds';
 import type { Envelope, ProjectMeta } from './format';
-
-/** Folder for items whose folder was deleted by someone else while they were being created. */
-export const RECOVERY_FOLDER_ID = 'f_recovered';
-const RECOVERY_FOLDER_NAME = 'Recovered';
 
 type ListUpdate = <T extends { id: string }>(list: T[], kind: MediaKind) => T[];
 
@@ -23,99 +20,6 @@ function updateLists(draft: Draft<Project>, update: ListUpdate): void {
     const next = update(list, kind);
     if (next !== list) setMediaList(draft as Project, kind, next);
   }
-}
-
-function sameList(a: string[], b: string[]): boolean {
-  return a.length === b.length && a.every((v, i) => v === b[i]);
-}
-
-/** Keeps the known order, removes invalid/duplicate entries and appends missing ones. */
-function mergeOrder(current: string[], actual: string[]): string[] {
-  const valid = new Set(actual);
-  const seen = new Set<string>();
-  const result: string[] = [];
-  for (const id of current) {
-    if (valid.has(id) && !seen.has(id)) {
-      seen.add(id);
-      result.push(id);
-    }
-  }
-  for (const id of actual) if (!seen.has(id)) result.push(id);
-  return result;
-}
-
-function byCreatedThenId(items: Record<string, Item>) {
-  return (a: string, b: string) => items[a].createdAt - items[b].createdAt || (a < b ? -1 : a > b ? 1 : 0);
-}
-
-function withoutDuplicateIds<T extends { id: string }>(list: T[]): T[] {
-  if (new Set(list.map((e) => e.id)).size === list.length) return list;
-  const seen = new Set<string>();
-  return list.filter((entry) => !seen.has(entry.id) && seen.add(entry.id));
-}
-
-/** Repairs the folder structure of an (Immer) project. Only changes what is wrong. */
-function normalizeTree(draft: Draft<Project>): void {
-  const folders = draft.folders;
-  const items = draft.items;
-  const folderIds = Object.keys(folders).sort();
-
-  // Folders whose parent folder is missing move to the top level
-  for (const id of folderIds) {
-    const folder = folders[id];
-    if (folder.parentId !== null && (!folders[folder.parentId] || folder.parentId === id)) folder.parentId = null;
-  }
-  // Resolve cycles (A in B, B in A – moved at the same time)
-  for (;;) {
-    const reachable = new Set<string>();
-    const queue = folderIds.filter((id) => folders[id].parentId === null);
-    for (let id = queue.shift(); id !== undefined; id = queue.shift()) {
-      if (reachable.has(id)) continue;
-      reachable.add(id);
-      for (const child of folderIds) if (folders[child].parentId === id) queue.push(child);
-    }
-    const lost = folderIds.find((id) => !reachable.has(id));
-    if (!lost) break;
-    folders[lost].parentId = null;
-  }
-
-  const roots = folderIds.filter((id) => folders[id].parentId === null);
-  const rootOrder = mergeOrder(draft.rootFolderIds, roots);
-
-  // Rescue items without a folder
-  const orphans = Object.keys(items).filter((id) => !folders[items[id].folderId]);
-  if (orphans.length) {
-    let target = rootOrder[0];
-    if (!target) {
-      folders[RECOVERY_FOLDER_ID] = { id: RECOVERY_FOLDER_ID, name: RECOVERY_FOLDER_NAME, parentId: null, folderIds: [], itemIds: [] };
-      target = RECOVERY_FOLDER_ID;
-      rootOrder.push(RECOVERY_FOLDER_ID);
-      folderIds.push(RECOVERY_FOLDER_ID);
-    }
-    for (const id of orphans) items[id].folderId = target;
-  }
-  if (!sameList(draft.rootFolderIds, rootOrder)) draft.rootFolderIds = rootOrder;
-
-  const children = new Map<string, string[]>();
-  const folderItems = new Map<string, string[]>();
-  for (const id of folderIds) {
-    const parent = folders[id].parentId;
-    if (parent) children.set(parent, [...(children.get(parent) ?? []), id]);
-  }
-  for (const id of Object.keys(items).sort(byCreatedThenId(items))) {
-    const folderId = items[id].folderId;
-    folderItems.set(folderId, [...(folderItems.get(folderId) ?? []), id]);
-  }
-  for (const id of folderIds) {
-    const folder = folders[id];
-    const nextFolders = mergeOrder(folder.folderIds, children.get(id) ?? []);
-    if (!sameList(folder.folderIds, nextFolders)) folder.folderIds = nextFolders;
-    const nextItems = mergeOrder(folder.itemIds, folderItems.get(id) ?? []);
-    if (!sameList(folder.itemIds, nextItems)) folder.itemIds = nextItems;
-  }
-
-  // Remove duplicate glyphs, sounds, paintings (same internal ID)
-  updateLists(draft, withoutDuplicateIds);
 }
 
 /** Inserts, replaces or removes (data undefined) the entry with the ID in the list. */
@@ -156,7 +60,7 @@ export function applyRemoteEntities(project: Project, envelopes: Envelope[], now
   // Second pass: applied objects are now part of the project and may be adjusted
   return produce(overlaid, (draft) => {
     updateLists(draft, (list, kind) => sortByOrder(list, orders[kind]));
-    normalizeTree(draft);
+    repairProject(draft as Project);
     draft.updatedAt = Math.max(draft.updatedAt, now);
   });
 }
@@ -184,20 +88,10 @@ function sortByOrder<T extends { id: string }>(list: T[], order: string[] | unde
 
 /** Builds a project entirely from the files of a shared folder. */
 export function projectFromEnvelopes(meta: ProjectMeta, envelopes: Envelope[], now: number): Project {
-  const base: Project = {
-    formatVersion: 1,
-    id: meta.id,
-    name: meta.name,
-    namespace: meta.namespace,
-    settings: meta.settings,
-    folders: {},
-    items: {},
-    rootFolderIds: [...meta.rootFolderIds],
-    glyphs: [],
-    sounds: [],
-    paintings: [],
-    createdAt: typeof meta.createdAt === 'number' ? meta.createdAt : now,
-    updatedAt: now,
-  };
-  return applyRemoteEntities(base, envelopes, now);
+  // The project data goes through the same checks as a stored project; the entries come from the envelopes
+  const base = migrateProject(
+    { id: meta.id, name: meta.name, namespace: meta.namespace, settings: meta.settings, createdAt: meta.createdAt, updatedAt: now },
+    now,
+  );
+  return applyRemoteEntities({ ...base, rootFolderIds: [...meta.rootFolderIds] }, envelopes, now);
 }

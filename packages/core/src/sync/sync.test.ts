@@ -6,7 +6,7 @@ import { createGlyph } from '../nexo/glyphs/model';
 import { createSound } from '../nexo/sounds/model';
 import { createPainting } from '../nexo/paintings/model';
 import { readShareFolder, SyncEngine, ShareFolderError, type ShareFileInfo, type SyncFs, type SyncState } from './engine';
-import { RECOVERY_FOLDER_ID } from './merge';
+import { RECOVERY_FOLDER_ID } from '../project/repair';
 import { entityPath, isShareFilePath, parseEntityKey, parseEntityPath, PROJECT_FILE, README_FILE } from './format';
 
 /** Shared in-memory folder – like a OneDrive folder that both see */

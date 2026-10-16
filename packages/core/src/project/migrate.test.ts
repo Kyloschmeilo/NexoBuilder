@@ -58,6 +58,28 @@ describe('migrateProject', () => {
     });
   });
 
+  it('repairs the folder tree of stored data', () => {
+    const project = migrateProject({
+      name: 'Kaputt',
+      rootFolderIds: ['f_gone'],
+      folders: {
+        f_a: { name: 'A', parentId: 'f_b', folderIds: ['f_b'], itemIds: [] },
+        f_b: { name: 'B', parentId: 'f_a', folderIds: ['f_a'], itemIds: [] },
+      },
+      items: { i_1: { id: 'i_1', nexoId: 'x', folderId: 'f_missing', createdAt: 1 } },
+      glyphs: [
+        { id: 'g_1', glyphId: 'a' },
+        { id: 'g_1', glyphId: 'b' },
+      ],
+    });
+    // The cycle is broken, the item without a folder lands in the first root folder, duplicates are dropped
+    expect(project.rootFolderIds).toEqual(['f_a']);
+    expect(project.folders.f_a).toMatchObject({ parentId: null, folderIds: ['f_b'], itemIds: ['i_1'] });
+    expect(project.folders.f_b).toMatchObject({ parentId: 'f_a', folderIds: [] });
+    expect(project.items.i_1.folderId).toBe('f_a');
+    expect(project.glyphs.map((g) => g.glyphId)).toEqual(['a']);
+  });
+
   it('refuses data that is no project', () => {
     expect(() => migrateProject('nope')).toThrow(CoreError);
     expect(() => migrateProject({ items: {} })).toThrow('project.noName');

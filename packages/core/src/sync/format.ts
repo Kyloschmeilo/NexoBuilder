@@ -19,7 +19,7 @@ import type { Glyph } from '../nexo/glyphs/model';
 import { MEDIA_KIND_LIST, MEDIA_KINDS, mediaList, type MediaEntryByKind, type MediaKind } from '../nexo/media/kinds';
 import type { Painting } from '../nexo/paintings/model';
 import type { Sound } from '../nexo/sounds/model';
-import { isPlainObject } from '../object';
+import { isPlainObject, sameList } from '../object';
 import { migrateItem } from '../project/migrate';
 import type { Folder, Item, Project, ProjectSettings } from '../project/types';
 
@@ -182,11 +182,6 @@ export function entityKeys(project: Project): string[] {
   return keys;
 }
 
-function sameIds(a: ReadonlyArray<{ id: string }> | string[], b: ReadonlyArray<{ id: string }> | string[]): boolean {
-  const id = (v: { id: string } | string) => (typeof v === 'string' ? v : v.id);
-  return a.length === b.length && a.every((v, i) => id(v) === id(b[i]));
-}
-
 /**
  * Which entries changed between two project states?
  * Relies on Immer reusing unchanged objects – only references are compared.
@@ -201,8 +196,8 @@ export function changedEntityKeys(prev: Project, next: Project): string[] {
     prev.namespace !== next.namespace ||
     prev.settings !== next.settings ||
     prev.createdAt !== next.createdAt ||
-    !sameIds(prev.rootFolderIds, next.rootFolderIds) ||
-    MEDIA_KIND_LIST.some((kind) => !sameIds(mediaList(prev, kind), mediaList(next, kind)))
+    !sameList(prev.rootFolderIds, next.rootFolderIds) ||
+    MEDIA_KIND_LIST.some((kind) => !sameList<{ id: string }>(mediaList(prev, kind), mediaList(next, kind), (e) => e.id))
   ) {
     keys.push('project');
   }
