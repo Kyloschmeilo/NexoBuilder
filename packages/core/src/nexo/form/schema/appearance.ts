@@ -1,5 +1,5 @@
 import { ARMOR_LAYERS, type ArmorLayerDef, type ArmorSection } from '../../../project/armor';
-import { field, properties, type FieldSpecs } from './build';
+import { field, properties, type FieldSpecs } from '../../../form/build';
 
 const textureField = (layer: ArmorLayerDef) => field.texture({ sizeHint: layer.sizeHint, minVersion: layer.minVersion, help: layer.help });
 

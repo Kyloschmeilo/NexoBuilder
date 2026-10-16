@@ -1,8 +1,6 @@
 import { describe, expect, it } from 'vitest';
-import { createItem, createProject } from '../../project/factory';
 import { checkFieldValue } from './fieldSchema';
 import type { Field } from './fields';
-import { buildItemConfig } from '../itemConfig';
 
 const number: Field = { type: 'number', key: 'amount', label: 'amount', integer: true, min: 1, max: 10 };
 const select: Field = { type: 'select', key: 'mode', label: 'mode', options: [{ value: 'A' }, { value: 'B' }] };
@@ -51,15 +49,5 @@ describe('checkFieldValue', () => {
     ]);
     expect(checkFieldValue(undefined, number)).toEqual([]);
     expect(checkFieldValue(null, select)).toEqual([]);
-  });
-});
-
-describe('pruning by field', () => {
-  it('converts numbers and booleans stored as text and leaves out values of the wrong type', () => {
-    const project = createProject('T', 't');
-    const item = createItem({ displayName: 'x', itemId: 'x', folderId: 'f', model: null });
-    item.config.Components = { max_stack_size: '16', max_damage: 'lots', fire_resistant: 'true', hide_tooltip: 'maybe' };
-    const { config } = buildItemConfig({ project, item, modelKey: null });
-    expect(config.Components).toEqual({ max_stack_size: 16, fire_resistant: true });
   });
 });

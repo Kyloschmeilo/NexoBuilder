@@ -9,18 +9,12 @@ import { referencedAssetIds } from '../project/assets';
 import type { ConfigObject, ConfigValue, Item, Project } from '../project/types';
 import type { ArmorSettings } from '../project/armor';
 import { deletePath, getPath, setPath } from '../project/config';
-import { getPropertyValue, isPropertyActive, setPropertyValue } from './form/properties';
+import { getPropertyValue, isPropertyActive, setPropertyValue, unknownConfigPaths } from '../form/properties';
+import type { PropertyDef } from '../form/build';
 import { getRecipeTypeInfo, type Recipe } from '../project/recipes/model';
-import {
-  MANAGED_TOP_LEVEL_KEYS,
-  PROPERTIES,
-  PROPERTY_GROUPS,
-  unknownConfigPaths,
-  type PropertyDef,
-  type PropertyGroup,
-} from './form/schema';
+import { MANAGED_TOP_LEVEL_KEYS, NEXO_FORM, type NexoPropertyGroup, PROPERTIES, PROPERTY_GROUPS } from './form/schema';
 
-export type CopyCategory = 'material' | PropertyGroup | 'other' | 'rawYaml' | 'recipes';
+export type CopyCategory = 'material' | NexoPropertyGroup | 'other' | 'rawYaml' | 'recipes';
 
 interface CopyCategoryInfo {
   id: CopyCategory;
@@ -83,7 +77,7 @@ export function copyItemConfig(item: Item, projectId: string): ItemConfigClipboa
   };
 }
 
-const copyableProperties = (group: PropertyGroup): PropertyDef[] =>
+const copyableProperties = (group: NexoPropertyGroup): PropertyDef[] =>
   PROPERTIES.filter((p) => p.group === group && !NEVER_COPIED_PROPERTIES.has(p.id));
 
 /**
@@ -91,7 +85,7 @@ const copyableProperties = (group: PropertyGroup): PropertyDef[] =>
  * first. Unknown keys under Pack (model, textures, parent_model …) belong to the model and stay with the target.
  */
 function otherPaths(config: ConfigObject): string[][] {
-  return unknownConfigPaths(config)
+  return unknownConfigPaths(NEXO_FORM, config)
     .filter((path) => path[0] !== 'Pack' && !MANAGED_TOP_LEVEL_KEYS.includes(path[0]) && !NEVER_COPIED_PROPERTIES.has(path.join('.')))
     .sort((a, b) => a.length - b.length);
 }

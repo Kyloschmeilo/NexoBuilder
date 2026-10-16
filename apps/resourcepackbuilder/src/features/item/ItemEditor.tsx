@@ -1,4 +1,5 @@
 import { useTranslations } from 'next-intl';
+import { activeProperties, type FormSchema } from '@resourcepackbuilder/core/form';
 import type { Item } from '@resourcepackbuilder/core/project';
 import { issuesFor } from '@resourcepackbuilder/utils';
 import { PageShell } from '@resourcepackbuilder/ui';
@@ -12,23 +13,21 @@ import { setEditorTab, useUiStore, type EditorTab } from '../../store/ui';
 import { GeneralTab } from './GeneralTab';
 import { ItemHeader } from './ItemHeader';
 import { ModelTab } from './model/ModelTab';
-import { activeProperties } from '@resourcepackbuilder/core/nexo';
 import { PropertiesPanel } from './properties/PropertiesPanel';
+import { useProjectForm } from './properties/useProjectForm';
 import { RecipesTab } from './recipes/RecipesTab';
 import { useItemFieldContext } from './useItemFieldContext';
 import { YamlTab } from './YamlTab';
 
-const TABS: EditorTab[] = ['general', 'model', 'attributes', 'components', 'mechanics', 'recipes', 'yaml'];
-
-/** Tabs that only hold properties of one group. */
-const PROPERTY_TABS = ['attributes', 'components', 'mechanics'] as const;
+/** The editor's tabs: the fixed ones around the property tabs of the form. */
+function editorTabs(schema: FormSchema): EditorTab[] {
+  return ['general', 'model', ...schema.tabs.map((tab) => tab.id), 'recipes', 'yaml'];
+}
 
 /** Number shown on a tab: how many entries it has. */
-function tabCounts(item: Item): Partial<Record<EditorTab, number>> {
+function tabCounts(schema: FormSchema, item: Item): Partial<Record<EditorTab, number>> {
   return {
-    attributes: activeProperties(item, 'attributes').length,
-    components: activeProperties(item, 'components').length,
-    mechanics: activeProperties(item, 'mechanics').length,
+    ...Object.fromEntries(schema.tabs.map((tab) => [tab.id, activeProperties(schema, item, tab.group).length])),
     recipes: item.recipes.length,
   };
 }
@@ -38,8 +37,10 @@ function ItemEditorContent({ item }: { item: Item }) {
   const plan = usePlan();
   const activeTab = useUiStore((s) => s.editorTab);
   const fieldContext = useItemFieldContext(item);
+  const schema = useProjectForm();
   const issues = plan ? issuesFor(plan.issues, { kind: 'item', id: item.id }) : [];
-  const counts = tabCounts(item);
+  const tabs = editorTabs(schema);
+  const counts = tabCounts(schema, item);
 
   return (
     <FieldContext.Provider value={fieldContext}>
@@ -47,20 +48,21 @@ function ItemEditorContent({ item }: { item: Item }) {
       <PageShell className="gap-5">
         <ItemHeader item={item} issues={issues} />
         <Tabs
-          value={activeTab}
+          value={tabs.includes(activeTab) ? activeTab : 'general'}
           onValueChange={(value) => {
-            if (isOneOf(TABS, value)) setEditorTab(value);
+            if (isOneOf(tabs, value)) setEditorTab(value);
           }}
           className="gap-5"
         >
           <TabsList variant="line" className="w-full flex-wrap justify-start gap-1 border-b p-0 group-data-horizontal/tabs:h-auto">
-            {TABS.map((tab) => (
+            {tabs.map((tab) => (
               <TabsTrigger
                 key={tab}
                 value={tab}
                 className="group/tab h-10 flex-none rounded-b-none px-3 after:bg-primary group-data-horizontal/tabs:after:-bottom-px hover:bg-muted"
               >
-                {t(`editor.tabs.${tab}`)}
+                {/* Property tab ids come from the form at runtime; the catalogue holds a label for each of them */}
+                {t(`editor.tabs.${tab}` as never)}
                 {!!counts[tab] && (
                   <Badge
                     variant="outline"
@@ -79,9 +81,9 @@ function ItemEditorContent({ item }: { item: Item }) {
           <TabsContent value="model">
             <ModelTab item={item} />
           </TabsContent>
-          {PROPERTY_TABS.map((group) => (
-            <TabsContent key={group} value={group}>
-              <PropertiesPanel item={item} group={group} />
+          {schema.tabs.map((tab) => (
+            <TabsContent key={tab.id} value={tab.id}>
+              <PropertiesPanel item={item} group={tab.group} />
             </TabsContent>
           ))}
           <TabsContent value="recipes">

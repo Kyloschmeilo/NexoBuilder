@@ -2,7 +2,13 @@ import { useState } from 'react';
 import { useTranslations } from 'next-intl';
 import { Plus } from 'lucide-react';
 import type { Item } from '@resourcepackbuilder/core/project';
-import { availableProperties, propertyConflict, type PropertyGroup, propertyYamlPath } from '@resourcepackbuilder/core/nexo';
+import {
+  availableProperties,
+  type FormSchema,
+  propertyConflict,
+  type PropertyGroup,
+  propertyYamlPath,
+} from '@resourcepackbuilder/core/form';
 import { Button } from '@resourcepackbuilder/ui/components/button';
 import { Command, CommandEmpty, CommandInput, CommandItem, CommandList } from '@resourcepackbuilder/ui/components/command';
 import { Popover, PopoverContent, PopoverTrigger } from '@resourcepackbuilder/ui/components/popover';
@@ -18,13 +24,13 @@ function matchesQuery(_value: string, search: string, keywords: string[] = []): 
 }
 
 /** "Add" with a searchable list of the group's properties the item does not use yet. */
-export function AddPropertyButton({ item, group }: { item: Item; group: PropertyGroup }) {
+export function AddPropertyButton({ schema, item, group }: { schema: FormSchema; item: Item; group: PropertyGroup }) {
   const t = useTranslations('item');
   const tCommon = useTranslations('common');
   const tSchema = useSchemaText();
   const [isOpen, setIsOpen] = useState(false);
   const version = useOpenProject().settings.minecraftVersion;
-  const available = availableProperties(item, group);
+  const available = availableProperties(schema, item, group);
 
   return (
     <Popover open={isOpen} onOpenChange={setIsOpen}>
@@ -39,7 +45,7 @@ export function AddPropertyButton({ item, group }: { item: Item; group: Property
             {available.map((def) => {
               const label = tSchema(def.label);
               const description = tSchema(def.description);
-              const conflict = propertyConflict(item, def);
+              const conflict = propertyConflict(schema, item, def);
               return (
                 <CommandItem
                   key={def.id}

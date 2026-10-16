@@ -21,7 +21,8 @@ import {
 } from '@resourcepackbuilder/minecraft';
 import * as operations from '@resourcepackbuilder/core/project';
 import { assetToken, texturePlaceholder, uid } from '@resourcepackbuilder/utils';
-import { PROPERTY_BY_ID, type PropertyDef, setPropertyValue } from '@resourcepackbuilder/core/nexo';
+import { propertyById, type PropertyDef, setPropertyValue } from '@resourcepackbuilder/core/form';
+import { formFor } from '@resourcepackbuilder/core/targets';
 import { getProject, mutate } from '../store/project';
 import { select, setExpanded } from '../store/ui';
 
@@ -63,14 +64,20 @@ export function setItemProperty(itemId: string, def: PropertyDef, value: ConfigV
   updateItem(itemId, (item) => setPropertyValue(item, def, value), historyKey);
 }
 
+/** A property of the open project's form. */
+function projectProperty(propertyId: string): PropertyDef | undefined {
+  const project = getProject();
+  return project ? propertyById(formFor(project.target), propertyId) : undefined;
+}
+
 export function addProperty(itemId: string, propertyId: string): void {
-  const def = PROPERTY_BY_ID.get(propertyId);
+  const def = projectProperty(propertyId);
   if (def) updateItem(itemId, (item) => setPropertyValue(item, def, def.defaultValue()));
 }
 
 /** Removes a property and the extra textures only it used. */
 export function removeProperty(itemId: string, propertyId: string): void {
-  const def = PROPERTY_BY_ID.get(propertyId);
+  const def = projectProperty(propertyId);
   if (!def) return;
   updateItem(itemId, (item) => {
     setPropertyValue(item, def, undefined);

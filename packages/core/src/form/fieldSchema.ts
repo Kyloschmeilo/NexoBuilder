@@ -1,12 +1,12 @@
 /**
- * The Nexo field tree (fields.ts) as zod schemas. The field DSL stays the source for the UI (labels, help, options);
+ * The field tree (fields.ts) as zod schemas. The field DSL stays the source for the UI (labels, help, options);
  * this module derives from it what a value of a field may be:
  *  - the leaf values pruning writes into the YAML (`NumberValue`, `BooleanValue`: numbers and booleans that were
  *    stored as text are converted, everything else of the wrong type is left out)
  *  - `fieldToSchema(field)`: the checks reported on export, with each ZodIssue path mapped to issue frames
  */
 import { z } from 'zod';
-import { fieldFrame, listEntryFrame, mapKeyFrame } from '../../project/issueFrames';
+import { fieldFrame, listEntryFrame, mapKeyFrame } from '../project/issueFrames';
 import { labelArg, type IssueContext, type MessageArgs } from '@resourcepackbuilder/utils';
 import { type Field, validateTextFormat } from './fields';
 

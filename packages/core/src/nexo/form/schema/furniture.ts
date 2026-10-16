@@ -1,6 +1,6 @@
 /** The furniture mechanic (Mechanics.furniture) – the largest property, hence its own module. */
 import { DISPLAY_TRANSFORMS, TRACKING_ROTATIONS } from '../options';
-import { field, type PropertySpec } from './build';
+import { field, type PropertySpec } from '../../../form/build';
 import {
   blockLockerField,
   blockSoundsField,

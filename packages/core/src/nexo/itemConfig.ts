@@ -7,11 +7,12 @@
 import { deepClone, deepMerge, isPlainObject, mapData, MODEL_TOKEN } from '@resourcepackbuilder/utils';
 import type { ConfigObject, ConfigValue, Item, Project } from '../project/types';
 import { slotForMaterial, type ItemArmor } from '../project/armor';
-import type { Field } from './form/fields';
-import { BooleanValue, NumberValue } from './form/fieldSchema';
+import type { Field } from '../form/fields';
+import { BooleanValue, NumberValue } from '../form/fieldSchema';
 import { getPath, setPath } from '../project/config';
 import { itemMaterial } from '../project/item';
-import { CONFIG_PROPERTIES, unknownConfigPaths } from './form/schema';
+import { unknownConfigPaths } from '../form/properties';
+import { CONFIG_PROPERTIES, NEXO_FORM } from './form/schema';
 import { parseYaml } from './yaml';
 
 /** Order of the keys in the YAML (as in the Nexo docs) */
@@ -93,7 +94,7 @@ export function buildItemConfig(context: BuildContext): BuildResult {
     if (pruned !== undefined) setPath(cleaned, def.path, pruned as ConfigValue);
   }
   // Take over values that belong to no known property (only empty ones are dropped)
-  for (const path of unknownConfigPaths(source)) {
+  for (const path of unknownConfigPaths(NEXO_FORM, source)) {
     const pruned = pruneGeneric(getPath(source, path));
     if (pruned !== undefined) setPath(cleaned, path, pruned as ConfigValue);
   }

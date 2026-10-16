@@ -1,4 +1,4 @@
-import type { MultiSelectField } from '@resourcepackbuilder/core/nexo';
+import type { MultiSelectField } from '@resourcepackbuilder/core/form';
 import { ToggleGroup, ToggleGroupItem } from '@resourcepackbuilder/ui/components/toggle-group';
 import { FieldShell } from '../FieldShell';
 import { useChoiceText } from '../inputs/choices';

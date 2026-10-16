@@ -1,4 +1,4 @@
-import type { Field } from '@resourcepackbuilder/core/nexo';
+import type { Field } from '@resourcepackbuilder/core/form';
 
 /** Props of every field editor. Values are stored unchanged in the config object; "not set" is undefined. */
 export interface EditorProps<F extends Field = Field> {

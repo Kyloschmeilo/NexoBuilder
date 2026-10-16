@@ -1,7 +1,7 @@
 /** Export of recipes: one file per recipe type under recipes/<type>/. */
 import { groupBy } from '@resourcepackbuilder/utils';
 import type { Item, Project } from '../../project/types';
-import { englishName } from '../form/fields';
+import { englishName } from '../../form/fields';
 import { projectFileName } from '../../project/factory';
 import { itemsToYaml } from '../yaml';
 import {

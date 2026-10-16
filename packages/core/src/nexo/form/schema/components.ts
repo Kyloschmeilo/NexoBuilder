@@ -1,13 +1,6 @@
-import {
-  CONSUME_ANIMATIONS,
-  DAMAGE_TYPE_TAGS,
-  EQUIPPABLE_SLOTS,
-  MATERIALS,
-  plainOptions,
-  SWING_ANIMATIONS,
-  VANILLA_COMPONENTS,
-} from '../options';
-import { field, properties } from './build';
+import { CONSUME_ANIMATIONS, DAMAGE_TYPE_TAGS, EQUIPPABLE_SLOTS, MATERIALS, SWING_ANIMATIONS, VANILLA_COMPONENTS } from '../options';
+import { field, properties } from '../../../form/build';
+import { plainOptions } from '../../../form/options';
 import { consumeEffectsField, soundField } from './shared';
 
 /** Swing, attack and interact animation */

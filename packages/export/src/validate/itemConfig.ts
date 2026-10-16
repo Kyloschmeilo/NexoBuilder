@@ -2,7 +2,8 @@
 import { getPath, isPlainObject, labelArg, MODEL_TOKEN, schemaKey } from '@resourcepackbuilder/utils';
 import { versionSupport } from '@resourcepackbuilder/minecraft';
 import { type Item, itemLabel, MATERIAL_PATTERN, propertyFrame, slotForMaterial } from '@resourcepackbuilder/core/project';
-import { checkFieldValue, getPropertyValue, PROPERTIES } from '@resourcepackbuilder/core/nexo';
+import { checkFieldValue, getPropertyValue } from '@resourcepackbuilder/core/form';
+import { PROPERTIES } from '@resourcepackbuilder/core/nexo';
 import type { ItemExport } from '../types';
 
 /** Highest custom_variation per block type (Nexo limits) */

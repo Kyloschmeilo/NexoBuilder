@@ -9,7 +9,8 @@ export type ViewName = 'glyphs' | 'sounds' | 'paintings' | 'testServer';
 
 export type Selection = { kind: 'item'; id: string } | { kind: 'folder'; id: string } | { kind: 'view'; view: ViewName } | null;
 
-export type EditorTab = 'general' | 'model' | 'attributes' | 'components' | 'mechanics' | 'recipes' | 'yaml';
+/** A tab of the item editor: one of the fixed tabs (general, model, recipes, yaml) or a property tab of the project's form. */
+export type EditorTab = string;
 
 interface UiState {
   selection: Selection;

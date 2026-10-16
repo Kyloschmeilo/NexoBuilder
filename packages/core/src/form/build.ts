@@ -1,5 +1,5 @@
 /**
- * Builder for the property schema. Properties are written as field specs without message keys; the
+ * Builder for the property schema of a form. Properties are written as field specs without message keys; the
  * builder derives every key from the position in the tree:
  *
  *  - property `<id>` (e.g. `Components.food`): YAML path `id.split('.')`, field key = last path segment,
@@ -11,19 +11,20 @@
  *
  * Shared field definitions set an explicit `scope` (e.g. `shared.drop`); explicit keys override single messages.
  */
-import type { ConfigValue } from '../../../project/types';
-import type { Field, MapField, ObjectField, ObjectListField } from '../fields';
+import type { ConfigValue } from '../project/types';
+import type { Field, MapField, ObjectField, ObjectListField } from './fields';
 import { keySegment } from '@resourcepackbuilder/utils';
-import { labeledOptions, type Option } from '../options';
+import { labeledOptions, type Option } from './options';
 
-export type PropertyGroup = 'general' | 'appearance' | 'attributes' | 'components' | 'mechanics';
+/** Id of a property group (e.g. Nexo's `components`); the form schema lists its groups. */
+export type PropertyGroup = string;
 
 interface PropertyBase {
   id: string;
   group: PropertyGroup;
-  /** Message key in the `schema` namespace (the English Nexo feature name in both languages) */
+  /** Message key in the form's namespace (the English feature name of the plugin in both languages) */
   label: string;
-  /** Message key in the `schema` namespace */
+  /** Message key in the form's namespace */
   description: string;
   field: Field;
   defaultValue: () => ConfigValue;
@@ -32,7 +33,7 @@ interface PropertyBase {
   maxVersion?: string;
   /** These properties are mutually exclusive */
   conflicts?: string[];
-  /** Hint shown above the form – message key in the `schema` namespace */
+  /** Hint shown above the form – message key in the form's namespace */
   hint?: string;
   docs?: string;
   /** Write an empty object anyway (mechanic active, even without options) */

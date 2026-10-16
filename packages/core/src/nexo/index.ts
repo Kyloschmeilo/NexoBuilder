@@ -1,13 +1,9 @@
 /** Public API of @resourcepackbuilder/core/nexo. */
 export * from './copyConfig';
-export * from './form/fields';
-export * from './form/fieldSchema';
 export * from './form/options';
-export * from './form/properties';
 export * from './form/schema';
 export * from './form/schema/appearance';
 export * from './form/schema/attributes';
-export * from './form/schema/build';
 export * from './form/schema/components';
 export * from './form/schema/furniture';
 export * from './form/schema/general';

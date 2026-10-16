@@ -1,5 +1,5 @@
 import { ATTRIBUTE_OPERATIONS, ATTRIBUTE_SLOTS, ATTRIBUTES, ENCHANTMENTS } from '../options';
-import { field, properties, whenType } from './build';
+import { field, properties, whenType } from '../../../form/build';
 
 export const ATTRIBUTE_PROPERTIES = properties('attributes', {
   AttributeModifiers: {

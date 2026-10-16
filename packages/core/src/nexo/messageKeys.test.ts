@@ -8,8 +8,9 @@ import { describe, expect, it } from 'vitest';
 import { TEXTURE_TEMPLATES } from '@resourcepackbuilder/minecraft';
 import { ARMOR_LAYERS } from '../project/armor';
 import { COPY_CATEGORIES, summarizeClipboard, type ItemConfigClipboard } from './copyConfig';
-import { type Field, type TextField, validateTextFormat } from './form/fields';
+import { type Field, type TextField, validateTextFormat } from '../form/fields';
 import { keySegment } from '@resourcepackbuilder/utils';
+import type { Option } from '../form/options';
 import * as options from './form/options';
 import { INGREDIENT_SOURCES, RECIPE_TYPES } from '../project/recipes/model';
 import { PROPERTIES, PROPERTY_GROUPS } from './form/schema';
@@ -38,7 +39,7 @@ function leafKeys(tree: MessageTree, prefix = ''): string[] {
   });
 }
 
-function optionKeys(list: options.Option[] | undefined): string[] {
+function optionKeys(list: Option[] | undefined): string[] {
   return (list ?? []).flatMap((o) => (o.label ? [o.label] : []));
 }
 
@@ -73,7 +74,7 @@ function referencedKeys(): Set<string> {
     if (property.hint) keys.push(property.hint);
   }
   for (const value of Object.values(options)) {
-    if (Array.isArray(value)) keys.push(...optionKeys(value as options.Option[]));
+    if (Array.isArray(value)) keys.push(...optionKeys(value as Option[]));
   }
   for (const layer of ARMOR_LAYERS) keys.push(layer.label);
   for (const def of [...VARIANTS, ...FURNITURE_MODEL_SLOTS, STACK_MODELS, stateDef('on')]) {

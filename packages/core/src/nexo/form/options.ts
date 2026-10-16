@@ -15,20 +15,7 @@ import {
   POTION_EFFECT_NAMES,
   SOUND_EVENTS,
 } from '@resourcepackbuilder/minecraft';
-import { keySegment } from '@resourcepackbuilder/utils';
-
-export interface Option {
-  value: string;
-  /** Message key in the `schema` namespace; without a label the value itself is shown */
-  label?: string;
-}
-
-/** Options shown as their value. */
-export const plainOptions = (values: readonly string[]): Option[] => values.map((value) => ({ value }));
-
-/** Options labeled by the message keys `<scope>.<camel(value)>.label` in the `schema` namespace. */
-export const labeledOptions = (scope: string, values: string[]): Option[] =>
-  values.map((value) => ({ value, label: `${scope}.${keySegment(value)}.label` }));
+import { labeledOptions, type Option, plainOptions } from '../../form/options';
 
 /** Option lists of this module are labeled under `options.<list name>`. */
 const labeled = (list: string, values: string[]): Option[] => labeledOptions(`options.${list}`, values);

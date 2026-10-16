@@ -7,7 +7,9 @@
   "sideEffects": false,
   "exports": {
     "./project": "./src/project/index.ts",
-    "./nexo": "./src/nexo/index.ts"
+    "./form": "./src/form/index.ts",
+    "./nexo": "./src/nexo/index.ts",
+    "./targets": "./src/targets/index.ts"
   },
   "scripts": {
     "typecheck": "tsc -b",
