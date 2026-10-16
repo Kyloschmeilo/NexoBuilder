@@ -1,6 +1,9 @@
-/** The entries below the tree that open project-wide views: glyphs, sounds, paintings and the test server. */
+/**
+ * The entries below the tree that open project-wide views: glyphs, sounds, paintings, a CraftEngine project's loot
+ * sources and the test server.
+ */
 import type { ReactNode } from 'react';
-import { Frame, Music, Server, Smile } from 'lucide-react';
+import { Frame, Gem, Music, Server, Smile } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 import { cn } from 'cn';
 import type { IssueTarget } from '@resourcepackbuilder/utils';
@@ -43,7 +46,7 @@ const RESOURCES = [
   { view: 'paintings', target: 'painting', icon: <Frame className="size-4" /> },
 ] as const satisfies ReadonlyArray<{ view: ViewName; target: IssueTarget['kind']; icon: ReactNode }>;
 
-/** Project-wide lists below the tree, each with its size and the worst issue level of its entries. */
+/** Project-wide lists below the tree, each with its size and the worst issue level of its entries (loot sources: CraftEngine only). */
 export function ResourceEntries() {
   const t = useTranslations('layout.sidebar.resources');
   const project = useOpenProject();
@@ -69,6 +72,15 @@ export function ResourceEntries() {
           />
         );
       })}
+      {project.target === 'craftengine' && (
+        <ViewEntry
+          view="lootSources"
+          icon={<Gem className="size-4" />}
+          label={t('lootSources.label')}
+          tip={t('lootSources.hint')}
+          status={<span className={treeRowSlots.count}>{project.craftEngine?.lootSources?.length ?? 0}</span>}
+        />
+      )}
     </div>
   );
 }

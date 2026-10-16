@@ -23,6 +23,10 @@
     "events": {
       "label": "Events",
       "description": "What the item, its block or its furniture does on a click, a break and more"
+    },
+    "loot": {
+      "label": "Loot",
+      "description": "What the block or the furniture drops when it breaks"
     }
   },
   "properties": {
@@ -881,10 +885,7 @@
     },
     "blockLoot": {
       "label": "Loot",
-      "description": "What the block drops when it breaks. default:loot_table/self drops the block itself. Without loot the block drops nothing.",
-      "field": {
-        "label": "Loot table (YAML)"
-      }
+      "description": "What the block drops when it breaks. default:loot_table/self drops the block itself. Without loot the block drops nothing."
     },
     "blockStatesArgumentsSlabBaseBlock": {
       "label": "Vanilla slab",
@@ -1133,6 +1134,10 @@
     "furnitureEvents": {
       "label": "Furniture Events",
       "description": "Functions the placed furniture runs when it is clicked, placed or broken."
+    },
+    "furnitureLoot": {
+      "label": "Loot",
+      "description": "What the furniture drops when it breaks. default:loot_table/furniture drops the item it was placed with. Without loot it drops nothing."
     }
   },
   "recipes": {
@@ -1955,10 +1960,6 @@
         "label": "drop_loot",
         "help": "Drops loot at a position.",
         "fields": {
-          "loot": {
-            "label": "loot",
-            "help": "A loot table (YAML) or the id of one."
-          },
           "toInventory": {
             "label": "to_inventory"
           },
@@ -2421,9 +2422,78 @@
         "label": "overwrite",
         "help": "What to remove from the vanilla result: items, experience, all or none (default: add your loot)."
       },
-      "loot": {
+      "lootTable": {
         "label": "loot",
-        "help": "A loot table (YAML) or the id of one."
+        "help": "A loot template with its arguments, a loot table of your own, or the id of another loot table.",
+        "choices": {
+          "template": {
+            "label": "Template",
+            "field": {
+              "fields": {
+                "template": {
+                  "label": "template",
+                  "help": "A loot template of CraftEngine or of another pack. default:loot_table/self drops the block itself."
+                },
+                "arguments": {
+                  "label": "arguments",
+                  "help": "The values the template fills in, such as item or count.",
+                  "keyLabel": "Argument",
+                  "keyPlaceholder": "item",
+                  "value": {
+                    "label": "Value"
+                  }
+                }
+              }
+            }
+          },
+          "table": {
+            "label": "Loot table",
+            "field": {
+              "fields": {
+                "pools": {
+                  "label": "pools",
+                  "itemLabel": "pool",
+                  "fields": {
+                    "rolls": {
+                      "label": "rolls"
+                    },
+                    "bonusRolls": {
+                      "label": "bonus_rolls",
+                      "help": "Extra rolls per point of luck."
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "reference": {
+            "label": "Id",
+            "field": {
+              "label": "Loot table id",
+              "placeholder": "minecraft:chests/simple_dungeon"
+            }
+          }
+        }
+      },
+      "lootEntries": {
+        "label": "entries"
+      },
+      "lootFunctions": {
+        "label": "functions",
+        "help": "Change the dropped items, in this order."
+      },
+      "lootSourceId": {
+        "label": "id",
+        "help": "The id of the loot source. Without a namespace it gets the project namespace.",
+        "placeholder": "example:extra_drops"
+      },
+      "weight": {
+        "label": "weight",
+        "help": "How often this entry is picked among the others of its pool (default 1)."
+      },
+      "quality": {
+        "label": "quality",
+        "help": "How much each point of luck adds to the weight."
       }
     },
     "numbers": {
@@ -2726,6 +2796,140 @@
         "label": "advancement",
         "help": "A player completes an advancement; the loot goes into the inventory. Target: advancement ids."
       }
+    },
+    "lootEntries": {
+      "item": {
+        "label": "item",
+        "help": "Drops an item.",
+        "fields": {
+          "item": {
+            "label": "item"
+          }
+        }
+      },
+      "furnitureItem": {
+        "label": "furniture_item",
+        "help": "Drops the item the furniture was placed with.",
+        "fields": {
+          "item": {
+            "label": "item",
+            "help": "The item it drops when the furniture has no item of its own."
+          }
+        }
+      },
+      "exp": {
+        "label": "exp",
+        "help": "Drops experience.",
+        "fields": {
+          "count": {
+            "label": "count"
+          }
+        }
+      },
+      "empty": {
+        "label": "empty",
+        "help": "Drops nothing. Use it to give the other entries a chance to miss."
+      },
+      "function": {
+        "label": "function",
+        "help": "Runs functions instead of dropping an item.",
+        "fields": {
+          "run": {
+            "label": "run"
+          }
+        }
+      },
+      "lootTable": {
+        "label": "loot_table",
+        "help": "Drops the loot of another loot table.",
+        "fields": {
+          "id": {
+            "label": "id"
+          }
+        }
+      },
+      "alternatives": {
+        "label": "alternatives",
+        "help": "Drops the first child whose conditions hold."
+      },
+      "ifElse": {
+        "label": "if_else",
+        "help": "Drops the first child whose conditions hold (a second name of alternatives)."
+      }
+    },
+    "lootFunctions": {
+      "setCount": {
+        "label": "set_count",
+        "help": "Sets the number of items.",
+        "fields": {
+          "count": {
+            "label": "count"
+          }
+        }
+      },
+      "applyBonus": {
+        "label": "apply_bonus",
+        "help": "Adds items for each level of an enchantment, such as Fortune.",
+        "fields": {
+          "enchantment": {
+            "label": "enchantment"
+          },
+          "formula": {
+            "label": "formula",
+            "help": "How the level turns into extra items.",
+            "fields": {
+              "type": {
+                "label": "type",
+                "help": "ore_drops: like vanilla ores. binomial_with_bonus_count: like vanilla crops."
+              },
+              "extra": {
+                "label": "extra"
+              },
+              "probability": {
+                "label": "probability"
+              }
+            }
+          }
+        }
+      },
+      "explosionDecay": {
+        "label": "explosion_decay",
+        "help": "Lets an explosion destroy some of the items."
+      },
+      "limitCount": {
+        "label": "limit_count",
+        "help": "Keeps the number of items between min and max.",
+        "fields": {
+          "min": {
+            "label": "min"
+          },
+          "max": {
+            "label": "max"
+          }
+        }
+      },
+      "dropExp": {
+        "label": "drop_exp",
+        "help": "Drops experience as well.",
+        "fields": {
+          "count": {
+            "label": "count"
+          }
+        }
+      },
+      "applyData": {
+        "label": "apply_data",
+        "help": "Changes the data of the items.",
+        "fields": {
+          "data": {
+            "label": "data",
+            "help": "Item data as YAML, like the data of an item."
+          }
+        }
+      }
     }
+  },
+  "lootSources": {
+    "label": "loot_sources"
   }
 }

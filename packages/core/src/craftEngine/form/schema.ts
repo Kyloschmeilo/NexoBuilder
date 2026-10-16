@@ -6,18 +6,20 @@
 import type { PropertyDef } from '../../form/build';
 import type { FormSchema } from '../../form/types';
 import { eventPropertyIds } from '../events';
+import { lootPropertyIds } from '../loot';
 import { CE_BLOCK_BEHAVIOR_PROPERTIES } from './schema/blockBehavior';
 import { CE_BLOCK_SETTINGS_PROPERTIES } from './schema/blockSettings';
 import { CE_DATA_PROPERTIES } from './schema/data';
 import { CE_EVENT_PROPERTIES } from './schema/events';
 import { CE_GENERAL_PROPERTIES } from './schema/general';
+import { CE_LOOT_PROPERTIES } from './schema/loot';
 import { CE_SETTINGS_PROPERTIES } from './schema/settings';
 
-export type CraftEnginePropertyGroup = 'general' | 'data' | 'settings' | 'blockSettings' | 'blockBehavior' | 'events';
+export type CraftEnginePropertyGroup = 'general' | 'data' | 'settings' | 'blockSettings' | 'blockBehavior' | 'events' | 'loot';
 
 /** `label` and `description` are message keys in the `ceSchema` namespace. */
 export const CE_PROPERTY_GROUPS: Array<{ id: CraftEnginePropertyGroup; label: string; description: string }> = (
-  ['general', 'data', 'settings', 'blockSettings', 'blockBehavior', 'events'] as const
+  ['general', 'data', 'settings', 'blockSettings', 'blockBehavior', 'events', 'loot'] as const
 ).map((id) => ({ id, label: `groups.${id}.label`, description: `groups.${id}.description` }));
 
 export const CE_PROPERTIES: PropertyDef[] = [
@@ -27,6 +29,7 @@ export const CE_PROPERTIES: PropertyDef[] = [
   ...CE_BLOCK_SETTINGS_PROPERTIES,
   ...CE_BLOCK_BEHAVIOR_PROPERTIES,
   ...CE_EVENT_PROPERTIES,
+  ...CE_LOOT_PROPERTIES,
 ];
 
 /** Paths that ResourcepackBuilder sets automatically: the material and the display name. */
@@ -35,7 +38,7 @@ export const CE_MANAGED_PATHS = ['material', 'data.item_name'];
 /**
  * The CraftEngine item editor. The group `general` is shown on the app's General tab, `blockSettings` and
  * `blockBehavior` in the Block section of the model tab (only while the item is a block). The Events tab shows the
- * item's events and those of the block or furniture it places.
+ * item's events and those of the block or furniture it places, the Loot tab what that block or furniture drops.
  */
 export const CRAFT_ENGINE_FORM: FormSchema = {
   target: 'craftengine',
@@ -46,5 +49,6 @@ export const CRAFT_ENGINE_FORM: FormSchema = {
   tabs: [
     ...(['data', 'settings'] as const).map((group) => ({ id: group, group })),
     { id: 'events', group: 'events', only: eventPropertyIds },
+    { id: 'loot', group: 'loot', only: lootPropertyIds },
   ],
 };

@@ -1,7 +1,8 @@
 /**
  * The files of plugins/CraftEngine: the project's pack.yml, its item configs (with their blocks, furniture and
  * recipes) grouped by file, the configs of its glyphs, sounds and paintings, its armor sets (equipments.yml), its
- * folders as categories (categories.yml, when the project setting is on) and its lang files.
+ * folders as categories (categories.yml, when the project setting is on), its lang files and its loot sources
+ * (loot_sources.yml).
  */
 import { createIssue, groupBy, type Issue, type IssueCode, type IssueLevel, type MessageArgs } from '@resourcepackbuilder/utils';
 import { formatResourceLocation } from '@resourcepackbuilder/minecraft';
@@ -10,6 +11,7 @@ import {
   craftEngineGlyphs,
   craftEngineLang,
   craftEngineJukeboxSong,
+  craftEngineLootSources,
   craftEnginePainting,
   craftEngineSound,
   type CraftEngineSections,
@@ -24,7 +26,7 @@ import type { FileContent, ItemPlan } from '../../types';
 import type { TargetPluginFiles } from '../types';
 import { exportPackName } from '../../paths';
 import { CRAFT_ENGINE_RESERVED_PACK_NAME, craftEngineConfigFile, craftEngineMediaFile, packYmlFile } from './layout';
-import { blockProjectIssues } from './validate';
+import { blockProjectIssues, lootSourceIssues } from './validate';
 
 export function planCraftEnginePluginFiles(project: Project, plans: ItemPlan[], writer: PackWriter, issues: Issue[]): TargetPluginFiles {
   const pluginFiles = new Map<string, FileContent>([[packYmlFile(project), buildPackYml(project)]]);
@@ -43,7 +45,14 @@ export function planCraftEnginePluginFiles(project: Project, plans: ItemPlan[], 
       plans.map((p) => p.item),
     ),
   );
-  issues.push(...blockProjectIssues(project));
+  issues.push(...blockProjectIssues(project), ...lootSourceIssues(project));
+  const lootSources = craftEngineLootSources(project);
+  if (Object.keys(lootSources).length > 0) {
+    pluginFiles.set(
+      craftEngineConfigFile(project, 'loot_sources'),
+      sectionsToYaml({ loot_sources: lootSources }, `loot sources of "${project.name}"`),
+    );
+  }
   for (const [path, text] of planMedia(project, writer, issues)) pluginFiles.set(path, text);
   for (const [path, text] of planItemExtras(project, plans)) pluginFiles.set(path, text);
   return { pluginFiles };

@@ -6,8 +6,9 @@
 import { readFileSync } from 'node:fs';
 import { describe, expect, it } from 'vitest';
 import { checkFieldValue, fieldToSchema } from '../../form/fieldSchema';
-import { formMessageKeys } from '../../form/messageKeys';
+import { fieldMessageKeys, formMessageKeys } from '../../form/messageKeys';
 import { CE_LOGIC, logicMessageKeys } from '../logic';
+import { CE_LOOT_SOURCE_LIST } from '../loot';
 import { CRAFT_ENGINE_FORM } from './schema';
 
 type MessageTree = { [key: string]: string | MessageTree };
@@ -36,10 +37,17 @@ function leafKeys(tree: MessageTree, prefix = ''): string[] {
 const configPaths = CRAFT_ENGINE_FORM.properties.flatMap((p) => (p.storage === 'config' ? [p.path.join('.')] : []));
 
 describe('CraftEngine form', () => {
-  it('uses the ceSchema namespace and shows data, settings and events as tabs', () => {
+  it('uses the ceSchema namespace and shows data, settings, events and loot as tabs', () => {
     expect(CRAFT_ENGINE_FORM.target).toBe('craftengine');
     expect(CRAFT_ENGINE_FORM.messages).toBe('ceSchema');
-    expect(CRAFT_ENGINE_FORM.tabs.map((tab) => tab.id)).toEqual(['data', 'settings', 'events']);
+    expect(CRAFT_ENGINE_FORM.tabs.map((tab) => tab.id)).toEqual(['data', 'settings', 'events', 'loot']);
+  });
+
+  it('shows the loot of the block or the furniture the item places', () => {
+    const loot = CRAFT_ENGINE_FORM.tabs.find((tab) => tab.id === 'loot')!;
+    expect(loot.only?.({ material: 'paper' })).toEqual([]);
+    expect(loot.only?.({ block: { loot: { template: 'default:loot_table/self' } } })).toEqual(['block.loot']);
+    expect(loot.only?.({ furniture: {} })).toEqual(['furniture.loot']);
   });
 
   it('stores every property in the config at its own path, except the armor and the translations on the item', () => {
@@ -77,8 +85,12 @@ describe('CraftEngine form', () => {
 });
 
 describe('ceSchema message keys', () => {
-  // The logic catalogs (conditions, functions …) keep their texts in the same catalogue
-  const keys = new Set([...formMessageKeys(CRAFT_ENGINE_FORM), ...Object.values(CE_LOGIC).flatMap((types) => logicMessageKeys(types))]);
+  // The logic catalogs (conditions, functions …) and the project's loot sources keep their texts in the same catalogue
+  const keys = new Set([
+    ...formMessageKeys(CRAFT_ENGINE_FORM),
+    ...Object.values(CE_LOGIC).flatMap((types) => logicMessageKeys(types)),
+    ...fieldMessageKeys(CE_LOOT_SOURCE_LIST),
+  ]);
 
   it('references only keys that are well-formed', () => {
     expect([...keys].filter((k) => !/^[A-Za-z0-9]+(\.[A-Za-z0-9]+)+$/.test(k))).toEqual([]);

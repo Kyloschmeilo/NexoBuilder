@@ -13,6 +13,7 @@ const WIDE_TYPES = new Set<Field['type']>([
   'texture',
   'presence',
   'typedList',
+  'choice',
 ]);
 
 /** Whether a field takes the full width of the form (lists, objects, multiline text…). */

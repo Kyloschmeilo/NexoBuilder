@@ -26,6 +26,7 @@ import {
   validateCraftEngineEvents,
   validateCraftEngineFurniture,
   validateCraftEngineItem,
+  validateCraftEngineLoot,
 } from './validate';
 import { writeCraftEngineVariants } from './variants';
 
@@ -91,10 +92,12 @@ function buildItem(itemExport: ItemExport, written: CraftEngineWrittenModels, sh
   if (built.furniture) {
     validateCraftEngineFurniture(itemExport, built.furniture, built.config);
     validateCraftEngineEvents(itemExport, 'furniture', built.furniture);
+    validateCraftEngineLoot(itemExport, 'furniture', built.furniture);
     sections.furniture = { [key]: built.furniture };
   } else if (built.block) {
     validateCraftEngineBlock(itemExport, built.block, built.blockModel);
     validateCraftEngineEvents(itemExport, 'block', built.block);
+    validateCraftEngineLoot(itemExport, 'block', built.block);
     sections.blocks = { [key]: built.block };
   }
   const { recipes, unsupported } = craftEngineRecipes(project, item);

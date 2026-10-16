@@ -60,6 +60,8 @@ function sample(field: Field): unknown {
       return [{ type: 'has_player' }];
     case 'numberProvider':
       return { type: 'uniform', min: 1, max: '2~3' };
+    case 'choice':
+      return { template: 'default:loot_table/basic', arguments: { item: 'minecraft:stone' } };
   }
 }
 
@@ -76,7 +78,7 @@ function pruned(field: Field, value: unknown): unknown {
 describe('the logic catalogs', () => {
   it('have the types of the plugin registries', () => {
     const counts = Object.fromEntries(Object.entries(CE_LOGIC).map(([name, types]) => [name, types.length]));
-    expect(counts).toEqual({ conditions: 37, functions: 55, numbers: 13, triggers: 12, lootSources: 12 });
+    expect(counts).toEqual({ conditions: 37, functions: 55, numbers: 13, triggers: 12, lootSources: 12, lootEntries: 8, lootFunctions: 6 });
   });
 
   for (const [name, types] of Object.entries(CE_LOGIC)) {
@@ -100,7 +102,7 @@ describe('the logic catalogs', () => {
 });
 
 describe('typedList', () => {
-  const typedCatalogs = ['conditions', 'functions', 'numbers', 'lootSources'] as const;
+  const typedCatalogs = ['conditions', 'functions', 'numbers', 'lootSources', 'lootEntries', 'lootFunctions'] as const;
   for (const catalog of typedCatalogs) {
     it.each(CE_LOGIC[catalog].map((t: LogicType) => [t.type, t]))(`round-trips a sample ${catalog} entry: %s`, (type, t) => {
       const entry = { type, ...sampleObject((t as LogicType).fields) };

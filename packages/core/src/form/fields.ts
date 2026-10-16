@@ -157,6 +157,29 @@ export interface NumberProviderField extends BaseField {
   types: () => readonly TypedType[];
 }
 
+/** One form a {@link ChoiceField}'s value can take, with the field that edits it. */
+export interface ChoiceOption {
+  id: string;
+  /** Name of the form – message key in the form's namespace */
+  label: string;
+  /** The field that edits a value of this form */
+  field: Field;
+  /** Whether a value has this form */
+  matches: (value: unknown) => boolean;
+  /** The value a switch to this form starts with */
+  newValue: () => unknown;
+}
+
+/**
+ * A value that takes one of several forms, each edited by its own field (e.g. a CraftEngine loot table: a template
+ * with arguments, a table of pools, or the id of another table). The first choice whose `matches` holds edits and
+ * checks the value; a value no choice matches is kept unchanged.
+ */
+export interface ChoiceField extends BaseField {
+  type: 'choice';
+  choices: ChoiceOption[];
+}
+
 export type Field =
   | TextField
   | NumberField
@@ -171,7 +194,13 @@ export type Field =
   | PresenceField
   | TextureField
   | TypedListField
-  | NumberProviderField;
+  | NumberProviderField
+  | ChoiceField;
+
+/** The choice whose form a value has, if any. */
+export function findChoice(field: ChoiceField, value: unknown): ChoiceOption | undefined {
+  return field.choices.find((choice) => choice.matches(value));
+}
 
 /** The type an entry's `type` value names (a leading "!" inverts it when `invertible`), if the catalog knows it. */
 export function findTypedType(field: { types: () => readonly TypedType[]; invertible?: boolean }, entry: unknown): TypedType | undefined {

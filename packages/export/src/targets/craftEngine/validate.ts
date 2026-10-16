@@ -1,5 +1,13 @@
 /** Checks of a CraftEngine item config (the shared property checks run over CraftEngine's form) and of its block. */
-import { createIssue, isPlainObject, type Issue } from '@resourcepackbuilder/utils';
+import {
+  createIssue,
+  isPlainObject,
+  type Issue,
+  type IssueContext,
+  issueCode,
+  issueReporter,
+  type MessageArgs,
+} from '@resourcepackbuilder/utils';
 import {
   autoStateOverruns,
   autoStateGroupOf,
@@ -16,6 +24,12 @@ import {
   CE_FURNITURE_ELEMENT_TYPES,
   CE_FURNITURE_HITBOX_TYPES,
   CE_FURNITURE_ROTATIONS,
+  CE_LOOT_ENTRIES,
+  CE_LOOT_FUNCTIONS,
+  CE_LOOT_PROPERTIES,
+  CE_LOOT_PROPERTY_IDS,
+  CE_LOOT_SOURCE_LIST,
+  CE_LOOT_SOURCES,
   CE_MODEL_KEYS,
   CE_PROPERTIES,
   type CraftEngineBlockModel,
@@ -25,12 +39,14 @@ import {
   furnitureVariants,
   isTransparentState,
   type LogicObjectKind,
+  lootSourceKey,
   type LogicType,
   missingBehaviorProperties,
   parseCeRotation,
   parseCeVector,
   parseFurnitureSeat,
   parseVariantKey,
+  projectLootSources,
   propertyValues,
   rendererElements,
   requiredElementKey,
@@ -44,7 +60,7 @@ import {
   variantList,
 } from '@resourcepackbuilder/core/craftEngine';
 import { checkFieldValue } from '@resourcepackbuilder/core/form';
-import { listEntryFrame, propertyFrame, type Project } from '@resourcepackbuilder/core/project';
+import { listEntryFrame, lootSourceFrame, propertyFrame, type Project } from '@resourcepackbuilder/core/project';
 import { ITEM_ID_PATTERN } from '@resourcepackbuilder/minecraft';
 import type { ItemExport } from '../../types';
 import { validateProperties } from '../../validate/itemConfig';
@@ -139,6 +155,95 @@ export function validateCraftEngineEvents(itemExport: ItemExport, kind: LogicObj
     }
   });
   for (const found of checkFieldValue(events, def.field)) report('warning', found.code, found.args, [frame, ...found.context]);
+}
+
+/** An issue of a loot table's types (it has no place of its own: the caller names the table) */
+interface LootTypeIssue {
+  code: string;
+  args: MessageArgs;
+}
+
+/**
+ * Entry, loot function and condition types of a loot table that CraftEngine does not know (it then drops the whole
+ * table), in its pools, their entries (and the children of `alternatives`) and its functions. Parts that use a
+ * template, and a table given by template or id, are not checked.
+ */
+export function lootTypeIssues(loot: unknown): LootTypeIssue[] {
+  const issues: LootTypeIssue[] = [];
+  const own = (value: unknown) =>
+    asList(value)
+      .filter(isPlainObject)
+      .filter((entry) => entry.template === undefined);
+  const check = (types: readonly LogicType[], code: string, entry: Record<string, unknown>) => {
+    if (!knownType(types, entry)) issues.push({ code, args: { type: String(entry.type ?? '') } });
+  };
+  const conditions = (value: unknown) => own(value).forEach((c) => check(CE_CONDITIONS, 'ce.lootConditionUnknown', c));
+  const functions = (value: unknown) =>
+    own(value).forEach((fn) => {
+      check(CE_LOOT_FUNCTIONS, 'ce.lootFunctionUnknown', fn);
+      conditions(fn.conditions ?? fn.condition);
+    });
+  const entries = (value: unknown) =>
+    own(value).forEach((entry) => {
+      check(CE_LOOT_ENTRIES, 'ce.lootEntryUnknown', entry);
+      conditions(entry.conditions ?? entry.condition);
+      functions(entry.functions);
+      entries(entry.children);
+    });
+  if (!isPlainObject(loot) || loot.template !== undefined) return issues;
+  for (const pool of own(loot.pools)) {
+    conditions(pool.conditions ?? pool.condition);
+    entries(pool.entries);
+    functions(pool.functions);
+  }
+  functions(loot.functions);
+  return issues;
+}
+
+/** The loot of a block or furniture as the export writes it (with that of the additional YAML): its types. */
+export function validateCraftEngineLoot(itemExport: ItemExport, kind: 'block' | 'furniture', definition: Record<string, unknown>): void {
+  const def = CE_LOOT_PROPERTIES.find((p) => p.id === CE_LOOT_PROPERTY_IDS[kind]);
+  const loot = definition.loot ?? definition.loots;
+  if (!def || loot === undefined) return;
+  for (const { code, args } of lootTypeIssues(loot)) itemExport.report('warning', code, args, [propertyFrame(def.label)]);
+}
+
+/** Loot source types CraftEngine still reads under their old names */
+const LOOT_SOURCE_ALIASES: Record<string, string> = { block: 'block_break', entity: 'entity_death', shear_block: 'block_shear' };
+
+/**
+ * The project's loot sources: each needs an id of its own, a type CraftEngine knows (with a target only where the type
+ * takes one) and loot; the values of its fields are checked through the catalog, the types of its loot table too.
+ */
+export function lootSourceIssues(project: Project): Issue[] {
+  const issues: Issue[] = [];
+  const keys = new Set<string>();
+  projectLootSources(project).forEach((source, i) => {
+    const id = typeof source.id === 'string' ? source.id.trim() : '';
+    const frames: IssueContext[] = id ? [lootSourceFrame(id)] : [listEntryFrame(i + 1)];
+    const report = issueReporter(issues, { context: frames });
+    if (!id) report('error', 'ce.lootSourceIdMissing');
+    else {
+      const key = lootSourceKey(project, id);
+      if (keys.has(key)) report('error', 'ce.lootSourceIdDuplicate', { id: key });
+      keys.add(key);
+    }
+    const typeName = typeof source.type === 'string' ? source.type.replace(/^craftengine:/, '') : '';
+    const type = CE_LOOT_SOURCES.find((t) => t.type === (LOOT_SOURCE_ALIASES[typeName] ?? typeName));
+    if (!type) report('error', 'ce.lootSourceTypeUnknown', { type: typeName });
+    const target = source.target ?? source.targets;
+    if (type && target !== undefined && !type.fields.some((f) => f.key === 'target')) {
+      report('error', 'ce.lootSourceTargetNotAllowed', { type: type.type });
+    }
+    const loot = source.loot ?? source.loots;
+    if (loot === undefined || loot === null || loot === '') report('error', 'ce.lootSourceLootMissing');
+    // The frame of the list entry is replaced by that of the source
+    for (const found of checkFieldValue([source], CE_LOOT_SOURCE_LIST)) {
+      report('warning', issueCode(found.code), found.args, found.context.slice(1));
+    }
+    for (const { code, args } of lootTypeIssues(loot)) report('warning', issueCode(code), args);
+  });
+  return issues;
 }
 
 /**

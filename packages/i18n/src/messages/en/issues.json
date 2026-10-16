@@ -14,7 +14,8 @@
     "mapKey": "{key}",
     "variant": "{variant}",
     "variantModel": "{variant} ({suffix})",
-    "armorLayer": "{layer}"
+    "armorLayer": "{layer}",
+    "lootSource": "Loot source “{id}”"
   },
   "plan": {
     "missingModel": "No model – the item uses the look of its base material.",
@@ -254,7 +255,15 @@
     "eventTriggerNotForFurniture": "Furniture never fires the trigger “{trigger}”, so the event never runs. Furniture fires: {triggers}.",
     "eventNoFunctions": "The event has no functions, so it does nothing.",
     "eventFunctionUnknown": "The function type “{type}” is unknown. CraftEngine skips the event unless an add-on registers it.",
-    "eventConditionUnknown": "The condition type “{type}” is unknown. CraftEngine skips the event unless an add-on registers it."
+    "eventConditionUnknown": "The condition type “{type}” is unknown. CraftEngine skips the event unless an add-on registers it.",
+    "lootEntryUnknown": "The loot entry type “{type}” is unknown. CraftEngine skips the whole loot table unless an add-on registers it.",
+    "lootFunctionUnknown": "The loot function type “{type}” is unknown. CraftEngine skips the whole loot table unless an add-on registers it.",
+    "lootConditionUnknown": "The condition type “{type}” is unknown. CraftEngine skips the whole loot table unless an add-on registers it.",
+    "lootSourceIdMissing": "The loot source has no id, so it is left out.",
+    "lootSourceIdDuplicate": "Another loot source already uses the id “{id}”, so this one is left out.",
+    "lootSourceTypeUnknown": "CraftEngine does not know the loot source type “{type}”.",
+    "lootSourceTargetNotAllowed": "The loot source type {type} takes no target. CraftEngine rejects the loot source.",
+    "lootSourceLootMissing": "The loot source has no loot."
   },
   "issueList": {
     "openItem": "Go to item",

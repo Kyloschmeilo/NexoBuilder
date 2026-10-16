@@ -11,7 +11,7 @@ import { type FieldSpecs, resolveFields } from '../../form/build';
 import type { Field, TypedType } from '../../form/fields';
 import { fieldMessageKeys } from '../../form/messageKeys';
 
-export type LogicCatalogName = 'conditions' | 'functions' | 'numbers' | 'triggers' | 'lootSources';
+export type LogicCatalogName = 'conditions' | 'functions' | 'numbers' | 'triggers' | 'lootSources' | 'lootEntries' | 'lootFunctions';
 
 /** The objects that fire events (and so have event triggers) */
 export type LogicObjectKind = 'item' | 'block' | 'furniture';
@@ -34,10 +34,13 @@ export interface LogicType extends TypedType {
 }
 
 /** Shows each field (and the fields nested in it) under its YAML key. */
-function withKeyNames(fields: Field[]): Field[] {
+export function withKeyNames(fields: Field[]): Field[] {
   return fields.map((f) => {
     const named = f.key && f.key !== '*' ? { ...f, name: f.key } : f;
     if (named.type === 'object' || named.type === 'objectList') return { ...named, fields: withKeyNames(named.fields) };
+    if (named.type === 'choice') {
+      return { ...named, choices: named.choices.map((choice) => ({ ...choice, field: withKeyNames([choice.field])[0] })) };
+    }
     return named;
   });
 }

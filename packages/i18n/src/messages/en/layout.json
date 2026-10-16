@@ -71,6 +71,10 @@
       "paintings": {
         "label": "Paintings",
         "hint": "Paintings: custom paintings to hang up"
+      },
+      "lootSources": {
+        "label": "Loot sources",
+        "hint": "Loot sources: extra loot for vanilla blocks, mobs, chests and fishing"
       }
     },
     "testServer": {

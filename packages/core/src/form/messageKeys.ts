@@ -26,6 +26,9 @@ export function fieldMessageKeys(field: Field): string[] {
       keys.push(field.keyLabel, ...optionMessageKeys(field.keyOptions), ...fieldMessageKeys(field.value));
       if (field.keyPlaceholder) keys.push(field.keyPlaceholder);
       break;
+    case 'choice':
+      keys.push(...field.choices.flatMap((choice) => [choice.label, ...fieldMessageKeys(choice.field)]));
+      break;
   }
   return keys;
 }

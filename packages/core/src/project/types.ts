@@ -73,6 +73,12 @@ export interface ProjectSettings {
   ceCategoriesFromFolders: boolean;
 }
 
+/** Project-wide CraftEngine configuration, written to the pack's configuration folder */
+export interface CraftEngineProjectData {
+  /** The loot sources (`loot_sources`), each a config with its `id` (core/craftEngine/loot.ts) */
+  lootSources?: ConfigObject[];
+}
+
 export interface Project {
   /** Version of the data format for future migrations */
   formatVersion: 1;
@@ -91,6 +97,8 @@ export interface Project {
   sounds: Sound[];
   /** Custom paintings (plugins/Nexo/paintings.yml + texture in the pack) */
   paintings: Painting[];
+  /** Project-wide CraftEngine configuration; only CraftEngine projects have it */
+  craftEngine?: CraftEngineProjectData;
   createdAt: number;
   updatedAt: number;
 }

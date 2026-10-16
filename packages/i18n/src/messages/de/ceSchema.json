@@ -23,6 +23,10 @@
     "events": {
       "label": "Events",
       "description": "Was das Item, sein Block oder sein Möbel bei einem Klick, beim Abbauen und mehr tut"
+    },
+    "loot": {
+      "label": "Loot",
+      "description": "Was der Block oder das Möbelstück beim Abbauen fallen lässt"
     }
   },
   "properties": {
@@ -881,10 +885,7 @@
     },
     "blockLoot": {
       "label": "Loot",
-      "description": "Was der Block beim Abbauen fallen lässt. default:loot_table/self lässt den Block selbst fallen. Ohne Loot fällt nichts.",
-      "field": {
-        "label": "Loot-Tabelle (YAML)"
-      }
+      "description": "Was der Block beim Abbauen fallen lässt. default:loot_table/self lässt den Block selbst fallen. Ohne Loot lässt der Block nichts fallen."
     },
     "blockStatesArgumentsSlabBaseBlock": {
       "label": "Vanilla-Stufe",
@@ -1133,6 +1134,10 @@
     "furnitureEvents": {
       "label": "Furniture Events",
       "description": "Funktionen, die das platzierte Möbel ausführt, wenn man es anklickt, platziert oder abbaut."
+    },
+    "furnitureLoot": {
+      "label": "Loot",
+      "description": "Was das Möbelstück beim Abbauen fallen lässt. default:loot_table/furniture lässt das Item fallen, mit dem es platziert wurde. Ohne Loot lässt es nichts fallen."
     }
   },
   "recipes": {
@@ -1955,10 +1960,6 @@
         "label": "drop_loot",
         "help": "Lässt Beute an einer Position fallen.",
         "fields": {
-          "loot": {
-            "label": "loot",
-            "help": "Eine Beutetabelle (YAML) oder ihre ID."
-          },
           "toInventory": {
             "label": "to_inventory"
           },
@@ -2421,9 +2422,78 @@
         "label": "overwrite",
         "help": "Was aus dem Vanilla-Ergebnis entfernt wird: items, experience, all oder none (Standard: deine Beute kommt dazu)."
       },
-      "loot": {
+      "lootTable": {
         "label": "loot",
-        "help": "Eine Beutetabelle (YAML) oder ihre ID."
+        "help": "Eine Loot-Vorlage mit ihren Argumenten, eine eigene Loot-Tabelle oder die ID einer anderen Loot-Tabelle.",
+        "choices": {
+          "template": {
+            "label": "Vorlage",
+            "field": {
+              "fields": {
+                "template": {
+                  "label": "template",
+                  "help": "Eine Loot-Vorlage von CraftEngine oder eines anderen Packs. default:loot_table/self lässt den Block selbst fallen."
+                },
+                "arguments": {
+                  "label": "arguments",
+                  "help": "Die Werte, die die Vorlage einsetzt, etwa item oder count.",
+                  "keyLabel": "Argument",
+                  "keyPlaceholder": "item",
+                  "value": {
+                    "label": "Wert"
+                  }
+                }
+              }
+            }
+          },
+          "table": {
+            "label": "Loot-Tabelle",
+            "field": {
+              "fields": {
+                "pools": {
+                  "label": "pools",
+                  "itemLabel": "Pool",
+                  "fields": {
+                    "rolls": {
+                      "label": "rolls"
+                    },
+                    "bonusRolls": {
+                      "label": "bonus_rolls",
+                      "help": "Zusätzliche Würfe pro Glückspunkt."
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "reference": {
+            "label": "ID",
+            "field": {
+              "label": "ID der Loot-Tabelle",
+              "placeholder": "minecraft:chests/simple_dungeon"
+            }
+          }
+        }
+      },
+      "lootEntries": {
+        "label": "entries"
+      },
+      "lootFunctions": {
+        "label": "functions",
+        "help": "Ändern die fallen gelassenen Items, in dieser Reihenfolge."
+      },
+      "lootSourceId": {
+        "label": "id",
+        "help": "Die ID der Loot-Quelle. Ohne Namespace bekommt sie den Namespace des Projekts.",
+        "placeholder": "example:extra_drops"
+      },
+      "weight": {
+        "label": "weight",
+        "help": "Wie oft dieser Eintrag unter den anderen seines Pools gewählt wird (Standard 1)."
+      },
+      "quality": {
+        "label": "quality",
+        "help": "Wie viel jeder Glückspunkt zum Gewicht addiert."
       }
     },
     "numbers": {
@@ -2726,6 +2796,140 @@
         "label": "advancement",
         "help": "Ein Spieler schließt einen Fortschritt ab; die Beute geht ins Inventar. Ziel: Fortschritts-IDs."
       }
+    },
+    "lootEntries": {
+      "item": {
+        "label": "item",
+        "help": "Lässt ein Item fallen.",
+        "fields": {
+          "item": {
+            "label": "item"
+          }
+        }
+      },
+      "furnitureItem": {
+        "label": "furniture_item",
+        "help": "Lässt das Item fallen, mit dem das Möbelstück platziert wurde.",
+        "fields": {
+          "item": {
+            "label": "item",
+            "help": "Das Item, das fällt, wenn das Möbelstück kein eigenes Item hat."
+          }
+        }
+      },
+      "exp": {
+        "label": "exp",
+        "help": "Lässt Erfahrung fallen.",
+        "fields": {
+          "count": {
+            "label": "count"
+          }
+        }
+      },
+      "empty": {
+        "label": "empty",
+        "help": "Lässt nichts fallen. Damit können die anderen Einträge auch leer ausgehen."
+      },
+      "function": {
+        "label": "function",
+        "help": "Führt Funktionen aus, statt ein Item fallen zu lassen.",
+        "fields": {
+          "run": {
+            "label": "run"
+          }
+        }
+      },
+      "lootTable": {
+        "label": "loot_table",
+        "help": "Lässt den Loot einer anderen Loot-Tabelle fallen.",
+        "fields": {
+          "id": {
+            "label": "id"
+          }
+        }
+      },
+      "alternatives": {
+        "label": "alternatives",
+        "help": "Lässt das erste Kind fallen, dessen Bedingungen erfüllt sind."
+      },
+      "ifElse": {
+        "label": "if_else",
+        "help": "Lässt das erste Kind fallen, dessen Bedingungen erfüllt sind (ein zweiter Name von alternatives)."
+      }
+    },
+    "lootFunctions": {
+      "setCount": {
+        "label": "set_count",
+        "help": "Setzt die Anzahl der Items.",
+        "fields": {
+          "count": {
+            "label": "count"
+          }
+        }
+      },
+      "applyBonus": {
+        "label": "apply_bonus",
+        "help": "Fügt pro Stufe einer Verzauberung wie Glück Items hinzu.",
+        "fields": {
+          "enchantment": {
+            "label": "enchantment"
+          },
+          "formula": {
+            "label": "formula",
+            "help": "Wie die Stufe zu zusätzlichen Items wird.",
+            "fields": {
+              "type": {
+                "label": "type",
+                "help": "ore_drops: wie bei Vanilla-Erzen. binomial_with_bonus_count: wie bei Vanilla-Pflanzen."
+              },
+              "extra": {
+                "label": "extra"
+              },
+              "probability": {
+                "label": "probability"
+              }
+            }
+          }
+        }
+      },
+      "explosionDecay": {
+        "label": "explosion_decay",
+        "help": "Lässt eine Explosion einen Teil der Items zerstören."
+      },
+      "limitCount": {
+        "label": "limit_count",
+        "help": "Hält die Anzahl der Items zwischen min und max.",
+        "fields": {
+          "min": {
+            "label": "min"
+          },
+          "max": {
+            "label": "max"
+          }
+        }
+      },
+      "dropExp": {
+        "label": "drop_exp",
+        "help": "Lässt zusätzlich Erfahrung fallen.",
+        "fields": {
+          "count": {
+            "label": "count"
+          }
+        }
+      },
+      "applyData": {
+        "label": "apply_data",
+        "help": "Ändert die Daten der Items.",
+        "fields": {
+          "data": {
+            "label": "data",
+            "help": "Item-Daten als YAML, wie die Daten eines Items."
+          }
+        }
+      }
     }
+  },
+  "lootSources": {
+    "label": "loot_sources"
   }
 }

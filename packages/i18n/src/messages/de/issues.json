@@ -14,7 +14,8 @@
     "mapKey": "{key}",
     "variant": "{variant}",
     "variantModel": "{variant} ({suffix})",
-    "armorLayer": "{layer}"
+    "armorLayer": "{layer}",
+    "lootSource": "Loot-Quelle „{id}“"
   },
   "plan": {
     "missingModel": "Kein Modell – das Item nutzt das Aussehen des Basis-Materials.",
@@ -254,7 +255,15 @@
     "eventTriggerNotForFurniture": "Möbel lösen „{trigger}“ nie aus, das Event läuft also nie. Möbel lösen aus: {triggers}.",
     "eventNoFunctions": "Das Event hat keine Funktionen und tut daher nichts.",
     "eventFunctionUnknown": "Der Funktionstyp „{type}“ ist unbekannt. CraftEngine überspringt das Event, wenn kein Add-on ihn registriert.",
-    "eventConditionUnknown": "Der Bedingungstyp „{type}“ ist unbekannt. CraftEngine überspringt das Event, wenn kein Add-on ihn registriert."
+    "eventConditionUnknown": "Der Bedingungstyp „{type}“ ist unbekannt. CraftEngine überspringt das Event, wenn kein Add-on ihn registriert.",
+    "lootEntryUnknown": "Der Loot-Eintragstyp „{type}“ ist unbekannt. CraftEngine überspringt die ganze Loot-Tabelle, außer ein Add-on registriert ihn.",
+    "lootFunctionUnknown": "Der Loot-Funktionstyp „{type}“ ist unbekannt. CraftEngine überspringt die ganze Loot-Tabelle, außer ein Add-on registriert ihn.",
+    "lootConditionUnknown": "Der Bedingungstyp „{type}“ ist unbekannt. CraftEngine überspringt die ganze Loot-Tabelle, außer ein Add-on registriert ihn.",
+    "lootSourceIdMissing": "Die Loot-Quelle hat keine ID und wird deshalb weggelassen.",
+    "lootSourceIdDuplicate": "Eine andere Loot-Quelle nutzt schon die ID „{id}“, deshalb wird diese weggelassen.",
+    "lootSourceTypeUnknown": "CraftEngine kennt den Loot-Quellentyp „{type}“ nicht.",
+    "lootSourceTargetNotAllowed": "Der Loot-Quellentyp {type} nimmt kein Ziel. CraftEngine lehnt die Loot-Quelle ab.",
+    "lootSourceLootMissing": "Die Loot-Quelle hat keinen Loot."
   },
   "issueList": {
     "openItem": "Zum Item",

@@ -6,6 +6,7 @@
 import type { ComponentType } from 'react';
 import type { Field } from '@resourcepackbuilder/core/form';
 import { BooleanEditor } from './editors/BooleanEditor';
+import { ChoiceEditor } from './editors/ChoiceEditor';
 import { MapEditor } from './editors/MapEditor';
 import { MultiSelectEditor } from './editors/MultiSelectEditor';
 import { NumberProviderEditor } from './editors/NumberProviderEditor';
@@ -39,6 +40,7 @@ const EDITORS: { [T in keyof FieldByType]: ComponentType<EditorProps<FieldByType
   texture: TextureEditor,
   typedList: TypedListEditor,
   numberProvider: NumberProviderEditor,
+  choice: ChoiceEditor,
 };
 
 function Editor<T extends keyof FieldByType>(props: EditorProps<FieldByType[T]> & { field: { type: T } }) {

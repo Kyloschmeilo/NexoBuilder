@@ -16,6 +16,7 @@ export interface CraftEngineSections {
   categories?: Record<string, Record<string, unknown>>;
   /** Locale → lang key → text */
   lang?: Record<string, Record<string, unknown>>;
+  loot_sources?: Record<string, Record<string, unknown>>;
 }
 
 const SECTION_ORDER: Array<keyof CraftEngineSections> = [
@@ -31,6 +32,7 @@ const SECTION_ORDER: Array<keyof CraftEngineSections> = [
   'equipments',
   'categories',
   'lang',
+  'loot_sources',
 ];
 
 /** Writes the non-empty sections, separated by a blank line, with an optional header comment. */

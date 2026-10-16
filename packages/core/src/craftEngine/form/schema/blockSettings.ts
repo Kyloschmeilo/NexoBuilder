@@ -8,8 +8,8 @@ const percent = () => field.number({ integer: true, min: 0, max: 100 });
 
 /**
  * The block settings (`block.settings`, stable and unstable keys of the wiki, checked against the plugin's
- * BlockSettingsModifiers) and the block's drops (`block.loot`). Shown in the Block section of the model tab, only
- * while the item is a block, so adding one never turns an item into a block.
+ * BlockSettingsModifiers). Shown in the Block section of the model tab, only while the item is a block, so adding one
+ * never turns an item into a block. The block's drops (`block.loot`) are on the Loot tab (schema/loot.ts).
  */
 const SETTINGS: Record<string, PropertySpec> = {
   'block.settings.hardness': { field: field.number({ min: 0, step: 0.1 }), defaultValue: () => 2 },
@@ -57,7 +57,4 @@ const SETTINGS: Record<string, PropertySpec> = {
   'block.settings.support_shape': { field: field.text({ format: 'resource', placeholder: true }), defaultValue: () => 'minecraft:stone' },
 };
 
-export const CE_BLOCK_SETTINGS_PROPERTIES = properties('blockSettings', {
-  ...withDocs(CE_DOCS.blockSettings, SETTINGS),
-  'block.loot': { field: field.yaml(), defaultValue: () => ({ template: 'default:loot_table/self' }), docs: CE_DOCS.loot },
-});
+export const CE_BLOCK_SETTINGS_PROPERTIES = properties('blockSettings', withDocs(CE_DOCS.blockSettings, SETTINGS));

@@ -2,7 +2,7 @@
 import { isPlainObject, mapData } from '@resourcepackbuilder/utils';
 import type { ConfigObject, ConfigValue } from '../project/types';
 import { getPath, setPath } from '../project/config';
-import { type Field, findTypedType } from './fields';
+import { type Field, findChoice, findTypedType } from './fields';
 import { BooleanValue, NumberValue } from './fieldSchema';
 import { unknownConfigPaths } from './properties';
 import type { FormSchema } from './types';
@@ -26,6 +26,11 @@ export function cleanConfig(schema: FormSchema, source: ConfigObject): ConfigObj
     if (pruned !== undefined) setPath(cleaned, path, pruned as ConfigValue);
   }
   return cleaned;
+}
+
+/** A value without its empty parts, by its field (as the export writes it); undefined if nothing is left. */
+export function pruneValue(value: unknown, field: Field): unknown {
+  return pruneByField(value, field);
 }
 
 function isEmptyString(v: unknown): boolean {
@@ -105,6 +110,10 @@ function pruneByField(value: unknown, field: Field): unknown {
     case 'numberProvider':
       if (typeof value === 'string') return isEmptyString(value) ? undefined : (NumberValue.safeParse(value).data ?? value);
       return isPlainObject(value) ? pruneTypedEntry(value, field) : value;
+    case 'choice': {
+      const choice = findChoice(field, value);
+      return choice ? pruneByField(value, choice.field) : pruneGeneric(value);
+    }
     case 'map': {
       if (!isPlainObject(value)) return undefined;
       const out: Record<string, unknown> = {};

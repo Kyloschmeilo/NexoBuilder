@@ -7,7 +7,7 @@
 import { field, type FieldSpecs } from '../../form/build';
 import { plainOptions } from '../../form/options';
 import { logicCatalog, type LogicTypeSpec } from './catalog';
-import { equipmentSlot, functionList, gate, hand, numberProvider, placement, playerTarget, position, resource } from './shared';
+import { equipmentSlot, functionList, gate, hand, lootTable, numberProvider, placement, playerTarget, position, resource } from './shared';
 
 const text = () => field.text({ format: 'minimessage' });
 const add = () => field.boolean({ defaultHint: false, help: true, scope: 'logic.shared.add' });
@@ -92,7 +92,7 @@ export const CE_FUNCTIONS = logicCatalog('functions', [
   fn('set_count', { count: numberProvider(), add: add() }),
   fn('damage_item', { amount: numberProvider(), slot: equipmentSlot() }),
   fn('clear_item', { item: resource(), count: numberProvider() }),
-  fn('drop_loot', { loot: field.yaml({ help: true }), to_inventory: field.boolean(), ...position() }),
+  fn('drop_loot', { loot: lootTable(), to_inventory: field.boolean(), ...position() }),
   fn('cancel_event'),
   fn('run', { functions: functionList(), delay: numberProvider() }),
   fn('if_else', { rules: branches() }),

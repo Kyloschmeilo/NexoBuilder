@@ -8,7 +8,7 @@
 import { z } from 'zod';
 import { fieldFrame, listEntryFrame, mapKeyFrame } from '../project/issueFrames';
 import { isPlainObject, labelArg, type IssueContext, type MessageArgs } from '@resourcepackbuilder/utils';
-import { type Field, findTypedType, type TypedType, validateTextFormat } from './fields';
+import { type Field, findChoice, findTypedType, type TypedType, validateTextFormat } from './fields';
 
 const NUMBER_TEXT = /^\s*-?(\d+(\.\d*)?|\.\d+)([eE][-+]?\d+)?\s*$/;
 
@@ -140,6 +140,14 @@ function buildSchema(field: Field): z.ZodType {
     }
     case 'numberProvider':
       return numberProviderSchema(field);
+    case 'choice':
+      // Checked by the field of the value's form, built only when a value needs it (loot tables contain themselves)
+      return z.unknown().superRefine((value, ctx) => {
+        const choice = findChoice(field, value);
+        if (!choice) return;
+        for (const issue of fieldToSchema(choice.field).safeParse(value, { reportInput: true }).error?.issues ?? [])
+          ctx.addIssue({ ...issue });
+      });
     case 'stringList':
     case 'yaml':
     case 'presence':
@@ -169,6 +177,9 @@ function locate(field: Field, path: readonly PropertyKey[], value: unknown): { f
   let data = value;
   for (let i = 0; i < path.length; i++) {
     const segment = path[i];
+    // A choice holds its value in the field of the value's form
+    const choice = current.type === 'choice' ? findChoice(current, data) : undefined;
+    if (choice) current = choice.field;
     if (current.type === 'map') {
       frames.push(mapKeyFrame(String(segment)));
       current = current.value;
@@ -197,7 +208,8 @@ function locate(field: Field, path: readonly PropertyKey[], value: unknown): { f
     current = child;
     data = at(data, path[i]);
   }
-  return { field: current, frames };
+  const choice = current.type === 'choice' ? findChoice(current, data) : undefined;
+  return { field: choice?.field ?? current, frames };
 }
 
 export interface FieldValueIssue {

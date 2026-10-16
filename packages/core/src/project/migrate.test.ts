@@ -159,6 +159,17 @@ describe('migrateProject', () => {
     expect(item.assets).toEqual({ a: { id: 'a', name: '', dataUrl: '', width: 0, height: 0, mcmeta: null } });
   });
 
+  it('keeps the CraftEngine data leniently and leaves it out when there is none', () => {
+    const source = { id: 'a', type: 'block_break', loot: { template: 'default:loot_table/self' } };
+    const stored = (craftEngine: unknown) => migrateProject({ name: 'P', target: 'craftengine', craftEngine });
+    expect(stored({ lootSources: [source, 'nope', null], futureKey: 1 }).craftEngine).toEqual({ lootSources: [source] });
+    expect(stored({ lootSources: 'nope' }).craftEngine).toEqual({ lootSources: [] });
+    for (const craftEngine of [undefined, 'nope', [], {}, { lootSources: undefined }]) {
+      expect(stored(craftEngine)).not.toHaveProperty('craftEngine');
+    }
+    expect(migrateProject({ name: 'Nexo' })).not.toHaveProperty('craftEngine');
+  });
+
   it('refuses data that is no project', () => {
     expect(() => migrateProject('nope')).toThrow(CoreError);
     expect(() => migrateProject({ items: {} })).toThrow('project.noName');
@@ -171,6 +182,8 @@ describe('migrateProject', () => {
     const item = createItem({ displayName: 'Helm', itemId: 'helm', folderId: folder.id, model: null });
     item.armor = { set: 'rund' };
     insertItem(project, item);
+    expect(parseProjectFile(serializeProject(project))).toEqual(project);
+    project.craftEngine = { lootSources: [{ id: 'extra', type: 'fishing', loot: 'minecraft:gameplay/fishing' }] };
     expect(parseProjectFile(serializeProject(project))).toEqual(project);
     expect(() => parseProjectFile('{')).toThrow('project.invalidFile');
     expect(() => parseProjectFile('{"app":"Other"}')).toThrow('project.notProjectFile');

@@ -188,5 +188,11 @@
       "eula": "Ich akzeptiere die <link>Minecraft-EULA</link>",
       "eulaHint": "Ohne Zustimmung darf ein Minecraft-Server nicht gestartet werden."
     }
+  },
+  "lootSources": {
+    "title": "Loot-Quellen",
+    "count": "{count, plural, one {# Loot-Quelle} other {# Loot-Quellen}}",
+    "hint": "Eine Loot-Quelle hängt eine Loot-Tabelle an ein Vanilla-Loot-Ereignis: einen Block abbauen, einen Mob töten, eine Truhe öffnen, angeln und mehr. Mit overwrite ersetzt sie die Vanilla-Items oder die Erfahrung.",
+    "docs": "Loot-Quellen im CraftEngine-Wiki"
   }
 }

@@ -62,6 +62,11 @@ export function listEntryFrame(index: number): IssueContext {
   return { code: 'context.listEntry', args: { index } };
 }
 
+/** A CraftEngine loot source, named by its id. */
+export function lootSourceFrame(id: string): IssueContext {
+  return { code: 'context.lootSource', args: { id: id || '?' } };
+}
+
 export function mapKeyFrame(key: string): IssueContext {
   return { code: 'context.mapKey', args: { key } };
 }

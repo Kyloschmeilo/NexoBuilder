@@ -12,7 +12,7 @@
  * Shared field definitions set an explicit `scope` (e.g. `shared.drop`); explicit keys override single messages.
  */
 import type { ConfigValue } from '../project/types';
-import type { Field, MapField, ObjectField, ObjectListField, TypedType } from './fields';
+import type { ChoiceField, ChoiceOption, Field, MapField, ObjectField, ObjectListField, TypedType } from './fields';
 import { keySegment } from '@resourcepackbuilder/utils';
 import { labeledOptions, type Option } from './options';
 
@@ -68,7 +68,8 @@ export type PropertyDef = ConfigPropertyDef | ItemFieldPropertyDef;
 /* ====================================================================== Field specs */
 
 /** Field properties the builder derives */
-type Derived = 'key' | 'label' | 'help' | 'placeholder' | 'itemLabel' | 'keyLabel' | 'keyPlaceholder' | 'fields' | 'value' | 'options';
+type Derived =
+  'key' | 'label' | 'help' | 'placeholder' | 'itemLabel' | 'keyLabel' | 'keyPlaceholder' | 'fields' | 'value' | 'options' | 'choices';
 
 interface SpecMessages {
   /** Message scope of this field (default: derived from the position) */
@@ -92,6 +93,16 @@ interface MapValueSpec {
   keyPlaceholder?: boolean;
 }
 
+/** One form of a choice field: the field that edits it, and how a value of it is recognized and started */
+export interface ChoiceSpec extends Omit<ChoiceOption, 'id' | 'label' | 'field'> {
+  field: FieldSpec;
+}
+
+interface ChoicesSpec {
+  /** The forms by id, in display order; each is named at `<scope>.choices.<camel(id)>.label` */
+  choices: Record<string, ChoiceSpec>;
+}
+
 interface OptionsSpec {
   /** Option lists, or plain values that get labels at `<scope>.options.<camel(value)>.label` */
   options: Option[] | string[];
@@ -101,7 +112,8 @@ type SpecOf<F extends Field> = Omit<F, Derived> &
   SpecMessages &
   (F extends { fields: Field[] } ? { fields: FieldSpecs } : unknown) &
   (F extends { value: Field } ? MapValueSpec : unknown) &
-  (F extends { options: Option[] } ? OptionsSpec : unknown);
+  (F extends { options: Option[] } ? OptionsSpec : unknown) &
+  (F extends { choices: ChoiceOption[] } ? ChoicesSpec : unknown);
 
 export type FieldSpec = { [T in Field['type']]: SpecOf<Extract<Field, { type: T }>> }[Field['type']];
 
@@ -144,6 +156,11 @@ export const field = {
     types: () => readonly TypedType[],
     rest: SpecOptions<'numberProvider', 'catalog' | 'types'> = {},
   ): SpecFor<'numberProvider'> => ({ type: 'numberProvider', catalog, types, ...rest }),
+  choice: (choices: Record<string, ChoiceSpec>, rest: SpecOptions<'choice', 'choices'> = {}): SpecFor<'choice'> => ({
+    type: 'choice',
+    choices,
+    ...rest,
+  }),
 };
 
 /** Shows a field only while its sibling `type` has one of these values */
@@ -206,6 +223,15 @@ function resolveField(spec: FieldSpec, key: string, defaultScope: string, isMapV
     case 'multiSelect': {
       const { scope, rest, messages } = split(spec, key, defaultScope, isMapValue);
       return { ...rest, ...messages, options: resolveOptions(rest.options, scope) };
+    }
+    case 'choice': {
+      const { scope, rest, messages } = split(spec, key, defaultScope, isMapValue);
+      const choices = Object.entries(rest.choices).map(([id, { field: choiceSpec, ...choice }]): ChoiceOption => {
+        const choiceScope = `${scope}.choices.${keySegment(id)}`;
+        // An object form has no label of its own (the choice names it)
+        return { id, label: `${choiceScope}.label`, field: resolveField(choiceSpec, '', `${choiceScope}.field`, true), ...choice };
+      });
+      return { ...rest, ...messages, choices } satisfies ChoiceField;
     }
     case 'typedList':
     case 'numberProvider': {

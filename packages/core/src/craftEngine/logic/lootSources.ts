@@ -1,15 +1,18 @@
 /**
  * The loot source types (`LootSources`, checked against the plugin's registry; 12). `fishing` and `piglin_barter` take
- * no target. The plugin also reads the old names `block`, `entity` and `shear_block`. `loot` stays YAML until the loot
- * table editor exists. No type is Premium only.
+ * no target. The plugin also reads the old names `block`, `entity` and `shear_block`. No type is Premium only.
+ *
+ * Each type also has the field `id`: ResourcepackBuilder keeps a project's loot sources as a list, and the export
+ * writes each under its id in `loot_sources` (lootSources.ts).
  */
 import { field, type FieldSpecs } from '../../form/build';
 import { logicCatalog, type LogicTypeSpec } from './catalog';
-import { gate } from './shared';
+import { gate, lootTable } from './shared';
 
 /** A loot source type; `targeted`: it applies to the ids in `target` (all when unset) */
 function source(type: string, targeted = true): LogicTypeSpec {
   const fields: FieldSpecs = {
+    id: field.text({ format: 'resource', placeholder: true, help: true, scope: 'logic.shared.lootSourceId' }),
     ...(targeted && {
       target: field.stringList({ format: 'resource', singleAsString: true, scope: 'logic.shared.lootTarget', help: true }),
     }),
@@ -20,7 +23,7 @@ function source(type: string, targeted = true): LogicTypeSpec {
       help: true,
     }),
     conditions: gate(),
-    loot: field.yaml({ scope: 'logic.shared.loot', help: true }),
+    loot: lootTable(),
   };
   return { type, fields };
 }

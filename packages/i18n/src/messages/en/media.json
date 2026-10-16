@@ -188,5 +188,11 @@
       "eula": "I accept the <link>Minecraft EULA</link>",
       "eulaHint": "A Minecraft server may not be started without accepting it."
     }
+  },
+  "lootSources": {
+    "title": "Loot sources",
+    "count": "{count, plural, one {# loot source} other {# loot sources}}",
+    "hint": "A loot source adds a loot table to a vanilla loot event: breaking a block, killing a mob, opening a chest, fishing and more. With overwrite it replaces the vanilla items or experience.",
+    "docs": "Loot sources in the CraftEngine wiki"
   }
 }

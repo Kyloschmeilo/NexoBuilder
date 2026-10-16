@@ -10,7 +10,8 @@
       "mechanics": "Mechanics",
       "events": "Events",
       "recipes": "Recipes",
-      "yaml": "YAML"
+      "yaml": "YAML",
+      "loot": "Loot"
     },
     "itemId": "Item-ID",
     "folder": "Ordner",
@@ -36,7 +37,8 @@
       "settings": "Settings",
       "blockSettings": "Block Settings",
       "blockBehavior": "Verhalten",
-      "events": "Events"
+      "events": "Events",
+      "loot": "Loot"
     },
     "empty": {
       "general": "Noch nichts hinzugefügt (z.B. Lore).",
@@ -46,9 +48,10 @@
       "mechanics": "Noch keine Mechanics.",
       "data": "Noch keine Item-Daten (z.B. Food, Equippable).",
       "settings": "Noch keine Settings (z.B. Tags, Fuel Time).",
-      "blockSettings": "Noch keine Block-Einstellungen (z. B. Hardness, Sounds, Loot).",
+      "blockSettings": "Noch keine Block-Einstellungen (z. B. Hardness, Sounds).",
       "blockBehavior": "Noch keine Optionen des Verhaltens (z. B. Sounds, weitere Verhalten).",
-      "events": "Noch keine Events (z. B. ein Befehl bei Rechtsklick)."
+      "events": "Noch keine Events (z. B. ein Befehl bei Rechtsklick).",
+      "loot": "Noch kein Loot. Ohne Loot lässt der Block oder das Möbelstück nichts fallen."
     },
     "fromVersion": "ab {version}",
     "untilVersion": "bis {version}",

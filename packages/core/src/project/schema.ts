@@ -51,7 +51,7 @@ import type { JukeboxSong, Sound, SoundFile } from './media/sound';
 import { itemIdFromName } from './ids';
 import { defaultSettings, DEFAULT_PACK_NAME } from './factory';
 import { DEFAULT_PACK_TARGET, PACK_TARGETS } from './target';
-import type { ConfigObject, ConfigValue, Folder, Item, Project, ProjectSettings } from './types';
+import type { ConfigObject, ConfigValue, CraftEngineProjectData, Folder, Item, Project, ProjectSettings } from './types';
 
 /** Former location of the armor settings inside the item configuration */
 const LEGACY_ARMOR_KEY = '$armor';
@@ -270,6 +270,12 @@ export function settingsSchema(projectName: string) {
     .catch(defaults);
 }
 
+/** The project-wide CraftEngine configuration; a bad part is dropped, an empty one leaves the whole out. */
+export const CraftEngineProjectSchema = z
+  .object({ lootSources: optional(lenientList(ConfigObjectSchema)) })
+  .transform((data) => withoutUndefined(data))
+  .transform((data) => (Object.keys(data).length > 0 ? data : undefined));
+
 /** A whole stored project (before repairProject): only the name is required; `now` is the fallback for timestamps. */
 export function projectSchema(now: number) {
   return z.looseObject({ name: z.string() }).transform((raw) => {
@@ -315,6 +321,9 @@ export function projectSchema(now: number) {
       createdAt: lenientNumber(now).parse(raw.createdAt),
       updatedAt: lenientNumber(now).parse(raw.updatedAt),
     };
+    // Only set when the project has some, so other projects keep their shape
+    const craftEngine = optional(CraftEngineProjectSchema).parse(raw.craftEngine);
+    if (craftEngine) project.craftEngine = craftEngine;
     return project;
   });
 }
@@ -353,5 +362,7 @@ export type ProjectSchemaChecks = SchemaChecks<
     Covers<Out<typeof FolderSchema>, Folder>,
     Fits<SettingsOut, ProjectSettings>,
     Covers<SettingsOut, ProjectSettings>,
+    Fits<NonNullable<Out<typeof CraftEngineProjectSchema>>, CraftEngineProjectData>,
+    Covers<NonNullable<Out<typeof CraftEngineProjectSchema>>, CraftEngineProjectData>,
   ]
 >;
