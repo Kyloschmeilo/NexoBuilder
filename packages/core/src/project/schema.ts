@@ -29,13 +29,12 @@ import {
   recordOf,
   type SchemaChecks,
   schemaKey,
-  slugify,
-  stripFormatting,
   stringList,
   uid,
+  uniqueId,
   withoutUndefined,
 } from '@resourcepackbuilder/utils';
-import { type ImportedModel, JavaModelSchema, type ModelTexture, ModelTextureSchema } from '@resourcepackbuilder/minecraft';
+import { type ImportedModel, itemIdSyntaxError, JavaModelSchema, type ModelTexture, ModelTextureSchema } from '@resourcepackbuilder/minecraft';
 import { toArmorSettings, type ArmorSettings } from './armor';
 import { CHAT_TEXT_HEIGHT, DEFAULT_FONT_ASCENT, type Glyph } from './media/glyph';
 import type { MediaFile } from './media/entry';
@@ -43,6 +42,7 @@ import type { MediaEntryByKind, MediaKind } from './media/kinds';
 import type { Painting } from './media/painting';
 import { INGREDIENT_LETTERS, RECIPE_TYPES, type Recipe, type RecipeIngredient } from './recipes/model';
 import type { JukeboxSong, Sound, SoundFile } from './media/sound';
+import { itemIdFromName } from './ids';
 import { defaultSettings, DEFAULT_PACK_NAME } from './factory';
 import { DEFAULT_PACK_TARGET, PACK_TARGETS } from './target';
 import type { ConfigObject, ConfigValue, Folder, Item, Project, ProjectSettings } from './types';
@@ -217,8 +217,8 @@ export function itemSchema(now: number) {
       createdAt: lenientNumber(now),
       updatedAt: lenientNumber(now),
     })
-    // A missing item ID is derived from the display name like for new items (repairProject makes it unique)
-    .transform((item) => ({ ...item, itemId: item.itemId || slugify(stripFormatting(item.displayName)) || 'item' }))
+    // A missing or invalid item ID is derived from the display name like for new items (projectSchema makes it unique)
+    .transform((item) => ({ ...item, itemId: itemIdSyntaxError(item.itemId) ? itemIdFromName(item.displayName) : item.itemId }))
     .transform(withoutUndefined);
 }
 
@@ -264,11 +264,19 @@ export function settingsSchema(projectName: string) {
 export function projectSchema(now: number) {
   return z.looseObject({ name: z.string() }).transform((raw) => {
     const items: Record<string, Item> = {};
+    const derivedIds: string[] = [];
     if (isPlainObject(raw.items)) {
       for (const [key, value] of Object.entries(raw.items)) {
         const item = parseItem(value, now, key);
         if (item) items[key] = item;
+        if (item && isPlainObject(value) && value.itemId !== item.itemId) derivedIds.push(key);
       }
+    }
+    // Derived IDs may collide; they get numbered. IDs the user stored stay as they are, duplicates included.
+    const taken = new Set(Object.entries(items).filter(([key]) => !derivedIds.includes(key)).map(([, item]) => item.itemId));
+    for (const key of derivedIds.sort((a, b) => items[a].createdAt - items[b].createdAt || (a < b ? -1 : 1))) {
+      items[key].itemId = uniqueId(items[key].itemId, taken);
+      taken.add(items[key].itemId);
     }
     const folders: Record<string, Folder> = {};
     if (isPlainObject(raw.folders)) {

@@ -1,7 +1,12 @@
 /** User-facing IDs of project entries. */
-import { slugify, uniqueId } from '@resourcepackbuilder/utils';
+import { slugify, stripFormatting, uniqueId } from '@resourcepackbuilder/utils';
 import { itemIdSyntaxError } from '@resourcepackbuilder/minecraft';
 import type { Item, Project } from './types';
+
+/** The item ID suggested for a display name (MiniMessage formatting removed). */
+export function itemIdFromName(displayName: string): string {
+  return slugify(stripFormatting(displayName));
+}
 
 /** Suggests a unique item ID, e.g. "ruby_sword_2" if "ruby_sword" already exists. */
 export function uniqueItemId(project: Project, wanted: string, ignoreItemId?: string): string {

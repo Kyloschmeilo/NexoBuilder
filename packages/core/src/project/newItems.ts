@@ -4,9 +4,8 @@
  */
 import { DEFAULT_MATERIAL } from './item';
 import type { NewItemInput } from './factory';
-import { validateNewItemIds, type ItemIdError } from './ids';
+import { itemIdFromName, validateNewItemIds, type ItemIdError } from './ids';
 import type { Project } from './types';
-import { slugify, stripFormatting } from '@resourcepackbuilder/utils';
 import { createDrafts, type ImportDraft, type ImportFile, type PngMode, unsupportedFiles } from '@resourcepackbuilder/minecraft';
 
 /** What the user enters for one new item. */
@@ -50,14 +49,14 @@ export function sourceKey(draft: ImportDraft): string {
 }
 
 function newMeta(displayName: string): ItemMeta {
-  return { displayName, itemId: displayName && slugify(stripFormatting(displayName)), isIdEdited: false, material: DEFAULT_MATERIAL };
+  return { displayName, itemId: displayName && itemIdFromName(displayName), isIdEdited: false, material: DEFAULT_MATERIAL };
 }
 
 /** Applies entered values; the ID follows the display name until it is edited by hand. */
 function patchMeta(meta: ItemMeta, patch: MetaPatch): ItemMeta {
   const next = { ...meta, ...patch };
   if (patch.itemId !== undefined) next.isIdEdited = true;
-  else if (patch.displayName !== undefined && !meta.isIdEdited) next.itemId = slugify(stripFormatting(patch.displayName));
+  else if (patch.displayName !== undefined && !meta.isIdEdited) next.itemId = itemIdFromName(patch.displayName);
   return next;
 }
 

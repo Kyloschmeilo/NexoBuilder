@@ -65,6 +65,20 @@ describe('migrateProject', () => {
     expect(project.items.i_2.itemId).toBe('ruby_sword_2');
   });
 
+  it('keeps stored duplicate item IDs unchanged', () => {
+    const project = migrateProject(
+      { name: 'Alt', items: { i_1: { itemId: 'x', createdAt: 1 }, i_2: { itemId: 'x', createdAt: 2 } } },
+      5,
+    );
+    expect(project.items.i_1.itemId).toBe('x');
+    expect(project.items.i_2.itemId).toBe('x');
+  });
+
+  it('derives an invalid stored item ID from the display name', () => {
+    const project = migrateProject({ name: 'Alt', items: { i_1: { itemId: 'Ruby Sword!', displayName: 'Gem' } } }, 5);
+    expect(project.items.i_1.itemId).toBe('gem');
+  });
+
   it('fills missing fields with defaults and drops dangling item references', () => {
     const project = migrateProject(
       { name: 'Alt', folders: { f_1: { name: 'Waffen', itemIds: ['i_gone', 'i_1'] } }, items: { i_1: { itemId: 'sword' } } },
