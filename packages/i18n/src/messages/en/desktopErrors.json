@@ -1,0 +1,13 @@
+{
+  "notAllowed": "This request is not allowed.",
+  "invalidArguments": "The desktop program received invalid data ({channel}).",
+  "folderNotAllowed": "This folder was not chosen for sharing",
+  "invalidFile": "Invalid file: {file}",
+  "eulaRequired": "Please accept the Minecraft EULA first.",
+  "versionRequired": "Please choose a Minecraft version.",
+  "notAPlugin": "This is not a valid plugin file (plugin.yml is missing).",
+  "notNexo": "This is not Nexo but “{name}”.",
+  "requestFailed": "Request failed ({status}): {url}",
+  "requestFailedWithMessage": "{message} ({status})",
+  "unexpected": "{message}"
+}

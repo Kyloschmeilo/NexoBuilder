@@ -23,18 +23,14 @@
     "chooseJoinFolder": "Ordner mit dem geteilten Projekt wählen",
     "chooseShareFolder": "Ordner zum Teilen wählen (z.B. in OneDrive)",
     "open": "Öffnen",
-    "shareHere": "Hier teilen",
-    "invalidFolder": "Ungültiger Ordner",
-    "folderNotAllowed": "Dieser Ordner wurde nicht zum Teilen ausgewählt",
-    "invalidFile": "Ungültige Datei: {file}",
-    "invalidContent": "Ungültiger Inhalt"
+    "shareHere": "Hier teilen"
   },
   "testServer": {
-    "requestFailed": "Anfrage fehlgeschlagen ({status}): {url}",
     "downloadFailed": "Download fehlgeschlagen ({status}): {label}",
     "downloading": "{label} wird heruntergeladen …",
     "downloadingPercent": "{label} wird heruntergeladen … {percent} %",
     "checksumMismatch": "{label}: Prüfsumme stimmt nicht – Download beschädigt. Bitte erneut versuchen.",
+    "checksumMissing": "{label}: Für diesen Download wurde keine Prüfsumme veröffentlicht, er kann daher nicht geprüft werden. Bitte später erneut versuchen.",
     "searchingPaper": "Suche Paper {version} …",
     "noPaperBuild": "Für Minecraft {version} gibt es keinen Paper-Build.",
     "noPaperDownload": "Paper {version}: kein Download gefunden.",
@@ -49,8 +45,6 @@
     "chooseNexoJar": "Nexo-Plugin (JAR) auswählen",
     "choose": "Auswählen",
     "pluginFilter": "Minecraft-Plugin",
-    "notAPlugin": "Das ist keine gültige Plugin-Datei (paper-plugin.yml fehlt).",
-    "notNexo": "Das ist nicht Nexo, sondern „{name}“.",
     "nexoSelected": "Nexo {version} ausgewählt.",
     "paperSettingsPatched": "Paper-Einstellungen für Nexo angepasst (Notenblock-, Stolperdraht- und Chorus-Updates aus).",
     "nexoJarMissing": "Die Nexo-JAR fehlt. Bitte erneut auswählen.",
@@ -61,8 +55,6 @@
     "packBuildingOnStart": "Nexo erstellt beim Start das Resourcepack …",
     "unknownError": "Unbekannter Fehler",
     "portInUse": "Port {port} ist belegt – läuft schon ein anderer Minecraft-Server?",
-    "eulaRequired": "Bitte zuerst die Minecraft-EULA akzeptieren.",
-    "versionRequired": "Bitte eine Minecraft-Version wählen.",
     "preparing": "Bereite den Testserver vor …",
     "startingPaper": "Starte Paper {version} mit Java {java} ({ram} GB RAM) …",
     "starting": "Server startet …",
@@ -72,10 +64,10 @@
     "crashed": "Der Server wurde unerwartet beendet (Code {code}). Details in der Konsole.",
     "stopping": "Server wird gestoppt (Welt wird gespeichert) …",
     "notResponding": "Server reagiert nicht – wird beendet.",
-    "invalidPath": "Ungültiger Pfad: {path}",
-    "invalidFiles": "Ungültige Dateien",
     "skippedFile": "Übersprungen (ungültiger Dateiname): {path}",
     "synced": "Projekt übertragen: {written} geschrieben, {deleted} entfernt.",
-    "syncedSettings": "Projekt übertragen: {written} geschrieben, {deleted} entfernt, Einstellungen angepasst."
+    "syncedSettings": "Projekt übertragen: {written} geschrieben, {deleted} entfernt, Einstellungen angepasst.",
+    "settingsReset": "Die gespeicherten Testserver-Einstellungen waren beschädigt und wurden zurückgesetzt (gesichert als {file}).",
+    "manifestReset": "Die Liste der übertragenen Dateien war beschädigt (gesichert als {file}); Dateien früherer Übertragungen können in plugins/Nexo verbleiben."
   }
 }

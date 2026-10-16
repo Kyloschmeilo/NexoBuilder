@@ -4,7 +4,13 @@ const nextConfig: NextConfig = {
   // Static export: Electron serves the "out" folder through its app:// protocol.
   output: 'export',
   images: { unoptimized: true },
-  transpilePackages: ['@resourcepackbuilder/i18n', '@resourcepackbuilder/core', '@resourcepackbuilder/ui', '@resourcepackbuilder/preview'],
+  transpilePackages: [
+    '@resourcepackbuilder/i18n',
+    '@resourcepackbuilder/core',
+    '@resourcepackbuilder/desktop-contract',
+    '@resourcepackbuilder/ui',
+    '@resourcepackbuilder/preview',
+  ],
 };
 
 export default nextConfig;
