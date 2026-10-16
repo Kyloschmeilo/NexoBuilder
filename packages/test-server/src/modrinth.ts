@@ -20,8 +20,25 @@ export function craftEngineVersionsUrl(paperVersion: string): string {
   return `${MODRINTH_API}/project/${CRAFT_ENGINE_PROJECT}/version?${query.toString()}`;
 }
 
+/** CraftEngine's Modrinth project id; its files lie under https://cdn.modrinth.com/data/<id>/. */
+const CRAFT_ENGINE_PROJECT_ID = 'tRX6FMfQ';
+const MODRINTH_CDN_HOST = 'cdn.modrinth.com';
+
+/** Whether `url` is a file of CraftEngine on Modrinth's CDN (nothing else gets downloaded, whatever the list says). */
+function isCraftEngineFileUrl(url: string): boolean {
+  const parsed = new URL(url);
+  return (
+    parsed.protocol === 'https:' &&
+    parsed.hostname === MODRINTH_CDN_HOST &&
+    parsed.port === '' &&
+    parsed.username === '' &&
+    parsed.password === '' &&
+    parsed.pathname.startsWith(`/data/${CRAFT_ENGINE_PROJECT_ID}/`)
+  );
+}
+
 const modrinthFileSchema = z.object({
-  url: z.url({ protocol: /^https$/ }),
+  url: z.url({ protocol: /^https$/ }).refine(isCraftEngineFileUrl),
   filename: z.string(),
   primary: z.boolean().catch(false),
   hashes: z.object({ sha512: z.string().regex(/^[0-9a-fA-F]{128}$/) }),

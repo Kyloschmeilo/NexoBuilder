@@ -65,4 +65,22 @@ describe('pickCraftEngineVersion', () => {
     expect(pickCraftEngineVersion([{ ...paper, files: renamed }], '26.3')).toBeNull();
     expect(pickCraftEngineVersion([{ ...paper, files: noHash }], '26.3')).toBeNull();
   });
+
+  it("only downloads from CraftEngine's folder on Modrinth's CDN", () => {
+    const paper = versions.find((v) => v.version_number === '26.9.2' && v.loaders.includes('paper')) as ModrinthVersion;
+    const file = (paper.files as Array<Record<string, unknown>>)[0];
+    const at = (url: string) => pickCraftEngineVersion([{ ...paper, files: [{ ...file, url }] }], '26.3');
+    expect(at('https://cdn.modrinth.com/data/tRX6FMfQ/versions/x/craft-engine-paper-plugin-26.9.2.jar')).not.toBeNull();
+    for (const url of [
+      'https://evil.example/data/tRX6FMfQ/versions/x/craft-engine-paper-plugin-26.9.2.jar',
+      'https://cdn.modrinth.com.evil.example/data/tRX6FMfQ/x.jar',
+      'https://cdn.modrinth.com:8443/data/tRX6FMfQ/x.jar',
+      'https://user@cdn.modrinth.com/data/tRX6FMfQ/x.jar',
+      'https://cdn.modrinth.com/data/OtherProj/versions/x/craft-engine-paper-plugin-26.9.2.jar',
+      'https://cdn.modrinth.com/data/tRX6FMfQ/../OtherProj/x.jar',
+      'http://cdn.modrinth.com/data/tRX6FMfQ/x.jar',
+    ]) {
+      expect(at(url), url).toBeNull();
+    }
+  });
 });

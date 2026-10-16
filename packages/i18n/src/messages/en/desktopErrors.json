@@ -7,7 +7,7 @@
   "versionRequired": "Please choose a Minecraft version.",
   "notAPlugin": "This is not a valid plugin file (plugin.yml is missing).",
   "wrongPlugin": "This is not {plugin} but “{name}”.",
-  "pluginDownloadUnsupported": "The {plugin} plugin cannot be downloaded automatically yet. Choose its JAR instead.",
+  "pluginDownloadUnsupported": "The {plugin} plugin cannot be downloaded automatically. Choose its JAR instead.",
   "noCraftEngineVersion": "Modrinth has no CraftEngine version for Minecraft {version}. Choose another version or choose the JAR yourself.",
   "wrongTarget": "The test server runs {server}, but this project is for {project}. Stop the server and start it again from this project.",
   "requestFailed": "Request failed ({status}): {url}",

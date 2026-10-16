@@ -107,7 +107,6 @@ function PluginJarField({ config, target }: { config: TestServerConfig; target: 
               variant="outline"
               size="sm"
               disabled={isBusy || !config.paperVersion}
-              title={config.paperVersion ? undefined : t('downloadNeedsVersion')}
               onClick={() => void downloadJar()}
             >
               <Download /> {t('downloadJar', { plugin })}
@@ -122,6 +121,8 @@ function PluginJarField({ config, target }: { config: TestServerConfig; target: 
           </Button>
         )}
       </div>
+      {/* A disabled button shows no tooltip, so the reason is written out */}
+      {canDownload && !config.paperVersion && <FormHelp>{t('downloadNeedsVersion')}</FormHelp>}
       <FormHelp>{canDownload ? t('jarDownloadHelp', { plugin }) : t('jarHelp', { plugin, target })}</FormHelp>
     </div>
   );

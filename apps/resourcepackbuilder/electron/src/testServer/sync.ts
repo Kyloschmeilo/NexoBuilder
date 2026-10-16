@@ -4,7 +4,7 @@
  * target's `sync-manifest.json` remembers what was written.
  */
 import type { PackTargetId } from '@resourcepackbuilder/core/project';
-import { serverAdapterFor } from '@resourcepackbuilder/test-server';
+import { parseSyncManifest, serverAdapterFor, staleSyncFiles, type SyncManifest } from '@resourcepackbuilder/test-server';
 import {
   DesktopError,
   type TestServerSyncFile,
@@ -15,29 +15,11 @@ import crypto from 'node:crypto';
 import fs from 'node:fs';
 import fsp from 'node:fs/promises';
 import path from 'node:path';
-import { z } from 'zod';
 import { readJsonFile, writeFileAtomic } from '../fileHelpers';
 import { t } from '../i18n';
 import { manifestFile, pluginDir } from './paths';
 import { isReloadPending, isRunning, requestReload } from './server';
 import { logInfo, pushLog, setState, state } from './state';
-
-/** Path relative to the plugin folder → SHA-1 of what was written. */
-const manifestFilesSchema = z.record(z.string(), z.string());
-
-/**
- * What the last sync wrote, and for which pack: CraftEngine's paths contain the pack name, so after a rename the old
- * files are only recognised (and removed) with the old name. Older manifests are a bare file list without a name.
- */
-interface Manifest {
-  packName: string | null;
-  files: Record<string, string>;
-}
-
-const manifestSchema = z.union([
-  z.object({ packName: z.string(), files: manifestFilesSchema }),
-  manifestFilesSchema.transform((files) => ({ packName: null, files })),
-]);
 
 /** The absolute destination of a project file, or null if the path is not one the project may write. */
 function syncDestination(target: PackTargetId, packName: string, relativePath: string): string | null {
@@ -63,11 +45,9 @@ async function pruneEmptyDirs(target: PackTargetId, dir: string) {
  * What the last sync wrote. Missing on the first sync; a damaged manifest is kept as .bak and reported in the console,
  * because files of earlier syncs can then no longer be cleaned up.
  */
-async function readManifest(target: PackTargetId): Promise<Manifest> {
-  const manifest = await readJsonFile(
-    manifestFile(target),
-    (data) => manifestSchema.safeParse(data).data ?? null,
-    (backup) => pushLog(t('testServer.manifestReset', { file: backup, folder: serverAdapterFor(target).pluginDir }), 'err'),
+async function readManifest(target: PackTargetId): Promise<SyncManifest> {
+  const manifest = await readJsonFile(manifestFile(target), parseSyncManifest, (backup) =>
+    pushLog(t('testServer.manifestReset', { file: backup, folder: serverAdapterFor(target).pluginDir }), 'err'),
   );
   return manifest ?? { packName: null, files: {} };
 }
@@ -97,8 +77,6 @@ export async function syncFiles(
     });
   }
   const manifest = await readManifest(target);
-  // Paths the last sync wrote are checked against the pack name they were written for (see Manifest)
-  const writtenPackName = manifest.packName ?? packName;
   const next: Record<string, string> = {};
   let written = 0;
   let deleted = 0;
@@ -118,17 +96,16 @@ export async function syncFiles(
       written++;
     }
   }
-  for (const relativePath of Object.keys(manifest.files)) {
-    if (relativePath in next) continue;
-    const destination = syncDestination(target, writtenPackName, relativePath);
-    if (!destination) continue; // invalid entry
+  // Only what the last sync wrote and the adapter allows for the pack it was written for
+  for (const segments of staleSyncFiles(serverAdapterFor(target), manifest, { packName, paths: new Set(Object.keys(next)) })) {
+    const destination = path.join(pluginDir(target), ...segments);
     await fsp.rm(destination, { force: true });
     await pruneEmptyDirs(target, path.dirname(destination));
     deleted++;
   }
   const settingsChanged = await writeSettings(target, settings);
   await fsp.mkdir(path.dirname(manifestFile(target)), { recursive: true });
-  await fsp.writeFile(manifestFile(target), JSON.stringify({ packName, files: next } satisfies Manifest));
+  await fsp.writeFile(manifestFile(target), JSON.stringify({ packName, files: next } satisfies SyncManifest));
 
   const changed = written > 0 || deleted > 0 || settingsChanged;
   const reloaded = changed && reload && state.status === 'running' && (requestReload() || isReloadPending());

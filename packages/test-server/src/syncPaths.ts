@@ -5,10 +5,15 @@
 
 /** A path segment: no separators, no "." or "..", nothing a file system treats specially. */
 const SAFE_SEGMENT = /^[A-Za-z0-9_.+-]+$/;
+/** Windows device names, with or without an extension ("nul", "COM1.yml"); they never name a file there. */
+const WINDOWS_DEVICE_NAME = /^(con|prn|aux|nul|com[1-9]|lpt[1-9])(\..*)?$/i;
 
-/** Whether `segment` is a single harmless path segment. */
+/**
+ * Whether `segment` is a single harmless path segment. A trailing "." or space is refused too: Windows drops it, so
+ * "internal." would name the folder "internal".
+ */
 export function isSafeSegment(segment: string): boolean {
-  return SAFE_SEGMENT.test(segment) && segment !== '.' && segment !== '..';
+  return SAFE_SEGMENT.test(segment) && !/[. ]$/.test(segment) && !WINDOWS_DEVICE_NAME.test(segment);
 }
 
 /** The segments of `relativePath`, or null if one of them is empty or not safe. */

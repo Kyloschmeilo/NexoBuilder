@@ -22,7 +22,7 @@ function configOverrides(options: CraftEngineServerConfig): Array<[string[], unk
 
 /**
  * Sets the required values in config.yml. Everything else (including comments) is preserved. If the file does not
- * exist yet, a small file is created – CraftEngine adds the rest on startup. If all values are already correct, the
+ * exist yet, a small file is created, and CraftEngine adds the rest on startup. If all values are already correct, the
  * file is returned unchanged, so an unchanged config never counts as a change.
  */
 export function patchCraftEngineConfig(current: string | null, options: CraftEngineServerConfig): string {
@@ -31,7 +31,7 @@ export function patchCraftEngineConfig(current: string | null, options: CraftEng
     // Don't make a broken file worse: only write our values fresh
     return patchCraftEngineConfig(null, options);
   }
-  if (!current?.trim()) doc.commentBefore = ' Created by ResourcepackBuilder – CraftEngine adds the remaining settings on startup.';
+  if (!current?.trim()) doc.commentBefore = ' Created by ResourcepackBuilder. CraftEngine adds the remaining settings on startup.';
   let changed = !current?.trim();
   for (const [path, value] of configOverrides(options)) {
     if (sameSetting(doc.getIn(path), value)) continue;
@@ -47,7 +47,7 @@ export function patchCraftEngineConfig(current: string | null, options: CraftEng
   return doc.toString({ lineWidth: 0 });
 }
 
-/** CraftEngine writes some values as text ("8082", "false") – the same content counts as equal. */
+/** CraftEngine writes some values as text ("8082", "false"); the same content counts as equal. */
 function sameSetting(actual: unknown, wanted: unknown): boolean {
   if (actual === wanted) return true;
   if (typeof wanted === 'number') return typeof actual !== 'boolean' && actual !== null && Number(actual) === wanted;

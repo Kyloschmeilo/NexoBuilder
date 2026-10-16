@@ -101,7 +101,7 @@ describe('the CraftEngine adapter', () => {
   });
 
   it("never touches CraftEngine's own packs", () => {
-    for (const packName of ['default', 'default_assets', 'internal', 'Internal']) {
+    for (const packName of ['default', 'default_assets', 'internal', 'Internal', 'internal.', 'default_assets.', 'CON', 'nul.x']) {
       expect(ce.syncPathSegments(`resources/${packName}/pack.yml`, { packName }), packName).toBeNull();
     }
   });

@@ -9,4 +9,5 @@ export * from './pluginJar';
 export * from './serverFiles';
 export * from './serverLog';
 export * from './status';
+export * from './syncManifest';
 export * from './syncPaths';
