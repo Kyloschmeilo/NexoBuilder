@@ -19,6 +19,7 @@
     "copyTooltip": "Copy all properties – except name, item ID, model and folder",
     "pasteTooltip": "Paste properties from “{name}”",
     "pasteDisabled": "Choose “Copy” on another item first",
+    "copyUnsupported": "Copying properties is only available in Nexo projects for now",
     "move": "Move",
     "give": "Give in test server",
     "giveTooltip": "Put the item into your inventory on the local test server",

@@ -1,11 +1,12 @@
 /** Item actions offered in the sidebar and the item editor, with their questions and notices. */
 import { useTranslations } from 'next-intl';
 import { type Item, itemLabel } from '@resourcepackbuilder/core/project';
-import { clipboardLabel } from '@resourcepackbuilder/core/nexo';
+import { canPasteItemConfig, clipboardLabel } from '@resourcepackbuilder/core/nexo';
 import { copyItemProperties } from '../../commands/clipboard';
 import { deleteItem, duplicateItem, setItemModel } from '../../commands/items';
 import { useClipboardStore } from '../../store/clipboard';
 import { confirm } from '../../store/dialogs';
+import { getProject } from '../../store/project';
 import { pasteConfigDialog } from '../pasteConfig/PasteConfigDialog';
 import { notify } from '../../shell/notify';
 
@@ -45,9 +46,12 @@ export function useItemActions() {
       if (clip) notify('success', tApp('clipboard.copied', { name: clipboardLabel(clip) }));
     },
 
-    /** Opens the paste dialog for the target items (or explains that nothing was copied yet). */
+    /** Opens the paste dialog for the target items (or explains that nothing fitting was copied yet). */
     pasteProperties(targetItemIds: string[]) {
-      if (useClipboardStore.getState().clip) pasteConfigDialog.openWithPayload({ targetItemIds });
+      const { clip } = useClipboardStore.getState();
+      const target = getProject()?.target;
+      if (target && canPasteItemConfig(clip, target)) pasteConfigDialog.openWithPayload({ targetItemIds });
+      else if (clip) notify('info', tApp('clipboard.unsupported'));
       else notify('info', tApp('clipboard.nothingCopied'));
     },
   };

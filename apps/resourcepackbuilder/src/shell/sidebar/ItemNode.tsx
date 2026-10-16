@@ -1,7 +1,7 @@
 import { Box, ClipboardCopy, ClipboardPaste, Copy, FolderInput, Trash2 } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 import { itemLabel } from '@resourcepackbuilder/core/project';
-import { clipboardLabel } from '@resourcepackbuilder/core/nexo';
+import { canCopyItemConfig, canPasteItemConfig, clipboardLabel } from '@resourcepackbuilder/core/nexo';
 import { type MenuEntry, StatusDot, Thumb, TREE_INDENT_PX, treeRowSlots } from '@resourcepackbuilder/ui';
 import { useThumbnail } from '../../components/useThumbnail';
 import { moveItem } from '../../commands/items';
@@ -29,6 +29,7 @@ export function ItemNode({ itemId, depth, tree }: { itemId: string; depth: numbe
   });
   if (!item) return null;
   const level = tree.itemLevels.get(itemId);
+  const canCopy = canCopyItemConfig(tree.project.target);
   const show = () => select({ kind: 'item', id: itemId });
 
   const entries: MenuEntry[] = [
@@ -38,14 +39,15 @@ export function ItemNode({ itemId, depth, tree }: { itemId: string; depth: numbe
     {
       icon: <ClipboardCopy />,
       label: t('itemMenu.copyProperties'),
-      description: t('itemMenu.copyPropertiesDescription'),
+      description: canCopy ? t('itemMenu.copyPropertiesDescription') : t('paste.unsupported'),
+      disabled: !canCopy,
       onSelect: () => actions.copyProperties(itemId),
     },
     {
       icon: <ClipboardPaste />,
       label: t('paste.label'),
-      description: clip ? t('paste.fromItem', { name: clipboardLabel(clip) }) : t('paste.needsCopy'),
-      disabled: !clip || clip.sourceId === itemId,
+      description: !canCopy ? t('paste.unsupported') : clip ? t('paste.fromItem', { name: clipboardLabel(clip) }) : t('paste.needsCopy'),
+      disabled: !canPasteItemConfig(clip, tree.project.target) || clip.sourceId === itemId,
       onSelect: () => actions.pasteProperties([itemId]),
     },
     'separator',

@@ -71,6 +71,7 @@ function referencedKeys(): Set<string> {
     sourceName: 'Item',
     sourceItemId: 'item',
     projectId: 'p',
+    target: 'nexo',
     config: {},
     rawYaml: 'a: 1',
     assets: {},

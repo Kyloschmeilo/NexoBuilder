@@ -3,7 +3,7 @@ import { Box, ClipboardCopy, ClipboardPaste, Copy, FolderInput, Gift, Trash2 } f
 import { getFolderPathLabel, type Item, itemMaterial } from '@resourcepackbuilder/core/project';
 import type { Issue } from '@resourcepackbuilder/utils';
 import { PLAYER_NAME_PATTERN } from '@resourcepackbuilder/test-server';
-import { clipboardLabel } from '@resourcepackbuilder/core/nexo';
+import { canCopyItemConfig, canPasteItemConfig, clipboardLabel } from '@resourcepackbuilder/core/nexo';
 import { IconButton, PageHeader, Thumb, Tip } from '@resourcepackbuilder/ui';
 import { Badge } from '@resourcepackbuilder/ui/components/badge';
 import { Button } from '@resourcepackbuilder/ui/components/button';
@@ -70,17 +70,25 @@ function ItemActions({ item }: { item: Item }) {
   const t = useTranslations('item');
   const tCommon = useTranslations('common');
   const clip = useClipboardStore((s) => s.clip);
+  const { target } = useOpenProject();
   const actions = useItemActions();
-  const canPaste = !!clip && clip.sourceId !== item.id;
+  // Copying works on Nexo's property groups; other targets show both buttons disabled with the reason
+  const canCopy = canCopyItemConfig(target);
+  const canPaste = canPasteItemConfig(clip, target) && clip.sourceId !== item.id;
+  const pasteTip = !canCopy
+    ? t('editor.copyUnsupported')
+    : clip
+      ? t('editor.pasteTooltip', { name: clipboardLabel(clip) })
+      : t('editor.pasteDisabled');
   return (
     <>
       <GiveButton item={item} />
-      <Tip label={t('editor.copyTooltip')}>
-        <Button variant="outline" size="sm" onClick={() => actions.copyProperties(item.id)}>
+      <Tip label={canCopy ? t('editor.copyTooltip') : t('editor.copyUnsupported')}>
+        <Button variant="outline" size="sm" disabled={!canCopy} onClick={() => actions.copyProperties(item.id)}>
           <ClipboardCopy /> {tCommon('copy')}
         </Button>
       </Tip>
-      <Tip label={clip ? t('editor.pasteTooltip', { name: clipboardLabel(clip) }) : t('editor.pasteDisabled')}>
+      <Tip label={pasteTip}>
         <Button variant="outline" size="sm" disabled={!canPaste} onClick={() => actions.pasteProperties([item.id])}>
           <ClipboardPaste /> {tCommon('paste')}
         </Button>

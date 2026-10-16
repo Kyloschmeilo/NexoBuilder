@@ -12,7 +12,8 @@
   },
   "clipboard": {
     "copied": "Copied the properties of “{name}”. To paste them, choose “Paste properties” in another item’s menu.",
-    "nothingCopied": "First choose “Copy properties” on an item."
+    "nothingCopied": "First choose “Copy properties” on an item.",
+    "unsupported": "Copying properties is only available in Nexo projects for now."
   },
   "autosave": {
     "failed": "Projects can’t be saved automatically in the browser. Please save the project as a file regularly."

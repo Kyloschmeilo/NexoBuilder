@@ -107,7 +107,8 @@
       "label": "Eigenschaften einfügen …",
       "fromItem": "von „{name}“",
       "fromItemIntoFolder": "von „{name}“ in alle Items des Ordners",
-      "needsCopy": "Zuerst bei einem Item kopieren"
+      "needsCopy": "Zuerst bei einem Item kopieren",
+      "unsupported": "Vorerst nur in Nexo-Projekten"
     }
   },
   "folder": {
