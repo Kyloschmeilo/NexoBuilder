@@ -3,11 +3,11 @@ import type { Item } from '@resourcepackbuilder/core/project/types';
 import type { ExportPlan } from '@resourcepackbuilder/core/export/types';
 import { parseYaml, toYaml } from '@resourcepackbuilder/core/nexo/yaml';
 import { isPlainObject } from '@resourcepackbuilder/core/object';
-import { CopyButton, SectionCard } from '@resourcepackbuilder/ui';
+import { SectionCard } from '@resourcepackbuilder/ui';
 import { FieldDescription, FieldError } from '@resourcepackbuilder/ui/components/field';
 import { Textarea } from '@resourcepackbuilder/ui/components/textarea';
 import { updateItem } from '../../commands/items';
-import { YamlView } from '../../components/YamlView';
+import { YamlCode } from '../../components/YamlCode';
 import { usePlan } from '../../store/PlanProvider';
 
 const INDENT = '  ';
@@ -30,7 +30,6 @@ function useRawYamlError(text: string): string | null {
 
 export function YamlTab({ item }: { item: Item }) {
   const t = useTranslations('item');
-  const tCommon = useTranslations('common');
   const plan = usePlan();
   const error = useRawYamlError(item.rawYaml);
   const preview = itemYamlPreview(plan, item);
@@ -67,12 +66,8 @@ export function YamlTab({ item }: { item: Item }) {
         <FieldDescription className="mt-1.5 text-xs">{t('yaml.keyHint', { id: item.nexoId })}</FieldDescription>
       </SectionCard>
 
-      <SectionCard
-        title={t('yaml.finalTitle')}
-        description={t('yaml.finalDescription', { file: yamlFile })}
-        actions={<CopyButton text={preview} label={tCommon('copy')} />}
-      >
-        <YamlView text={preview || t('yaml.computing')} />
+      <SectionCard title={t('yaml.finalTitle')} description={t('yaml.finalDescription', { file: yamlFile })}>
+        <YamlCode text={preview || t('yaml.computing')} />
       </SectionCard>
     </div>
   );

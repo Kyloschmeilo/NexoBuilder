@@ -4,10 +4,10 @@ import { useTranslations } from 'next-intl';
 import type { ExportPlan } from '@resourcepackbuilder/core/export/types';
 import { issuesFor, type Issue } from '@resourcepackbuilder/core/issues';
 import type { Project } from '@resourcepackbuilder/core/project/types';
-import { CopyButton, Tip } from '@resourcepackbuilder/ui';
+import { Tip } from '@resourcepackbuilder/ui';
 import { ScrollArea } from '@resourcepackbuilder/ui/components/scroll-area';
 import { IssueList } from '../components/IssueList';
-import { YamlView } from '../components/YamlView';
+import { YamlCode } from '../components/YamlCode';
 import { itemYamlPreview } from '../features/item/YamlTab';
 import { usePlan } from '../store/PlanProvider';
 import { useOpenProject } from '../store/project';
@@ -61,12 +61,11 @@ export function RightPanel() {
         <Tip label={title}>
           <h2 className="min-w-0 flex-1 truncate font-mono text-xs">{title}</h2>
         </Tip>
-        {text && <CopyButton text={text} />}
       </div>
       <ScrollArea className="min-h-0 flex-1">
         {text ? (
           <div className="p-2.5">
-            <YamlView text={text} />
+            <YamlCode text={text} />
           </div>
         ) : (
           <div className="p-8 text-center text-xs text-muted-foreground">{t('empty')}</div>

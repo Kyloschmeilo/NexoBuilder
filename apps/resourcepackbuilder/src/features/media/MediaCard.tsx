@@ -1,5 +1,6 @@
 import type { ReactNode } from 'react';
 import { Trash2 } from 'lucide-react';
+import { useTranslations } from 'next-intl';
 import { CopyButton, IconButton, SectionCard, Thumb } from '@resourcepackbuilder/ui';
 
 interface MediaCardProps {
@@ -20,6 +21,7 @@ interface MediaCardProps {
 
 /** Card of one glyph, sound or painting: heading with usage and actions, optional preview and the form. */
 export function MediaCard({ title, badges, usage, copyLabel, actions, deleteLabel, onDelete, preview, children }: MediaCardProps) {
+  const tUi = useTranslations('ui');
   return (
     <SectionCard
       size="sm"
@@ -30,7 +32,7 @@ export function MediaCard({ title, badges, usage, copyLabel, actions, deleteLabe
       actions={
         <>
           <span className="min-w-0 truncate font-mono text-xs text-muted-foreground">{usage}</span>
-          <CopyButton text={usage} label={copyLabel} />
+          <CopyButton text={usage} label={copyLabel} copiedLabel={tUi('copyButton.copied')} />
           {actions}
           <IconButton label={deleteLabel} variant="ghost-destructive" onClick={onDelete}>
             <Trash2 />

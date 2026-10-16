@@ -10,6 +10,8 @@ import { useTestServer } from './useTestServer';
 /** How to join the server, the server folder and – while it runs with Nexo – the resource pack status. */
 export function ConnectCard({ server }: { server: TestServerState }) {
   const t = useTranslations('media.testServer');
+  const tCommon = useTranslations('common');
+  const tUi = useTranslations('ui');
   const testServer = useTestServer();
   const { config } = server;
 
@@ -22,7 +24,7 @@ export function ConnectCard({ server }: { server: TestServerState }) {
       description={t('connectHint')}
       actions={
         <>
-          <CopyButton text={server.address} />
+          <CopyButton text={server.address} label={tCommon('copy')} copiedLabel={tUi('copyButton.copied')} />
           <Tip label={t('openFolder')}>
             <Button variant="outline" size="sm" onClick={testServer.openFolder}>
               <FolderOpen /> {t('folder')}
