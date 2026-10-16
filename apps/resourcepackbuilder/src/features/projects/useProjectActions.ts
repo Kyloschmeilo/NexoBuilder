@@ -12,7 +12,7 @@ import {
   saveProjectFile,
 } from '../../commands/projects';
 import { useErrorMessage } from '../../i18n/errors';
-import { useServices } from '../../services/servicesContext';
+import { useServices } from '../../services/bootstrap';
 import { confirm } from '../../store/dialogs';
 import { notify } from '../../shell/notify';
 import { getProject } from '../../store/project';

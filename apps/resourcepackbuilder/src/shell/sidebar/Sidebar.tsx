@@ -9,7 +9,7 @@ import { InputGroup, InputGroupAddon, InputGroupInput } from '@resourcepackbuild
 import { ScrollArea } from '@resourcepackbuilder/ui/components/scroll-area';
 import { moveFolder } from '../../commands/folders';
 import { useFolderActions } from '../../features/folder/useFolderActions';
-import { useServices } from '../../services/servicesContext';
+import { useServices } from '../../services/bootstrap';
 import { usePlan } from '../../store/PlanProvider';
 import { useOpenProject } from '../../store/project';
 import { FolderNode } from './FolderNode';

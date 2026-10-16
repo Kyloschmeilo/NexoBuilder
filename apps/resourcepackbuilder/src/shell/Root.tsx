@@ -6,7 +6,7 @@ import { TooltipProvider } from '@resourcepackbuilder/ui/components/tooltip';
 import { BrandMark } from '../components/BrandMark';
 import { I18nProvider } from '../i18n/I18nProvider';
 import { bootstrap, type AppServices } from '../services/bootstrap';
-import { ServicesContext } from '../services/servicesContext';
+import { ServicesContext } from '../services/bootstrap';
 import { AppShell } from './AppShell';
 
 type BootState = { kind: 'booting' } | { kind: 'ready'; services: AppServices } | { kind: 'failed'; error: unknown };

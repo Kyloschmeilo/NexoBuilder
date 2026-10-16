@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
 import type { Project } from '@resourcepackbuilder/core/project/types';
 import { summarizeProject, type ProjectSummary } from '../../services/projectRepository';
-import { useServices } from '../../services/servicesContext';
+import { useServices } from '../../services/bootstrap';
 import { setOtherProjectIncluded } from '../../store/exportChoices';
 
 /** A project the export dialog offers. */

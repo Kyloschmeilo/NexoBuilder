@@ -13,7 +13,7 @@ import { IssueCountBadges } from '../../components/IssueCountBadges';
 import { MiniMessageBox } from '../../components/miniMessage/MiniMessageBox';
 import { MiniMessageLine } from '../../components/miniMessage/MiniMessageLine';
 import { useBusyAction } from '../../hooks/useBusyAction';
-import { useServices } from '../../services/servicesContext';
+import { useServices } from '../../services/bootstrap';
 import { clipboardLabel, useClipboardStore } from '../../store/clipboard';
 import { openDialog } from '../../store/dialogs';
 import { useOpenProject } from '../../store/project';

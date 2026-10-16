@@ -7,7 +7,7 @@ import { Progress } from '@resourcepackbuilder/ui/components/progress';
 import { Spinner } from '@resourcepackbuilder/ui/components/spinner';
 import { PageHeader, PageShell, StatusBadge } from '@resourcepackbuilder/ui';
 import type { TestServerState } from '../../platform/desktopApi';
-import { useServices } from '../../services/servicesContext';
+import { useServices } from '../../services/bootstrap';
 import { useTestServerStore } from '../../store/testServer';
 import { ConnectCard } from './ConnectCard';
 import { ServerConsole } from './ServerConsole';

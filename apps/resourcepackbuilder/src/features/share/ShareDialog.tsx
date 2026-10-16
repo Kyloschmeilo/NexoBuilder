@@ -10,7 +10,7 @@ import { Spinner } from '@resourcepackbuilder/ui/components/spinner';
 import { DialogFrame } from '../../components/DialogFrame';
 import { useErrorMessage } from '../../i18n/errors';
 import { richTags } from '../../i18n/richTags';
-import { useServices } from '../../services/servicesContext';
+import { useServices } from '../../services/bootstrap';
 import type { ShareSync } from '../../services/shareSync';
 import { closeDialog, confirm } from '../../store/dialogs';
 import { useBusyAction } from '../../hooks/useBusyAction';

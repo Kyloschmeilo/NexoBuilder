@@ -1,6 +1,6 @@
 import { useErrorMessage } from '../../i18n/errors';
 import type { TestServerConfigPatch } from '../../platform/desktopApi';
-import { useServices } from '../../services/servicesContext';
+import { useServices } from '../../services/bootstrap';
 import type { TestServerSync } from '../../services/testServerSync';
 import { notify } from '../../shell/notify';
 
