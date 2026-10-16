@@ -2,6 +2,7 @@
 import type { Project } from '@resourcepackbuilder/core/project';
 import type { MultiExportPlan } from '../../selection';
 import type { ExportPlan } from '../../types';
+import type { InstallGuideOptions } from '../types';
 import { NEXO_PLUGIN_DIR, NEXO_RELOAD_COMMAND, packLocation } from './layout';
 import { PAINTINGS_FILE, SOUNDS_FILE } from './rootFiles';
 
@@ -27,25 +28,32 @@ const USAGE = [
 ];
 
 /** Guide for the export; `rootFiles` are the shared sounds.yml/paintings.yml of the archive. */
-export function nexoInstallGuide(multi: MultiExportPlan, rootFiles: Map<string, string>): string {
+export function nexoInstallGuide(multi: MultiExportPlan, rootFiles: Map<string, string>, options: InstallGuideOptions): string {
   return multi.projects.length === 1
-    ? singleGuide(multi.projects[0].project, multi.projects[0].plan, rootFiles)
-    : multiGuide(multi, rootFiles);
+    ? singleGuide(multi.projects[0].project, multi.projects[0].plan, rootFiles, options)
+    : multiGuide(multi, rootFiles, options);
+}
+
+/** Step 1: where the files go (an archive of several plugins holds plugins/Nexo/ itself). */
+function extractLine({ prefixed }: InstallGuideOptions): string {
+  return prefixed
+    ? `1. The folder  ${NEXO_PLUGIN_DIR}/  of this ZIP archive is merged into the folder  ${NEXO_PLUGIN_DIR}/  of your server.`
+    : `1. Extract the contents of this ZIP archive into the folder  ${NEXO_PLUGIN_DIR}/  of your server.`;
 }
 
 function hasFilesIn(plan: ExportPlan, dir: string): boolean {
   return [...plan.pluginFiles.keys()].some((path) => path.startsWith(dir));
 }
 
-function singleGuide(project: Project, plan: ExportPlan, rootFiles: Map<string, string>): string {
-  const ids = plan.items.map((p) => `  - ${p.item.itemId}`).join('\n');
+function singleGuide(project: Project, plan: ExportPlan, rootFiles: Map<string, string>, options: InstallGuideOptions): string {
+  const ids = plan.items.map((p) => `  - ${p.yamlKey}`).join('\n');
   return [
     `ResourcepackBuilder – project "${project.name}"`,
     '==========================================',
     '',
     'Installation',
     '------------',
-    `1. Extract the contents of this ZIP archive into the folder  ${NEXO_PLUGIN_DIR}/  of your server.`,
+    extractLine(options),
     '   The folders "items" and "pack" are merged with the existing folders.',
     '',
     '   items/...                 -> the item configurations',
@@ -66,14 +74,14 @@ function singleGuide(project: Project, plan: ExportPlan, rootFiles: Map<string, 
   ].join('\n');
 }
 
-function multiGuide(multi: MultiExportPlan, rootFiles: Map<string, string>): string {
+function multiGuide(multi: MultiExportPlan, rootFiles: Map<string, string>, options: InstallGuideOptions): string {
   const lines = [
     `ResourcepackBuilder – ${multi.projects.length} projects`,
     '==========================================',
     '',
     'Installation',
     '------------',
-    `1. Extract the contents of this ZIP archive into the folder  ${NEXO_PLUGIN_DIR}/  of your server.`,
+    extractLine(options),
     '   The folders "items" and "pack" are merged with the existing folders.',
     '   Each project has its own folder under items/ and its own resource pack:',
     '',
@@ -88,7 +96,7 @@ function multiGuide(multi: MultiExportPlan, rootFiles: Map<string, string>): str
       title,
       '-'.repeat(title.length),
       `Namespace: ${project.namespace} · Minecraft ${project.settings.minecraftVersion}`,
-      ...(plan.items.length > 0 ? plan.items.map((p) => `  - ${p.item.itemId}`) : ['  (no items)']),
+      ...(plan.items.length > 0 ? plan.items.map((p) => `  - ${p.yamlKey}`) : ['  (no items)']),
       ...(project.glyphs.length > 0 ? [`  + ${project.glyphs.length} glyph(s)`] : []),
       '',
     );

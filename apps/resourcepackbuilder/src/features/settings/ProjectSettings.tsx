@@ -2,7 +2,7 @@
 import { useId } from 'react';
 import { useTranslations } from 'next-intl';
 import { MC_VERSIONS, PACK_NAME_PATTERN } from '@resourcepackbuilder/minecraft';
-import { nexoPluginPath, packLocation } from '@resourcepackbuilder/export';
+import { packTargetFor } from '@resourcepackbuilder/export';
 import { Field, FieldDescription, FieldError, FieldLabel } from '@resourcepackbuilder/ui/components/field';
 import { Input } from '@resourcepackbuilder/ui/components/input';
 import { NativeSelect, NativeSelectOption } from '@resourcepackbuilder/ui/components/native-select';
@@ -22,6 +22,7 @@ export function ProjectSettings() {
   const namespaceProblem = checkNamespace(project.namespace);
   const { settings } = project;
   const isPackNameValid = PACK_NAME_PATTERN.test(settings.packName);
+  const { layout } = packTargetFor(project);
 
   return (
     <div className="flex flex-col gap-5">
@@ -72,7 +73,7 @@ export function ProjectSettings() {
             onChange={(e) => updateProjectSettings((p) => (p.settings.packName = e.target.value))}
           />
           {isPackNameValid ? (
-            <FieldDescription className="font-mono text-xs break-all">{nexoPluginPath(packLocation(project, false))}</FieldDescription>
+            <FieldDescription className="font-mono text-xs break-all">{`${layout.pluginDir}/${layout.packLocation(project, false)}`}</FieldDescription>
           ) : (
             <FieldError>{t('packNameInvalid')}</FieldError>
           )}

@@ -9,7 +9,8 @@ import {
   insertFolder,
   insertItem,
 } from '@resourcepackbuilder/core/project';
-import { planExport } from '@resourcepackbuilder/export';
+import { exportPackName, planExport } from '@resourcepackbuilder/export';
+import { CRAFT_ENGINE_SERVER_ADAPTER } from './craftEngine/adapter';
 import { pluginFolderFiles } from './files';
 import { NEXO_SERVER_ADAPTER } from './nexo/adapter';
 import { createTextureModel } from '@resourcepackbuilder/minecraft';
@@ -52,6 +53,22 @@ describe('Test server: files for plugins/Nexo', () => {
     project.settings.packName = 'mein pack!';
     const files = pluginFolderFiles(project, planExport(project, { includeBinaries: true }));
     expect(files.some((f) => f.path.startsWith('pack/external_packs/resourcepackbuilder/'))).toBe(true);
+  });
+});
+
+describe('Test server: files for plugins/CraftEngine', () => {
+  it('writes only paths the CraftEngine adapter accepts', () => {
+    const project = createProject('Kristall', 'kristall', '1.21.11', 'craftengine');
+    const folder = createFolder('Waffen', null);
+    insertFolder(project, folder);
+    const model = createTextureModel('handheld', { layer0: 'gem.png' }, [{ name: 'gem.png', dataUrl: makePngDataUrl(16, 16) }]);
+    insertItem(project, createItem({ displayName: 'Edelstein', itemId: 'gem', folderId: folder.id, model }));
+    const paths = pluginFolderFiles(project, planExport(project)).map((f) => f.path);
+    expect(paths).toContain('resources/kristall/pack.yml');
+    expect(paths).toContain('resources/kristall/configuration/items/waffen/waffen.yml');
+    expect(paths).toContain('resources/kristall/resourcepack/pack.mcmeta');
+    const packName = exportPackName(project);
+    expect(paths.filter((path) => CRAFT_ENGINE_SERVER_ADAPTER.syncPathSegments(path, { packName }) === null)).toEqual([]);
   });
 });
 

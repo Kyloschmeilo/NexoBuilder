@@ -197,6 +197,16 @@
     "syntax": "YAML-Fehler in Zeile {line}, Spalte {column}: {detail}",
     "duplicateKey": "Der Schlüssel in Zeile {line} kommt doppelt vor ({detail})."
   },
+  "ce": {
+    "itemIdInvalid": "Die Item-ID „{id}“ ist für CraftEngine ungültig (nur Kleinbuchstaben, Ziffern, _ . - und /).",
+    "missingModel": "Kein Modell: CraftEngine lädt kein Item ohne Modell. Importiere ein Modell oder setze model oder texture im zusätzlichen YAML.",
+    "variantUnsupported": "CraftEngine nutzt dieses Modell noch nicht, deshalb wird es nicht exportiert.",
+    "variantSlotsFilled": "CraftEngine braucht {count} Modelle für {material}. Die fehlenden zeigen das Hauptmodell.",
+    "glyphsNotExported": "Der CraftEngine-Export enthält noch keine Glyphen ({count}). Sie folgen in einer späteren Version.",
+    "soundsNotExported": "Der CraftEngine-Export enthält noch keine Sounds ({count}). Sie folgen in einer späteren Version.",
+    "paintingsNotExported": "Der CraftEngine-Export enthält noch keine Gemälde ({count}). Sie folgen in einer späteren Version.",
+    "recipesNotExported": "Der CraftEngine-Export enthält noch keine Rezepte ({count}). Sie folgen in einer späteren Version."
+  },
   "issueList": {
     "openItem": "Zum Item",
     "openGlyphs": "Glyphs öffnen",

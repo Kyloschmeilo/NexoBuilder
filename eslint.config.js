@@ -21,8 +21,8 @@ const DOMAIN_PACKAGES = ['utils', 'minecraft', 'core', 'export', 'sync', 'test-s
  * Import boundaries: a workspace may only import the @resourcepackbuilder packages its package.json declares.
  * turbo refuses cyclic declarations, so imports between packages can only point one way. Inside core, the project
  * model (project/) must not import a target (nexo/, craftEngine/) or the target switch (targets/), which build on it,
- * the generic form DSL (form/) must not import a target either, so project/ may use it, and the targets do not import
- * each other.
+ * the generic form DSL (form/) and the shared YAML helpers (yaml/) must not import a target either, so project/ may use
+ * them, and the targets do not import each other.
  */
 const WORKSPACES = ['packages', 'apps']
   .flatMap((root) => fs.readdirSync(path.join(import.meta.dirname, root)).map((dir) => `${root}/${dir}`))
@@ -37,6 +37,10 @@ const PROJECT_IMPORTS_TARGET = {
 const FORM_IMPORTS_TARGET = {
   group: coreImports('nexo', 'craftEngine', 'targets'),
   message: 'The form DSL must not depend on a target (each target builds its FormSchema on form/).',
+};
+const YAML_IMPORTS_TARGET = {
+  group: coreImports('nexo', 'craftEngine', 'targets'),
+  message: 'The shared YAML helpers must not depend on a target (every target writes its YAML with them).',
 };
 /** A target may not import another target or the target switch (only targets/ knows them all). */
 const targetImportsOther = (other) => ({
@@ -57,6 +61,7 @@ const importBoundaries = WORKSPACES.flatMap((dir) => {
   if (dir === 'packages/core') {
     blocks.push({ files: [`${dir}/src/project/**`], rules: rule([undeclared, PROJECT_IMPORTS_TARGET]) });
     blocks.push({ files: [`${dir}/src/form/**`], rules: rule([undeclared, FORM_IMPORTS_TARGET]) });
+    blocks.push({ files: [`${dir}/src/yaml/**`], rules: rule([undeclared, YAML_IMPORTS_TARGET]) });
     blocks.push({ files: [`${dir}/src/nexo/**`], rules: rule([undeclared, targetImportsOther('craftEngine')]) });
     blocks.push({ files: [`${dir}/src/craftEngine/**`], rules: rule([undeclared, targetImportsOther('nexo')]) });
   }

@@ -207,7 +207,7 @@ function crossProjectIssues(projects: PlannedProject[]): Issue[] {
         error('selection.pluginFileClash', { first: other, second: name, path, slug: projectFileName(project) });
       }
     }
-    // Nexo merges all external packs – identical paths then overwrite each other
+    // The plugins merge the packs of all projects – identical paths then overwrite each other
     for (const path of plan.packFiles.keys()) {
       if (!path.startsWith('assets/')) continue;
       const other = firstOwner(assetFiles, path, index);

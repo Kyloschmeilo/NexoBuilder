@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { parseRawYaml } from '@resourcepackbuilder/core/nexo';
+import { parseRawYaml } from '@resourcepackbuilder/core/yaml';
 import { createFolder, createItem, createProject, insertFolder, insertItem } from '@resourcepackbuilder/core/project';
 import { findItemPlan, itemYamlPreview } from './itemPreview';
 import { nexoPluginPath } from './targets';

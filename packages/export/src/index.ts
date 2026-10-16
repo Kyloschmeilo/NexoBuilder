@@ -1,6 +1,5 @@
 /** Public API of @resourcepackbuilder/export: planning and writing a resource pack export (YAML, models, media, ZIP). */
 export * from './equipment';
-export * from './itemModels';
 export * from './itemPreview';
 export * from './models';
 export * from './packWriter';

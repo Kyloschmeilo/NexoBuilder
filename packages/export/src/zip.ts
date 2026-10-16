@@ -6,7 +6,7 @@ import JSZip from 'jszip';
 import type { Project } from '@resourcepackbuilder/core/project';
 import { exportPackName } from './paths';
 import type { MultiExportPlan } from './selection';
-import { buildRootFiles, packTargetFor } from './targets';
+import { buildRootFiles, packTargetFor, type PackTarget } from './targets';
 import type { ExportMode, FileContent } from './types';
 
 /** The install guide in the archive of a full export */
@@ -32,13 +32,22 @@ function addAll(entries: Map<string, ArchiveEntry>, files: Map<string, FileConte
 /** How the resource pack goes into the plugin folder: as the project setting says, always as a folder, or not at all. */
 type PackPlacement = 'setting' | 'folder' | 'none';
 
+/** The pack targets of the archive's projects, in the order they first appear. */
+function archiveTargets(multi: MultiExportPlan): PackTarget[] {
+  return [...new Set(multi.projects.map((e) => packTargetFor(e.project)))];
+}
+
+/** Whether the archive holds several plugin folders (projects of different targets) and is extracted into the server folder. */
+function isPrefixed(multi: MultiExportPlan): boolean {
+  return archiveTargets(multi).length > 1;
+}
+
 /**
  * Where a project's plugin files go in the archive. When all projects share a plugin folder, the
  * archive is extracted into it (no prefix); projects of different targets each get their plugin folder.
  */
 function pluginPrefix(multi: MultiExportPlan, project: Project): string {
-  const pluginDir = packTargetFor(project).layout.pluginDir;
-  return multi.projects.every((e) => packTargetFor(e.project).layout.pluginDir === pluginDir) ? '' : `${pluginDir}/`;
+  return isPrefixed(multi) ? `${packTargetFor(project).layout.pluginDir}/` : '';
 }
 
 /** The files of the plugin folders (item configs, recipes, glyphs, the pack and Nexo's sounds.yml/paintings.yml), by path. */
@@ -48,8 +57,7 @@ function pluginEntries(multi: MultiExportPlan, pack: PackPlacement): Map<string,
     const { layout } = packTargetFor(project);
     const prefix = pluginPrefix(multi, project);
     addAll(entries, plan.pluginFiles, prefix);
-    if (pack === 'setting' && project.settings.externalPackAsZip)
-      entries.set(prefix + layout.packLocation(project, true), { zip: plan.packFiles });
+    if (pack === 'setting' && layout.packAsZip(project)) entries.set(prefix + layout.packLocation(project, true), { zip: plan.packFiles });
     else if (pack !== 'none') addAll(entries, plan.packFiles, prefix + layout.packLocation(project, false));
   }
   // Only Nexo plans carry root file entries; the files lie in the Nexo plugin folder
@@ -75,11 +83,28 @@ function archiveEntries(multi: MultiExportPlan, mode: ExportMode): Map<string, A
   }
   if (mode === 'items') return pluginEntries(multi, 'none');
   const entries = pluginFolderEntries(multi);
-  if (multi.projects.length > 0) {
-    const rootFiles = buildRootFiles(multi.projects.map((e) => e.plan));
-    entries.set(INSTALL_GUIDE_FILE, { content: packTargetFor(multi.projects[0].project).layout.installGuide(multi, rootFiles) });
-  }
+  if (multi.projects.length > 0) entries.set(INSTALL_GUIDE_FILE, { content: installGuide(multi) });
   return entries;
+}
+
+/** The install guide: the target's own, or for projects of several targets an intro and one part per target. */
+function installGuide(multi: MultiExportPlan): string {
+  const rootFiles = buildRootFiles(multi.projects.map((e) => e.plan));
+  const targets = archiveTargets(multi);
+  if (targets.length === 1) return targets[0].layout.installGuide(multi, rootFiles, { prefixed: false });
+  const parts = targets.map((target) => {
+    const projects = multi.projects.filter((e) => packTargetFor(e.project) === target);
+    return target.layout.installGuide({ ...multi, projects }, rootFiles, { prefixed: true });
+  });
+  const intro = [
+    `ResourcepackBuilder – ${multi.projects.length} projects for ${targets.length} server plugins`,
+    '==========================================',
+    '',
+    'Extract this ZIP archive into the folder of your server (the one that holds the folder "plugins").',
+    `It holds one folder per plugin (${targets.map((t) => `${t.layout.pluginDir}/`).join(', ')}); follow the part of each plugin below.`,
+    '',
+  ].join('\n');
+  return [intro, ...parts].join('\n\n');
 }
 
 /** A single pack lies directly in the ZIP, multiple packs each get a folder. */
@@ -123,5 +148,6 @@ function exportFileName(multi: MultiExportPlan, mode: ExportMode): string {
     multi.projects.length === 1 ? exportPackName(multi.projects[0].project) : `resourcepackbuilder_${multi.projects.length}_projects`;
   if (mode === 'pack') return multi.projects.length === 1 ? `${base}.zip` : `${base}_packs.zip`;
   if (mode === 'items') return `${base}_items.zip`;
-  return `${base}_nexo.zip`;
+  const targets = archiveTargets(multi);
+  return `${base}_${targets.length === 1 ? targets[0].layout.fileTag : 'plugins'}.zip`;
 }

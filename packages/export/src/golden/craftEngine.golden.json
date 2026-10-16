@@ -1,0 +1,80 @@
+{
+  "single-full": {
+    "INSTALL.txt": "40126066d0c0816893ce91b70c063f77a566f3a723d1ccff0078d582b273ffee",
+    "resources/kristall_pack/configuration/items/kram/kram.yml": "c20833ddedca1cbdea37d9d46b3a7e3efeec917e509f9168ace3d44f1fc20fe3",
+    "resources/kristall_pack/configuration/items/waffen/waffen.yml": "0b824eb0e46fdf703c20151561f6c1c9581958f809b23e1245b1a361f1bbe46f",
+    "resources/kristall_pack/pack.yml": "8804c3fc270fdb276916d9698c527abf2ffcdc023c2976b544707cf09570f516",
+    "resources/kristall_pack/resourcepack/assets/kristall/models/item/waffen/crystal_bow-pulling_0.json": "e6fbc8c9cf5ffefee9712e77183dc55de6f020b3b3ae9ff615d8504b1388e63a",
+    "resources/kristall_pack/resourcepack/assets/kristall/models/item/waffen/crystal_bow-pulling_1.json": "557ac492656ba54f95091b9096f5a66c98f5a635b662f7285f941e74bb42451e",
+    "resources/kristall_pack/resourcepack/assets/kristall/models/item/waffen/crystal_bow-pulling_2.json": "88f427f50f1b7c178f65d2c9ca7c69b9eb1312e898aeec3a61f5666c941fd5bb",
+    "resources/kristall_pack/resourcepack/assets/kristall/models/item/waffen/crystal_bow.json": "703036af618343f4ec595111a6a6754145b7b5a234f42f73f6cabae228f45c94",
+    "resources/kristall_pack/resourcepack/assets/kristall/models/item/waffen/crystal_sword.json": "c70869ac000233ec025a727b16a9292a40a3fcf51eee7d81e32def36d1b919d1",
+    "resources/kristall_pack/resourcepack/assets/kristall/textures/item/waffen/crystal_bow-pulling_0/cbow_0.png": "8916d83980b35e2ad89032559c473bff5bfe7ee5f1bba3c7e5264975b5ec9520",
+    "resources/kristall_pack/resourcepack/assets/kristall/textures/item/waffen/crystal_bow-pulling_1/cbow_1.png": "8916d83980b35e2ad89032559c473bff5bfe7ee5f1bba3c7e5264975b5ec9520",
+    "resources/kristall_pack/resourcepack/assets/kristall/textures/item/waffen/crystal_bow-pulling_2/cbow_2.png": "8916d83980b35e2ad89032559c473bff5bfe7ee5f1bba3c7e5264975b5ec9520",
+    "resources/kristall_pack/resourcepack/assets/kristall/textures/item/waffen/crystal_bow/cbow.png": "8916d83980b35e2ad89032559c473bff5bfe7ee5f1bba3c7e5264975b5ec9520",
+    "resources/kristall_pack/resourcepack/assets/kristall/textures/item/waffen/crystal_sword/crystal_sword.png": "8916d83980b35e2ad89032559c473bff5bfe7ee5f1bba3c7e5264975b5ec9520",
+    "resources/kristall_pack/resourcepack/pack.mcmeta": "5a98ed2c9ceb88110da9f61155681b73791c0e3d76ec44b464d8e4a1e2d27fd5"
+  },
+  "single-pack": {
+    "assets/kristall/models/item/waffen/crystal_bow-pulling_0.json": "e6fbc8c9cf5ffefee9712e77183dc55de6f020b3b3ae9ff615d8504b1388e63a",
+    "assets/kristall/models/item/waffen/crystal_bow-pulling_1.json": "557ac492656ba54f95091b9096f5a66c98f5a635b662f7285f941e74bb42451e",
+    "assets/kristall/models/item/waffen/crystal_bow-pulling_2.json": "88f427f50f1b7c178f65d2c9ca7c69b9eb1312e898aeec3a61f5666c941fd5bb",
+    "assets/kristall/models/item/waffen/crystal_bow.json": "703036af618343f4ec595111a6a6754145b7b5a234f42f73f6cabae228f45c94",
+    "assets/kristall/models/item/waffen/crystal_sword.json": "c70869ac000233ec025a727b16a9292a40a3fcf51eee7d81e32def36d1b919d1",
+    "assets/kristall/textures/item/waffen/crystal_bow-pulling_0/cbow_0.png": "8916d83980b35e2ad89032559c473bff5bfe7ee5f1bba3c7e5264975b5ec9520",
+    "assets/kristall/textures/item/waffen/crystal_bow-pulling_1/cbow_1.png": "8916d83980b35e2ad89032559c473bff5bfe7ee5f1bba3c7e5264975b5ec9520",
+    "assets/kristall/textures/item/waffen/crystal_bow-pulling_2/cbow_2.png": "8916d83980b35e2ad89032559c473bff5bfe7ee5f1bba3c7e5264975b5ec9520",
+    "assets/kristall/textures/item/waffen/crystal_bow/cbow.png": "8916d83980b35e2ad89032559c473bff5bfe7ee5f1bba3c7e5264975b5ec9520",
+    "assets/kristall/textures/item/waffen/crystal_sword/crystal_sword.png": "8916d83980b35e2ad89032559c473bff5bfe7ee5f1bba3c7e5264975b5ec9520",
+    "pack.mcmeta": "5a98ed2c9ceb88110da9f61155681b73791c0e3d76ec44b464d8e4a1e2d27fd5"
+  },
+  "single-items": {
+    "resources/kristall_pack/configuration/items/kram/kram.yml": "c20833ddedca1cbdea37d9d46b3a7e3efeec917e509f9168ace3d44f1fc20fe3",
+    "resources/kristall_pack/configuration/items/waffen/waffen.yml": "0b824eb0e46fdf703c20151561f6c1c9581958f809b23e1245b1a361f1bbe46f",
+    "resources/kristall_pack/pack.yml": "8804c3fc270fdb276916d9698c527abf2ffcdc023c2976b544707cf09570f516"
+  },
+  "mixed-full": {
+    "INSTALL.txt": "eabef987ac5b9dad3c0d722c30b1774214d83743ef6b22c3ac0c894f4adb6086",
+    "plugins/CraftEngine/resources/kristall_pack/configuration/items/kram/kram.yml": "c20833ddedca1cbdea37d9d46b3a7e3efeec917e509f9168ace3d44f1fc20fe3",
+    "plugins/CraftEngine/resources/kristall_pack/configuration/items/waffen/waffen.yml": "0b824eb0e46fdf703c20151561f6c1c9581958f809b23e1245b1a361f1bbe46f",
+    "plugins/CraftEngine/resources/kristall_pack/pack.yml": "8804c3fc270fdb276916d9698c527abf2ffcdc023c2976b544707cf09570f516",
+    "plugins/CraftEngine/resources/kristall_pack/resourcepack/assets/kristall/models/item/waffen/crystal_bow-pulling_0.json": "e6fbc8c9cf5ffefee9712e77183dc55de6f020b3b3ae9ff615d8504b1388e63a",
+    "plugins/CraftEngine/resources/kristall_pack/resourcepack/assets/kristall/models/item/waffen/crystal_bow-pulling_1.json": "557ac492656ba54f95091b9096f5a66c98f5a635b662f7285f941e74bb42451e",
+    "plugins/CraftEngine/resources/kristall_pack/resourcepack/assets/kristall/models/item/waffen/crystal_bow-pulling_2.json": "88f427f50f1b7c178f65d2c9ca7c69b9eb1312e898aeec3a61f5666c941fd5bb",
+    "plugins/CraftEngine/resources/kristall_pack/resourcepack/assets/kristall/models/item/waffen/crystal_bow.json": "703036af618343f4ec595111a6a6754145b7b5a234f42f73f6cabae228f45c94",
+    "plugins/CraftEngine/resources/kristall_pack/resourcepack/assets/kristall/models/item/waffen/crystal_sword.json": "c70869ac000233ec025a727b16a9292a40a3fcf51eee7d81e32def36d1b919d1",
+    "plugins/CraftEngine/resources/kristall_pack/resourcepack/assets/kristall/textures/item/waffen/crystal_bow-pulling_0/cbow_0.png": "8916d83980b35e2ad89032559c473bff5bfe7ee5f1bba3c7e5264975b5ec9520",
+    "plugins/CraftEngine/resources/kristall_pack/resourcepack/assets/kristall/textures/item/waffen/crystal_bow-pulling_1/cbow_1.png": "8916d83980b35e2ad89032559c473bff5bfe7ee5f1bba3c7e5264975b5ec9520",
+    "plugins/CraftEngine/resources/kristall_pack/resourcepack/assets/kristall/textures/item/waffen/crystal_bow-pulling_2/cbow_2.png": "8916d83980b35e2ad89032559c473bff5bfe7ee5f1bba3c7e5264975b5ec9520",
+    "plugins/CraftEngine/resources/kristall_pack/resourcepack/assets/kristall/textures/item/waffen/crystal_bow/cbow.png": "8916d83980b35e2ad89032559c473bff5bfe7ee5f1bba3c7e5264975b5ec9520",
+    "plugins/CraftEngine/resources/kristall_pack/resourcepack/assets/kristall/textures/item/waffen/crystal_sword/crystal_sword.png": "8916d83980b35e2ad89032559c473bff5bfe7ee5f1bba3c7e5264975b5ec9520",
+    "plugins/CraftEngine/resources/kristall_pack/resourcepack/pack.mcmeta": "5a98ed2c9ceb88110da9f61155681b73791c0e3d76ec44b464d8e4a1e2d27fd5",
+    "plugins/Nexo/items/zweites_pack/dinge/dinge.yml": "5405b569eb49bb8ea914df31c4d63fa88a1c3dade99921fe26be08bb7dd7dff0",
+    "plugins/Nexo/pack/external_packs/zweites_pack/assets/zweit/models/item/dinge/thing.json": "05cef0adf9a0338d73ce356bdf97e17c300a9e7ba6cea06ac7649908adb466b0",
+    "plugins/Nexo/pack/external_packs/zweites_pack/assets/zweit/textures/item/dinge/thing/thing.png": "8916d83980b35e2ad89032559c473bff5bfe7ee5f1bba3c7e5264975b5ec9520",
+    "plugins/Nexo/pack/external_packs/zweites_pack/pack.mcmeta": "203a54ee35484a1de7e7d6c57745da201873ef3da818e0ab7bdde58b1fe34be5"
+  },
+  "mixed-pack": {
+    "kristall_pack/assets/kristall/models/item/waffen/crystal_bow-pulling_0.json": "e6fbc8c9cf5ffefee9712e77183dc55de6f020b3b3ae9ff615d8504b1388e63a",
+    "kristall_pack/assets/kristall/models/item/waffen/crystal_bow-pulling_1.json": "557ac492656ba54f95091b9096f5a66c98f5a635b662f7285f941e74bb42451e",
+    "kristall_pack/assets/kristall/models/item/waffen/crystal_bow-pulling_2.json": "88f427f50f1b7c178f65d2c9ca7c69b9eb1312e898aeec3a61f5666c941fd5bb",
+    "kristall_pack/assets/kristall/models/item/waffen/crystal_bow.json": "703036af618343f4ec595111a6a6754145b7b5a234f42f73f6cabae228f45c94",
+    "kristall_pack/assets/kristall/models/item/waffen/crystal_sword.json": "c70869ac000233ec025a727b16a9292a40a3fcf51eee7d81e32def36d1b919d1",
+    "kristall_pack/assets/kristall/textures/item/waffen/crystal_bow-pulling_0/cbow_0.png": "8916d83980b35e2ad89032559c473bff5bfe7ee5f1bba3c7e5264975b5ec9520",
+    "kristall_pack/assets/kristall/textures/item/waffen/crystal_bow-pulling_1/cbow_1.png": "8916d83980b35e2ad89032559c473bff5bfe7ee5f1bba3c7e5264975b5ec9520",
+    "kristall_pack/assets/kristall/textures/item/waffen/crystal_bow-pulling_2/cbow_2.png": "8916d83980b35e2ad89032559c473bff5bfe7ee5f1bba3c7e5264975b5ec9520",
+    "kristall_pack/assets/kristall/textures/item/waffen/crystal_bow/cbow.png": "8916d83980b35e2ad89032559c473bff5bfe7ee5f1bba3c7e5264975b5ec9520",
+    "kristall_pack/assets/kristall/textures/item/waffen/crystal_sword/crystal_sword.png": "8916d83980b35e2ad89032559c473bff5bfe7ee5f1bba3c7e5264975b5ec9520",
+    "kristall_pack/pack.mcmeta": "5a98ed2c9ceb88110da9f61155681b73791c0e3d76ec44b464d8e4a1e2d27fd5",
+    "zweites_pack/assets/zweit/models/item/dinge/thing.json": "05cef0adf9a0338d73ce356bdf97e17c300a9e7ba6cea06ac7649908adb466b0",
+    "zweites_pack/assets/zweit/textures/item/dinge/thing/thing.png": "8916d83980b35e2ad89032559c473bff5bfe7ee5f1bba3c7e5264975b5ec9520",
+    "zweites_pack/pack.mcmeta": "203a54ee35484a1de7e7d6c57745da201873ef3da818e0ab7bdde58b1fe34be5"
+  },
+  "mixed-items": {
+    "plugins/CraftEngine/resources/kristall_pack/configuration/items/kram/kram.yml": "c20833ddedca1cbdea37d9d46b3a7e3efeec917e509f9168ace3d44f1fc20fe3",
+    "plugins/CraftEngine/resources/kristall_pack/configuration/items/waffen/waffen.yml": "0b824eb0e46fdf703c20151561f6c1c9581958f809b23e1245b1a361f1bbe46f",
+    "plugins/CraftEngine/resources/kristall_pack/pack.yml": "8804c3fc270fdb276916d9698c527abf2ffcdc023c2976b544707cf09570f516",
+    "plugins/Nexo/items/zweites_pack/dinge/dinge.yml": "5405b569eb49bb8ea914df31c4d63fa88a1c3dade99921fe26be08bb7dd7dff0"
+  }
+}

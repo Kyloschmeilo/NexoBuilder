@@ -4,21 +4,13 @@
  * The result contains finished file contents and can be zipped directly (see paths.ts for the layout).
  *
  * Convention: each domain owns its checks (nexo/<domain>/validate.ts, export/validate/* for what only
- * exists in the export); this module only calls them and puts their issues into the item's context.
+ * exists in the export, the target's own checks in targets/<target>/); this module only calls them and puts
+ * their issues into the item's context.
  */
 import { inContext, type Issue, type IssueContext, issueReporter } from '@resourcepackbuilder/utils';
 import { buildPackMcmeta } from '@resourcepackbuilder/minecraft';
-import {
-  getFolderSlugs,
-  getItemsInTreeOrder,
-  type Item,
-  itemFrame,
-  itemTarget,
-  type Project,
-  VARIANTS,
-} from '@resourcepackbuilder/core/project';
+import { getFolderSlugs, getItemsInTreeOrder, type Item, itemFrame, itemTarget, type Project } from '@resourcepackbuilder/core/project';
 import { collectArmorSets, itemArmor, writeArmorSets } from './equipment';
-import { writeItemModels } from './itemModels';
 import { writeModel } from './models';
 import { PackWriter } from './packWriter';
 import { modelPathFor } from './paths';
@@ -32,7 +24,7 @@ export function planExport(project: Project, options: PlanOptions = {}): ExportP
   const writer = new PackWriter(options.includeBinaries ?? true);
   const issues: Issue[] = [...validateProjectSettings(project), ...validateFolders(project)];
   const items = getItemsInTreeOrder(project);
-  issues.push(...validateItemIds(items));
+  issues.push(...validateItemIds(items, target.itemIds));
 
   const armorSets = collectArmorSets(items, project.settings.minecraftVersion, issues);
   writeArmorSets(writer, project, armorSets);
@@ -69,15 +61,7 @@ function planItem(target: PackTarget, project: Project, item: Item, writer: Pack
   };
 
   const main = item.model ? itemExport.writeModel(item.model, itemExport.modelPath, null) : null;
-  if (!main) itemExport.report('info', 'plan.missingModel');
-  const variantKeys = target.writeVariants(itemExport, main !== null);
-  const packSlots = VARIANTS.filter((def) => variantKeys[def.slot] !== undefined).map((def) => def.slot);
-  const itemModels = writeItemModels(itemExport, main?.key ?? null, packSlots);
-  const config = target.buildItem(
-    itemExport,
-    { mainKey: main?.key ?? null, variantKeys, itemModel: itemModels.itemModel, extraConfig: itemModels.config },
-    shared,
-  );
+  const config = target.buildItem(itemExport, target.writeModels(itemExport, main?.key ?? null), shared);
 
   return {
     item,
@@ -86,6 +70,7 @@ function planItem(target: PackTarget, project: Project, item: Item, writer: Pack
     modelFile: main?.file ?? null,
     modelJson: main?.json ?? null,
     config,
+    yamlKey: target.yamlKey(project, item),
     yamlFile: target.itemFile(project, itemExport.folderSlugs, item),
   };
 }

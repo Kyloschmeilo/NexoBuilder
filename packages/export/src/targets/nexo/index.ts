@@ -1,33 +1,62 @@
 /** The Nexo pack target: item configs as Nexo YAML in plugins/Nexo, the pack as an external pack. */
 import { getPath } from '@resourcepackbuilder/utils';
-import { buildItemConfig } from '@resourcepackbuilder/core/nexo';
-import { itemMaterial, variantFrame, variantPathSuffix, VARIANTS } from '@resourcepackbuilder/core/project';
+import { ITEM_ID_PATTERN } from '@resourcepackbuilder/minecraft';
+import { buildItemConfig, type ConfigAddition } from '@resourcepackbuilder/core/nexo';
+import { itemMaterial, variantFrame, variantPathSuffix, VARIANTS, type VariantSlot } from '@resourcepackbuilder/core/project';
+import { toYaml } from '@resourcepackbuilder/core/yaml';
 import type { ItemExport } from '../../types';
 import { validateItemConfig } from '../../validate/itemConfig';
-import type { ItemShared, PackTarget, VariantKeys, WrittenItemModels } from '../types';
+import type { ItemShared, PackTarget, WrittenItemModels } from '../types';
 import { nexoInstallGuide } from './installGuide';
+import { writeItemModels } from './itemModels';
 import { itemYamlFile, NEXO_PLUGIN_DIR, NEXO_RELOAD_COMMAND, packLocation } from './layout';
 import { planNexoPluginFiles } from './pluginFiles';
 
 export * from './installGuide';
+export * from './itemModels';
 export * from './layout';
 export * from './media';
 export * from './rootFiles';
 
-export const NEXO_TARGET: PackTarget = {
+/** Model keys of an item's variants by slot (several models for slots like pulling_models). */
+export type VariantKeys = Partial<Record<VariantSlot, string | string[]>>;
+
+/** What Nexo's config needs from the written models. */
+export interface NexoWrittenModels extends WrittenItemModels {
+  variantKeys: VariantKeys;
+  /** Item model definition written by ResourcepackBuilder (inventory icon, connectable furniture …) */
+  itemModel: string | null;
+  /** Values that additional models need in the config */
+  extraConfig: ConfigAddition[];
+}
+
+export const NEXO_TARGET: PackTarget<NexoWrittenModels> = {
   id: 'nexo',
+  itemIds: { pattern: ITEM_ID_PATTERN, invalidCode: 'plan.itemIdInvalid' },
   itemFile: (project, folderSlugs, item) => itemYamlFile(project, folderSlugs, item.itemId),
-  writeVariants,
+  writeModels,
   buildItem,
   yamlKey: (_project, item) => item.itemId,
+  itemYaml: (plan) => toYaml({ [plan.yamlKey || 'item']: plan.config }),
   planPluginFiles: planNexoPluginFiles,
   layout: {
     pluginDir: NEXO_PLUGIN_DIR,
+    fileTag: 'nexo',
+    packAsZip: (project) => project.settings.externalPackAsZip,
     packLocation,
     installGuide: nexoInstallGuide,
     reloadCommand: NEXO_RELOAD_COMMAND,
   },
 };
+
+/** The variants Nexo builds in, then the item model definitions ResourcepackBuilder writes for Nexo itself. */
+function writeModels(itemExport: ItemExport, mainKey: string | null): NexoWrittenModels {
+  if (!mainKey) itemExport.report('info', 'plan.missingModel');
+  const variantKeys = writeVariants(itemExport, mainKey !== null);
+  const packSlots = VARIANTS.filter((def) => variantKeys[def.slot] !== undefined).map((def) => def.slot);
+  const itemModels = writeItemModels(itemExport, mainKey, packSlots);
+  return { mainKey, variantKeys, itemModel: itemModels.itemModel, extraConfig: itemModels.config };
+}
 
 /**
  * Variant models that Nexo builds in via Pack.<slot> (bow, shield, fishing rod …). The hyphen in
@@ -64,7 +93,7 @@ function writeVariants(itemExport: ItemExport, hasMainModel: boolean): VariantKe
 }
 
 /** Builds the item's Nexo YAML config and checks it. */
-function buildItem(itemExport: ItemExport, written: WrittenItemModels, shared: ItemShared): Record<string, unknown> {
+function buildItem(itemExport: ItemExport, written: NexoWrittenModels, shared: ItemShared): Record<string, unknown> {
   const built = buildItemConfig({
     project: itemExport.project,
     item: itemExport.item,

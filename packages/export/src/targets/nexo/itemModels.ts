@@ -1,5 +1,5 @@
 /**
- * Models for which ResourcepackBuilder writes item model definitions (assets/<ns>/items/…) itself:
+ * Nexo: models for which ResourcepackBuilder writes item model definitions (assets/<ns>/items/…) itself:
  * custom inventory icon, connectable furniture, placement, light and state models of furniture
  * as well as stack stages of blocks. The matching values in the item configuration are returned too.
  */
@@ -22,8 +22,8 @@ import {
   type VariantSlot,
 } from '@resourcepackbuilder/core/project';
 import { getPath, isPlainObject } from '@resourcepackbuilder/utils';
-import { itemModelDefinitionFile } from './paths';
-import type { ItemExport } from './types';
+import { itemModelDefinitionFile } from '../../paths';
+import type { ItemExport } from '../../types';
 
 export interface ItemModelsResult {
   /** Custom item model of the item (Components.item_model) */

@@ -13,7 +13,7 @@ export function planNexoPluginFiles(project: Project, plans: ItemPlan[], writer:
     pluginFiles.set(
       file,
       itemsToYaml(
-        list.map((p) => ({ id: p.item.itemId, config: p.config })),
+        list.map((p) => ({ id: p.yamlKey, config: p.config })),
         `project "${project.name}"`,
       ),
     );

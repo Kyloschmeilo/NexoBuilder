@@ -3,8 +3,8 @@ import { parse } from 'yaml';
 import { createFolder, createItem, createProject, insertFolder, insertItem, type Project } from '@resourcepackbuilder/core/project';
 import { createTextureModel, type ImportedModel } from '@resourcepackbuilder/minecraft';
 import { makePngDataUrl } from '@resourcepackbuilder/test-utils/png';
-import { planExport } from './plan';
-import { pluginText } from '../test-utils/export';
+import { planExport } from '../../plan';
+import { pluginText } from '../../../test-utils/export';
 
 const PNG16 = makePngDataUrl(16, 16);
 const model = (name: string): ImportedModel =>

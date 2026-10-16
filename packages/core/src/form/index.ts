@@ -5,4 +5,5 @@ export * from './fieldSchema';
 export * from './messageKeys';
 export * from './options';
 export * from './properties';
+export * from './prune';
 export * from './types';

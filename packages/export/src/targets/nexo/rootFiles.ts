@@ -2,7 +2,7 @@
  * sounds.yml and paintings.yml live directly in plugins/Nexo – there is only one file of each.
  * When exporting multiple projects, the entries are therefore combined into one file.
  */
-import { toYaml, yamlHeader } from '@resourcepackbuilder/core/nexo';
+import { toYaml, yamlHeader } from '@resourcepackbuilder/core/yaml';
 import type { ExportPlan } from '../../types';
 
 export const SOUNDS_FILE = 'sounds.yml';

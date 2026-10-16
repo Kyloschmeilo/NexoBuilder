@@ -80,3 +80,48 @@ export function goldenSecondProject(): Project {
   );
   return project;
 }
+
+/**
+ * A CraftEngine project: a sword with a model, properties and a value without a property, a bow with pulling
+ * variants whose raw YAML overrides data.item_name and adds unknown keys, and an item without a model in a second
+ * folder. Its glyph and recipe are not exported for CraftEngine yet.
+ */
+export function goldenCraftEngineProject(): Project {
+  const project = createProject('Kristall Pack', 'kristall', '1.21.11', 'craftengine');
+  const weapons = createFolder('Waffen', null);
+  const misc = createFolder('Kram', null);
+  insertFolder(project, weapons);
+  insertFolder(project, misc);
+
+  const sword = createItem({
+    displayName: '<aqua>Kristall-Schwert',
+    itemId: 'crystal_sword',
+    folderId: weapons.id,
+    material: 'DIAMOND_SWORD',
+    model: png('crystal_sword.png'),
+  });
+  sword.config.data = { lore: ['<gray>Funkelt'], unbreakable: true };
+  sword.config.settings = { fuel_time: 300 };
+  sword.config.custom_extra = { keep: 'me' };
+  const recipe = createRecipe('shaped', 'r1');
+  recipe.grid = ['', 'A', '', '', 'A', '', '', 'B', ''];
+  recipe.ingredients = { A: { source: 'minecraft', id: 'AMETHYST_SHARD' }, B: { source: 'minecraft', id: 'STICK' } };
+  sword.recipes = [recipe];
+  insertItem(project, sword);
+
+  const bow = createItem({
+    displayName: 'Kristallbogen',
+    itemId: 'crystal_bow',
+    folderId: weapons.id,
+    material: 'BOW',
+    model: png('cbow.png'),
+  });
+  bow.variants = { pulling_models: [png('cbow_0.png'), png('cbow_1.png'), png('cbow_2.png')] };
+  bow.rawYaml = 'data:\n  item_name: "<gold>Bogen"\n  my_component: 1\nunknown_key: true';
+  insertItem(project, bow);
+
+  insertItem(project, createItem({ displayName: 'Stein', itemId: 'pebble', folderId: misc.id, material: 'PAPER', model: null }));
+
+  project.glyphs = [createGlyph('g1', 'gem', glyphFileFromDataUrl('gem.png', makePngDataUrl(8, 8)))];
+  return project;
+}

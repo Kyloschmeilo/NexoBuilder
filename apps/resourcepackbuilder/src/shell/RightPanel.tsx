@@ -48,7 +48,8 @@ function previewFor(project: Project, plan: ExportPlan | null, selection: Select
       return entry ? { file: entry.yamlFile, text: pluginText(plan, entry.yamlFile), issues: [] } : NOTHING;
     }
     case 'view': {
-      const glyphFile = selection.view === 'glyphs' ? glyphFilePath(project) : null;
+      // Only Nexo writes a glyph file so far (CraftEngine's images follow with its media)
+      const glyphFile = selection.view === 'glyphs' && project.target === 'nexo' ? glyphFilePath(project) : null;
       const text = glyphFile ? pluginText(plan, glyphFile) : '';
       return glyphFile && text ? { file: glyphFile, text, issues: [] } : NOTHING;
     }
