@@ -18,8 +18,6 @@ import { watchOpenProject } from './watchOpenProject';
 
 const AUTO_SYNC_DELAY_MS = 1200;
 /** Wait after a reload when Nexo's pack build cannot be followed (no Nexo JAR configured). */
-const UNTRACKED_RELOAD_MS = 2500;
-
 export interface TestServerSync {
   /** Writes the open project into the server; resolves with a transfer that started after the call. */
   sync(reload: boolean): Promise<TestServerSyncResult | null>;
@@ -77,15 +75,22 @@ export function createTestServerSync(api: DesktopTestServerApi): TestServerSync 
   );
 
   /** Resolves when the pack build started by a reload is over (or the server stopped). */
-  const reloadDone = (): Promise<void> => {
-    const isPackBuilding = () => {
+  /**
+   * Resolves once Nexo has finished the pack build that a reload requested at `requestedAt` started. The desktop
+   * program marks the pack as building when it sends the reload and times a stuck build out, so this always settles.
+   * Without a Nexo JAR there is no pack to wait for.
+   */
+  const reloadDone = (requestedAt: number): Promise<void> => {
+    const isSettled = () => {
       const { server } = store.getState();
-      return server?.status === 'running' && server.pack.status === 'building';
+      if (!server || server.status !== 'running' || !server.config.nexoJar) return true;
+      const { pack } = server;
+      return pack.status !== 'building' && pack.at !== null && pack.at >= requestedAt;
     };
-    if (!isPackBuilding()) return new Promise((resolve) => setTimeout(resolve, UNTRACKED_RELOAD_MS));
+    if (isSettled()) return Promise.resolve();
     return new Promise((resolve) => {
       const unsubscribe = store.subscribe(() => {
-        if (isPackBuilding()) return;
+        if (!isSettled()) return;
         unsubscribe();
         resolve();
       });
@@ -205,8 +210,9 @@ export function createTestServerSync(api: DesktopTestServerApi): TestServerSync 
       const player = server.config.playerName;
       if (!player) throw new AppError('errors.testServer.playerNameMissing');
       // Transfer the latest files first so the item is sure to exist
+      const requestedAt = Date.now();
       const result = await transfer.run(true);
-      if (result?.reloaded) await reloadDone();
+      if (result?.reloaded) await reloadDone(requestedAt);
       await api.command(nexoGiveCommand(nexoId, amount, player));
       return player;
     },

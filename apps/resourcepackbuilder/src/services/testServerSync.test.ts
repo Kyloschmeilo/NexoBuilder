@@ -105,3 +105,42 @@ describe('loadPaperVersions', () => {
     expect(api.versions).toHaveBeenCalledTimes(2);
   });
 });
+
+describe('give', () => {
+  const running = (nexoJar: TestServerState['config']['nexoJar']): TestServerState => ({
+    ...serverState(),
+    status: 'running',
+    config: { ...serverState().config, playerName: 'Steve', nexoJar },
+  });
+
+  async function startGiving(nexoJar: TestServerState['config']['nexoJar']) {
+    const command = vi.fn(() => Promise.resolve(true));
+    const api: DesktopTestServerApi = {
+      ...fakeApi(() => Promise.resolve([])),
+      command,
+      sync: () => Promise.resolve({ written: 1, deleted: 0, skipped: 0, settingsChanged: false, reloaded: true, total: 1 }),
+    };
+    const sync = await startService(api, '1.21.4');
+    useTestServerStore.setState({ server: running(nexoJar) });
+    return { api: { command }, given: sync.give('fire_sword') };
+  }
+
+  it('waits until the pack build started by the reload has finished', async () => {
+    const { api, given } = await startGiving({ file: 'Nexo-1.0.jar', name: 'Nexo', version: '1.0' });
+    const server = () => state().server as TestServerState;
+    // The desktop program marks the pack as building when it sends the reload, then ready when Nexo is done
+    await vi.waitFor(() => expect(server().pack.status).toBe('idle'));
+    useTestServerStore.setState({ server: { ...server(), pack: { status: 'building', message: null, at: Date.now() } } });
+    await new Promise((resolve) => setTimeout(resolve, 20));
+    expect(api.command).not.toHaveBeenCalled();
+    useTestServerStore.setState({ server: { ...server(), pack: { status: 'ready', message: null, at: Date.now() } } });
+    await expect(given).resolves.toBe('Steve');
+    expect(api.command).toHaveBeenCalledWith(expect.stringContaining('fire_sword'));
+  });
+
+  it('gives right away when there is no Nexo pack to wait for', async () => {
+    const { api, given } = await startGiving(null);
+    await expect(given).resolves.toBe('Steve');
+    expect(api.command).toHaveBeenCalledTimes(1);
+  });
+});
