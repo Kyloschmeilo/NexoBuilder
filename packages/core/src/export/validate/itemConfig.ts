@@ -1,9 +1,8 @@
 /** Checks of an item's configuration (properties, field formats, custom block, stack size). */
-import { labelArg, type IssueContext, type MessageArgs } from '../../issues';
+import { labelArg } from '../../issues';
 import { versionSupport } from '../../minecraft/versions';
 import { slotForMaterial } from '../../nexo/armor';
-import { validateTextFormat } from '../../nexo/fieldFormat';
-import type { Field } from '../../nexo/fields';
+import { checkFieldValue } from '../../nexo/fieldSchema';
 import { getPropertyValue } from '../../nexo/properties';
 import { MATERIAL_PATTERN } from '../../nexo/material';
 import { PROPERTIES } from '../../nexo/schema';
@@ -11,7 +10,7 @@ import { MODEL_TOKEN } from '../../tokens';
 import { getPath, isPlainObject } from '../../object';
 import { itemLabel } from '../../project/labels';
 import type { Item } from '../../project/types';
-import { fieldFrame, listEntryFrame, mapKeyFrame, propertyFrame } from '../../issueFrames';
+import { propertyFrame } from '../../issueFrames';
 import type { ItemExport } from '../types';
 
 /** Highest custom_variation per block type (Nexo limits) */
@@ -48,7 +47,7 @@ export function validateItemConfig(itemExport: ItemExport, { config, usedVariati
         report('error', 'plan.propertyConflict', { other: labelArg(other.label) }, [frame]);
       }
     }
-    for (const found of validateFieldValues(value, def.field)) {
+    for (const found of checkFieldValue(value, def.field)) {
       report('warning', found.code, found.args, [frame, ...found.context]);
     }
   }
@@ -81,57 +80,4 @@ export function validateItemConfig(itemExport: ItemExport, { config, usedVariati
     const stack = components.max_stack_size;
     if (typeof stack === 'number' && components.max_damage !== undefined && stack > 1) report('error', 'plan.damageableStackable');
   }
-}
-
-interface FieldValueIssue {
-  code: string;
-  args?: MessageArgs;
-  /** Where inside the property value: field labels, list positions and map keys */
-  context: IssueContext[];
-}
-
-/** Recursively checks formats (duration, vector, color …) and number ranges within a value. */
-function validateFieldValues(value: unknown, field: Field): FieldValueIssue[] {
-  const found: FieldValueIssue[] = [];
-  const add = (code: string, context: IssueContext[], args?: MessageArgs) => found.push({ code, context, ...(args && { args }) });
-  const visit = (v: unknown, f: Field, context: IssueContext[]) => {
-    if (v === undefined || v === null) return;
-    switch (f.type) {
-      case 'text': {
-        // validateTextFormat returns a message key in the `schema` namespace
-        const error = typeof v === 'string' ? validateTextFormat(f.format, v) : null;
-        if (typeof v === 'string' && error) add('plan.fieldFormat', context, { value: v, error: labelArg(error) });
-        break;
-      }
-      case 'number':
-        if (typeof v !== 'number') break;
-        if (f.min !== undefined && v < f.min) add('plan.fieldTooSmall', context, { value: v, min: f.min });
-        if (f.max !== undefined && v > f.max) add('plan.fieldTooLarge', context, { value: v, max: f.max });
-        if (f.integer && !Number.isInteger(v)) add('plan.fieldNotInteger', context);
-        break;
-      case 'object':
-        if (!isPlainObject(v)) break;
-        for (const child of f.fields) {
-          if (child.key !== '*') visit(v[child.key], child, [...context, fieldFrame(child.label)]);
-        }
-        break;
-      case 'objectList':
-        if (!Array.isArray(v)) break;
-        v.forEach((entry, i) => {
-          if (!isPlainObject(entry)) return;
-          for (const child of f.fields) visit(entry[child.key], child, [...context, listEntryFrame(i + 1), fieldFrame(child.label)]);
-        });
-        break;
-      case 'map':
-        if (!isPlainObject(v)) break;
-        for (const [key, entry] of Object.entries(v)) {
-          if (!f.reservedKeys?.includes(key)) visit(entry, f.value, [...context, mapKeyFrame(key)]);
-        }
-        break;
-      default:
-        break;
-    }
-  };
-  visit(value, field, []);
-  return found;
 }
