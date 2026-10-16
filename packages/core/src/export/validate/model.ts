@@ -3,6 +3,7 @@ import type { Issue } from '../../issues';
 import { compareVersions, getMcVersion } from '../../minecraft/versions';
 import { isVanillaReference } from '../../minecraft/resourceLocation';
 import { analyseElements } from '../../model/javaModel';
+import { followTextureRef } from '../../model/textureRefs';
 import type { JavaModelJson } from '../../model/types';
 
 /** `ownTextures`: texture references written by this export. */
@@ -16,11 +17,12 @@ export function validateModel(model: JavaModelJson, targetVersion: string, ownTe
       args: { version: analysis.requiresVersion, target: getMcVersion(targetVersion).label },
     });
   }
-  const isDefined = (key: string) => key === 'missing' || model.textures?.[key] !== undefined || !!model.parent;
+  // A parent may define the key; "#missing" is Minecraft's own missing texture
+  const isDefined = (ref: string) => ref === '#missing' || !!model.parent || followTextureRef(model.textures, ref) !== null;
   for (const [key, value] of Object.entries(model.textures ?? {})) {
     if (typeof value !== 'string') continue;
     if (value.startsWith('#')) {
-      if (!isDefined(value.slice(1))) issues.push({ level: 'warning', code: 'plan.textureRefUndefined', args: { key, value } });
+      if (!isDefined(value)) issues.push({ level: 'warning', code: 'plan.textureRefUndefined', args: { key, value } });
     } else if (!isVanillaReference(value) && !ownTextures.has(value)) {
       // Foreign references must be provided by another pack
       issues.push({ level: 'warning', code: 'plan.textureRefForeign', args: { key, value } });
@@ -33,7 +35,7 @@ export function validateModel(model: JavaModelJson, targetVersion: string, ownTe
     }
   }
   for (const key of faceKeys) {
-    if (!isDefined(key)) issues.push({ level: 'warning', code: 'plan.faceTextureUndefined', args: { key } });
+    if (!isDefined(`#${key}`)) issues.push({ level: 'warning', code: 'plan.faceTextureUndefined', args: { key } });
   }
   return issues;
 }

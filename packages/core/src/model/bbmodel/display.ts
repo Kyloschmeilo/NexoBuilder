@@ -1,21 +1,8 @@
 /** Display transforms (first person, GUI, …) of a Blockbench project. */
+import { DISPLAY_SLOTS } from '../../minecraft/vanillaModels';
 import { isPlainObject } from '../../object';
 import { roundNumber } from '../geometry';
 import type { JavaDisplayTransform } from '../types';
-
-/** Java display contexts that Blockbench exports. */
-const DISPLAY_SLOTS = [
-  'thirdperson_righthand',
-  'thirdperson_lefthand',
-  'firstperson_righthand',
-  'firstperson_lefthand',
-  'ground',
-  'gui',
-  'head',
-  'embedded',
-  'fixed',
-  'on_shelf',
-];
 
 const VECTOR_KEYS = ['rotation', 'translation', 'scale', 'rotation_pivot', 'scale_pivot'] as const;
 

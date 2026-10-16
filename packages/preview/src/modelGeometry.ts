@@ -4,10 +4,11 @@
  *
  * Vertex order and UV rotation match Blockbench (js/util/three_custom.js, cube.js).
  */
-import type { FaceName, ImportedModel, JavaModelElement, JavaModelFace, ModelTexture } from '@resourcepackbuilder/core/model/types';
-import { parseTexturePlaceholder } from '@resourcepackbuilder/core/tokens';
 import { stripMinecraftNamespace } from '@resourcepackbuilder/core/minecraft/resourceLocation';
+import { isGeneratedItemParent, MAX_ITEM_LAYERS, vanillaParentElements } from '@resourcepackbuilder/core/minecraft/vanillaModels';
+import { resolveTextureRef } from '@resourcepackbuilder/core/model/textureRefs';
 import { getFrameSize } from '@resourcepackbuilder/core/model/textures';
+import type { FaceName, ImportedModel, ModelTexture } from '@resourcepackbuilder/core/model/types';
 
 export type Vec3 = [number, number, number];
 
@@ -38,56 +39,11 @@ export interface PreviewModel {
 }
 
 export type PreviewNote =
-  | { code: 'vanillaParent'; params: { parent: string } }
-  | { code: 'noElements'; params?: undefined }
-  | { code: 'noLayer0'; params?: undefined };
+  { code: 'vanillaParent'; args: { parent: string } } | { code: 'noElements'; args?: undefined } | { code: 'noLayer0'; args?: undefined };
 
 const FACE_ORDER: FaceName[] = ['east', 'west', 'up', 'down', 'south', 'north'];
 /** Brightness like Minecraft blocks (directional light) */
 const FACE_SHADE: Record<FaceName, number> = { up: 1, down: 0.5, north: 0.8, south: 0.8, east: 0.6, west: 0.6 };
-
-const GENERATED_PARENTS = ['item/generated', 'item/handheld', 'item/handheld_rod', 'item/handheld_mace', 'builtin/generated'];
-
-/** Elements of the most important vanilla parent models so texture models get a preview too. */
-function builtinParentElements(parent: string): JavaModelElement[] | null {
-  const p = stripMinecraftNamespace(parent);
-  const cube = (faces: Partial<Record<FaceName, string>>): JavaModelElement => ({
-    from: [0, 0, 0],
-    to: [16, 16, 16],
-    faces: Object.fromEntries(Object.entries(faces).map(([k, v]) => [k, { texture: v }])) as JavaModelElement['faces'],
-  });
-  switch (p) {
-    case 'block/cube':
-      return [cube({ down: '#down', up: '#up', north: '#north', south: '#south', west: '#west', east: '#east' })];
-    case 'block/cube_all':
-      return [cube({ down: '#all', up: '#all', north: '#all', south: '#all', west: '#all', east: '#all' })];
-    case 'block/cube_column':
-      return [cube({ down: '#end', up: '#end', north: '#side', south: '#side', west: '#side', east: '#side' })];
-    case 'block/cube_bottom_top':
-      return [cube({ down: '#bottom', up: '#top', north: '#side', south: '#side', west: '#side', east: '#side' })];
-    case 'block/orientable':
-      return [cube({ down: '#top', up: '#top', north: '#front', south: '#side', west: '#side', east: '#side' })];
-    case 'block/cross':
-      return [
-        {
-          from: [0.8, 0, 8],
-          to: [15.2, 16, 8],
-          rotation: { origin: [8, 8, 8], axis: 'y', angle: 45, rescale: true },
-          shade: false,
-          faces: { north: { uv: [0, 0, 16, 16], texture: '#cross' }, south: { uv: [0, 0, 16, 16], texture: '#cross' } },
-        },
-        {
-          from: [8, 0, 0.8],
-          to: [8, 16, 15.2],
-          rotation: { origin: [8, 8, 8], axis: 'y', angle: 45, rescale: true },
-          shade: false,
-          faces: { west: { uv: [0, 0, 16, 16], texture: '#cross' }, east: { uv: [0, 0, 16, 16], texture: '#cross' } },
-        },
-      ];
-    default:
-      return null;
-  }
-}
 
 /** Default UVs when a face has no UVs of its own (like Minecraft). */
 function defaultUv(face: FaceName, from: Vec3, to: Vec3): [number, number, number, number] {
@@ -160,46 +116,21 @@ function rescaleFactor(angle: number): number {
   return 1 / Math.cos((a * Math.PI) / 180);
 }
 
-export interface TextureResolution {
-  texture: ModelTexture | null;
-  unresolved: string | null;
-}
-
-/** Resolves "#key" references down to the actual texture. */
-export function resolveTextureRef(model: ImportedModel, ref: string): TextureResolution {
-  const textures = model.json.textures ?? {};
-  let value: string | undefined = ref;
-  const seen = new Set<string>();
-  while (value?.startsWith('#')) {
-    const key = value.slice(1);
-    if (seen.has(key)) return { texture: null, unresolved: value };
-    seen.add(key);
-    value = textures[key];
-  }
-  if (!value) return { texture: null, unresolved: ref };
-  const id = parseTexturePlaceholder(value);
-  if (id) {
-    const texture = model.textures.find((t) => t.id === id) ?? null;
-    return texture?.dataUrl ? { texture, unresolved: null } : { texture: null, unresolved: value };
-  }
-  return { texture: null, unresolved: value };
-}
-
 export function buildPreviewModel(model: ImportedModel): PreviewModel {
   const json = model.json;
   let elements = Array.isArray(json.elements) ? json.elements : null;
   const parent = typeof json.parent === 'string' ? stripMinecraftNamespace(json.parent) : '';
 
-  if (!elements && GENERATED_PARENTS.includes(parent)) {
+  if (!elements && isGeneratedItemParent(parent)) {
     return buildGeneratedModel(model);
   }
   if (!elements && parent) {
-    elements = builtinParentElements(parent);
+    elements = vanillaParentElements(parent);
     if (!elements) {
       return {
         elements: [],
         kind: 'empty',
-        note: { code: 'vanillaParent', params: { parent: String(json.parent) } },
+        note: { code: 'vanillaParent', args: { parent: String(json.parent) } },
       };
     }
   }
@@ -232,10 +163,10 @@ export function buildPreviewModel(model: ImportedModel): PreviewModel {
 
     const faces: PreviewFace[] = [];
     for (const faceName of FACE_ORDER) {
-      const face = el.faces?.[faceName] as JavaModelFace | undefined;
+      const face = el.faces?.[faceName];
       if (!face) continue;
       const { texture, unresolved } = resolveTextureRef(model, face.texture ?? '#missing');
-      const uv = face.uv ?? defaultUv(faceName, el.from as Vec3, el.to as Vec3);
+      const uv = face.uv ?? defaultUv(faceName, el.from, el.to);
       faces.push({
         positions: facePositions(faceName, from, to),
         uvs: computeUvs(uv, face.rotation ?? 0, texture),
@@ -279,7 +210,7 @@ function computeUvs(uv: number[], rotation: number, texture: ModelTexture | null
 /** 2D items (item/generated): layers as a flat plane in the middle of the block. */
 function buildGeneratedModel(model: ImportedModel): PreviewModel {
   const elements: PreviewElement[] = [];
-  for (let i = 0; i < 5; i++) {
+  for (let i = 0; i < MAX_ITEM_LAYERS; i++) {
     const ref = model.json.textures?.[`layer${i}`];
     if (!ref) break;
     const { texture, unresolved } = resolveTextureRef(model, ref);

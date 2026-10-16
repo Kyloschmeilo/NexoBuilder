@@ -9,6 +9,7 @@
 import { isPngDataUrl } from '../binary/png';
 import { CoreError, type Issue } from '../issues';
 import { isVanillaReference, resourceBaseName, stripMinecraftNamespace } from '../minecraft/resourceLocation';
+import { ELEMENTLESS_ITEM_PARENTS } from '../minecraft/vanillaModels';
 import { FEATURE_VERSIONS, maxVersion } from '../minecraft/versions';
 import { deepClone, isPlainObject } from '../object';
 import { fileBaseName } from '../text';
@@ -21,9 +22,6 @@ interface ParsedJson {
   name: string;
   json: JavaModelJson;
 }
-
-/** Parent models Minecraft uses for 2D items (no elements needed here). */
-const ITEM_PARENTS = ['item/generated', 'item/handheld', 'item/handheld_rod', 'item/handheld_mace', 'builtin/generated', 'builtin/entity'];
 
 export function convertJavaModel(files: ImportFile[]): ImportedModel {
   const jsonFiles = files.filter((f) => /\.json$/i.test(f.name) && typeof f.text === 'string');
@@ -296,7 +294,7 @@ function checkParent(json: JavaModelJson, issues: Issue[]) {
   const parent = stripMinecraftNamespace(json.parent);
   if (!isVanillaReference(json.parent)) {
     issues.push({ level: 'warning', code: 'model.customParent', args: { parent: json.parent } });
-  } else if (!json.elements && !ITEM_PARENTS.includes(parent) && !parent.startsWith('block/') && !parent.startsWith('item/')) {
+  } else if (!json.elements && !ELEMENTLESS_ITEM_PARENTS.includes(parent) && !parent.startsWith('block/') && !parent.startsWith('item/')) {
     issues.push({ level: 'info', code: 'model.vanillaParent', args: { parent: json.parent } });
   }
 }

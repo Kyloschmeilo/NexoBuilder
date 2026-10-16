@@ -4,13 +4,22 @@ import { RotateCcw } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 import { IconButton } from '@resourcepackbuilder/ui';
 import { NativeSelect, NativeSelectOption } from '@resourcepackbuilder/ui/components/native-select';
-import type { ImportedModel, JavaDisplayTransform } from '@resourcepackbuilder/core/model/types';
+import type { DisplaySlot } from '@resourcepackbuilder/core/minecraft/vanillaModels';
+import type { ImportedModel } from '@resourcepackbuilder/core/model/types';
 import { buildPreviewModel } from './modelGeometry';
 import { createStage, type Stage } from './stage';
 import { createModelObject } from './threeModel';
 
-/** Display slots that can be previewed; labels live in the `preview.display` messages. */
-const DISPLAY_OPTIONS = ['none', 'gui', 'thirdperson_righthand', 'firstperson_righthand', 'head', 'ground', 'fixed'] as const;
+/** Display slots that can be previewed (a choice of core's DISPLAY_SLOTS); labels live in the `preview.display` messages. */
+const DISPLAY_OPTIONS = [
+  'none',
+  'gui',
+  'thirdperson_righthand',
+  'firstperson_righthand',
+  'head',
+  'ground',
+  'fixed',
+] as const satisfies ReadonlyArray<'none' | DisplaySlot>;
 type DisplayOption = (typeof DISPLAY_OPTIONS)[number];
 
 const isDisplayOption = (value: string): value is DisplayOption => (DISPLAY_OPTIONS as readonly string[]).includes(value);
@@ -49,7 +58,7 @@ export function ModelPreview({ model, height = 340, showToolbar = true }: ModelP
   const [resetCounter, setResetCounter] = useState(0);
   const [isWebglUnavailable, setIsWebglUnavailable] = useState(false);
   const preview = useMemo(() => buildPreviewModel(model), [model]);
-  const displayTransform = display === 'none' ? undefined : (model.json.display?.[display] as JavaDisplayTransform | undefined);
+  const displayTransform = display === 'none' ? undefined : model.json.display?.[display];
 
   // The stage lives as long as its container element (created before the effects below run)
   const attachStage = useCallback((container: HTMLDivElement) => {
@@ -94,7 +103,7 @@ export function ModelPreview({ model, height = 340, showToolbar = true }: ModelP
   const note = isWebglUnavailable
     ? t('webglUnavailable')
     : preview.kind === 'empty' && preview.note
-      ? t(`notes.${preview.note.code}`, preview.note.params)
+      ? t(`notes.${preview.note.code}`, preview.note.args)
       : null;
 
   return (

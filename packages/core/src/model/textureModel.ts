@@ -3,6 +3,7 @@
  * (2D item, tool, cube block, plant …).
  */
 import { isPngDataUrl } from '../binary/png';
+import { MAX_ITEM_LAYERS } from '../minecraft/vanillaModels';
 import { CoreError, type Issue } from '../issues';
 import { fileBaseName } from '../text';
 import { texturePlaceholder } from '../tokens';
@@ -27,8 +28,7 @@ export interface TextureTemplate {
   block?: boolean;
 }
 
-/** Minecraft supports layers layer0 to layer4 for item/generated. */
-export const MAX_ITEM_LAYERS = 5;
+export { MAX_ITEM_LAYERS };
 
 export const TEXTURE_TEMPLATES: TextureTemplate[] = [
   {
