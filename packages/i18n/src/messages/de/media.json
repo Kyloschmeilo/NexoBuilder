@@ -194,5 +194,19 @@
     "count": "{count, plural, one {# Loot-Quelle} other {# Loot-Quellen}}",
     "hint": "Eine Loot-Quelle hängt eine Loot-Tabelle an ein Vanilla-Loot-Ereignis: einen Block abbauen, einen Mob töten, eine Truhe öffnen, angeln und mehr. Mit overwrite ersetzt sie die Vanilla-Items oder die Erfahrung.",
     "docs": "Loot-Quellen im CraftEngine-Wiki"
+  },
+  "templates": {
+    "title": "Vorlagen",
+    "count": "{count, plural, one {# Vorlage} other {# Vorlagen}}",
+    "hint": "Eine Vorlage ist ein Stück Konfiguration mit Platzhaltern für Argumente. Blöcke nutzen sie in ihren Einstellungen, Items für das ganze Item, dazu Loot-Tabellen und Events. Die Standardvorlagen von CraftEngine (default:…) gibt es immer.",
+    "docs": "Vorlagen im CraftEngine-Wiki",
+    "defaults": "Standardvorlagen von CraftEngine",
+    "defaultsHint": "Jeder Block, jedes Item und jedes Möbelstück kann sie nutzen. Pflichtargumente sind mit * markiert."
+  },
+  "globalVariables": {
+    "title": "Globale Variablen",
+    "count": "{count, plural, one {# Variable} other {# Variablen}}",
+    "hint": "Eine globale Variable ist ein MiniMessage-Text, den CraftEngine überall einsetzt, wo ein Text '<'global:name> sagt: in Item-Namen, Lore und mehr. Die Vorschauen im Item-Editor zeigen ihn auch.",
+    "docs": "Globale Variablen im CraftEngine-Wiki"
   }
 }

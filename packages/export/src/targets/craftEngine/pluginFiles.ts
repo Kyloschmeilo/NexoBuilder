@@ -1,19 +1,21 @@
 /**
  * The files of plugins/CraftEngine: the project's pack.yml, its item configs (with their blocks, furniture and
  * recipes) grouped by file, the configs of its glyphs, sounds and paintings, its armor sets (equipments.yml), its
- * folders as categories (categories.yml, when the project setting is on), its lang files and its loot sources
- * (loot_sources.yml).
+ * folders as categories (categories.yml, when the project setting is on), its lang files, its loot sources
+ * (loot_sources.yml), its templates (templates.yml) and its global variables (global_variables.yml).
  */
 import { createIssue, groupBy, type Issue, type IssueCode, type IssueLevel, type MessageArgs } from '@resourcepackbuilder/utils';
 import { formatResourceLocation } from '@resourcepackbuilder/minecraft';
 import {
   craftEngineCategories,
+  craftEngineGlobalVariables,
   craftEngineGlyphs,
   craftEngineLang,
   craftEngineJukeboxSong,
   craftEngineLootSources,
   craftEnginePainting,
   craftEngineSound,
+  craftEngineTemplates,
   type CraftEngineSections,
   sectionsToYaml,
   buildPackYml,
@@ -26,7 +28,7 @@ import type { FileContent, ItemPlan } from '../../types';
 import type { TargetPluginFiles } from '../types';
 import { exportPackName } from '../../paths';
 import { CRAFT_ENGINE_RESERVED_PACK_NAME, craftEngineConfigFile, craftEngineMediaFile, packYmlFile } from './layout';
-import { blockProjectIssues, lootSourceIssues } from './validate';
+import { blockProjectIssues, lootSourceIssues, templateProjectIssues } from './validate';
 
 export function planCraftEnginePluginFiles(project: Project, plans: ItemPlan[], writer: PackWriter, issues: Issue[]): TargetPluginFiles {
   const pluginFiles = new Map<string, FileContent>([[packYmlFile(project), buildPackYml(project)]]);
@@ -45,13 +47,15 @@ export function planCraftEnginePluginFiles(project: Project, plans: ItemPlan[], 
       plans.map((p) => p.item),
     ),
   );
-  issues.push(...blockProjectIssues(project), ...lootSourceIssues(project));
-  const lootSources = craftEngineLootSources(project);
-  if (Object.keys(lootSources).length > 0) {
-    pluginFiles.set(
-      craftEngineConfigFile(project, 'loot_sources'),
-      sectionsToYaml({ loot_sources: lootSources }, `loot sources of "${project.name}"`),
-    );
+  issues.push(...blockProjectIssues(project), ...lootSourceIssues(project), ...templateProjectIssues(project));
+  const projectSections = [
+    ['loot_sources', craftEngineLootSources(project), 'loot sources'],
+    ['templates', craftEngineTemplates(project), 'templates'],
+    ['global_variables', craftEngineGlobalVariables(project), 'global variables'],
+  ] as const;
+  for (const [name, section, label] of projectSections) {
+    if (Object.keys(section).length === 0) continue;
+    pluginFiles.set(craftEngineConfigFile(project, name), sectionsToYaml({ [name]: section }, `${label} of "${project.name}"`));
   }
   for (const [path, text] of planMedia(project, writer, issues)) pluginFiles.set(path, text);
   for (const [path, text] of planItemExtras(project, plans)) pluginFiles.set(path, text);

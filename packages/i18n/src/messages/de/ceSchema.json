@@ -82,6 +82,28 @@
         }
       }
     },
+    "template": {
+      "label": "Template",
+      "description": "Baut das ganze Item aus Vorlagen des Projekts (siehe Vorlagen). Die hier gesetzten Schlüssel werden über die der Vorlagen gelegt.",
+      "hint": "CraftEngine füllt $'{'__NAMESPACE__'}' und $'{'__ID__'}' mit Namespace und ID des Items.",
+      "field": {
+        "label": "Vorlagen",
+        "placeholder": "z.B. meinpack:armor"
+      }
+    },
+    "arguments": {
+      "label": "Arguments",
+      "description": "Die Werte für die Platzhalter der Vorlagen des Items.",
+      "field": {
+        "label": "Argumente",
+        "keyLabel": "Argument",
+        "keyPlaceholder": "z.B. material",
+        "value": {
+          "label": "Wert",
+          "placeholder": "z.B. topaz"
+        }
+      }
+    },
     "clientBoundMaterial": {
       "label": "Client Bound Material",
       "description": "Das Material, das Spieler sehen. Der Server behält das echte Material.",
@@ -660,6 +682,28 @@
       "description": "Eine eigene Projektil-Entity, z.B. für einen Dreizack.",
       "field": {
         "label": "Projektil (YAML)"
+      }
+    },
+    "blockSettingsTemplate": {
+      "label": "Template",
+      "description": "Übernimmt die Block-Einstellungen aus Vorlagen: den Standardvorlagen von CraftEngine (default:settings/…, default:hardness/…, default:sound/…, default:burn_data/…) oder denen des Projekts. Spätere Vorlagen gewinnen gegen frühere.",
+      "hint": "Die hier gesetzten Einstellungen werden über die der Vorlagen gelegt: Werte ersetzen ihre, Listen werden an ihre angehängt.",
+      "field": {
+        "label": "Vorlagen",
+        "placeholder": "z.B. default:sound/stone"
+      }
+    },
+    "blockSettingsArguments": {
+      "label": "Arguments",
+      "description": "Die Werte für die Platzhalter der Einstellungsvorlagen, z.B. break_power für default:settings/ore.",
+      "field": {
+        "label": "Argumente",
+        "keyLabel": "Argument",
+        "keyPlaceholder": "z.B. break_power",
+        "value": {
+          "label": "Wert",
+          "placeholder": "z.B. 2"
+        }
       }
     },
     "blockSettingsHardness": {
@@ -2931,5 +2975,49 @@
   },
   "lootSources": {
     "label": "loot_sources"
+  },
+  "craftEngine": {
+    "fields": {
+      "templates": {
+        "label": "templates",
+        "itemLabel": "Vorlage",
+        "fields": {
+          "id": {
+            "label": "id",
+            "help": "Verwendungen nennen die Vorlage mit dieser ID. Ohne Namespace bekommt sie den des Projekts.",
+            "placeholder": "z.B. ore_settings"
+          },
+          "arguments": {
+            "label": "arguments",
+            "help": "Die Argumente der Vorlage. Eines ohne Standardwert muss jede Verwendung übergeben.",
+            "itemLabel": "Argument",
+            "fields": {
+              "name": {
+                "label": "name",
+                "placeholder": "z.B. hardness"
+              },
+              "default": {
+                "label": "default",
+                "placeholder": "leer: das Argument ist Pflicht"
+              }
+            }
+          },
+          "body": {
+            "label": "body",
+            "help": "Die Konfiguration, für die die Vorlage steht, als YAML. $'{'name'}' setzt ein Argument ein, $'{'name:-wert'}' ein Argument mit Standardwert.",
+            "placeholder": "hardness: $'{'hardness'}'"
+          }
+        }
+      },
+      "globalVariables": {
+        "label": "global_variables",
+        "keyLabel": "Name",
+        "keyPlaceholder": "z.B. rare_tag",
+        "value": {
+          "label": "Text",
+          "placeholder": "z.B. '<'gold>[Selten]"
+        }
+      }
+    }
   }
 }

@@ -6,6 +6,8 @@ import { Empty, EmptyContent, EmptyDescription, EmptyHeader, EmptyMedia, EmptyTi
 import { FolderView } from '../features/folder/FolderView';
 import { useFolderActions } from '../features/folder/useFolderActions';
 import { ItemEditor } from '../features/item/ItemEditor';
+import { GlobalVariablesView } from '../features/craftEngine/GlobalVariablesView';
+import { TemplatesView } from '../features/craftEngine/TemplatesView';
 import { LootSourcesView } from '../features/lootSources/LootSourcesView';
 import { GlyphsView, PaintingsView, SoundsView } from '../features/media/MediaView';
 import { TestServerView } from '../features/testServer/TestServerView';
@@ -18,6 +20,8 @@ const VIEWS: Record<ViewName, ComponentType> = {
   sounds: SoundsView,
   paintings: PaintingsView,
   lootSources: LootSourcesView,
+  templates: TemplatesView,
+  globalVariables: GlobalVariablesView,
   testServer: TestServerView,
 };
 

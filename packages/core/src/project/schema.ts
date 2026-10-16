@@ -272,7 +272,11 @@ export function settingsSchema(projectName: string) {
 
 /** The project-wide CraftEngine configuration; a bad part is dropped, an empty one leaves the whole out. */
 export const CraftEngineProjectSchema = z
-  .object({ lootSources: optional(lenientList(ConfigObjectSchema)) })
+  .object({
+    lootSources: optional(lenientList(ConfigObjectSchema)),
+    templates: optional(lenientList(ConfigObjectSchema)),
+    globalVariables: optional(lenientRecord(z.string())),
+  })
   .transform((data) => withoutUndefined(data))
   .transform((data) => (Object.keys(data).length > 0 ? data : undefined));
 

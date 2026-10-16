@@ -14,6 +14,8 @@ export const CE_DOCS = {
   lang: `${WIKI}/configuration/translations`,
   events: `${WIKI}/reference/events`,
   lootSources: `${WIKI}/configuration/loot_source`,
+  templates: `${WIKI}/reference/template`,
+  globalVariables: `${WIKI}/configuration/global_variable`,
 };
 
 /** Links every property of a group to its wiki page. */

@@ -15,7 +15,8 @@
     "variant": "{variant}",
     "variantModel": "{variant} ({suffix})",
     "armorLayer": "{layer}",
-    "lootSource": "Loot-Quelle „{id}“"
+    "lootSource": "Loot-Quelle „{id}“",
+    "template": "Vorlage „{id}“"
   },
   "plan": {
     "missingModel": "Kein Modell – das Item nutzt das Aussehen des Basis-Materials.",
@@ -263,7 +264,14 @@
     "lootSourceIdDuplicate": "Eine andere Loot-Quelle nutzt schon die ID „{id}“, deshalb wird diese weggelassen.",
     "lootSourceTypeUnknown": "CraftEngine kennt den Loot-Quellentyp „{type}“ nicht.",
     "lootSourceTargetNotAllowed": "Der Loot-Quellentyp {type} nimmt kein Ziel. CraftEngine lehnt die Loot-Quelle ab.",
-    "lootSourceLootMissing": "Die Loot-Quelle hat keinen Loot."
+    "lootSourceLootMissing": "Die Loot-Quelle hat keinen Loot.",
+    "templateUnknown": "Es gibt keine Vorlage „{template}“. Weder die Standardvorlagen von CraftEngine noch dieses Projekt definieren sie, deshalb lehnt CraftEngine die Konfiguration ab.",
+    "templateArgumentMissing": "Die Vorlage „{template}“ braucht das Argument „{argument}“. Füge es bei den Argumenten hinzu.",
+    "templateIdMissing": "Die Vorlage hat keine ID und wird deshalb weggelassen.",
+    "templateIdInvalid": "Die Vorlagen-ID „{id}“ darf nur Kleinbuchstaben, Ziffern und _ . - / enthalten (und ein : nach dem Namespace).",
+    "templateIdDuplicate": "Eine andere Vorlage nutzt schon die ID „{id}“, deshalb wird diese weggelassen.",
+    "templateBodyMissing": "Die Vorlage hat keinen Inhalt und wird deshalb weggelassen.",
+    "globalVariableNameInvalid": "Der Name der globalen Variable „{name}“ darf nur Buchstaben, Ziffern und _ . - / enthalten und wird deshalb weggelassen."
   },
   "issueList": {
     "openItem": "Zum Item",

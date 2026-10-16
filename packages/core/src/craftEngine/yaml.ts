@@ -17,6 +17,10 @@ export interface CraftEngineSections {
   /** Locale → lang key → text */
   lang?: Record<string, Record<string, unknown>>;
   loot_sources?: Record<string, Record<string, unknown>>;
+  /** Template id → body (any config value) */
+  templates?: Record<string, unknown>;
+  /** Variable name → MiniMessage text */
+  global_variables?: Record<string, unknown>;
 }
 
 const SECTION_ORDER: Array<keyof CraftEngineSections> = [
@@ -33,6 +37,8 @@ const SECTION_ORDER: Array<keyof CraftEngineSections> = [
   'categories',
   'lang',
   'loot_sources',
+  'templates',
+  'global_variables',
 ];
 
 /** Writes the non-empty sections, separated by a blank line, with an optional header comment. */

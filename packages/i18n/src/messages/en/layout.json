@@ -75,6 +75,14 @@
       "lootSources": {
         "label": "Loot sources",
         "hint": "Loot sources: extra loot for vanilla blocks, mobs, chests and fishing"
+      },
+      "templates": {
+        "label": "Templates",
+        "hint": "Templates: reusable config with arguments"
+      },
+      "globalVariables": {
+        "label": "Global variables",
+        "hint": "Global variables: texts for '<'global:name>"
       }
     },
     "testServer": {

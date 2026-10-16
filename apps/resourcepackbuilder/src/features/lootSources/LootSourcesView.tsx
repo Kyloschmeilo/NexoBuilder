@@ -10,22 +10,17 @@ import { CRAFT_ENGINE_PLUGIN_DIR, craftEngineConfigFile } from '@resourcepackbui
 import { IconButton, PageHeader, PageShell } from '@resourcepackbuilder/ui';
 import { Alert, AlertDescription } from '@resourcepackbuilder/ui/components/alert';
 import { Badge } from '@resourcepackbuilder/ui/components/badge';
-import { setLootSources } from '../../commands/lootSources';
-import { FieldContext, type FieldContextValue, FieldRenderer } from '../../components/editor';
+import { setLootSources } from '../../commands/craftEngine';
+import { FieldRenderer } from '../../components/editor';
 import { useOpenProject } from '../../store/project';
+import { ProjectFieldContext } from '../craftEngine/ProjectFieldContext';
 
 export function LootSourcesView() {
   const t = useTranslations('media.lootSources');
   const project = useOpenProject();
   const sources = projectLootSources(project);
-  // Loot sources have no textures of their own
-  const fieldContext: FieldContextValue = {
-    minecraftVersion: project.settings.minecraftVersion,
-    getAsset: () => undefined,
-    uploadAsset: () => Promise.resolve(null),
-  };
   return (
-    <FieldContext.Provider value={fieldContext}>
+    <ProjectFieldContext>
       <PageShell>
         <PageHeader
           icon={<Gem className="size-7" />}
@@ -49,6 +44,6 @@ export function LootSourcesView() {
         </Alert>
         <FieldRenderer field={CE_LOOT_SOURCE_LIST} value={sources} hideLabel onChange={setLootSources} />
       </PageShell>
-    </FieldContext.Provider>
+    </ProjectFieldContext>
   );
 }

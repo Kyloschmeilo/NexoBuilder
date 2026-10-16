@@ -194,5 +194,19 @@
     "count": "{count, plural, one {# loot source} other {# loot sources}}",
     "hint": "A loot source adds a loot table to a vanilla loot event: breaking a block, killing a mob, opening a chest, fishing and more. With overwrite it replaces the vanilla items or experience.",
     "docs": "Loot sources in the CraftEngine wiki"
+  },
+  "templates": {
+    "title": "Templates",
+    "count": "{count, plural, one {# template} other {# templates}}",
+    "hint": "A template is a piece of config with placeholders for arguments. Blocks use one in their settings, items for the whole item, loot tables and events too. CraftEngine's default templates (default:…) are always there.",
+    "docs": "Templates in the CraftEngine wiki",
+    "defaults": "CraftEngine's default templates",
+    "defaultsHint": "Every block, item and furniture can use these. Required arguments are marked with *."
+  },
+  "globalVariables": {
+    "title": "Global variables",
+    "count": "{count, plural, one {# variable} other {# variables}}",
+    "hint": "A global variable is a MiniMessage text that CraftEngine puts in wherever a text says '<'global:name>: in item names, lore and more. The previews in the item editor show it too.",
+    "docs": "Global variables in the CraftEngine wiki"
   }
 }

@@ -15,7 +15,8 @@
     "variant": "{variant}",
     "variantModel": "{variant} ({suffix})",
     "armorLayer": "{layer}",
-    "lootSource": "Loot source “{id}”"
+    "lootSource": "Loot source “{id}”",
+    "template": "Template “{id}”"
   },
   "plan": {
     "missingModel": "No model – the item uses the look of its base material.",
@@ -263,7 +264,14 @@
     "lootSourceIdDuplicate": "Another loot source already uses the id “{id}”, so this one is left out.",
     "lootSourceTypeUnknown": "CraftEngine does not know the loot source type “{type}”.",
     "lootSourceTargetNotAllowed": "The loot source type {type} takes no target. CraftEngine rejects the loot source.",
-    "lootSourceLootMissing": "The loot source has no loot."
+    "lootSourceLootMissing": "The loot source has no loot.",
+    "templateUnknown": "There is no template “{template}”. Neither CraftEngine's default templates nor this project define it, so CraftEngine rejects the config.",
+    "templateArgumentMissing": "The template “{template}” needs the argument “{argument}”. Add it to the arguments.",
+    "templateIdMissing": "The template has no id, so it is left out.",
+    "templateIdInvalid": "The template id “{id}” may only contain lowercase letters, digits and _ . - / (and one : after the namespace).",
+    "templateIdDuplicate": "Another template already uses the id “{id}”, so this one is left out.",
+    "templateBodyMissing": "The template has no body, so it is left out.",
+    "globalVariableNameInvalid": "The global variable name “{name}” may only contain letters, digits and _ . - /, so it is left out."
   },
   "issueList": {
     "openItem": "Go to item",

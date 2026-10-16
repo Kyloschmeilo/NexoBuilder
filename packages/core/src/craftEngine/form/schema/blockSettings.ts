@@ -1,5 +1,6 @@
 import { CE_BLOCK_SOUNDS, CE_BLOCK_TAGS, CE_INSTRUMENTS, CE_PUSH_REACTIONS } from '../options';
 import { field, properties, type PropertySpec } from '../../../form/build';
+import { CE_SETTINGS_TEMPLATE_OPTIONS } from '../../templates';
 import { CE_DOCS, withDocs } from './docs';
 
 const sound = () => field.text({ suggestions: CE_BLOCK_SOUNDS, placeholder: true });
@@ -10,8 +11,21 @@ const percent = () => field.number({ integer: true, min: 0, max: 100 });
  * The block settings (`block.settings`, stable and unstable keys of the wiki, checked against the plugin's
  * BlockSettingsModifiers). Shown in the Block section of the model tab, only while the item is a block, so adding one
  * never turns an item into a block. The block's drops (`block.loot`) are on the Loot tab (schema/loot.ts).
+ * `template` and `arguments` take the settings from templates (the jar's or the project's); the settings set next to
+ * them are merged over the template's, as in the jar's blocks.
  */
 const SETTINGS: Record<string, PropertySpec> = {
+  'block.settings.template': {
+    field: field.stringList({ suggestions: CE_SETTINGS_TEMPLATE_OPTIONS, dynamicSuggestions: 'templates', placeholder: true }),
+    defaultValue: () => ['default:settings/solid_1x1x1'],
+    hint: true,
+    docs: CE_DOCS.templates,
+  },
+  'block.settings.arguments': {
+    field: field.map(field.text({ placeholder: true }), { keyPlaceholder: true, newValue: () => '' }),
+    defaultValue: () => ({ block_type: 'stone' }),
+    docs: CE_DOCS.templates,
+  },
   'block.settings.hardness': { field: field.number({ min: 0, step: 0.1 }), defaultValue: () => 2 },
   'block.settings.resistance': { field: field.number({ min: 0, step: 0.1 }), defaultValue: () => 2 },
   'block.settings.tags': {

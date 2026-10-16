@@ -34,6 +34,17 @@ export const CE_GENERAL_PROPERTIES = properties(
       }),
       defaultValue: () => ({ de_de: '' }),
     },
+    template: {
+      field: field.stringList({ dynamicSuggestions: 'templates', placeholder: true }),
+      defaultValue: () => [''],
+      hint: true,
+      docs: CE_DOCS.templates,
+    },
+    arguments: {
+      field: field.map(field.text({ placeholder: true }), { keyPlaceholder: true, newValue: () => '' }),
+      defaultValue: () => ({ material: '' }),
+      docs: CE_DOCS.templates,
+    },
     client_bound_material: {
       field: field.text({ placeholder: true }),
       defaultValue: () => 'paper',

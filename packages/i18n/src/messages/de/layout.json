@@ -75,6 +75,14 @@
       "lootSources": {
         "label": "Loot-Quellen",
         "hint": "Loot-Quellen: zusätzlicher Loot für Vanilla-Blöcke, Mobs, Truhen und Angeln"
+      },
+      "templates": {
+        "label": "Vorlagen",
+        "hint": "Vorlagen: wiederverwendbare Konfiguration mit Argumenten"
+      },
+      "globalVariables": {
+        "label": "Globale Variablen",
+        "hint": "Globale Variablen: Texte für '<'global:name>"
       }
     },
     "testServer": {

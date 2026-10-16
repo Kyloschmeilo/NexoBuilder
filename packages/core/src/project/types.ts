@@ -77,6 +77,10 @@ export interface ProjectSettings {
 export interface CraftEngineProjectData {
   /** The loot sources (`loot_sources`), each a config with its `id` (core/craftEngine/loot.ts) */
   lootSources?: ConfigObject[];
+  /** The project's templates (`templates`), each with its `id`, declared `arguments` and `body` (core/craftEngine/templates.ts) */
+  templates?: ConfigObject[];
+  /** The global variables (`global_variables`): name → MiniMessage text, used as `<global:name>` */
+  globalVariables?: Record<string, string>;
 }
 
 export interface Project {

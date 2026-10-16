@@ -82,6 +82,28 @@
         }
       }
     },
+    "template": {
+      "label": "Template",
+      "description": "Builds the whole item from templates of the project (see Templates). The keys set here are merged over those of the templates.",
+      "hint": "CraftEngine fills $'{'__NAMESPACE__'}' and $'{'__ID__'}' with the namespace and id of the item.",
+      "field": {
+        "label": "Templates",
+        "placeholder": "e.g. mypack:armor"
+      }
+    },
+    "arguments": {
+      "label": "Arguments",
+      "description": "The values for the placeholders of the item's templates.",
+      "field": {
+        "label": "Arguments",
+        "keyLabel": "Argument",
+        "keyPlaceholder": "e.g. material",
+        "value": {
+          "label": "Value",
+          "placeholder": "e.g. topaz"
+        }
+      }
+    },
     "clientBoundMaterial": {
       "label": "Client Bound Material",
       "description": "The material players see. The server keeps the real material.",
@@ -660,6 +682,28 @@
       "description": "A custom projectile entity, e.g. for a trident.",
       "field": {
         "label": "Projectile (YAML)"
+      }
+    },
+    "blockSettingsTemplate": {
+      "label": "Template",
+      "description": "Takes the block settings from templates: CraftEngine's default templates (default:settings/…, default:hardness/…, default:sound/…, default:burn_data/…) or the project's own. Later templates win over earlier ones.",
+      "hint": "The settings set here are merged over those of the templates: values replace theirs, lists are added to theirs.",
+      "field": {
+        "label": "Templates",
+        "placeholder": "e.g. default:sound/stone"
+      }
+    },
+    "blockSettingsArguments": {
+      "label": "Arguments",
+      "description": "The values for the placeholders of the settings templates, e.g. break_power for default:settings/ore.",
+      "field": {
+        "label": "Arguments",
+        "keyLabel": "Argument",
+        "keyPlaceholder": "e.g. break_power",
+        "value": {
+          "label": "Value",
+          "placeholder": "e.g. 2"
+        }
       }
     },
     "blockSettingsHardness": {
@@ -2931,5 +2975,49 @@
   },
   "lootSources": {
     "label": "loot_sources"
+  },
+  "craftEngine": {
+    "fields": {
+      "templates": {
+        "label": "templates",
+        "itemLabel": "Template",
+        "fields": {
+          "id": {
+            "label": "id",
+            "help": "Uses name the template by this id. Without a namespace it gets the project's.",
+            "placeholder": "e.g. ore_settings"
+          },
+          "arguments": {
+            "label": "arguments",
+            "help": "The arguments the template takes. One without a default must be passed by every use.",
+            "itemLabel": "Argument",
+            "fields": {
+              "name": {
+                "label": "name",
+                "placeholder": "e.g. hardness"
+              },
+              "default": {
+                "label": "default",
+                "placeholder": "empty: the argument is required"
+              }
+            }
+          },
+          "body": {
+            "label": "body",
+            "help": "The config the template stands for, as YAML. $'{'name'}' puts in an argument, $'{'name:-value'}' an argument with a default.",
+            "placeholder": "hardness: $'{'hardness'}'"
+          }
+        }
+      },
+      "globalVariables": {
+        "label": "global_variables",
+        "keyLabel": "Name",
+        "keyPlaceholder": "e.g. rare_tag",
+        "value": {
+          "label": "Text",
+          "placeholder": "e.g. '<'gold>[Rare]"
+        }
+      }
+    }
   }
 }

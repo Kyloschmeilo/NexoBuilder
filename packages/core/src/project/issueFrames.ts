@@ -67,6 +67,11 @@ export function lootSourceFrame(id: string): IssueContext {
   return { code: 'context.lootSource', args: { id: id || '?' } };
 }
 
+/** A CraftEngine template of the project, named by its id. */
+export function templateFrame(id: string): IssueContext {
+  return { code: 'context.template', args: { id: id || '?' } };
+}
+
 export function mapKeyFrame(key: string): IssueContext {
   return { code: 'context.mapKey', args: { key } };
 }

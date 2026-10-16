@@ -61,6 +61,8 @@ export interface StringListField extends BaseField {
   suggestions?: Option[];
   format?: TextField['format'];
   singleAsString?: boolean;
+  /** Name of a list of suggestions the editor adds from the open project (e.g. CraftEngine's 'templates') */
+  dynamicSuggestions?: string;
 }
 
 export interface MultiSelectField extends BaseField {

@@ -24,6 +24,7 @@ import {
   CE_FURNITURE_ELEMENT_TYPES,
   CE_FURNITURE_HITBOX_TYPES,
   CE_FURNITURE_ROTATIONS,
+  CE_GLOBAL_VARIABLE_NAME,
   CE_LOOT_ENTRIES,
   CE_LOOT_FUNCTIONS,
   CE_LOOT_PROPERTIES,
@@ -32,6 +33,8 @@ import {
   CE_LOOT_SOURCES,
   CE_MODEL_KEYS,
   CE_PROPERTIES,
+  CE_STATE_TEMPLATES,
+  CE_TEMPLATE_ID,
   type CraftEngineBlockModel,
   definitionEvents,
   furnitureElementType,
@@ -46,7 +49,9 @@ import {
   parseCeVector,
   parseFurnitureSeat,
   parseVariantKey,
+  projectGlobalVariables,
   projectLootSources,
+  projectTemplates,
   propertyValues,
   rendererElements,
   requiredElementKey,
@@ -56,11 +61,15 @@ import {
   statesMap,
   statesTemplate,
   templateArguments,
+  templateEntryId,
+  templateKey,
+  templateLookup,
+  templateUseIssues,
   triggersFor,
   variantList,
 } from '@resourcepackbuilder/core/craftEngine';
 import { checkFieldValue } from '@resourcepackbuilder/core/form';
-import { listEntryFrame, lootSourceFrame, propertyFrame, type Project } from '@resourcepackbuilder/core/project';
+import { listEntryFrame, lootSourceFrame, propertyFrame, type Project, templateFrame } from '@resourcepackbuilder/core/project';
 import { ITEM_ID_PATTERN } from '@resourcepackbuilder/minecraft';
 import type { ItemExport } from '../../types';
 import { validateProperties } from '../../validate/itemConfig';
@@ -243,6 +252,48 @@ export function lootSourceIssues(project: Project): Issue[] {
     }
     for (const { code, args } of lootTypeIssues(loot)) report('warning', issueCode(code), args);
   });
+  return issues;
+}
+
+/**
+ * The template uses of an item, its block or its furniture as the export writes them: each names a template the jar
+ * or the project has and passes the arguments it needs. The state templates of the block forms are checked with the
+ * block (validateCraftEngineBlock), as the export fills their arguments from the model.
+ */
+export function validateCraftEngineTemplateUses(itemExport: ItemExport, ...definitions: Array<Record<string, unknown> | undefined>): void {
+  const lookup = templateLookup(itemExport.project);
+  for (const definition of definitions) {
+    for (const { code, args } of templateUseIssues(definition, lookup, (id) => Object.hasOwn(CE_STATE_TEMPLATES, id))) {
+      itemExport.report('error', code, args);
+    }
+  }
+}
+
+/**
+ * The project's templates and global variables: each template needs an id of its own (a resource location) and a
+ * body, and the templates its body uses must exist (their arguments may come from the use, so they are not checked);
+ * each global variable needs a name `<global:…>` can read.
+ */
+export function templateProjectIssues(project: Project): Issue[] {
+  const issues: Issue[] = [];
+  const keys = new Set<string>();
+  const lookup = templateLookup(project);
+  projectTemplates(project).forEach((entry, i) => {
+    const id = templateEntryId(entry);
+    const report = issueReporter(issues, { context: [id ? templateFrame(id) : listEntryFrame(i + 1)] });
+    if (!id) report('error', 'ce.templateIdMissing');
+    else if (!CE_TEMPLATE_ID.test(id)) report('error', 'ce.templateIdInvalid', { id });
+    else {
+      const key = templateKey(project, id);
+      if (keys.has(key)) report('error', 'ce.templateIdDuplicate', { id: key });
+      keys.add(key);
+    }
+    if (entry.body === undefined || entry.body === null) report('error', 'ce.templateBodyMissing');
+    for (const { code, args } of templateUseIssues(entry.body, lookup)) if (code === 'ce.templateUnknown') report('error', code, args);
+  });
+  for (const name of Object.keys(projectGlobalVariables(project))) {
+    if (!CE_GLOBAL_VARIABLE_NAME.test(name)) issues.push(createIssue('error', 'ce.globalVariableNameInvalid', { name }));
+  }
   return issues;
 }
 

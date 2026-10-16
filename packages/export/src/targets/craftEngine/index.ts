@@ -27,6 +27,7 @@ import {
   validateCraftEngineFurniture,
   validateCraftEngineItem,
   validateCraftEngineLoot,
+  validateCraftEngineTemplateUses,
 } from './validate';
 import { writeCraftEngineVariants } from './variants';
 
@@ -100,6 +101,7 @@ function buildItem(itemExport: ItemExport, written: CraftEngineWrittenModels, sh
     validateCraftEngineLoot(itemExport, 'block', built.block);
     sections.blocks = { [key]: built.block };
   }
+  validateCraftEngineTemplateUses(itemExport, built.config, built.furniture ?? undefined, built.block ?? undefined);
   const { recipes, unsupported } = craftEngineRecipes(project, item);
   for (const recipe of unsupported) {
     itemExport.report('warning', 'ce.recipeKindUnsupported', { type: recipe.type }, [recipeFrame(recipe.key)]);
