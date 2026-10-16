@@ -214,7 +214,17 @@
     "blockAutoStateInvalid": "CraftEngine has no block state group “{group}”. Choose one in the Block section of the model tab.",
     "blockMissingModel": "The block has no model, so CraftEngine cannot load it. Import a model or textures on the model tab.",
     "blockExtraTextures": "A block made from textures uses at most {max} of them, so {count, plural, one {one more texture is} other {# more textures are}} left out of the block.",
-    "autoStateBudget": "The project’s blocks need {used} block states of the group “{group}”, but CraftEngine has only {capacity}. Move some blocks to another group."
+    "autoStateBudget": "The project’s blocks need {used} block states of the group “{group}”, but CraftEngine has only {capacity}. Move some blocks to another group.",
+    "blockAppearanceStateMissing": "The appearance “{appearance}” has no block state. Choose a block state group for it in the Block section of the model tab.",
+    "blockPropertyInvalid": "The block property “{property}” is incomplete: it needs a known type, an int a range and a string its values.",
+    "blockNoAppearance": "The block’s states have no appearance. Add one in the Block section of the model tab.",
+    "blockVariantInvalid": "The variant “{variant}” names a property or value the block does not have. Write it as property=value pairs, separated by commas.",
+    "blockVariantAppearanceMissing": "The variant “{variant}” uses the appearance “{appearance}”, which the block does not have.",
+    "blockTemplateArgumentMissing": "The fence needs the item “{argument}”. Set it in the Block section of the model tab.",
+    "blockBehaviorProperty": "The behavior {behavior} needs the block property “{property}” of the type {type}. Add it to the block’s states.",
+    "blockBaseShared": "The blocks {blocks} all borrow the states of {block}, but each state can only show one of them. Choose another vanilla block for all but one.",
+    "rawBlockWithoutBlock": "The additional YAML has a block: section, but the item is no block, so the section is left out. Turn on “Place as a block” in the Block section of the model tab.",
+    "blockFenceItemUnknown": "The fence shows the item “{item}”, which the project does not have. Create it with the model of the post or the side, or choose another item in the Block section."
   },
   "issueList": {
     "openItem": "Go to item",

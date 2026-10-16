@@ -3,8 +3,10 @@
  *  1. clean up the structured config (remove empty fields, keep values without a property)
  *  2. add the automatic values (material, data.item_name, model or models)
  *  3. overlay the user's additional YAML, which wins
- * A block definition in `block` is no item key: it is returned as the block of the same key, with its state's model
- * filled in, and the item gets the behavior that places it.
+ * A block definition in `block` is no item key: it is returned as the block of the same key, and the item gets the
+ * behavior that places it. The additional YAML's `block:` is the block's overlay (the same shape as the config,
+ * where `block` holds the block); it is merged before the export fills in what the block leaves out (the models of
+ * its states, the arguments of a state template), so what it sets wins too.
  */
 import type { JavaModelJson } from '@resourcepackbuilder/minecraft';
 import { deepClone, deepMerge, isPlainObject } from '@resourcepackbuilder/utils';
@@ -13,13 +15,17 @@ import { itemMaterial } from '../project/item';
 import { cleanConfig } from '../form/prune';
 import { parseRawYaml, type RawYamlError } from '../yaml';
 import { CRAFT_ENGINE_FORM } from './form/schema';
-import { craftEngineBlock, craftEngineBlockModel, type CraftEngineBlockModel } from './block';
+import { craftEngineBlock, craftEngineBlockModel, craftEngineBlockTextures, type CraftEngineBlockModel } from './block';
+import { blockBehaviorForm, blockBehaviorType } from './blockBehaviors';
+import { blockStates, CE_STATE_TEMPLATES, statesTemplate, templateArguments } from './blockStates';
 
 /** Order of the keys in the YAML (as in the CraftEngine docs); other keys follow in their own order. */
 const TOP_LEVEL_ORDER = ['material', 'client_bound_material', 'data', 'model', 'models', 'settings', 'behavior', 'events'];
-/** Order of the keys of a block and of its state */
+/** Order of the keys of a block, of its states, of a state (or appearance) and of its model */
 const BLOCK_ORDER = ['state', 'states', 'settings', 'behavior', 'behaviors', 'loot', 'events'];
+const STATES_ORDER = ['template', 'arguments', 'merges', 'properties', 'appearances', 'variants'];
 const STATE_ORDER = ['auto_state', 'state', 'model', 'models'];
+const MODEL_ORDER = ['path', 'x', 'y', 'uvlock', 'weight', 'generation'];
 /** Keys of a state that give it its look (block/states.mdx, appearance keys); the generated model is added only without them */
 const STATE_APPEARANCE_KEYS = ['model', 'models', 'texture', 'textures', 'blueprint', 'transparent'];
 
@@ -45,9 +51,11 @@ export interface CraftEngineBuildResult {
   config: Record<string, unknown>;
   /** The block the item places (its entry under `blocks:`), null if the item is no block */
   block: Record<string, unknown> | null;
-  /** How the block's state got its model (null if the item is no block or its state sets a model itself) */
+  /** How the block's states got their model (null if the item is no block or its states set their look themselves) */
   blockModel: CraftEngineBlockModel | null;
   rawYamlError: RawYamlError | null;
+  /** The additional YAML has a `block:` but the item is no block (it is left out) */
+  rawBlockIgnored: boolean;
 }
 
 /** The key of an item under `items:`, e.g. "ruby:ruby_sword". */
@@ -72,26 +80,145 @@ function ordered(source: Record<string, unknown>, order: string[]): Record<strin
   return result;
 }
 
-/** The block of the item with its state's model from the main model (unless the state sets its look itself). */
-function buildBlock(source: Record<string, unknown>, context: CraftEngineBuildContext) {
-  const state = isPlainObject(source.state) ? { ...source.state } : {};
-  let blockModel: CraftEngineBlockModel | null = null;
-  if (STATE_APPEARANCE_KEYS.every((key) => state[key] === undefined)) {
-    blockModel = craftEngineBlockModel(context.modelKey, context.modelJson ?? null);
-    if (blockModel.model) state.model = blockModel.model;
+const asList = (value: unknown): unknown[] => (value === undefined ? [] : Array.isArray(value) ? value : [value]);
+
+/**
+ * A state or appearance with the item's model when it sets no look itself. A `model` with only a rotation
+ * (`{ y: 90 }`, as a block facing the player has) gets the item's model path too.
+ */
+function withModel(state: Record<string, unknown>, model: () => Record<string, unknown> | null): Record<string, unknown> {
+  const result = { ...state };
+  if (STATE_APPEARANCE_KEYS.every((key) => result[key] === undefined)) {
+    const generated = model();
+    if (generated) result.model = generated;
+  } else if (isPlainObject(result.model) && result.model.path === undefined) {
+    const generated = model();
+    if (generated) result.model = ordered({ ...generated, ...result.model }, MODEL_ORDER);
   }
-  const block = ordered({ ...source, state: ordered(state, STATE_ORDER) }, BLOCK_ORDER);
-  return { block, blockModel };
+  return ordered(result, STATE_ORDER);
+}
+
+/** The bottom, side and top texture from 1 to 3 textures (the slot order of generated blocks: bottom/end, side, top). */
+function slotTextures(textures: string[]) {
+  const [first, second, third] = textures;
+  return { bottom: first, side: second ?? first, top: third ?? first };
+}
+
+/**
+ * The arguments the export fills a known template with from the item's model: the model paths it generates (next
+ * to the main model: `<main>-slab`, `<main>-slab_top` …) and the textures.
+ */
+function templateFills(template: string, base: string, textures: string[], cube: Record<string, unknown> | null) {
+  const slots = slotTextures(textures);
+  const [first, second] = textures;
+  switch (template) {
+    case 'default:block_state/slab':
+      return {
+        slab_texture: slots.side,
+        slab_texture_bottom: slots.bottom,
+        slab_texture_side: slots.side,
+        slab_texture_top: slots.top,
+        slab_model: `${base}-slab`,
+        planks_model: cube?.path ?? `${base}-block`,
+      };
+    case 'default:block_state/stairs':
+      return {
+        stairs_texture: slots.side,
+        stairs_texture_bottom: slots.bottom,
+        stairs_texture_side: slots.side,
+        stairs_texture_top: slots.top,
+        stairs_model: `${base}-stairs`,
+      };
+    case 'default:block_state/door':
+      return { door_model: `${base}-door`, door_texture_bottom: first, door_texture_top: second ?? first };
+    case 'default:block_state/trapdoor':
+      return { trapdoor_model: `${base}-trapdoor`, trapdoor_texture: first };
+    case 'default:block_state/fence_gate':
+      return { fence_gate_model: `${base}-fence_gate`, fence_gate_texture: first };
+    case 'default:block_state/leaves':
+      return { leaves_model: `${base}-leaves`, leaves_texture: first };
+    default:
+      return null;
+  }
+}
+
+const SLAB_TEMPLATE = 'default:block_state/slab';
+/** Templates whose looks the export generates from the item's textures (the fence shows two items instead). */
+const TEMPLATES_WITH_TEXTURES = new Set(
+  ['slab', 'stairs', 'door', 'trapdoor', 'fence_gate', 'leaves'].map((name) => `default:block_state/${name}`),
+);
+
+/** The block of the item with the models of its states (or a template's arguments) from the main model. */
+function buildBlock(source: Record<string, unknown>, context: CraftEngineBuildContext, rawBlock: Record<string, unknown> | null) {
+  const merged = rawBlock ? deepMerge(source, rawBlock) : { ...source };
+  const form = blockBehaviorForm(blockBehaviorType(merged));
+  const modelJson = context.modelJson ?? null;
+  let blockModel: CraftEngineBlockModel | null = null;
+  // The first state that shows the generated model generates it; the others name its path only
+  let generated = false;
+  const model = () => {
+    const main = (blockModel ??= craftEngineBlockModel(context.modelKey, modelJson, form?.plant)).model;
+    if (!main) return null;
+    const result = generated ? { path: main.path } : deepClone(main);
+    generated = true;
+    return result;
+  };
+
+  const states = blockStates(merged);
+  const template = states && statesTemplate(states);
+  if (states && template) {
+    const textures = craftEngineBlockTextures(modelJson);
+    const modelKey = textures.length > 0 ? context.modelKey : null;
+    // A double slab is a full block: the main model when it has a shape, else a cube CraftEngine generates
+    const cube = modelKey && template === SLAB_TEMPLATE ? model() : null;
+    const fills = modelKey ? templateFills(template, modelKey, textures, cube) : null;
+    if (!modelKey && TEMPLATES_WITH_TEXTURES.has(template)) blockModel = { model: null, unusedTextures: 0 };
+    // The form's vanilla block is filled in too when the user removed it
+    const base = CE_STATE_TEMPLATES[template]?.baseArgument;
+    const presetArgs = form?.preset(craftEngineItemKey(context.project, context.item)).states?.arguments;
+    const presetBase = base && isPlainObject(presetArgs) && presetArgs[base] !== undefined ? { [base]: presetArgs[base] } : {};
+    const args = { ...presetBase, ...templateArguments(states) };
+    // The arguments set in the config first (as the jar writes the vanilla block first), then the filled ones
+    const next: Record<string, unknown> = { ...states, arguments: { ...args, ...(fills ?? {}), ...args } };
+    if (cube?.generation && args.planks_model === undefined) {
+      next.merges = deepMerge(
+        { appearances: { 'type=double,waterlogged=false': { model: { generation: cube.generation } } } },
+        isPlainObject(states.merges) ? states.merges : {},
+      );
+    }
+    merged.states = ordered(next, STATES_ORDER);
+  } else if (states) {
+    const appearances = isPlainObject(states.appearances) ? states.appearances : {};
+    const filled = Object.fromEntries(
+      Object.entries(appearances).map(([name, value]) => [name, isPlainObject(value) ? withModel(value, model) : value]),
+    );
+    merged.states = ordered({ ...states, appearances: filled }, STATES_ORDER);
+  } else {
+    merged.state = withModel(isPlainObject(merged.state) ? merged.state : {}, model);
+  }
+
+  // CraftEngine reads one of `behavior` and `behaviors`: the form's behavior goes after the other ones
+  if (merged.behavior !== undefined && merged.behaviors !== undefined) {
+    merged.behaviors = [...asList(merged.behaviors), ...asList(merged.behavior)];
+    delete merged.behavior;
+  }
+  return { block: ordered(merged, BLOCK_ORDER), blockModel: blockModel as CraftEngineBlockModel | null, form };
 }
 
 export function buildCraftEngineItem(context: CraftEngineBuildContext): CraftEngineBuildResult {
   const { project, item, modelKey, models } = context;
   const resolved: Record<string, unknown> = cleanConfig(CRAFT_ENGINE_FORM, deepClone(item.config));
 
+  const raw = parseRawYaml(item.rawYaml);
+  const rawItem = raw.value ? { ...raw.value } : null;
+  const rawBlock = rawItem && isPlainObject(rawItem.block) ? rawItem.block : null;
+  if (rawItem) delete rawItem.block;
+
   // Whether the item is a block is decided on the item's own config (as isBlockItem does), not on the cleaned one
-  const built = craftEngineBlock(item.config) ? buildBlock(isPlainObject(resolved.block) ? resolved.block : {}, context) : null;
+  const isBlock = craftEngineBlock(item.config) !== null;
+  const built = isBlock ? buildBlock(isPlainObject(resolved.block) ? resolved.block : {}, context, rawBlock) : null;
   delete resolved.block;
-  if (built) resolved.behavior = { type: 'block_item', block: craftEngineItemKey(project, item) };
+  if (built) resolved.behavior = { type: built.form?.itemBehavior ?? 'block_item', block: craftEngineItemKey(project, item) };
 
   // The managed paths are set below, whatever the config holds there
   delete resolved.material;
@@ -102,8 +229,7 @@ export function buildCraftEngineItem(context: CraftEngineBuildContext): CraftEng
   if (Object.keys(withName).length > 0) resolved.data = withName;
   else delete resolved.data;
 
-  const raw = parseRawYaml(item.rawYaml);
-  const rawSetsModel = raw.value !== null && CE_MODEL_KEYS.some((key) => raw.value?.[key] !== undefined);
+  const rawSetsModel = rawItem !== null && CE_MODEL_KEYS.some((key) => rawItem[key] !== undefined);
   if (rawSetsModel) {
     delete resolved.model;
     delete resolved.models;
@@ -112,9 +238,10 @@ export function buildCraftEngineItem(context: CraftEngineBuildContext): CraftEng
   const config = { material: itemMaterial(item).toLowerCase(), ...ordered(resolved, TOP_LEVEL_ORDER) };
 
   return {
-    config: raw.value ? deepMerge(config, raw.value) : config,
+    config: rawItem ? deepMerge(config, rawItem) : config,
     block: built?.block ?? null,
     blockModel: built?.blockModel ?? null,
     rawYamlError: raw.error,
+    rawBlockIgnored: rawBlock !== null && !isBlock,
   };
 }

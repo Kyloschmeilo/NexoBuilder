@@ -7,7 +7,7 @@ import type { FileContent, ItemPlan } from '../../types';
 import type { TargetPluginFiles } from '../types';
 import { exportPackName } from '../../paths';
 import { CRAFT_ENGINE_RESERVED_PACK_NAME, packYmlFile } from './layout';
-import { autoStateBudgetIssues } from './validate';
+import { blockProjectIssues } from './validate';
 
 export function planCraftEnginePluginFiles(project: Project, plans: ItemPlan[], _writer: PackWriter, issues: Issue[]): TargetPluginFiles {
   const pluginFiles = new Map<string, FileContent>([[packYmlFile(project), buildPackYml(project)]]);
@@ -18,7 +18,7 @@ export function planCraftEnginePluginFiles(project: Project, plans: ItemPlan[], 
   }
   const packName = exportPackName(project);
   if (CRAFT_ENGINE_RESERVED_PACK_NAME.test(packName)) issues.push(createIssue('error', 'ce.reservedPackName', { name: packName }));
-  issues.push(...autoStateBudgetIssues(project), ...notYetExported(project, plans));
+  issues.push(...blockProjectIssues(project), ...notYetExported(project, plans));
   return { pluginFiles };
 }
 

@@ -7,6 +7,8 @@ export const CE_DOCS = {
   data: `${WIKI}/configuration/item/data`,
   settings: `${WIKI}/configuration/item/settings`,
   blockSettings: `${WIKI}/configuration/block/settings`,
+  blockStates: `${WIKI}/configuration/block/states`,
+  blockBehaviors: `${WIKI}/configuration/block/behaviors`,
   loot: `${WIKI}/reference/loot_table`,
 };
 

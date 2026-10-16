@@ -1,10 +1,10 @@
 /** Creating, changing, moving and deleting items. */
-import { produce } from 'immer';
+import { current, isDraft, produce } from 'immer';
 import {
+  type ConfigObject,
   type ConfigValue,
   createRecipe,
   furnitureStatePath,
-  getPath,
   type Item,
   type NewItemInput,
   pruneUnusedAssets,
@@ -24,7 +24,7 @@ import * as operations from '@resourcepackbuilder/core/project';
 import { assetToken, isPlainObject, texturePlaceholder, uid } from '@resourcepackbuilder/utils';
 import { propertyById, type PropertyDef, setPropertyValue } from '@resourcepackbuilder/core/form';
 import { formFor } from '@resourcepackbuilder/core/targets';
-import { newCraftEngineBlock } from '@resourcepackbuilder/core/craftEngine';
+import { applyBlockBehavior, CE_DEFAULT_AUTO_STATE, craftEngineItemKey, newCraftEngineBlock } from '@resourcepackbuilder/core/craftEngine';
 import { getProject, mutate } from '../store/project';
 import { select, setExpanded } from '../store/ui';
 
@@ -190,12 +190,30 @@ export function setCraftEngineBlock(itemId: string, isBlock: boolean): void {
   });
 }
 
-/** Sets the `auto_state` group of the item's block; a shared state (`{ type, id }`) keeps its id. */
-export function setBlockAutoState(itemId: string, group: string): void {
-  updateItem(itemId, (item) => {
-    const current = getPath(item.config, ['block', 'state', 'auto_state']);
-    setPath(item.config, ['block', 'state', 'auto_state'], isPlainObject(current) ? { ...current, type: group } : group);
-  });
+/**
+ * Replaces the item's block with what `next` makes of it (the block editors build it with core's block helpers);
+ * equal `historyKey`s in quick succession form one undo step.
+ */
+export function updateCraftEngineBlock(itemId: string, next: (block: ConfigObject) => ConfigObject, historyKey?: string): void {
+  updateItem(
+    itemId,
+    (item) => {
+      const block = item.config.block;
+      if (!isPlainObject(block)) return;
+      item.config.block = next(isDraft(block) ? current(block) : block);
+    },
+    historyKey,
+  );
+}
+
+/** Gives the item's block the behavior of a form with the states it needs, or none (`null`). */
+export function setBlockBehavior(itemId: string, type: string | null): void {
+  const project = getProject();
+  const item = project?.items[itemId];
+  if (!project || !item) return;
+  updateCraftEngineBlock(itemId, (block) =>
+    applyBlockBehavior(block, type, craftEngineItemKey(project, item), { auto_state: CE_DEFAULT_AUTO_STATE }),
+  );
 }
 
 // --- Recipes -----------------------------------------------------------------------------------------

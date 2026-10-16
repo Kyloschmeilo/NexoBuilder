@@ -214,7 +214,17 @@
     "blockAutoStateInvalid": "CraftEngine kennt keine Blockzustand-Gruppe „{group}“. Wähle eine im Block-Bereich des Modell-Tabs.",
     "blockMissingModel": "Der Block hat kein Modell, deshalb kann CraftEngine ihn nicht laden. Importiere im Modell-Tab ein Modell oder Texturen.",
     "blockExtraTextures": "Ein Block aus Texturen nutzt höchstens {max} davon. {count, plural, one {Die andere Textur fehlt} other {Die anderen # Texturen fehlen}} im Block.",
-    "autoStateBudget": "Die Blöcke des Projekts brauchen {used} Blockzustände der Gruppe „{group}“, CraftEngine hat aber nur {capacity}. Verschiebe einige Blöcke in eine andere Gruppe."
+    "autoStateBudget": "Die Blöcke des Projekts brauchen {used} Blockzustände der Gruppe „{group}“, CraftEngine hat aber nur {capacity}. Verschiebe einige Blöcke in eine andere Gruppe.",
+    "blockAppearanceStateMissing": "Das Aussehen „{appearance}“ hat keinen Blockzustand. Wähle im Bereich Block des Modell-Tabs eine Blockzustandsgruppe dafür.",
+    "blockPropertyInvalid": "Die Blockeigenschaft „{property}“ ist unvollständig: Sie braucht einen bekannten Typ, ein int einen Bereich und ein string seine Werte.",
+    "blockNoAppearance": "Die Zustände des Blocks haben kein Aussehen. Füge im Bereich Block des Modell-Tabs eines hinzu.",
+    "blockVariantInvalid": "Die Variante „{variant}“ nennt eine Eigenschaft oder einen Wert, die der Block nicht hat. Schreibe sie als Paare eigenschaft=wert, durch Kommas getrennt.",
+    "blockVariantAppearanceMissing": "Die Variante „{variant}“ nutzt das Aussehen „{appearance}“, das der Block nicht hat.",
+    "blockTemplateArgumentMissing": "Der Zaun braucht das Item „{argument}“. Lege es im Bereich Block des Modell-Tabs fest.",
+    "blockBehaviorProperty": "Das Verhalten {behavior} braucht die Blockeigenschaft „{property}“ vom Typ {type}. Füge sie den Zuständen des Blocks hinzu.",
+    "blockBaseShared": "Die Blöcke {blocks} leihen sich alle die Zustände von {block}, aber jeder Zustand kann nur einen davon zeigen. Wähle für alle bis auf einen einen anderen Vanilla-Block.",
+    "rawBlockWithoutBlock": "Das zusätzliche YAML hat einen Abschnitt block:, aber das Item ist kein Block, daher fehlt der Abschnitt. Schalte „Als Block platzieren“ im Bereich Block des Modell-Tabs ein.",
+    "blockFenceItemUnknown": "Der Zaun zeigt das Item „{item}“, das es im Projekt nicht gibt. Lege es mit dem Modell des Pfostens oder der Seite an oder wähle im Bereich Block ein anderes Item."
   },
   "issueList": {
     "openItem": "Zum Item",

@@ -33,7 +33,8 @@
       "mechanics": "Mechanics",
       "data": "Data",
       "settings": "Settings",
-      "blockSettings": "Block Settings"
+      "blockSettings": "Block Settings",
+      "blockBehavior": "Verhalten"
     },
     "empty": {
       "general": "Noch nichts hinzugefügt (z.B. Lore).",
@@ -43,7 +44,8 @@
       "mechanics": "Noch keine Mechanics.",
       "data": "Noch keine Item-Daten (z.B. Food, Equippable).",
       "settings": "Noch keine Settings (z.B. Tags, Fuel Time).",
-      "blockSettings": "Noch keine Block-Einstellungen (z. B. Hardness, Sounds, Loot)."
+      "blockSettings": "Noch keine Block-Einstellungen (z. B. Hardness, Sounds, Loot).",
+      "blockBehavior": "Noch keine Optionen des Verhaltens (z. B. Sounds, weitere Verhalten)."
     },
     "fromVersion": "ab {version}",
     "untilVersion": "bis {version}",
@@ -206,6 +208,55 @@
     "toggleHelp": "Das Item platziert einen eigenen Block mit derselben ID.",
     "autoState": "Blockzustand-Gruppe",
     "autoStateHelp": "CraftEngine zeigt den Block über einen freien Zustand dieser Vanilla-Blöcke. Die Gruppe bestimmt die Kollisionsbox: solid für volle Blöcke, leaves für durchsichtige Blöcke, tripwire für flache Pflanzen.",
-    "model": "Der Block zeigt das Modell des Items. Ein flaches Item-Modell wird zu einem Würfel aus seinen Texturen: 1 Textur auf allen Seiten, 2 als Stirn- und Seitenfläche (wie ein Stamm), 3 als Unterseite, Seite und Oberseite."
+    "model": "Der Block zeigt das Modell des Items. Ein flaches Item-Modell wird zu einem Würfel aus seinen Texturen: 1 Textur auf allen Seiten, 2 als Stirn- und Seitenfläche (wie ein Stamm), 3 als Unterseite, Seite und Oberseite.",
+    "behavior": "Verhalten",
+    "behaviorHelp": "Was der Block tut. Ein Verhalten legt die Zustände an, die es braucht. Jedes andere Verhalten schreibst du im zusätzlichen YAML unter block: (zum Beispiel block: behavior: type: falling_block).",
+    "behaviors": {
+      "none": "Keins",
+      "other": "Anderes (aus dem zusätzlichen YAML)",
+      "slab_block": "Stufe",
+      "stairs_block": "Treppe",
+      "door_block": "Tür",
+      "trapdoor_block": "Falltür",
+      "fence_block": "Zaun",
+      "fence_gate_block": "Zauntor",
+      "crop_block": "Feldfrucht",
+      "sapling_block": "Setzling",
+      "leaves_block": "Laub",
+      "lamp_block": "Lampe (Redstone)",
+      "toggleable_lamp_block": "Schaltbares Licht",
+      "seat_block": "Sitz",
+      "simple_storage_block": "Lager"
+    },
+    "states": {
+      "toMulti": "Mehrere Zustände nutzen",
+      "toSingle": "Zurück zu einem Zustand",
+      "template": "Die Zustände kommen aus CraftEngines Vorlage {template}. Die Optionen des Verhaltens oben füllen sie aus; der Export ergänzt die Modelle aus den Texturen des Items.",
+      "count": "{count, plural, one {# interner Zustand} other {# interne Zustände}}, {appearances, plural, one {# Aussehen} other {# Aussehen}}. Jedes Aussehen belegt einen Zustand seiner Gruppe.",
+      "countUnknown": "Eine Eigenschaft ist unvollständig, daher ist die Zahl der internen Zustände unbekannt.",
+      "properties": "Eigenschaften",
+      "propertiesHelp": "CraftEngine legt für jede Kombination der Werte einen internen Zustand an. Namen wie facing, axis und waterlogged werden beim Platzieren gesetzt.",
+      "propertyName": "Name der Eigenschaft",
+      "propertyType": "Typ",
+      "propertyDefault": "Standard",
+      "propertyRange": "Bereich",
+      "propertyValues": "Werte",
+      "rangePlaceholder": "0~3",
+      "valuesPlaceholder": "a, b",
+      "appearances": "Aussehen",
+      "appearancesHelp": "Wie der Block aussieht. Das erste Aussehen ist der Standard. Ohne Modellpfad zeigt ein Aussehen das Modell des Items.",
+      "appearanceName": "Name des Aussehens",
+      "appearanceModel": "Modellpfad",
+      "modelPlaceholder": "Das Modell des Items",
+      "rotationX": "Drehung um x",
+      "rotationY": "Drehung um y",
+      "variants": "Varianten",
+      "variantsHelp": "Welches Aussehen der Block bei bestimmten Werten zeigt, z. B. facing=north oder open=true,facing=east. Die erste passende Variante gilt.",
+      "variantKey": "Werte der Eigenschaften",
+      "variantAppearance": "Aussehen",
+      "noAppearance": "Kein Aussehen",
+      "withSettings": "+ Einstellungen",
+      "addFacing": "Zum Spieler drehen"
+    }
   }
 }

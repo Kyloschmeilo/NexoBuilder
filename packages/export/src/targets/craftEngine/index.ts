@@ -57,6 +57,7 @@ function buildItem(itemExport: ItemExport, written: CraftEngineWrittenModels): B
   });
   if (built.rawYamlError?.kind === 'syntax') itemExport.report('error', 'plan.rawYamlError', { error: built.rawYamlError.message });
   else if (built.rawYamlError) itemExport.report('error', 'plan.rawYamlNotMapping');
+  if (built.rawBlockIgnored) itemExport.report('warning', 'ce.rawBlockWithoutBlock');
   validateCraftEngineItem(itemExport, built.config);
   if (!built.block) return { config: built.config };
   validateCraftEngineBlock(itemExport, built.block, built.blockModel);

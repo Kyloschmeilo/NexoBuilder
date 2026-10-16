@@ -33,7 +33,8 @@
       "mechanics": "Mechanics",
       "data": "Data",
       "settings": "Settings",
-      "blockSettings": "Block Settings"
+      "blockSettings": "Block Settings",
+      "blockBehavior": "Behavior"
     },
     "empty": {
       "general": "Nothing added yet (e.g. Lore).",
@@ -43,7 +44,8 @@
       "mechanics": "No mechanics yet.",
       "data": "No item data yet (e.g. Food, Equippable).",
       "settings": "No settings yet (e.g. Tags, Fuel Time).",
-      "blockSettings": "No block settings yet (e.g. Hardness, Sounds, Loot)."
+      "blockSettings": "No block settings yet (e.g. Hardness, Sounds, Loot).",
+      "blockBehavior": "No behavior options yet (e.g. sounds, extra behaviors)."
     },
     "fromVersion": "from {version}",
     "untilVersion": "until {version}",
@@ -206,6 +208,55 @@
     "toggleHelp": "The item places a custom block with the same ID.",
     "autoState": "Block state group",
     "autoStateHelp": "CraftEngine shows the block through a free state of these vanilla blocks. The group decides the collision box: solid for full blocks, leaves for see-through blocks, tripwire for thin plants.",
-    "model": "The block shows the item’s model. A flat item model becomes a cube from its textures: 1 texture on all sides, 2 as end and side (like a log), 3 as bottom, side and top."
+    "model": "The block shows the item’s model. A flat item model becomes a cube from its textures: 1 texture on all sides, 2 as end and side (like a log), 3 as bottom, side and top.",
+    "behavior": "Behavior",
+    "behaviorHelp": "What the block does. A behavior sets up the states it needs. For any other behavior, write it in the additional YAML under block: (for example block: behavior: type: falling_block).",
+    "behaviors": {
+      "none": "None",
+      "other": "Other (from the additional YAML)",
+      "slab_block": "Slab",
+      "stairs_block": "Stairs",
+      "door_block": "Door",
+      "trapdoor_block": "Trapdoor",
+      "fence_block": "Fence",
+      "fence_gate_block": "Fence gate",
+      "crop_block": "Crop",
+      "sapling_block": "Sapling",
+      "leaves_block": "Leaves",
+      "lamp_block": "Lamp (redstone)",
+      "toggleable_lamp_block": "Togglable light",
+      "seat_block": "Seat",
+      "simple_storage_block": "Storage"
+    },
+    "states": {
+      "toMulti": "Use several states",
+      "toSingle": "Back to one state",
+      "template": "The states come from CraftEngine’s template {template}. The behavior’s options above fill it in; the export adds the models from the item’s textures.",
+      "count": "{count, plural, one {# internal state} other {# internal states}}, {appearances, plural, one {# appearance} other {# appearances}}. Each appearance takes one state of its group.",
+      "countUnknown": "A property is incomplete, so the number of internal states is unknown.",
+      "properties": "Properties",
+      "propertiesHelp": "CraftEngine makes one internal state for each combination of the values. Names like facing, axis and waterlogged get set on placement.",
+      "propertyName": "Property name",
+      "propertyType": "Type",
+      "propertyDefault": "Default",
+      "propertyRange": "Range",
+      "propertyValues": "Values",
+      "rangePlaceholder": "0~3",
+      "valuesPlaceholder": "a, b",
+      "appearances": "Appearances",
+      "appearancesHelp": "How the block looks. The first appearance is the default. Without a model path, an appearance shows the item’s model.",
+      "appearanceName": "Appearance name",
+      "appearanceModel": "Model path",
+      "modelPlaceholder": "The item’s model",
+      "rotationX": "Rotation around x",
+      "rotationY": "Rotation around y",
+      "variants": "Variants",
+      "variantsHelp": "Which appearance the block shows for property values, e.g. facing=north or open=true,facing=east. The first matching variant wins.",
+      "variantKey": "Property values",
+      "variantAppearance": "Appearance",
+      "noAppearance": "No appearance",
+      "withSettings": "+ settings",
+      "addFacing": "Face the player"
+    }
   }
 }

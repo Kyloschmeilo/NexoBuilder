@@ -5,6 +5,7 @@
 import { compareVersions, isGeneratedItemParent, type JavaModelJson } from '@resourcepackbuilder/minecraft';
 import { isPlainObject } from '@resourcepackbuilder/utils';
 import type { ConfigObject, Item, Project } from '../project/types';
+import { blockAppearances, blockStates, CE_STATE_TEMPLATES, statesTemplate, templateArguments } from './blockStates';
 
 /**
  * The `auto_state` groups: the vanilla block states CraftEngine borrows for a block's look, with how many of them
@@ -102,13 +103,9 @@ export interface BlockAutoState {
   shared: string | null;
 }
 
-/**
- * The block's `auto_state` (simple form `solid`, shared form `{ type: solid, id: … }`); null when the state has none
- * or it has neither form.
- */
-export function blockAutoState(block: Record<string, unknown>): BlockAutoState | null {
-  const state = isPlainObject(block.state) ? block.state : null;
-  const auto = state?.auto_state;
+/** The `auto_state` of a state or appearance (simple form `solid`, shared form `{ type: solid, id: … }`), null without one. */
+export function stateAutoState(state: unknown): BlockAutoState | null {
+  const auto = isPlainObject(state) ? state.auto_state : undefined;
   if (typeof auto === 'string') return { group: auto, shared: null };
   if (isPlainObject(auto) && typeof auto.type === 'string') {
     return { group: auto.type, shared: auto.id === undefined ? null : String(auto.id) };
@@ -116,24 +113,44 @@ export function blockAutoState(block: Record<string, unknown>): BlockAutoState |
   return null;
 }
 
+/** The `auto_state` of the block's single state; null when it has none (or several states). */
+export function blockAutoState(block: Record<string, unknown>): BlockAutoState | null {
+  return stateAutoState(block.state);
+}
+
+/**
+ * Every `auto_state` the block takes: that of its single state, of each appearance of its states, or those of the
+ * template its states come from (leaves take one state from a leaves group and one from its waterlogged twin).
+ */
+export function blockAutoStates(block: Record<string, unknown>): BlockAutoState[] {
+  const states = blockStates(block);
+  const template = states && statesTemplate(states);
+  if (states && template) {
+    const groups = CE_STATE_TEMPLATES[template]?.autoStates?.(templateArguments(states)) ?? [];
+    return groups.map((group) => ({ group, shared: null }));
+  }
+  return blockAppearances(block).flatMap(([, appearance]) => stateAutoState(appearance) ?? []);
+}
+
 /**
  * How many vanilla states the project's blocks take from each `auto_state` group, by canonical id (aliases count for
- * their group); shared ids count once. Unknown groups are left out (the export reports them).
+ * their group): one per appearance, shared ids once. Unknown groups are left out (the export reports them).
  */
 export function countAutoStates(project: Pick<Project, 'items'>): Map<string, number> {
   const counts = new Map<string, number>();
   const shared = new Set<string>();
   for (const item of Object.values(project.items) as Item[]) {
     const block = craftEngineBlock(item.config);
-    const auto = block && blockAutoState(block);
-    const group = auto && autoStateGroupOf(auto.group);
-    if (!auto || !group) continue;
-    if (auto.shared !== null) {
-      const key = `${group.id}\u0000${auto.shared}`;
-      if (shared.has(key)) continue;
-      shared.add(key);
+    for (const auto of block ? blockAutoStates(block) : []) {
+      const group = autoStateGroupOf(auto.group);
+      if (!group) continue;
+      if (auto.shared !== null) {
+        const key = `${group.id}\u0000${auto.shared}`;
+        if (shared.has(key)) continue;
+        shared.add(key);
+      }
+      counts.set(group.id, (counts.get(group.id) ?? 0) + 1);
     }
-    counts.set(group.id, (counts.get(group.id) ?? 0) + 1);
   }
   return counts;
 }
@@ -165,6 +182,27 @@ const PARENTS_BY_TEXTURE_COUNT: Array<{ parent: string; slots: string[] }> = [
   { parent: 'minecraft:block/cube_bottom_top', slots: ['bottom', 'side', 'top'] },
 ];
 
+/** A flat item model (item/generated …) without a shape of its own. */
+const isFlatModel = (modelJson: JavaModelJson) => !modelJson.elements && isGeneratedItemParent(modelJson.parent ?? '');
+
+/** The layer textures of a flat item model in layer order. */
+function flatLayers(modelJson: JavaModelJson): string[] {
+  return Object.entries(modelJson.textures ?? {})
+    .filter(([key]) => /^layer\d+$/.test(key))
+    .sort(([a], [b]) => Number(a.slice(5)) - Number(b.slice(5)))
+    .map(([, texture]) => texture);
+}
+
+/**
+ * The textures a block template is filled with: the layers of a flat model, or the textures a shaped model uses
+ * (references to other slots like `#side` left out), each once.
+ */
+export function craftEngineBlockTextures(modelJson: JavaModelJson | null): string[] {
+  if (!modelJson) return [];
+  if (isFlatModel(modelJson)) return flatLayers(modelJson);
+  return [...new Set(Object.values(modelJson.textures ?? {}).filter((texture) => !texture.startsWith('#')))];
+}
+
 /** The most textures a block generated from a flat item model uses. */
 export const CE_BLOCK_MAX_TEXTURES = PARENTS_BY_TEXTURE_COUNT.length;
 
@@ -182,14 +220,18 @@ export interface CraftEngineBlockModel {
  *    1 texture is cube_all, 2 are cube_column (end, side), 3 are cube_bottom_top (bottom, side, top). The generated
  *    model goes to `<main model>-block`, next to the main model.
  */
-export function craftEngineBlockModel(modelKey: string | null, modelJson: JavaModelJson | null): CraftEngineBlockModel {
+export function craftEngineBlockModel(modelKey: string | null, modelJson: JavaModelJson | null, plant = false): CraftEngineBlockModel {
   if (!modelKey || !modelJson) return { model: null, unusedTextures: 0 };
-  if (modelJson.elements || !isGeneratedItemParent(modelJson.parent ?? '')) return { model: { path: modelKey }, unusedTextures: 0 };
-  const layers = Object.entries(modelJson.textures ?? {})
-    .filter(([key]) => /^layer\d+$/.test(key))
-    .sort(([a], [b]) => Number(a.slice(5)) - Number(b.slice(5)))
-    .map(([, texture]) => texture);
+  if (!isFlatModel(modelJson)) return { model: { path: modelKey }, unusedTextures: 0 };
+  const layers = flatLayers(modelJson);
   if (layers.length === 0) return { model: { path: modelKey }, unusedTextures: 0 };
+  // A plant (crop, sapling) shows its first texture on two crossed planes, as vanilla plants do
+  if (plant) {
+    return {
+      model: { path: `${modelKey}-block`, generation: { parent: 'minecraft:block/cross', textures: { cross: layers[0] } } },
+      unusedTextures: 0,
+    };
+  }
   const used = layers.slice(0, CE_BLOCK_MAX_TEXTURES);
   const { parent, slots } = PARENTS_BY_TEXTURE_COUNT[used.length - 1];
   const textures = Object.fromEntries(slots.map((slot, i) => [slot, used[i]]));

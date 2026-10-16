@@ -24,14 +24,24 @@ function matchesQuery(_value: string, search: string, keywords: string[] = []): 
   return !query || keywords.some((keyword) => keyword.toLowerCase().includes(query)) ? 1 : 0;
 }
 
-/** "Add" with a searchable list of the group's properties the item does not use yet. */
-export function AddPropertyButton({ schema, item, group }: { schema: FormSchema; item: Item; group: PropertyGroup }) {
+/** "Add" with a searchable list of the group's properties (those in `only`, if given) the item does not use yet. */
+export function AddPropertyButton({
+  schema,
+  item,
+  group,
+  only,
+}: {
+  schema: FormSchema;
+  item: Item;
+  group: PropertyGroup;
+  only?: string[];
+}) {
   const t = useTranslations('item');
   const tCommon = useTranslations('common');
   const tSchema = useSchemaText();
   const [isOpen, setIsOpen] = useState(false);
   const version = useOpenProject().settings.minecraftVersion;
-  const available = availableProperties(schema, item, group);
+  const available = availableProperties(schema, item, group).filter((def) => !only || only.includes(def.id));
 
   return (
     <Popover open={isOpen} onOpenChange={setIsOpen}>

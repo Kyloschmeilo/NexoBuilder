@@ -4,6 +4,7 @@
  */
 import { describe, expect, it } from 'vitest';
 import { PACK_TARGETS } from '@resourcepackbuilder/core/project';
+import { CE_BLOCK_BEHAVIOR_FORMS } from '@resourcepackbuilder/core/craftEngine';
 import { formFor } from '@resourcepackbuilder/core/targets';
 import { MESSAGES_BY_LOCALE } from '@resourcepackbuilder/i18n';
 
@@ -25,5 +26,9 @@ describe('item editor messages', () => {
         expect(keys.filter((key) => typeof lookup(messages, key) !== 'string')).toEqual([]);
       });
     }
+    it(`has the ${locale} name of every CraftEngine block behavior with a form`, () => {
+      const keys = CE_BLOCK_BEHAVIOR_FORMS.map((form) => `item.ceBlock.behaviors.${form.type}`);
+      expect(keys.filter((key) => typeof lookup(messages, key) !== 'string')).toEqual([]);
+    });
   }
 });

@@ -3,11 +3,21 @@ import { createIssue, isPlainObject, type Issue } from '@resourcepackbuilder/uti
 import {
   autoStateOverruns,
   autoStateGroupOf,
-  blockAutoState,
+  blockAppearances,
+  blockPropertyTypes,
+  blockStates,
   CE_BLOCK_MAX_TEXTURES,
   CE_MODEL_KEYS,
   CE_PROPERTIES,
   type CraftEngineBlockModel,
+  missingBehaviorProperties,
+  parseVariantKey,
+  propertyValues,
+  sharedBaseBlocks,
+  stateAutoState,
+  statesMap,
+  statesTemplate,
+  templateArguments,
 } from '@resourcepackbuilder/core/craftEngine';
 import type { Project } from '@resourcepackbuilder/core/project';
 import { ITEM_ID_PATTERN } from '@resourcepackbuilder/minecraft';
@@ -33,18 +43,71 @@ export function validateCraftEngineItem(itemExport: ItemExport, config: Record<s
   if (!CE_MODEL_KEYS.some((key) => config[key] !== undefined)) report('warning', 'ce.missingModel');
 }
 
-/** The block's state: a known `auto_state` group (or a fixed vanilla `state`) and a model to show. */
+/** A state or appearance: a known `auto_state` group or a fixed vanilla `state`. */
+function validateState(itemExport: ItemExport, state: Record<string, unknown>, appearance: string | null): void {
+  const { report } = itemExport;
+  const auto = stateAutoState(state);
+  if (state.auto_state === undefined && state.state === undefined) {
+    if (appearance === null) report('error', 'ce.blockStateMissing');
+    else report('error', 'ce.blockAppearanceStateMissing', { appearance });
+  } else if (state.auto_state !== undefined && !(auto && autoStateGroupOf(auto.group))) {
+    report('error', 'ce.blockAutoStateInvalid', { group: auto?.group ?? String(state.auto_state) });
+  }
+}
+
+/**
+ * Written-out states: complete properties, at least one appearance, and variants that name existing properties,
+ * values and appearances.
+ */
+function validateStates(itemExport: ItemExport, states: Record<string, unknown>): void {
+  const { report } = itemExport;
+  const properties = statesMap(states, 'properties');
+  const values = new Map(Object.entries(properties).map(([name, def]) => [name, propertyValues(def)]));
+  for (const [property, list] of values) if (!list) report('error', 'ce.blockPropertyInvalid', { property });
+  const appearances = statesMap(states, 'appearances');
+  if (Object.keys(appearances).length === 0) report('error', 'ce.blockNoAppearance');
+  for (const [variant, value] of Object.entries(statesMap(states, 'variants'))) {
+    const pairs = parseVariantKey(variant);
+    const known = pairs?.every(([name, v]) => values.get(name)?.includes(v) ?? false);
+    if (!known) report('error', 'ce.blockVariantInvalid', { variant });
+    const appearance = isPlainObject(value) ? value.appearance : undefined;
+    if (appearance !== undefined && !Object.hasOwn(appearances, String(appearance))) {
+      report('error', 'ce.blockVariantAppearanceMissing', { variant, appearance: String(appearance) });
+    }
+  }
+}
+
+/**
+ * The block: its state (or each appearance of its states) with a known `auto_state` group and a model, the
+ * properties its behaviors need, and the arguments a template cannot be filled with.
+ */
 export function validateCraftEngineBlock(
   itemExport: ItemExport,
   block: Record<string, unknown>,
   blockModel: CraftEngineBlockModel | null,
 ): void {
   const { report } = itemExport;
-  const state = isPlainObject(block.state) ? block.state : {};
-  const auto = blockAutoState(block);
-  if (state.auto_state === undefined && state.state === undefined) report('error', 'ce.blockStateMissing');
-  else if (state.auto_state !== undefined && !(auto && autoStateGroupOf(auto.group))) {
-    report('error', 'ce.blockAutoStateInvalid', { group: auto?.group ?? String(state.auto_state) });
+  const states = blockStates(block);
+  const template = states && statesTemplate(states);
+  if (!states) validateState(itemExport, isPlainObject(block.state) ? block.state : {}, null);
+  else if (!template) {
+    validateStates(itemExport, states);
+    for (const [name, appearance] of blockAppearances(block)) validateState(itemExport, appearance, name);
+  } else if (template === 'default:block_state/fence') {
+    // The fence shows two items: both must be set, and those of this pack must exist
+    const { project } = itemExport;
+    const items = Object.values(project.items).map((item) => `${project.namespace}:${item.itemId}`);
+    const args = templateArguments(states);
+    for (const argument of ['fence_post_item', 'fence_side_item']) {
+      const value = args[argument];
+      if (!value) report('error', 'ce.blockTemplateArgumentMissing', { argument });
+      else if (String(value).startsWith(`${project.namespace}:`) && !items.includes(String(value))) {
+        report('warning', 'ce.blockFenceItemUnknown', { item: String(value) });
+      }
+    }
+  }
+  for (const { behavior, property, type } of missingBehaviorProperties(block, blockPropertyTypes(block))) {
+    report('error', 'ce.blockBehaviorProperty', { behavior, property, type });
   }
   if (blockModel && !blockModel.model) report('error', 'ce.blockMissingModel');
   if (blockModel && blockModel.unusedTextures > 0) {
@@ -52,9 +115,17 @@ export function validateCraftEngineBlock(
   }
 }
 
-/** One warning per `auto_state` group whose blocks need more vanilla states than the group has. */
-export function autoStateBudgetIssues(project: Project): Issue[] {
-  return autoStateOverruns(project).map(({ group, used, capacity }) =>
-    createIssue('warning', 'ce.autoStateBudget', { group, used, capacity }),
-  );
+/**
+ * Project-wide block checks: one warning per `auto_state` group whose blocks need more vanilla states than the
+ * group has, and per vanilla block that several blocks borrow through a template.
+ */
+export function blockProjectIssues(project: Project): Issue[] {
+  return [
+    ...autoStateOverruns(project).map(({ group, used, capacity }) =>
+      createIssue('warning', 'ce.autoStateBudget', { group, used, capacity }),
+    ),
+    ...sharedBaseBlocks(project).map(({ block, blocks }) =>
+      createIssue('warning', 'ce.blockBaseShared', { block, blocks: blocks.join(', ') }),
+    ),
+  ];
 }
