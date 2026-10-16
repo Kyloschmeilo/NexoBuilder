@@ -60,7 +60,9 @@ export const plainObject = () => z.record(z.string(), z.unknown());
 /** `true` when a schema's output is assignable to the type it stands for. */
 export type Fits<Output, Type> = [Output] extends [Type] ? true : { error: 'schema output does not fit the type'; output: Output };
 /** `true` when the schema knows every key of the type. */
-export type Covers<Output, Type> = [Exclude<keyof Type, keyof Output>] extends [never] ? true : { error: 'schema misses keys'; keys: Exclude<keyof Type, keyof Output> };
+export type Covers<Output, Type> = [Exclude<keyof Type, keyof Output>] extends [never]
+  ? true
+  : { error: 'schema misses keys'; keys: Exclude<keyof Type, keyof Output> };
 /** Compiles only when every check is `true` (type-level schema/type compatibility). */
 export type SchemaChecks<T extends true[]> = T;
 

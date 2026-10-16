@@ -4,7 +4,18 @@
  * instead of crashing the converter later.
  */
 import { z } from 'zod';
-import { type Covers, type Fits, type SchemaChecks, lenientList, lenientNumber, lenientRecord, lenientString, optional, plainObject, withoutUndefined } from '../lenient';
+import {
+  type Covers,
+  type Fits,
+  type SchemaChecks,
+  lenientList,
+  lenientNumber,
+  lenientRecord,
+  lenientString,
+  optional,
+  plainObject,
+  withoutUndefined,
+} from '../lenient';
 import type { BBElement, BBFace, BBModel, BBTexture } from './bbmodel/types';
 import type { JavaDisplayTransform, JavaElementRotation, JavaModelElement, JavaModelFace, JavaModelJson, ModelTexture } from './types';
 
@@ -169,19 +180,19 @@ export const BBModelSchema = z
 
 export type ModelSchemaChecks = SchemaChecks<
   [
-  Fits<z.output<typeof JavaModelSchema>, JavaModelJson>,
-  Fits<z.output<typeof JavaElementSchema>, JavaModelElement>,
-  Fits<z.output<typeof JavaFaceSchema>, JavaModelFace>,
-  Fits<z.output<typeof JavaRotationSchema>, JavaElementRotation>,
-  Covers<z.output<typeof JavaRotationSchema>, JavaElementRotation>,
-  Fits<z.output<typeof JavaDisplaySchema>, JavaDisplayTransform>,
-  Fits<z.output<typeof ModelTextureSchema>, ModelTexture>,
-  Covers<z.output<typeof ModelTextureSchema>, ModelTexture>,
-  Fits<z.output<typeof BBModelSchema>, BBModel>,
-  Fits<z.output<typeof BBElementSchema>, BBElement>,
-  Covers<z.output<typeof BBElementSchema>, BBElement>,
-  Fits<z.output<typeof BBFaceSchema>, BBFace>,
-  Fits<z.output<typeof BBTextureSchema>, BBTexture>,
-  Covers<z.output<typeof BBTextureSchema>, BBTexture>,
+    Fits<z.output<typeof JavaModelSchema>, JavaModelJson>,
+    Fits<z.output<typeof JavaElementSchema>, JavaModelElement>,
+    Fits<z.output<typeof JavaFaceSchema>, JavaModelFace>,
+    Fits<z.output<typeof JavaRotationSchema>, JavaElementRotation>,
+    Covers<z.output<typeof JavaRotationSchema>, JavaElementRotation>,
+    Fits<z.output<typeof JavaDisplaySchema>, JavaDisplayTransform>,
+    Fits<z.output<typeof ModelTextureSchema>, ModelTexture>,
+    Covers<z.output<typeof ModelTextureSchema>, ModelTexture>,
+    Fits<z.output<typeof BBModelSchema>, BBModel>,
+    Fits<z.output<typeof BBElementSchema>, BBElement>,
+    Covers<z.output<typeof BBElementSchema>, BBElement>,
+    Fits<z.output<typeof BBFaceSchema>, BBFace>,
+    Fits<z.output<typeof BBTextureSchema>, BBTexture>,
+    Covers<z.output<typeof BBTextureSchema>, BBTexture>,
   ]
 >;

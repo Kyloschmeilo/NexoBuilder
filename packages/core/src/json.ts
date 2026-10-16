@@ -21,10 +21,15 @@ export function parseJson<S extends z.ZodType>(text: string, schema: S, codes: J
   try {
     raw = JSON.parse(text);
   } catch (err) {
-    return { ok: false, error: new CoreError(codes.syntax ?? 'file.invalidJson', { ...codes.args, error: err instanceof Error ? err.message : String(err) }) };
+    return {
+      ok: false,
+      error: new CoreError(codes.syntax ?? 'file.invalidJson', { ...codes.args, error: err instanceof Error ? err.message : String(err) }),
+    };
   }
   const parsed = schema.safeParse(raw);
-  return parsed.success ? { ok: true, value: parsed.data } : { ok: false, error: new CoreError(codes.shape ?? 'file.unexpectedContent', codes.args) };
+  return parsed.success
+    ? { ok: true, value: parsed.data }
+    : { ok: false, error: new CoreError(codes.shape ?? 'file.unexpectedContent', codes.args) };
 }
 
 /** The value of a {@link JsonResult}; throws its error. */

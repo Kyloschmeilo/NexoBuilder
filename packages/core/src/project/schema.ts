@@ -48,7 +48,9 @@ const id = () => z.string().min(1);
 
 /* ------------------------------------------------------------ Issues */
 
-const LabelArgSchema = z.object({ key: z.string(), args: optional(lenientRecord(z.union([z.string(), z.number()]))) }).transform(withoutUndefined);
+const LabelArgSchema = z
+  .object({ key: z.string(), args: optional(lenientRecord(z.union([z.string(), z.number()]))) })
+  .transform(withoutUndefined);
 const MessageArgsSchema = recordOf(z.union([z.string(), z.number(), LabelArgSchema]));
 
 /** An issue stored with an imported model (only level, code and args are kept). */
@@ -167,9 +169,7 @@ export const RecipeSchema = z.object({
 export const ConfigValueSchema: z.ZodType<ConfigValue, unknown> = z.lazy(() =>
   z.union([z.string(), z.number(), z.boolean(), z.null(), listOf(ConfigValueSchema), ConfigObjectSchema]),
 );
-export const ConfigObjectSchema: z.ZodType<ConfigObject, unknown> = z.lazy(() =>
-  recordOf(ConfigValueSchema),
-);
+export const ConfigObjectSchema: z.ZodType<ConfigObject, unknown> = z.lazy(() => recordOf(ConfigValueSchema));
 
 const ArmorSchema = z.record(z.string(), z.unknown()).transform((value): ArmorSettings => toArmorSettings(value));
 

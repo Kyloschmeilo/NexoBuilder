@@ -95,7 +95,10 @@ describe('migrateProject', () => {
             folderId: 'f_1',
             config: { material: 'PAPER', bad: undefined, list: [1, undefined, 'a'] },
             model: { source: 'other', json: { elements: [null, { from: [0, 0, 0], to: [1, 1, 1], faces: { up: null } }] }, textures: [7] },
-            recipes: [{ id: 'r_1', type: 'magic' }, { id: 'r_2', type: 'shaped', grid: ['A'] }],
+            recipes: [
+              { id: 'r_1', type: 'magic' },
+              { id: 'r_2', type: 'shaped', grid: ['A'] },
+            ],
             assets: { a: { id: 'a', dataUrl: 5 }, b: 'nope' },
           },
           i_2: 'no item',
