@@ -2,11 +2,10 @@ import { ClipboardPaste, Folder as FolderIcon, FolderOpen, FolderPlus, Pencil, P
 import { useTranslations } from 'next-intl';
 import { cn } from 'cn';
 import { itemIdsInFolder } from '@resourcepackbuilder/core/project/tree';
-import { filesFromDataTransfer, IconButton, TREE_INDENT_PX, TreeChevron, treeRowSlots } from '@resourcepackbuilder/ui';
+import { filesFromDataTransfer, IconButton, type MenuEntry, TREE_INDENT_PX, TreeChevron, treeRowSlots } from '@resourcepackbuilder/ui';
 import { Collapsible, CollapsibleContent } from '@resourcepackbuilder/ui/components/collapsible';
 import { moveFolder } from '../../commands/folders';
 import { moveItem } from '../../commands/items';
-import type { MenuEntry } from '../../components/MenuEntries';
 import { useFolderActions } from '../../features/folder/useFolderActions';
 import { useItemActions } from '../../features/item/useItemActions';
 import { clipboardLabel, useClipboardStore } from '../../store/clipboard';

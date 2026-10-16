@@ -1,11 +1,10 @@
 import type { ComponentProps, DragEvent, KeyboardEvent, ReactNode } from 'react';
 import { EllipsisVertical } from 'lucide-react';
 import { useTranslations } from 'next-intl';
-import { Tip, treeRow, treeRowSlots } from '@resourcepackbuilder/ui';
+import { MenuEntries, type MenuEntry, Tip, treeRow, treeRowSlots } from '@resourcepackbuilder/ui';
 import { Button } from '@resourcepackbuilder/ui/components/button';
 import { ContextMenu, ContextMenuContent, ContextMenuTrigger } from '@resourcepackbuilder/ui/components/context-menu';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuTrigger } from '@resourcepackbuilder/ui/components/dropdown-menu';
-import { MenuEntries, type MenuEntry } from '../../components/MenuEntries';
 
 /** Enter and Space activate a focused tree row like a click. */
 export function activateOnKey(action: () => void) {

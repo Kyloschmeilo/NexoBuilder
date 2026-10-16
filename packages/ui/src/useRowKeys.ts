@@ -1,5 +1,4 @@
 import { useState } from 'react';
-import { insertAt, moveInArray, removeAt } from './values';
 
 const newKey = () => crypto.randomUUID();
 
@@ -15,15 +14,22 @@ export function useRowKeys(count: number) {
     current = keys.length > count ? keys.slice(0, count) : [...keys, ...Array.from({ length: count - keys.length }, newKey)];
     setKeys(current);
   }
+  // The edit operations update from the latest keys, so several of them in one event do not overwrite each other
   return {
     keys: current,
     /** Inserts a key at `index` and returns it. */
     insert: (index: number) => {
       const key = newKey();
-      setKeys(insertAt(current, index, key));
+      setKeys((prev) => [...prev.slice(0, index), key, ...prev.slice(index)]);
       return key;
     },
-    move: (from: number, to: number) => setKeys(moveInArray(current, from, to)),
-    remove: (index: number) => setKeys(removeAt(current, index)),
+    move: (from: number, to: number) =>
+      setKeys((prev) => {
+        const next = [...prev];
+        const [moved] = next.splice(from, 1);
+        next.splice(to, 0, moved);
+        return next;
+      }),
+    remove: (index: number) => setKeys((prev) => prev.filter((_, i) => i !== index)),
   };
 }

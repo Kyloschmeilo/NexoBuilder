@@ -3,7 +3,7 @@ import { Plus, Trash2 } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 import type { MapField } from '@resourcepackbuilder/core/nexo/fields';
 import { isPlainObject } from '@resourcepackbuilder/core/object';
-import { IconButton } from '@resourcepackbuilder/ui';
+import { IconButton, useDraft } from '@resourcepackbuilder/ui';
 import { Card, CardContent, CardHeader } from '@resourcepackbuilder/ui/components/card';
 import { Button } from '@resourcepackbuilder/ui/components/button';
 import { FieldError } from '@resourcepackbuilder/ui/components/field';
@@ -13,7 +13,6 @@ import { FieldRenderer } from '../FieldRenderer';
 import { FieldShell } from '../FieldShell';
 import { Datalist } from '../inputs/TextInput';
 import type { EditorProps } from '../types';
-import { useDraft } from '../useDraft';
 import { isWideField, objectOrUndefined, renameKey, withKey } from '../values';
 import { ObjectFields } from './ObjectEditor';
 

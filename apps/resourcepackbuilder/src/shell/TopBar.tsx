@@ -17,7 +17,7 @@ import {
 import { useTranslations } from 'next-intl';
 import { cn } from 'cn';
 import { countIssues } from '@resourcepackbuilder/core/issues';
-import { IconButton, StatusDot, Tip, TONE_ICONS, TONE_TEXT_CLASS } from '@resourcepackbuilder/ui';
+import { IconButton, MenuEntries, type MenuEntry, StatusDot, Tip, TONE_ICONS, TONE_TEXT_CLASS } from '@resourcepackbuilder/ui';
 import { Button } from '@resourcepackbuilder/ui/components/button';
 import { Kbd } from '@resourcepackbuilder/ui/components/kbd';
 import {
@@ -30,7 +30,6 @@ import {
   DropdownMenuTrigger,
 } from '@resourcepackbuilder/ui/components/dropdown-menu';
 import { BrandMark } from '../components/BrandMark';
-import { MenuEntries, type MenuEntry } from '../components/MenuEntries';
 import { useProjectActions } from '../features/projects/useProjectActions';
 import { SHARE_STATUS_TONE, useShareStatusText } from '../features/share/ShareStatusBadge';
 import { openDialog } from '../store/dialogs';

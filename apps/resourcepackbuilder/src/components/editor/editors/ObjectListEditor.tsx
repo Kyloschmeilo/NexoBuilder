@@ -2,13 +2,12 @@ import { Copy } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 import type { ObjectField, ObjectListField } from '@resourcepackbuilder/core/nexo/fields';
 import { isPlainObject } from '@resourcepackbuilder/core/object';
-import { IconButton } from '@resourcepackbuilder/ui';
+import { IconButton, useRowKeys } from '@resourcepackbuilder/ui';
 import { Card, CardContent, CardHeader } from '@resourcepackbuilder/ui/components/card';
 import { useSchemaText } from '../../useSchemaText';
 import { FieldShell } from '../FieldShell';
 import { AddButton, ListControls } from '../inputs/ListControls';
 import type { EditorProps } from '../types';
-import { useRowKeys } from '../useRowKeys';
 import { insertAt, listOrUndefined, moveInArray, removeAt, replaceAt } from '../values';
 import { ObjectFields } from './ObjectEditor';
 

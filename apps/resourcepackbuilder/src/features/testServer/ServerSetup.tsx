@@ -6,7 +6,7 @@ import { Checkbox } from '@resourcepackbuilder/ui/components/checkbox';
 import { Field, FieldContent, FieldDescription, FieldLabel } from '@resourcepackbuilder/ui/components/field';
 import { Input } from '@resourcepackbuilder/ui/components/input';
 import { NativeSelect, NativeSelectOption } from '@resourcepackbuilder/ui/components/native-select';
-import { AutoGrid, SectionCard, StatusBadge } from '@resourcepackbuilder/ui';
+import { AutoGrid, SectionCard, StatusBadge, useDraft } from '@resourcepackbuilder/ui';
 import {
   MAX_PLAYER_NAME_LENGTH,
   MAX_PORT,
@@ -14,7 +14,6 @@ import {
   PLAYER_NAME_INVALID_CHARS,
   RAM_OPTIONS_GB,
 } from '@resourcepackbuilder/core/testServer/config';
-import { useDraft } from '../../components/editor/useDraft';
 import { FormField, FormHelp } from '../../components/FormField';
 import type { TestServerConfig } from '../../platform/desktopApi';
 import { notify } from '../../shell/notify';
