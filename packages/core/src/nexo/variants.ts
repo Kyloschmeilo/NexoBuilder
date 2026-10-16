@@ -4,6 +4,9 @@
  * The keys match the Pack options from the Nexo docs (configuration/items/item-appearance).
  */
 import { normalizeTypedId } from '../minecraft/resourceLocation';
+import { isPlainObject } from '../object';
+import type { ConfigObject } from '../project/types';
+import { getPath } from './configPath';
 import { keySegment } from './messageKey';
 
 /** Variants that Nexo itself builds into the ItemModel via Pack.<slot> */
@@ -130,6 +133,68 @@ export function stateDef(name: string): VariantDef {
     multiple: false,
     suffix: `state_${normalizeTypedId(name) || 'state'}`,
   };
+}
+
+/* ------------------------------------------------------------------ mechanics the variants belong to */
+
+/** The furniture mechanic in an item config. */
+export const FURNITURE_PATH = ['Mechanics', 'furniture'];
+/** The custom block mechanic in an item config. */
+export const CUSTOM_BLOCK_PATH = ['Mechanics', 'custom_block'];
+/** Where Nexo reads the stack stages of a StringBlock. */
+export const STACKABLE_PATH = [...CUSTOM_BLOCK_PATH, 'stackable'];
+/** The only custom block type with stack stages. */
+export const STRINGBLOCK_TYPE = 'STRINGBLOCK';
+
+/** The furniture mechanic of the config, or null when it is not active. */
+export function furnitureConfig(config: ConfigObject): Record<string, unknown> | null {
+  const furniture = getPath(config, FURNITURE_PATH);
+  return isPlainObject(furniture) ? furniture : null;
+}
+
+/** The custom block mechanic of the config, or null when it is not active. */
+export function customBlockConfig(config: ConfigObject): Record<string, unknown> | null {
+  const block = getPath(config, CUSTOM_BLOCK_PATH);
+  return isPlainObject(block) ? block : null;
+}
+
+/** Whether the config is a StringBlock, the custom block type that has stack stages. */
+export function isStringBlock(config: ConfigObject): boolean {
+  return customBlockConfig(config)?.type === STRINGBLOCK_TYPE;
+}
+
+/** Path of a furniture state in the item config. */
+export function furnitureStatePath(name: string): string[] {
+  return [...FURNITURE_PATH, 'states', name];
+}
+
+/** Names of the furniture's states (without the settings next to them). */
+export function furnitureStateNames(config: ConfigObject): string[] {
+  const states = furnitureConfig(config)?.states;
+  return isPlainObject(states) ? Object.keys(states).filter((key) => !RESERVED_STATE_KEYS.includes(key)) : [];
+}
+
+export type StateNameError = 'required' | 'invalid' | 'taken';
+
+/** Why `name` (trimmed) cannot name a new furniture state of the config. */
+export function stateNameError(config: ConfigObject, name: string): StateNameError | null {
+  const trimmed = name.trim();
+  if (!trimmed) return 'required';
+  if (!STATE_NAME_PATTERN.test(trimmed)) return 'invalid';
+  if (RESERVED_STATE_KEYS.includes(trimmed) || furnitureStateNames(config).includes(trimmed)) return 'taken';
+  return null;
+}
+
+/** Where a variant is written in the item config (Pack.<slot>, the stack stages); null when it gets its own item model. */
+export function variantConfigPath(def: VariantDef): string[] | null {
+  switch (def.kind) {
+    case 'pack':
+      return ['Pack', def.slot];
+    case 'block':
+      return STACKABLE_PATH;
+    default:
+      return null;
+  }
 }
 
 /** Path suffix of a variant model, e.g. "pulling_0" or "blocking". */

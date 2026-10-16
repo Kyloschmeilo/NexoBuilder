@@ -8,9 +8,13 @@ import { compareVersions, FEATURE_VERSIONS } from '../minecraft/versions';
 import type { ConfigAddition } from '../nexo/itemConfig';
 import {
   CONNECT_SLOTS,
+  customBlockConfig,
+  furnitureConfig,
   FURNITURE_MODEL_SLOTS,
+  isStringBlock,
   PLACEMENT_SLOTS,
   STACK_MODELS,
+  STACKABLE_PATH,
   stateDef,
   VARIANTS,
   type StateSlot,
@@ -75,12 +79,12 @@ export function writeItemModels(itemExport: ItemExport, modelKey: string | null,
     return result;
   }
 
-  const furniture = getPath(item.config, ['Mechanics', 'furniture']);
-  if (furnitureSlots.length > 0 && !isPlainObject(furniture)) report('warning', 'plan.furnitureMechanicMissing');
+  const furniture = furnitureConfig(item.config);
+  if (furnitureSlots.length > 0 && !furniture) report('warning', 'plan.furnitureMechanicMissing');
 
   /* ------------------------------------------------ Main item model: connectable + inventory icon */
   let main: ItemModelNode | null = null;
-  if (isPlainObject(furniture)) {
+  if (furniture) {
     const connect = CONNECT_SLOTS.flatMap((c) => {
       const key = has(c.slot) ? writeSlot(c.slot, c.state) : null;
       return key ? [{ state: c.state, key }] : [];
@@ -165,16 +169,15 @@ export function writeItemModels(itemExport: ItemExport, modelKey: string | null,
 
   /* ------------------------------------------------ Blocks: stack stages */
   if (has('stack_models')) {
-    const block = getPath(item.config, ['Mechanics', 'custom_block']);
-    if (!isPlainObject(block)) {
+    if (!customBlockConfig(item.config)) {
       report('warning', 'plan.customBlockMechanicMissing');
     } else {
-      if (block.type !== 'STRINGBLOCK') report('warning', 'plan.stackableNeedsStringblock');
+      if (!isStringBlock(item.config)) report('warning', 'plan.stackableNeedsStringblock');
       const keys = (variants.stack_models ?? []).map((model, i) => {
         const suffix = `stack_${i + 1}`;
         return itemExport.writeModel(model, `${itemExport.modelPath}-${suffix}`, variantFrame(STACK_MODELS, suffix)).key;
       });
-      result.config.push({ path: ['Mechanics', 'custom_block', 'stackable'], value: keys.map((model) => ({ model })), ifMissing: true });
+      result.config.push({ path: STACKABLE_PATH, value: keys.map((model) => ({ model })), ifMissing: true });
     }
   }
   return result;

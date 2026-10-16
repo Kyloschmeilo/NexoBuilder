@@ -11,7 +11,7 @@ import { assetToken, texturePlaceholder } from '@resourcepackbuilder/core/tokens
 import { setPath } from '@resourcepackbuilder/core/nexo/configPath';
 import { PROPERTY_BY_ID, type PropertyDef } from '@resourcepackbuilder/core/nexo/schema';
 import { setPropertyValue } from '@resourcepackbuilder/core/nexo/properties';
-import type { VariantSlot } from '@resourcepackbuilder/core/nexo/variants';
+import { furnitureStatePath, type VariantSlot } from '@resourcepackbuilder/core/nexo/variants';
 import { createRecipe, type Recipe, type RecipeType } from '@resourcepackbuilder/core/nexo/recipes/model';
 import { getProject, mutate } from '../store/project';
 import { select, setExpanded } from '../store/ui';
@@ -159,7 +159,7 @@ export function removeVariant(itemId: string, slot: VariantSlot): void {
 
 /** Adds an empty state to the item's furniture mechanic (Mechanics.furniture.states.<name>). */
 export function addFurnitureState(itemId: string, name: string): void {
-  updateItem(itemId, (item) => setPath(item.config, ['Mechanics', 'furniture', 'states', name], {}));
+  updateItem(itemId, (item) => setPath(item.config, furnitureStatePath(name), {}));
 }
 
 // --- Recipes -----------------------------------------------------------------------------------------
