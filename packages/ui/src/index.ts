@@ -7,6 +7,7 @@ export { IconButton } from './IconButton';
 export { PageHeader, PageShell } from './PageHeader';
 export { SectionCard } from './SectionCard';
 export { SectionLabel } from './SectionLabel';
+export { SegmentedControl, type SegmentedOption } from './SegmentedControl';
 export { StatusBadge } from './StatusBadge';
 export { StatusDot } from './StatusDot';
 export { Thumb } from './Thumb';

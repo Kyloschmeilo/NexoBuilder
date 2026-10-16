@@ -3,12 +3,11 @@ import { useTranslations } from 'next-intl';
 import { Box, FilePlus2, PackagePlus, TriangleAlert } from 'lucide-react';
 import { isPngDataUrl } from '@resourcepackbuilder/core/binary/png';
 import { getFolderPathLabel } from '@resourcepackbuilder/core/project/tree';
-import { DropZone, SectionCard } from '@resourcepackbuilder/ui';
+import { DropZone, SectionCard, SegmentedControl } from '@resourcepackbuilder/ui';
 import { Alert, AlertDescription } from '@resourcepackbuilder/ui/components/alert';
 import { Button } from '@resourcepackbuilder/ui/components/button';
 import { Field, FieldLabel } from '@resourcepackbuilder/ui/components/field';
 import { Spinner } from '@resourcepackbuilder/ui/components/spinner';
-import { ToggleGroup, ToggleGroupItem } from '@resourcepackbuilder/ui/components/toggle-group';
 import { addItems } from '../../commands/items';
 import { DialogFrame } from '../../components/DialogFrame';
 import { FolderSelect } from '../../components/FolderSelect';
@@ -29,22 +28,16 @@ function PngModeToggle({ state, dispatch }: { state: NewItemState; dispatch: (ac
   return (
     <div className="flex flex-wrap items-center gap-2">
       <span className="text-sm text-muted-foreground">{t('multiplePngs')}</span>
-      <ToggleGroup
-        variant="outline"
+      <SegmentedControl
         size="sm"
-        spacing={0}
-        value={[state.drafts.length > 1 ? 'separate' : 'combined']}
-        onValueChange={([next]) => {
-          if (next === 'separate' || next === 'combined') dispatch({ type: 'pngModeChanged', pngMode: next });
-        }}
-      >
-        <ToggleGroupItem value="separate" className="px-3">
-          {t('pngSeparate')}
-        </ToggleGroupItem>
-        <ToggleGroupItem value="combined" className="px-3">
-          {t('pngCombined')}
-        </ToggleGroupItem>
-      </ToggleGroup>
+        aria-label={t('multiplePngs')}
+        value={state.drafts.length > 1 ? 'separate' : 'combined'}
+        options={[
+          { value: 'separate', label: t('pngSeparate') },
+          { value: 'combined', label: t('pngCombined') },
+        ]}
+        onChange={(pngMode) => dispatch({ type: 'pngModeChanged', pngMode })}
+      />
     </div>
   );
 }

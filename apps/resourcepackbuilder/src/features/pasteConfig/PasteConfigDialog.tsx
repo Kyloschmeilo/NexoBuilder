@@ -8,6 +8,7 @@ import {
   summarizeClipboard,
   type CopyCategory,
   type ItemConfigClipboard,
+  type PasteOptions,
 } from '@resourcepackbuilder/core/nexo/copyConfig';
 import { SectionLabel } from '@resourcepackbuilder/ui';
 import { Button } from '@resourcepackbuilder/ui/components/button';
@@ -19,7 +20,7 @@ import { closeDialog, type FeatureDialogProps } from '../../store/dialogs';
 import { notify } from '../../shell/notify';
 import { useOpenProject } from '../../store/project';
 import { SelectionTree } from '../export/SelectionTree';
-import { CategoryPicker, type PasteMode } from './CategoryPicker';
+import { CategoryPicker } from './CategoryPicker';
 
 function PasteDialogContent({ clip, targetItemIds }: { clip: ItemConfigClipboard; targetItemIds: string[] }) {
   const t = useTranslations('dialogs.pasteConfig');
@@ -27,7 +28,7 @@ function PasteDialogContent({ clip, targetItemIds }: { clip: ItemConfigClipboard
   const tCommon = useTranslations('common');
   const project = useOpenProject();
   const summary = useMemo(() => summarizeClipboard(clip), [clip]);
-  const [mode, setMode] = useState<PasteMode>('replace');
+  const [mode, setMode] = useState<PasteOptions['mode']>('replace');
   const [categories, setCategories] = useState<ReadonlySet<CopyCategory>>(
     () => new Set(COPY_CATEGORIES.filter((c) => c.defaultOn && summary.find((s) => s.id === c.id)?.entries.length).map((c) => c.id)),
   );

@@ -2,12 +2,11 @@
 import { useId } from 'react';
 import { useTranslations } from 'next-intl';
 import { SUPPORTED_LOCALES } from '@resourcepackbuilder/i18n';
+import { SegmentedControl } from '@resourcepackbuilder/ui';
 import { Field, FieldDescription, FieldLabel, FieldTitle } from '@resourcepackbuilder/ui/components/field';
 import { NativeSelect, NativeSelectOption } from '@resourcepackbuilder/ui/components/native-select';
-import { ToggleGroup, ToggleGroupItem } from '@resourcepackbuilder/ui/components/toggle-group';
 import { setLocale, useLocaleStore } from '../../i18n/locale';
 import { THEME_CHOICES } from '../../theme/choices';
-import { isThemeChoice } from '../../theme/theme';
 import { useTheme } from '../../theme/ThemeProvider';
 
 export function DeviceSettings() {
@@ -39,22 +38,20 @@ export function DeviceSettings() {
       </Field>
       <Field>
         <FieldTitle>{tCommon('theme')}</FieldTitle>
-        <ToggleGroup
-          variant="outline"
-          spacing={0}
+        <SegmentedControl
           aria-label={tCommon('theme')}
-          value={[choice]}
-          onValueChange={([next]) => {
-            if (isThemeChoice(next)) setTheme(next);
-          }}
-        >
-          {THEME_CHOICES.map(({ id, icon: Icon }) => (
-            <ToggleGroupItem key={id} value={id} className="px-3">
-              <Icon />
-              {tCommon(`themeNames.${id}`)}
-            </ToggleGroupItem>
-          ))}
-        </ToggleGroup>
+          value={choice}
+          options={THEME_CHOICES.map(({ id, icon: Icon }) => ({
+            value: id,
+            label: (
+              <>
+                <Icon />
+                {tCommon(`themeNames.${id}`)}
+              </>
+            ),
+          }))}
+          onChange={setTheme}
+        />
         <FieldDescription>{t('themeHelp')}</FieldDescription>
       </Field>
     </div>
