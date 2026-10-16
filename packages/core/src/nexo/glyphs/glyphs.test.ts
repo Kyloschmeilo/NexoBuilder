@@ -5,7 +5,7 @@ import { buildMultiExportZip } from '../../export/zip';
 import { singleExport } from '../../../test-utils/export';
 import { createProject } from '../../project/factory';
 import { makePngDataUrl } from '@resourcepackbuilder/test-utils/png';
-import { createGlyph, glyphFileFromDataUrl, glyphKindOf, glyphTag, isMultiBitmap } from './model';
+import { createGlyph, glyphFileFromDataUrl, glyphKindOf, glyphTag, isMultiBitmap } from '../../project/media/glyph';
 import { validateGlyphs } from './validate';
 
 // Minimal GIF (1×1) with width/height in the header

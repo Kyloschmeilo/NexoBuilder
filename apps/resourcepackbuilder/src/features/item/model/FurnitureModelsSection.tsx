@@ -12,7 +12,7 @@ import {
   stateNameError,
   type StateNameError,
   type VariantSlot,
-} from '@resourcepackbuilder/core/nexo/variants';
+} from '@resourcepackbuilder/core/project/variants';
 import { Button } from '@resourcepackbuilder/ui/components/button';
 import { Card, CardContent } from '@resourcepackbuilder/ui/components/card';
 import { AutoGrid } from '@resourcepackbuilder/ui';

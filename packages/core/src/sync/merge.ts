@@ -8,7 +8,7 @@ import { produce, type Draft } from 'immer';
 import { migrateProject } from '../project/migrate';
 import { repairProject } from '../project/repair';
 import type { Project } from '../project/types';
-import { MEDIA_KIND_LIST, MEDIA_KINDS, mediaList, setMediaList, type MediaEntry, type MediaKind } from '../nexo/media/kinds';
+import { MEDIA_KIND_LIST, MEDIA_KINDS, mediaList, setMediaList, type MediaEntry, type MediaKind } from '../project/media/kinds';
 import type { Envelope, ProjectMeta } from './format';
 
 type ListUpdate = <T extends { id: string }>(list: T[], kind: MediaKind) => T[];

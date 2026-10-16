@@ -10,10 +10,10 @@ import {
   NAMESPACE_PATTERN,
   validateTexture,
 } from '@resourcepackbuilder/minecraft';
-import { ARMOR_LAYERS, armorTexture, type ArmorGroup, type ItemArmor } from '../nexo/armor';
+import { ARMOR_LAYERS, armorTexture, type ArmorGroup, type ItemArmor } from '../project/armor';
 import { resolveAsset } from '../project/assets';
 import type { Item, Project } from '../project/types';
-import { armorLayerFrame, itemFrame, itemTarget } from '../issueFrames';
+import { armorLayerFrame, itemFrame, itemTarget } from '../project/issueFrames';
 import type { PackWriter } from './packWriter';
 import { equipmentModelFile, equipmentTextureFile } from './paths';
 

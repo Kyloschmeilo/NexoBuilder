@@ -3,10 +3,10 @@
  * namespace. All `context.*` frames are built here so the app can rely on their codes and args.
  */
 import { labelArg, schemaKey, type IssueContext, type IssueTarget } from '@resourcepackbuilder/utils';
-import type { MediaKind } from './nexo/media/kinds';
-import type { VariantDef } from './nexo/variants';
-import { itemLabel } from './project/labels';
-import type { Item, Project } from './project/types';
+import type { MediaKind } from './media/kinds';
+import type { VariantDef } from './variants';
+import { itemLabel } from './item';
+import type { Item, Project } from './types';
 
 export function itemTarget(item: Item): IssueTarget {
   return { kind: 'item', id: item.id };

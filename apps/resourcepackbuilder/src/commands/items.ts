@@ -12,11 +12,11 @@ import type { NewItemInput } from '@resourcepackbuilder/core/project/factory';
 import * as operations from '@resourcepackbuilder/core/project/operations';
 import { assetToken, texturePlaceholder, uid } from '@resourcepackbuilder/utils';
 import { pruneUnusedAssets } from '@resourcepackbuilder/core/project/assets';
-import { setPath } from '@resourcepackbuilder/core/nexo/configPath';
-import { PROPERTY_BY_ID, type PropertyDef } from '@resourcepackbuilder/core/nexo/schema';
-import { setPropertyValue } from '@resourcepackbuilder/core/nexo/properties';
-import { furnitureStatePath, type VariantSlot } from '@resourcepackbuilder/core/nexo/variants';
-import { createRecipe, type Recipe, type RecipeType } from '@resourcepackbuilder/core/nexo/recipes/model';
+import { setPath } from '@resourcepackbuilder/core/project/config';
+import { PROPERTY_BY_ID, type PropertyDef } from '@resourcepackbuilder/core/nexo/form/schema';
+import { setPropertyValue } from '@resourcepackbuilder/core/nexo/form/properties';
+import { furnitureStatePath, type VariantSlot } from '@resourcepackbuilder/core/project/variants';
+import { createRecipe, type Recipe, type RecipeType } from '@resourcepackbuilder/core/project/recipes/model';
 import { getProject, mutate } from '../store/project';
 import { select, setExpanded } from '../store/ui';
 

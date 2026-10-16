@@ -19,9 +19,9 @@ import {
   type StateSlot,
   type VariantDef,
   type VariantSlot,
-} from '../nexo/variants';
+} from '../project/variants';
 import { getPath, isPlainObject } from '@resourcepackbuilder/utils';
-import { variantFrame } from '../issueFrames';
+import { variantFrame } from '../project/issueFrames';
 import { itemModelDefinitionFile } from './paths';
 import type { ItemExport } from './types';
 

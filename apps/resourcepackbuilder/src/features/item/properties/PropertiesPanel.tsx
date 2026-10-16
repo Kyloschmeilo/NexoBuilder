@@ -1,7 +1,7 @@
 import { useTranslations } from 'next-intl';
 import type { Item } from '@resourcepackbuilder/core/project/types';
-import { activeProperties } from '@resourcepackbuilder/core/nexo/properties';
-import type { PropertyGroup } from '@resourcepackbuilder/core/nexo/schema';
+import { activeProperties } from '@resourcepackbuilder/core/nexo/form/properties';
+import type { PropertyGroup } from '@resourcepackbuilder/core/nexo/form/schema';
 import { Section } from '../../../components/Section';
 import { AddPropertyButton } from './AddPropertyButton';
 import { PropertyCard } from './PropertyCard';

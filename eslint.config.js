@@ -5,6 +5,7 @@ import nextPlugin from '@next/eslint-plugin-next';
 import { defineConfig, globalIgnores } from 'eslint/config';
 import reactHooks from 'eslint-plugin-react-hooks';
 import globals from 'globals';
+import fs from 'node:fs';
 import path from 'node:path';
 import tseslint from 'typescript-eslint';
 
@@ -13,6 +14,33 @@ const APP = 'apps/resourcepackbuilder';
 const NODE_SOURCES = [`${APP}/electron/**`, 'packages/s3/**', 'packages/test-utils/**'];
 /** Framework-free domain packages (no React, no DOM-only code). */
 const DOMAIN_PACKAGES = ['utils', 'minecraft', 'core', 'desktop-contract'].map((name) => `packages/${name}/**`);
+
+/**
+ * Import boundaries: a workspace may only import the @resourcepackbuilder packages its package.json declares.
+ * turbo refuses cyclic declarations, so imports between packages can only point one way. Inside core, the project
+ * model (project/) must not import the Nexo mapping (nexo/), which builds on it.
+ */
+const WORKSPACES = ['packages', 'apps']
+  .flatMap((root) => fs.readdirSync(path.join(import.meta.dirname, root)).map((dir) => `${root}/${dir}`))
+  .filter((dir) => fs.existsSync(path.join(import.meta.dirname, dir, 'package.json')));
+const PROJECT_IMPORTS_NEXO = {
+  group: ['**/nexo', '**/nexo/**', '@resourcepackbuilder/core/nexo', '@resourcepackbuilder/core/nexo/**'],
+  message: 'The project model must not depend on the Nexo mapping (nexo/ builds on project/).',
+};
+const importBoundaries = WORKSPACES.flatMap((dir) => {
+  const pkg = JSON.parse(fs.readFileSync(path.join(import.meta.dirname, dir, 'package.json'), 'utf8'));
+  const declared = Object.keys({ ...pkg.dependencies, ...pkg.devDependencies, ...pkg.peerDependencies })
+    .filter((name) => name.startsWith('@resourcepackbuilder/'))
+    .map((name) => name.slice('@resourcepackbuilder/'.length));
+  const undeclared = {
+    regex: `^@resourcepackbuilder/(?!(?:${declared.join('|')})(?:/|$))`,
+    message: `Not a dependency of ${pkg.name}: declare it in package.json, keeping the package graph one-directional.`,
+  };
+  const rule = (patterns) => ({ 'no-restricted-imports': ['error', { patterns }] });
+  const blocks = [{ files: [`${dir}/**/*.{ts,tsx,mjs,js}`], rules: rule([undeclared]) }];
+  if (dir === 'packages/core') blocks.push({ files: [`${dir}/src/project/**`], rules: rule([undeclared, PROJECT_IMPORTS_NEXO]) });
+  return blocks;
+});
 
 export default defineConfig(
   globalIgnores([
@@ -88,4 +116,5 @@ export default defineConfig(
     files: ['**/*.mjs', '**/*.config.{js,ts,mjs}', ...DOMAIN_PACKAGES.map((glob) => `${glob}/*.test.ts`)],
     languageOptions: { globals: globals.node },
   },
+  ...importBoundaries,
 );

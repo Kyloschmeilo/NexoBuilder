@@ -3,11 +3,11 @@
  * export selection, migration) iterates this registry instead of spelling out each kind.
  */
 import { SOUND_ID_CHARS } from '@resourcepackbuilder/minecraft';
-import type { Project } from '../../project/types';
+import type { Project } from '../types';
 import { slugify, toIdentifier } from '@resourcepackbuilder/utils';
-import type { Glyph } from '../glyphs/model';
-import type { Painting } from '../paintings/model';
-import type { Sound } from '../sounds/model';
+import type { Glyph } from './glyph';
+import type { Painting } from './painting';
+import type { Sound } from './sound';
 import { mediaKey } from './entry';
 
 export interface MediaEntryByKind {

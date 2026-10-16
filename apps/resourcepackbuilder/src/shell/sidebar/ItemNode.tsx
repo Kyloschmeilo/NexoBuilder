@@ -1,6 +1,6 @@
 import { Box, ClipboardCopy, ClipboardPaste, Copy, FolderInput, Trash2 } from 'lucide-react';
 import { useTranslations } from 'next-intl';
-import { itemLabel } from '@resourcepackbuilder/core/project/labels';
+import { itemLabel } from '@resourcepackbuilder/core/project/item';
 import { clipboardLabel } from '@resourcepackbuilder/core/nexo/copyConfig';
 import { type MenuEntry, StatusDot, Thumb, TREE_INDENT_PX, treeRowSlots } from '@resourcepackbuilder/ui';
 import { useThumbnail } from '@resourcepackbuilder/preview';

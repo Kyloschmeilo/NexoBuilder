@@ -1,9 +1,9 @@
 import { describe, expect, it } from 'vitest';
-import { createProject } from '../../project/factory';
-import { insertNewItem } from '../../project/operations';
-import { createGlyph } from '../glyphs/model';
-import { createPainting } from '../paintings/model';
-import { createSound, setSoundJukebox } from '../sounds/model';
+import { createProject } from '../factory';
+import { insertNewItem } from '../operations';
+import { createGlyph } from './glyph';
+import { createPainting } from './painting';
+import { createSound, setSoundJukebox } from './sound';
 import { makePngDataUrl } from '@resourcepackbuilder/test-utils/png';
 import { pngMediaFile } from './entry';
 import { musicDiscItem, paintingItem } from './items';

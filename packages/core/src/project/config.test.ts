@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { toConfigValue } from './configValue';
+import { toConfigValue } from './config';
 
 describe('toConfigValue', () => {
   it('keeps config data and drops keys without a value', () => {

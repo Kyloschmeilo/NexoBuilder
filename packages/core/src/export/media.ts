@@ -1,11 +1,11 @@
 /** Glyphs, sounds and paintings: their pack files, plugin files and checks. */
-import { mediaFrame } from '../issueFrames';
+import { mediaFrame } from '../project/issueFrames';
 import { inContext, type Issue } from '@resourcepackbuilder/utils';
 import { buildGlyphFile, glyphFilePath } from '../nexo/glyphs/files';
 import { validateGlyphs } from '../nexo/glyphs/validate';
-import type { MediaKind } from '../nexo/media/kinds';
+import type { MediaKind } from '../project/media/kinds';
 import { paintingMcmeta, paintingToYaml } from '../nexo/paintings/files';
-import { mediaKey } from '../nexo/media/entry';
+import { mediaKey } from '../project/media/entry';
 import { validatePaintings } from '../nexo/paintings/validate';
 import { soundFilePath, soundToYaml } from '../nexo/sounds/files';
 import { validateSounds } from '../nexo/sounds/validate';

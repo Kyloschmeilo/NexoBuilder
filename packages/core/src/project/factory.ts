@@ -1,7 +1,7 @@
 /** Creates new projects, folders and items with sensible defaults. */
 import { DEFAULT_MC_VERSION, type ImportedModel } from '@resourcepackbuilder/minecraft';
-import { DEFAULT_MATERIAL } from '../nexo/material';
-import { mapMediaLists } from '../nexo/media/kinds';
+import { DEFAULT_MATERIAL } from './item';
+import { mapMediaLists } from './media/kinds';
 import { slugify, uid } from '@resourcepackbuilder/utils';
 import type { Folder, Item, Project, ProjectSettings } from './types';
 
@@ -84,4 +84,9 @@ export function insertFolder(project: Project, folder: Folder): void {
 export function insertItem(project: Project, item: Item): void {
   project.items[item.id] = item;
   project.folders[item.folderId]?.itemIds.push(item.id);
+}
+
+/** File name of the project's own Nexo files (glyphs/<name>.yml, recipes/<type>/<name>.yml, items/<name>/). */
+export function projectFileName(project: Pick<Project, 'name'>): string {
+  return slugify(project.name, DEFAULT_PACK_NAME);
 }

@@ -4,9 +4,9 @@ import { useTranslations } from 'next-intl';
 import { Folder as FolderIcon, Frame, Music, Smile, type LucideIcon } from 'lucide-react';
 import { cn } from 'cn';
 import type { Project } from '@resourcepackbuilder/core/project/types';
-import { itemLabel } from '@resourcepackbuilder/core/project/labels';
-import { glyphTag } from '@resourcepackbuilder/core/nexo/glyphs/model';
-import { MEDIA_KIND_LIST, MEDIA_KINDS, mediaId, mediaList, type MediaKind } from '@resourcepackbuilder/core/nexo/media/kinds';
+import { itemLabel } from '@resourcepackbuilder/core/project/item';
+import { glyphTag } from '@resourcepackbuilder/core/project/media/glyph';
+import { MEDIA_KIND_LIST, MEDIA_KINDS, mediaId, mediaList, type MediaKind } from '@resourcepackbuilder/core/project/media/kinds';
 import { itemIdsInFolder } from '@resourcepackbuilder/core/project/tree';
 import {
   selectionState,

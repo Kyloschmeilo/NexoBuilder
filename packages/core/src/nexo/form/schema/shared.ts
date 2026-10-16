@@ -9,7 +9,7 @@ import {
   TOOL_TYPES,
   TRACKING_ROTATIONS,
 } from '../options';
-import { RESERVED_STATE_KEYS } from '../variants';
+import { RESERVED_STATE_KEYS } from '../../../project/variants';
 import { field, whenType } from './build';
 
 /** Sound key with suggestions; all sound fields share one placeholder. */

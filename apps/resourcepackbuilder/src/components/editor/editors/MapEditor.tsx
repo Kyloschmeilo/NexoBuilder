@@ -1,7 +1,7 @@
 import { useId, useState } from 'react';
 import { Plus, Trash2 } from 'lucide-react';
 import { useTranslations } from 'next-intl';
-import type { MapField } from '@resourcepackbuilder/core/nexo/fields';
+import type { MapField } from '@resourcepackbuilder/core/nexo/form/fields';
 import { isPlainObject } from '@resourcepackbuilder/utils';
 import { IconButton, useDraft } from '@resourcepackbuilder/ui';
 import { Card, CardContent, CardHeader } from '@resourcepackbuilder/ui/components/card';

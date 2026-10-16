@@ -1,5 +1,5 @@
 import { useTranslations } from 'next-intl';
-import type { PropertyDef } from '@resourcepackbuilder/core/nexo/schema';
+import type { PropertyDef } from '@resourcepackbuilder/core/nexo/form/schema';
 import { versionSupport } from '@resourcepackbuilder/minecraft';
 import { Badge } from '@resourcepackbuilder/ui/components/badge';
 

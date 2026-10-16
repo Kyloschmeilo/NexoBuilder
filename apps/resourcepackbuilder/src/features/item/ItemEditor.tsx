@@ -12,7 +12,7 @@ import { setEditorTab, useUiStore, type EditorTab } from '../../store/ui';
 import { GeneralTab } from './GeneralTab';
 import { ItemHeader } from './ItemHeader';
 import { ModelTab } from './model/ModelTab';
-import { activeProperties } from '@resourcepackbuilder/core/nexo/properties';
+import { activeProperties } from '@resourcepackbuilder/core/nexo/form/properties';
 import { PropertiesPanel } from './properties/PropertiesPanel';
 import { RecipesTab } from './recipes/RecipesTab';
 import { useItemFieldContext } from './useItemFieldContext';

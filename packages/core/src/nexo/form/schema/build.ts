@@ -11,9 +11,9 @@
  *
  * Shared field definitions set an explicit `scope` (e.g. `shared.drop`); explicit keys override single messages.
  */
-import type { ConfigValue } from '../../project/types';
+import type { ConfigValue } from '../../../project/types';
 import type { Field, MapField, ObjectField, ObjectListField } from '../fields';
-import { keySegment } from '../messageKey';
+import { keySegment } from '@resourcepackbuilder/utils';
 import { labeledOptions, type Option } from '../options';
 
 export type PropertyGroup = 'general' | 'appearance' | 'attributes' | 'components' | 'mechanics';

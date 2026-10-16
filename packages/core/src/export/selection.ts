@@ -6,10 +6,10 @@
  * items) is created – paths and file names thus stay exactly as in the full export.
  */
 import { inContext, issueReporter, type Issue, type IssueCode, type MessageArgs } from '@resourcepackbuilder/utils';
-import { MEDIA_KIND_LIST, MEDIA_KINDS, mapMediaLists, mediaGlobalId, mediaList, type MediaKind } from '../nexo/media/kinds';
+import { MEDIA_KIND_LIST, MEDIA_KINDS, mapMediaLists, mediaGlobalId, mediaList, type MediaKind } from '../project/media/kinds';
 import type { Project } from '../project/types';
-import { projectFrame } from '../issueFrames';
-import { projectFileName } from '../nexo/projectFiles';
+import { projectFrame } from '../project/issueFrames';
+import { projectFileName } from '../project/factory';
 import { planExport } from './plan';
 import type { ExportPlan, PlanOptions } from './types';
 

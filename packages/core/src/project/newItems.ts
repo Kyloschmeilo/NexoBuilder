@@ -2,7 +2,7 @@
  * State of the "New item" dialog as a reducer: the dropped files, the drafts built from them and the name, ID and
  * material entered per draft (or for one item without a model).
  */
-import { DEFAULT_MATERIAL } from '../nexo/material';
+import { DEFAULT_MATERIAL } from './item';
 import type { NewItemInput } from './factory';
 import { validateNewItemIds, type ItemIdError } from './ids';
 import type { Project } from './types';

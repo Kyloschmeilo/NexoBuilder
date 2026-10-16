@@ -2,7 +2,7 @@ import { describe, expect, it } from 'vitest';
 import { createFolder, createItem, createProject, insertFolder, insertItem } from './factory';
 import { uniqueId } from '@resourcepackbuilder/utils';
 import { uniqueNexoId, validateItemId } from './ids';
-import { itemLabel } from './labels';
+import { itemLabel } from './item';
 
 describe('item IDs', () => {
   it('finds free and duplicate item IDs', () => {

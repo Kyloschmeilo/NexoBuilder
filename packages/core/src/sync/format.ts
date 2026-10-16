@@ -28,7 +28,7 @@ import {
   type SchemaChecks,
   withoutUndefined,
 } from '@resourcepackbuilder/utils';
-import { MEDIA_KIND_LIST, MEDIA_KINDS, mediaList, type MediaEntryByKind, type MediaKind } from '../nexo/media/kinds';
+import { MEDIA_KIND_LIST, MEDIA_KINDS, mediaList, type MediaEntryByKind, type MediaKind } from '../project/media/kinds';
 import { FolderSchema, MEDIA_SCHEMAS, parseItem, settingsSchema } from '../project/schema';
 import type { Folder, Item, Project, ProjectSettings } from '../project/types';
 

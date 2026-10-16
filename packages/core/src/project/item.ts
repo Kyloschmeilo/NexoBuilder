@@ -1,5 +1,6 @@
-/** The base material of a Nexo item (`material:` in its config). */
-import type { Item } from '../project/types';
+/** Items: the base material (`material:` in their config) and the plain-text label. */
+import { stripFormatting } from '@resourcepackbuilder/utils';
+import type { Item } from './types';
 
 /** The material Nexo uses when an item sets none. */
 export const DEFAULT_MATERIAL = 'PAPER';
@@ -16,4 +17,9 @@ export function itemMaterial(item: Item): string {
 /** Normalises a material name while it is typed: upper case, other characters become `_`. */
 export function normalizeTypedMaterial(text: string): string {
   return text.toUpperCase().replace(/[^A-Z0-9_]/g, '_');
+}
+
+/** The display name without formatting, or the item ID if the item has no name (for messages and lists). */
+export function itemLabel(item: Pick<Item, 'displayName' | 'nexoId'>): string {
+  return stripFormatting(item.displayName) || item.nexoId;
 }

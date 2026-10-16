@@ -2,7 +2,7 @@ import { describe, expect, it } from 'vitest';
 import JSZip from 'jszip';
 import { createFolder, createItem, createProject, insertFolder, insertItem } from '../project/factory';
 import { createTextureModel } from '@resourcepackbuilder/minecraft';
-import { createGlyph } from '../nexo/glyphs/model';
+import { createGlyph } from '../project/media/glyph';
 import { makePngDataUrl } from '@resourcepackbuilder/test-utils/png';
 import { planExport } from './plan';
 import { countSelected, planMultiExport, selectFromProject, selectNothing } from './selection';

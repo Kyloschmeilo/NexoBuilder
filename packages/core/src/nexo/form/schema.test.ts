@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
-import { buildItemConfig } from './itemConfig';
-import { createItem, createProject } from '../project/factory';
+import { buildItemConfig } from '../itemConfig';
+import { createItem, createProject } from '../../project/factory';
 import { unknownConfigPaths } from './schema';
 
 describe('unknown config paths', () => {

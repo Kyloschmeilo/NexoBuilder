@@ -1,6 +1,6 @@
 import { Disc3 } from 'lucide-react';
 import { useTranslations } from 'next-intl';
-import type { JukeboxSong, Sound } from '@resourcepackbuilder/core/nexo/sounds/model';
+import type { JukeboxSong, Sound } from '@resourcepackbuilder/core/project/media/sound';
 import { Button } from '@resourcepackbuilder/ui/components/button';
 import { Input } from '@resourcepackbuilder/ui/components/input';
 import { AutoGrid } from '@resourcepackbuilder/ui';

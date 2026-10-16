@@ -2,7 +2,7 @@ import { RefreshCw } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 import type { ExportPlan } from '@resourcepackbuilder/core/export/types';
 import { issuesFor } from '@resourcepackbuilder/utils';
-import { glyphKindOf, glyphTag, type Glyph } from '@resourcepackbuilder/core/nexo/glyphs/model';
+import { glyphKindOf, glyphTag, type Glyph } from '@resourcepackbuilder/core/project/media/glyph';
 import { Badge } from '@resourcepackbuilder/ui/components/badge';
 import { IconButton, pickFiles } from '@resourcepackbuilder/ui';
 import { updateGlyph } from '../../commands/media';

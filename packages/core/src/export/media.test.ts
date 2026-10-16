@@ -11,8 +11,8 @@ import { nexoFolderFiles } from '../testServer/files';
 import { makePngDataUrl } from '@resourcepackbuilder/test-utils/png';
 import type { Issue } from '@resourcepackbuilder/utils';
 import type { Project } from '../project/types';
-import { createPainting } from '../nexo/paintings/model';
-import { createSound } from '../nexo/sounds/model';
+import { createPainting } from '../project/media/painting';
+import { createSound } from '../project/media/sound';
 
 /** The context codes of an issue (outermost first), then its own code. */
 const issueCodes = (issue: Issue): string[] => [...(issue.context ?? []).map((c) => c.code), issue.code];

@@ -4,7 +4,7 @@ import { Download, FileArchive, FolderTree, Package, ScrollText } from 'lucide-r
 import { countIssues } from '@resourcepackbuilder/utils';
 import type { ExportMode } from '@resourcepackbuilder/core/export/types';
 import type { Project } from '@resourcepackbuilder/core/project/types';
-import { MEDIA_KIND_LIST, mediaList } from '@resourcepackbuilder/core/nexo/media/kinds';
+import { MEDIA_KIND_LIST, mediaList } from '@resourcepackbuilder/core/project/media/kinds';
 import {
   planMultiExport,
   SELECT_ALL,

@@ -1,6 +1,6 @@
 import { useTranslations } from 'next-intl';
 import type { Item } from '@resourcepackbuilder/core/project/types';
-import { VARIANTS } from '@resourcepackbuilder/core/nexo/variants';
+import { VARIANTS } from '@resourcepackbuilder/core/project/variants';
 import { setVariantModels } from '../../../commands/items';
 import { AddMenuButton } from '../../../components/AddMenuButton';
 import { Section } from '../../../components/Section';

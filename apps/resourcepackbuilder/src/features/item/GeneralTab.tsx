@@ -1,7 +1,7 @@
 import { useId } from 'react';
 import { useTranslations } from 'next-intl';
 import type { Item } from '@resourcepackbuilder/core/project/types';
-import { DEFAULT_MATERIAL } from '@resourcepackbuilder/core/nexo/material';
+import { DEFAULT_MATERIAL } from '@resourcepackbuilder/core/project/item';
 import { validateItemId } from '@resourcepackbuilder/core/project/ids';
 import { SectionCard } from '@resourcepackbuilder/ui';
 import { Field, FieldLabel } from '@resourcepackbuilder/ui/components/field';

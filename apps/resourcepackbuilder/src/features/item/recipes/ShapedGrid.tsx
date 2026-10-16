@@ -1,7 +1,7 @@
 import { useTranslations } from 'next-intl';
 import { cn } from 'cn';
-import type { Recipe, RecipeIngredient } from '@resourcepackbuilder/core/nexo/recipes/model';
-import { ingredientLetters } from '@resourcepackbuilder/core/nexo/recipes/operations';
+import type { Recipe, RecipeIngredient } from '@resourcepackbuilder/core/project/recipes/model';
+import { ingredientLetters } from '@resourcepackbuilder/core/project/recipes/operations';
 import { Tip } from '@resourcepackbuilder/ui';
 import { NativeSelect, NativeSelectOption } from '@resourcepackbuilder/ui/components/native-select';
 import type { RecipeUpdater } from './RecipeCard';

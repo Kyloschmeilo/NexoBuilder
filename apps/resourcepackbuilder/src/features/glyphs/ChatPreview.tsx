@@ -1,6 +1,6 @@
 import { useTranslations } from 'next-intl';
-import { DEFAULT_FONT_ASCENT, type Glyph } from '@resourcepackbuilder/core/nexo/glyphs/model';
-import type { MediaFile } from '@resourcepackbuilder/core/nexo/media/entry';
+import { DEFAULT_FONT_ASCENT, type Glyph } from '@resourcepackbuilder/core/project/media/glyph';
+import type { MediaFile } from '@resourcepackbuilder/core/project/media/entry';
 
 /** Screen pixels per Minecraft pixel in the preview. */
 const PREVIEW_SCALE = 2;

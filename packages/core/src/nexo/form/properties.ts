@@ -2,9 +2,9 @@
  * Reading and writing property values of an item. Config properties live at their path in `item.config`;
  * the armor settings live in `item.armor`. The UI edits both the same way through these functions.
  */
-import type { ConfigObject, ConfigValue } from '../project/types';
-import { toArmorSettings, type ArmorSettings } from './armor';
-import { deletePath, getPath, setPath } from './configPath';
+import type { ConfigObject, ConfigValue } from '../../project/types';
+import { toArmorSettings, type ArmorSettings } from '../../project/armor';
+import { deletePath, getPath, setPath } from '../../project/config';
 import { PROPERTIES, PROPERTY_BY_ID, type PropertyDef, type PropertyGroup } from './schema';
 
 /** What holds property values: an item, or a clipboard copy of one */

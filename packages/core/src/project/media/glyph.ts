@@ -4,7 +4,7 @@
  * (assets/<ns>/textures/glyphs/<id>.png or .gif).
  */
 import { readGifInfoFromDataUrl, readPngInfoFromDataUrl } from '@resourcepackbuilder/minecraft';
-import type { MediaFile } from '../media/entry';
+import type { MediaFile } from './entry';
 
 export type GlyphKind = 'image' | 'gif' | 'reference';
 

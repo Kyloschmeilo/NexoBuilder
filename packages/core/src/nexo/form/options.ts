@@ -15,7 +15,7 @@ import {
   POTION_EFFECT_NAMES,
   SOUND_EVENTS,
 } from '@resourcepackbuilder/minecraft';
-import { keySegment } from './messageKey';
+import { keySegment } from '@resourcepackbuilder/utils';
 
 export interface Option {
   value: string;

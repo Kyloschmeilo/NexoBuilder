@@ -1,6 +1,8 @@
-/** Turning arbitrary values (e.g. from an editor) into item config data. */
-import { mapData } from '@resourcepackbuilder/utils';
-import type { ConfigValue } from './types';
+/** Item config data: turning arbitrary values (e.g. from an editor) into config data, reading and writing nested values. */
+import { getPath as getAnyPath, mapData, setPath as setAnyPath } from '@resourcepackbuilder/utils';
+import type { ConfigObject, ConfigValue } from './types';
+
+export { deletePath, hasPath } from '@resourcepackbuilder/utils';
 
 /**
  * A value as config data (YAML scalars, lists and objects), or undefined for "not set". Object keys without a value
@@ -14,4 +16,12 @@ export function toConfigValue(value: unknown): ConfigValue | undefined {
 function configScalar(value: unknown): ConfigValue | undefined {
   if (value === null || typeof value === 'string' || typeof value === 'boolean') return value;
   return typeof value === 'number' && Number.isFinite(value) ? value : undefined;
+}
+
+export function getPath(obj: ConfigObject, path: string[]): ConfigValue | undefined {
+  return getAnyPath(obj, path) as ConfigValue | undefined;
+}
+
+export function setPath(obj: ConfigObject, path: string[], value: ConfigValue | undefined): void {
+  setAnyPath(obj, path, value);
 }

@@ -1,4 +1,4 @@
-import type { PresenceField } from '@resourcepackbuilder/core/nexo/fields';
+import type { PresenceField } from '@resourcepackbuilder/core/nexo/form/fields';
 import { isPlainObject } from '@resourcepackbuilder/utils';
 import { CheckboxField } from '../../CheckboxField';
 import { useSchemaText } from '../../useSchemaText';

@@ -1,6 +1,6 @@
 import { produce } from 'immer';
 import { describe, expect, it } from 'vitest';
-import { createRecipe } from '../nexo/recipes/model';
+import { createRecipe } from './recipes/model';
 import { createFolder, createItem, createProject, insertFolder, insertItem } from './factory';
 import {
   canMoveFolder,

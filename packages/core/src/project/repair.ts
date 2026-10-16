@@ -4,7 +4,7 @@
  * are completed or cleaned up from them. Only what is wrong is changed, so unchanged parts stay
  * the same objects in an Immer draft.
  */
-import { MEDIA_KIND_LIST, mediaList, setMediaList } from '../nexo/media/kinds';
+import { MEDIA_KIND_LIST, mediaList, setMediaList } from './media/kinds';
 import { sameList } from '@resourcepackbuilder/utils';
 import type { Item, Project } from './types';
 

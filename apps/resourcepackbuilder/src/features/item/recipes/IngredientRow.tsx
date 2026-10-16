@@ -6,10 +6,10 @@ import {
   MAX_INGREDIENT_AMOUNT,
   type IngredientSource,
   type RecipeIngredient,
-} from '@resourcepackbuilder/core/nexo/recipes/model';
-import { withIngredientAmount, withIngredientId } from '@resourcepackbuilder/core/nexo/recipes/operations';
-import { CRAFTING_MATERIALS, ITEM_TAGS } from '@resourcepackbuilder/core/nexo/options';
-import { itemLabel } from '@resourcepackbuilder/core/project/labels';
+} from '@resourcepackbuilder/core/project/recipes/model';
+import { withIngredientAmount, withIngredientId } from '@resourcepackbuilder/core/project/recipes/operations';
+import { CRAFTING_MATERIALS, ITEM_TAGS } from '@resourcepackbuilder/core/nexo/form/options';
+import { itemLabel } from '@resourcepackbuilder/core/project/item';
 import { NativeSelect, NativeSelectOption } from '@resourcepackbuilder/ui/components/native-select';
 import { NumberInput, TextInput, type LiteralChoice } from '../../../components/editor';
 import { useOpenProject } from '../../../store/project';

@@ -2,6 +2,8 @@
  * Description of form fields. The UI renders these fields generically; the values end up 1:1 in the
  * item's config object (= the later YAML) – or in `item.armor` for the armor settings.
  */
+import { RESOURCE_LOCATION_PATTERN } from '@resourcepackbuilder/minecraft';
+import { type LabelKey, MODEL_TOKEN } from '@resourcepackbuilder/utils';
 import type { Option } from './options';
 
 export interface BaseField {
@@ -126,3 +128,60 @@ export type Field =
   | YamlField
   | PresenceField
   | TextureField;
+
+// English display names of YAML keys – shown as field titles as they appear in the Nexo docs (not translated)
+
+const ACRONYMS: Record<string, string> = { id: 'ID', gui: 'GUI', uuid: 'UUID', xp: 'XP', ui: 'UI', nbt: 'NBT' };
+
+/** max_stack_size → Max Stack Size, layer1 → Layer 1 */
+export function englishName(key: string): string {
+  return key
+    .replace(/([a-z0-9])([A-Z])/g, '$1_$2')
+    .replace(/([a-zA-Z])(\d)/g, '$1_$2')
+    .split(/[_\s.-]+/)
+    .filter(Boolean)
+    .map((w) => ACRONYMS[w.toLowerCase()] ?? w.charAt(0).toUpperCase() + w.slice(1).toLowerCase())
+    .join(' ');
+}
+
+/**
+ * Name of a field as it appears in the Nexo docs.
+ * Falls back to `label` (a `schema` message key) only for fields without name and key.
+ */
+export function fieldName(field: { key: string; label: string; name?: string }): string {
+  if (field.name) return field.name;
+  if (field.key && field.key !== '*') return englishName(field.key);
+  return field.label;
+}
+
+// Validation of single text values against their field format (duration, vector, color …)
+
+const DURATION = /^\d+(\.\d+)?(t|ms|s|m|h|d|w|mo)?$/;
+const VECTOR = /^\s*-?\d+(\.\d+)?\s*,\s*-?\d+(\.\d+)?\s*,\s*-?\d+(\.\d+)?\s*$/;
+const COLOR = /^\s*(\d{1,3})\s*,\s*(\d{1,3})\s*,\s*(\d{1,3})\s*$/;
+const RANGE = /^-?\d+(\.\d+)?(\.\.-?\d+(\.\d+)?)?$/;
+
+/**
+ * Checks a text value against its format.
+ * @returns null if valid, otherwise a message key in the `schema` namespace (`validation.*`)
+ */
+export function validateTextFormat(format: TextField['format'], value: string): LabelKey | null {
+  if (!value || value === MODEL_TOKEN) return null;
+  switch (format) {
+    case 'duration':
+      return DURATION.test(value.trim()) ? null : 'validation.duration';
+    case 'vector':
+      return VECTOR.test(value) ? null : 'validation.vector';
+    case 'color': {
+      const m = COLOR.exec(value);
+      if (!m) return 'validation.color';
+      return [m[1], m[2], m[3]].every((n) => Number(n) <= 255) ? null : 'validation.colorRange';
+    }
+    case 'range':
+      return RANGE.test(value.trim()) ? null : 'validation.range';
+    case 'resource':
+      return RESOURCE_LOCATION_PATTERN.test(value.trim()) ? null : 'validation.resource';
+    default:
+      return null;
+  }
+}

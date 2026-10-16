@@ -4,7 +4,7 @@
  * From Minecraft 1.21.5 on, Nexo generates the required datapack from it.
  */
 import { DEFAULT_ANIMATION_FRAMETIME } from '@resourcepackbuilder/minecraft';
-import type { MediaFile } from '../media/entry';
+import type { MediaFile } from './entry';
 
 /** Largest painting side in blocks. */
 export const MAX_PAINTING_BLOCKS = 16;

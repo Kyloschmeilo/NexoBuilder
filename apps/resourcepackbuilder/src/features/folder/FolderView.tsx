@@ -3,7 +3,7 @@ import { useTranslations } from 'next-intl';
 import type { Item as ProjectItem } from '@resourcepackbuilder/core/project/types';
 import { folderYamlFile, nexoPluginPath } from '@resourcepackbuilder/core/export/paths';
 import { issuesFor } from '@resourcepackbuilder/utils';
-import { itemLabel } from '@resourcepackbuilder/core/project/labels';
+import { itemLabel } from '@resourcepackbuilder/core/project/item';
 import { getFolderPathLabel } from '@resourcepackbuilder/core/project/tree';
 import { AutoGrid, DropZone, IconButton, PageHeader, PageShell, Thumb, Tip } from '@resourcepackbuilder/ui';
 import { Badge } from '@resourcepackbuilder/ui/components/badge';

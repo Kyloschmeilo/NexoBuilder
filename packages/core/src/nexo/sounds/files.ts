@@ -1,8 +1,8 @@
 /** Export of sounds: OGG file paths and the sounds.yml entry. */
 import { formatResourceLocation } from '@resourcepackbuilder/minecraft';
 import type { Project } from '../../project/types';
-import { mediaKey } from '../media/entry';
-import type { Sound } from './model';
+import { mediaKey } from '../../project/media/entry';
+import type { Sound } from '../../project/media/sound';
 
 /** Path of the OGG file relative to assets/<ns>/sounds (without extension) */
 export function soundFilePath(sound: Sound, index: number): string {

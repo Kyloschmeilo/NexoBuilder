@@ -3,11 +3,11 @@
  * or plays the sound in a jukebox (jukebox_playable).
  */
 import { ID_CHARS } from '@resourcepackbuilder/minecraft';
-import type { Item, Project } from '../../project/types';
+import type { Item, Project } from '../types';
 import { toIdentifier } from '@resourcepackbuilder/utils';
-import { DEFAULT_MATERIAL } from '../material';
-import type { Painting } from '../paintings/model';
-import type { Sound } from '../sounds/model';
+import { DEFAULT_MATERIAL } from '../item';
+import type { Painting } from './painting';
+import type { Sound } from './sound';
 import { mediaKey } from './entry';
 
 /** What a new item for a media entry starts with; `configure` adds its components. */

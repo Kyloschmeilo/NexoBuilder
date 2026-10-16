@@ -34,13 +34,13 @@ import {
   withoutUndefined,
 } from '@resourcepackbuilder/utils';
 import { type ImportedModel, JavaModelSchema, type ModelTexture, ModelTextureSchema } from '@resourcepackbuilder/minecraft';
-import { toArmorSettings, type ArmorSettings } from '../nexo/armor';
-import { CHAT_TEXT_HEIGHT, DEFAULT_FONT_ASCENT, type Glyph } from '../nexo/glyphs/model';
-import type { MediaFile } from '../nexo/media/entry';
-import type { MediaEntryByKind, MediaKind } from '../nexo/media/kinds';
-import type { Painting } from '../nexo/paintings/model';
-import { INGREDIENT_LETTERS, RECIPE_TYPES, type Recipe, type RecipeIngredient } from '../nexo/recipes/model';
-import type { JukeboxSong, Sound, SoundFile } from '../nexo/sounds/model';
+import { toArmorSettings, type ArmorSettings } from './armor';
+import { CHAT_TEXT_HEIGHT, DEFAULT_FONT_ASCENT, type Glyph } from './media/glyph';
+import type { MediaFile } from './media/entry';
+import type { MediaEntryByKind, MediaKind } from './media/kinds';
+import type { Painting } from './media/painting';
+import { INGREDIENT_LETTERS, RECIPE_TYPES, type Recipe, type RecipeIngredient } from './recipes/model';
+import type { JukeboxSong, Sound, SoundFile } from './media/sound';
 import { defaultSettings, DEFAULT_PACK_NAME } from './factory';
 import type { ConfigObject, ConfigValue, Folder, Item, Project, ProjectSettings } from './types';
 

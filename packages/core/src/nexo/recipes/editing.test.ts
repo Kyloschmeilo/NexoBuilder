@@ -1,10 +1,10 @@
 import { describe, expect, it } from 'vitest';
 import { planExport } from '../../export/plan';
-import { recipeFrame, recipeIngredientFrame, recipeInputFrame } from '../../issueFrames';
+import { recipeFrame, recipeIngredientFrame, recipeInputFrame } from '../../project/issueFrames';
 import { issuesFor, type Issue, type IssueCode, type IssueContext } from '@resourcepackbuilder/utils';
 import { createFolder, createItem, createProject, insertFolder, insertItem } from '../../project/factory';
 import { recipeIssues } from './issues';
-import { createRecipe, emptyIngredient } from './model';
+import { createRecipe, emptyIngredient } from '../../project/recipes/model';
 import {
   addIngredient,
   ingredientLetters,
@@ -12,7 +12,7 @@ import {
   removeIngredient,
   withIngredientAmount,
   withIngredientId,
-} from './operations';
+} from '../../project/recipes/operations';
 
 const issue = (code: IssueCode, context?: Issue['context']): Issue => ({ level: 'error', code, context });
 const itemFrame: IssueContext = { code: 'context.item', args: { item: 'Ruby' } };

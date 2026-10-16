@@ -4,7 +4,7 @@ import { createFolder, createItem, createProject, insertFolder, insertItem } fro
 import { createTexture } from '@resourcepackbuilder/minecraft';
 import { makePngDataUrl } from '@resourcepackbuilder/test-utils/png';
 import { planExport } from './plan';
-import type { ArmorSettings } from '../nexo/armor';
+import type { ArmorSettings } from '../project/armor';
 import type { Project } from '../project/types';
 
 const PNG = makePngDataUrl(64, 32);

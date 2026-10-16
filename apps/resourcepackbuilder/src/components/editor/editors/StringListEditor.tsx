@@ -1,7 +1,6 @@
 import { useId, useState } from 'react';
 import { useTranslations } from 'next-intl';
-import type { StringListField } from '@resourcepackbuilder/core/nexo/fields';
-import { validateTextFormat } from '@resourcepackbuilder/core/nexo/fieldFormat';
+import { type StringListField, validateTextFormat } from '@resourcepackbuilder/core/nexo/form/fields';
 import { FieldError } from '@resourcepackbuilder/ui/components/field';
 import { Input } from '@resourcepackbuilder/ui/components/input';
 import { useRowKeys } from '@resourcepackbuilder/ui';

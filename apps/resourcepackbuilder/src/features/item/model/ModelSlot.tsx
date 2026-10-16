@@ -2,7 +2,7 @@ import { useTranslations } from 'next-intl';
 import { Box, RefreshCw, Trash2 } from 'lucide-react';
 import { cn } from 'cn';
 import type { Item } from '@resourcepackbuilder/core/project/types';
-import type { VariantDef } from '@resourcepackbuilder/core/nexo/variants';
+import type { VariantDef } from '@resourcepackbuilder/core/project/variants';
 import { DropZone, IconButton, pickFiles, Thumb, Tip } from '@resourcepackbuilder/ui';
 import { useThumbnail } from '@resourcepackbuilder/preview';
 import { removeVariant, setVariantModels } from '../../../commands/items';

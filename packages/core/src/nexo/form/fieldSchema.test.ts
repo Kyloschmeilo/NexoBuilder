@@ -1,8 +1,8 @@
 import { describe, expect, it } from 'vitest';
-import { createItem, createProject } from '../project/factory';
+import { createItem, createProject } from '../../project/factory';
 import { checkFieldValue } from './fieldSchema';
 import type { Field } from './fields';
-import { buildItemConfig } from './itemConfig';
+import { buildItemConfig } from '../itemConfig';
 
 const number: Field = { type: 'number', key: 'amount', label: 'amount', integer: true, min: 1, max: 10 };
 const select: Field = { type: 'select', key: 'mode', label: 'mode', options: [{ value: 'A' }, { value: 'B' }] };

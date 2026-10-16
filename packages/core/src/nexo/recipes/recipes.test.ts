@@ -5,7 +5,7 @@ import { buildMultiExportZip } from '../../export/zip';
 import { singleExport } from '../../../test-utils/export';
 import { createFolder, createItem, createProject, insertFolder, insertItem } from '../../project/factory';
 import { buildRecipeFiles, recipeToYaml } from './files';
-import { createRecipe } from './model';
+import { createRecipe } from '../../project/recipes/model';
 import { validateRecipe } from './validate';
 
 function setup() {

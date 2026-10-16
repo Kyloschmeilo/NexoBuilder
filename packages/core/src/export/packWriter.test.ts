@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { createGlyph } from '../nexo/glyphs/model';
+import { createGlyph } from '../project/media/glyph';
 import { createProject } from '../project/factory';
 import { makePngDataUrl } from '@resourcepackbuilder/test-utils/png';
 import { PackWriter } from './packWriter';

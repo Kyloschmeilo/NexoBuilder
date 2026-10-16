@@ -19,8 +19,8 @@ import {
   lenientString,
   type SchemaChecks,
 } from '@resourcepackbuilder/utils';
-import { mediaId, mediaList, type MediaEntry, type MediaKind } from '../nexo/media/kinds';
-import { itemLabel } from '../project/labels';
+import { mediaId, mediaList, type MediaEntry, type MediaKind } from '../project/media/kinds';
+import { itemLabel } from '../project/item';
 import type { Project } from '../project/types';
 import {
   changedEntityKeys,

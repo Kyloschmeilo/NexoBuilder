@@ -4,10 +4,9 @@
  * The keys match the Pack options from the Nexo docs (configuration/items/item-appearance).
  */
 import { normalizeTypedId } from '@resourcepackbuilder/minecraft';
-import { isPlainObject } from '@resourcepackbuilder/utils';
-import type { ConfigObject } from '../project/types';
-import { getPath } from './configPath';
-import { keySegment } from './messageKey';
+import { isPlainObject, keySegment } from '@resourcepackbuilder/utils';
+import type { ConfigObject } from './types';
+import { getPath } from './config';
 
 /** Variants that Nexo itself builds into the ItemModel via Pack.<slot> */
 export type PackVariantSlot =

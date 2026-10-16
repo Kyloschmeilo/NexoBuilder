@@ -6,10 +6,9 @@
  *  - `fieldToSchema(field)`: the checks reported on export, with each ZodIssue path mapped to issue frames
  */
 import { z } from 'zod';
-import { fieldFrame, listEntryFrame, mapKeyFrame } from '../issueFrames';
+import { fieldFrame, listEntryFrame, mapKeyFrame } from '../../project/issueFrames';
 import { labelArg, type IssueContext, type MessageArgs } from '@resourcepackbuilder/utils';
-import { validateTextFormat } from './fieldFormat';
-import type { Field } from './fields';
+import { type Field, validateTextFormat } from './fields';
 
 const NUMBER_TEXT = /^\s*-?(\d+(\.\d*)?|\.\d+)([eE][-+]?\d+)?\s*$/;
 

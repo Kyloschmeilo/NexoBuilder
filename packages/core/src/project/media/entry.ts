@@ -3,9 +3,9 @@
  * namespace, an uploaded file and per-entry checks with the same frame and ID rules.
  */
 import { formatResourceLocation, readPngInfoFromDataUrl } from '@resourcepackbuilder/minecraft';
-import { mediaFrame } from '../../issueFrames';
+import { mediaFrame } from '../issueFrames';
 import { issueReporter, type Issue, type ReportIssue } from '@resourcepackbuilder/utils';
-import type { Project } from '../../project/types';
+import type { Project } from '../types';
 import type { MediaKind } from './kinds';
 
 /** An uploaded image (glyph or painting) with the size read from its header. */
