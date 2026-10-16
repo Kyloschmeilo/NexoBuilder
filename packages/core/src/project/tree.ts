@@ -30,17 +30,24 @@ export function getFolderPathLabel(project: Project, folderId: string): string {
     .join(' / ');
 }
 
-/** Visits the folders below `rootIds` depth-first (each folder at most once). */
-function walkFolders(project: Project, rootIds: string[], visit: (folder: Folder) => void): void {
+/** Visits the folders below `rootIds` depth-first (each folder at most once); `depth` counts from 0 at `rootIds`. */
+function walkFolders(project: Project, rootIds: string[], visit: (folder: Folder, depth: number) => void): void {
   const seen = new Set<string>();
-  const walk = (id: string) => {
+  const walk = (id: string, depth: number) => {
     const folder = project.folders[id];
     if (!folder || seen.has(id)) return;
     seen.add(id);
-    visit(folder);
-    folder.folderIds.forEach(walk);
+    visit(folder, depth);
+    folder.folderIds.forEach((child) => walk(child, depth + 1));
   };
-  rootIds.forEach(walk);
+  rootIds.forEach((id) => walk(id, 0));
+}
+
+/** All folders in tree order with their depth (top level: 0). */
+export function flattenFolderTree(project: Project): Array<{ folder: Folder; depth: number }> {
+  const result: Array<{ folder: Folder; depth: number }> = [];
+  walkFolders(project, project.rootFolderIds, (folder, depth) => result.push({ folder, depth }));
+  return result;
 }
 
 /** All items in tree order (folder by folder). */

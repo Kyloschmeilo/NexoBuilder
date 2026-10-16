@@ -2,7 +2,7 @@ import { useId, useState } from 'react';
 import { FolderPlus } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 import { DEFAULT_MC_VERSION, MC_VERSIONS } from '@resourcepackbuilder/core/minecraft/versions';
-import { slugify } from '@resourcepackbuilder/core/text';
+import { defaultNamespace } from '@resourcepackbuilder/core/project/factory';
 import { Button } from '@resourcepackbuilder/ui/components/button';
 import { Field, FieldLabel } from '@resourcepackbuilder/ui/components/field';
 import { Input } from '@resourcepackbuilder/ui/components/input';
@@ -10,9 +10,6 @@ import { NativeSelect, NativeSelectOption } from '@resourcepackbuilder/ui/compon
 import { AutoGrid } from '@resourcepackbuilder/ui';
 import { NamespaceProblemText, useNamespaceProblem } from '../../components/NamespaceProblem';
 import { useProjectActions } from './useProjectActions';
-
-/** Slug used when even the default project name gives none. */
-const FALLBACK_NAMESPACE = 'my_pack';
 
 /** Name, namespace and Minecraft version of a new project; the namespace follows the name until edited. */
 export function NewProjectForm({ onDone }: { onDone?: () => void }) {
@@ -24,7 +21,7 @@ export function NewProjectForm({ onDone }: { onDone?: () => void }) {
   const [editedNamespace, setEditedNamespace] = useState<string | null>(null);
   const [version, setVersion] = useState(DEFAULT_MC_VERSION);
   const defaultName = t('defaultName');
-  const namespace = editedNamespace ?? slugify(name || defaultName, slugify(defaultName, FALLBACK_NAMESPACE));
+  const namespace = editedNamespace ?? defaultNamespace(name || defaultName);
   const problem = checkNamespace(namespace);
   const isInvalid = problem?.isError ?? false;
 

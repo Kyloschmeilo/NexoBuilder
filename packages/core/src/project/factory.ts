@@ -23,6 +23,11 @@ export function defaultSettings(name: string): ProjectSettings {
   };
 }
 
+/** The namespace a project named `name` gets unless one is chosen. */
+export function defaultNamespace(name: string): string {
+  return slugify(name, DEFAULT_PACK_NAME);
+}
+
 export function createProject(name: string, namespace?: string, minecraftVersion?: string): Project {
   const now = Date.now();
   const settings = defaultSettings(name);
@@ -31,7 +36,7 @@ export function createProject(name: string, namespace?: string, minecraftVersion
     formatVersion: 1,
     id: uid('p_'),
     name,
-    namespace: namespace ?? slugify(name, DEFAULT_PACK_NAME),
+    namespace: namespace ?? defaultNamespace(name),
     settings,
     folders: {},
     items: {},

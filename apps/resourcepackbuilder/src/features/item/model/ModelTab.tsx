@@ -9,12 +9,9 @@ import { BlockModelsSection } from './BlockModelsSection';
 import { FurnitureModelsSection } from './FurnitureModelsSection';
 import { ModelCard } from './ModelCard';
 import { TexturesSection } from './TexturesSection';
-import { MODEL_ACCEPT } from '../../../components/modelFiles';
+import { MODEL_ACCEPT, MODEL_FORMATS } from '../../../components/modelFiles';
 import { useModelImport } from './useModelImport';
 import { VariantsSection } from './VariantsSection';
-
-/** Formats shown on the drop zone of an item without a model. */
-const MODEL_FORMATS = ['.bbmodel', '.json + .png', '.png'];
 
 function NoModelCard({ item }: { item: Item }) {
   const t = useTranslations('item');
