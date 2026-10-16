@@ -1,8 +1,8 @@
-import type { Issue } from '../../issues';
+import { mediaFrame } from '../../issueFrames';
+import { issueReporter, type Issue } from '../../issues';
 import { ITEM_ID_PATTERN } from '../../minecraft/resourceLocation';
 import { compareVersions, FEATURE_VERSIONS } from '../../minecraft/versions';
 import type { Project } from '../../project/types';
-import { issueReporter } from '../issueReporter';
 import { MAX_PAINTING_BLOCKS, paintingFrameSize } from './model';
 
 /** Checks all paintings of the project; each issue targets its painting and carries a `context.painting` frame. */
@@ -16,7 +16,7 @@ export function validatePaintings(project: Project): Issue[] {
   for (const painting of paintings) {
     const add = issueReporter(issues, {
       target: { kind: 'painting', id: painting.id },
-      context: [{ code: 'context.painting', args: { painting: painting.paintingId || '?' } }],
+      context: [mediaFrame('painting', painting.paintingId)],
     });
     if (!ITEM_ID_PATTERN.test(painting.paintingId)) add('error', 'painting.idInvalid');
     if (seen.has(painting.paintingId)) add('error', 'painting.idDuplicate');

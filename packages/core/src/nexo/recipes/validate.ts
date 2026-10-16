@@ -1,7 +1,7 @@
-import type { Issue, IssueContext } from '../../issues';
+import { recipeFrame, recipeIngredientFrame, recipeInputFrame } from '../../issueFrames';
+import { issueReporter, type Issue, type IssueContext } from '../../issues';
 import { RESOURCE_LOCATION_PATTERN } from '../../minecraft/resourceLocation';
 import type { Project } from '../../project/types';
-import { issueReporter } from '../issueReporter';
 import { MATERIAL_PATTERN } from '../material';
 import { getRecipeTypeInfo, MAX_INGREDIENT_AMOUNT, MAX_RESULT_AMOUNT, type Recipe, type RecipeIngredient } from './model';
 
@@ -32,8 +32,8 @@ function validateIngredient(ingredient: RecipeIngredient | null | undefined, con
 export function validateRecipe(recipe: Recipe, project: Project, key: string): Issue[] {
   const issues: Issue[] = [];
   const info = getRecipeTypeInfo(recipe.type);
-  const add = issueReporter(issues, { context: [{ code: 'context.recipe', args: { recipe: key } }] });
-  const ingredientContext = (letter: string): IssueContext => ({ code: 'context.recipeIngredient', args: { recipe: key, letter } });
+  const add = issueReporter(issues, { context: [recipeFrame(key)] });
+  const ingredientContext = (letter: string) => recipeIngredientFrame(key, letter);
   if (!Number.isInteger(recipe.resultAmount) || recipe.resultAmount < 1 || recipe.resultAmount > MAX_RESULT_AMOUNT) {
     add('error', 'recipe.resultAmountRange');
   }
@@ -48,7 +48,7 @@ export function validateRecipe(recipe: Recipe, project: Project, key: string): I
       validateIngredient(ingredient, ingredientContext(letter), project, issues);
     }
   } else {
-    validateIngredient(recipe.input, { code: 'context.recipeInput', args: { recipe: key } }, project, issues);
+    validateIngredient(recipe.input, recipeInputFrame(key), project, issues);
     if (info.kind === 'cooking') {
       if (!Number.isFinite(recipe.cookingTime) || recipe.cookingTime < 1) add('error', 'recipe.cookingTimeInvalid');
       if (!Number.isFinite(recipe.experience) || recipe.experience < 0) add('error', 'recipe.experienceNegative');

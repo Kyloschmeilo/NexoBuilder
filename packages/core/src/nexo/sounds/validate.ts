@@ -1,8 +1,8 @@
 import { isOggDataUrl } from '../../binary/ogg';
-import type { Issue } from '../../issues';
+import { mediaFrame } from '../../issueFrames';
+import { issueReporter, type Issue } from '../../issues';
 import { NAMESPACE_PATTERN } from '../../minecraft/resourceLocation';
 import type { Project } from '../../project/types';
-import { issueReporter } from '../issueReporter';
 
 const DURATION_PATTERN = /^\s*\d+(\.\d+)?\s*[tsmhd]?(\s+\d+(\.\d+)?\s*[tsmhd])*\s*$/;
 
@@ -13,7 +13,7 @@ export function validateSounds(project: Project): Issue[] {
   for (const sound of project.sounds ?? []) {
     const add = issueReporter(issues, {
       target: { kind: 'sound', id: sound.id },
-      context: [{ code: 'context.sound', args: { sound: sound.soundId || '?' } }],
+      context: [mediaFrame('sound', sound.soundId)],
     });
     if (!NAMESPACE_PATTERN.test(sound.soundId)) add('error', 'sound.idInvalid');
     if (seen.has(sound.soundId)) add('error', 'sound.idDuplicate');

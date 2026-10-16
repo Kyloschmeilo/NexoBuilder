@@ -18,7 +18,7 @@ import {
   type VariantSlot,
 } from '../nexo/variants';
 import { isPlainObject } from '../object';
-import { variantFrame } from './frames';
+import { variantFrame } from '../issueFrames';
 import { itemModelDefinitionFile } from './paths';
 import type { ItemExport } from './types';
 

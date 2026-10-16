@@ -87,6 +87,14 @@ describe('sounds and paintings', () => {
     expect(codes).toContain('warning: painting.datapackNeedsVersion');
   });
 
+  it('reports unreadable media files with the entry as target and context', () => {
+    const project = mediaProject();
+    project.sounds[0].files[0].dataUrl = 'not a data url';
+    const unreadable = planExport(project).issues.find((i) => i.code === 'plan.fileUnreadable');
+    expect(unreadable?.target).toEqual({ kind: 'sound', id: 's1' });
+    expect(unreadable?.context).toEqual([{ code: 'context.sound', args: { sound: 'block.glocke.ding' } }]);
+  });
+
   it('merges sounds.yml of several projects and reports duplicate IDs', async () => {
     const a = mediaProject('Klang', 'klang');
     const b = mediaProject('Andere', 'andere');

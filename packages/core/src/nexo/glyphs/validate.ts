@@ -1,7 +1,7 @@
-import type { Issue } from '../../issues';
+import { mediaFrame } from '../../issueFrames';
+import { issueReporter, type Issue } from '../../issues';
 import { ITEM_ID_PATTERN, RESOURCE_LOCATION_PATTERN } from '../../minecraft/resourceLocation';
 import type { Project } from '../../project/types';
-import { issueReporter } from '../issueReporter';
 import { MAX_GLYPH_CELL, type Glyph } from './model';
 
 /** Checks all glyphs of the project; each issue targets its glyph and carries a `context.glyph` frame. */
@@ -13,7 +13,7 @@ export function validateGlyphs(project: Project): Issue[] {
   for (const glyph of glyphs) {
     const add = issueReporter(issues, {
       target: { kind: 'glyph', id: glyph.id },
-      context: [{ code: 'context.glyph', args: { glyph: glyph.glyphId || '?' } }],
+      context: [mediaFrame('glyph', glyph.glyphId)],
     });
     if (!ITEM_ID_PATTERN.test(glyph.glyphId)) add('error', 'glyph.idInvalid');
     if (seen.has(glyph.glyphId)) add('error', 'glyph.idDuplicate');

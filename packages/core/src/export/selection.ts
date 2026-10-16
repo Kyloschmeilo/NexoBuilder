@@ -5,9 +5,9 @@
  * For the selection, a sub-project with the same folders (just without the deselected
  * items) is created – paths and file names thus stay exactly as in the full export.
  */
-import { inContext, type Issue, type MessageArgs } from '../issues';
+import { inContext, issueReporter, type Issue, type MessageArgs } from '../issues';
 import type { Project } from '../project/types';
-import { projectFrame } from './frames';
+import { projectFrame } from '../issueFrames';
 import { projectFileName } from '../nexo/projectFiles';
 import { planExport } from './plan';
 import type { ExportPlan, PlanOptions } from './types';
@@ -156,7 +156,8 @@ export function planMultiExport(entries: ExportEntry[], options: PlanOptions = {
 
 function crossProjectIssues(projects: PlannedProject[]): Issue[] {
   const issues: Issue[] = [];
-  const error = (code: string, args: MessageArgs) => issues.push({ level: 'error', code, args });
+  const report = issueReporter(issues);
+  const error = (code: string, args: MessageArgs) => report('error', code, args);
 
   // Remembers the first project (index) per key and returns its name on overlap
   const firstOwner = <K>(map: Map<K, number>, key: K, owner: number): string | null => {
@@ -213,7 +214,7 @@ function crossProjectIssues(projects: PlannedProject[]): Issue[] {
       const other = firstOwner(assetFiles, path, index);
       if (other && !reportedAssets.has(path)) {
         reportedAssets.add(path);
-        issues.push({ level: 'warning', code: 'selection.assetFileClash', args: { first: other, second: name, path } });
+        report('warning', 'selection.assetFileClash', { first: other, second: name, path });
       }
     }
   });

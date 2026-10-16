@@ -12,7 +12,7 @@ import { MODEL_TOKEN } from '../../nexo/tokens';
 import { isPlainObject } from '../../object';
 import { itemLabel } from '../../project/labels';
 import type { Item } from '../../project/types';
-import { fieldFrame, listEntryFrame, mapKeyFrame, propertyFrame } from '../frames';
+import { fieldFrame, listEntryFrame, mapKeyFrame, propertyFrame } from '../../issueFrames';
 import type { ItemExport } from '../types';
 
 /** Highest custom_variation per block type (Nexo limits) */

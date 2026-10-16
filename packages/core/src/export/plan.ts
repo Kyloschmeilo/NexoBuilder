@@ -2,7 +2,7 @@
  * Plans the complete export of a project: item YAMLs, models, textures, armor and all checks.
  * The result contains finished file contents and can be zipped directly (see paths.ts for the layout).
  */
-import { inContext, type Issue, type IssueContext } from '../issues';
+import { inContext, issueReporter, type Issue, type IssueContext } from '../issues';
 import { buildPackMcmeta } from '../minecraft/versions';
 import { getPath } from '../nexo/configPath';
 import { buildItemConfig } from '../nexo/itemConfig';
@@ -14,7 +14,7 @@ import { itemsToYaml } from '../nexo/yaml';
 import { getFolderSlugs, getItemsInTreeOrder } from '../project/tree';
 import type { Item, Project } from '../project/types';
 import { collectArmorSets, itemArmor, writeArmorSets, type ItemArmor } from './armor';
-import { itemFrame, itemTarget, variantFrame } from './frames';
+import { itemFrame, itemTarget, variantFrame } from '../issueFrames';
 import { writeItemModels } from './itemModels';
 import { writeMedia } from './media';
 import { writeModel } from './models';
@@ -81,7 +81,7 @@ function planItem(project: Project, item: Item, writer: PackWriter, issues: Issu
     writer,
     modelPath: modelPathFor(project, item),
     folderSlugs: getFolderSlugs(project, item.folderId),
-    report: (level, code, args, context) => reportIn({ level, code, ...(args && { args }) }, context),
+    report: issueReporter(issues, { target, context: [frame] }),
     reportIn,
     writeModel: (model, modelPath, modelFrame) =>
       writeModel(writer, project, model, modelPath, (issue) => reportIn(issue, modelFrame ? [modelFrame] : [])),
