@@ -172,6 +172,27 @@
   ::selection {
     @apply bg-accent text-foreground;
   }
+  /* Tailwind v4 dropped the pointer cursor on buttons; every clickable element gets it back, disabled ones don't. */
+  :is(
+    button,
+    a[href],
+    summary,
+    select,
+    label[for],
+    input:is([type='checkbox'], [type='radio'], [type='color'], [type='file']),
+    [role='button'],
+    [role='checkbox'],
+    [role='radio'],
+    [role='switch'],
+    [role='tab'],
+    [role='option'],
+    [role='menuitem'],
+    [role='menuitemcheckbox'],
+    [role='menuitemradio'],
+    [role='combobox']
+  ):not(:disabled, [aria-disabled='true'], [data-disabled]) {
+    cursor: pointer;
+  }
   /* Lucide icons: 1.5px stroke width as in the design */
   .lucide {
     stroke-width: 1.5;
