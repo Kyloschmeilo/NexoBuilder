@@ -20,6 +20,7 @@ import { planMultiExport } from '../../selection';
 import { buildMultiExportZip, INSTALL_GUIDE_FILE, listMultiExportPaths, pluginFolderEntries } from '../../zip';
 import { pluginText } from '../../../test-utils/export';
 import { CRAFT_ENGINE_TARGET } from '.';
+import { folderConfigPath } from '..';
 
 const PNG16 = makePngDataUrl(16, 16);
 const png = (name: string) => createTextureModel('handheld', { layer0: name }, [{ name, dataUrl: PNG16 }]);
@@ -252,6 +253,17 @@ describe('CraftEngine checks', () => {
       expect(planExport(project).issues.find((i) => i.code === 'ce.reservedPackName')?.level).toBe('error');
     }
     expect(codes(oneItemProject(() => {}))).not.toContain('ce.reservedPackName');
+  });
+
+  it("shows a folder's config file in the target's plugin folder", () => {
+    const project = oneItemProject(() => {});
+    const folderId = project.rootFolderIds[0];
+    expect(folderConfigPath(project, folderId)).toMatch(
+      /^plugins\/CraftEngine\/resources\/[^/]+\/configuration\/items\/dinge\/dinge\.yml$/,
+    );
+    expect(folderConfigPath({ ...project, target: 'nexo' }, folderId)).toBe('plugins/Nexo/items/dinge/dinge.yml');
+    project.settings.yamlFileMode = 'item';
+    expect(folderConfigPath(project, folderId)).toMatch(/\/items\/dinge\/<item_id>\.yml$/);
   });
 
   it('does not warn about the namespace "nexo", which only Nexo uses itself', () => {

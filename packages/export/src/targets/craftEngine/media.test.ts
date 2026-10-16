@@ -97,6 +97,18 @@ describe('CraftEngine images and emoji', () => {
     expect(plan.packFiles.has('assets/klang/textures/glyphs/spin.gif')).toBe(false);
     expect(plan.pluginFiles.has(`${CONFIG}/images.yml`)).toBe(false);
   });
+
+  it('notes a permission that CraftEngine drops because the glyph has no chat shortcut', () => {
+    const project = ceProject();
+    const vip = createGlyph('g1', 'vip', glyphFileFromDataUrl('vip.png', makePngDataUrl(8, 8)));
+    vip.permission = 'glyph.vip';
+    const shortcut = createGlyph('g2', 'star', glyphFileFromDataUrl('star.png', makePngDataUrl(8, 8)));
+    shortcut.permission = 'glyph.star';
+    shortcut.placeholders = [':star:'];
+    project.glyphs = [vip, shortcut];
+    const notes = planExport(project).issues.filter((i) => i.code === 'ce.glyphPermissionUnused');
+    expect(notes.map((i) => [i.level, i.target?.id])).toEqual([['info', 'g1']]);
+  });
 });
 
 describe('CraftEngine sounds and jukebox songs', () => {
@@ -152,6 +164,18 @@ describe('CraftEngine sounds and jukebox songs', () => {
     expect(durationSeconds('100t')).toBe(5);
     expect(durationSeconds('')).toBeNull();
     expect(durationSeconds('soon')).toBeNull();
+    expect(durationSeconds(' 2 m 30 s ')).toBe(150);
+    expect(durationSeconds('2m30s')).toBe(150);
+    expect(durationSeconds('2x')).toBeNull();
+  });
+
+  it('rejects long and adversarial durations quickly', () => {
+    const start = performance.now();
+    expect(durationSeconds('1'.repeat(64) + '!')).toBeNull();
+    expect(durationSeconds('1 '.repeat(31) + 'x')).toBeNull();
+    expect(durationSeconds('1'.repeat(100_000) + 'x')).toBeNull();
+    expect(durationSeconds('1s '.repeat(30))).toBeNull();
+    expect(performance.now() - start).toBeLessThan(100);
   });
 });
 

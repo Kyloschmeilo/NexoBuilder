@@ -118,7 +118,7 @@
     "dropNeedsFolder": "Create a folder first – the items are created inside it."
   },
   "folderView": {
-    "targetHint": "Target in the Nexo folder",
+    "targetHint": "Target in the plugin folder",
     "itemCount": "{count, plural, one {# item} other {# items}}",
     "newItem": "New item",
     "newSubfolder": "Create subfolder",

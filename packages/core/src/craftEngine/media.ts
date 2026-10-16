@@ -20,10 +20,12 @@ export interface CraftEngineGlyphs {
   gifs: Glyph[];
   /** Reference glyphs whose multi-bitmap glyph is not in the project (the cell cannot be located) */
   unknownReferences: Glyph[];
+  /** Glyphs with a permission but no chat shortcuts: CraftEngine checks permissions on emoji only, so it is dropped */
+  unusedPermissions: Glyph[];
 }
 
 export function craftEngineGlyphs(project: Project): CraftEngineGlyphs {
-  const out: CraftEngineGlyphs = { images: {}, emoji: {}, gifs: [], unknownReferences: [] };
+  const out: CraftEngineGlyphs = { images: {}, emoji: {}, gifs: [], unknownReferences: [], unusedPermissions: [] };
   for (const glyph of project.glyphs) {
     if (glyph.kind === 'gif') {
       out.gifs.push(glyph);
@@ -38,6 +40,7 @@ export function craftEngineGlyphs(project: Project): CraftEngineGlyphs {
     out.images[key] = image;
     const keywords = glyph.placeholders.map((p) => p.trim()).filter(Boolean);
     if (keywords.length > 0) out.emoji[key] = emoji(glyph, isMultiBitmap(glyph) ? `${key}:0:0` : key, keywords);
+    else if (glyph.permission.trim()) out.unusedPermissions.push(glyph);
   }
   return out;
 }
@@ -104,12 +107,21 @@ export function craftEngineJukeboxSong(project: Project, sound: Sound): Record<s
 }
 
 const DURATION_UNITS: Record<string, number> = { t: 0.05, s: 1, m: 60, h: 3600, d: 86400 };
+/** Longer texts are no song length anyone types */
+const MAX_DURATION_LENGTH = 64;
 
 /** Seconds of a duration like "2m 30s", "150s", "150" (seconds) or "3000t"; null when it cannot be read. */
 export function durationSeconds(text: string): number | null {
-  if (!/^\s*(\d+(\.\d+)?\s*[tsmhd]?\s*)+$/.test(text)) return null;
+  const input = text.trim();
+  if (!input || input.length > MAX_DURATION_LENGTH) return null;
+  // One part per step (sticky, so every step must start where the last ended): linear, no backtracking
+  const part = /(\d+(?:\.\d+)?)\s*([tsmhd]?)\s*/y;
   let seconds = 0;
-  for (const [, value, unit] of text.matchAll(/(\d+(?:\.\d+)?)\s*([tsmhd]?)/g)) seconds += Number(value) * DURATION_UNITS[unit || 's'];
+  while (part.lastIndex < input.length) {
+    const match = part.exec(input);
+    if (!match) return null;
+    seconds += Number(match[1]) * DURATION_UNITS[match[2] || 's'];
+  }
   return Math.round(seconds * 1000) / 1000;
 }
 

@@ -118,7 +118,7 @@
     "dropNeedsFolder": "Lege zuerst einen Ordner an – darin werden die Items erstellt."
   },
   "folderView": {
-    "targetHint": "Ziel im Nexo-Ordner",
+    "targetHint": "Ziel im Plugin-Ordner",
     "itemCount": "{count, plural, one {# Item} other {# Items}}",
     "newItem": "Neues Item",
     "newSubfolder": "Unterordner anlegen",

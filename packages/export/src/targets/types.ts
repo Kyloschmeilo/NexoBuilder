@@ -44,7 +44,7 @@ export interface PackTarget<W extends WrittenItemModels = WrittenItemModels> {
   id: PackTargetId;
   itemIds: ItemIdRule;
   /** File (relative to `layout.pluginDir`) that holds the config of `item` in the folder `folderSlugs`. */
-  itemFile(project: Project, folderSlugs: string[], item: Item): string;
+  itemFile(project: Project, folderSlugs: string[], item: Pick<Item, 'itemId'>): string;
   /** Writes the item's further models (variants, item model definitions) after its main model `main`. */
   writeModels(itemExport: ItemExport, main: WrittenModel | null): W;
   /** Builds the item's config from the written models and checks it; reports through itemExport. */

@@ -4,7 +4,7 @@
  *   sounds.yml, paintings.yml (shared by all projects)
  *   pack/external_packs/<pack>/ or pack/external_packs/<pack>.zip (the resource pack)
  */
-import { getFolderSlugs, type Project, projectFileName } from '@resourcepackbuilder/core/project';
+import { type Project, projectFileName } from '@resourcepackbuilder/core/project';
 import { exportPackName } from '../../paths';
 
 /** The Nexo plugin folder on a server; every exported config file is relative to it. */
@@ -23,11 +23,6 @@ export function itemYamlFile(project: Project, folderSlugs: string[], itemId: st
   const dir = ['items', ...(project.settings.itemsInProjectFolder ? [projectFileName(project)] : []), ...folderSlugs];
   const fileName = project.settings.yamlFileMode === 'item' ? itemId : (folderSlugs[folderSlugs.length - 1] ?? 'items');
   return `${dir.join('/')}/${fileName}.yml`;
-}
-
-/** YAML file of a folder's items; in "one file per item" mode with `itemPlaceholder` as file name. */
-export function folderYamlFile(project: Project, folderId: string, itemPlaceholder = '<item_id>'): string {
-  return itemYamlFile(project, getFolderSlugs(project, folderId), itemPlaceholder);
 }
 
 /** Location of the resource pack inside plugins/Nexo. */

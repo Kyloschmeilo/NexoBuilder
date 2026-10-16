@@ -2,7 +2,7 @@
  * The files of plugins/CraftEngine: the project's pack.yml, its item configs (with their blocks, furniture and
  * recipes) grouped by file and the configs of its glyphs, sounds and paintings.
  */
-import { createIssue, groupBy, type Issue, type IssueCode, type MessageArgs } from '@resourcepackbuilder/utils';
+import { createIssue, groupBy, type Issue, type IssueCode, type IssueLevel, type MessageArgs } from '@resourcepackbuilder/utils';
 import {
   craftEngineGlyphs,
   craftEngineJukeboxSong,
@@ -53,12 +53,11 @@ function planMedia(project: Project, writer: PackWriter, issues: Issue[]): Map<s
   issues.push(...mediaIssues.filter((issue) => !NOT_FOR_CRAFT_ENGINE.has(issue.code)));
 
   const glyphs = craftEngineGlyphs(project);
-  const reportGlyph = (glyph: Glyph, code: IssueCode, args?: MessageArgs) =>
-    issues.push(
-      createIssue('warning', code, args, { target: { kind: 'glyph', id: glyph.id }, context: [mediaFrame('glyph', glyph.glyphId)] }),
-    );
+  const reportGlyph = (glyph: Glyph, code: IssueCode, args?: MessageArgs, level: IssueLevel = 'warning') =>
+    issues.push(createIssue(level, code, args, { target: { kind: 'glyph', id: glyph.id }, context: [mediaFrame('glyph', glyph.glyphId)] }));
   for (const glyph of glyphs.gifs) reportGlyph(glyph, 'ce.glyphGifUnsupported');
   for (const glyph of glyphs.unknownReferences) reportGlyph(glyph, 'ce.glyphReferenceUnknown', { reference: glyph.reference });
+  for (const glyph of glyphs.unusedPermissions) reportGlyph(glyph, 'ce.glyphPermissionUnused', undefined, 'info');
 
   const songs = project.sounds.flatMap((sound) => {
     const song = craftEngineJukeboxSong(project, sound);
