@@ -16,7 +16,7 @@ import { closeDialog, type FeatureDialogProps } from '../../store/dialogs';
 import { notify } from '../../shell/notify';
 import { useOpenProject } from '../../store/project';
 import { setEditorTab } from '../../store/ui';
-import { MODEL_ACCEPT, MODEL_FORMATS } from '../item/model/modelFiles';
+import { MODEL_ACCEPT, MODEL_FORMATS } from '../../components/modelFiles';
 import { DraftCard } from './DraftCard';
 import { ItemMetaFields } from './ItemMetaFields';
 import { ignoredFileNames, sourceKey, type NewItemAction, type NewItemState } from './newItemState';

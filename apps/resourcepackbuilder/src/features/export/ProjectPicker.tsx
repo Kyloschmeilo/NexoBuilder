@@ -5,8 +5,8 @@ import { countSelected, SELECT_ALL, type ExportSelection } from '@resourcepackbu
 import { treeRowSlots } from '@resourcepackbuilder/ui';
 import { Badge } from '@resourcepackbuilder/ui/components/badge';
 import { Spinner } from '@resourcepackbuilder/ui/components/spinner';
-import { GroupRow } from './SelectionRows';
-import { SelectionTree } from './SelectionTree';
+import { GroupRow } from '../../components/selection/SelectionRows';
+import { SelectionTree } from '../../components/selection/SelectionTree';
 import type { ProjectChoice } from './useProjectChoices';
 
 interface ProjectPickerProps {

@@ -15,7 +15,7 @@ import { openDialog } from '../../store/dialogs';
 import { usePlan } from '../../store/PlanProvider';
 import { useOpenProject } from '../../store/project';
 import { select } from '../../store/ui';
-import { MODEL_ACCEPT, MODEL_FORMATS } from '../item/model/modelFiles';
+import { MODEL_ACCEPT, MODEL_FORMATS } from '../../components/modelFiles';
 import { useFolderActions } from './useFolderActions';
 
 export function FolderView({ folderId }: { folderId: string }) {

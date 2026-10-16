@@ -21,6 +21,7 @@ import { Field, FieldContent, FieldDescription, FieldLabel, FieldTitle } from '@
 import { RadioGroup, RadioGroupItem } from '@resourcepackbuilder/ui/components/radio-group';
 import { Spinner } from '@resourcepackbuilder/ui/components/spinner';
 import { DialogFrame } from '../../components/DialogFrame';
+import { SelectionHeader } from '../../components/selection/SelectionTree';
 import { richTags } from '../../i18n/richTags';
 import { closeDialog, confirm } from '../../store/dialogs';
 import { setExportSelection, setOtherProjectIncluded, useExportChoicesStore } from '../../store/exportChoices';
@@ -193,30 +194,12 @@ export function ExportDialog() {
 
         <div className="grid items-start gap-5 @3xl/dialog:grid-cols-2">
           <section className="flex min-w-0 flex-col gap-2">
-            <SectionLabel
-              actions={
-                <>
-                  <Button
-                    variant="ghost"
-                    size="sm"
-                    disabled={!expandedProject}
-                    onClick={() => expandedProject && setExportSelection(expandedProject.id, SELECT_ALL)}
-                  >
-                    {tSelection('all')}
-                  </Button>
-                  <Button
-                    variant="ghost"
-                    size="sm"
-                    disabled={!expandedProject}
-                    onClick={() => expandedProject && setExportSelection(expandedProject.id, selectNothing(expandedProject))}
-                  >
-                    {tSelection('none')}
-                  </Button>
-                </>
-              }
-            >
-              {tSelection('title')}
-            </SectionLabel>
+            <SelectionHeader
+              title={tSelection('title')}
+              disabled={!expandedProject}
+              onAll={() => expandedProject && setExportSelection(expandedProject.id, SELECT_ALL)}
+              onNone={() => expandedProject && setExportSelection(expandedProject.id, selectNothing(expandedProject))}
+            />
             <ProjectPicker
               choices={choices}
               includedIds={includedIds}

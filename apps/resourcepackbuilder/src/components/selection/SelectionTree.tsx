@@ -13,7 +13,9 @@ import {
   type ExportSelection,
   type ListSelectionKey,
 } from '@resourcepackbuilder/core/export/selection';
-import { TREE_INDENT_PX, treeRowSlots } from '@resourcepackbuilder/ui';
+import { SectionLabel, TREE_INDENT_PX, treeRowSlots } from '@resourcepackbuilder/ui';
+import { Button } from '@resourcepackbuilder/ui/components/button';
+import { Empty, EmptyDescription } from '@resourcepackbuilder/ui/components/empty';
 import { EntryRow, GroupRow } from './SelectionRows';
 
 /** Projects with at most this many items start with every folder open; larger ones only show the top level. */
@@ -169,7 +171,39 @@ export function SelectionTree({ project, selection, onChange, itemsOnly }: Selec
             </div>
           );
         })}
-      {isEmpty && <p className="px-2 py-1.5 text-xs text-muted-foreground">{itemsOnly ? t('noItems') : t('emptyProject')}</p>}
+      {isEmpty && (
+        <Empty className="p-4">
+          <EmptyDescription className="text-xs">{itemsOnly ? t('noItems') : t('emptyProject')}</EmptyDescription>
+        </Empty>
+      )}
     </div>
+  );
+}
+
+interface SelectionHeaderProps {
+  title: ReactNode;
+  onAll: () => void;
+  onNone: () => void;
+  disabled?: boolean;
+}
+
+/** Caption above a {@link SelectionTree} with "All" and "None" buttons. */
+export function SelectionHeader({ title, onAll, onNone, disabled }: SelectionHeaderProps) {
+  const t = useTranslations('dialogs.selection');
+  return (
+    <SectionLabel
+      actions={
+        <>
+          <Button variant="ghost" size="sm" disabled={disabled} onClick={onAll}>
+            {t('all')}
+          </Button>
+          <Button variant="ghost" size="sm" disabled={disabled} onClick={onNone}>
+            {t('none')}
+          </Button>
+        </>
+      }
+    >
+      {title}
+    </SectionLabel>
   );
 }

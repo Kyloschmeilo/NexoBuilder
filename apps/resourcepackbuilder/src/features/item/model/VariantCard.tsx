@@ -10,7 +10,7 @@ import { Badge } from '@resourcepackbuilder/ui/components/badge';
 import { Button } from '@resourcepackbuilder/ui/components/button';
 import { removeVariant, setVariantModels, updateItem } from '../../../commands/items';
 import { moveInArray, removeAt, replaceAt } from '../../../components/editor';
-import { MODEL_ACCEPT } from './modelFiles';
+import { MODEL_ACCEPT } from '../../../components/modelFiles';
 import { useModelImport } from './useModelImport';
 import { VariantModelRow } from './VariantModelRow';
 

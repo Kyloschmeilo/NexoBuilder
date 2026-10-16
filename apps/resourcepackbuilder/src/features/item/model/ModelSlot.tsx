@@ -6,7 +6,7 @@ import type { VariantDef } from '@resourcepackbuilder/core/nexo/variants';
 import { DropZone, IconButton, pickFiles, Thumb, Tip } from '@resourcepackbuilder/ui';
 import { useThumbnail } from '@resourcepackbuilder/preview';
 import { removeVariant, setVariantModels } from '../../../commands/items';
-import { MODEL_ACCEPT } from './modelFiles';
+import { MODEL_ACCEPT } from '../../../components/modelFiles';
 import { useModelImport } from './useModelImport';
 
 const THUMB_SIZE = 48;

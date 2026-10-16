@@ -15,7 +15,7 @@ import { usePlan } from '../../../store/PlanProvider';
 import { useOpenProject } from '../../../store/project';
 import { ModelParentSelect } from './ModelParentSelect';
 import { ShadingOptions } from './ShadingOptions';
-import { MODEL_ACCEPT } from './modelFiles';
+import { MODEL_ACCEPT } from '../../../components/modelFiles';
 import { useModelImport } from './useModelImport';
 
 const PREVIEW_HEIGHT = 360;

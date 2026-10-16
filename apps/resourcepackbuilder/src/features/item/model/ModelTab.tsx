@@ -9,7 +9,7 @@ import { BlockModelsSection } from './BlockModelsSection';
 import { FurnitureModelsSection } from './FurnitureModelsSection';
 import { ModelCard } from './ModelCard';
 import { TexturesSection } from './TexturesSection';
-import { MODEL_ACCEPT } from './modelFiles';
+import { MODEL_ACCEPT } from '../../../components/modelFiles';
 import { useModelImport } from './useModelImport';
 import { VariantsSection } from './VariantsSection';
 

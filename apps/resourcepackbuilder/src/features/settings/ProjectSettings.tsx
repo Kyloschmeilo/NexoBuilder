@@ -10,7 +10,7 @@ import { CheckboxField } from '../../components/CheckboxField';
 import { updateProjectSettings } from '../../commands/settings';
 import { richTags } from '../../i18n/richTags';
 import { useOpenProject } from '../../store/project';
-import { NamespaceProblemText, useNamespaceProblem } from '../projects/NamespaceProblem';
+import { NamespaceProblemText, useNamespaceProblem } from '../../components/NamespaceProblem';
 import { PackIconField } from './PackIconField';
 
 export function ProjectSettings() {
