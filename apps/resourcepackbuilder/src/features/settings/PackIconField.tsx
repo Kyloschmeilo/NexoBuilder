@@ -1,24 +1,17 @@
 /** The optional pack icon (pack.png) of the open project: preview, upload and remove. */
 import { useTranslations } from 'next-intl';
-import { readPngInfoFromDataUrl } from '@resourcepackbuilder/core/binary/png';
-import { pickFiles, readPngAsDataUrl } from '@resourcepackbuilder/ui';
 import { Field, FieldTitle } from '@resourcepackbuilder/ui/components/field';
 import { updateProjectSettings } from '../../commands/settings';
 import { ImageUploadField } from '../../components/ImageUploadField';
-import { notify } from '../../shell/notify';
+import { usePngPicker } from '../../hooks/useFileReaders';
 
 export function PackIconField({ packIcon }: { packIcon: string | null }) {
   const t = useTranslations('dialogs.settings');
+  const pickPng = usePngPicker();
 
   const upload = async () => {
-    const [file] = await pickFiles('.png,image/png', false);
-    if (!file) return;
-    const dataUrl = await readPngAsDataUrl(file);
-    if (!readPngInfoFromDataUrl(dataUrl)) {
-      notify('error', t('invalidPng'));
-      return;
-    }
-    updateProjectSettings((p) => (p.settings.packIcon = dataUrl));
+    const png = await pickPng();
+    if (png) updateProjectSettings((p) => (p.settings.packIcon = png.dataUrl));
   };
 
   return (

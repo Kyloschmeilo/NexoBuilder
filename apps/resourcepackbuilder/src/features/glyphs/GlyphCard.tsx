@@ -2,29 +2,28 @@ import { RefreshCw } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 import type { ExportPlan } from '@resourcepackbuilder/core/export/types';
 import { issuesFor } from '@resourcepackbuilder/core/issues';
-import type { Glyph } from '@resourcepackbuilder/core/nexo/glyphs/model';
+import { glyphKindOf, glyphTag, type Glyph } from '@resourcepackbuilder/core/nexo/glyphs/model';
 import { Badge } from '@resourcepackbuilder/ui/components/badge';
 import { IconButton, pickFiles } from '@resourcepackbuilder/ui';
 import { updateGlyph } from '../../commands/media';
 import { IssueList } from '../../components/IssueList';
+import { useMediaFileReader } from '../../hooks/useFileReaders';
+import { MEDIA_FILES } from '../../lib/mediaFiles';
 import { MediaCard, PreviewFrame } from '../media/MediaCard';
 import { useMediaActions } from '../media/useMediaActions';
 import { ChatPreview } from './ChatPreview';
 import { GlyphFields } from './GlyphFields';
-import { GLYPH_ACCEPT, glyphKindOf } from './glyphFiles';
-import { glyphTag } from './glyphTag';
-import { useGlyphFileReader } from './useGlyphFileReader';
 
 export function GlyphCard({ glyph, glyphs, plan }: { glyph: Glyph; glyphs: Glyph[]; plan: ExportPlan | null }) {
   const t = useTranslations('media.glyphs');
   const tShared = useTranslations('media.shared');
-  const readFiles = useGlyphFileReader();
+  const readFiles = useMediaFileReader('glyph');
   const media = useMediaActions();
   const issues = plan ? issuesFor(plan.issues, { kind: 'glyph', id: glyph.id }) : [];
   const { file } = glyph;
 
   const replaceImage = async () => {
-    const [entry] = await readFiles(await pickFiles(GLYPH_ACCEPT, false));
+    const [entry] = await readFiles(await pickFiles(MEDIA_FILES.glyph.accept, false));
     if (!entry) return;
     updateGlyph(glyph.id, (draft) => {
       draft.file = entry.file;

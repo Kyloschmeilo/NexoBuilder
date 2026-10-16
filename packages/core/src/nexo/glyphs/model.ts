@@ -65,6 +65,21 @@ export function createGlyph(id: string, glyphId: string, file: MediaFile | null,
   };
 }
 
+/** The glyph kind an uploaded image becomes: animated for GIFs. */
+export function glyphKindOf(file: MediaFile): 'image' | 'gif' {
+  return file.dataUrl.startsWith('data:image/gif') ? 'gif' : 'image';
+}
+
+/** An image glyph split into several cells, addressed by reference glyphs. */
+export function isMultiBitmap(glyph: Glyph): boolean {
+  return glyph.kind === 'image' && glyph.rows * glyph.columns > 1;
+}
+
+/** The tag that shows the glyph in chat, lore etc.; for a multi-bitmap its first cell. */
+export function glyphTag(glyph: Glyph): string {
+  return isMultiBitmap(glyph) ? `<glyph:${glyph.glyphId}:1>` : `<glyph:${glyph.glyphId}>`;
+}
+
 /** Reads a dropped PNG/GIF file as a glyph file. */
 export function glyphFileFromDataUrl(name: string, dataUrl: string): MediaFile | null {
   const png = readPngInfoFromDataUrl(dataUrl);

@@ -44,7 +44,6 @@
     "packIconHint": "Quadratisches PNG, z.B. 128×128",
     "upload": "Hochladen",
     "replace": "Ersetzen",
-    "invalidPng": "Die Datei ist kein gültiges PNG.",
     "useItemModel": "ItemModel-Komponente setzen (empfohlen)",
     "useItemModelHelp": "Setzt <code>{component}</code>. So bekommt jedes Item ein eigenes ItemModel statt CustomModelData – das vermeidet Konflikte (Minecraft 1.21.4+). Wird bei Items mit fester CustomModelData automatisch weggelassen."
   },

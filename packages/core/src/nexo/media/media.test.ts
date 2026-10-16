@@ -4,6 +4,8 @@ import { insertNewItem } from '../../project/operations';
 import { createGlyph } from '../glyphs/model';
 import { createPainting } from '../paintings/model';
 import { createSound, setSoundJukebox } from '../sounds/model';
+import { makePngDataUrl } from '../../test/png';
+import { pngMediaFile } from './entry';
 import { musicDiscItem, paintingItem } from './items';
 import { addMediaEntry, deleteMediaEntry, findMediaEntry } from './operations';
 
@@ -57,5 +59,12 @@ describe('media items', () => {
     expect(item.config.Components).toEqual({ max_stack_size: 1, jukebox_playable: { song_key: 'pack:music.theme' } });
     setSoundJukebox(sound, false);
     expect(sound.jukebox).toBeNull();
+  });
+});
+
+describe('media files', () => {
+  it('reads the size of a PNG and rejects other data', () => {
+    expect(pngMediaFile('a.png', makePngDataUrl(32, 16))).toMatchObject({ name: 'a.png', width: 32, height: 16 });
+    expect(pngMediaFile('a.png', 'data:image/png;base64,AAAA')).toBeNull();
   });
 });

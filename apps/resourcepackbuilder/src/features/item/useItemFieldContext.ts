@@ -3,7 +3,7 @@ import { resolveAsset } from '@resourcepackbuilder/core/project/assets';
 import { addItemAsset } from '../../commands/items';
 import type { FieldContextValue } from '../../components/editor';
 import { useOpenProject } from '../../store/project';
-import { usePngReader } from './usePngReader';
+import { usePngReader } from '../../hooks/useFileReaders';
 
 /** What the property editors of an item need: the project's version and the item's extra textures. */
 export function useItemFieldContext(item: Item): FieldContextValue {

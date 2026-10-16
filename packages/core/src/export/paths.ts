@@ -17,6 +17,14 @@ import { DEFAULT_PACK_NAME } from '../project/factory';
 import { getFolderSlugs, isBlockItem } from '../project/tree';
 import type { Item, Project } from '../project/types';
 
+/** The Nexo plugin folder on a server; every exported config file is relative to it. */
+export const NEXO_PLUGIN_DIR = 'plugins/Nexo';
+
+/** `relativePath` (e.g. "sounds.yml") inside the Nexo plugin folder, as shown to users. */
+export function nexoPluginPath(relativePath: string): string {
+  return `${NEXO_PLUGIN_DIR}/${relativePath}`;
+}
+
 function textureDirFor(item: Item): 'item' | 'block' {
   return isBlockItem(item) ? 'block' : 'item';
 }

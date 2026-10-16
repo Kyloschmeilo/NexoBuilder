@@ -5,6 +5,7 @@ import { Folder as FolderIcon, Frame, Music, Smile } from 'lucide-react';
 import { cn } from 'cn';
 import type { Project } from '@resourcepackbuilder/core/project/types';
 import { itemLabel } from '@resourcepackbuilder/core/project/labels';
+import { glyphTag } from '@resourcepackbuilder/core/nexo/glyphs/model';
 import { itemIdsInFolder } from '@resourcepackbuilder/core/project/tree';
 import {
   selectionState,
@@ -113,7 +114,7 @@ export function SelectionTree({ project, selection, onChange, itemsOnly }: Selec
           key: 'excludedGlyphIds',
           label: t('glyphs'),
           icon: <Smile className={treeRowSlots.icon} />,
-          entries: project.glyphs.map((g) => ({ id: g.id, label: `<glyph:${g.glyphId}>` })),
+          entries: project.glyphs.map((g) => ({ id: g.id, label: glyphTag(g) })),
         },
         {
           key: 'excludedSoundIds',

@@ -15,27 +15,27 @@ import { NumberInput } from '../../components/editor';
 import { CheckboxField } from '../../components/CheckboxField';
 import { FormField } from '../../components/FormField';
 import { IssueList } from '../../components/IssueList';
+import { useMediaFileReader } from '../../hooks/useFileReaders';
+import { MEDIA_FILES } from '../../lib/mediaFiles';
 import { useOpenProject } from '../../store/project';
 import { MediaCard, PreviewFrame } from '../media/MediaCard';
 import { useMediaActions } from '../media/useMediaActions';
 import { NexoKey } from '../media/NexoKey';
-import { PAINTING_ACCEPT } from './paintingFiles';
 import { PaintingPreview } from './PaintingPreview';
-import { usePaintingFileReader } from './usePaintingFileReader';
 
 export function PaintingCard({ painting, plan }: { painting: Painting; plan: ExportPlan | null }) {
   const t = useTranslations('media.paintings');
   const media = useMediaActions();
   const tShared = useTranslations('media.shared');
   const project = useOpenProject();
-  const readFiles = usePaintingFileReader();
+  const readFiles = useMediaFileReader('painting');
   const update = (recipe: (draft: Painting) => void, historyKey?: string) => updatePainting(painting.id, recipe, historyKey);
   const issues = plan ? issuesFor(plan.issues, { kind: 'painting', id: painting.id }) : [];
   const { file } = painting;
   const frames = painting.animated ? (paintingFrameSize(painting)?.frames ?? 1) : 1;
 
   const replaceImage = async () => {
-    const [entry] = await readFiles(await pickFiles(PAINTING_ACCEPT, false));
+    const [entry] = await readFiles(await pickFiles(MEDIA_FILES.painting.accept, false));
     if (entry) update((p) => (p.file = entry.file));
   };
 
