@@ -277,6 +277,7 @@ describe('CraftEngine checks', () => {
     const plan = planExport(goldenCraftEngineProject());
     expect([...plan.pluginFiles.keys()].filter((path) => path.includes('/configuration/') && !path.includes('/items/'))).toEqual([
       'resources/kristall_pack/configuration/images.yml',
+      'resources/kristall_pack/configuration/categories.yml',
     ]);
     expect(plan.packFiles.has('assets/kristall/textures/glyphs/gem.png')).toBe(true);
   });

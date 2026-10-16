@@ -52,12 +52,18 @@ export interface ConfigPropertyDef extends PropertyBase {
   path: string[];
 }
 
-/** The armor settings: stored in `item.armor`, never written to the YAML as they are */
-export interface ArmorPropertyDef extends PropertyBase {
-  storage: 'armor';
+/**
+ * A property stored on the item outside the config, never written to the YAML as it is: the armor settings
+ * (`item.armor`) and the display name translations (`item.translations`)
+ */
+export interface ItemFieldPropertyDef extends PropertyBase {
+  storage: ItemFieldStorage;
 }
 
-export type PropertyDef = ConfigPropertyDef | ArmorPropertyDef;
+/** The item fields a property can be stored in instead of the config */
+export type ItemFieldStorage = 'armor' | 'translations';
+
+export type PropertyDef = ConfigPropertyDef | ItemFieldPropertyDef;
 
 /* ====================================================================== Field specs */
 
@@ -210,8 +216,8 @@ export interface PropertySpec {
   docs?: string;
   keepEmpty?: boolean;
   badge?: PropertyBadge;
-  /** Stored in `item.armor` instead of the config (only the armor settings) */
-  storage?: 'armor';
+  /** Stored in an item field instead of the config: `item.armor` or `item.translations` */
+  storage?: ItemFieldStorage;
 }
 
 /** Builds the properties of a group from their specs, keyed by property id (in display order). */
@@ -228,6 +234,6 @@ export function properties(group: PropertyGroup, specs: Record<string, PropertyS
       ...(hint && { hint: `${scope}.hint` }),
       field: resolveField(fieldSpec, path[path.length - 1], `${scope}.field`),
     };
-    return storage === 'armor' ? { ...base, storage } : { ...base, storage: 'config', path };
+    return storage ? { ...base, storage } : { ...base, storage: 'config', path };
   });
 }

@@ -60,6 +60,20 @@
         "label": "Data (YAML)"
       }
     },
+    "translations": {
+      "label": "Translations",
+      "description": "The item name per Minecraft language. ResourcepackBuilder writes them to the pack's lang files and sets data.item_name to its lang key. The display name is the English (en_us) text unless you set en_us here.",
+      "hint": "Players see the name in their Minecraft language. Languages without a text show the en_us text.",
+      "field": {
+        "label": "Translations",
+        "keyLabel": "Language",
+        "keyPlaceholder": "e.g. de_de",
+        "value": {
+          "label": "Name",
+          "placeholder": "e.g. '<'aqua>Rubinschwert"
+        }
+      }
+    },
     "clientBoundMaterial": {
       "label": "Client Bound Material",
       "description": "The material players see. The server keeps the real material.",
@@ -477,6 +491,91 @@
           },
           "equipOnInteract": {
             "label": "Can be put on a mob by using it"
+          }
+        }
+      }
+    },
+    "armor": {
+      "label": "CustomArmor (Armor, Elytra, Mob Armor, Harness, Saddles)",
+      "description": "Texture shown when worn: player armor, elytra wings, armor for wolf/horse/llama/nautilus, harness for the happy ghast, or saddles. ResourcepackBuilder generates an equipment model in the pack and an entry in equipments.yml from it, and sets settings.equipment (equipment ID and, without an armor material, the slot).",
+      "hint": "All parts of a set get the same set ID; the textures only need to be uploaded on one part. Elytras, animal armor and saddles each need their own set ID. CraftEngine has no allowed animals: animal armor fits any animal with that slot.",
+      "field": {
+        "label": "Armor",
+        "fields": {
+          "set": {
+            "label": "Set ID",
+            "placeholder": "e.g. ruby"
+          },
+          "layer1": {
+            "label": "Player: Layer 1 (helmet, chestplate, boots)",
+            "help": "Corresponds to e.g. diamond_layer_1.png"
+          },
+          "layer2": {
+            "label": "Player: Layer 2 (leggings)",
+            "help": "Corresponds to e.g. diamond_layer_2.png"
+          },
+          "elytra": {
+            "label": "Elytra wings",
+            "help": "Like elytra.png. Without material ELYTRA, ResourcepackBuilder adds the glider component automatically."
+          },
+          "mob": {
+            "label": "Animal armor & harness",
+            "fields": {
+              "wolfArmor": {
+                "label": "Wolf armor",
+                "help": "Like wolf_armor.png"
+              },
+              "horseArmor": {
+                "label": "Horse armor",
+                "help": "Like horse_armor_diamond.png"
+              },
+              "llamaArmor": {
+                "label": "Llama carpet",
+                "help": "Like llama/decor/*.png"
+              },
+              "nautilusArmor": {
+                "label": "Nautilus armor"
+              },
+              "harness": {
+                "label": "Harness (happy ghast)"
+              }
+            }
+          },
+          "saddles": {
+            "label": "Saddles (1.21.5+)",
+            "help": "A saddle can have textures for several animals.",
+            "fields": {
+              "horseSaddle": {
+                "label": "Horse"
+              },
+              "pigSaddle": {
+                "label": "Pig"
+              },
+              "striderSaddle": {
+                "label": "Strider"
+              },
+              "donkeySaddle": {
+                "label": "Donkey"
+              },
+              "muleSaddle": {
+                "label": "Mule"
+              },
+              "camelSaddle": {
+                "label": "Camel"
+              },
+              "skeletonHorseSaddle": {
+                "label": "Skeleton horse"
+              },
+              "zombieHorseSaddle": {
+                "label": "Zombie horse"
+              },
+              "nautilusSaddle": {
+                "label": "Nautilus"
+              },
+              "camelHuskSaddle": {
+                "label": "Camel husk"
+              }
+            }
           }
         }
       }

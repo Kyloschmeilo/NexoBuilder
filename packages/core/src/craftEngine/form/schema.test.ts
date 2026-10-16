@@ -41,8 +41,13 @@ describe('CraftEngine form', () => {
     expect(CRAFT_ENGINE_FORM.tabs.map((tab) => tab.id)).toEqual(['data', 'settings']);
   });
 
-  it('stores every property in the config at its own path', () => {
-    expect(configPaths).toHaveLength(CRAFT_ENGINE_FORM.properties.length);
+  it('stores every property in the config at its own path, except the armor and the translations on the item', () => {
+    const itemFields = CRAFT_ENGINE_FORM.properties.filter((p) => p.storage !== 'config');
+    expect(itemFields.map((p) => [p.id, p.group, p.storage])).toEqual([
+      ['translations', 'general', 'translations'],
+      ['armor', 'settings', 'armor'],
+    ]);
+    expect(configPaths).toHaveLength(CRAFT_ENGINE_FORM.properties.length - itemFields.length);
     expect(new Set(configPaths).size).toBe(configPaths.length);
   });
 

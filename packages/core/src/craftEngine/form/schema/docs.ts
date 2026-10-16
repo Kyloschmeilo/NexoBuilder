@@ -10,6 +10,8 @@ export const CE_DOCS = {
   blockStates: `${WIKI}/configuration/block/states`,
   blockBehaviors: `${WIKI}/configuration/block/behaviors`,
   loot: `${WIKI}/reference/loot_table`,
+  equipment: `${WIKI}/configuration/equipment`,
+  lang: `${WIKI}/configuration/translations`,
 };
 
 /** Links every property of a group to its wiki page. */

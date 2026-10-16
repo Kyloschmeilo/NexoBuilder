@@ -30,6 +30,30 @@ export const CE_ATTRIBUTE_SLOTS = plainOptions([
 /** Equipment slots of `equippable` and `settings.equipment`. */
 export const CE_EQUIPMENT_SLOTS = plainOptions(['head', 'chest', 'legs', 'feet', 'body', 'mainhand', 'offhand', 'saddle']);
 
+/** Common Minecraft locales for the display name translations (`lang:`); any other locale can be typed in. */
+export const CE_LOCALES = plainOptions([
+  'en_us',
+  'en_gb',
+  'de_de',
+  'de_at',
+  'de_ch',
+  'fr_fr',
+  'es_es',
+  'it_it',
+  'nl_nl',
+  'pl_pl',
+  'pt_br',
+  'ru_ru',
+  'uk_ua',
+  'tr_tr',
+  'sv_se',
+  'cs_cz',
+  'ja_jp',
+  'ko_kr',
+  'zh_cn',
+  'zh_tw',
+]);
+
 /** Vanilla enchantments (`minecraft:sharpness`). */
 export const CE_ENCHANTMENTS = plainOptions(ENCHANTMENT_NAMES.map((name) => `minecraft:${name}`));
 

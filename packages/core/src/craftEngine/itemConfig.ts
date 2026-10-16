@@ -10,11 +10,14 @@
  * A furniture definition in `furniture` works the same way: it is returned as the furniture of the same key, the item
  * gets the `furniture_item` behavior (with the definition's placement rules), and the additional YAML's `furniture:`
  * is merged over it. An item is either a block or furniture: with both, the block is built and the furniture left out.
+ * An item of an armor set gets `settings.equipment` (the set's equipment, see export/equipment); what the config sets
+ * there wins, as Nexo's `Components.equippable` does.
  */
 import type { JavaModelJson } from '@resourcepackbuilder/minecraft';
 import { deepClone, deepMerge, isPlainObject } from '@resourcepackbuilder/utils';
 import type { Item, Project } from '../project/types';
 import { itemMaterial } from '../project/item';
+import { slotForMaterial, type ItemArmor } from '../project/armor';
 import { cleanConfig } from '../form/prune';
 import { parseRawYaml, type RawYamlError } from '../yaml';
 import { CRAFT_ENGINE_FORM } from './form/schema';
@@ -30,6 +33,7 @@ import { blockBehaviorForm, blockBehaviorType } from './blockBehaviors';
 import { blockStates, CE_STATE_TEMPLATES, statesTemplate, templateArguments } from './blockStates';
 import { buildRenderer, rendererElements } from './blockRenderer';
 import { buildCraftEngineFurniture, craftEngineFurniture } from './furniture';
+import { craftEngineItemName } from './lang';
 
 /** Order of the keys in the YAML (as in the CraftEngine docs); other keys follow in their own order. */
 const TOP_LEVEL_ORDER = ['material', 'client_bound_material', 'data', 'model', 'models', 'settings', 'behavior', 'events'];
@@ -57,6 +61,8 @@ export interface CraftEngineBuildContext {
   models?: string[] | null;
   /** The written main model, which a block's state shows */
   modelJson?: JavaModelJson | null;
+  /** The item's usable armor set (null = none) */
+  armor?: ItemArmor | null;
 }
 
 export interface CraftEngineBuildResult {
@@ -239,6 +245,22 @@ function buildBlock(source: Record<string, unknown>, context: CraftEngineBuildCo
   return { block: ordered(merged, BLOCK_ORDER), blockModel: blockModel as CraftEngineBlockModel | null, form };
 }
 
+/**
+ * Points `settings.equipment` at the item's armor set: its asset id and, when the material is no armor (which brings
+ * its slot), the set's slot. Elytra wings on another material need the glider component.
+ */
+function addArmor(resolved: Record<string, unknown>, data: Record<string, unknown>, armor: ItemArmor, material: string): void {
+  const settings = isPlainObject(resolved.settings) ? resolved.settings : {};
+  const equipment = isPlainObject(settings.equipment) ? settings.equipment : {};
+  const slot = slotForMaterial(material) ? undefined : (armor.slot ?? 'HEAD').toLowerCase();
+  settings.equipment = { asset_id: armor.assetId, ...(slot && { slot }), ...equipment };
+  resolved.settings = settings;
+  if (armor.glider && material !== 'elytra') {
+    const components = isPlainObject(data.components) ? data.components : {};
+    if (components['minecraft:glider'] === undefined) data.components = { ...components, 'minecraft:glider': {} };
+  }
+}
+
 export function buildCraftEngineItem(context: CraftEngineBuildContext): CraftEngineBuildResult {
   const { project, item, modelKey, models } = context;
   const resolved: Record<string, unknown> = cleanConfig(CRAFT_ENGINE_FORM, deepClone(item.config));
@@ -273,8 +295,9 @@ export function buildCraftEngineItem(context: CraftEngineBuildContext): CraftEng
   delete resolved.material;
   const data = isPlainObject(resolved.data) ? resolved.data : {};
   delete data.item_name;
-  const name = item.displayName.trim();
+  const name = craftEngineItemName(project, item);
   const withName = name ? { item_name: name, ...data } : data;
+  if (context.armor) addArmor(resolved, withName, context.armor, craftEngineMaterial(item));
   if (Object.keys(withName).length > 0) resolved.data = withName;
   else delete resolved.data;
 

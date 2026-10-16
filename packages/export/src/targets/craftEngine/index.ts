@@ -1,9 +1,15 @@
 /** The CraftEngine pack target: one CraftEngine pack per project in plugins/CraftEngine/resources/<pack>/. */
-import { buildCraftEngineItem, craftEngineItemKey, craftEngineRecipes, sectionsToYaml } from '@resourcepackbuilder/core/craftEngine';
+import {
+  buildCraftEngineItem,
+  craftEngineItemKey,
+  craftEngineRecipes,
+  craftEngineTranslations,
+  sectionsToYaml,
+} from '@resourcepackbuilder/core/craftEngine';
 import { recipeFrame } from '@resourcepackbuilder/core/project';
 import type { JavaModelJson } from '@resourcepackbuilder/minecraft';
 import type { ItemExport, ItemSections } from '../../types';
-import type { BuiltItem, PackTarget, WrittenItemModels } from '../types';
+import type { BuiltItem, ItemShared, PackTarget, WrittenItemModels } from '../types';
 import { craftEngineInstallGuide } from './installGuide';
 import {
   CRAFT_ENGINE_MEDIA_FILES,
@@ -55,7 +61,7 @@ export const CRAFT_ENGINE_TARGET: PackTarget<CraftEngineWrittenModels> = {
 };
 
 /** Builds the item's CraftEngine config (and the block or furniture it places, and its recipes) and checks it. */
-function buildItem(itemExport: ItemExport, written: CraftEngineWrittenModels): BuiltItem {
+function buildItem(itemExport: ItemExport, written: CraftEngineWrittenModels, shared: ItemShared): BuiltItem {
   const { project, item } = itemExport;
   const built = buildCraftEngineItem({
     project,
@@ -63,6 +69,7 @@ function buildItem(itemExport: ItemExport, written: CraftEngineWrittenModels): B
     modelKey: written.mainKey,
     models: written.models,
     modelJson: written.mainJson,
+    armor: shared.armor,
   });
   if (built.rawYamlError?.kind === 'syntax') itemExport.report('error', 'plan.rawYamlError', { error: built.rawYamlError.message });
   else if (built.rawYamlError) itemExport.report('error', 'plan.rawYamlNotMapping');
@@ -70,6 +77,8 @@ function buildItem(itemExport: ItemExport, written: CraftEngineWrittenModels): B
   if (built.rawBlockInvalid) itemExport.report('warning', 'ce.rawBlockNotMapping');
   if (built.rawFurnitureIgnored) itemExport.report('warning', 'ce.rawFurnitureWithoutFurniture');
   if (built.furnitureIgnored) itemExport.report('error', 'ce.furnitureWithBlock');
+  for (const locale of craftEngineTranslations(item).invalidLocales)
+    itemExport.report('warning', 'ce.translationLocaleInvalid', { locale });
   validateCraftEngineItem(itemExport, built.config);
   const key = craftEngineItemKey(project, item);
   const sections: ItemSections = {};

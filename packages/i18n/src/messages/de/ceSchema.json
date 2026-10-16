@@ -60,6 +60,20 @@
         "label": "Daten (YAML)"
       }
     },
+    "translations": {
+      "label": "Translations",
+      "description": "Der Item-Name pro Minecraft-Sprache. ResourcepackBuilder schreibt sie in die Sprachdateien des Packs und setzt data.item_name auf ihren lang-Schlüssel. Der Anzeigename ist der englische Text (en_us), außer du setzt en_us hier.",
+      "hint": "Spieler sehen den Namen in ihrer Minecraft-Sprache. Sprachen ohne Text zeigen den en_us-Text.",
+      "field": {
+        "label": "Übersetzungen",
+        "keyLabel": "Sprache",
+        "keyPlaceholder": "z.B. de_de",
+        "value": {
+          "label": "Name",
+          "placeholder": "z.B. '<'aqua>Rubinschwert"
+        }
+      }
+    },
     "clientBoundMaterial": {
       "label": "Client Bound Material",
       "description": "Das Material, das Spieler sehen. Der Server behält das echte Material.",
@@ -477,6 +491,91 @@
           },
           "equipOnInteract": {
             "label": "Kann einem Mob per Benutzen angezogen werden"
+          }
+        }
+      }
+    },
+    "armor": {
+      "label": "CustomArmor (Armor, Elytra, Mob Armor, Harness, Saddles)",
+      "description": "Textur, die beim Tragen angezeigt wird: Spieler-Rüstung, Elytra-Flügel, Rüstung für Wolf/Pferd/Lama/Nautilus, Geschirr für den Glücklichen Ghast oder Sättel. ResourcepackBuilder erzeugt daraus ein Equipment-Modell im Pack und einen Eintrag in equipments.yml und setzt settings.equipment (Equipment-ID und ohne Rüstungsmaterial den Slot).",
+      "hint": "Alle Teile eines Sets bekommen dieselbe Set-ID, die Texturen müssen nur bei einem Teil hochgeladen werden. Elytren, Tier-Rüstungen und Sättel brauchen jeweils eine eigene Set-ID. CraftEngine kennt keine erlaubten Tiere: Tier-Rüstung passt auf jedes Tier mit diesem Slot.",
+      "field": {
+        "label": "Rüstung",
+        "fields": {
+          "set": {
+            "label": "Set-ID",
+            "placeholder": "z.B. ruby"
+          },
+          "layer1": {
+            "label": "Spieler: Layer 1 (Helm, Brust, Schuhe)",
+            "help": "Entspricht z.B. diamond_layer_1.png"
+          },
+          "layer2": {
+            "label": "Spieler: Layer 2 (Hose)",
+            "help": "Entspricht z.B. diamond_layer_2.png"
+          },
+          "elytra": {
+            "label": "Elytra-Flügel",
+            "help": "Wie elytra.png. Ohne Material ELYTRA setzt ResourcepackBuilder die Gleiter-Komponente automatisch."
+          },
+          "mob": {
+            "label": "Tier-Rüstung & Geschirr",
+            "fields": {
+              "wolfArmor": {
+                "label": "Wolfspanzer",
+                "help": "Wie wolf_armor.png"
+              },
+              "horseArmor": {
+                "label": "Pferderüstung",
+                "help": "Wie horse_armor_diamond.png"
+              },
+              "llamaArmor": {
+                "label": "Lama-Teppich",
+                "help": "Wie llama/decor/*.png"
+              },
+              "nautilusArmor": {
+                "label": "Nautilus-Rüstung"
+              },
+              "harness": {
+                "label": "Geschirr (Glücklicher Ghast)"
+              }
+            }
+          },
+          "saddles": {
+            "label": "Sättel (ab 1.21.5)",
+            "help": "Ein Sattel kann für mehrere Tiere Texturen haben.",
+            "fields": {
+              "horseSaddle": {
+                "label": "Pferd"
+              },
+              "pigSaddle": {
+                "label": "Schwein"
+              },
+              "striderSaddle": {
+                "label": "Schreiter"
+              },
+              "donkeySaddle": {
+                "label": "Esel"
+              },
+              "muleSaddle": {
+                "label": "Maultier"
+              },
+              "camelSaddle": {
+                "label": "Kamel"
+              },
+              "skeletonHorseSaddle": {
+                "label": "Skelettpferd"
+              },
+              "zombieHorseSaddle": {
+                "label": "Zombiepferd"
+              },
+              "nautilusSaddle": {
+                "label": "Nautilus"
+              },
+              "camelHuskSaddle": {
+                "label": "Wüstenkamel"
+              }
+            }
           }
         }
       }

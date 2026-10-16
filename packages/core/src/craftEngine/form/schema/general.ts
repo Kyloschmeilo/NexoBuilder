@@ -1,8 +1,11 @@
-import { CE_COMPONENTS } from '../options';
+import { CE_COMPONENTS, CE_LOCALES } from '../options';
 import { field, properties } from '../../../form/build';
 import { CE_DOCS, withDocs } from './docs';
 
-/** Shown on the General tab. `data.item_name` is managed: the item's display name is written there. */
+/**
+ * Shown on the General tab. `data.item_name` is managed: the item's display name is written there, or a `<lang:…>`
+ * key when the item has translations (stored in `item.translations`, written to the pack's lang files).
+ */
 export const CE_GENERAL_PROPERTIES = properties(
   'general',
   withDocs(CE_DOCS.data, {
@@ -20,6 +23,17 @@ export const CE_GENERAL_PROPERTIES = properties(
       defaultValue: () => ['minecraft:attribute_modifiers'],
     },
     'data.pdc': { field: field.yaml(), defaultValue: () => ({ key: 'value' }) },
+    translations: {
+      storage: 'translations',
+      hint: true,
+      docs: CE_DOCS.lang,
+      field: field.map(field.text({ format: 'minimessage', placeholder: true }), {
+        keyOptions: CE_LOCALES,
+        keyPlaceholder: true,
+        newValue: () => '',
+      }),
+      defaultValue: () => ({ de_de: '' }),
+    },
     client_bound_material: {
       field: field.text({ placeholder: true }),
       defaultValue: () => 'paper',

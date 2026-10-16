@@ -1,6 +1,7 @@
 /**
  * Reading and writing property values of an item. Config properties live at their path in `item.config`;
- * the armor settings live in `item.armor`. The UI edits both the same way through these functions.
+ * the armor settings live in `item.armor`, the display name translations in `item.translations`. The UI edits
+ * them the same way through these functions.
  */
 import { isPlainObject } from '@resourcepackbuilder/utils';
 import type { ConfigObject, ConfigValue } from '../project/types';
@@ -13,6 +14,7 @@ import type { FormSchema } from './types';
 export interface PropertyOwner {
   config: ConfigObject;
   armor?: ArmorSettings;
+  translations?: Record<string, string>;
 }
 
 /* ====================================================================== Schema lookups */
@@ -71,7 +73,8 @@ export function unknownConfigPaths(schema: FormSchema, config: ConfigObject): st
 /* ====================================================================== Values */
 
 export function getPropertyValue(owner: PropertyOwner, def: PropertyDef): ConfigValue | undefined {
-  return def.storage === 'armor' ? owner.armor : getPath(owner.config, def.path);
+  if (def.storage === 'config') return getPath(owner.config, def.path);
+  return def.storage === 'armor' ? owner.armor : owner.translations;
 }
 
 export function isPropertyActive(owner: PropertyOwner, def: PropertyDef): boolean {
@@ -122,8 +125,18 @@ export function setPropertyValue(owner: PropertyOwner, def: PropertyDef, value: 
     if (value === undefined) deletePath(owner.config, def.path);
     else setPath(owner.config, def.path, value);
   } else if (value === undefined) {
-    delete owner.armor;
-  } else {
+    delete owner[def.storage];
+  } else if (def.storage === 'armor') {
     owner.armor = toArmorSettings(value);
+  } else {
+    owner.translations = toTranslations(value);
   }
+}
+
+/** Reads translations from untyped data (form values): text values only, keys trimmed and in lower case. */
+function toTranslations(value: unknown): Record<string, string> {
+  const source = isPlainObject(value) ? value : {};
+  return Object.fromEntries(
+    Object.entries(source).flatMap(([locale, text]) => (typeof text === 'string' ? [[locale.trim().toLowerCase(), text]] : [])),
+  );
 }

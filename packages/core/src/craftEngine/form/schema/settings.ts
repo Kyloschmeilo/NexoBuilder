@@ -1,4 +1,5 @@
 import { CE_DAMAGE_CAUSES, CE_EQUIPMENT_SLOTS, CE_GLOW_COLORS, CE_ITEM_TAGS } from '../options';
+import { ARMOR_PROPERTY } from '../../../form/armor';
 import { field, properties, type FieldSpecs } from '../../../form/build';
 import { CE_DOCS, withDocs } from './docs';
 
@@ -60,6 +61,8 @@ export const CE_SETTINGS_PROPERTIES = properties(
       }),
       defaultValue: () => ({ asset_id: '' }),
     },
+    // The shared armor sets: the export writes their `equipments:` entry and fills in `settings.equipment`
+    armor: { ...ARMOR_PROPERTY, docs: CE_DOCS.equipment },
     'settings.consume_replacement': { field: field.text({ format: 'resource', placeholder: true }), defaultValue: () => '' },
     'settings.craft_remainder': { field: field.text({ format: 'resource', placeholder: true }), defaultValue: () => '' },
     'settings.allowed_projectiles': { field: field.stringList({ placeholder: true }), defaultValue: () => ['minecraft:arrow'] },

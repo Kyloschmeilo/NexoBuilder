@@ -47,6 +47,8 @@ export interface Item {
   variants?: Partial<Record<VariantSlot, ImportedModel[]>>;
   /** Worn textures (equipment model); absent = the item is no armor */
   armor?: ArmorSettings;
+  /** Display name per Minecraft locale ("de_de" → name); only the CraftEngine export writes them (as lang files) */
+  translations?: Record<string, string>;
   createdAt: number;
   updatedAt: number;
 }
@@ -67,6 +69,8 @@ export interface ProjectSettings {
   itemsInProjectFolder: boolean;
   /** One YAML file per folder (folder) or per item (item) */
   yamlFileMode: 'folder' | 'item';
+  /** CraftEngine: write categories.yml with one category per folder (the item browser of /ce) */
+  ceCategoriesFromFolders: boolean;
 }
 
 export interface Project {

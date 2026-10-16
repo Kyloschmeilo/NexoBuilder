@@ -1,6 +1,7 @@
 {
   "single-full": {
     "INSTALL.txt": "0ec7ee7b150c5571d3962977008c59172fc8c43dc1cb842187f7027776399de1",
+    "resources/kristall_pack/configuration/categories.yml": "d2331840bf5be3345bdf15b84164d02b39b8cbd6baf9c81c826c47337432b102",
     "resources/kristall_pack/configuration/images.yml": "c9183f8f25cda98e7607bab3025435856c3d1b4198ffbe73828eb4f79aa4285e",
     "resources/kristall_pack/configuration/items/kram/kram.yml": "629bfd3e6cde8a87ce82c67870e0d68a0556f2cf940e1c4872dae47d860e9abc",
     "resources/kristall_pack/configuration/items/waffen/waffen.yml": "f20247049406c50b9b1e3e7300a7c297cdffdfaed078b046c957ab76e7eb9f7d",
@@ -37,6 +38,7 @@
     "pack.mcmeta": "5a98ed2c9ceb88110da9f61155681b73791c0e3d76ec44b464d8e4a1e2d27fd5"
   },
   "single-items": {
+    "resources/kristall_pack/configuration/categories.yml": "d2331840bf5be3345bdf15b84164d02b39b8cbd6baf9c81c826c47337432b102",
     "resources/kristall_pack/configuration/images.yml": "c9183f8f25cda98e7607bab3025435856c3d1b4198ffbe73828eb4f79aa4285e",
     "resources/kristall_pack/configuration/items/kram/kram.yml": "629bfd3e6cde8a87ce82c67870e0d68a0556f2cf940e1c4872dae47d860e9abc",
     "resources/kristall_pack/configuration/items/waffen/waffen.yml": "f20247049406c50b9b1e3e7300a7c297cdffdfaed078b046c957ab76e7eb9f7d",
@@ -44,6 +46,7 @@
   },
   "mixed-full": {
     "INSTALL.txt": "0e1f88381c56edb5d93741611d4cfe46b7c5bb07347815d7411275b4bc88b8a1",
+    "plugins/CraftEngine/resources/kristall_pack/configuration/categories.yml": "d2331840bf5be3345bdf15b84164d02b39b8cbd6baf9c81c826c47337432b102",
     "plugins/CraftEngine/resources/kristall_pack/configuration/images.yml": "c9183f8f25cda98e7607bab3025435856c3d1b4198ffbe73828eb4f79aa4285e",
     "plugins/CraftEngine/resources/kristall_pack/configuration/items/kram/kram.yml": "629bfd3e6cde8a87ce82c67870e0d68a0556f2cf940e1c4872dae47d860e9abc",
     "plugins/CraftEngine/resources/kristall_pack/configuration/items/waffen/waffen.yml": "f20247049406c50b9b1e3e7300a7c297cdffdfaed078b046c957ab76e7eb9f7d",
@@ -87,6 +90,7 @@
     "zweites_pack/pack.mcmeta": "203a54ee35484a1de7e7d6c57745da201873ef3da818e0ab7bdde58b1fe34be5"
   },
   "mixed-items": {
+    "plugins/CraftEngine/resources/kristall_pack/configuration/categories.yml": "d2331840bf5be3345bdf15b84164d02b39b8cbd6baf9c81c826c47337432b102",
     "plugins/CraftEngine/resources/kristall_pack/configuration/images.yml": "c9183f8f25cda98e7607bab3025435856c3d1b4198ffbe73828eb4f79aa4285e",
     "plugins/CraftEngine/resources/kristall_pack/configuration/items/kram/kram.yml": "629bfd3e6cde8a87ce82c67870e0d68a0556f2cf940e1c4872dae47d860e9abc",
     "plugins/CraftEngine/resources/kristall_pack/configuration/items/waffen/waffen.yml": "f20247049406c50b9b1e3e7300a7c297cdffdfaed078b046c957ab76e7eb9f7d",

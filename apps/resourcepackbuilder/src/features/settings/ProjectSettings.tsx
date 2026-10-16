@@ -99,6 +99,15 @@ export function ProjectSettings() {
           description={t.rich('useItemModelHelp', { ...richTags, component: 'Components.item_model: nexo:<item_id>' })}
         />
       )}
+      {/* A CraftEngine setting: Nexo has no item browser categories */}
+      {project.target === 'craftengine' && (
+        <CheckboxField
+          checked={settings.ceCategoriesFromFolders}
+          onChange={(checked) => updateProjectSettings((p) => (p.settings.ceCategoriesFromFolders = checked))}
+          label={t('ceCategoriesFromFolders')}
+          description={t.rich('ceCategoriesFromFoldersHelp', richTags)}
+        />
+      )}
     </div>
   );
 }

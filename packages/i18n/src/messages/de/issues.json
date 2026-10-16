@@ -206,6 +206,7 @@
     "variantSlotsFilled": "CraftEngine braucht {count} Modelle für {material}. Die fehlenden zeigen das Hauptmodell.",
     "glyphGifUnsupported": "CraftEngine zeigt nur PNG-Bilder, deshalb wird dieser animierte Glyph nicht exportiert.",
     "glyphPermissionUnused": "CraftEngine prüft Berechtigungen nur bei Chat-Kürzeln, deshalb wird die Berechtigung dieses Glyphs nicht exportiert. Füge ein Kürzel hinzu, um sie zu nutzen.",
+    "translationLocaleInvalid": "Die Übersetzungssprache „{locale}“ ist kein Minecraft-Sprachcode (wie de_de) und wird deshalb weggelassen.",
     "glyphReferenceUnknown": "„{reference}“ ist kein Multi-Bitmap-Glyph dieses Projekts. CraftEngine findet die Zelle nicht, deshalb wird dieser Glyph nicht exportiert.",
     "recipeKindUnsupported": "CraftEngine hat keinen Rezepttyp für „{type}“-Rezepte, darum wird dieses Rezept nicht exportiert.",
     "materialInvalid": "Das Material „{material}“ ist für CraftEngine ungültig (z. B. diamond_sword oder minecraft:diamond_sword).",

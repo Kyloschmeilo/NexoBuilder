@@ -7,6 +7,7 @@ import {
   emptyPropertyValue,
   propertyById,
   propertyConflict,
+  type PropertyOwner,
   propertyYamlPath,
   setPropertyValue,
   unknownConfigPaths,
@@ -22,6 +23,7 @@ const SCHEMA: FormSchema = {
       'Box.round': { field: field.boolean(), defaultValue: () => true, conflicts: ['Box.square'] },
       'Box.square': { field: field.object({ size: field.number() }), defaultValue: () => ({}), conflicts: ['Box.round'] },
       armor: { field: field.yaml(), defaultValue: () => ({}), storage: 'armor' },
+      translations: { field: field.map(field.text()), defaultValue: () => ({}), storage: 'translations' },
     }),
     ...properties('other', { color: { field: field.text(), defaultValue: () => '' } }),
   ],
@@ -45,7 +47,7 @@ describe('form properties', () => {
   it('splits a group into active and available properties', () => {
     const item = owner({ Box: { round: true }, color: 'red' });
     expect(activeProperties(SCHEMA, item, 'main').map((def) => def.id)).toEqual(['Box.round']);
-    expect(availableProperties(SCHEMA, item, 'main').map((def) => def.id)).toEqual(['lore', 'Box.square', 'armor']);
+    expect(availableProperties(SCHEMA, item, 'main').map((def) => def.id)).toEqual(['lore', 'Box.square', 'armor', 'translations']);
     expect(activeProperties(SCHEMA, item, 'other').map((def) => def.id)).toEqual(['color']);
   });
 
@@ -61,6 +63,16 @@ describe('form properties', () => {
     expect(item.config).toEqual({ Box: { round: true } });
     setPropertyValue(item, propertyById(SCHEMA, 'Box.round')!, undefined);
     expect(item.config).toEqual({});
+  });
+
+  it('writes the translations to the item, text values only with the locales in lower case', () => {
+    const item: PropertyOwner = owner({});
+    const translations = propertyById(SCHEMA, 'translations')!;
+    setPropertyValue(item, translations, { ' De_DE ': 'Rubin', fr_fr: 3 });
+    expect(item).toEqual({ config: {}, translations: { de_de: 'Rubin' } });
+    expect(propertyYamlPath(translations)).toBeNull();
+    setPropertyValue(item, translations, undefined);
+    expect(item).toEqual({ config: {} });
   });
 
   it('reports config paths that belong to no property, looking into property sections', () => {

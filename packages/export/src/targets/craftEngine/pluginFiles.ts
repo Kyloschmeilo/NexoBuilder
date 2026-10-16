@@ -1,10 +1,14 @@
 /**
  * The files of plugins/CraftEngine: the project's pack.yml, its item configs (with their blocks, furniture and
- * recipes) grouped by file and the configs of its glyphs, sounds and paintings.
+ * recipes) grouped by file, the configs of its glyphs, sounds and paintings, its armor sets (equipments.yml), its
+ * folders as categories (categories.yml, when the project setting is on) and its lang files.
  */
 import { createIssue, groupBy, type Issue, type IssueCode, type IssueLevel, type MessageArgs } from '@resourcepackbuilder/utils';
+import { formatResourceLocation } from '@resourcepackbuilder/minecraft';
 import {
+  craftEngineCategories,
   craftEngineGlyphs,
+  craftEngineLang,
   craftEngineJukeboxSong,
   craftEnginePainting,
   craftEngineSound,
@@ -13,12 +17,13 @@ import {
   buildPackYml,
 } from '@resourcepackbuilder/core/craftEngine';
 import { type Glyph, mediaFrame, mediaKey, type Project, validateRecipes } from '@resourcepackbuilder/core/project';
+import { armorSetLayers, collectArmorSets } from '../../equipment';
 import { writeMediaPackFiles } from '../../media';
 import type { PackWriter } from '../../packWriter';
 import type { FileContent, ItemPlan } from '../../types';
 import type { TargetPluginFiles } from '../types';
 import { exportPackName } from '../../paths';
-import { CRAFT_ENGINE_RESERVED_PACK_NAME, craftEngineMediaFile, packYmlFile } from './layout';
+import { CRAFT_ENGINE_RESERVED_PACK_NAME, craftEngineConfigFile, craftEngineMediaFile, packYmlFile } from './layout';
 import { blockProjectIssues } from './validate';
 
 export function planCraftEnginePluginFiles(project: Project, plans: ItemPlan[], writer: PackWriter, issues: Issue[]): TargetPluginFiles {
@@ -40,7 +45,41 @@ export function planCraftEnginePluginFiles(project: Project, plans: ItemPlan[], 
   );
   issues.push(...blockProjectIssues(project));
   for (const [path, text] of planMedia(project, writer, issues)) pluginFiles.set(path, text);
+  for (const [path, text] of planItemExtras(project, plans)) pluginFiles.set(path, text);
   return { pluginFiles };
+}
+
+/**
+ * The config files the items share: equipments.yml (one component equipment per armor set, the same model the shared
+ * export writes into the pack, which CraftEngine merges with it), categories.yml and the lang files.
+ */
+function planItemExtras(project: Project, plans: ItemPlan[]): Map<string, string> {
+  const out = new Map<string, string>();
+  const items = plans.map((p) => p.item);
+  // The shared export already reported the sets' issues
+  const sets = collectArmorSets(items, project.settings.minecraftVersion, []);
+  const equipments = Object.fromEntries(
+    [...armorSetLayers(sets)].map(([setId, layers]) => {
+      const assetId = formatResourceLocation(project.namespace, setId);
+      return [assetId, { type: 'component', ...Object.fromEntries(layers.map((layer) => [layer, assetId])) }];
+    }),
+  );
+  if (Object.keys(equipments).length > 0) {
+    out.set(craftEngineConfigFile(project, 'equipments'), sectionsToYaml({ equipments }, `armor sets of "${project.name}"`));
+  }
+  if (project.settings.ceCategoriesFromFolders) {
+    const categories = craftEngineCategories(project, items);
+    if (Object.keys(categories).length > 0) {
+      out.set(craftEngineConfigFile(project, 'categories'), sectionsToYaml({ categories }, `categories of "${project.name}"`));
+    }
+  }
+  for (const [locale, texts] of craftEngineLang(project, items)) {
+    out.set(
+      craftEngineConfigFile(project, `lang/${locale}`),
+      sectionsToYaml({ lang: { [locale]: texts } }, `translations of "${project.name}"`),
+    );
+  }
+  return out;
 }
 
 /** Media checks that only apply to Nexo (GIF shaders, Nexo's painting datapack) or that CraftEngine reports itself. */

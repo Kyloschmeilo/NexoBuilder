@@ -3,6 +3,8 @@
  *   resources/<pack>/pack.yml
  *   resources/<pack>/configuration/items/<folder…>/<folder|item_id>.yml
  *   resources/<pack>/configuration/{images,sounds,paintings}.yml (glyphs with their emoji, sounds with their jukebox songs)
+ *   resources/<pack>/configuration/{equipments,categories}.yml (the armor sets, a category per folder)
+ *   resources/<pack>/configuration/lang/<locale>.yml (the items' display name translations)
  *   resources/<pack>/resourcepack/ (the resource pack: pack.mcmeta, pack.png, assets/…)
  * The test server's CraftEngine adapter accepts exactly these paths.
  */
@@ -34,9 +36,14 @@ export const CRAFT_ENGINE_MEDIA_FILES = { glyph: 'images', sound: 'sounds', pain
   string
 >;
 
+/** A config file of the pack (relative to plugins/CraftEngine), e.g. "resources/golden/configuration/categories.yml". */
+export function craftEngineConfigFile(project: Project, name: string): string {
+  return `${craftEnginePackDir(project)}/configuration/${name}.yml`;
+}
+
 /** A config file of the pack's media (relative to plugins/CraftEngine), e.g. "resources/golden/configuration/images.yml". */
 export function craftEngineMediaFile(project: Project, name: (typeof CRAFT_ENGINE_MEDIA_FILES)[MediaKind]): string {
-  return `${craftEnginePackDir(project)}/configuration/${name}.yml`;
+  return craftEngineConfigFile(project, name);
 }
 
 /** Config file (relative to plugins/CraftEngine) for items in the folder `folderSlugs`; `itemId` names it in "one file per item" mode. */

@@ -19,6 +19,7 @@ export function defaultSettings(name: string): ProjectSettings {
     externalPackAsZip: false,
     itemsInProjectFolder: false,
     yamlFileMode: 'folder',
+    ceCategoriesFromFolders: true,
   };
 }
 

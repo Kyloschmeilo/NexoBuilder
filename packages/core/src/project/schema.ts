@@ -221,6 +221,7 @@ export function itemSchema(now: number) {
         recipes: lenientList(RecipeSchema),
         variants: optional(lenientRecord(lenientList(ImportedModelSchema))),
         armor: optional(ArmorSchema),
+        translations: optional(lenientRecord(z.string())),
         createdAt: lenientNumber(now),
         updatedAt: lenientNumber(now),
       })
@@ -264,6 +265,7 @@ export function settingsSchema(projectName: string) {
       externalPackAsZip: lenientBoolean(defaults.externalPackAsZip),
       itemsInProjectFolder: lenientBoolean(defaults.itemsInProjectFolder),
       yamlFileMode: lenientEnum(['folder', 'item'], 'folder'),
+      ceCategoriesFromFolders: lenientBoolean(defaults.ceCategoriesFromFolders),
     })
     .catch(defaults);
 }

@@ -12,6 +12,10 @@ export interface CraftEngineSections {
   sounds?: Record<string, Record<string, unknown>>;
   jukebox_songs?: Record<string, Record<string, unknown>>;
   paintings?: Record<string, Record<string, unknown>>;
+  equipments?: Record<string, Record<string, unknown>>;
+  categories?: Record<string, Record<string, unknown>>;
+  /** Locale → lang key → text */
+  lang?: Record<string, Record<string, unknown>>;
 }
 
 const SECTION_ORDER: Array<keyof CraftEngineSections> = [
@@ -24,6 +28,9 @@ const SECTION_ORDER: Array<keyof CraftEngineSections> = [
   'sounds',
   'jukebox_songs',
   'paintings',
+  'equipments',
+  'categories',
+  'lang',
 ];
 
 /** Writes the non-empty sections, separated by a blank line, with an optional header comment. */
