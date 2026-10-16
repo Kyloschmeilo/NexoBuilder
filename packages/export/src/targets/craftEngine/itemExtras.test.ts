@@ -109,6 +109,18 @@ describe('CraftEngine equipments', () => {
     );
   });
 
+  it('reads a namespaced raw YAML material: minecraft:elytra needs no glider and no slot', () => {
+    const { project, add } = ceProject();
+    add('wings', 'PAPER', (item) => {
+      withArmor({ set: 'fire', elytra: '@asset:tex' })(item);
+      item.rawYaml = 'material: minecraft:elytra';
+    });
+    const file = itemsFile(project);
+    expect(file).not.toContain('minecraft:glider');
+    expect(file).not.toContain('slot:');
+    expect(file).toContain('        asset_id: aus:fire');
+  });
+
   it('writes no equipments.yml without armor', () => {
     const { project, add } = ceProject();
     add('stone', 'PAPER');

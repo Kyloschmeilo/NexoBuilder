@@ -252,7 +252,9 @@ function buildBlock(source: Record<string, unknown>, context: CraftEngineBuildCo
  * Points `settings.equipment` at the item's armor set: its asset id and, when the material is no armor (which brings
  * its slot), the set's slot. Elytra wings on another material need the glider component.
  */
-function addArmor(resolved: Record<string, unknown>, data: Record<string, unknown>, armor: ItemArmor, material: string): void {
+function addArmor(resolved: Record<string, unknown>, data: Record<string, unknown>, armor: ItemArmor, rawMaterial: string): void {
+  // The raw YAML may name the material with its namespace (minecraft:elytra)
+  const material = rawMaterial.toLowerCase().replace(/^minecraft:/, '');
   const settings = isPlainObject(resolved.settings) ? resolved.settings : {};
   const equipment = isPlainObject(settings.equipment) ? settings.equipment : {};
   const slot = slotForMaterial(material) ? undefined : (armor.slot ?? 'HEAD').toLowerCase();
