@@ -1,7 +1,7 @@
 import { useEffect } from 'react';
 import { useTranslations } from 'next-intl';
 import type { Project } from '@resourcepackbuilder/core/project/types';
-import { filesFromDataTransfer } from '@resourcepackbuilder/ui';
+import { carriesFiles, filesFromDataTransfer } from '@resourcepackbuilder/ui';
 import { isAnyDialogOpen, openDialog } from '../store/dialogs';
 import { notify } from './notify';
 import { getProject } from '../store/project';
@@ -19,10 +19,6 @@ function dropFolderId(project: Project, selection: Selection): string | undefine
   }
 }
 
-function carriesFiles(e: DragEvent): boolean {
-  return e.dataTransfer?.types.includes('Files') ?? false;
-}
-
 /**
  * Files dropped anywhere in the window (and not already taken by a drop target) open the "New item" dialog for the
  * selected folder, instead of letting the browser navigate away.
@@ -31,10 +27,10 @@ export function useWindowDrop(): void {
   const t = useTranslations('layout.main');
   useEffect(() => {
     const handleDragOver = (e: DragEvent) => {
-      if (carriesFiles(e)) e.preventDefault();
+      if (carriesFiles(e.dataTransfer)) e.preventDefault();
     };
     const handleDrop = async (e: DragEvent) => {
-      if (!carriesFiles(e) || !e.dataTransfer) return;
+      if (!e.dataTransfer || !carriesFiles(e.dataTransfer)) return;
       const isTaken = e.defaultPrevented;
       e.preventDefault();
       const project = getProject();

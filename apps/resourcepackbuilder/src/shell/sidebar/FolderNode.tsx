@@ -2,7 +2,15 @@ import { ClipboardPaste, Folder as FolderIcon, FolderOpen, FolderPlus, Pencil, P
 import { useTranslations } from 'next-intl';
 import { cn } from 'cn';
 import { itemIdsInFolder } from '@resourcepackbuilder/core/project/tree';
-import { filesFromDataTransfer, IconButton, type MenuEntry, TREE_INDENT_PX, TreeChevron, treeRowSlots } from '@resourcepackbuilder/ui';
+import {
+  FILES_DRAG_TYPE,
+  filesFromDataTransfer,
+  IconButton,
+  type MenuEntry,
+  TREE_INDENT_PX,
+  TreeChevron,
+  treeRowSlots,
+} from '@resourcepackbuilder/ui';
 import { Collapsible, CollapsibleContent } from '@resourcepackbuilder/ui/components/collapsible';
 import { moveFolder } from '../../commands/folders';
 import { moveItem } from '../../commands/items';
@@ -15,11 +23,11 @@ import { ItemNode } from './ItemNode';
 import { FOLDER_ICON_PADDING_PX, FOLDER_PADDING_PX } from './rowStyles';
 import type { SidebarTree } from './treeIndex';
 import { activateOnKey, TreeRow } from './TreeRow';
-import { DRAG_FILES, DRAG_FOLDER, DRAG_ITEM, useDropTarget } from './useDropTarget';
+import { DRAG_FOLDER, DRAG_ITEM, useDropTarget } from './useDropTarget';
 
 /** Accepts items and folders moved onto it, and files that become new items in it. */
 function useFolderDrop(folderId: string) {
-  return useDropTarget([DRAG_ITEM, DRAG_FOLDER, DRAG_FILES], (data) => {
+  return useDropTarget([DRAG_ITEM, DRAG_FOLDER, FILES_DRAG_TYPE], (data) => {
     const itemId = data.getData(DRAG_ITEM);
     const draggedFolderId = data.getData(DRAG_FOLDER);
     if (itemId) moveItem(itemId, folderId);
