@@ -2,7 +2,7 @@
   "single-full": {
     "INSTALL.txt": "049d987e3d505386ed546aa5e31299b28c135aaf8630888c55cab5837003fddf",
     "resources/kristall_pack/configuration/items/kram/kram.yml": "629bfd3e6cde8a87ce82c67870e0d68a0556f2cf940e1c4872dae47d860e9abc",
-    "resources/kristall_pack/configuration/items/waffen/waffen.yml": "0b824eb0e46fdf703c20151561f6c1c9581958f809b23e1245b1a361f1bbe46f",
+    "resources/kristall_pack/configuration/items/waffen/waffen.yml": "f20247049406c50b9b1e3e7300a7c297cdffdfaed078b046c957ab76e7eb9f7d",
     "resources/kristall_pack/pack.yml": "8804c3fc270fdb276916d9698c527abf2ffcdc023c2976b544707cf09570f516",
     "resources/kristall_pack/resourcepack/assets/kristall/models/block/kram/crystal_block.json": "08a8583c096de53b9e206c15012052b3aea8d5c5755a96ada6feceee64733f1b",
     "resources/kristall_pack/resourcepack/assets/kristall/models/item/waffen/crystal_bow-pulling_0.json": "e6fbc8c9cf5ffefee9712e77183dc55de6f020b3b3ae9ff615d8504b1388e63a",
@@ -35,13 +35,13 @@
   },
   "single-items": {
     "resources/kristall_pack/configuration/items/kram/kram.yml": "629bfd3e6cde8a87ce82c67870e0d68a0556f2cf940e1c4872dae47d860e9abc",
-    "resources/kristall_pack/configuration/items/waffen/waffen.yml": "0b824eb0e46fdf703c20151561f6c1c9581958f809b23e1245b1a361f1bbe46f",
+    "resources/kristall_pack/configuration/items/waffen/waffen.yml": "f20247049406c50b9b1e3e7300a7c297cdffdfaed078b046c957ab76e7eb9f7d",
     "resources/kristall_pack/pack.yml": "8804c3fc270fdb276916d9698c527abf2ffcdc023c2976b544707cf09570f516"
   },
   "mixed-full": {
     "INSTALL.txt": "32e7bd7112a27dc06e515192e2f308d0ec6a927e381b38b381fbcce6ca2d9f25",
     "plugins/CraftEngine/resources/kristall_pack/configuration/items/kram/kram.yml": "629bfd3e6cde8a87ce82c67870e0d68a0556f2cf940e1c4872dae47d860e9abc",
-    "plugins/CraftEngine/resources/kristall_pack/configuration/items/waffen/waffen.yml": "0b824eb0e46fdf703c20151561f6c1c9581958f809b23e1245b1a361f1bbe46f",
+    "plugins/CraftEngine/resources/kristall_pack/configuration/items/waffen/waffen.yml": "f20247049406c50b9b1e3e7300a7c297cdffdfaed078b046c957ab76e7eb9f7d",
     "plugins/CraftEngine/resources/kristall_pack/pack.yml": "8804c3fc270fdb276916d9698c527abf2ffcdc023c2976b544707cf09570f516",
     "plugins/CraftEngine/resources/kristall_pack/resourcepack/assets/kristall/models/block/kram/crystal_block.json": "08a8583c096de53b9e206c15012052b3aea8d5c5755a96ada6feceee64733f1b",
     "plugins/CraftEngine/resources/kristall_pack/resourcepack/assets/kristall/models/item/waffen/crystal_bow-pulling_0.json": "e6fbc8c9cf5ffefee9712e77183dc55de6f020b3b3ae9ff615d8504b1388e63a",
@@ -81,7 +81,7 @@
   },
   "mixed-items": {
     "plugins/CraftEngine/resources/kristall_pack/configuration/items/kram/kram.yml": "629bfd3e6cde8a87ce82c67870e0d68a0556f2cf940e1c4872dae47d860e9abc",
-    "plugins/CraftEngine/resources/kristall_pack/configuration/items/waffen/waffen.yml": "0b824eb0e46fdf703c20151561f6c1c9581958f809b23e1245b1a361f1bbe46f",
+    "plugins/CraftEngine/resources/kristall_pack/configuration/items/waffen/waffen.yml": "f20247049406c50b9b1e3e7300a7c297cdffdfaed078b046c957ab76e7eb9f7d",
     "plugins/CraftEngine/resources/kristall_pack/pack.yml": "8804c3fc270fdb276916d9698c527abf2ffcdc023c2976b544707cf09570f516",
     "plugins/Nexo/items/zweites_pack/dinge/dinge.yml": "5405b569eb49bb8ea914df31c4d63fa88a1c3dade99921fe26be08bb7dd7dff0"
   }

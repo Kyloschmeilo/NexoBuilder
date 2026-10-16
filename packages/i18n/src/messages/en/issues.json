@@ -148,6 +148,7 @@
     "materialInvalid": "“{id}” is not a valid Minecraft item name (e.g. DIAMOND).",
     "tagInvalid": "“{id}” is not a valid tag (e.g. planks).",
     "nexoItemNotInProject": "The Nexo item “{id}” is not in this project – it must exist on the server.",
+    "ceItemNotInProject": "The item “{id}” is not in this project. CraftEngine skips the recipe unless another pack on the server has it.",
     "amountRange": "The amount must be between 1 and 64."
   },
   "glyph": {
@@ -206,7 +207,7 @@
     "glyphsNotExported": "The CraftEngine export does not include glyphs yet ({count}). They follow in a later version.",
     "soundsNotExported": "The CraftEngine export does not include sounds yet ({count}). They follow in a later version.",
     "paintingsNotExported": "The CraftEngine export does not include paintings yet ({count}). They follow in a later version.",
-    "recipesNotExported": "The CraftEngine export does not include recipes yet ({count}). They follow in a later version.",
+    "recipeKindUnsupported": "CraftEngine has no recipe type for “{type}” recipes, so this recipe is not exported.",
     "materialInvalid": "The material “{material}” is invalid for CraftEngine (e.g. diamond_sword or minecraft:diamond_sword).",
     "variantExtraModels": "CraftEngine uses only the first {used, plural, one {model} other {# models}} of this variant. The other {count} {count, plural, one {is} other {are}} not exported.",
     "reservedPackName": "The pack name “{name}” belongs to one of CraftEngine's own packs (default, default_…, internal). Choose another pack name in the project settings.",

@@ -1,10 +1,10 @@
 /**
- * The files of plugins/CraftEngine: the project's pack.yml and its item configs (with their blocks and furniture)
- * grouped by file.
+ * The files of plugins/CraftEngine: the project's pack.yml and its item configs (with their blocks, furniture and
+ * recipes) grouped by file.
  */
 import { createIssue, groupBy, type Issue } from '@resourcepackbuilder/utils';
 import { buildPackYml, sectionsToYaml } from '@resourcepackbuilder/core/craftEngine';
-import type { Project } from '@resourcepackbuilder/core/project';
+import { type Project, validateRecipes } from '@resourcepackbuilder/core/project';
 import type { PackWriter } from '../../packWriter';
 import type { FileContent, ItemPlan } from '../../types';
 import type { TargetPluginFiles } from '../types';
@@ -18,22 +18,27 @@ export function planCraftEnginePluginFiles(project: Project, plans: ItemPlan[], 
     const items = Object.fromEntries(list.map((p) => [p.yamlKey, p.config]));
     const blocks = Object.assign({}, ...list.map((p) => p.sections?.blocks));
     const furniture = Object.assign({}, ...list.map((p) => p.sections?.furniture));
-    pluginFiles.set(file, sectionsToYaml({ items, blocks, furniture }, `project "${project.name}"`));
+    const recipes = Object.assign({}, ...list.map((p) => p.sections?.recipes));
+    pluginFiles.set(file, sectionsToYaml({ items, blocks, furniture, recipes }, `project "${project.name}"`));
   }
   const packName = exportPackName(project);
   if (CRAFT_ENGINE_RESERVED_PACK_NAME.test(packName)) issues.push(createIssue('error', 'ce.reservedPackName', { name: packName }));
-  issues.push(...blockProjectIssues(project), ...notYetExported(project, plans));
+  issues.push(
+    ...validateRecipes(
+      project,
+      plans.map((p) => p.item),
+    ),
+  );
+  issues.push(...blockProjectIssues(project), ...notYetExported(project));
   return { pluginFiles };
 }
 
-/** Glyphs, sounds, paintings and recipes are not written for CraftEngine yet: one note per kind the project uses. */
-function notYetExported(project: Project, plans: ItemPlan[]): Issue[] {
-  const recipes = plans.reduce((sum, p) => sum + p.item.recipes.length, 0);
+/** Glyphs, sounds and paintings are not written for CraftEngine yet: one note per kind the project uses. */
+function notYetExported(project: Project): Issue[] {
   const counts = [
     ['ce.glyphsNotExported', project.glyphs.length],
     ['ce.soundsNotExported', project.sounds.length],
     ['ce.paintingsNotExported', project.paintings.length],
-    ['ce.recipesNotExported', recipes],
   ] as const;
   return counts.filter(([, count]) => count > 0).map(([code, count]) => createIssue('info', code, { count }));
 }

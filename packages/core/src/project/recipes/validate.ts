@@ -1,16 +1,10 @@
-import { itemFrame, itemTarget, recipeFrame, recipeIngredientFrame, recipeInputFrame } from '../../project/issueFrames';
+import { itemFrame, itemTarget, recipeFrame, recipeIngredientFrame, recipeInputFrame } from '../issueFrames';
 import { inContext, issueReporter, type Issue, type IssueContext } from '@resourcepackbuilder/utils';
 import { RESOURCE_LOCATION_PATTERN } from '@resourcepackbuilder/minecraft';
-import type { Item, Project } from '../../project/types';
-import { recipeKeys } from './files';
-import { MATERIAL_PATTERN } from '../../project/item';
-import {
-  getRecipeTypeInfo,
-  MAX_INGREDIENT_AMOUNT,
-  MAX_RESULT_AMOUNT,
-  type Recipe,
-  type RecipeIngredient,
-} from '../../project/recipes/model';
+import type { Item, Project } from '../types';
+import { recipeKeys } from './export';
+import { MATERIAL_PATTERN } from '../item';
+import { getRecipeTypeInfo, MAX_INGREDIENT_AMOUNT, MAX_RESULT_AMOUNT, type Recipe, type RecipeIngredient } from './model';
 
 function validateIngredient(ingredient: RecipeIngredient | null | undefined, context: IssueContext, project: Project, issues: Issue[]) {
   const add = issueReporter(issues, { context: [context] });
@@ -21,8 +15,10 @@ function validateIngredient(ingredient: RecipeIngredient | null | undefined, con
   }
   if (ingredient.source === 'minecraft' && !MATERIAL_PATTERN.test(id.toUpperCase())) add('error', 'recipe.materialInvalid', { id });
   if (ingredient.source === 'tag' && !RESOURCE_LOCATION_PATTERN.test(id)) add('error', 'recipe.tagInvalid', { id });
+  // A missing item is fine for Nexo (another plugin may add it); CraftEngine skips a recipe whose item it lacks
   if (ingredient.source === 'nexo' && !Object.values(project.items).some((i) => i.itemId === id)) {
-    add('info', 'recipe.nexoItemNotInProject', { id });
+    if (project.target === 'craftengine') add('warning', 'recipe.ceItemNotInProject', { id });
+    else add('info', 'recipe.nexoItemNotInProject', { id });
   }
   if (
     ingredient.amount !== undefined &&

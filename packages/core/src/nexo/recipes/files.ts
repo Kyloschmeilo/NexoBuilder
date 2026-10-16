@@ -12,6 +12,7 @@ import {
   type RecipeIngredient,
   type RecipeType,
 } from '../../project/recipes/model';
+import { keyedRecipes, trimShape } from '../../project/recipes/export';
 
 function ingredientToYaml(ingredient: RecipeIngredient): Record<string, unknown> {
   const out: Record<string, unknown> = {};
@@ -21,21 +22,6 @@ function ingredientToYaml(ingredient: RecipeIngredient): Record<string, unknown>
   else out.tag = id;
   if (ingredient.amount && ingredient.amount > 1) out.amount = ingredient.amount;
   return out;
-}
-
-/** Removes empty border rows/columns so the recipe works at any position in the grid. */
-function trimShape(grid: string[]): string[] {
-  const rows = [0, 1, 2].map((r) => [0, 1, 2].map((c) => grid[r * 3 + c] || ' '));
-  const usedRows = [0, 1, 2].filter((r) => rows[r].some((ch) => ch !== ' '));
-  const usedCols = [0, 1, 2].filter((c) => rows.some((row) => row[c] !== ' '));
-  if (usedRows.length === 0) return [];
-  const r0 = usedRows[0];
-  const r1 = usedRows[usedRows.length - 1];
-  const c0 = usedCols[0];
-  const c1 = usedCols[usedCols.length - 1];
-  const result: string[] = [];
-  for (let r = r0; r <= r1; r++) result.push(rows[r].slice(c0, c1 + 1).join(''));
-  return result;
 }
 
 /** The YAML entry of one recipe (also the unit the recipe tests check). */
@@ -69,21 +55,6 @@ export function recipeToYaml(recipe: Recipe, item: Item): Record<string, unknown
     }
   }
   return out;
-}
-
-/** The item's recipes with their unique keys, e.g. "ruby_sword_shaped" or "ruby_sword_shaped_2". */
-function keyedRecipes(item: Item): Array<{ key: string; recipe: Recipe }> {
-  const counter = new Map<RecipeType, number>();
-  return (item.recipes ?? []).map((recipe) => {
-    const n = (counter.get(recipe.type) ?? 0) + 1;
-    counter.set(recipe.type, n);
-    return { key: `${item.itemId}_${recipe.type}${n > 1 ? `_${n}` : ''}`, recipe };
-  });
-}
-
-/** Recipe ID → unique key of the recipe in the YAML */
-export function recipeKeys(item: Item): Map<string, string> {
-  return new Map(keyedRecipes(item).map(({ key, recipe }) => [recipe.id, key]));
 }
 
 export function recipeFilePath(project: Project, type: RecipeType): string {

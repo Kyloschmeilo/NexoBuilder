@@ -1019,5 +1019,10 @@
         "label": "Verhalten (YAML)"
       }
     }
+  },
+  "recipes": {
+    "sources": {
+      "nexo": "Projekt-Item"
+    }
   }
 }

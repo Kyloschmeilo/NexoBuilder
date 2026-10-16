@@ -6,10 +6,12 @@ import {
   type Item,
   MAX_RESULT_AMOUNT,
   type Recipe,
+  recipeIssues,
   TICKS_PER_SECOND,
 } from '@resourcepackbuilder/core/project';
 import { issuesFor } from '@resourcepackbuilder/utils';
-import { recipeFilePath, recipeIssues } from '@resourcepackbuilder/core/nexo';
+import { recipeFilePath } from '@resourcepackbuilder/core/nexo';
+import { findItemPlan } from '@resourcepackbuilder/export';
 import { IconButton, SectionCard, Tip } from '@resourcepackbuilder/ui';
 import { Badge } from '@resourcepackbuilder/ui/components/badge';
 import { Field, FieldDescription, FieldTitle } from '@resourcepackbuilder/ui/components/field';
@@ -42,6 +44,8 @@ export function RecipeCard({ item, recipe, recipeKey }: RecipeCardProps) {
   const plan = usePlan();
   const itemIssues = plan ? issuesFor(plan.issues, { kind: 'item', id: item.id }) : [];
   const issues = recipeIssues(itemIssues, recipeKey, Object.keys(recipe.ingredients));
+  // CraftEngine writes the recipe into the item's own file
+  const file = project.target === 'craftengine' ? findItemPlan(plan, item.id)?.yamlFile : recipeFilePath(project, recipe.type);
   const update: RecipeUpdater = (change, historyKey) => updateRecipe(item.id, recipe.id, change, historyKey);
 
   return (
@@ -56,8 +60,7 @@ export function RecipeCard({ item, recipe, recipeKey }: RecipeCardProps) {
       }
       description={
         <>
-          {tSchema(info.description)} {t('recipes.file')}{' '}
-          <span className="font-mono break-all">{recipeFilePath(project, recipe.type)}</span>
+          {tSchema(info.description)} {t('recipes.file')} <span className="font-mono break-all">{file}</span>
         </>
       }
       actions={

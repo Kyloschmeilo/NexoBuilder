@@ -4,10 +4,12 @@ import {
   createFolder,
   createItem,
   createProject,
+  createRecipe,
   insertFolder,
   insertItem,
   type Item,
   type Project,
+  type RecipeType,
 } from '@resourcepackbuilder/core/project';
 import { createTextureModel, type ImportedModel } from '@resourcepackbuilder/minecraft';
 import { makePngDataUrl } from '@resourcepackbuilder/test-utils/png';
@@ -73,6 +75,20 @@ describe('CraftEngine item config', () => {
         '      - kristall:item/waffen/crystal_bow-pulling_1',
         '      - kristall:item/waffen/crystal_bow-pulling_2',
         '    unknown_key: true',
+        '',
+        'recipes:',
+        '  kristall:crystal_sword_shaped:',
+        '    type: shaped',
+        '    pattern:',
+        '      - A',
+        '      - A',
+        '      - B',
+        '    ingredients:',
+        '      A: minecraft:amethyst_shard',
+        '      B: minecraft:stick',
+        '    result:',
+        '      id: kristall:crystal_sword',
+        '      count: 1',
         '',
       ].join('\n'),
     );
@@ -238,14 +254,44 @@ describe('CraftEngine checks', () => {
     expect(codes(oneItemProject(() => {}))).not.toContain('ce.reservedPackName');
   });
 
-  it('notes the glyphs, sounds, paintings and recipes that are not exported yet', () => {
+  it('notes the glyphs, sounds and paintings that are not exported yet', () => {
     const plan = planExport(goldenCraftEngineProject());
     const notes = plan.issues.filter((i) => i.code.endsWith('NotExported'));
-    expect(notes.map((i) => [i.level, i.code, i.args])).toEqual([
-      ['info', 'ce.glyphsNotExported', { count: 1 }],
-      ['info', 'ce.recipesNotExported', { count: 1 }],
-    ]);
+    expect(notes.map((i) => [i.level, i.code, i.args])).toEqual([['info', 'ce.glyphsNotExported', { count: 1 }]]);
     expect([...plan.pluginFiles.keys()].some((path) => path.includes('glyph') || path.includes('recipe'))).toBe(false);
+  });
+});
+
+describe('CraftEngine recipes', () => {
+  it("shows the item's recipes in its YAML preview (the whole file is checked above)", () => {
+    const plan = planExport(goldenCraftEngineProject());
+    const sword = plan.items.find((p) => p.item.itemId === 'crystal_sword')!;
+    expect(itemYamlPreview(plan, sword.item.id)).toContain('kristall:crystal_sword_shaped:');
+  });
+
+  it('checks the recipes and warns about project items that are missing', () => {
+    const project = oneItemProject((item) => {
+      const recipe = createRecipe('stonecutting', 'r');
+      recipe.input = { source: 'nexo', id: 'missing' };
+      item.recipes = [recipe, createRecipe('furnace', 'r2')];
+    });
+    const issues = planExport(project).issues;
+    expect(issues.find((i) => i.code === 'recipe.ceItemNotInProject')?.level).toBe('warning');
+    expect(issues.find((i) => i.code === 'recipe.ingredientMissing')?.context?.at(-1)).toEqual({
+      code: 'context.recipeInput',
+      args: { recipe: 'thing_furnace' },
+    });
+  });
+
+  it('reports recipe kinds CraftEngine has no type for and leaves them out', () => {
+    const project = oneItemProject((item) => {
+      item.recipes = [{ ...createRecipe('furnace', 'r'), type: 'brewing' as RecipeType }];
+    });
+    const plan = planExport(project);
+    const issue = plan.issues.find((i) => i.code === 'ce.recipeKindUnsupported');
+    expect(issue?.args).toEqual({ type: 'brewing' });
+    expect(issue?.context?.at(-1)).toEqual({ code: 'context.recipe', args: { recipe: 'thing_brewing' } });
+    expect([...plan.pluginFiles.values()].some((text) => String(text).includes('recipes:'))).toBe(false);
   });
 });
 

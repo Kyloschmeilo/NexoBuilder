@@ -1,7 +1,7 @@
 /** The files of plugins/Nexo: item YAMLs grouped by file, recipes and glyphs, plus the media in the pack. */
 import { groupBy, type Issue } from '@resourcepackbuilder/utils';
-import { buildRecipeFiles, itemsToYaml, validateRecipes } from '@resourcepackbuilder/core/nexo';
-import type { Project } from '@resourcepackbuilder/core/project';
+import { buildRecipeFiles, itemsToYaml } from '@resourcepackbuilder/core/nexo';
+import { type Project, validateRecipes } from '@resourcepackbuilder/core/project';
 import type { PackWriter } from '../../packWriter';
 import type { FileContent, ItemPlan } from '../../types';
 import type { TargetPluginFiles } from '../types';

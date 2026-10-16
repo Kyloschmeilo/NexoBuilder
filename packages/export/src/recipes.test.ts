@@ -3,8 +3,16 @@ import { parse } from 'yaml';
 import { planExport } from './plan';
 import { buildMultiExportZip } from './zip';
 import { singleExport } from '../test-utils/export';
-import { createFolder, createItem, createProject, createRecipe, insertFolder, insertItem } from '@resourcepackbuilder/core/project';
-import { buildRecipeFiles, recipeToYaml, validateRecipe } from '@resourcepackbuilder/core/nexo';
+import {
+  createFolder,
+  createItem,
+  createProject,
+  createRecipe,
+  insertFolder,
+  insertItem,
+  validateRecipe,
+} from '@resourcepackbuilder/core/project';
+import { buildRecipeFiles, recipeToYaml } from '@resourcepackbuilder/core/nexo';
 
 function setup() {
   const project = createProject('Rezept Test', 'rezepte', '26.3');

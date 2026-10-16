@@ -1019,5 +1019,10 @@
         "label": "Behaviors (YAML)"
       }
     }
+  },
+  "recipes": {
+    "sources": {
+      "nexo": "Project item"
+    }
   }
 }

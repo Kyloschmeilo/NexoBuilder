@@ -84,7 +84,7 @@ export function goldenSecondProject(): Project {
 /**
  * A CraftEngine project: a sword with a model, properties and a value without a property, a bow with pulling
  * variants whose raw YAML overrides data.item_name and adds unknown keys, and an item without a model in a second
- * folder. Its glyph and recipe are not exported for CraftEngine yet.
+ * folder. Its glyph is not exported for CraftEngine yet.
  */
 export function goldenCraftEngineProject(): Project {
   const project = createProject('Kristall Pack', 'kristall', '1.21.11', 'craftengine');

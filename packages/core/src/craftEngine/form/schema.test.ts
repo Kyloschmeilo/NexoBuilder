@@ -1,6 +1,7 @@
 /**
  * The CraftEngine form: unique property paths, no property on a managed path, valid default values, and every
- * message key in the English and German `ceSchema` catalogue (with no keys nobody references).
+ * message key in the English and German `ceSchema` catalogue (with no keys nobody references, except overrides of
+ * shared `schema` keys).
  */
 import { readFileSync } from 'node:fs';
 import { describe, expect, it } from 'vitest';
@@ -10,8 +11,8 @@ import { CRAFT_ENGINE_FORM } from './schema';
 
 type MessageTree = { [key: string]: string | MessageTree };
 
-function loadCatalogue(locale: 'en' | 'de'): MessageTree {
-  const url = new URL(`../../../../i18n/src/messages/${locale}/ceSchema.json`, import.meta.url);
+function loadCatalogue(locale: 'en' | 'de', namespace = 'ceSchema'): MessageTree {
+  const url = new URL(`../../../../i18n/src/messages/${locale}/${namespace}.json`, import.meta.url);
   return JSON.parse(readFileSync(url, 'utf8')) as MessageTree;
 }
 
@@ -83,7 +84,9 @@ describe('ceSchema message keys', () => {
     });
   }
 
+  // A key of the shared `schema` catalogue may be given a CraftEngine wording here (the app looks in ceSchema first)
   it('has no unreferenced keys in the catalogue', () => {
-    expect(leafKeys(loadCatalogue('en')).filter((k) => !keys.has(k))).toEqual([]);
+    const shared = loadCatalogue('en', 'schema');
+    expect(leafKeys(loadCatalogue('en')).filter((k) => !keys.has(k) && typeof lookup(shared, k) !== 'string')).toEqual([]);
   });
 });

@@ -15,8 +15,6 @@ export * from './itemConfig';
 export * from './paintings/files';
 export * from './paintings/validate';
 export * from './recipes/files';
-export * from './recipes/issues';
-export * from './recipes/validate';
 export * from './sounds/files';
 export * from './sounds/validate';
 export * from './yaml';

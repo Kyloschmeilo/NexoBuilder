@@ -13,4 +13,5 @@ export * from './form/schema/settings';
 export * from './furniture';
 export * from './itemConfig';
 export * from './pack';
+export * from './recipes';
 export * from './yaml';
