@@ -4,6 +4,7 @@ import type { Item } from '@resourcepackbuilder/core/project/types';
 import { itemMaterial } from '@resourcepackbuilder/core/nexo/material';
 import type { Issue } from '@resourcepackbuilder/core/issues';
 import { getFolderPathLabel } from '@resourcepackbuilder/core/project/tree';
+import { PLAYER_NAME_PATTERN } from '@resourcepackbuilder/core/testServer/config';
 import { IconButton, PageHeader, Thumb, Tip } from '@resourcepackbuilder/ui';
 import { Badge } from '@resourcepackbuilder/ui/components/badge';
 import { Button } from '@resourcepackbuilder/ui/components/button';
@@ -25,16 +26,20 @@ function GiveButton({ nexoId }: { nexoId: string }) {
   const t = useTranslations('item');
   const errorMessage = useErrorMessage();
   const testServer = useServices().testServer;
+  const tPack = useTranslations('media.testServer.pack');
   const isRunning = useTestServerStore((s) => s.server?.status === 'running');
+  const player = useTestServerStore((s) => s.server?.config.playerName ?? '');
   if (!testServer || !isRunning) return null;
+  // The give command needs a valid player name; core's command builder rejects anything else
+  const isValidPlayer = PLAYER_NAME_PATTERN.test(player);
   const give = () =>
     void testServer.give(nexoId).then(
       (player) => notify('success', t('editor.giveSuccess', { id: nexoId, player })),
       (err: unknown) => notify('error', errorMessage(err)),
     );
   return (
-    <Tip label={t('editor.giveTooltip')}>
-      <Button variant="outline" size="sm" onClick={give}>
+    <Tip label={isValidPlayer ? t('editor.giveTooltip') : tPack('enterName')}>
+      <Button variant="outline" size="sm" disabled={!isValidPlayer} onClick={give}>
         <Gift /> {t('editor.give')}
       </Button>
     </Tip>

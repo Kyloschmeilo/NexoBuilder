@@ -7,6 +7,13 @@ import { Field, FieldContent, FieldDescription, FieldLabel } from '@resourcepack
 import { Input } from '@resourcepackbuilder/ui/components/input';
 import { NativeSelect, NativeSelectOption } from '@resourcepackbuilder/ui/components/native-select';
 import { AutoGrid, SectionCard, StatusBadge } from '@resourcepackbuilder/ui';
+import {
+  MAX_PLAYER_NAME_LENGTH,
+  MAX_PORT,
+  MIN_PORT,
+  PLAYER_NAME_INVALID_CHARS,
+  RAM_OPTIONS_GB,
+} from '@resourcepackbuilder/core/testServer/config';
 import { useDraft } from '../../components/editor/useDraft';
 import { FormField, FormHelp } from '../../components/FormField';
 import type { TestServerConfig } from '../../platform/desktopApi';
@@ -14,13 +21,6 @@ import { notify } from '../../shell/notify';
 import { useBusyAction, useSetConfig, useTestServer } from './useTestServer';
 import { VersionSelect } from './VersionSelect';
 
-const RAM_OPTIONS_GB = [1, 2, 3, 4, 6, 8];
-/** Ports below are reserved for system services. */
-const MIN_PORT = 1024;
-const MAX_PORT = 65535;
-/** Minecraft player names: at most 16 letters, digits and underscores. */
-const MAX_PLAYER_NAME_LENGTH = 16;
-const PLAYER_NAME_INVALID_CHARS = /[^A-Za-z0-9_]/g;
 const EULA_URL = 'https://aka.ms/MinecraftEULA';
 
 /** Settings of the test server; most of them only apply on the next start. */

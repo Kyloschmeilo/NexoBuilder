@@ -2,6 +2,7 @@ import { RefreshCw, Upload } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 import { Button } from '@resourcepackbuilder/ui/components/button';
 import { StatusBadge, Tip } from '@resourcepackbuilder/ui';
+import { PLAYER_NAME_PATTERN } from '@resourcepackbuilder/core/testServer/config';
 import { nexoPackCommand } from '@resourcepackbuilder/core/testServer/files';
 import type { TestServerState } from '../../platform/desktopApi';
 import { PACK_STATUS_TONE } from './status';
@@ -12,6 +13,7 @@ export function PackStatus({ pack, player }: { pack: TestServerState['pack']; pl
   const t = useTranslations('media.testServer.pack');
   const testServer = useTestServer();
   const { isBusy, run } = useBusyAction();
+  const isValidPlayer = PLAYER_NAME_PATTERN.test(player);
   const detail = pack.status === 'failed' || pack.status === 'ready' ? pack.message : null;
 
   return (
@@ -26,11 +28,11 @@ export function PackStatus({ pack, player }: { pack: TestServerState['pack']; pl
             <RefreshCw /> {t('reload')}
           </Button>
         </Tip>
-        <Tip label={player ? t('resendHint', { player }) : t('enterName')}>
+        <Tip label={isValidPlayer ? t('resendHint', { player }) : t('enterName')}>
           <Button
             variant="outline"
             size="sm"
-            disabled={isBusy || pack.status !== 'ready' || !player}
+            disabled={isBusy || pack.status !== 'ready' || !isValidPlayer}
             onClick={() => void run(() => testServer.command(nexoPackCommand(player)))}
           >
             <Upload /> {t('resend')}
