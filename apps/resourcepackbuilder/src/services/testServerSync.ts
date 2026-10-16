@@ -9,6 +9,7 @@ import { compareVersions } from '@resourcepackbuilder/core/minecraft/versions';
 import { TEST_SERVER_LOG_LIMIT } from '@resourcepackbuilder/core/testServer/config';
 import { nexoFolderFiles, nexoGiveCommand, patchNexoSettings } from '@resourcepackbuilder/core/testServer/files';
 import { AppError } from '../i18n/errors';
+import { asError } from '../lib/asError';
 import type { DesktopTestServerApi, NexoJarInfo, TestServerConfigPatch, TestServerSyncResult } from '../platform/desktopApi';
 import { useProjectStore } from '../store/project';
 import { useTestServerStore } from '../store/testServer';
@@ -66,7 +67,7 @@ export function createTestServerSync(api: DesktopTestServerApi): TestServerSync 
         store.setState({ ...(hasChanged && { lastResult: { ...result, at: Date.now() } }), lastCheck: Date.now(), syncError: null });
         return result;
       } catch (err) {
-        store.setState({ syncError: err });
+        store.setState({ syncError: asError(err) });
         return null;
       } finally {
         store.setState({ isSyncing: false });
@@ -147,7 +148,7 @@ export function createTestServerSync(api: DesktopTestServerApi): TestServerSync 
     try {
       versions = [...(await api.versions())].sort((a, b) => compareVersions(b, a));
     } catch (err) {
-      store.setState({ paperVersionsError: err });
+      store.setState({ paperVersionsError: asError(err) });
       return;
     }
     store.setState({ paperVersions: versions });

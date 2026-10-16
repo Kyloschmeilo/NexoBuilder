@@ -18,6 +18,7 @@ import {
   type SyncState,
 } from '@resourcepackbuilder/core/sync/engine';
 import { AppError } from '../i18n/errors';
+import { asError } from '../lib/asError';
 import type { DesktopShareApi } from '../platform/desktopApi';
 import { applyRemote, useProjectStore } from '../store/project';
 import { DISCONNECTED, useShareStore, type ShareState } from '../store/share';
@@ -99,7 +100,7 @@ export function createShareSync({ api, repository, autosave }: ShareSyncOptions)
     } catch (err) {
       if (s.isStopped) return;
       if (err instanceof ShareFolderError) {
-        setStatus({ status: 'error', error: err });
+        setStatus({ status: 'error', error: asError(err) });
         stopSession();
       } else {
         console.warn('Sync failed', err);

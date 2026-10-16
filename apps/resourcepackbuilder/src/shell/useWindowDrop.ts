@@ -30,7 +30,7 @@ export function useWindowDrop(): void {
     const handleDragOver = (e: DragEvent) => {
       if (carriesFiles(e.dataTransfer)) e.preventDefault();
     };
-    const handleDrop = async (e: DragEvent) => {
+    const handleDrop = (e: DragEvent) => {
       if (!e.dataTransfer || !carriesFiles(e.dataTransfer)) return;
       const isTaken = e.defaultPrevented;
       e.preventDefault();
@@ -42,8 +42,12 @@ export function useWindowDrop(): void {
         notify('warning', t('dropNeedsFolder'));
         return;
       }
-      const files = await filesFromDataTransfer(e.dataTransfer);
-      if (files.length) newItemDialog.openWithPayload({ folderId, files });
+      filesFromDataTransfer(e.dataTransfer).then(
+        (files) => {
+          if (files.length) newItemDialog.openWithPayload({ folderId, files });
+        },
+        (err: unknown) => console.warn('Could not read the dropped files', err),
+      );
     };
     window.addEventListener('dragover', handleDragOver);
     window.addEventListener('drop', handleDrop);
