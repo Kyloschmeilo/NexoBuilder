@@ -18,7 +18,7 @@ import { Card, CardContent } from '@resourcepackbuilder/ui/components/card';
 import { AutoGrid } from '@resourcepackbuilder/ui';
 import { addFurnitureState } from '../../../commands/items';
 import { prompt } from '../../../store/dialogs';
-import { EditorSection } from '../EditorSection';
+import { Section } from '../../../components/Section';
 import { ModelSlot } from './ModelSlot';
 
 const CONNECT_DEFS = FURNITURE_MODEL_SLOTS.filter((def) => CONNECT_SLOTS.some((c) => c.slot === def.slot));
@@ -28,15 +28,11 @@ const LIGHT_DEFS = FURNITURE_MODEL_SLOTS.filter((def) => def.slot === LIGHT_SLOT
 
 function SlotGroup({ title, description, children }: { title: string; description: string; children: ReactNode }) {
   return (
-    <div className="flex flex-col gap-2">
-      <div>
-        <div className="font-heading text-xs font-semibold tracking-[0.14em] text-muted-foreground uppercase">{title}</div>
-        <div className="text-xs text-muted-foreground">{description}</div>
-      </div>
+    <Section title={title} description={description} className="gap-2">
       <AutoGrid min="10rem" className="gap-2">
         {children}
       </AutoGrid>
-    </div>
+    </Section>
   );
 }
 
@@ -66,7 +62,7 @@ export function FurnitureModelsSection({ item }: { item: Item }) {
   };
 
   return (
-    <EditorSection title={t('slots.furnitureTitle')}>
+    <Section title={t('slots.furnitureTitle')}>
       <Card className="rounded-lg py-0">
         <CardContent className="flex flex-col gap-5 py-5">
           <SlotGroup title={t('slots.connectable')} description={t('slots.connectableHelp')}>
@@ -99,6 +95,6 @@ export function FurnitureModelsSection({ item }: { item: Item }) {
           </SlotGroup>
         </CardContent>
       </Card>
-    </EditorSection>
+    </Section>
   );
 }

@@ -8,26 +8,26 @@ import {
   summarizeClipboard,
   type CopyCategory,
   type ItemConfigClipboard,
+  type PasteOptions,
 } from '@resourcepackbuilder/core/nexo/copyConfig';
-import { SectionLabel } from '@resourcepackbuilder/ui';
 import { Button } from '@resourcepackbuilder/ui/components/button';
 import { pasteItemProperties } from '../../commands/clipboard';
 import { DialogFrame } from '../../components/DialogFrame';
+import { SelectionHeader, SelectionTree } from '../../components/selection/SelectionTree';
 import { richTags } from '../../i18n/richTags';
 import { clipboardLabel, useClipboardStore } from '../../store/clipboard';
 import { closeDialog, type FeatureDialogProps } from '../../store/dialogs';
 import { notify } from '../../shell/notify';
 import { useOpenProject } from '../../store/project';
-import { SelectionTree } from '../export/SelectionTree';
-import { CategoryPicker, type PasteMode } from './CategoryPicker';
+
+import { CategoryPicker } from './CategoryPicker';
 
 function PasteDialogContent({ clip, targetItemIds }: { clip: ItemConfigClipboard; targetItemIds: string[] }) {
   const t = useTranslations('dialogs.pasteConfig');
-  const tSelection = useTranslations('dialogs.selection');
   const tCommon = useTranslations('common');
   const project = useOpenProject();
   const summary = useMemo(() => summarizeClipboard(clip), [clip]);
-  const [mode, setMode] = useState<PasteMode>('replace');
+  const [mode, setMode] = useState<PasteOptions['mode']>('replace');
   const [categories, setCategories] = useState<ReadonlySet<CopyCategory>>(
     () => new Set(COPY_CATEGORIES.filter((c) => c.defaultOn && summary.find((s) => s.id === c.id)?.entries.length).map((c) => c.id)),
   );
@@ -72,20 +72,11 @@ function PasteDialogContent({ clip, targetItemIds }: { clip: ItemConfigClipboard
       <div className="grid items-start gap-5 @3xl/dialog:grid-cols-2">
         <CategoryPicker summary={summary} categories={categories} onCategoriesChange={setCategories} mode={mode} onModeChange={setMode} />
         <section className="flex min-w-0 flex-col gap-2">
-          <SectionLabel
-            actions={
-              <>
-                <Button variant="ghost" size="sm" onClick={() => setExcludedIds([])}>
-                  {tSelection('all')}
-                </Button>
-                <Button variant="ghost" size="sm" onClick={() => setExcludedIds(Object.keys(project.items))}>
-                  {tSelection('none')}
-                </Button>
-              </>
-            }
-          >
-            {t.rich('targets', { ...richTags, count: targets.length })}
-          </SectionLabel>
+          <SelectionHeader
+            title={t.rich('targets', { ...richTags, count: targets.length })}
+            onAll={() => setExcludedIds([])}
+            onNone={() => setExcludedIds(Object.keys(project.items))}
+          />
           <div className="rounded-md border border-primary/50">
             <SelectionTree
               project={treeProject}

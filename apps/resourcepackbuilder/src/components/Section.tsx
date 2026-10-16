@@ -1,21 +1,28 @@
 import type { ReactNode } from 'react';
+import { cn } from 'cn';
 import { SectionLabel } from '@resourcepackbuilder/ui';
 import { Empty, EmptyDescription } from '@resourcepackbuilder/ui/components/empty';
 
-interface EditorSectionProps {
+interface SectionProps {
   title: ReactNode;
+  /** Short help below the title. */
+  description?: ReactNode;
   /** Buttons next to the title (e.g. "Add"). */
   actions?: ReactNode;
   /** Shown in a placeholder card when set (the section has no entries yet). */
   empty?: ReactNode;
+  className?: string;
   children?: ReactNode;
 }
 
-/** A titled group of cards in the item editor. */
-export function EditorSection({ title, actions, empty, children }: EditorSectionProps) {
+/** A titled group of content (cards, tiles, slots) on a page or in the item editor. */
+export function Section({ title, description, actions, empty, className, children }: SectionProps) {
   return (
-    <section className="flex flex-col gap-3">
-      <SectionLabel actions={actions}>{title}</SectionLabel>
+    <section className={cn('flex flex-col gap-3', className)}>
+      <div>
+        <SectionLabel actions={actions}>{title}</SectionLabel>
+        {description && <p className="text-xs text-muted-foreground">{description}</p>}
+      </div>
       {empty && (
         <Empty className="rounded-lg border p-5">
           <EmptyDescription className="text-xs">{empty}</EmptyDescription>

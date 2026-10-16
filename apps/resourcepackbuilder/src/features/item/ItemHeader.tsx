@@ -4,17 +4,18 @@ import type { Item } from '@resourcepackbuilder/core/project/types';
 import { itemMaterial } from '@resourcepackbuilder/core/nexo/material';
 import type { Issue } from '@resourcepackbuilder/core/issues';
 import { getFolderPathLabel } from '@resourcepackbuilder/core/project/tree';
-import { IconButton, Thumb, Tip } from '@resourcepackbuilder/ui';
+import { PLAYER_NAME_PATTERN } from '@resourcepackbuilder/core/testServer/config';
+import { IconButton, PageHeader, Thumb, Tip } from '@resourcepackbuilder/ui';
 import { Badge } from '@resourcepackbuilder/ui/components/badge';
 import { Button } from '@resourcepackbuilder/ui/components/button';
 import { useThumbnail } from '@resourcepackbuilder/preview';
+import { IssueCountBadges } from '../../components/IssueCountBadges';
 import { MiniMessageBox } from '../../components/miniMessage/MiniMessageBox';
 import { MiniMessageLine } from '../../components/miniMessage/MiniMessageLine';
-import { useErrorMessage } from '../../i18n/errors';
+import { useBusyAction } from '../../hooks/useBusyAction';
 import { useServices } from '../../services/servicesContext';
 import { clipboardLabel, useClipboardStore } from '../../store/clipboard';
 import { openDialog } from '../../store/dialogs';
-import { notify } from '../../shell/notify';
 import { useOpenProject } from '../../store/project';
 import { useTestServerStore } from '../../store/testServer';
 import { useItemActions } from './useItemActions';
@@ -22,18 +23,22 @@ import { useItemActions } from './useItemActions';
 /** "Give in test server" – only visible while the local test server is running. */
 function GiveButton({ nexoId }: { nexoId: string }) {
   const t = useTranslations('item');
-  const errorMessage = useErrorMessage();
   const testServer = useServices().testServer;
+  const { isBusy, run } = useBusyAction();
+  const tPack = useTranslations('media.testServer.pack');
   const isRunning = useTestServerStore((s) => s.server?.status === 'running');
+  const player = useTestServerStore((s) => s.server?.config.playerName ?? '');
   if (!testServer || !isRunning) return null;
+  // The give command needs a valid player name; core's command builder rejects anything else
+  const isValidPlayer = PLAYER_NAME_PATTERN.test(player);
   const give = () =>
-    void testServer.give(nexoId).then(
-      (player) => notify('success', t('editor.giveSuccess', { id: nexoId, player })),
-      (err: unknown) => notify('error', errorMessage(err)),
+    void run(
+      () => testServer.give(nexoId),
+      (player) => t('editor.giveSuccess', { id: nexoId, player }),
     );
   return (
-    <Tip label={t('editor.giveTooltip')}>
-      <Button variant="outline" size="sm" onClick={give}>
+    <Tip label={isValidPlayer ? t('editor.giveTooltip') : tPack('enterName')}>
+      <Button variant="outline" size="sm" disabled={isBusy || !isValidPlayer} onClick={give}>
         <Gift /> {t('editor.give')}
       </Button>
     </Tip>
@@ -44,10 +49,8 @@ function GiveButton({ nexoId }: { nexoId: string }) {
 function ItemBadges({ item, issues }: { item: Item; issues: Issue[] }) {
   const t = useTranslations('item');
   const project = useOpenProject();
-  const errors = issues.filter((i) => i.level === 'error').length;
-  const warnings = issues.filter((i) => i.level === 'warning').length;
   return (
-    <div className="flex flex-wrap gap-2">
+    <>
       <Tip label={t('editor.itemId')}>
         <Badge variant="outline" className="border-primary font-mono text-primary">
           {item.nexoId}
@@ -59,10 +62,8 @@ function ItemBadges({ item, issues }: { item: Item; issues: Issue[] }) {
       <Badge variant="outline" className="font-mono">
         {itemMaterial(item)}
       </Badge>
-      {errors > 0 && <Badge variant="destructive">{t('editor.errors', { count: errors })}</Badge>}
-      {warnings > 0 && <Badge variant="warning">{t('editor.warnings', { count: warnings })}</Badge>}
-      {errors === 0 && warnings === 0 && <Badge variant="success">{t('editor.ready')}</Badge>}
-    </div>
+      <IssueCountBadges issues={issues} okLabel={t('editor.ready')} />
+    </>
   );
 }
 
@@ -73,7 +74,7 @@ function ItemActions({ item }: { item: Item }) {
   const actions = useItemActions();
   const canPaste = !!clip && clip.sourceItemId !== item.id;
   return (
-    <div className="flex flex-wrap gap-2">
+    <>
       <GiveButton nexoId={item.nexoId} />
       <Tip label={t('editor.copyTooltip')}>
         <Button variant="outline" size="sm" onClick={() => actions.copyProperties(item.id)}>
@@ -94,7 +95,7 @@ function ItemActions({ item }: { item: Item }) {
       <IconButton label={tCommon('delete')} variant="destructive" onClick={() => void actions.remove(item)}>
         <Trash2 />
       </IconButton>
-    </div>
+    </>
   );
 }
 
@@ -102,18 +103,16 @@ function ItemActions({ item }: { item: Item }) {
 export function ItemHeader({ item, issues }: { item: Item; issues: Issue[] }) {
   const thumb = useThumbnail(item.model);
   return (
-    <header className="flex flex-wrap items-start gap-x-4 gap-y-3">
-      <Thumb src={thumb} fallback={<Box className="size-6 opacity-60" />} className="border" />
-      <div className="flex min-w-0 flex-1 basis-48 flex-col gap-2">
-        <h1 className="m-0 min-w-0 font-heading text-2xl leading-8 font-semibold">
-          {/* Minecraft colours are made for a dark background, so the name sits in a dark box in both themes */}
-          <MiniMessageBox className="min-w-0 px-3 py-0.5 align-top font-heading text-2xl leading-8">
-            <MiniMessageLine text={item.displayName || item.nexoId} />
-          </MiniMessageBox>
-        </h1>
-        <ItemBadges item={item} issues={issues} />
-      </div>
-      <ItemActions item={item} />
-    </header>
+    <PageHeader
+      icon={<Thumb src={thumb} size={48} checkered={false} fallback={<Box className="size-6 opacity-60" />} />}
+      title={
+        // Minecraft colours are made for a dark background, so the name sits in a dark box in both themes
+        <MiniMessageBox className="min-w-0 px-3 py-0.5 align-top font-heading text-2xl leading-8">
+          <MiniMessageLine text={item.displayName || item.nexoId} />
+        </MiniMessageBox>
+      }
+      meta={<ItemBadges item={item} issues={issues} />}
+      actions={<ItemActions item={item} />}
+    />
   );
 }

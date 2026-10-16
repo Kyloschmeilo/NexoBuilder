@@ -3,9 +3,8 @@ import { Trash2 } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 import { cn } from 'cn';
 import { Button } from '@resourcepackbuilder/ui/components/button';
-import { Card, CardAction, CardDescription, CardHeader, CardTitle } from '@resourcepackbuilder/ui/components/card';
 import { Input } from '@resourcepackbuilder/ui/components/input';
-import { Tip } from '@resourcepackbuilder/ui';
+import { SectionCard, Tip } from '@resourcepackbuilder/ui';
 import type { TestServerLogLine } from '../../platform/desktopApi';
 import { useTestServerStore } from '../../store/testServer';
 import { useCommandHistory } from './useCommandHistory';
@@ -42,22 +41,23 @@ export function ServerConsole() {
   };
 
   return (
-    <Card size="sm" className="gap-0 py-0">
-      <CardHeader className="py-3">
-        <CardTitle className="font-heading">{t('title')}</CardTitle>
-        <CardDescription className="text-xs">{t('description')}</CardDescription>
-        <CardAction>
-          <Tip label={t('clearHint')}>
-            <Button variant="ghost" size="sm" onClick={() => void testServer.clearLog()}>
-              <Trash2 /> {t('clear')}
-            </Button>
-          </Tip>
-        </CardAction>
-      </CardHeader>
+    <SectionCard
+      size="sm"
+      title={t('title')}
+      description={t('description')}
+      actions={
+        <Tip label={t('clearHint')}>
+          <Button variant="ghost" size="sm" onClick={() => void testServer.clearLog()}>
+            <Trash2 /> {t('clear')}
+          </Button>
+        </Tip>
+      }
+      contentClassName="p-0"
+    >
       <div
         ref={output}
         data-testid="test-server-console"
-        className="h-84 overflow-auto border-y border-border bg-background px-4 py-3 font-mono text-xs leading-5"
+        className="h-84 overflow-auto border-b border-border bg-background px-4 py-3 font-mono text-xs leading-5"
         onScroll={(e) => {
           const el = e.currentTarget;
           isFollowing.current = el.scrollHeight - el.scrollTop - el.clientHeight < FOLLOW_THRESHOLD_PX;
@@ -102,6 +102,6 @@ export function ServerConsole() {
           {t('send')}
         </Button>
       </div>
-    </Card>
+    </SectionCard>
   );
 }

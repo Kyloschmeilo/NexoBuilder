@@ -3,5 +3,4 @@ export { FieldContext, type FieldContextValue } from './fieldContext';
 export type { Choice, LiteralChoice } from './inputs/choices';
 export { NumberInput } from './inputs/NumberInput';
 export { TextInput } from './inputs/TextInput';
-export { useDraft } from './useDraft';
 export { moveInArray, removeAt, replaceAt, toStringList } from './values';

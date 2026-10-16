@@ -6,6 +6,7 @@ import type { ModelTexture } from '@resourcepackbuilder/core/model/types';
 import { getAnimation, getFrameSize } from '@resourcepackbuilder/core/model/textures';
 import { IconButton, pickFiles, Thumb } from '@resourcepackbuilder/ui';
 import { Button } from '@resourcepackbuilder/ui/components/button';
+import { Item, ItemContent, ItemMedia } from '@resourcepackbuilder/ui/components/item';
 import { Checkbox } from '@resourcepackbuilder/ui/components/checkbox';
 import { Input } from '@resourcepackbuilder/ui/components/input';
 import { Label } from '@resourcepackbuilder/ui/components/label';
@@ -115,9 +116,11 @@ export function TextureCard({ itemId, texture, isUsed }: { itemId: string; textu
     });
   };
   return (
-    <div className={cn('flex gap-3 rounded-md border bg-muted/50 p-3', !texture.dataUrl && 'border-destructive')}>
-      <Thumb src={texture.dataUrl} alt={texture.name} fallback={<ImageUp className="size-5.5 opacity-60" />} />
-      <div className="flex min-w-0 flex-1 flex-col gap-1.5 text-xs text-muted-foreground">
+    <Item variant="muted" className={cn('flex-nowrap items-start gap-3 border-border p-3', !texture.dataUrl && 'border-destructive')}>
+      <ItemMedia>
+        <Thumb src={texture.dataUrl} alt={texture.name} fallback={<ImageUp className="size-5.5 opacity-60" />} />
+      </ItemMedia>
+      <ItemContent className="min-w-0 gap-1.5 text-xs text-muted-foreground">
         <TextureName itemId={itemId} texture={texture} />
         <span>
           {texture.dataUrl ? t('model.texture.size', { width: texture.width, height: texture.height }) : t('model.texture.missing')}
@@ -130,7 +133,7 @@ export function TextureCard({ itemId, texture, isUsed }: { itemId: string; textu
           </Button>
           <TextureAnimationOptions itemId={itemId} texture={texture} />
         </div>
-      </div>
-    </div>
+      </ItemContent>
+    </Item>
   );
 }

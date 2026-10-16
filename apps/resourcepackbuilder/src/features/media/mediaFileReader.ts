@@ -2,7 +2,7 @@ import { fileStem } from '@resourcepackbuilder/ui';
 import { notify } from '../../shell/notify';
 
 /** A dropped or picked file read for a glyph, sound or painting. */
-export interface MediaFileEntry<T> {
+interface MediaFileEntry<T> {
   /** File name without extension, the base for the new ID. */
   name: string;
   file: T;

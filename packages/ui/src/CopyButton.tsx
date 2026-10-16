@@ -1,14 +1,19 @@
 import { useEffect, useRef, useState } from 'react';
 import { Check, Copy } from 'lucide-react';
-import { useTranslations } from 'next-intl';
 import { Button } from './components/button';
 
 const CONFIRMATION_MS = 1500;
 
-/** Copies `text` to the clipboard and confirms it briefly; `label` defaults to the common "Copy". */
-export function CopyButton({ text, label }: { text: string; label?: string }) {
-  const t = useTranslations('ui');
-  const tCommon = useTranslations('common');
+interface CopyButtonProps {
+  text: string;
+  /** Button text, e.g. "Copy". */
+  label: string;
+  /** Shown briefly after copying, e.g. "Copied". */
+  copiedLabel: string;
+}
+
+/** Copies `text` to the clipboard and confirms it briefly. */
+export function CopyButton({ text, label, copiedLabel }: CopyButtonProps) {
   const [isCopied, setIsCopied] = useState(false);
   const timer = useRef<number | undefined>(undefined);
   useEffect(() => () => window.clearTimeout(timer.current), []);
@@ -27,7 +32,7 @@ export function CopyButton({ text, label }: { text: string; label?: string }) {
   return (
     <Button variant="outline" size="sm" onClick={() => void copy()}>
       {isCopied ? <Check /> : <Copy />}
-      {isCopied ? t('copyButton.copied') : (label ?? tCommon('copy'))}
+      {isCopied ? copiedLabel : label}
     </Button>
   );
 }

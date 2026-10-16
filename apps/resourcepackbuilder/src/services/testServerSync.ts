@@ -6,6 +6,7 @@
  */
 import { planExport } from '@resourcepackbuilder/core/export/plan';
 import { compareVersions } from '@resourcepackbuilder/core/minecraft/versions';
+import { TEST_SERVER_LOG_LIMIT } from '@resourcepackbuilder/core/testServer/config';
 import { nexoFolderFiles, nexoGiveCommand, patchNexoSettings } from '@resourcepackbuilder/core/testServer/files';
 import { AppError } from '../i18n/errors';
 import type { DesktopTestServerApi, NexoJarInfo, TestServerConfigPatch, TestServerSyncResult } from '../platform/desktopApi';
@@ -14,7 +15,6 @@ import { useTestServerStore } from '../store/testServer';
 import { createSerialTask } from './serialTask';
 
 const AUTO_SYNC_DELAY_MS = 1200;
-const LOG_LIMIT = 2000;
 /** Wait after a reload when Nexo's pack build cannot be followed (no Nexo JAR configured). */
 const UNTRACKED_RELOAD_MS = 2500;
 
@@ -95,7 +95,7 @@ export function createTestServerSync(api: DesktopTestServerApi): TestServerSync 
   const offEvent = api.onEvent((event) => {
     if (event.type === 'log') {
       const log = [...store.getState().log, ...event.lines];
-      store.setState({ log: log.length > LOG_LIMIT ? log.slice(-LOG_LIMIT) : log });
+      store.setState({ log: log.length > TEST_SERVER_LOG_LIMIT ? log.slice(-TEST_SERVER_LOG_LIMIT) : log });
     } else {
       const before = store.getState().server?.status;
       store.setState({ server: event.state });

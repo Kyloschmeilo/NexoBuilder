@@ -1,13 +1,14 @@
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useState, type ReactNode } from 'react';
 import { Package, Trash2 } from 'lucide-react';
 import { useFormatter, useTranslations } from 'next-intl';
 import { IconButton } from '@resourcepackbuilder/ui';
 import { Badge } from '@resourcepackbuilder/ui/components/badge';
+import { Empty, EmptyDescription } from '@resourcepackbuilder/ui/components/empty';
+import { Item, ItemActions, ItemContent, ItemDescription, ItemMedia, ItemTitle } from '@resourcepackbuilder/ui/components/item';
 import { Spinner } from '@resourcepackbuilder/ui/components/spinner';
 import { richTags } from '../../i18n/richTags';
 import { useServices } from '../../services/servicesContext';
 import type { ProjectSummary } from '../../services/projectRepository';
-import { confirm } from '../../store/dialogs';
 import { useProjectStore } from '../../store/project';
 import { useProjectActions } from './useProjectActions';
 
@@ -24,33 +25,46 @@ function ProjectRow({ project, isOpen, isShared, onOpen, onDelete }: ProjectRowP
   const t = useTranslations('layout.projectList');
   const format = useFormatter();
   return (
-    <div className="flex items-center gap-1 rounded-md border border-border bg-card pr-2 transition-colors hover:border-input hover:bg-muted">
-      <button
-        type="button"
-        className="flex min-w-0 flex-1 cursor-pointer items-center gap-3 rounded-md px-3 py-2.5 text-left outline-none focus-visible:ring-3 focus-visible:ring-ring/50"
-        onClick={onOpen}
-      >
-        <Package className="size-4.5 shrink-0 text-muted-foreground" />
-        <span className="min-w-0 flex-1">
-          <span className="flex flex-wrap items-center gap-1.5 font-semibold break-words">
+    <Item
+      variant="outline"
+      className="relative flex-nowrap bg-card py-2 pr-2 hover:border-input hover:bg-muted has-[button:focus-visible]:ring-3 has-[button:focus-visible]:ring-ring/50"
+    >
+      <ItemMedia variant="icon" className="text-muted-foreground">
+        <Package className="size-4.5" />
+      </ItemMedia>
+      <ItemContent className="min-w-0 gap-0.5">
+        <ItemTitle className="line-clamp-none flex-wrap gap-1.5 font-semibold break-words">
+          {/* The whole row opens the project: the button's overlay covers it, the delete button sits above */}
+          <button type="button" className="cursor-pointer text-left outline-none after:absolute after:inset-0" onClick={onOpen}>
             {project.name}
-            {isOpen && <Badge>{t('current')}</Badge>}
-            {isShared && <Badge variant="success">{t('shared')}</Badge>}
-          </span>
-          <span className="block text-xs text-muted-foreground">
-            {t.rich('meta', {
-              ...richTags,
-              count: project.itemCount,
-              namespace: project.namespace,
-              date: format.dateTime(new Date(project.updatedAt), { dateStyle: 'medium', timeStyle: 'short' }),
-            })}
-          </span>
-        </span>
-      </button>
-      <IconButton label={t('delete')} tone="destructive" onClick={onDelete}>
-        <Trash2 />
-      </IconButton>
-    </div>
+          </button>
+          {isOpen && <Badge>{t('current')}</Badge>}
+          {isShared && <Badge variant="success">{t('shared')}</Badge>}
+        </ItemTitle>
+        <ItemDescription className="text-xs">
+          {t.rich('meta', {
+            ...richTags,
+            count: project.itemCount,
+            namespace: project.namespace,
+            date: format.dateTime(new Date(project.updatedAt), { dateStyle: 'medium', timeStyle: 'short' }),
+          })}
+        </ItemDescription>
+      </ItemContent>
+      <ItemActions className="relative">
+        <IconButton label={t('delete')} variant="ghost-destructive" onClick={onDelete}>
+          <Trash2 />
+        </IconButton>
+      </ItemActions>
+    </Item>
+  );
+}
+
+/** Shown instead of the list (loading, nothing saved, no storage). */
+function ListNotice({ children }: { children: ReactNode }) {
+  return (
+    <Empty className="p-4">
+      <EmptyDescription className="flex items-center gap-2 text-xs">{children}</EmptyDescription>
+    </Empty>
   );
 }
 
@@ -70,30 +84,22 @@ export function ProjectList({ onOpened }: { onOpened?: () => void }) {
   }, [repository]);
   useEffect(refresh, [refresh]);
 
-  if (!repository.available) return <p className="text-xs text-muted-foreground">{t('storageUnavailable')}</p>;
+  if (!repository.available) return <ListNotice>{t('storageUnavailable')}</ListNotice>;
   if (!projects) {
     return (
-      <p className="flex items-center gap-2 text-xs text-muted-foreground">
+      <ListNotice>
         <Spinner /> {tCommon('loading')}
-      </p>
+      </ListNotice>
     );
   }
-  if (projects.length === 0) return <p className="text-xs text-muted-foreground">{t('empty')}</p>;
+  if (projects.length === 0) return <ListNotice>{t('empty')}</ListNotice>;
 
   const open = async (id: string) => {
     await actions.open(id);
     onOpened?.();
   };
   const remove = async (project: ProjectSummary) => {
-    const confirmed = await confirm({
-      title: t('deleteTitle'),
-      message: t('deleteMessage', { name: project.name }),
-      confirmLabel: t('deleteConfirm'),
-      destructive: true,
-    });
-    if (!confirmed) return;
-    await actions.remove(project.id);
-    refresh();
+    if (await actions.remove(project)) refresh();
   };
 
   return (

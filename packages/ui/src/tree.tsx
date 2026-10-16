@@ -1,0 +1,49 @@
+import { cva } from 'class-variance-authority';
+import { ChevronDown, ChevronRight } from 'lucide-react';
+
+/** Indentation per tree level, in pixels (applied as runtime padding of the rows). */
+export const TREE_INDENT_PX = 16;
+
+/**
+ * A row of a tree (sidebar or a checkable selection list); `group/row` and `data-selected` style its parts.
+ * `sidebar` rows sit on the sidebar background, `panel` rows inside dialogs and cards.
+ */
+export const treeRow = cva('group/row flex items-center rounded-sm text-sm select-none', {
+  variants: {
+    surface: {
+      sidebar: 'h-8 hover:bg-sidebar-accent',
+      panel: 'min-h-8 gap-2 pr-3 text-foreground hover:bg-muted',
+    },
+    selected: {
+      true: 'bg-primary/10 ring-1 ring-primary ring-inset hover:bg-primary/15',
+      false: '',
+    },
+    dropTarget: {
+      true: 'bg-primary/10 outline-1 -outline-offset-1 outline-primary outline-dashed',
+      false: '',
+    },
+  },
+  defaultVariants: { surface: 'sidebar', selected: false, dropTarget: false },
+});
+
+/** Classes of the parts of a {@link treeRow}. */
+export const treeRowSlots = {
+  /** The focusable, clickable part of a row. */
+  button:
+    'flex h-full min-w-0 flex-1 cursor-pointer items-center gap-1.5 rounded-sm pr-1 text-left outline-none focus-visible:ring-2 focus-visible:ring-ring/50',
+  /** An icon, or a span around one. */
+  icon: 'grid size-4 shrink-0 place-items-center text-muted-foreground group-data-selected/row:text-primary [&_svg]:size-4',
+  label: 'min-w-0 flex-1 truncate',
+  /** A count or short fact on the right. */
+  count: 'px-1 font-mono text-xs whitespace-nowrap text-muted-foreground',
+} as const;
+
+/** The open/closed chevron in front of a tree row that has children. */
+export function TreeChevron({ isOpen }: { isOpen: boolean }) {
+  const Icon = isOpen ? ChevronDown : ChevronRight;
+  return (
+    <span className="grid w-4 shrink-0 place-items-center text-muted-foreground">
+      <Icon className="size-3.5" />
+    </span>
+  );
+}

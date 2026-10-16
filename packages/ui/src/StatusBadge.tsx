@@ -1,19 +1,16 @@
 import type { ComponentProps } from 'react';
 import { Badge } from './components/badge';
-import type { Tone } from './tone';
-
-const BADGE_VARIANT = {
-  neutral: 'secondary',
-  info: 'info',
-  busy: 'info',
-  success: 'success',
-  warning: 'warning',
-  error: 'destructive',
-} as const satisfies Record<Tone, string>;
+import { Spinner } from './components/spinner';
+import { TONE_BADGE_VARIANT, type Tone } from './tone';
 
 type StatusBadgeProps = Omit<ComponentProps<typeof Badge>, 'variant'> & { tone: Tone };
 
-/** A badge coloured by `tone`; other props (data attributes, aria) go to the badge. */
-export function StatusBadge({ tone, ...props }: StatusBadgeProps) {
-  return <Badge variant={BADGE_VARIANT[tone]} {...props} />;
+/** A badge coloured by `tone`, with a spinner while `busy`; other props (data attributes, aria) go to the badge. */
+export function StatusBadge({ tone, children, ...props }: StatusBadgeProps) {
+  return (
+    <Badge variant={TONE_BADGE_VARIANT[tone]} {...props}>
+      {tone === 'busy' && <Spinner />}
+      {children}
+    </Badge>
+  );
 }

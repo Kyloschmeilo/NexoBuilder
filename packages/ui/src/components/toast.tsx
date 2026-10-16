@@ -1,11 +1,12 @@
 "use client"
 
-import * as React from "react"
 import { Toast as ToastPrimitive } from "@base-ui/react/toast"
 import { cn } from "cn"
 
 import { Button } from "./button"
-import { XIcon, CircleCheckIcon, InfoIcon, TriangleAlertIcon, OctagonXIcon, Loader2Icon } from "lucide-react"
+import { XIcon } from "lucide-react"
+
+import { TONE_ICONS, TONE_TEXT_CLASS, type Tone } from "../tone"
 
 const toast = ToastPrimitive.createToastManager()
 
@@ -132,49 +133,32 @@ function ToastClose({
   )
 }
 
+const TOAST_TONES: Record<string, Tone> = {
+  success: "success",
+  info: "info",
+  warning: "warning",
+  error: "error",
+  loading: "busy",
+}
+
 function ToastIcon({ type }: { type: string | undefined }) {
-  let icon: React.ReactNode = null
+  const tone = type ? TOAST_TONES[type] : undefined
 
-  if (type === "success") {
-    icon = (
-      <CircleCheckIcon className="text-success" aria-hidden="true" />
-    )
-  }
-
-  if (type === "info") {
-    icon = (
-      <InfoIcon className="text-info" aria-hidden="true" />
-    )
-  }
-
-  if (type === "warning") {
-    icon = (
-      <TriangleAlertIcon className="text-warning" aria-hidden="true" />
-    )
-  }
-
-  if (type === "error") {
-    icon = (
-      <OctagonXIcon className="text-destructive" aria-hidden="true" />
-    )
-  }
-
-  if (type === "loading") {
-    icon = (
-      <Loader2Icon className="animate-spin" aria-hidden="true" />
-    )
-  }
-
-  if (!icon) {
+  if (!tone) {
     return null
   }
+
+  const Icon = TONE_ICONS[tone]
 
   return (
     <span
       data-slot="toast-icon"
       className="shrink-0 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4"
     >
-      {icon}
+      <Icon
+        className={cn(TONE_TEXT_CLASS[tone], tone === "busy" && "animate-spin")}
+        aria-hidden="true"
+      />
     </span>
   )
 }

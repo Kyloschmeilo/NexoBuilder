@@ -6,7 +6,8 @@ import type { VariantDef } from '@resourcepackbuilder/core/nexo/variants';
 import { DropZone, IconButton, pickFiles, Thumb, Tip } from '@resourcepackbuilder/ui';
 import { useThumbnail } from '@resourcepackbuilder/preview';
 import { removeVariant, setVariantModels } from '../../../commands/items';
-import { MODEL_ACCEPT } from './modelFiles';
+import { MODEL_ACCEPT } from '../../../components/modelFiles';
+import { useSchemaText } from '../../../components/useSchemaText';
 import { useModelImport } from './useModelImport';
 
 const THUMB_SIZE = 48;
@@ -15,7 +16,7 @@ const THUMB_SIZE = 48;
 export function ModelSlot({ item, def }: { item: Item; def: VariantDef }) {
   const t = useTranslations('item');
   const tCommon = useTranslations('common');
-  const tSchema = useTranslations('schema');
+  const tSchema = useSchemaText();
   const { importModels } = useModelImport();
   const model = item.variants?.[def.slot]?.[0] ?? null;
   const thumb = useThumbnail(model);
@@ -33,14 +34,19 @@ export function ModelSlot({ item, def }: { item: Item; def: VariantDef }) {
     <div className={cn('flex min-w-0 flex-col gap-2 rounded-md border p-2', model && 'border-primary bg-primary/10')}>
       <div className="flex min-h-7 items-center gap-0.5">
         <span className="min-w-0 flex-1 truncate font-heading text-xs font-semibold tracking-[0.08em] uppercase">
-          {tSchema(def.label as never, def.params as never)}
+          {tSchema(def.label, def.params)}
         </span>
         {model && (
           <>
             <IconButton label={t('model.replace')} size="icon-xs" onClick={() => void replace()}>
               <RefreshCw />
             </IconButton>
-            <IconButton label={tCommon('remove')} size="icon-xs" tone="destructive" onClick={() => removeVariant(item.id, def.slot)}>
+            <IconButton
+              label={tCommon('remove')}
+              size="icon-xs"
+              variant="ghost-destructive"
+              onClick={() => removeVariant(item.id, def.slot)}
+            >
               <Trash2 />
             </IconButton>
           </>
@@ -58,7 +64,7 @@ export function ModelSlot({ item, def }: { item: Item; def: VariantDef }) {
           onFiles={(files) => void load(files)}
           accept={MODEL_ACCEPT}
           title={t('slots.model')}
-          subtitle={tSchema(def.description as never, def.params as never)}
+          subtitle={tSchema(def.description, def.params)}
           multiple={false}
           compact
         />

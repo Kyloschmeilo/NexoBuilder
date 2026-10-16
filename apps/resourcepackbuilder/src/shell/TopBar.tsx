@@ -1,7 +1,5 @@
 import {
   ChevronDown,
-  CircleAlert,
-  CircleCheck,
   Download,
   FolderOpen,
   FolderSync,
@@ -11,7 +9,6 @@ import {
   Redo2,
   Save,
   Settings,
-  TriangleAlert,
   Undo2,
   Upload,
   Users,
@@ -20,7 +17,7 @@ import {
 import { useTranslations } from 'next-intl';
 import { cn } from 'cn';
 import { countIssues } from '@resourcepackbuilder/core/issues';
-import { StatusDot, Tip } from '@resourcepackbuilder/ui';
+import { IconButton, MenuEntries, type MenuEntry, StatusDot, Tip, TONE_ICONS, TONE_TEXT_CLASS } from '@resourcepackbuilder/ui';
 import { Button } from '@resourcepackbuilder/ui/components/button';
 import { Kbd } from '@resourcepackbuilder/ui/components/kbd';
 import {
@@ -33,7 +30,6 @@ import {
   DropdownMenuTrigger,
 } from '@resourcepackbuilder/ui/components/dropdown-menu';
 import { BrandMark } from '../components/BrandMark';
-import { MenuEntries, type MenuEntry } from '../components/MenuEntries';
 import { useProjectActions } from '../features/projects/useProjectActions';
 import { SHARE_STATUS_TONE, useShareStatusText } from '../features/share/ShareStatusBadge';
 import { openDialog } from '../store/dialogs';
@@ -83,16 +79,17 @@ function ChecksButton({ onClick }: { onClick: () => void }) {
   const plan = usePlan();
   if (!plan) return null;
   const counts = countIssues(plan.issues);
-  const [icon, label] =
+  const [tone, label] =
     counts.error > 0
-      ? [<CircleAlert key="icon" className="text-destructive" />, t('errors', { count: counts.error })]
+      ? (['error', t('errors', { count: counts.error })] as const)
       : counts.warning > 0
-        ? [<TriangleAlert key="icon" className="text-warning" />, t('warnings', { count: counts.warning })]
-        : [<CircleCheck key="icon" className="text-success" />, t('ok')];
+        ? (['warning', t('warnings', { count: counts.warning })] as const)
+        : (['success', t('ok')] as const);
+  const Icon = TONE_ICONS[tone];
   return (
     <Tip label={t('hint')}>
       <Button variant="ghost" aria-label={label} onClick={onClick}>
-        {icon}
+        <Icon className={TONE_TEXT_CLASS[tone]} />
         <span className="hidden @2xl/top:inline">{label}</span>
       </Button>
     </Tip>
@@ -200,28 +197,32 @@ export function TopBar() {
         <>
           <ProjectMenu name={project.name} />
           <div className="flex shrink-0 items-center gap-0.5">
-            <Tip
+            <IconButton
               label={
                 <>
                   {t('undo')} <Kbd>{t('undoShortcut')}</Kbd>
                 </>
               }
+              aria-label={t('undo')}
+              size="icon"
+              disabled={!canUndo}
+              onClick={undo}
             >
-              <Button variant="ghost" size="icon" aria-label={t('undo')} disabled={!canUndo} onClick={undo}>
-                <Undo2 />
-              </Button>
-            </Tip>
-            <Tip
+              <Undo2 />
+            </IconButton>
+            <IconButton
               label={
                 <>
                   {t('redo')} <Kbd>{t('redoShortcut')}</Kbd>
                 </>
               }
+              aria-label={t('redo')}
+              size="icon"
+              disabled={!canRedo}
+              onClick={redo}
             >
-              <Button variant="ghost" size="icon" aria-label={t('redo')} disabled={!canRedo} onClick={redo}>
-                <Redo2 />
-              </Button>
-            </Tip>
+              <Redo2 />
+            </IconButton>
           </div>
           <SaveStatus />
           <ShareButton />
@@ -232,11 +233,9 @@ export function TopBar() {
       <ThemeMenu />
       {project && (
         <>
-          <Tip label={previewLabel}>
-            <Button variant="ghost" size="icon" aria-label={previewLabel} onClick={() => setRightPanelOpen(!isRightPanelOpen)}>
-              {isRightPanelOpen ? <PanelRightClose /> : <PanelRight />}
-            </Button>
-          </Tip>
+          <IconButton label={previewLabel} size="icon" onClick={() => setRightPanelOpen(!isRightPanelOpen)}>
+            {isRightPanelOpen ? <PanelRightClose /> : <PanelRight />}
+          </IconButton>
           <Button className="shrink-0" onClick={openExport}>
             <Download /> {t('export')}
           </Button>

@@ -2,7 +2,9 @@ import { useTranslations } from 'next-intl';
 import { ArrowDown, ArrowUp, Box, RefreshCw, Trash2 } from 'lucide-react';
 import type { ImportedModel } from '@resourcepackbuilder/core/model/types';
 import { IconButton, Thumb } from '@resourcepackbuilder/ui';
+import { Item, ItemActions, ItemContent, ItemDescription, ItemMedia, ItemTitle } from '@resourcepackbuilder/ui/components/item';
 import { useThumbnail } from '@resourcepackbuilder/preview';
+import { IssueCountBadges } from '../../../components/IssueCountBadges';
 
 const THUMB_SIZE = 44;
 
@@ -22,18 +24,19 @@ export function VariantModelRow({ model, label, position, onMove, onReplace, onR
   const t = useTranslations('item');
   const tCommon = useTranslations('common');
   const thumb = useThumbnail(model);
-  const errors = model.issues.filter((i) => i.level === 'error').length;
   return (
-    <div className="flex items-center gap-3 rounded-md border bg-muted/50 p-2">
-      <Thumb size={THUMB_SIZE} src={thumb} fallback={<Box className="size-4.5 opacity-60" />} />
-      <div className="flex min-w-0 flex-1 flex-col gap-0.5 text-xs">
-        <span className="font-mono">{label}</span>
-        <span className="truncate text-muted-foreground">
-          {model.fileName}
-          {errors > 0 && <span className="text-destructive"> · {t('editor.errors', { count: errors })}</span>}
+    <Item variant="muted" size="xs" className="flex-nowrap gap-3 border-border p-2">
+      <ItemMedia>
+        <Thumb size={THUMB_SIZE} src={thumb} fallback={<Box className="size-4.5 opacity-60" />} />
+      </ItemMedia>
+      <ItemContent className="min-w-0 gap-0.5 text-xs">
+        <ItemTitle className="font-mono text-xs font-normal">{label}</ItemTitle>
+        <ItemDescription className="line-clamp-1">{model.fileName}</ItemDescription>
+        <span className="flex flex-wrap gap-1 empty:hidden">
+          <IssueCountBadges issues={model.issues} />
         </span>
-      </div>
-      <div className="flex shrink-0 flex-wrap justify-end">
+      </ItemContent>
+      <ItemActions className="shrink-0 flex-wrap justify-end gap-0">
         {position && (
           <>
             <IconButton label={t('variants.moveUp')} disabled={position.index === 0} onClick={() => onMove(position.index - 1)}>
@@ -51,10 +54,10 @@ export function VariantModelRow({ model, label, position, onMove, onReplace, onR
         <IconButton label={t('model.replace')} onClick={onReplace}>
           <RefreshCw />
         </IconButton>
-        <IconButton label={tCommon('remove')} tone="destructive" onClick={onRemove}>
+        <IconButton label={tCommon('remove')} variant="ghost-destructive" onClick={onRemove}>
           <Trash2 />
         </IconButton>
-      </div>
-    </div>
+      </ItemActions>
+    </Item>
   );
 }

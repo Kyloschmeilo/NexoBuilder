@@ -1,6 +1,6 @@
 import type { ReactNode } from 'react';
-import { DropdownMenuItem, DropdownMenuSeparator } from '@resourcepackbuilder/ui/components/dropdown-menu';
-import { ContextMenuItem, ContextMenuSeparator } from '@resourcepackbuilder/ui/components/context-menu';
+import { DropdownMenuItem, DropdownMenuSeparator } from './components/dropdown-menu';
+import { ContextMenuItem, ContextMenuSeparator } from './components/context-menu';
 
 /** One entry of a menu that can be rendered both as a dropdown and as a context menu. */
 export type MenuEntry =

@@ -2,7 +2,8 @@
   "shared": {
     "copyId": "ID kopieren",
     "replaceImage": "Bild ersetzen",
-    "optional": "optional"
+    "optional": "optional",
+    "deleteMessage": "„{name}“ wird gelöscht."
   },
   "sounds": {
     "title": "Sounds",
@@ -30,7 +31,8 @@
     "rangeHelp": "Hörweite in Blöcken (optional)",
     "createDisc": "Musik-CD-Item anlegen",
     "createDiscHint": "Ein neues Item mit der Component „Jukebox Playable“ für diesen Song.",
-    "discCreated": "Musik-CD-Item angelegt – Modell oder Textur kannst du noch hinzufügen."
+    "discCreated": "Musik-CD-Item angelegt – Modell oder Textur kannst du noch hinzufügen.",
+    "deleteTitle": "Sound löschen?"
   },
   "paintings": {
     "title": "Paintings",
@@ -54,7 +56,8 @@
     "animatedHint": "(Bilder untereinander)",
     "createItem": "Item zum Aufhängen anlegen",
     "createItemHint": "Ein Item mit Material PAINTING, das genau dieses Gemälde aufhängt.",
-    "itemCreated": "Gemälde-Item angelegt."
+    "itemCreated": "Gemälde-Item angelegt.",
+    "deleteTitle": "Gemälde löschen?"
   },
   "glyphs": {
     "title": "Glyphs",
@@ -92,7 +95,8 @@
     "sizeHelp": "Höhe = Größe im Spiel (Chat-Text ist 8 hoch). Ascent schiebt den Glyph nach oben und darf nicht größer als die Höhe sein. Bilder über 256×256 in Zeilen/Spalten aufteilen.",
     "largeNoPreview": "Großer Glyph (z.B. GUI) – keine Chat-Vorschau.",
     "previewBefore": "Hallo",
-    "previewAfter": "Welt"
+    "previewAfter": "Welt",
+    "deleteTitle": "Glyph löschen?"
   },
   "testServer": {
     "title": "Testserver",

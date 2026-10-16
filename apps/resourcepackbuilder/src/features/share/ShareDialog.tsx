@@ -13,6 +13,7 @@ import { richTags } from '../../i18n/richTags';
 import { useServices } from '../../services/servicesContext';
 import type { ShareSync } from '../../services/shareSync';
 import { closeDialog, confirm } from '../../store/dialogs';
+import { useBusyAction } from '../../hooks/useBusyAction';
 import { notify } from '../../shell/notify';
 import { useOpenProject } from '../../store/project';
 import { isProjectShared, useShareStore } from '../../store/share';
@@ -67,22 +68,15 @@ function useUserName(shareSync: ShareSync) {
 function StartSharing({ shareSync }: { shareSync: ShareSync }) {
   const t = useTranslations('dialogs.share');
   const tApp = useTranslations('app');
-  const errorMessage = useErrorMessage();
   const project = useOpenProject();
   const userName = useUserName(shareSync);
-  const [isStarting, setIsStarting] = useState(false);
+  const { isBusy: isStarting, run } = useBusyAction();
 
-  const start = async () => {
-    setIsStarting(true);
-    try {
-      const folder = await shareSync.share(project.name || tApp('defaults.sharedProjectFolder'), userName.effective());
-      if (folder) notify('success', t('started', { folder }));
-    } catch (err) {
-      notify('error', errorMessage(err));
-    } finally {
-      setIsStarting(false);
-    }
-  };
+  const start = () =>
+    run(
+      () => shareSync.share(project.name || tApp('defaults.sharedProjectFolder'), userName.effective()),
+      (folder) => (folder ? t('started', { folder }) : undefined),
+    );
 
   return (
     <div className="flex flex-col gap-4">
@@ -159,7 +153,7 @@ function SharedProject({ shareSync }: { shareSync: ShareSync }) {
       <Alert variant="info">
         <AlertDescription>{t('sharedHint')}</AlertDescription>
       </Alert>
-      <Button variant="ghost" className="self-start text-destructive hover:text-destructive" onClick={() => void confirmStop()}>
+      <Button variant="ghost-destructive" className="self-start" onClick={() => void confirmStop()}>
         <Unplug /> {t('stop')}
       </Button>
     </div>

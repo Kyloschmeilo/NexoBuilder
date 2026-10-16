@@ -1,7 +1,6 @@
 import { useTranslations } from 'next-intl';
-import { Tip } from '@resourcepackbuilder/ui';
+import { Tip, useDraft } from '@resourcepackbuilder/ui';
 import { Input } from '@resourcepackbuilder/ui/components/input';
-import { useDraft } from '../useDraft';
 import { parseNumber } from '../values';
 
 interface NumberInputProps {

@@ -5,9 +5,10 @@ import { issuesFor } from '@resourcepackbuilder/core/issues';
 import type { Glyph } from '@resourcepackbuilder/core/nexo/glyphs/model';
 import { Badge } from '@resourcepackbuilder/ui/components/badge';
 import { IconButton, pickFiles } from '@resourcepackbuilder/ui';
-import { deleteGlyph, updateGlyph } from '../../commands/media';
+import { updateGlyph } from '../../commands/media';
 import { IssueList } from '../../components/IssueList';
 import { MediaCard, PreviewFrame } from '../media/MediaCard';
+import { useMediaActions } from '../media/useMediaActions';
 import { ChatPreview } from './ChatPreview';
 import { GlyphFields } from './GlyphFields';
 import { GLYPH_ACCEPT, glyphKindOf } from './glyphFiles';
@@ -18,6 +19,7 @@ export function GlyphCard({ glyph, glyphs, plan }: { glyph: Glyph; glyphs: Glyph
   const t = useTranslations('media.glyphs');
   const tShared = useTranslations('media.shared');
   const readFiles = useGlyphFileReader();
+  const media = useMediaActions();
   const issues = plan ? issuesFor(plan.issues, { kind: 'glyph', id: glyph.id }) : [];
   const { file } = glyph;
 
@@ -49,13 +51,11 @@ export function GlyphCard({ glyph, glyphs, plan }: { glyph: Glyph; glyphs: Glyph
         )
       }
       deleteLabel={t('delete')}
-      onDelete={() => deleteGlyph(glyph.id)}
+      onDelete={() => void media.removeGlyph(glyph)}
       preview={
         glyph.kind !== 'reference' && (
           <>
-            <PreviewFrame>
-              {file && <img src={file.dataUrl} alt="" className="size-full object-contain [image-rendering:pixelated]" />}
-            </PreviewFrame>
+            <PreviewFrame src={file?.dataUrl} />
             {file && <ChatPreview glyph={glyph} file={file} />}
           </>
         )

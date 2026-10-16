@@ -4,13 +4,12 @@ import { Frame, Music, Server, Smile } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 import { cn } from 'cn';
 import type { IssueTarget } from '@resourcepackbuilder/core/issues';
-import { StatusDot, Tip } from '@resourcepackbuilder/ui';
+import { StatusDot, Tip, treeRow, treeRowSlots } from '@resourcepackbuilder/ui';
 import { TEST_SERVER_STATUS_TONE } from '../../features/testServer/status';
 import { usePlan } from '../../store/PlanProvider';
 import { useOpenProject } from '../../store/project';
 import { useTestServerStore } from '../../store/testServer';
 import { select, useUiStore, type ViewName } from '../../store/ui';
-import { ROW_BADGE_CLASS, ROW_BUTTON_CLASS, rowClass, ROW_ICON_CLASS, ROW_LABEL_CLASS } from './rowStyles';
 import { levelsByTarget, worstLevel } from './treeIndex';
 
 interface ViewEntryProps {
@@ -25,11 +24,11 @@ interface ViewEntryProps {
 function ViewEntry({ view, icon, label, tip, status }: ViewEntryProps) {
   const isSelected = useUiStore((s) => s.selection?.kind === 'view' && s.selection.view === view);
   return (
-    <div className={rowClass(isSelected)} data-selected={isSelected || undefined}>
+    <div className={treeRow({ selected: isSelected })} data-selected={isSelected || undefined}>
       <Tip label={tip} side="right">
-        <button type="button" className={cn(ROW_BUTTON_CLASS, 'pl-2')} onClick={() => select({ kind: 'view', view })}>
-          <span className={ROW_ICON_CLASS}>{icon}</span>
-          <span className={ROW_LABEL_CLASS}>{label}</span>
+        <button type="button" className={cn(treeRowSlots.button, 'pl-2')} onClick={() => select({ kind: 'view', view })}>
+          <span className={treeRowSlots.icon}>{icon}</span>
+          <span className={treeRowSlots.label}>{label}</span>
           {status}
         </button>
       </Tip>
@@ -64,7 +63,7 @@ export function ResourceEntries() {
             status={
               <>
                 {level && <StatusDot tone={level} />}
-                <span className={ROW_BADGE_CLASS}>{sizes[view]}</span>
+                <span className={treeRowSlots.count}>{sizes[view]}</span>
               </>
             }
           />
@@ -89,7 +88,7 @@ export function TestServerEntry() {
         status={
           <>
             {status !== 'stopped' && <StatusDot tone={TEST_SERVER_STATUS_TONE[status]} />}
-            <span className={ROW_BADGE_CLASS}>{tStatus(status)}</span>
+            <span className={treeRowSlots.count}>{tStatus(status)}</span>
           </>
         }
       />

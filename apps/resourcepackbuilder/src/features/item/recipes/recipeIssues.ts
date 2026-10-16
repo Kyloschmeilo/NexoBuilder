@@ -1,7 +1,7 @@
 import type { Issue } from '@resourcepackbuilder/core/issues';
 
 /** The issues of one recipe, sorted to where the recipe card shows them. */
-export interface RecipeIssues {
+interface RecipeIssues {
   /** Issues of the whole recipe. */
   recipe: Issue[];
   /** Issues of the input of cooking and stonecutting recipes. */

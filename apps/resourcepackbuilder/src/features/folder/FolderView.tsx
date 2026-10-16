@@ -1,20 +1,22 @@
-import type { ReactNode } from 'react';
 import { Box, FolderOpen, FolderPlus, Pencil, Plus, Trash2 } from 'lucide-react';
 import { useTranslations } from 'next-intl';
-import type { Item } from '@resourcepackbuilder/core/project/types';
+import type { Item as ProjectItem } from '@resourcepackbuilder/core/project/types';
 import { folderYamlFile } from '@resourcepackbuilder/core/export/paths';
-import { countIssues, issuesFor } from '@resourcepackbuilder/core/issues';
+import { issuesFor } from '@resourcepackbuilder/core/issues';
 import { itemLabel } from '@resourcepackbuilder/core/project/labels';
 import { getFolderPathLabel } from '@resourcepackbuilder/core/project/tree';
-import { AutoGrid, DropZone, IconButton, PageHeader, PageShell, SectionLabel, Tip } from '@resourcepackbuilder/ui';
+import { AutoGrid, DropZone, IconButton, PageHeader, PageShell, Thumb, Tip } from '@resourcepackbuilder/ui';
 import { Badge } from '@resourcepackbuilder/ui/components/badge';
 import { Button } from '@resourcepackbuilder/ui/components/button';
+import { Item, ItemContent, ItemDescription, ItemMedia, ItemTitle } from '@resourcepackbuilder/ui/components/item';
 import { useThumbnail } from '@resourcepackbuilder/preview';
+import { IssueCountBadges } from '../../components/IssueCountBadges';
+import { Section } from '../../components/Section';
 import { openDialog } from '../../store/dialogs';
 import { usePlan } from '../../store/PlanProvider';
 import { useOpenProject } from '../../store/project';
 import { select } from '../../store/ui';
-import { MODEL_ACCEPT, MODEL_FORMATS } from '../item/model/modelFiles';
+import { MODEL_ACCEPT, MODEL_FORMATS } from '../../components/modelFiles';
 import { useFolderActions } from './useFolderActions';
 
 export function FolderView({ folderId }: { folderId: string }) {
@@ -70,16 +72,16 @@ export function FolderView({ folderId }: { folderId: string }) {
       />
 
       {items.length > 0 && (
-        <FolderSection title={t('itemsHeading')}>
+        <Section className="mt-2 gap-2" title={t('itemsHeading')}>
           <AutoGrid min="190px" className="gap-2.5">
             {items.map((item) => (
               <ItemTile key={item.id} item={item} />
             ))}
           </AutoGrid>
-        </FolderSection>
+        </Section>
       )}
       {folder.folderIds.length > 0 && (
-        <FolderSection title={t('subfoldersHeading')}>
+        <Section className="mt-2 gap-2" title={t('subfoldersHeading')}>
           <div className="flex flex-wrap gap-2">
             {folder.folderIds.map((id) => (
               <Button key={id} variant="outline" className="max-w-full" onClick={() => select({ kind: 'folder', id })}>
@@ -88,49 +90,34 @@ export function FolderView({ folderId }: { folderId: string }) {
               </Button>
             ))}
           </div>
-        </FolderSection>
+        </Section>
       )}
     </PageShell>
   );
 }
 
-function FolderSection({ title, children }: { title: string; children: ReactNode }) {
-  return (
-    <section className="mt-2 flex flex-col gap-2">
-      <SectionLabel>{title}</SectionLabel>
-      {children}
-    </section>
-  );
-}
-
-function ItemTile({ item }: { item: Item }) {
-  const t = useTranslations('layout.folderView');
+function ItemTile({ item }: { item: ProjectItem }) {
   const plan = usePlan();
   const thumb = useThumbnail(item.model);
-  const counts = countIssues(plan ? issuesFor(plan.issues, { kind: 'item', id: item.id }) : []);
+  const issues = plan ? issuesFor(plan.issues, { kind: 'item', id: item.id }) : [];
   return (
-    <button
-      type="button"
-      className="flex min-w-0 cursor-pointer items-center gap-2.5 rounded-lg border border-border bg-card p-3 text-left text-card-foreground transition-colors outline-none hover:bg-muted focus-visible:ring-3 focus-visible:ring-ring/50"
-      onClick={() => select({ kind: 'item', id: item.id })}
+    <Item
+      variant="outline"
+      className="min-w-0 cursor-pointer flex-nowrap bg-card p-3 text-left text-card-foreground hover:bg-muted"
+      render={<button type="button" onClick={() => select({ kind: 'item', id: item.id })} />}
     >
-      <div className="grid size-12 shrink-0 place-items-center overflow-hidden rounded-sm border border-border bg-muted">
-        {thumb ? (
-          <img src={thumb} alt="" className="size-9 object-contain [image-rendering:pixelated]" />
-        ) : (
-          <Box className="size-5 text-muted-foreground" />
-        )}
-      </div>
-      <div className="min-w-0 flex-1">
-        <div className="truncate font-semibold">{itemLabel(item)}</div>
-        <div className="truncate font-mono text-xs text-muted-foreground">{item.nexoId}</div>
-        {(counts.error > 0 || counts.warning > 0) && (
-          <div className="mt-1 flex items-center gap-1">
-            {counts.error > 0 && <Badge variant="destructive">{t('errors', { count: counts.error })}</Badge>}
-            {counts.warning > 0 && <Badge variant="warning">{counts.warning}</Badge>}
+      <ItemMedia>
+        <Thumb size={48} src={thumb} bordered fallback={<Box className="size-5" />} />
+      </ItemMedia>
+      <ItemContent className="min-w-0 gap-0.5">
+        <ItemTitle className="font-semibold">{itemLabel(item)}</ItemTitle>
+        <ItemDescription className="line-clamp-1 font-mono text-xs">{item.nexoId}</ItemDescription>
+        {issues.some((i) => i.level !== 'info') && (
+          <div className="mt-1 flex flex-wrap items-center gap-1">
+            <IssueCountBadges issues={issues} />
           </div>
         )}
-      </div>
-    </button>
+      </ItemContent>
+    </Item>
   );
 }

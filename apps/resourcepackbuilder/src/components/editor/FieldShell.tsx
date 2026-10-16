@@ -7,7 +7,7 @@ import { fieldName } from '@resourcepackbuilder/core/nexo/fieldNames';
 import { compareVersions } from '@resourcepackbuilder/core/minecraft/versions';
 import { Tip } from '@resourcepackbuilder/ui';
 import { Badge } from '@resourcepackbuilder/ui/components/badge';
-import { FieldDescription, FieldError, FieldTitle } from '@resourcepackbuilder/ui/components/field';
+import { Field as FieldRoot, FieldDescription, FieldError, FieldTitle } from '@resourcepackbuilder/ui/components/field';
 import { useSchemaText } from '../useSchemaText';
 import { useFieldContext } from './fieldContext';
 
@@ -55,10 +55,6 @@ export function FieldName({ field }: { field: Field }) {
   );
 }
 
-export function FieldErrorText({ children }: { children: ReactNode }) {
-  return <FieldError className="text-xs leading-4 before:content-['■_']">{children}</FieldError>;
-}
-
 interface FieldShellProps {
   field: Field;
   /** The title is omitted (the context already names the field). */
@@ -74,7 +70,7 @@ export function FieldShell({ field, hideLabel, wide, error, children }: FieldShe
   const text = useSchemaText();
   const help = text(field.help);
   return (
-    <div className={cn('flex min-w-0 flex-col gap-1.5', wide && 'col-span-full')}>
+    <FieldRoot orientation="stacked" data-invalid={!!error || undefined} className={cn('min-w-0 gap-1.5', wide && 'col-span-full')}>
       {!hideLabel && field.label && (
         <FieldTitle className="w-full gap-1.5 text-sm leading-4">
           <FieldName field={field} />
@@ -82,8 +78,8 @@ export function FieldShell({ field, hideLabel, wide, error, children }: FieldShe
         </FieldTitle>
       )}
       {children}
-      {error && <FieldErrorText>{error}</FieldErrorText>}
+      <FieldError className="text-xs leading-4">{error}</FieldError>
       {help && <FieldDescription className="text-xs leading-4">{help}</FieldDescription>}
-    </div>
+    </FieldRoot>
   );
 }

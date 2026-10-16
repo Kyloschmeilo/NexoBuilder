@@ -11,8 +11,6 @@
     },
     "itemId": "Item-ID",
     "folder": "Ordner",
-    "errors": "{count, plural, other {# Fehler}}",
-    "warnings": "{count, plural, one {# Warnung} other {# Warnungen}}",
     "ready": "Bereit",
     "copyTooltip": "Alle Eigenschaften kopieren – außer Name, Item-ID, Modell und Ordner",
     "pasteTooltip": "Eigenschaften von „{name}“ einfügen",

@@ -1,7 +1,7 @@
 import { FolderSync, Upload } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 import { Button } from '@resourcepackbuilder/ui/components/button';
-import { Card, CardAction, CardContent, CardHeader, CardTitle } from '@resourcepackbuilder/ui/components/card';
+import { SectionCard } from '@resourcepackbuilder/ui';
 import { BrandMark } from '../../components/BrandMark';
 import { useProjectActions } from './useProjectActions';
 import { NewProjectForm } from './NewProjectForm';
@@ -22,18 +22,13 @@ export function Welcome() {
           <p className="max-w-2xl text-base text-muted-foreground @3xl:text-lg">{t('tagline')}</p>
         </header>
         <div className="grid gap-4 @3xl:grid-cols-[1.1fr_1fr]">
-          <Card>
-            <CardHeader className="border-b">
-              <CardTitle className="font-heading">{t('newProject')}</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <NewProjectForm />
-            </CardContent>
-          </Card>
-          <Card>
-            <CardHeader className="border-b">
-              <CardTitle className="font-heading">{t('savedProjects')}</CardTitle>
-              <CardAction className="flex flex-wrap justify-end gap-1.5">
+          <SectionCard title={t('newProject')}>
+            <NewProjectForm />
+          </SectionCard>
+          <SectionCard
+            title={t('savedProjects')}
+            actions={
+              <>
                 {actions.isShareAvailable && (
                   <Button variant="outline" size="sm" onClick={() => void actions.openShared()}>
                     <FolderSync /> {t('openShared')}
@@ -42,12 +37,11 @@ export function Welcome() {
                 <Button variant="outline" size="sm" onClick={() => void actions.openFile()}>
                   <Upload /> {t('openFile')}
                 </Button>
-              </CardAction>
-            </CardHeader>
-            <CardContent>
-              <ProjectList />
-            </CardContent>
-          </Card>
+              </>
+            }
+          >
+            <ProjectList />
+          </SectionCard>
         </div>
         <ol className="mt-8 grid gap-3 @xl:grid-cols-2 @4xl:grid-cols-4">
           {STEPS.map((step, i) => (

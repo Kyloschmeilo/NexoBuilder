@@ -8,7 +8,7 @@ import { Badge } from '@resourcepackbuilder/ui/components/badge';
 import { Button } from '@resourcepackbuilder/ui/components/button';
 import { Input } from '@resourcepackbuilder/ui/components/input';
 import { AutoGrid, IconButton, pickFiles } from '@resourcepackbuilder/ui';
-import { addPaintingItem, deletePainting, updatePainting } from '../../commands/media';
+import { addPaintingItem, updatePainting } from '../../commands/media';
 import { NumberInput } from '../../components/editor';
 import { CheckboxField } from '../../components/CheckboxField';
 import { FormField } from '../../components/FormField';
@@ -16,6 +16,7 @@ import { IssueList } from '../../components/IssueList';
 import { notify } from '../../shell/notify';
 import { useOpenProject } from '../../store/project';
 import { MediaCard, PreviewFrame } from '../media/MediaCard';
+import { useMediaActions } from '../media/useMediaActions';
 import { NexoKey } from '../media/NexoKey';
 import { PAINTING_ACCEPT } from './paintingFiles';
 import { PaintingPreview } from './PaintingPreview';
@@ -26,6 +27,7 @@ const DEFAULT_FRAMETIME = 2;
 
 export function PaintingCard({ painting, plan }: { painting: Painting; plan: ExportPlan | null }) {
   const t = useTranslations('media.paintings');
+  const media = useMediaActions();
   const tShared = useTranslations('media.shared');
   const tApp = useTranslations('app');
   const project = useOpenProject();
@@ -61,7 +63,7 @@ export function PaintingCard({ painting, plan }: { painting: Painting; plan: Exp
         </IconButton>
       }
       deleteLabel={t('delete')}
-      onDelete={() => deletePainting(painting.id)}
+      onDelete={() => void media.removePainting(painting)}
       preview={
         <>
           <PreviewFrame>{file && <PaintingPreview painting={painting} file={file} frames={Math.max(1, frames)} />}</PreviewFrame>

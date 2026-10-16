@@ -6,7 +6,7 @@ import { notify } from '../../shell/notify';
 /** Files the PNG pickers offer. */
 export const PNG_ACCEPT = '.png,image/png';
 
-export interface PngFile {
+interface PngFile {
   dataUrl: string;
   width: number;
   height: number;

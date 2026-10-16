@@ -1,31 +1,25 @@
 import { useTranslations } from 'next-intl';
-import { Plus } from 'lucide-react';
 import type { Item } from '@resourcepackbuilder/core/project/types';
 import { VARIANTS } from '@resourcepackbuilder/core/nexo/variants';
-import { Button } from '@resourcepackbuilder/ui/components/button';
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@resourcepackbuilder/ui/components/dropdown-menu';
 import { setVariantModels } from '../../../commands/items';
-import { EditorSection } from '../EditorSection';
+import { AddMenuButton } from '../../../components/AddMenuButton';
+import { Section } from '../../../components/Section';
+import { useSchemaText } from '../../../components/useSchemaText';
 import { VariantCard } from './VariantCard';
 
 function AddVariantButton({ item }: { item: Item }) {
   const tCommon = useTranslations('common');
-  const tSchema = useTranslations('schema');
-  const available = VARIANTS.filter((v) => item.variants?.[v.slot] === undefined);
+  const schemaText = useSchemaText();
   return (
-    <DropdownMenu>
-      <DropdownMenuTrigger render={<Button size="sm" disabled={available.length === 0} />}>
-        <Plus /> {tCommon('add')}
-      </DropdownMenuTrigger>
-      <DropdownMenuContent align="end" className="w-90 max-w-[calc(100vw-2rem)]">
-        {available.map((def) => (
-          <DropdownMenuItem key={def.slot} className="flex-col items-start gap-0.5" onClick={() => setVariantModels(item.id, def.slot, [])}>
-            <span className="font-medium">{tSchema(def.label as never)}</span>
-            <span className="text-xs text-muted-foreground">{tSchema(def.description as never)}</span>
-          </DropdownMenuItem>
-        ))}
-      </DropdownMenuContent>
-    </DropdownMenu>
+    <AddMenuButton
+      label={tCommon('add')}
+      options={VARIANTS.filter((v) => item.variants?.[v.slot] === undefined).map((def) => ({
+        value: def.slot,
+        label: schemaText(def.label),
+        description: schemaText(def.description),
+      }))}
+      onSelect={(slot) => setVariantModels(item.id, slot, [])}
+    />
   );
 }
 
@@ -34,7 +28,7 @@ export function VariantsSection({ item }: { item: Item }) {
   const t = useTranslations('item');
   const active = VARIANTS.filter((v) => item.variants?.[v.slot] !== undefined);
   return (
-    <EditorSection
+    <Section
       title={t('variants.title')}
       actions={<AddVariantButton item={item} />}
       empty={active.length === 0 && t.rich('variants.empty', { b: (chunks) => <strong>{chunks}</strong> })}
@@ -42,6 +36,6 @@ export function VariantsSection({ item }: { item: Item }) {
       {active.map((def) => (
         <VariantCard key={def.slot} item={item} def={def} />
       ))}
-    </EditorSection>
+    </Section>
   );
 }

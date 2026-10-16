@@ -5,13 +5,13 @@ import { toConfigValue } from '@resourcepackbuilder/core/project/configValue';
 import { getPropertyValue } from '@resourcepackbuilder/core/nexo/properties';
 import type { PropertyDef } from '@resourcepackbuilder/core/nexo/schema';
 import { versionSupport } from '@resourcepackbuilder/core/minecraft/versions';
-import { IconButton, Tip } from '@resourcepackbuilder/ui';
+import { IconButton, SectionCard, Tip } from '@resourcepackbuilder/ui';
 import { Alert, AlertDescription } from '@resourcepackbuilder/ui/components/alert';
 import { Badge } from '@resourcepackbuilder/ui/components/badge';
 import { removeProperty, setItemProperty } from '../../../commands/items';
 import { FieldRenderer } from '../../../components/editor';
 import { useOpenProject } from '../../../store/project';
-import { EditorCard } from '../EditorCard';
+import { useSchemaText } from '../../../components/useSchemaText';
 import { VersionBadges } from './VersionBadges';
 
 /** The value a property keeps when its editor is cleared: the property stays on the item until it is removed. */
@@ -32,7 +32,7 @@ function emptyValueFor(def: PropertyDef): ConfigValue {
 
 function PropertyHints({ def, version }: { def: PropertyDef; version: string }) {
   const t = useTranslations('item');
-  const tSchema = useTranslations('schema');
+  const tSchema = useSchemaText();
   const support = versionSupport(version, def);
   return (
     <>
@@ -48,7 +48,7 @@ function PropertyHints({ def, version }: { def: PropertyDef; version: string }) 
       )}
       {def.hint && (
         <Alert variant="info">
-          <AlertDescription>{tSchema(def.hint as never)}</AlertDescription>
+          <AlertDescription>{tSchema(def.hint)}</AlertDescription>
         </Alert>
       )}
     </>
@@ -58,11 +58,11 @@ function PropertyHints({ def, version }: { def: PropertyDef; version: string }) 
 /** One property of an item: its editor with version hints, YAML path, docs link and remove button. */
 export function PropertyCard({ item, def }: { item: Item; def: PropertyDef }) {
   const t = useTranslations('item');
-  const tSchema = useTranslations('schema');
+  const tSchema = useSchemaText();
   const version = useOpenProject().settings.minecraftVersion;
   return (
-    <EditorCard
-      title={tSchema(def.label as never)}
+    <SectionCard
+      title={tSchema(def.label)}
       badges={
         <>
           <VersionBadges def={def} version={version} />
@@ -73,7 +73,7 @@ export function PropertyCard({ item, def }: { item: Item; def: PropertyDef }) {
           </Tip>
         </>
       }
-      description={tSchema(def.description as never)}
+      description={tSchema(def.description)}
       actions={
         <>
           {def.docs && (
@@ -81,7 +81,7 @@ export function PropertyCard({ item, def }: { item: Item; def: PropertyDef }) {
               <ExternalLink />
             </IconButton>
           )}
-          <IconButton label={t('properties.remove')} tone="destructive" onClick={() => removeProperty(item.id, def.id)}>
+          <IconButton label={t('properties.remove')} variant="ghost-destructive" onClick={() => removeProperty(item.id, def.id)}>
             <Trash2 />
           </IconButton>
         </>
@@ -97,6 +97,6 @@ export function PropertyCard({ item, def }: { item: Item; def: PropertyDef }) {
           onChange={(value) => setItemProperty(item.id, def, toConfigValue(value) ?? emptyValueFor(def))}
         />
       </div>
-    </EditorCard>
+    </SectionCard>
   );
 }
