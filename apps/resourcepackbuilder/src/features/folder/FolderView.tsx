@@ -1,6 +1,6 @@
 import { Box, FolderOpen, FolderPlus, Pencil, Plus, Trash2 } from 'lucide-react';
 import { useTranslations } from 'next-intl';
-import type { Item } from '@resourcepackbuilder/core/project/types';
+import type { Item as ProjectItem } from '@resourcepackbuilder/core/project/types';
 import { folderYamlFile } from '@resourcepackbuilder/core/export/paths';
 import { issuesFor } from '@resourcepackbuilder/core/issues';
 import { itemLabel } from '@resourcepackbuilder/core/project/labels';
@@ -8,6 +8,7 @@ import { getFolderPathLabel } from '@resourcepackbuilder/core/project/tree';
 import { AutoGrid, DropZone, IconButton, PageHeader, PageShell, Thumb, Tip } from '@resourcepackbuilder/ui';
 import { Badge } from '@resourcepackbuilder/ui/components/badge';
 import { Button } from '@resourcepackbuilder/ui/components/button';
+import { Item, ItemContent, ItemDescription, ItemMedia, ItemTitle } from '@resourcepackbuilder/ui/components/item';
 import { useThumbnail } from '@resourcepackbuilder/preview';
 import { IssueCountBadges } from '../../components/IssueCountBadges';
 import { Section } from '../../components/Section';
@@ -95,26 +96,28 @@ export function FolderView({ folderId }: { folderId: string }) {
   );
 }
 
-function ItemTile({ item }: { item: Item }) {
+function ItemTile({ item }: { item: ProjectItem }) {
   const plan = usePlan();
   const thumb = useThumbnail(item.model);
   const issues = plan ? issuesFor(plan.issues, { kind: 'item', id: item.id }) : [];
   return (
-    <button
-      type="button"
-      className="flex min-w-0 cursor-pointer items-center gap-2.5 rounded-lg border border-border bg-card p-3 text-left text-card-foreground transition-colors outline-none hover:bg-muted focus-visible:ring-3 focus-visible:ring-ring/50"
-      onClick={() => select({ kind: 'item', id: item.id })}
+    <Item
+      variant="outline"
+      className="min-w-0 cursor-pointer flex-nowrap bg-card p-3 text-left text-card-foreground hover:bg-muted"
+      render={<button type="button" onClick={() => select({ kind: 'item', id: item.id })} />}
     >
-      <Thumb size={48} src={thumb} bordered fallback={<Box className="size-5" />} />
-      <div className="min-w-0 flex-1">
-        <div className="truncate font-semibold">{itemLabel(item)}</div>
-        <div className="truncate font-mono text-xs text-muted-foreground">{item.nexoId}</div>
+      <ItemMedia>
+        <Thumb size={48} src={thumb} bordered fallback={<Box className="size-5" />} />
+      </ItemMedia>
+      <ItemContent className="min-w-0 gap-0.5">
+        <ItemTitle className="font-semibold">{itemLabel(item)}</ItemTitle>
+        <ItemDescription className="line-clamp-1 font-mono text-xs">{item.nexoId}</ItemDescription>
         {issues.some((i) => i.level !== 'info') && (
           <div className="mt-1 flex flex-wrap items-center gap-1">
             <IssueCountBadges issues={issues} />
           </div>
         )}
-      </div>
-    </button>
+      </ItemContent>
+    </Item>
   );
 }

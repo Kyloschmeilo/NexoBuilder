@@ -3,6 +3,7 @@ import { ImageUp } from 'lucide-react';
 import { cn } from 'cn';
 import { pickFiles, Thumb } from '@resourcepackbuilder/ui';
 import { Button } from '@resourcepackbuilder/ui/components/button';
+import { Item, ItemContent, ItemDescription, ItemMedia, ItemTitle } from '@resourcepackbuilder/ui/components/item';
 import { assignTextureReference } from '../../../commands/items';
 import { PNG_ACCEPT, usePngReader } from '../usePngReader';
 
@@ -25,17 +26,19 @@ export function TextureReferenceCard({ itemId, textureKey, reference }: TextureR
     if (png) assignTextureReference(itemId, reference, file.name, png.dataUrl);
   };
   return (
-    <div className={cn('flex gap-3 rounded-md border bg-muted/50 p-3', !isVanilla && 'border-destructive')}>
-      <Thumb fallback={<ImageUp className="size-5.5 opacity-60" />} />
-      <div className="flex min-w-0 flex-1 flex-col gap-1.5 text-xs text-muted-foreground">
-        <strong className="font-mono text-foreground">#{textureKey}</strong>
-        <span className="break-all">
+    <Item variant="muted" className={cn('flex-nowrap items-start gap-3 border-border p-3', !isVanilla && 'border-destructive')}>
+      <ItemMedia>
+        <Thumb fallback={<ImageUp className="size-5.5 opacity-60" />} />
+      </ItemMedia>
+      <ItemContent className="min-w-0 gap-1.5">
+        <ItemTitle className="font-mono text-xs font-bold">#{textureKey}</ItemTitle>
+        <ItemDescription className="line-clamp-none text-xs break-all">
           {reference} {isVanilla ? t('model.texture.minecraftTexture') : t('model.texture.notInPack')}
-        </span>
+        </ItemDescription>
         <Button variant="outline" size="sm" className="self-start" onClick={() => void assign()}>
           <ImageUp /> {t('model.texture.assignOwnPng')}
         </Button>
-      </div>
-    </div>
+      </ItemContent>
+    </Item>
   );
 }
