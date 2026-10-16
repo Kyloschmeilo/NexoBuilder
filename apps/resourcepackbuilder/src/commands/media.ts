@@ -1,19 +1,20 @@
 /** Glyphs, sounds and paintings, and the items that use sounds and paintings. */
 import { createFolder, insertFolder } from '@resourcepackbuilder/core/project/factory';
-import { uid, uniqueId } from '@resourcepackbuilder/core/project/ids';
+import { uid, uniqueId } from '@resourcepackbuilder/core/id';
 import type { Item, Project } from '@resourcepackbuilder/core/project/types';
 import { slugify, toIdentifier } from '@resourcepackbuilder/core/text';
 import { ID_CHARS, SOUND_ID_CHARS } from '@resourcepackbuilder/core/minecraft/resourceLocation';
 import { DEFAULT_MATERIAL } from '@resourcepackbuilder/core/nexo/material';
-import { createGlyph, type Glyph, type GlyphFile, type GlyphKind } from '@resourcepackbuilder/core/nexo/glyphs/model';
-import { createPainting, type Painting, type PaintingFile } from '@resourcepackbuilder/core/nexo/paintings/model';
+import { createGlyph, type Glyph, type GlyphKind } from '@resourcepackbuilder/core/nexo/glyphs/model';
+import type { MediaFile } from '@resourcepackbuilder/core/nexo/media/entry';
+import { createPainting, type Painting } from '@resourcepackbuilder/core/nexo/paintings/model';
 import { createSound, type JukeboxSong, type Sound, type SoundFile } from '@resourcepackbuilder/core/nexo/sounds/model';
 import { mutate } from '../store/project';
 import { insertNewItem, showItem } from './items';
 
 /* ------------------------------------------------------------------ glyphs */
 
-export function addGlyph(name: string, file: GlyphFile | null, kind: GlyphKind): string {
+export function addGlyph(name: string, file: MediaFile | null, kind: GlyphKind): string {
   const id = uid('g_');
   mutate((draft) => {
     const glyphId = uniqueId(slugify(name, 'glyph'), new Set(draft.glyphs.map((g) => g.glyphId)));
@@ -99,7 +100,7 @@ export function deleteSound(soundId: string): void {
 
 /* ------------------------------------------------------------------ paintings */
 
-export function addPainting(name: string, file: PaintingFile | null): string {
+export function addPainting(name: string, file: MediaFile | null): string {
   const id = uid('p_');
   mutate((draft) => {
     const paintingId = uniqueId(slugify(name, 'painting'), new Set(draft.paintings.map((p) => p.paintingId)));

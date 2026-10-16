@@ -3,15 +3,12 @@
  * assets/<ns>/textures/painting/<id>.png plus an entry in plugins/Nexo/paintings.yml.
  * From Minecraft 1.21.5 on, Nexo generates the required datapack from it.
  */
-import type { Project } from '../../project/types';
-import { mediaKey, type MediaFile } from '../media/entry';
+import type { MediaFile } from '../media/entry';
 
 /** Largest painting side in blocks. */
 export const MAX_PAINTING_BLOCKS = 16;
 /** Pixels of a vanilla painting texture per block */
 const PIXELS_PER_BLOCK = 16;
-
-export type PaintingFile = MediaFile;
 
 export interface Painting {
   id: string;
@@ -24,13 +21,13 @@ export interface Painting {
   height: number;
   /** Also pick randomly when hanging regular paintings */
   randomPlace: boolean;
-  file: PaintingFile | null;
+  file: MediaFile | null;
   /** Animated: the image contains several frames stacked vertically */
   animated: boolean;
   frametime: number;
 }
 
-export function createPainting(id: string, paintingId: string, file: PaintingFile | null): Painting {
+export function createPainting(id: string, paintingId: string, file: MediaFile | null): Painting {
   // Estimate size in blocks from the image (16 pixels per block)
   const blocks = (px: number) => Math.min(MAX_PAINTING_BLOCKS, Math.max(1, Math.round(px / PIXELS_PER_BLOCK)));
   return {
@@ -45,10 +42,6 @@ export function createPainting(id: string, paintingId: string, file: PaintingFil
     animated: false,
     frametime: 2,
   };
-}
-
-export function paintingKey(project: Project, painting: Painting): string {
-  return mediaKey(project, painting.paintingId);
 }
 
 /** Size of a single frame for animated paintings (same aspect ratio as the painting) */

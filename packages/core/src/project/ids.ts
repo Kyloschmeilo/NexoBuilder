@@ -1,10 +1,8 @@
-/** User-facing IDs of project entries (the generic uid/uniqueId live in ../id and are re-exported for the app). */
+/** User-facing IDs of project entries. */
 import { uniqueId } from '../id';
 import { itemIdSyntaxError } from '../minecraft/resourceLocation';
 import { slugify } from '../text';
 import type { Item, Project } from './types';
-
-export { uid, uniqueId } from '../id';
 
 /** Suggests a unique item ID, e.g. "ruby_sword_2" if "ruby_sword" already exists. */
 export function uniqueNexoId(project: Project, wanted: string, ignoreItemId?: string): string {

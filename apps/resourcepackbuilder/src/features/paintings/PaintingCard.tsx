@@ -3,7 +3,8 @@ import { useTranslations } from 'next-intl';
 import type { ExportPlan } from '@resourcepackbuilder/core/export/types';
 import { issuesFor } from '@resourcepackbuilder/core/issues';
 import { normalizeTypedId } from '@resourcepackbuilder/core/minecraft/resourceLocation';
-import { MAX_PAINTING_BLOCKS, paintingFrameSize, paintingKey, type Painting } from '@resourcepackbuilder/core/nexo/paintings/model';
+import { MAX_PAINTING_BLOCKS, paintingFrameSize, type Painting } from '@resourcepackbuilder/core/nexo/paintings/model';
+import { mediaKey } from '@resourcepackbuilder/core/nexo/media/entry';
 import { Badge } from '@resourcepackbuilder/ui/components/badge';
 import { Button } from '@resourcepackbuilder/ui/components/button';
 import { Input } from '@resourcepackbuilder/ui/components/input';
@@ -55,7 +56,7 @@ export function PaintingCard({ painting, plan }: { painting: Painting; plan: Exp
           {painting.animated && <Badge>{t('animated')}</Badge>}
         </>
       }
-      usage={paintingKey(project, painting)}
+      usage={mediaKey(project, painting.paintingId)}
       copyLabel={tShared('copyId')}
       actions={
         <IconButton label={tShared('replaceImage')} onClick={() => void replaceImage()}>

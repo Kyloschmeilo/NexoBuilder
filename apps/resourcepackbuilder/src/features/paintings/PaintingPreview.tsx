@@ -1,10 +1,11 @@
-import type { Painting, PaintingFile } from '@resourcepackbuilder/core/nexo/paintings/model';
+import type { Painting } from '@resourcepackbuilder/core/nexo/paintings/model';
+import type { MediaFile } from '@resourcepackbuilder/core/nexo/media/entry';
 
 /**
  * The painting as it hangs: the texture stretched to the painting's block ratio; for an animation its first frame.
  * Scales to fill its parent while keeping that ratio.
  */
-export function PaintingPreview({ painting, file, frames }: { painting: Painting; file: PaintingFile; frames: number }) {
+export function PaintingPreview({ painting, file, frames }: { painting: Painting; file: MediaFile; frames: number }) {
   const width = file.width;
   const height = (file.width * painting.height) / painting.width;
   return (

@@ -2,7 +2,8 @@ import { useTranslations } from 'next-intl';
 import type { ExportPlan } from '@resourcepackbuilder/core/export/types';
 import { issuesFor } from '@resourcepackbuilder/core/issues';
 import { normalizeTypedId, SOUND_ID_CHARS } from '@resourcepackbuilder/core/minecraft/resourceLocation';
-import { soundKey, type Sound } from '@resourcepackbuilder/core/nexo/sounds/model';
+import type { Sound } from '@resourcepackbuilder/core/nexo/sounds/model';
+import { mediaKey } from '@resourcepackbuilder/core/nexo/media/entry';
 import { Badge } from '@resourcepackbuilder/ui/components/badge';
 import { Input } from '@resourcepackbuilder/ui/components/input';
 import { AutoGrid } from '@resourcepackbuilder/ui';
@@ -30,7 +31,7 @@ export function SoundCard({ sound, plan }: { sound: Sound; plan: ExportPlan | nu
     <MediaCard
       title={sound.soundId}
       badges={sound.jukebox && <Badge>{t('jukeboxSong')}</Badge>}
-      usage={soundKey(project, sound)}
+      usage={mediaKey(project, sound.soundId)}
       copyLabel={tShared('copyId')}
       deleteLabel={t('delete')}
       onDelete={() => void media.removeSound(sound)}

@@ -5,7 +5,7 @@ import { buildGlyphFile, glyphFilePath } from '../nexo/glyphs/files';
 import { validateGlyphs } from '../nexo/glyphs/validate';
 import type { MediaKind } from '../nexo/media/kinds';
 import { paintingMcmeta, paintingToYaml } from '../nexo/paintings/files';
-import { paintingKey } from '../nexo/paintings/model';
+import { mediaKey } from '../nexo/media/entry';
 import { validatePaintings } from '../nexo/paintings/validate';
 import { soundFilePath, soundToYaml } from '../nexo/sounds/files';
 import { validateSounds } from '../nexo/sounds/validate';
@@ -45,6 +45,6 @@ export function writeMedia(writer: PackWriter, project: Project, issues: Issue[]
   return {
     glyphFiles: new Map(glyphYaml ? [[glyphFilePath(project), glyphYaml]] : []),
     soundEntries: project.sounds.map((sound) => soundToYaml(project, sound)),
-    paintingEntries: Object.fromEntries(project.paintings.map((p) => [paintingKey(project, p), paintingToYaml(project, p)])),
+    paintingEntries: Object.fromEntries(project.paintings.map((p) => [mediaKey(project, p.paintingId), paintingToYaml(project, p)])),
   };
 }

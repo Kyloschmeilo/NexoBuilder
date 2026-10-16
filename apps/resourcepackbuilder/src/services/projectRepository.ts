@@ -4,7 +4,7 @@
  */
 import { createStore, del, delMany, get, keys, set, setMany, type UseStore } from 'idb-keyval';
 import type { SyncState } from '@resourcepackbuilder/core/sync/engine';
-import { uid } from '@resourcepackbuilder/core/project/ids';
+import { uid } from '@resourcepackbuilder/core/id';
 import { migrateProject } from '@resourcepackbuilder/core/project/migrate';
 import type { Project } from '@resourcepackbuilder/core/project/types';
 

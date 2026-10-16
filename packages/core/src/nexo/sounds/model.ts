@@ -3,8 +3,6 @@
  * plugins/Nexo/sounds.yml. As a music disc, Nexo additionally registers the sound as a jukebox song
  * that an item can play via the jukebox_playable component.
  */
-import type { Project } from '../../project/types';
-import { mediaKey } from '../media/entry';
 
 export interface SoundFile {
   name: string;
@@ -38,9 +36,4 @@ export interface JukeboxSong {
 
 export function createSound(id: string, soundId: string, files: SoundFile[]): Sound {
   return { id, soundId, files, stream: false, volume: null, pitch: null, distance: null, jukebox: null };
-}
-
-/** Full ID as used in item configs (e.g. block sounds) */
-export function soundKey(project: Project, sound: Sound): string {
-  return mediaKey(project, sound.soundId);
 }

@@ -28,8 +28,6 @@ export interface TextureTemplate {
   block?: boolean;
 }
 
-export { MAX_ITEM_LAYERS };
-
 export const TEXTURE_TEMPLATES: TextureTemplate[] = [
   {
     id: 'generated',

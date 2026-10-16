@@ -2,8 +2,8 @@
 import { useId } from 'react';
 import { useTranslations } from 'next-intl';
 import type { ImportFile } from '@resourcepackbuilder/core/model/types';
+import { MAX_ITEM_LAYERS } from '@resourcepackbuilder/core/minecraft/vanillaModels';
 import {
-  MAX_ITEM_LAYERS,
   TEXTURE_TEMPLATES,
   getTextureTemplate,
   isTextureTemplateId,
