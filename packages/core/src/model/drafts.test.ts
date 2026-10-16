@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { CoreError } from '../issues';
+import { CoreError } from '@resourcepackbuilder/utils';
 import { makePngDataUrl } from '../../test-utils/png';
 import { createDrafts, runDraft, unsupportedFiles } from './drafts';
 

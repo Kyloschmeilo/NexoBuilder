@@ -4,17 +4,14 @@
  * such as custom_model_data.
  */
 import type { ModelTexture } from '../model/types';
-import { deepClone, isPlainObject } from '../object';
+import { assetToken, deepClone, isPlainObject, stripFormatting, uid } from '@resourcepackbuilder/utils';
 import { referencedAssetIds } from '../project/assets';
-import { uid } from '../id';
-import { stripFormatting } from '../text';
 import type { ConfigObject, ConfigValue, Item, Project } from '../project/types';
 import type { ArmorSettings } from './armor';
 import { deletePath, getPath, setPath } from './configPath';
 import { getPropertyValue, isPropertyActive, setPropertyValue } from './properties';
 import { getRecipeTypeInfo, type Recipe } from './recipes/model';
 import { MANAGED_TOP_LEVEL_KEYS, PROPERTIES, PROPERTY_GROUPS, unknownConfigPaths, type PropertyDef, type PropertyGroup } from './schema';
-import { assetToken } from '../tokens';
 
 export type CopyCategory = 'material' | PropertyGroup | 'other' | 'rawYaml' | 'recipes';
 

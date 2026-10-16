@@ -11,6 +11,8 @@ import tseslint from 'typescript-eslint';
 const APP = 'apps/resourcepackbuilder';
 /** TypeScript that runs in Node rather than the browser. */
 const NODE_SOURCES = [`${APP}/electron/**`, 'packages/s3/**'];
+/** Framework-free domain packages (no React, no DOM-only code). */
+const DOMAIN_PACKAGES = ['utils', 'core', 'desktop-contract'].map((name) => `packages/${name}/**`);
 
 export default defineConfig(
   globalIgnores([
@@ -41,7 +43,7 @@ export default defineConfig(
   // React code (app and the React packages)
   {
     files: ['**/*.{ts,tsx}'],
-    ignores: ['packages/core/**', 'packages/desktop-contract/**', ...NODE_SOURCES],
+    ignores: [...DOMAIN_PACKAGES, ...NODE_SOURCES],
     extends: [reactHooks.configs.flat.recommended],
     languageOptions: { globals: globals.browser },
   },
@@ -83,7 +85,7 @@ export default defineConfig(
     languageOptions: { globals: globals.browser },
   },
   {
-    files: ['**/*.mjs', '**/*.config.{js,ts,mjs}', 'packages/core/**/*.test.ts'],
+    files: ['**/*.mjs', '**/*.config.{js,ts,mjs}', ...DOMAIN_PACKAGES.map((glob) => `${glob}/*.test.ts`)],
     languageOptions: { globals: globals.node },
   },
 );

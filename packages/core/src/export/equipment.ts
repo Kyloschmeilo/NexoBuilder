@@ -2,7 +2,7 @@
  * Equipment models of armor sets: all items with the same set ID share one equipment model
  * (assets/<ns>/equipment/<set>.json) with one texture per layer.
  */
-import { createIssue, issueReporter, type Issue } from '../issues';
+import { createIssue, issueReporter, type Issue } from '@resourcepackbuilder/utils';
 import { compareVersions } from '../minecraft/versions';
 import { formatResourceLocation, NAMESPACE_PATTERN } from '../minecraft/resourceLocation';
 import { validateTexture } from '../model/textures';

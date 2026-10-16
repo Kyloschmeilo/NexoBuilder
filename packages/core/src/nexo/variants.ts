@@ -4,7 +4,7 @@
  * The keys match the Pack options from the Nexo docs (configuration/items/item-appearance).
  */
 import { normalizeTypedId } from '../minecraft/resourceLocation';
-import { isPlainObject } from '../object';
+import { isPlainObject } from '@resourcepackbuilder/utils';
 import type { ConfigObject } from '../project/types';
 import { getPath } from './configPath';
 import { keySegment } from './messageKey';

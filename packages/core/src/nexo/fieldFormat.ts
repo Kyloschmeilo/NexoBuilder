@@ -1,8 +1,7 @@
 /** Validation of single text values against their field format (duration, vector, color …). */
 import { RESOURCE_LOCATION_PATTERN } from '../minecraft/resourceLocation';
-import type { LabelKey } from '../issues';
+import { type LabelKey, MODEL_TOKEN } from '@resourcepackbuilder/utils';
 import type { TextField } from './fields';
-import { MODEL_TOKEN } from '../tokens';
 
 const DURATION = /^\d+(\.\d+)?(t|ms|s|m|h|d|w|mo)?$/;
 const VECTOR = /^\s*-?\d+(\.\d+)?\s*,\s*-?\d+(\.\d+)?\s*,\s*-?\d+(\.\d+)?\s*$/;

@@ -5,7 +5,7 @@
  * - Changes by others are detected via file events and additionally by polling (cloud folders do not always report
  *   reliably): every few seconds without a working file watcher, rarely while it works.
  */
-import { deepClone } from '@resourcepackbuilder/core/object';
+import { deepClone } from '@resourcepackbuilder/utils';
 import { migrateProject } from '@resourcepackbuilder/core/project/migrate';
 import type { Project } from '@resourcepackbuilder/core/project/types';
 import { README_FILE, README_TEXT } from '@resourcepackbuilder/core/sync/format';

@@ -6,7 +6,7 @@ import { DEFAULT_MATERIAL } from '../nexo/material';
 import type { NewItemInput } from '../project/factory';
 import { validateNewItemIds, type ItemIdError } from '../project/ids';
 import type { Project } from '../project/types';
-import { slugify, stripFormatting } from '../text';
+import { slugify, stripFormatting } from '@resourcepackbuilder/utils';
 import { createDrafts, unsupportedFiles, type ImportDraft, type PngMode } from './drafts';
 import type { ImportFile } from './types';
 

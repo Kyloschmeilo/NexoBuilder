@@ -3,8 +3,7 @@
  * drafts or tests) and leave it untouched when the change is not possible.
  */
 import { current, isDraft } from 'immer';
-import { uid } from '../id';
-import { deepClone } from '../object';
+import { deepClone, uid } from '@resourcepackbuilder/utils';
 import { createFolder, createItem, insertFolder, insertItem, type NewItemInput } from './factory';
 import { uniqueNexoId } from './ids';
 import { getDescendantFolderIds } from './tree';

@@ -2,7 +2,7 @@
  * Adding, finding and deleting glyphs, sounds and paintings. All functions mutate the project (for Immer
  * drafts or tests) and work the same for every kind (see MEDIA_KINDS).
  */
-import { uid, uniqueId } from '../../id';
+import { uid, uniqueId } from '@resourcepackbuilder/utils';
 import { MEDIA_KINDS, mediaId, mediaList, setMediaList, type MediaEntryByKind, type MediaKind, type MediaLists } from './kinds';
 
 /**

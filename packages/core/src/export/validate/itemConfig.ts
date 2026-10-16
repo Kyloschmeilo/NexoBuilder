@@ -1,13 +1,11 @@
 /** Checks of an item's configuration (properties, field formats, custom block, stack size). */
-import { labelArg, schemaKey } from '../../issues';
+import { getPath, isPlainObject, labelArg, MODEL_TOKEN, schemaKey } from '@resourcepackbuilder/utils';
 import { versionSupport } from '../../minecraft/versions';
 import { slotForMaterial } from '../../nexo/armor';
 import { checkFieldValue } from '../../nexo/fieldSchema';
 import { getPropertyValue } from '../../nexo/properties';
 import { MATERIAL_PATTERN } from '../../nexo/material';
 import { PROPERTIES } from '../../nexo/schema';
-import { MODEL_TOKEN } from '../../tokens';
-import { getPath, isPlainObject } from '../../object';
 import { itemLabel } from '../../project/labels';
 import type { Item } from '../../project/types';
 import { propertyFrame } from '../../issueFrames';

@@ -1,5 +1,5 @@
 /** Plain-text names of project entries (for messages and lists). */
-import { stripFormatting } from '../text';
+import { stripFormatting } from '@resourcepackbuilder/utils';
 import type { Item } from './types';
 
 /** The display name without formatting, or the item ID if the item has no name. */

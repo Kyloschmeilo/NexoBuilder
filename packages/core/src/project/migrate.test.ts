@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { CoreError } from '../issues';
+import { CoreError } from '@resourcepackbuilder/utils';
 import { migrateItem, migrateProject } from './migrate';
 import { parseProjectFile, serializeProject } from './projectFile';
 import { createFolder, createItem, createProject, insertFolder, insertItem } from './factory';

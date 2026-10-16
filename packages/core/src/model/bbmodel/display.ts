@@ -1,6 +1,6 @@
 /** Display transforms (first person, GUI, …) of a Blockbench project. */
 import { DISPLAY_SLOTS } from '../../minecraft/vanillaModels';
-import { isPlainObject } from '../../object';
+import { isPlainObject } from '@resourcepackbuilder/utils';
 import { roundNumber } from '../geometry';
 import type { JavaDisplayTransform } from '../types';
 

@@ -1,7 +1,7 @@
 /** The checks of everything that is exported, with a jump to the entries of the open project. */
 import { useId, useState } from 'react';
 import { useTranslations } from 'next-intl';
-import { countIssues, type Issue } from '@resourcepackbuilder/core/issues';
+import { countIssues, type Issue } from '@resourcepackbuilder/utils';
 import { SectionLabel } from '@resourcepackbuilder/ui';
 import { Checkbox } from '@resourcepackbuilder/ui/components/checkbox';
 import { Field, FieldLabel } from '@resourcepackbuilder/ui/components/field';

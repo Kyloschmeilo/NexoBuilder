@@ -1,7 +1,6 @@
 /** The project file (.resourcepackbuilder.json) used for backups and passing projects on. */
 import { z } from 'zod';
-import { parseJson, unwrapJson } from '../json';
-import { plainObject } from '../lenient';
+import { parseJson, plainObject, unwrapJson } from '@resourcepackbuilder/utils';
 import { migrateProject } from './migrate';
 import type { Project } from './types';
 

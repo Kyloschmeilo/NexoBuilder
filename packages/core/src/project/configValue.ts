@@ -1,5 +1,5 @@
 /** Turning arbitrary values (e.g. from an editor) into item config data. */
-import { mapData } from '../object';
+import { mapData } from '@resourcepackbuilder/utils';
 import type { ConfigValue } from './types';
 
 /**

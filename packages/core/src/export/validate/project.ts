@@ -1,6 +1,6 @@
 /** Project-wide checks: namespace, pack settings, folder names and item IDs. */
 import { isPngDataUrl } from '../../binary/png';
-import { createIssue, issueReporter, type Issue, type IssueCode, type MessageArgs } from '../../issues';
+import { createIssue, issueReporter, type Issue, type IssueCode, type MessageArgs } from '@resourcepackbuilder/utils';
 import { itemFrame, itemTarget } from '../../issueFrames';
 import { itemIdSyntaxError, namespaceError, PACK_NAME_PATTERN } from '../../minecraft/resourceLocation';
 import { itemLabel } from '../../project/labels';

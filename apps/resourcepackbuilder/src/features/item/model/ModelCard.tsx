@@ -3,7 +3,7 @@ import { Box, RefreshCw, Trash2 } from 'lucide-react';
 import type { ImportedModel } from '@resourcepackbuilder/core/model/types';
 import type { Item } from '@resourcepackbuilder/core/project/types';
 import { compareVersions, getMcVersion } from '@resourcepackbuilder/core/minecraft/versions';
-import { issuesFor } from '@resourcepackbuilder/core/issues';
+import { issuesFor } from '@resourcepackbuilder/utils';
 import { CollapsibleSection, pickFiles, SectionCard } from '@resourcepackbuilder/ui';
 import { Alert, AlertDescription } from '@resourcepackbuilder/ui/components/alert';
 import { Button } from '@resourcepackbuilder/ui/components/button';

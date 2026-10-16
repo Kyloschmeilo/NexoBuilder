@@ -1,5 +1,5 @@
 /** What the sidebar derives from the project and its plan once per change, instead of once per row. */
-import type { Issue, IssueTarget } from '@resourcepackbuilder/core/issues';
+import type { Issue, IssueTarget } from '@resourcepackbuilder/utils';
 import { itemLabel } from '@resourcepackbuilder/core/project/labels';
 import type { Project } from '@resourcepackbuilder/core/project/types';
 

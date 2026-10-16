@@ -5,7 +5,7 @@
  * For the selection, a sub-project with the same folders (just without the deselected
  * items) is created – paths and file names thus stay exactly as in the full export.
  */
-import { inContext, issueReporter, type Issue, type IssueCode, type MessageArgs } from '../issues';
+import { inContext, issueReporter, type Issue, type IssueCode, type MessageArgs } from '@resourcepackbuilder/utils';
 import { MEDIA_KIND_LIST, MEDIA_KINDS, mapMediaLists, mediaGlobalId, mediaList, type MediaKind } from '../nexo/media/kinds';
 import type { Project } from '../project/types';
 import { projectFrame } from '../issueFrames';

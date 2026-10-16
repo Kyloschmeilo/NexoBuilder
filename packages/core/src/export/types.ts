@@ -1,5 +1,5 @@
 /** Types of the export plan. */
-import type { Issue, IssueContext, IssueLevel, MessageArgs } from '../issues';
+import type { Issue, IssueContext, IssueLevel, MessageArgs } from '@resourcepackbuilder/utils';
 import type { ImportedModel, JavaModelJson } from '../model/types';
 import type { Item, Project } from '../project/types';
 import type { PackWriter } from './packWriter';

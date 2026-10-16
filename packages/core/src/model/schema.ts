@@ -15,7 +15,7 @@ import {
   optional,
   plainObject,
   withoutUndefined,
-} from '../lenient';
+} from '@resourcepackbuilder/utils';
 import type { BBElement, BBFace, BBModel, BBTexture } from './bbmodel/types';
 import type { JavaDisplayTransform, JavaElementRotation, JavaModelElement, JavaModelFace, JavaModelJson, ModelTexture } from './types';
 

@@ -5,8 +5,7 @@
  * Afterwards the folder tree is repaired (see repair.ts): references to missing folders and items are
  * removed, items without a folder are rescued.
  */
-import { CoreError } from '../issues';
-import { isPlainObject } from '../object';
+import { CoreError, isPlainObject } from '@resourcepackbuilder/utils';
 import { repairProject } from './repair';
 import { parseItem, projectSchema } from './schema';
 import type { Item, Project } from './types';

@@ -9,6 +9,7 @@ const nextConfig: NextConfig = {
     '@resourcepackbuilder/core',
     '@resourcepackbuilder/desktop-contract',
     '@resourcepackbuilder/ui',
+    '@resourcepackbuilder/utils',
     '@resourcepackbuilder/preview',
   ],
 };

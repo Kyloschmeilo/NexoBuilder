@@ -1,5 +1,5 @@
 /** Checks of a model as written into the pack (texture paths already resolved). */
-import type { Issue } from '../../issues';
+import type { Issue } from '@resourcepackbuilder/utils';
 import { compareVersions, getMcVersion } from '../../minecraft/versions';
 import { isVanillaReference } from '../../minecraft/resourceLocation';
 import { analyseElements } from '../../model/javaModel';

@@ -1,7 +1,7 @@
 /** Reads the plugin descriptor (paper-plugin.yml or plugin.yml) of a Minecraft plugin JAR. */
 import JSZip from 'jszip';
 import { parse } from 'yaml';
-import { isPlainObject } from '../object';
+import { isPlainObject } from '@resourcepackbuilder/utils';
 
 export interface PluginDescriptor {
   name: string;

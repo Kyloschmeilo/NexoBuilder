@@ -1,5 +1,5 @@
 /** Following texture references ("#key") inside a model to the texture they end at. */
-import { parseTexturePlaceholder } from '../tokens';
+import { parseTexturePlaceholder } from '@resourcepackbuilder/utils';
 import type { ImportedModel, ModelTexture } from './types';
 
 type FollowResult = { value: string } | { value: null; stuckAt: string };

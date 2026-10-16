@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import { planExport } from '../../export/plan';
 import { recipeFrame, recipeIngredientFrame, recipeInputFrame } from '../../issueFrames';
-import { issuesFor, type Issue, type IssueCode, type IssueContext } from '../../issues';
+import { issuesFor, type Issue, type IssueCode, type IssueContext } from '@resourcepackbuilder/utils';
 import { createFolder, createItem, createProject, insertFolder, insertItem } from '../../project/factory';
 import { recipeIssues } from './issues';
 import { createRecipe, emptyIngredient } from './model';

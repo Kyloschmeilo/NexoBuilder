@@ -7,7 +7,7 @@
  */
 import { z } from 'zod';
 import { fieldFrame, listEntryFrame, mapKeyFrame } from '../issueFrames';
-import { labelArg, type IssueContext, type MessageArgs } from '../issues';
+import { labelArg, type IssueContext, type MessageArgs } from '@resourcepackbuilder/utils';
 import { validateTextFormat } from './fieldFormat';
 import type { Field } from './fields';
 

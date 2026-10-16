@@ -4,7 +4,7 @@
  */
 import { SOUND_ID_CHARS } from '../../minecraft/resourceLocation';
 import type { Project } from '../../project/types';
-import { slugify, toIdentifier } from '../../text';
+import { slugify, toIdentifier } from '@resourcepackbuilder/utils';
 import type { Glyph } from '../glyphs/model';
 import type { Painting } from '../paintings/model';
 import type { Sound } from '../sounds/model';

@@ -1,6 +1,6 @@
 /** Pure helpers of the field editors: visibility, value shapes and immutable list/object updates. */
 import type { Field } from '@resourcepackbuilder/core/nexo/fields';
-import { isPlainObject } from '@resourcepackbuilder/core/object';
+import { isPlainObject } from '@resourcepackbuilder/utils';
 
 /** Field types that take the full width of the form grid. */
 const WIDE_TYPES = new Set<Field['type']>(['object', 'objectList', 'map', 'yaml', 'stringList', 'multiSelect', 'texture', 'presence']);

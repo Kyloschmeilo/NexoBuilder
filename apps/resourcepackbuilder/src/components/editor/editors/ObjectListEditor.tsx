@@ -1,7 +1,7 @@
 import { Copy } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 import type { ObjectField, ObjectListField } from '@resourcepackbuilder/core/nexo/fields';
-import { isPlainObject } from '@resourcepackbuilder/core/object';
+import { isPlainObject } from '@resourcepackbuilder/utils';
 import { IconButton, useRowKeys } from '@resourcepackbuilder/ui';
 import { Card, CardContent, CardHeader } from '@resourcepackbuilder/ui/components/card';
 import { useSchemaText } from '../../useSchemaText';

@@ -1,5 +1,5 @@
 /** Converts Blockbench cubes into Java model elements. */
-import { isPlainObject } from '../../object';
+import { isPlainObject } from '@resourcepackbuilder/utils';
 import { FACE_NAMES, roundNumber } from '../geometry';
 import type { FaceName, JavaElementRotation, JavaModelElement, JavaModelFace } from '../types';
 import { faceTexture, type TextureEntry } from './textures';

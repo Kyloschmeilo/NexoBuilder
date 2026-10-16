@@ -3,7 +3,7 @@
  * harnesses and saddles. All items with the same set ID share one equipment model
  * (assets/<ns>/equipment/<set>.json); the textures live under textures/entity/equipment/<layer>/.
  */
-import { isPlainObject } from '../object';
+import { isPlainObject } from '@resourcepackbuilder/utils';
 import { keySegment } from './messageKey';
 
 export type ArmorGroup = 'player' | 'elytra' | 'mob' | 'saddle';

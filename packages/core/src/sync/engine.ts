@@ -10,8 +10,15 @@
  * the project through `SyncHost`. This allows testing it with an in-memory file system.
  */
 import { z } from 'zod';
-import { CoreError } from '../issues';
-import { type Covers, type Fits, type SchemaChecks, lenientNumber, lenientRecord, lenientString } from '../lenient';
+import {
+  CoreError,
+  type Covers,
+  type Fits,
+  lenientNumber,
+  lenientRecord,
+  lenientString,
+  type SchemaChecks,
+} from '@resourcepackbuilder/utils';
 import { mediaId, mediaList, type MediaEntry, type MediaKind } from '../nexo/media/kinds';
 import { itemLabel } from '../project/labels';
 import type { Project } from '../project/types';

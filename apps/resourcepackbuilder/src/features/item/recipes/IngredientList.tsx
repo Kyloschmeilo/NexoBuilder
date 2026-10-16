@@ -1,6 +1,6 @@
 import { useTranslations } from 'next-intl';
 import { Plus, Trash2 } from 'lucide-react';
-import type { Issue } from '@resourcepackbuilder/core/issues';
+import type { Issue } from '@resourcepackbuilder/utils';
 import type { Recipe } from '@resourcepackbuilder/core/nexo/recipes/model';
 import {
   addIngredient,

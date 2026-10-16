@@ -1,4 +1,4 @@
-import type { Issue } from '../../issues';
+import type { Issue } from '@resourcepackbuilder/utils';
 import { ITEM_ID_PATTERN, RESOURCE_LOCATION_PATTERN } from '../../minecraft/resourceLocation';
 import type { Project } from '../../project/types';
 import { validateEntries } from '../media/entry';

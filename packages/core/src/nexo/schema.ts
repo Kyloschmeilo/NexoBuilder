@@ -9,7 +9,7 @@ import type { ConfigPropertyDef, PropertyDef, PropertyGroup } from './schema/bui
 import { COMPONENT_PROPERTIES } from './schema/components';
 import { GENERAL_PROPERTIES } from './schema/general';
 import { MECHANIC_PROPERTIES } from './schema/mechanics';
-import { isPlainObject } from '../object';
+import { isPlainObject } from '@resourcepackbuilder/utils';
 import type { ConfigObject } from '../project/types';
 
 export type { ArmorPropertyDef, ConfigPropertyDef, PropertyDef, PropertyGroup } from './schema/build';

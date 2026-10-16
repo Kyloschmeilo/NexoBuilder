@@ -16,10 +16,19 @@
  * a small tombstone (deleted: true) so that the deletion reaches everyone.
  */
 import { z } from 'zod';
-import { jsonOrNull, parseJson } from '../json';
-import { type Fits, type SchemaChecks, lenientString, listOf, optional, plainObject, withoutUndefined } from '../lenient';
+import {
+  type Fits,
+  jsonOrNull,
+  lenientString,
+  listOf,
+  optional,
+  parseJson,
+  plainObject,
+  sameList,
+  type SchemaChecks,
+  withoutUndefined,
+} from '@resourcepackbuilder/utils';
 import { MEDIA_KIND_LIST, MEDIA_KINDS, mediaList, type MediaEntryByKind, type MediaKind } from '../nexo/media/kinds';
-import { sameList } from '../object';
 import { FolderSchema, MEDIA_SCHEMAS, parseItem, settingsSchema } from '../project/schema';
 import type { Folder, Item, Project, ProjectSettings } from '../project/types';
 

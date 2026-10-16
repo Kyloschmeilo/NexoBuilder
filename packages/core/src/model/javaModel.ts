@@ -8,14 +8,19 @@
  */
 import { z } from 'zod';
 import { isPngDataUrl } from '../binary/png';
-import { CoreError, type Issue } from '../issues';
-import { parseJson, unwrapJson, type JsonResult } from '../json';
+import {
+  CoreError,
+  deepClone,
+  fileBaseName,
+  type Issue,
+  type JsonResult,
+  parseJson,
+  texturePlaceholder,
+  unwrapJson,
+} from '@resourcepackbuilder/utils';
 import { isVanillaReference, resourceBaseName, stripMinecraftNamespace } from '../minecraft/resourceLocation';
 import { ELEMENTLESS_ITEM_PARENTS } from '../minecraft/vanillaModels';
 import { FEATURE_VERSIONS, maxVersion } from '../minecraft/versions';
-import { deepClone } from '../object';
-import { fileBaseName } from '../text';
-import { texturePlaceholder } from '../tokens';
 import { FACE_NAMES, isOutOfBounds } from './geometry';
 import { JavaModelSchema } from './schema';
 import { createTexture, findMcmetaFor, normalizeTextureName } from './textures';

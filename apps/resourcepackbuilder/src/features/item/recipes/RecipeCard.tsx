@@ -1,7 +1,7 @@
 import { useTranslations } from 'next-intl';
 import { Trash2 } from 'lucide-react';
 import type { Item } from '@resourcepackbuilder/core/project/types';
-import { issuesFor } from '@resourcepackbuilder/core/issues';
+import { issuesFor } from '@resourcepackbuilder/utils';
 import { emptyIngredient, getRecipeTypeInfo, MAX_RESULT_AMOUNT, type Recipe } from '@resourcepackbuilder/core/nexo/recipes/model';
 import { recipeIssues } from '@resourcepackbuilder/core/nexo/recipes/issues';
 import { TICKS_PER_SECOND } from '@resourcepackbuilder/core/nexo/recipes/operations';

@@ -1,6 +1,6 @@
 import { RefreshCw, TriangleAlert } from 'lucide-react';
 import { useFormatter, useTranslations } from 'next-intl';
-import { countIssues } from '@resourcepackbuilder/core/issues';
+import { countIssues } from '@resourcepackbuilder/utils';
 import { Alert, AlertDescription } from '@resourcepackbuilder/ui/components/alert';
 import { Button } from '@resourcepackbuilder/ui/components/button';
 import { SectionCard } from '@resourcepackbuilder/ui';

@@ -3,11 +3,8 @@
  * one or more models for new items.
  */
 import { isPngDataUrl } from '../binary/png';
-import { CoreError } from '../issues';
+import { CoreError, fileBaseName, jsonOrNull, prettyNameFromFile, uid } from '@resourcepackbuilder/utils';
 import { resourceBaseName } from '../minecraft/resourceLocation';
-import { jsonOrNull } from '../json';
-import { uid } from '../id';
-import { fileBaseName, prettyNameFromFile } from '../text';
 import { convertBBModel } from './bbmodel';
 import { convertJavaModel, parentBaseName, parseModelJson, pickMainModel } from './javaModel';
 import {

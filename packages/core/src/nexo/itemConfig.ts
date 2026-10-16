@@ -4,7 +4,7 @@
  *  2. add automatic values (itemname, material, Pack.model, Components.item_model)
  *  3. overlay the user's additional YAML
  */
-import { deepClone, deepMerge, isPlainObject, mapData } from '../object';
+import { deepClone, deepMerge, isPlainObject, mapData, MODEL_TOKEN } from '@resourcepackbuilder/utils';
 import type { ConfigObject, ConfigValue, Item, Project } from '../project/types';
 import { slotForMaterial, type ItemArmor } from './armor';
 import type { Field } from './fields';
@@ -12,7 +12,6 @@ import { BooleanValue, NumberValue } from './fieldSchema';
 import { getPath, setPath } from './configPath';
 import { itemMaterial } from './material';
 import { CONFIG_PROPERTIES, unknownConfigPaths } from './schema';
-import { MODEL_TOKEN } from '../tokens';
 import { parseYaml } from './yaml';
 
 /** Order of the keys in the YAML (as in the Nexo docs) */

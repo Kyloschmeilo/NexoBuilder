@@ -1,6 +1,6 @@
 import { useTranslations } from 'next-intl';
 import type { Item } from '@resourcepackbuilder/core/project/types';
-import { issuesFor } from '@resourcepackbuilder/core/issues';
+import { issuesFor } from '@resourcepackbuilder/utils';
 import { PageShell } from '@resourcepackbuilder/ui';
 import { Badge } from '@resourcepackbuilder/ui/components/badge';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@resourcepackbuilder/ui/components/tabs';

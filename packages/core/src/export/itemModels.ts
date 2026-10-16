@@ -21,7 +21,7 @@ import {
   type VariantDef,
   type VariantSlot,
 } from '../nexo/variants';
-import { getPath, isPlainObject } from '../object';
+import { getPath, isPlainObject } from '@resourcepackbuilder/utils';
 import { variantFrame } from '../issueFrames';
 import { itemModelDefinitionFile } from './paths';
 import type { ItemExport } from './types';

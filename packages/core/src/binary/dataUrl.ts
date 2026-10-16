@@ -1,5 +1,5 @@
 /** Data URLs and base64 (no DOM dependencies; atob/btoa exist in browsers and Node). */
-import { CoreError } from '../issues';
+import { CoreError } from '@resourcepackbuilder/utils';
 
 /** A `data:` URL, e.g. "data:image/png;base64,…" */
 export type DataUrl = string;

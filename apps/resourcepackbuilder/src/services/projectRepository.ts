@@ -4,10 +4,9 @@
  */
 import { createStore, del, delMany, get, keys, set, setMany, type UseStore } from 'idb-keyval';
 import { z } from 'zod';
-import { lenientList, lenientNumber, lenientString, plainObject } from '@resourcepackbuilder/core/lenient';
+import { lenientList, lenientNumber, lenientString, plainObject, uid } from '@resourcepackbuilder/utils';
 import { SyncStateSchema, type SyncState } from '@resourcepackbuilder/core/sync/engine';
 import { AppError } from '../i18n/errors';
-import { uid } from '@resourcepackbuilder/core/id';
 import { migrateProject } from '@resourcepackbuilder/core/project/migrate';
 import { summarizeProject, type ProjectSummary } from '@resourcepackbuilder/core/project/summary';
 import type { Project } from '@resourcepackbuilder/core/project/types';

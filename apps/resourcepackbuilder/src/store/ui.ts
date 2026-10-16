@@ -1,6 +1,6 @@
 /** UI state around the open project: what is selected, which folders are expanded, which panels are shown. */
 import { create } from 'zustand';
-import type { IssueTarget } from '@resourcepackbuilder/core/issues';
+import type { IssueTarget } from '@resourcepackbuilder/utils';
 import type { Project } from '@resourcepackbuilder/core/project/types';
 import { useProjectStore } from './project';
 

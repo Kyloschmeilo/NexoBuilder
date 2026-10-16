@@ -1,7 +1,7 @@
 import { useDeferredValue, useId, useMemo, useState, type Dispatch, type ReactNode, type SetStateAction } from 'react';
 import { useTranslations } from 'next-intl';
 import { Download, FileArchive, FolderTree, Package, ScrollText } from 'lucide-react';
-import { countIssues } from '@resourcepackbuilder/core/issues';
+import { countIssues } from '@resourcepackbuilder/utils';
 import type { ExportMode } from '@resourcepackbuilder/core/export/types';
 import type { Project } from '@resourcepackbuilder/core/project/types';
 import { MEDIA_KIND_LIST, mediaList } from '@resourcepackbuilder/core/nexo/media/kinds';

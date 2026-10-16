@@ -1,6 +1,6 @@
 /** Imported models and the Minecraft Java model format. */
 import type { DataUrl } from '../binary/dataUrl';
-import type { Issue } from '../issues';
+import type { Issue } from '@resourcepackbuilder/utils';
 
 /** Minecraft Java block model (assets/<ns>/models/...json) */
 export interface JavaModelJson {

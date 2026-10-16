@@ -5,7 +5,7 @@
  * the same objects in an Immer draft.
  */
 import { MEDIA_KIND_LIST, mediaList, setMediaList } from '../nexo/media/kinds';
-import { sameList } from '../object';
+import { sameList } from '@resourcepackbuilder/utils';
 import type { Item, Project } from './types';
 
 /** Folder for items whose folder no longer exists (e.g. deleted by someone else while they were being created). */

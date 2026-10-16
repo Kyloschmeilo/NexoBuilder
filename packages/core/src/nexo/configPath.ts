@@ -2,7 +2,7 @@
  * Reading/writing nested item config values – typed for config data. The generic helpers live in
  * ../object; this module stays because the app imports it.
  */
-import * as object from '../object';
+import * as object from '@resourcepackbuilder/utils';
 import type { ConfigObject, ConfigValue } from '../project/types';
 
 export function getPath(obj: ConfigObject, path: string[]): ConfigValue | undefined {
@@ -13,4 +13,4 @@ export function setPath(obj: ConfigObject, path: string[], value: ConfigValue | 
   object.setPath(obj, path, value);
 }
 
-export { deletePath, hasPath } from '../object';
+export { deletePath, hasPath } from '@resourcepackbuilder/utils';

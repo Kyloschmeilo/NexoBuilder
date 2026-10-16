@@ -4,7 +4,7 @@
  */
 import { ID_CHARS } from '../../minecraft/resourceLocation';
 import type { Item, Project } from '../../project/types';
-import { toIdentifier } from '../../text';
+import { toIdentifier } from '@resourcepackbuilder/utils';
 import { DEFAULT_MATERIAL } from '../material';
 import type { Painting } from '../paintings/model';
 import type { Sound } from '../sounds/model';

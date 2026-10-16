@@ -10,12 +10,13 @@
  * The TypeScript types stay in types.ts and the entity modules; the `SchemaChecks` at the end make sure both agree.
  */
 import { z } from 'zod';
-import { uid } from '../id';
-import { issueCode, schemaKey, type Issue, type LabelArg } from '../issues';
 import {
   type Covers,
   type Fits,
-  type SchemaChecks,
+  isPlainObject,
+  type Issue,
+  issueCode,
+  type LabelArg,
   lenientBoolean,
   lenientEnum,
   lenientList,
@@ -23,12 +24,15 @@ import {
   lenientRecord,
   lenientString,
   listOf,
-  recordOf,
   nullableNumber,
   optional,
+  recordOf,
+  type SchemaChecks,
+  schemaKey,
   stringList,
+  uid,
   withoutUndefined,
-} from '../lenient';
+} from '@resourcepackbuilder/utils';
 import { JavaModelSchema, ModelTextureSchema } from '../model/schema';
 import type { ImportedModel, ModelTexture } from '../model/types';
 import { toArmorSettings, type ArmorSettings } from '../nexo/armor';
@@ -38,7 +42,6 @@ import type { MediaEntryByKind, MediaKind } from '../nexo/media/kinds';
 import type { Painting } from '../nexo/paintings/model';
 import { INGREDIENT_LETTERS, RECIPE_TYPES, type Recipe, type RecipeIngredient } from '../nexo/recipes/model';
 import type { JukeboxSong, Sound, SoundFile } from '../nexo/sounds/model';
-import { isPlainObject } from '../object';
 import { defaultSettings, DEFAULT_PACK_NAME } from './factory';
 import type { ConfigObject, ConfigValue, Folder, Item, Project, ProjectSettings } from './types';
 

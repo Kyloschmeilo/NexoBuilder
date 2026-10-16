@@ -1,6 +1,6 @@
 /** The issues of one recipe, picked from the export plan and sorted to the parts of the recipe they concern. */
 import { RECIPE_FRAME_CODES } from '../../issueFrames';
-import type { Issue, IssueContext } from '../../issues';
+import type { Issue, IssueContext } from '@resourcepackbuilder/utils';
 
 export interface RecipeIssues {
   /** Issues of the whole recipe */

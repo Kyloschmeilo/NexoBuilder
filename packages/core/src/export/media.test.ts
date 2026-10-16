@@ -9,7 +9,7 @@ import { buildMultiExportZip } from './zip';
 import { singleExport } from '../../test-utils/export';
 import { nexoFolderFiles } from '../testServer/files';
 import { makePngDataUrl } from '../../test-utils/png';
-import type { Issue } from '../issues';
+import type { Issue } from '@resourcepackbuilder/utils';
 import type { Project } from '../project/types';
 import { createPainting } from '../nexo/paintings/model';
 import { createSound } from '../nexo/sounds/model';

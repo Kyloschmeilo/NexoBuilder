@@ -1,5 +1,5 @@
 import { isOggDataUrl } from '../../binary/ogg';
-import type { Issue } from '../../issues';
+import type { Issue } from '@resourcepackbuilder/utils';
 import { NAMESPACE_PATTERN } from '../../minecraft/resourceLocation';
 import type { Project } from '../../project/types';
 import { validateEntries } from '../media/entry';

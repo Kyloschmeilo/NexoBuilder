@@ -1,7 +1,6 @@
 /** Textures of a Blockbench project: matching the PNG data, texture keys and animation data. */
 import { isPngDataUrl, readPngInfoFromDataUrl } from '../../binary/png';
-import type { Issue } from '../../issues';
-import { fileBaseName } from '../../text';
+import { fileBaseName, type Issue } from '@resourcepackbuilder/utils';
 import { roundNumber } from '../geometry';
 import { findPngByName } from '../textures';
 import type { ImportFile } from '../types';

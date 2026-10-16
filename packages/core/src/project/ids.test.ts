@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { createFolder, createItem, createProject, insertFolder, insertItem } from './factory';
-import { uniqueId } from '../id';
+import { uniqueId } from '@resourcepackbuilder/utils';
 import { uniqueNexoId, validateItemId } from './ids';
 import { itemLabel } from './labels';
 

@@ -4,7 +4,7 @@
  */
 import { readPngInfoFromDataUrl } from '../../binary/png';
 import { mediaFrame } from '../../issueFrames';
-import { issueReporter, type Issue, type ReportIssue } from '../../issues';
+import { issueReporter, type Issue, type ReportIssue } from '@resourcepackbuilder/utils';
 import { formatResourceLocation } from '../../minecraft/resourceLocation';
 import type { Project } from '../../project/types';
 import type { MediaKind } from './kinds';

@@ -3,8 +3,7 @@ import { DEFAULT_MC_VERSION } from '../minecraft/versions';
 import type { ImportedModel } from '../model/types';
 import { DEFAULT_MATERIAL } from '../nexo/material';
 import { mapMediaLists } from '../nexo/media/kinds';
-import { slugify } from '../text';
-import { uid } from '../id';
+import { slugify, uid } from '@resourcepackbuilder/utils';
 import type { Folder, Item, Project, ProjectSettings } from './types';
 
 /** Fallback for pack name and namespace when the project name yields no identifier. */

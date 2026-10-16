@@ -2,7 +2,7 @@ import { useTranslations } from 'next-intl';
 import { Box, ClipboardCopy, ClipboardPaste, Copy, FolderInput, Gift, Trash2 } from 'lucide-react';
 import type { Item } from '@resourcepackbuilder/core/project/types';
 import { itemMaterial } from '@resourcepackbuilder/core/nexo/material';
-import type { Issue } from '@resourcepackbuilder/core/issues';
+import type { Issue } from '@resourcepackbuilder/utils';
 import { getFolderPathLabel } from '@resourcepackbuilder/core/project/tree';
 import { PLAYER_NAME_PATTERN } from '@resourcepackbuilder/core/testServer/config';
 import { clipboardLabel } from '@resourcepackbuilder/core/nexo/copyConfig';

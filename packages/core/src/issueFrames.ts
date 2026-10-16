@@ -2,7 +2,7 @@
  * Targets and context frames ("where") of issues; each frame code is a message key in the `issues`
  * namespace. All `context.*` frames are built here so the app can rely on their codes and args.
  */
-import { labelArg, schemaKey, type IssueContext, type IssueTarget } from './issues';
+import { labelArg, schemaKey, type IssueContext, type IssueTarget } from '@resourcepackbuilder/utils';
 import type { MediaKind } from './nexo/media/kinds';
 import type { VariantDef } from './nexo/variants';
 import { itemLabel } from './project/labels';

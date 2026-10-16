@@ -1,12 +1,8 @@
 /** Textures of imported models: matching dropped files, animation data and checks. */
 import { isPngDataUrl, readPngInfoFromDataUrl } from '../binary/png';
 import { z } from 'zod';
-import type { Issue } from '../issues';
-import { jsonOrNull, parseJson } from '../json';
-import { lenientNumber, optional } from '../lenient';
-import { isPlainObject } from '../object';
+import { fileBaseName, isPlainObject, type Issue, jsonOrNull, lenientNumber, optional, parseJson } from '@resourcepackbuilder/utils';
 import { McmetaSchema } from './schema';
-import { fileBaseName } from '../text';
 import type { ImportFile, ModelTexture, TextureAnimation } from './types';
 
 /** Normalizes a file name for comparisons ("Ruby_Sword.PNG" → "ruby_sword"). */

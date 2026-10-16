@@ -5,7 +5,7 @@
  * Convention: each domain owns its checks (nexo/<domain>/validate.ts, export/validate/* for what only
  * exists in the export); this module only calls them and puts their issues into the item's context.
  */
-import { inContext, issueReporter, type Issue, type IssueContext } from '../issues';
+import { getPath, groupBy, inContext, type Issue, type IssueContext, issueReporter } from '@resourcepackbuilder/utils';
 import { buildPackMcmeta } from '../minecraft/versions';
 import { buildItemConfig } from '../nexo/itemConfig';
 import { itemMaterial } from '../nexo/material';
@@ -13,7 +13,6 @@ import { buildRecipeFiles } from '../nexo/recipes/files';
 import { validateRecipes } from '../nexo/recipes/validate';
 import { VARIANTS, variantPathSuffix, type VariantSlot } from '../nexo/variants';
 import { itemsToYaml } from '../nexo/yaml';
-import { getPath, groupBy } from '../object';
 import { getFolderSlugs, getItemsInTreeOrder } from '../project/tree';
 import type { Item, Project } from '../project/types';
 import type { ItemArmor } from '../nexo/armor';

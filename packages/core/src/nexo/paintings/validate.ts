@@ -1,4 +1,4 @@
-import { createIssue, type Issue } from '../../issues';
+import { createIssue, type Issue } from '@resourcepackbuilder/utils';
 import { ITEM_ID_PATTERN } from '../../minecraft/resourceLocation';
 import { compareVersions, FEATURE_VERSIONS } from '../../minecraft/versions';
 import type { Project } from '../../project/types';

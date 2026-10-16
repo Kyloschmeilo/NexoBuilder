@@ -11,15 +11,13 @@
  *
  * The converted model is then checked like every other model (see analyseElements).
  */
-import type { Issue } from '../issues';
+import { type Issue, parseJson, texturePlaceholder, unwrapJson } from '@resourcepackbuilder/utils';
 import { compareVersions, FEATURE_VERSIONS } from '../minecraft/versions';
-import { parseJson, unwrapJson } from '../json';
 import { convertDisplay } from './bbmodel/display';
 import { convertElements, hasRotatedGroups } from './bbmodel/elements';
 import { buildTextureMcmeta, readTextureEntries } from './bbmodel/textures';
 import { positiveNumber, type BBTexture } from './bbmodel/types';
 import { BBModelSchema } from './schema';
-import { texturePlaceholder } from '../tokens';
 import { analyseElements } from './javaModel';
 import { createTexture, findMcmetaFor } from './textures';
 import type { ImportedModel, ImportFile, JavaModelJson, ModelTexture } from './types';
