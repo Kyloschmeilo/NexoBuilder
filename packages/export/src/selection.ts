@@ -18,6 +18,7 @@ import {
   projectFrame,
 } from '@resourcepackbuilder/core/project';
 import { planExport } from './plan';
+import { packTargetFor } from './targets';
 import type { ExportPlan, PlanOptions } from './types';
 
 /** What is deselected gets stored – this way new items are included automatically. */
@@ -196,9 +197,11 @@ function crossProjectIssues(projects: PlannedProject[]): Issue[] {
         if (other) error(`selection.${kind}IdClash`, { id, first: other, second: name });
       }
     }
-    for (const path of [...plan.itemFiles.keys(), ...plan.recipeFiles.keys(), ...plan.glyphFiles.keys()]) {
-      const other = firstOwner(pluginFiles, path, index);
-      const pair = `${pluginFiles.get(path)}:${index}`;
+    const { pluginDir } = packTargetFor(project).layout;
+    for (const path of plan.pluginFiles.keys()) {
+      const key = `${pluginDir}/${path}`;
+      const other = firstOwner(pluginFiles, key, index);
+      const pair = `${pluginFiles.get(key)}:${index}`;
       if (other && !reportedFilePairs.has(pair)) {
         reportedFilePairs.add(pair);
         error('selection.pluginFileClash', { first: other, second: name, path, slug: projectFileName(project) });

@@ -3,6 +3,7 @@ import { Code } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 import { type ExportPlan, findItemPlan, itemYamlPreview } from '@resourcepackbuilder/export';
 import { issuesFor, type Issue } from '@resourcepackbuilder/utils';
+import { glyphFilePath } from '@resourcepackbuilder/core/nexo';
 import type { Project } from '@resourcepackbuilder/core/project';
 import { Tip } from '@resourcepackbuilder/ui';
 import { ScrollArea } from '@resourcepackbuilder/ui/components/scroll-area';
@@ -22,6 +23,12 @@ interface Preview {
 
 const NOTHING: Preview = { file: null, text: '', issues: [] };
 
+/** A text file of the plan's plugin folder ('' when there is none). */
+function pluginText(plan: ExportPlan, path: string): string {
+  const content = plan.pluginFiles.get(path);
+  return typeof content === 'string' ? content : '';
+}
+
 /** What the panel shows for a selection: the item's YAML, the folder's file, or the glyph file. */
 function previewFor(project: Project, plan: ExportPlan | null, selection: Selection): Preview {
   if (!plan || !selection) return NOTHING;
@@ -38,11 +45,12 @@ function previewFor(project: Project, plan: ExportPlan | null, selection: Select
     case 'folder': {
       const itemIds = new Set(project.folders[selection.id]?.itemIds);
       const entry = plan.items.find((p) => itemIds.has(p.item.id));
-      return entry ? { file: entry.yamlFile, text: plan.itemFiles.get(entry.yamlFile) ?? '', issues: [] } : NOTHING;
+      return entry ? { file: entry.yamlFile, text: pluginText(plan, entry.yamlFile), issues: [] } : NOTHING;
     }
     case 'view': {
-      const [glyphFile] = selection.view === 'glyphs' ? plan.glyphFiles : [];
-      return glyphFile ? { file: glyphFile[0], text: glyphFile[1], issues: [] } : NOTHING;
+      const glyphFile = selection.view === 'glyphs' ? glyphFilePath(project) : null;
+      const text = glyphFile ? pluginText(plan, glyphFile) : '';
+      return glyphFile && text ? { file: glyphFile, text, issues: [] } : NOTHING;
     }
   }
 }

@@ -2,7 +2,7 @@ import { describe, expect, it } from 'vitest';
 import { parseRawYaml } from '@resourcepackbuilder/core/nexo';
 import { createFolder, createItem, createProject, insertFolder, insertItem } from '@resourcepackbuilder/core/project';
 import { findItemPlan, itemYamlPreview } from './itemPreview';
-import { nexoPluginPath } from './paths';
+import { nexoPluginPath } from './targets';
 import { planExport } from './plan';
 
 describe('item preview', () => {

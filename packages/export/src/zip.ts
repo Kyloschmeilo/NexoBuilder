@@ -4,11 +4,13 @@
  */
 import JSZip from 'jszip';
 import type { Project } from '@resourcepackbuilder/core/project';
-import { INSTALL_GUIDE_FILE, installGuide } from './installGuide';
-import { exportPackName, packLocation } from './paths';
-import { buildRootFiles } from './rootFiles';
+import { exportPackName } from './paths';
 import type { MultiExportPlan } from './selection';
+import { buildRootFiles, packTargetFor } from './targets';
 import type { ExportMode, FileContent } from './types';
+
+/** The install guide in the archive of a full export */
+export const INSTALL_GUIDE_FILE = 'INSTALL.txt';
 
 export interface ExportResult {
   fileName: string;
@@ -27,26 +29,40 @@ function addAll(entries: Map<string, ArchiveEntry>, files: Map<string, FileConte
   for (const [path, content] of files) entries.set(prefix + path, { content });
 }
 
-/** How the resource pack goes into plugins/Nexo: as the project setting says, always as a folder, or not at all. */
+/** How the resource pack goes into the plugin folder: as the project setting says, always as a folder, or not at all. */
 type PackPlacement = 'setting' | 'folder' | 'none';
 
-/** The files of plugins/Nexo (items, recipes, glyphs, the pack and sounds.yml/paintings.yml), by path. */
+/**
+ * Where a project's plugin files go in the archive. When all projects share a plugin folder, the
+ * archive is extracted into it (no prefix); projects of different targets each get their plugin folder.
+ */
+function pluginPrefix(multi: MultiExportPlan, project: Project): string {
+  const pluginDir = packTargetFor(project).layout.pluginDir;
+  return multi.projects.every((e) => packTargetFor(e.project).layout.pluginDir === pluginDir) ? '' : `${pluginDir}/`;
+}
+
+/** The files of the plugin folders (item configs, recipes, glyphs, the pack and Nexo's sounds.yml/paintings.yml), by path. */
 function pluginEntries(multi: MultiExportPlan, pack: PackPlacement): Map<string, ArchiveEntry> {
   const entries = new Map<string, ArchiveEntry>();
   for (const { project, plan } of multi.projects) {
-    for (const files of [plan.itemFiles, plan.recipeFiles, plan.glyphFiles]) addAll(entries, files);
-    if (pack === 'setting' && project.settings.externalPackAsZip) entries.set(packLocation(project, true), { zip: plan.packFiles });
-    else if (pack !== 'none') addAll(entries, plan.packFiles, packLocation(project, false));
+    const { layout } = packTargetFor(project);
+    const prefix = pluginPrefix(multi, project);
+    addAll(entries, plan.pluginFiles, prefix);
+    if (pack === 'setting' && project.settings.externalPackAsZip)
+      entries.set(prefix + layout.packLocation(project, true), { zip: plan.packFiles });
+    else if (pack !== 'none') addAll(entries, plan.packFiles, prefix + layout.packLocation(project, false));
   }
-  addAll(entries, buildRootFiles(multi.projects.map((e) => e.plan)));
+  // Only Nexo plans carry root file entries; the files lie in the Nexo plugin folder
+  const nexo = multi.projects.find((e) => e.plan.nexo);
+  if (nexo) addAll(entries, buildRootFiles(multi.projects.map((e) => e.plan)), pluginPrefix(multi, nexo.project));
   return entries;
 }
 
 /**
- * Everything the projects put into plugins/Nexo, by path – the archive of a full export and the
- * test server use the same list. `packAsFolder` ignores the "pack as ZIP" setting.
+ * Everything the projects put into their plugin folders, by path – the archive of a full export and
+ * the test server use the same list. `packAsFolder` ignores the "pack as ZIP" setting.
  */
-export function nexoFolderEntries(multi: MultiExportPlan, options: { packAsFolder?: boolean } = {}): Map<string, ArchiveEntry> {
+export function pluginFolderEntries(multi: MultiExportPlan, options: { packAsFolder?: boolean } = {}): Map<string, ArchiveEntry> {
   return pluginEntries(multi, options.packAsFolder ? 'folder' : 'setting');
 }
 
@@ -58,10 +74,10 @@ function archiveEntries(multi: MultiExportPlan, mode: ExportMode): Map<string, A
     return entries;
   }
   if (mode === 'items') return pluginEntries(multi, 'none');
-  const entries = nexoFolderEntries(multi);
+  const entries = pluginFolderEntries(multi);
   if (multi.projects.length > 0) {
     const rootFiles = buildRootFiles(multi.projects.map((e) => e.plan));
-    entries.set(INSTALL_GUIDE_FILE, { content: installGuide(multi, rootFiles) });
+    entries.set(INSTALL_GUIDE_FILE, { content: packTargetFor(multi.projects[0].project).layout.installGuide(multi, rootFiles) });
   }
   return entries;
 }

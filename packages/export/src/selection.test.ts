@@ -13,8 +13,7 @@ import { createTextureModel } from '@resourcepackbuilder/minecraft';
 import { makePngDataUrl } from '@resourcepackbuilder/test-utils/png';
 import { planExport } from './plan';
 import { countSelected, planMultiExport, selectFromProject, selectNothing } from './selection';
-import { INSTALL_GUIDE_FILE } from './installGuide';
-import { buildMultiExportZip, listMultiExportPaths } from './zip';
+import { buildMultiExportZip, INSTALL_GUIDE_FILE, listMultiExportPaths } from './zip';
 import { singleExport } from '../test-utils/export';
 
 const PNG16 = makePngDataUrl(16, 16);
@@ -65,7 +64,7 @@ describe('Export selection within a project', () => {
     const p = project('Mein Pack', 'meinpack', { weapons: ['ruby_sword'], furniture: ['chair'] });
     const subset = selectFromProject(p, { excludedItemIds: [itemId(p, 'ruby_sword')], excludedGlyphIds: [] });
     const plan = planExport(subset);
-    expect([...plan.itemFiles.keys()]).toEqual(['items/moebel/stuehle/stuehle.yml']);
+    expect([...plan.pluginFiles.keys()].filter((path) => path.startsWith('items/'))).toEqual(['items/moebel/stuehle/stuehle.yml']);
   });
 
   it('returns the unchanged project without a selection', () => {

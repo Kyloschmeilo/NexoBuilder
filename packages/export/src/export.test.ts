@@ -4,9 +4,8 @@ import { parse } from 'yaml';
 import { createFolder, createItem, createProject, insertFolder, insertItem, type Project } from '@resourcepackbuilder/core/project';
 import { convertBBModel, createTexture, createTextureModel } from '@resourcepackbuilder/minecraft';
 import { planExport } from './plan';
-import { INSTALL_GUIDE_FILE } from './installGuide';
-import { buildMultiExportZip } from './zip';
-import { singleExport } from '../test-utils/export';
+import { buildMultiExportZip, INSTALL_GUIDE_FILE } from './zip';
+import { pluginText, singleExport } from '../test-utils/export';
 import { makePngDataUrl } from '@resourcepackbuilder/test-utils/png';
 
 const PNG16 = makePngDataUrl(16, 16);
@@ -108,12 +107,12 @@ const text = (bytes: Uint8Array | undefined) => new TextDecoder().decode(bytes);
 describe('planExport', () => {
   it('creates the item YAMLs per folder with correct values', () => {
     const plan = planExport(buildProject());
-    expect([...plan.itemFiles.keys()].sort()).toEqual([
+    expect([...plan.pluginFiles.keys()].sort()).toEqual([
       'items/moebel/moebel.yml',
       'items/moebel/stuehle/stuehle.yml',
       'items/waffen/waffen.yml',
     ]);
-    const weapons = parse(plan.itemFiles.get('items/waffen/waffen.yml')!, { version: '1.1' });
+    const weapons = parse(pluginText(plan, 'items/waffen/waffen.yml'), { version: '1.1' });
     expect(weapons).toEqual({
       ruby_sword: {
         itemname: '<red>Rubin-Schwert',
@@ -129,20 +128,20 @@ describe('planExport', () => {
       },
     });
     // "yes" must be quoted for SnakeYAML
-    expect(plan.itemFiles.get('items/waffen/waffen.yml')).toContain('- "yes"');
-    expect(plan.itemFiles.get('items/waffen/waffen.yml')).toContain('itemname: "<red>Rubin-Schwert"');
+    expect(plan.pluginFiles.get('items/waffen/waffen.yml')).toContain('- "yes"');
+    expect(plan.pluginFiles.get('items/waffen/waffen.yml')).toContain('itemname: "<red>Rubin-Schwert"');
   });
 
   it('keeps empty mechanics and applies additional YAML', () => {
     const plan = planExport(buildProject());
-    const furniture = parse(plan.itemFiles.get('items/moebel/moebel.yml')!, { version: '1.1' });
+    const furniture = parse(pluginText(plan, 'items/moebel/moebel.yml'), { version: '1.1' });
     expect(furniture.oak_table.Mechanics.furniture).toEqual({
       hitbox: { barriers: ['0,0,0'] },
       rotatable: true,
       preview_placement: true,
       seats: ['0,0.5,0'],
     });
-    const chairs = parse(plan.itemFiles.get('items/moebel/stuehle/stuehle.yml')!, { version: '1.1' });
+    const chairs = parse(pluginText(plan, 'items/moebel/stuehle/stuehle.yml'), { version: '1.1' });
     expect(chairs).toEqual({
       chair: {
         itemname: 'Stuhl',
@@ -229,7 +228,7 @@ describe('planExport', () => {
     insertItem(project, ore);
     const plan = planExport(project);
     expect(plan.packFiles.has('assets/bloecke/textures/block/erze/ruby_ore/ruby_ore.png')).toBe(true);
-    const yaml = parse(plan.itemFiles.get('items/erze/erze.yml')!, { version: '1.1' });
+    const yaml = parse(pluginText(plan, 'items/erze/erze.yml'), { version: '1.1' });
     expect(yaml.ruby_ore.Pack.model).toBe('bloecke:block/erze/ruby_ore');
     expect(yaml.ruby_ore.Mechanics.custom_block).toEqual({
       type: 'NOTEBLOCK',
@@ -265,7 +264,7 @@ describe('planExport', () => {
     });
     expect(plan.packFiles.has('assets/ruestung/textures/entity/equipment/humanoid/ruby.png')).toBe(true);
     expect(plan.packFiles.has('assets/ruestung/textures/entity/equipment/humanoid_leggings/ruby.png')).toBe(true);
-    const yaml = parse(plan.itemFiles.get('items/ruestung/ruestung.yml')!, { version: '1.1' });
+    const yaml = parse(pluginText(plan, 'items/ruestung/ruestung.yml'), { version: '1.1' });
     expect(yaml.ruby_helmet.Components).toEqual({ equippable: { slot: 'HEAD', asset_id: 'ruestung:ruby' } });
     expect(yaml.ruby_boots.Components).toEqual({ equippable: { slot: 'FEET', asset_id: 'ruestung:ruby' } });
     expect(yaml.ruby_helmet.$armor).toBeUndefined();
@@ -286,7 +285,7 @@ describe('buildMultiExportZip (one project)', () => {
     expect(paths).toContain('pack/external_packs/mein_pack/assets/meinpack/models/item/moebel/oak_table.json');
     expect(paths).toContain(INSTALL_GUIDE_FILE);
     expect(paths).toEqual(result.paths);
-    expect(text(files.get('items/waffen/waffen.yml'))).toBe(plan.itemFiles.get('items/waffen/waffen.yml'));
+    expect(text(files.get('items/waffen/waffen.yml'))).toBe(plan.pluginFiles.get('items/waffen/waffen.yml'));
     const png = files.get('pack/external_packs/mein_pack/assets/meinpack/textures/item/waffen/ruby_sword/ruby_sword.png')!;
     expect([...png.slice(0, 4)]).toEqual([0x89, 0x50, 0x4e, 0x47]);
   });
@@ -319,7 +318,7 @@ describe('Variant models', () => {
     bow.variants = { pulling_models: [png('bow_0.png'), png('bow_1.png'), png('bow_2.png')] };
     insertItem(project, bow);
     const plan = planExport(project);
-    const yaml = parse(plan.itemFiles.get('items/fernkampf/fernkampf.yml')!, { version: '1.1' });
+    const yaml = parse(pluginText(plan, 'items/fernkampf/fernkampf.yml'), { version: '1.1' });
     expect(yaml.longbow.Pack).toEqual({
       model: 'boegen:item/fernkampf/longbow',
       pulling_models: [
@@ -359,7 +358,7 @@ describe('Variant models', () => {
     expect(plan.issues.some((i) => i.target?.id === noModel.id && i.level === 'error' && i.code === 'plan.variantNeedsMainModel')).toBe(
       true,
     );
-    const yaml = parse(plan.itemFiles.get('items/a/a.yml')!, { version: '1.1' });
+    const yaml = parse(pluginText(plan, 'items/a/a.yml'), { version: '1.1' });
     expect(yaml.shield.Pack.blocking_model).toBe('test:item/a/shield-blocking');
   });
 });

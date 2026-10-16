@@ -101,7 +101,7 @@ describe('recipes', () => {
     expect(shaped.ruby_sword_shaped.shape).toEqual(['AA']);
 
     const plan = planExport(project);
-    expect(plan.recipeFiles.size).toBe(2);
+    expect([...plan.pluginFiles.keys()].filter((p) => p.startsWith('recipes/'))).toHaveLength(2);
     const zip = await buildMultiExportZip(singleExport(project, plan), 'full');
     expect(zip.paths).toContain('recipes/shaped/rezept_test.yml');
     const pack = await buildMultiExportZip(singleExport(project, plan), 'pack');

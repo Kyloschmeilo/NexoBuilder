@@ -12,6 +12,7 @@ import {
 import { createTexture } from '@resourcepackbuilder/minecraft';
 import { makePngDataUrl } from '@resourcepackbuilder/test-utils/png';
 import { planExport } from './plan';
+import { pluginText } from '../test-utils/export';
 
 const PNG = makePngDataUrl(64, 32);
 
@@ -28,7 +29,7 @@ function project(version = '1.21.11'): { project: Project; add: (id: string, mat
   return { project: p, add };
 }
 
-const yamlOf = (p: Project) => parse(planExport(p).itemFiles.get('items/teile/teile.yml')!);
+const yamlOf = (p: Project) => parse(pluginText(planExport(p), 'items/teile/teile.yml'));
 
 describe('Worn textures', () => {
   it('creates elytra wings with slot CHEST and glider component', () => {

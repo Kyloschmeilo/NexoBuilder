@@ -12,11 +12,14 @@ import {
   validatePaintings,
   validateSounds,
 } from '@resourcepackbuilder/core/nexo';
-import type { PackWriter } from './packWriter';
-import { glyphTextureFile, paintingTextureFile, soundFile } from './paths';
-import type { ExportPlan } from './types';
+import type { PackWriter } from '../../packWriter';
+import { glyphTextureFile, paintingTextureFile, soundFile } from '../../paths';
+import type { NexoRootEntries } from '../../types';
 
-type MediaFiles = Pick<ExportPlan, 'glyphFiles' | 'soundEntries' | 'paintingEntries'>;
+/** The glyph file (relative to plugins/Nexo) and the root file entries. */
+interface MediaFiles extends NexoRootEntries {
+  glyphFiles: Map<string, string>;
+}
 
 export function writeMedia(writer: PackWriter, project: Project, issues: Issue[]): MediaFiles {
   // Unreadable files are reported like the entry's own checks: targeted and with its context frame

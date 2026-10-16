@@ -2,10 +2,9 @@ import { describe, expect, it } from 'vitest';
 import JSZip from 'jszip';
 import { parse } from 'yaml';
 import { createPainting, createProject, createSound, type Project } from '@resourcepackbuilder/core/project';
-import { INSTALL_GUIDE_FILE } from './installGuide';
 import { planExport } from './plan';
 import { planMultiExport } from './selection';
-import { buildMultiExportZip } from './zip';
+import { buildMultiExportZip, INSTALL_GUIDE_FILE } from './zip';
 import { singleExport } from '../test-utils/export';
 import { makePngDataUrl } from '@resourcepackbuilder/test-utils/png';
 import type { Issue } from '@resourcepackbuilder/utils';
@@ -120,7 +119,7 @@ describe('sounds and paintings', () => {
     const multi = planMultiExport([
       { project, selection: { excludedItemIds: [], excludedGlyphIds: [], excludedSoundIds: ['s2'], excludedPaintingIds: ['p1', 'p2'] } },
     ]);
-    expect(multi.projects[0].plan.soundEntries.map((s) => s.id)).toEqual(['klang:block.glocke.ding']);
-    expect(multi.projects[0].plan.paintingEntries).toEqual({});
+    expect(multi.projects[0].plan.nexo?.soundEntries.map((s) => s.id)).toEqual(['klang:block.glocke.ding']);
+    expect(multi.projects[0].plan.nexo?.paintingEntries).toEqual({});
   });
 });

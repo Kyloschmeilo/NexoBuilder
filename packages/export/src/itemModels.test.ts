@@ -4,6 +4,7 @@ import { createFolder, createItem, createProject, insertFolder, insertItem, type
 import { createTextureModel, type ImportedModel } from '@resourcepackbuilder/minecraft';
 import { makePngDataUrl } from '@resourcepackbuilder/test-utils/png';
 import { planExport } from './plan';
+import { pluginText } from '../test-utils/export';
 
 const PNG16 = makePngDataUrl(16, 16);
 const model = (name: string): ImportedModel =>
@@ -50,7 +51,7 @@ describe('Additional models', () => {
     expect(plan.packFiles.has('assets/moebel/models/item/sofas/sofa-outer.json')).toBe(true);
     expect(plan.packFiles.has('assets/moebel/textures/item/sofas/sofa-outer/outer.png')).toBe(true);
 
-    const yaml = parse(plan.itemFiles.get('items/sofas/sofas.yml')!).sofa;
+    const yaml = parse(pluginText(plan, 'items/sofas/sofas.yml')).sofa;
     expect(yaml.Components.item_model).toBe('moebel:sofas/sofa');
     expect(yaml.Pack.model).toBe('moebel:item/sofas/sofa');
     expect(yaml.Mechanics.furniture.connectable).toEqual({ type: 'ITEM_MODEL' });
@@ -73,7 +74,7 @@ describe('Additional models', () => {
     (sofa.config.Mechanics as Record<string, Record<string, unknown>>).furniture.placements = {
       wall: { item_model: 'eigenes:modell', properties: { translation: '0,0.3,-0.3' } },
     };
-    const yaml = parse(planExport(project).itemFiles.get('items/sofas/sofas.yml')!).sofa;
+    const yaml = parse(pluginText(planExport(project), 'items/sofas/sofas.yml')).sofa;
     expect(yaml.Mechanics.furniture.placements.wall).toEqual({ item_model: 'eigenes:modell', properties: { translation: '0,0.3,-0.3' } });
   });
 
@@ -97,7 +98,7 @@ describe('Additional models', () => {
     flower.variants = { stack_models: [model('s1'), model('s2')] };
     insertItem(project, flower);
     const plan = planExport(project);
-    const yaml = parse(plan.itemFiles.get('items/pflanzen/pflanzen.yml')!).blume;
+    const yaml = parse(pluginText(plan, 'items/pflanzen/pflanzen.yml')).blume;
     expect(yaml.Mechanics.custom_block.stackable).toEqual([
       { model: 'bl:block/pflanzen/blume-stack_1' },
       { model: 'bl:block/pflanzen/blume-stack_2' },
@@ -118,7 +119,7 @@ describe('Additional models', () => {
     });
     trident.variants = { throwing_model: [model('wurf')] };
     insertItem(project, trident);
-    const yaml = parse(planExport(project).itemFiles.get('items/dreizacke/dreizacke.yml')!).dreizack;
+    const yaml = parse(pluginText(planExport(project), 'items/dreizacke/dreizacke.yml')).dreizack;
     expect(yaml.Pack.throwing_model).toBe('wf:item/dreizacke/dreizack-throwing');
   });
 });

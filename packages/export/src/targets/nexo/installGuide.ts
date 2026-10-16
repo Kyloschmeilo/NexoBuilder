@@ -1,14 +1,9 @@
 /** The installation guide put into a full export (English – the exported pack is not localised). */
 import type { Project } from '@resourcepackbuilder/core/project';
-import { NEXO_PLUGIN_DIR, packLocation } from './paths';
+import type { MultiExportPlan } from '../../selection';
+import type { ExportPlan } from '../../types';
+import { NEXO_PLUGIN_DIR, NEXO_RELOAD_COMMAND, packLocation } from './layout';
 import { PAINTINGS_FILE, SOUNDS_FILE } from './rootFiles';
-import type { MultiExportPlan } from './selection';
-import type { ExportPlan } from './types';
-
-export const INSTALL_GUIDE_FILE = 'INSTALL.txt';
-
-/** Reloads Nexo's configuration and rebuilds the resource pack (what the user runs after installing an export). */
-export const NEXO_RELOAD_COMMAND = 'nexo reload all';
 
 /** Note about sounds.yml/paintings.yml – there is only one file of each on the server */
 function rootFileLines(rootFiles: Map<string, string>): string[] {
@@ -32,10 +27,14 @@ const USAGE = [
 ];
 
 /** Guide for the export; `rootFiles` are the shared sounds.yml/paintings.yml of the archive. */
-export function installGuide(multi: MultiExportPlan, rootFiles: Map<string, string>): string {
+export function nexoInstallGuide(multi: MultiExportPlan, rootFiles: Map<string, string>): string {
   return multi.projects.length === 1
     ? singleGuide(multi.projects[0].project, multi.projects[0].plan, rootFiles)
     : multiGuide(multi, rootFiles);
+}
+
+function hasFilesIn(plan: ExportPlan, dir: string): boolean {
+  return [...plan.pluginFiles.keys()].some((path) => path.startsWith(dir));
 }
 
 function singleGuide(project: Project, plan: ExportPlan, rootFiles: Map<string, string>): string {
@@ -50,8 +49,8 @@ function singleGuide(project: Project, plan: ExportPlan, rootFiles: Map<string, 
     '   The folders "items" and "pack" are merged with the existing folders.',
     '',
     '   items/...                 -> the item configurations',
-    ...(plan.recipeFiles.size > 0 ? ['   recipes/...               -> the crafting recipes'] : []),
-    ...(plan.glyphFiles.size > 0 ? ['   glyphs/...                -> the glyphs (usage: <glyph:id>)'] : []),
+    ...(hasFilesIn(plan, 'recipes/') ? ['   recipes/...               -> the crafting recipes'] : []),
+    ...(hasFilesIn(plan, 'glyphs/') ? ['   glyphs/...                -> the glyphs (usage: <glyph:id>)'] : []),
     ...rootFileLines(rootFiles),
     `   ${packLocation(project).padEnd(25)} -> the resource pack (Nexo includes it automatically)`,
     '',

@@ -1,0 +1,81 @@
+/** The Nexo pack target: item configs as Nexo YAML in plugins/Nexo, the pack as an external pack. */
+import { getPath } from '@resourcepackbuilder/utils';
+import { buildItemConfig } from '@resourcepackbuilder/core/nexo';
+import { itemMaterial, variantFrame, variantPathSuffix, VARIANTS } from '@resourcepackbuilder/core/project';
+import type { ItemExport } from '../../types';
+import { validateItemConfig } from '../../validate/itemConfig';
+import type { ItemShared, PackTarget, VariantKeys, WrittenItemModels } from '../types';
+import { nexoInstallGuide } from './installGuide';
+import { itemYamlFile, NEXO_PLUGIN_DIR, NEXO_RELOAD_COMMAND, packLocation } from './layout';
+import { planNexoPluginFiles } from './pluginFiles';
+
+export * from './installGuide';
+export * from './layout';
+export * from './media';
+export * from './rootFiles';
+
+export const NEXO_TARGET: PackTarget = {
+  id: 'nexo',
+  itemFile: (project, folderSlugs, item) => itemYamlFile(project, folderSlugs, item.itemId),
+  writeVariants,
+  buildItem,
+  yamlKey: (_project, item) => item.itemId,
+  planPluginFiles: planNexoPluginFiles,
+  layout: {
+    pluginDir: NEXO_PLUGIN_DIR,
+    packLocation,
+    installGuide: nexoInstallGuide,
+    reloadCommand: NEXO_RELOAD_COMMAND,
+  },
+};
+
+/**
+ * Variant models that Nexo builds in via Pack.<slot> (bow, shield, fishing rod …). The hyphen in
+ * their path cannot occur in item IDs and folder names – so there are no overlaps with other items.
+ */
+function writeVariants(itemExport: ItemExport, hasMainModel: boolean): VariantKeys {
+  const { item } = itemExport;
+  const keys: VariantKeys = {};
+  for (const def of VARIANTS) {
+    if (def.kind !== 'pack') continue;
+    const models = item.variants?.[def.slot];
+    if (models === undefined) continue;
+    const frame = variantFrame(def);
+    if (!hasMainModel) {
+      itemExport.report('error', 'plan.variantNeedsMainModel', {}, [frame]);
+      continue;
+    }
+    if (models.length === 0) {
+      itemExport.report('warning', 'plan.variantEmpty', {}, [frame]);
+      continue;
+    }
+    const written = models.map((model, i) => {
+      const suffix = variantPathSuffix(def, i);
+      return itemExport.writeModel(model, `${itemExport.modelPath}-${suffix}`, variantFrame(def, suffix)).key;
+    });
+    keys[def.slot] = def.multiple ? written : written[0];
+    const material = itemMaterial(item);
+    const blocksAttacks = def.slot === 'blocking_model' && getPath(item.config, ['Components', 'blocks_attacks']) !== undefined;
+    if (def.materials && !def.materials.includes(material) && !blocksAttacks) {
+      itemExport.report('warning', 'plan.variantWrongMaterial', { materials: def.materials.join(' / '), material }, [frame]);
+    }
+  }
+  return keys;
+}
+
+/** Builds the item's Nexo YAML config and checks it. */
+function buildItem(itemExport: ItemExport, written: WrittenItemModels, shared: ItemShared): Record<string, unknown> {
+  const built = buildItemConfig({
+    project: itemExport.project,
+    item: itemExport.item,
+    modelKey: written.mainKey,
+    armor: shared.armor,
+    variantKeys: written.variantKeys,
+    itemModel: written.itemModel,
+    extraConfig: written.extraConfig,
+  });
+  if (built.rawYamlError?.kind === 'syntax') itemExport.report('error', 'plan.rawYamlError', { error: built.rawYamlError.message });
+  else if (built.rawYamlError) itemExport.report('error', 'plan.rawYamlNotMapping');
+  validateItemConfig(itemExport, { config: built.config, usedVariations: shared.usedVariations, armorSlot: shared.armor?.slot ?? null });
+  return built.config;
+}
