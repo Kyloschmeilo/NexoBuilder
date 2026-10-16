@@ -2,13 +2,14 @@
   "name": "@resourcepackbuilder/core",
   "private": true,
   "version": "0.0.0",
-  "description": "The project model (items, folders, media, recipes, migration, operations) and its Nexo mapping (item config, form schema, YAML) – no UI.",
+  "description": "The project model (items, folders, media, recipes, migration, operations) its Nexo mapping (item config, form schema, YAML) and its CraftEngine form schema – no UI.",
   "type": "module",
   "sideEffects": false,
   "exports": {
     "./project": "./src/project/index.ts",
     "./form": "./src/form/index.ts",
     "./nexo": "./src/nexo/index.ts",
+    "./craftEngine": "./src/craftEngine/index.ts",
     "./targets": "./src/targets/index.ts"
   },
   "scripts": {

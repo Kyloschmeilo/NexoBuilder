@@ -41,3 +41,13 @@ describe('pruning by field', () => {
     expect(config.Components).toEqual({ max_stack_size: 16, fire_resistant: true });
   });
 });
+
+describe('Nexo form', () => {
+  it('shows attributes, components and mechanics as property tabs, in this order', () => {
+    expect(NEXO_FORM.tabs).toEqual([
+      { id: 'attributes', group: 'attributes' },
+      { id: 'components', group: 'components' },
+      { id: 'mechanics', group: 'mechanics' },
+    ]);
+  });
+});

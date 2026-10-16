@@ -15,6 +15,7 @@ import { Popover, PopoverContent, PopoverTrigger } from '@resourcepackbuilder/ui
 import { addProperty } from '../../../commands/items';
 import { useOpenProject } from '../../../store/project';
 import { useSchemaText } from '../../../components/useSchemaText';
+import { PremiumBadge } from './PremiumBadge';
 import { VersionBadges } from './VersionBadges';
 
 /** Search matches when the label, description or YAML path contains the query (the keywords hold them). */
@@ -60,6 +61,7 @@ export function AddPropertyButton({ schema, item, group }: { schema: FormSchema;
                   <div className="flex min-w-0 flex-1 flex-col gap-0.5">
                     <span className="flex flex-wrap items-center gap-1.5 font-medium">
                       {label}
+                      <PremiumBadge def={def} />
                       <VersionBadges def={def} version={version} showBoth />
                     </span>
                     <span className="text-xs text-muted-foreground">

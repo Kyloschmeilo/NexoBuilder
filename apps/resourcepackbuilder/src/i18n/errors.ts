@@ -3,6 +3,7 @@ import { useTranslations } from 'next-intl';
 import { CoreError, type IssueCode, type MessageArgs } from '@resourcepackbuilder/utils';
 import { DesktopError } from '@resourcepackbuilder/desktop-contract/errors';
 import type { MessageKey } from '@resourcepackbuilder/i18n';
+import { useSchemaText } from '../components/useSchemaText';
 
 /** Codes of the app's own errors: the messages under `errors` in the `app` namespace. */
 export type AppErrorCode = Extract<MessageKey<'app'>, `errors.${string}`>;
@@ -20,12 +21,12 @@ export class AppError extends Error {
 
 /**
  * Returns the function that renders a message of core in the current language: `code` from the `issues` namespace
- * with its `args`, where label args (`{ key, args }`) are translated from the `schema` namespace first. Used for
- * issues, their context frames and {@link CoreError}s alike.
+ * with its `args`, where label args (`{ key, args }`) are translated first like any text of core's data (see
+ * {@link useSchemaText}). Used for issues, their context frames and {@link CoreError}s alike.
  */
 export function useRenderMessage(): (code: IssueCode, args?: MessageArgs) => string {
   const tIssues = useTranslations('issues');
-  const tSchema = useTranslations('schema');
+  const tSchema = useSchemaText();
   return useCallback(
     (code: IssueCode, args: MessageArgs = {}) => {
       const values: Record<string, string | number> = {};

@@ -11,7 +11,7 @@ export function PropertiesPanel({ item, group }: { item: Item; group: PropertyGr
   const t = useTranslations('item');
   const schema = useProjectForm();
   const active = activeProperties(schema, item, group);
-  // Group ids come from the form at runtime; the catalogue holds a title and an empty text for each of them.
+  // Group ids come from the form at runtime; a test checks the catalogue has a title and an empty text for each of them.
   const groupText = (kind: 'titles' | 'empty') => t(`properties.${kind}.${group}` as never);
   return (
     <Section

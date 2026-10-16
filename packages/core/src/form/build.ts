@@ -38,7 +38,12 @@ interface PropertyBase {
   docs?: string;
   /** Write an empty object anyway (mechanic active, even without options) */
   keepEmpty?: boolean;
+  /** Shown as a badge next to the label: the property needs a paid edition of the plugin */
+  badge?: PropertyBadge;
 }
+
+/** A badge a property can carry (`premium`: CraftEngine Premium only) */
+export type PropertyBadge = 'premium';
 
 /** A property stored in the item config (= the YAML) */
 export interface ConfigPropertyDef extends PropertyBase {
@@ -204,6 +209,7 @@ export interface PropertySpec {
   hint?: boolean;
   docs?: string;
   keepEmpty?: boolean;
+  badge?: PropertyBadge;
   /** Stored in `item.armor` instead of the config (only the armor settings) */
   storage?: 'armor';
 }

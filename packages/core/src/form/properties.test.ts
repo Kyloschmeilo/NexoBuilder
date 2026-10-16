@@ -26,7 +26,7 @@ const SCHEMA: FormSchema = {
     ...properties('other', { color: { field: field.text(), defaultValue: () => '' } }),
   ],
   messages: 'test',
-  managedTopLevelKeys: ['material'],
+  managedPaths: ['material'],
   tabs: [{ id: 'main', group: 'main' }],
 };
 

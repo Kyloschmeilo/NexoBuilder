@@ -1,0 +1,551 @@
+{
+  "groups": {
+    "general": {
+      "label": "Allgemein",
+      "description": "Lore, Custom Name, Unbreakable und mehr"
+    },
+    "data": {
+      "label": "Data",
+      "description": "Datenkomponenten des Items (Food, Equippable, Enchantment …)"
+    },
+    "settings": {
+      "label": "Settings",
+      "description": "Item-Einstellungen von CraftEngine (Tags, Fuel Time, Reparatur …)"
+    }
+  },
+  "properties": {
+    "dataLore": {
+      "label": "Lore",
+      "description": "Textzeilen unter dem Item-Namen (MiniMessage, z.B. '<'gray>).",
+      "field": {
+        "label": "Zeilen",
+        "placeholder": "'<'gray>Eine Zeile"
+      }
+    },
+    "dataCustomName": {
+      "label": "Custom Name",
+      "description": "Ein Name, der den Anzeigenamen überschreibt, wie einer aus dem Amboss. Kursiv, wenn du es nicht abschaltest.",
+      "field": {
+        "label": "Name",
+        "placeholder": "'<'!i>'<'gold>Name"
+      }
+    },
+    "dataUnbreakable": {
+      "label": "Unbreakable",
+      "description": "Das Item verliert keine Haltbarkeit.",
+      "field": {
+        "label": "Unzerstörbar"
+      }
+    },
+    "dataHideTooltip": {
+      "label": "Hide Tooltip",
+      "description": "Blendet die Tooltip-Zeilen dieser Komponenten aus.",
+      "field": {
+        "label": "Komponenten",
+        "placeholder": "minecraft:enchantments"
+      }
+    },
+    "dataPdc": {
+      "label": "PDC",
+      "description": "Eigene Daten im PersistentDataContainer des Items, für andere Plugins.",
+      "field": {
+        "label": "Daten (YAML)"
+      }
+    },
+    "clientBoundMaterial": {
+      "label": "Client Bound Material",
+      "description": "Das Material, das Spieler sehen. Der Server behält das echte Material.",
+      "field": {
+        "label": "Material",
+        "placeholder": "z.B. mushroom_stem"
+      }
+    },
+    "dataInsertLore": {
+      "label": "Insert Lore",
+      "description": "Fügt Zeilen an einer Stelle in die Lore ein.",
+      "field": {
+        "label": "Lore einfügen",
+        "fields": {
+          "position": {
+            "label": "Position"
+          },
+          "pattern": {
+            "label": "Muster (Regex)",
+            "placeholder": "Gesuchter Text"
+          },
+          "lore": {
+            "label": "Zeilen"
+          }
+        }
+      }
+    },
+    "dataRemoveLore": {
+      "label": "Remove Lore",
+      "description": "Entfernt die Lore-Zeilen, die zu einem regulären Ausdruck passen.",
+      "field": {
+        "label": "Muster (Regex)",
+        "placeholder": "Gesuchter Text"
+      }
+    },
+    "dataTooltipStyle": {
+      "label": "Tooltip Style",
+      "description": "Die Hintergrund-Textur des Tooltips.",
+      "field": {
+        "label": "Stil",
+        "placeholder": "minecraft:topaz"
+      }
+    },
+    "dataDyedColor": {
+      "label": "Dyed Color",
+      "description": "Die Farbe färbbarer Items wie Lederrüstung, als r,g,b.",
+      "field": {
+        "label": "Farbe",
+        "placeholder": "255,128,64"
+      }
+    },
+    "dataTrim": {
+      "label": "Trim",
+      "description": "Ein Rüstungsbesatz mit Muster und Material.",
+      "field": {
+        "label": "Besatz",
+        "fields": {
+          "pattern": {
+            "label": "Muster"
+          },
+          "material": {
+            "label": "Material"
+          }
+        }
+      }
+    },
+    "dataProfile": {
+      "label": "Profile",
+      "description": "Der Skin eines Spielerkopfs: ein Spielername, eine Textur-URL oder Base64.",
+      "field": {
+        "label": "Profil",
+        "placeholder": "Spielername, URL oder Base64"
+      }
+    },
+    "dataFood": {
+      "label": "Food",
+      "description": "Nährwerte beim Essen. Damit das Item essbar ist, braucht es zusätzlich eine Consumable-Komponente.",
+      "field": {
+        "label": "Essen",
+        "fields": {
+          "nutrition": {
+            "label": "Nahrung (Hungerpunkte)"
+          },
+          "saturation": {
+            "label": "Sättigung"
+          },
+          "canAlwaysEat": {
+            "label": "Auch ohne Hunger essbar"
+          }
+        }
+      }
+    },
+    "dataEquippable": {
+      "label": "Equippable",
+      "description": "Das Item kann in einem Ausrüstungs-Slot getragen werden.",
+      "field": {
+        "label": "Ausrüstbar",
+        "fields": {
+          "slot": {
+            "label": "Slot"
+          },
+          "assetId": {
+            "label": "Equipment-Asset",
+            "placeholder": "z.B. minecraft:topaz"
+          },
+          "cameraOverlay": {
+            "label": "Kamera-Overlay",
+            "placeholder": "z.B. minecraft:misc/pumpkinblur"
+          },
+          "swappable": {
+            "label": "Per Rechtsklick tauschbar"
+          },
+          "damageOnHurt": {
+            "label": "Nimmt Schaden, wenn der Träger getroffen wird"
+          },
+          "dispensable": {
+            "label": "Per Werfer anziehbar"
+          },
+          "equipOnInteract": {
+            "label": "Kann einem Mob per Benutzen angezogen werden"
+          }
+        }
+      }
+    },
+    "dataUseRemainder": {
+      "label": "Use Remainder",
+      "description": "Das Item, das nach dem Benutzen übrig bleibt.",
+      "field": {
+        "label": "Rest nach Benutzung",
+        "fields": {
+          "id": {
+            "label": "Item",
+            "placeholder": "minecraft:glass_bottle"
+          },
+          "count": {
+            "label": "Anzahl"
+          }
+        }
+      }
+    },
+    "dataMaxDamage": {
+      "label": "Max Damage",
+      "description": "Maximale Haltbarkeit.",
+      "field": {
+        "label": "Haltbarkeit"
+      }
+    },
+    "dataAttributeModifiers": {
+      "label": "Attribute Modifiers",
+      "description": "Vanilla-Attributmodifikatoren, z.B. mehr Angriffsschaden in der Haupthand.",
+      "field": {
+        "label": "Modifikatoren",
+        "itemLabel": "Modifikator",
+        "fields": {
+          "type": {
+            "label": "Attribut"
+          },
+          "amount": {
+            "label": "Wert"
+          },
+          "operation": {
+            "label": "Operation"
+          },
+          "slot": {
+            "label": "Slot"
+          },
+          "id": {
+            "label": "Modifikator-ID",
+            "placeholder": "optional, z.B. namespace:bonus"
+          }
+        }
+      }
+    },
+    "dataEnchantment": {
+      "label": "Enchantment",
+      "description": "Feste Verzauberungen mit ihrer Stufe.",
+      "field": {
+        "label": "Verzauberungen",
+        "keyLabel": "Verzauberung",
+        "value": {
+          "label": "Stufe"
+        },
+        "keyPlaceholder": "z.B. minecraft:sharpness"
+      }
+    },
+    "dataPaintingVariant": {
+      "label": "Painting Variant",
+      "description": "Das Gemälde, das ein Gemälde-Item platziert.",
+      "field": {
+        "label": "Gemälde",
+        "placeholder": "namespace:gemaelde"
+      }
+    },
+    "dataJukeboxPlayable": {
+      "label": "Jukebox Playable",
+      "description": "Das Lied, das eine Jukebox mit diesem Item spielt.",
+      "field": {
+        "label": "Lied",
+        "placeholder": "namespace:lied"
+      }
+    },
+    "dataExternal": {
+      "label": "External",
+      "description": "Übernimmt die Daten eines Items aus einem anderen Plugin.",
+      "field": {
+        "label": "Extern",
+        "fields": {
+          "plugin": {
+            "label": "Plugin",
+            "placeholder": "z.B. mmoitems"
+          },
+          "id": {
+            "label": "Item-ID",
+            "placeholder": "example_item"
+          }
+        }
+      }
+    },
+    "dataComponents": {
+      "label": "Components",
+      "description": "Rohe Vanilla-Datenkomponenten. CraftEngine prüft sie nicht über Versionen hinweg.",
+      "field": {
+        "label": "Komponenten",
+        "keyLabel": "Komponente",
+        "value": {
+          "label": "Wert (YAML)"
+        },
+        "keyPlaceholder": "z.B. minecraft:tool"
+      }
+    },
+    "dataRemoveComponents": {
+      "label": "Remove Components",
+      "description": "Entfernt diese Komponenten vom Item.",
+      "field": {
+        "label": "Komponenten",
+        "placeholder": "minecraft:attribute_modifiers"
+      }
+    },
+    "clientBoundData": {
+      "label": "Client Bound Data",
+      "description": "Item-Daten, die nur an Spieler gesendet und für jeden einzeln aufgelöst werden, etwa bedingte Namen und Lore.",
+      "field": {
+        "label": "Daten (YAML)",
+        "placeholder": "lore: …"
+      },
+      "hint": "Nimmt dieselben Schlüssel wie data. Für Daten, die von Bedingungen abhängen, conditional#name-Einträge verwenden."
+    },
+    "settingsTags": {
+      "label": "Tags",
+      "description": "Item-Tags, zu denen das Item gehört, z.B. für Rezepte.",
+      "field": {
+        "label": "Tags",
+        "placeholder": "namespace:tag"
+      }
+    },
+    "settingsFuelTime": {
+      "label": "Fuel Time",
+      "description": "Wie lange das Item als Ofenbrennstoff brennt, in Ticks.",
+      "field": {
+        "label": "Ticks"
+      }
+    },
+    "settingsFuelRemainder": {
+      "label": "Fuel Remainder",
+      "description": "Das Item, das nach dem Verbrennen im Ofen bleibt. Nur für Items, die sich nicht stapeln.",
+      "field": {
+        "label": "Item",
+        "placeholder": "minecraft:bucket"
+      }
+    },
+    "settingsBreakPower": {
+      "label": "Break Power",
+      "description": "Abbaustufe des Werkzeugs. Blöcke mit einer benötigten Abbaustufe brauchen mindestens diesen Wert.",
+      "field": {
+        "label": "Abbaustufe"
+      }
+    },
+    "settingsRepairable": {
+      "label": "Repairable",
+      "description": "Ob das Item in Werkbank, Amboss oder Schleifstein repariert werden kann.",
+      "field": {
+        "label": "Reparierbar"
+      }
+    },
+    "settingsAnvilRepairItem": {
+      "label": "Anvil Repair Item",
+      "description": "Wird beim Reparaturmaterial gesetzt: die Items, die es im Amboss repariert.",
+      "field": {
+        "label": "Einträge",
+        "itemLabel": "Eintrag",
+        "fields": {
+          "target": {
+            "label": "Items oder Tags",
+            "placeholder": "#namespace:werkzeuge"
+          },
+          "amount": {
+            "label": "Wiederhergestellte Haltbarkeit"
+          },
+          "percent": {
+            "label": "Anteil der maximalen Haltbarkeit (0–1)"
+          }
+        }
+      }
+    },
+    "settingsDragRepairItem": {
+      "label": "Drag Repair Item",
+      "description": "Wird beim Reparaturmaterial gesetzt: die Items, die es repariert, wenn man es im Inventar darauf ablegt.",
+      "field": {
+        "label": "Einträge",
+        "itemLabel": "Eintrag",
+        "fields": {
+          "target": {
+            "label": "Items oder Tags",
+            "placeholder": "#namespace:werkzeuge"
+          },
+          "amount": {
+            "label": "Wiederhergestellte Haltbarkeit"
+          },
+          "percent": {
+            "label": "Anteil der maximalen Haltbarkeit (0–1)"
+          },
+          "sound": {
+            "label": "Sound",
+            "placeholder": "minecraft:item.armor.equip_iron"
+          }
+        }
+      }
+    },
+    "settingsRespectRepairableComponent": {
+      "label": "Respect Repairable Component",
+      "description": "Der Amboss beachtet die Vanilla-Komponente repairable des Items.",
+      "field": {
+        "label": "Beachten"
+      }
+    },
+    "settingsRenameable": {
+      "label": "Renameable",
+      "description": "Ob das Item im Amboss umbenannt werden kann.",
+      "field": {
+        "label": "Umbenennbar"
+      }
+    },
+    "settingsEnchantable": {
+      "label": "Enchantable",
+      "description": "Ob das Item im Zaubertisch verwendet werden kann.",
+      "field": {
+        "label": "Verzauberbar"
+      }
+    },
+    "settingsPreventBreak": {
+      "label": "Prevent Break",
+      "description": "Das Item behält seinen letzten Haltbarkeitspunkt, statt zu zerbrechen.",
+      "field": {
+        "label": "Zerbrechen verhindern"
+      }
+    },
+    "settingsCanPlace": {
+      "label": "Can Place",
+      "description": "Ob der Vanilla-Block des Materials platziert werden kann.",
+      "field": {
+        "label": "Platzierbar"
+      }
+    },
+    "settingsDyeable": {
+      "label": "Dyeable",
+      "description": "Ob das Item in der Werkbank gefärbt werden kann.",
+      "field": {
+        "label": "Färbbar"
+      }
+    },
+    "settingsDyeColor": {
+      "label": "Dye Color",
+      "description": "Die Farbe, die das Item in Färberezepten beisteuert, als r,g,b.",
+      "field": {
+        "label": "Farbe",
+        "placeholder": "255,140,0"
+      }
+    },
+    "settingsFireworkColor": {
+      "label": "Firework Color",
+      "description": "Die Farbe, die das Item dem Übergang eines Feuerwerkssterns gibt, als r,g,b.",
+      "field": {
+        "label": "Farbe",
+        "placeholder": "255,140,0"
+      }
+    },
+    "settingsEquipment": {
+      "label": "Equipment",
+      "description": "Wendet eine Equipment-Definition von CraftEngine an, wenn das Item getragen wird.",
+      "field": {
+        "label": "Ausrüstung",
+        "fields": {
+          "assetId": {
+            "label": "Equipment-ID",
+            "placeholder": "namespace:equipment"
+          },
+          "slot": {
+            "label": "Slot"
+          },
+          "clientBoundModel": {
+            "label": "Client-seitiges Modell"
+          },
+          "cameraOverlay": {
+            "label": "Kamera-Overlay",
+            "placeholder": "z.B. minecraft:misc/pumpkinblur"
+          },
+          "swappable": {
+            "label": "Per Rechtsklick tauschbar"
+          },
+          "damageOnHurt": {
+            "label": "Nimmt Schaden, wenn der Träger getroffen wird"
+          },
+          "dispensable": {
+            "label": "Per Werfer anziehbar"
+          },
+          "equipOnInteract": {
+            "label": "Kann einem Mob per Benutzen angezogen werden"
+          }
+        }
+      }
+    },
+    "settingsConsumeReplacement": {
+      "label": "Consume Replacement",
+      "description": "Das Item, das ein Spieler nach dem Verzehr zurückbekommt.",
+      "field": {
+        "label": "Item",
+        "placeholder": "minecraft:bowl"
+      }
+    },
+    "settingsCraftRemainder": {
+      "label": "Craft Remainder",
+      "description": "Das Item, das nach dem Craften im Raster bleibt.",
+      "field": {
+        "label": "Item",
+        "placeholder": "minecraft:bucket"
+      }
+    },
+    "settingsAllowedProjectiles": {
+      "label": "Allowed Projectiles",
+      "description": "Items, die ein Bogen oder eine Armbrust verschießen kann.",
+      "field": {
+        "label": "Items",
+        "placeholder": "minecraft:arrow"
+      }
+    },
+    "settingsIngredientSubstitute": {
+      "label": "Ingredient Substitute",
+      "description": "Vanilla-Items, die dieses Item in Rezepten ersetzen kann.",
+      "field": {
+        "label": "Items",
+        "placeholder": "minecraft:paper"
+      }
+    },
+    "settingsCompostProbability": {
+      "label": "Compost Probability",
+      "description": "Chance, dass das Item den Komposter füllt (0–1).",
+      "field": {
+        "label": "Chance"
+      }
+    },
+    "settingsInvulnerable": {
+      "label": "Invulnerable",
+      "description": "Schadensarten, die ein fallengelassenes Item übersteht.",
+      "field": {
+        "label": "Schadensarten"
+      }
+    },
+    "settingsKeepOnDeathChance": {
+      "label": "Keep On Death Chance",
+      "description": "Chance, dass ein Spieler das Item beim Tod behält (0–1).",
+      "field": {
+        "label": "Chance"
+      }
+    },
+    "settingsDestroyOnDeathChance": {
+      "label": "Destroy On Death Chance",
+      "description": "Chance, dass das Item beim Tod zerstört wird (0–1).",
+      "field": {
+        "label": "Chance"
+      }
+    },
+    "settingsGlowColor": {
+      "label": "Glow Color",
+      "description": "Die Leuchtfarbe des fallengelassenen Items.",
+      "field": {
+        "label": "Farbe"
+      }
+    },
+    "settingsProjectile": {
+      "label": "Projectile",
+      "description": "Eine eigene Projektil-Entity, z.B. für einen Dreizack.",
+      "field": {
+        "label": "Projektil (YAML)"
+      }
+    }
+  }
+}

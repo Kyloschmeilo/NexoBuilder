@@ -3,6 +3,8 @@
     "tabs": {
       "general": "General",
       "model": "Model & Pack",
+      "data": "Data",
+      "settings": "Settings",
       "attributes": "Attributes",
       "components": "Components",
       "mechanics": "Mechanics",
@@ -28,19 +30,28 @@
       "appearance": "Pack & Appearance",
       "attributes": "AttributeModifiers & Enchantments",
       "components": "Components",
-      "mechanics": "Mechanics"
+      "mechanics": "Mechanics",
+      "data": "Data",
+      "settings": "Settings"
     },
     "empty": {
       "general": "Noch nichts hinzugefügt (z.B. Lore).",
       "appearance": "Noch keine Pack-Optionen (z.B. CustomArmor, Color).",
       "attributes": "Noch keine AttributeModifiers oder Enchantments.",
       "components": "Noch keine Components.",
-      "mechanics": "Noch keine Mechanics."
+      "mechanics": "Noch keine Mechanics.",
+      "data": "Noch keine Item-Daten (z.B. Food, Equippable).",
+      "settings": "Noch keine Settings (z.B. Tags, Fuel Time)."
     },
     "fromVersion": "ab {version}",
     "untilVersion": "bis {version}",
     "pathInYaml": "Pfad im YAML",
-    "docs": "Nexo-Dokumentation",
+    "docs": {
+      "nexo": "Nexo-Dokumentation",
+      "craftengine": "CraftEngine-Dokumentation"
+    },
+    "premium": "Premium",
+    "premiumHint": "Nur CraftEngine Premium liest diese Eigenschaft.",
     "remove": "Eigenschaft entfernen",
     "tooLow": "Diese Eigenschaft benötigt Minecraft {min} oder neuer. Dein Projekt ist auf {version} eingestellt.",
     "tooHigh": "Diese Eigenschaft gibt es nur bis Minecraft {max}.",

@@ -2,6 +2,7 @@
 export * from './build';
 export * from './fields';
 export * from './fieldSchema';
+export * from './messageKeys';
 export * from './options';
 export * from './properties';
 export * from './types';

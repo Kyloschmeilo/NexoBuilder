@@ -38,6 +38,6 @@ export const NEXO_FORM: FormSchema = {
   groups: PROPERTY_GROUPS,
   properties: PROPERTIES,
   messages: 'schema',
-  managedTopLevelKeys: MANAGED_TOP_LEVEL_KEYS,
+  managedPaths: MANAGED_TOP_LEVEL_KEYS,
   tabs: (['attributes', 'components', 'mechanics'] as const).map((group) => ({ id: group, group })),
 };

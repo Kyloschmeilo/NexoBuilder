@@ -13,8 +13,11 @@ export interface FormSchema {
   properties: PropertyDef[];
   /** i18n namespace of the label, description, help and option keys ('schema' for Nexo) */
   messages: string;
-  /** Top-level config keys that ResourcepackBuilder sets automatically and that do not count as properties */
-  managedTopLevelKeys: string[];
+  /**
+   * Config paths that ResourcepackBuilder sets automatically and that no property may use, dotted for nested keys
+   * (Nexo's `itemname`, CraftEngine's `data.item_name`)
+   */
+  managedPaths: string[];
   /** The editor tabs that show one property group each, in order (the app adds its fixed tabs around them) */
   tabs: Array<{ id: string; group: PropertyGroup }>;
 }

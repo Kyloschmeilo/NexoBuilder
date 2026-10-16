@@ -19,9 +19,18 @@ import { RecipesTab } from './recipes/RecipesTab';
 import { useItemFieldContext } from './useItemFieldContext';
 import { YamlTab } from './YamlTab';
 
-/** The editor's tabs: the fixed ones around the property tabs of the form. */
-function editorTabs(schema: FormSchema): EditorTab[] {
-  return ['general', 'model', ...schema.tabs.map((tab) => tab.id), 'recipes', 'yaml'];
+type ItemTranslator = ReturnType<typeof useTranslations<'item'>>;
+
+/** The editor's tabs with their labels: the fixed ones around the property tabs of the form. */
+function editorTabs(schema: FormSchema, t: ItemTranslator): Array<{ id: EditorTab; label: string }> {
+  return [
+    { id: 'general', label: t('editor.tabs.general') },
+    { id: 'model', label: t('editor.tabs.model') },
+    // Property tab ids come from the form at runtime; a test checks the catalogue has a label for each of them
+    ...schema.tabs.map((tab) => ({ id: tab.id, label: t(`editor.tabs.${tab.id}` as never) })),
+    { id: 'recipes', label: t('editor.tabs.recipes') },
+    { id: 'yaml', label: t('editor.tabs.yaml') },
+  ];
 }
 
 /** Number shown on a tab: how many entries it has. */
@@ -39,7 +48,8 @@ function ItemEditorContent({ item }: { item: Item }) {
   const fieldContext = useItemFieldContext(item);
   const schema = useProjectForm();
   const issues = plan ? issuesFor(plan.issues, { kind: 'item', id: item.id }) : [];
-  const tabs = editorTabs(schema);
+  const tabs = editorTabs(schema, t);
+  const tabIds = tabs.map((tab) => tab.id);
   const counts = tabCounts(schema, item);
 
   return (
@@ -48,27 +58,26 @@ function ItemEditorContent({ item }: { item: Item }) {
       <PageShell className="gap-5">
         <ItemHeader item={item} issues={issues} />
         <Tabs
-          value={tabs.includes(activeTab) ? activeTab : 'general'}
+          value={tabIds.includes(activeTab) ? activeTab : 'general'}
           onValueChange={(value) => {
-            if (isOneOf(tabs, value)) setEditorTab(value);
+            if (isOneOf(tabIds, value)) setEditorTab(value);
           }}
           className="gap-5"
         >
           <TabsList variant="line" className="w-full flex-wrap justify-start gap-1 border-b p-0 group-data-horizontal/tabs:h-auto">
-            {tabs.map((tab) => (
+            {tabs.map(({ id, label }) => (
               <TabsTrigger
-                key={tab}
-                value={tab}
+                key={id}
+                value={id}
                 className="group/tab h-10 flex-none rounded-b-none px-3 after:bg-primary group-data-horizontal/tabs:after:-bottom-px hover:bg-muted"
               >
-                {/* Property tab ids come from the form at runtime; the catalogue holds a label for each of them */}
-                {t(`editor.tabs.${tab}` as never)}
-                {!!counts[tab] && (
+                {label}
+                {!!counts[id] && (
                   <Badge
                     variant="outline"
                     className="h-4 px-1.5 font-mono text-muted-foreground group-data-active/tab:border-primary group-data-active/tab:bg-primary/10 group-data-active/tab:text-primary"
                   >
-                    {counts[tab]}
+                    {counts[id]}
                   </Badge>
                 )}
               </TabsTrigger>
