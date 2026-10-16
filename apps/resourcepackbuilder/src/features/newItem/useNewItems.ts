@@ -1,43 +1,17 @@
 import { useEffect, useEffectEvent, useReducer } from 'react';
 import { useTranslations } from 'next-intl';
-import type { ImportDraft } from '@resourcepackbuilder/core/model/drafts';
+import {
+  initialNewItemState,
+  isCreationBlocked,
+  newItemEntries,
+  newItemInputs,
+  newItemReducer,
+} from '@resourcepackbuilder/core/model/newItems';
 import type { NewItemInput } from '@resourcepackbuilder/core/project/factory';
-import { validateItemId } from '@resourcepackbuilder/core/project/ids';
 import type { Project } from '@resourcepackbuilder/core/project/types';
-import { DEFAULT_MATERIAL } from '@resourcepackbuilder/core/nexo/material';
 import { useErrorMessage } from '../../i18n/errors';
 import { notify } from '../../shell/notify';
 import { readImportFiles } from '../../components/modelFiles';
-import { initialNewItemState, newItemReducer, sourceKey, type ItemMeta } from './newItemState';
-
-/** Why an entered ID cannot be used (message keys in `dialogs.newItem`). */
-export type IdError = 'idRequired' | 'idInvalid' | 'idExists' | 'idDuplicate';
-
-/** One item the dialog will create: its draft (null without a model) and what was entered for it. */
-interface NewItemEntry {
-  draft: ImportDraft | null;
-  meta: ItemMeta;
-  idError: IdError | null;
-}
-
-/** Checks every entered ID against the project and against the other new items. */
-function withIdErrors(project: Project, entries: Array<Omit<NewItemEntry, 'idError'>>): NewItemEntry[] {
-  const counts = new Map<string, number>();
-  for (const { meta } of entries) counts.set(meta.nexoId, (counts.get(meta.nexoId) ?? 0) + 1);
-  return entries.map((entry) => {
-    const error = validateItemId(project, entry.meta.nexoId);
-    const idError: IdError | null = error
-      ? error.kind === 'missing'
-        ? 'idRequired'
-        : error.kind === 'invalid'
-          ? 'idInvalid'
-          : 'idExists'
-      : (counts.get(entry.meta.nexoId) ?? 0) > 1
-        ? 'idDuplicate'
-        : null;
-    return { ...entry, idError };
-  });
-}
 
 /**
  * The dialog's state with its actions: files are read (also those it was opened with), turned into drafts, and the
@@ -63,28 +37,8 @@ export function useNewItems(project: Project, initialFiles: File[] | undefined) 
     if (initialFiles?.length) readInitialFiles(initialFiles);
   }, [initialFiles]);
 
-  const entries = withIdErrors(
-    project,
-    state.isWithoutModel
-      ? [{ draft: null, meta: state.plainMeta }]
-      : state.drafts.flatMap((draft) => {
-          const meta = state.metaBySource[sourceKey(draft)];
-          return meta ? [{ draft, meta }] : [];
-        }),
-  );
-  const isBlocked =
-    entries.length === 0 || entries.some((e) => e.idError !== null || (e.draft !== null && (e.draft.error !== null || !e.draft.model)));
-
-  const inputs = (folderId: string): NewItemInput[] | null =>
-    isBlocked
-      ? null
-      : entries.map(({ draft, meta }) => ({
-          displayName: meta.displayName,
-          nexoId: meta.nexoId,
-          folderId,
-          material: meta.material || DEFAULT_MATERIAL,
-          model: draft?.model ?? null,
-        }));
+  const entries = newItemEntries(project, state);
+  const isBlocked = isCreationBlocked(entries);
 
   return {
     state,
@@ -95,6 +49,6 @@ export function useNewItems(project: Project, initialFiles: File[] | undefined) 
       dispatch({ type: 'readStarted' });
       void read(files);
     },
-    inputs,
+    inputs: (folderId: string): NewItemInput[] | null => (isBlocked ? null : newItemInputs(entries, folderId)),
   };
 }

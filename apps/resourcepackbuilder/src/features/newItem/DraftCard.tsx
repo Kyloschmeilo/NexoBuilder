@@ -3,17 +3,17 @@ import { useTranslations } from 'next-intl';
 import { Box, Image as ImageIcon, Trash2, TriangleAlert } from 'lucide-react';
 import { isPngDataUrl } from '@resourcepackbuilder/core/binary/png';
 import type { ImportDraft } from '@resourcepackbuilder/core/model/drafts';
+import type { ItemMeta, MetaPatch } from '@resourcepackbuilder/core/model/newItems';
+import type { ItemIdError } from '@resourcepackbuilder/core/project/ids';
 import { getTextureTemplate } from '@resourcepackbuilder/core/model/textureModel';
-import { IconButton, SectionCard } from '@resourcepackbuilder/ui';
+import { AutoGrid, IconButton, SectionCard } from '@resourcepackbuilder/ui';
 import { Alert, AlertDescription } from '@resourcepackbuilder/ui/components/alert';
 import { ModelPreview } from '@resourcepackbuilder/preview';
 import { IssueCountBadges } from '../../components/IssueCountBadges';
 import { IssueList } from '../../components/IssueList';
 import { useErrorMessage } from '../../i18n/errors';
-import { ItemMetaFields } from './ItemMetaFields';
-import type { ItemMeta, MetaPatch } from './newItemState';
+import { ItemIdentityFields } from '../../components/ItemIdentityFields';
 import { TextureSlots } from './TextureSlots';
-import type { IdError } from './useNewItems';
 
 /** Preview height with a single draft (room for the toolbar) and with several. */
 const PREVIEW_HEIGHT_SINGLE_PX = 300;
@@ -22,7 +22,7 @@ const PREVIEW_HEIGHT_PX = 200;
 interface DraftCardProps {
   draft: ImportDraft;
   meta: ItemMeta;
-  idError: IdError | null;
+  idError: ItemIdError | null;
   /** The only draft: larger preview, cannot be removed */
   isSingle: boolean;
   onMetaChange: (patch: MetaPatch) => void;
@@ -78,7 +78,15 @@ export function DraftCard({ draft, meta, idError, isSingle, onMetaChange, onDraf
             <ModelPreview model={draft.model} height={isSingle ? PREVIEW_HEIGHT_SINGLE_PX : PREVIEW_HEIGHT_PX} showToolbar={isSingle} />
           )}
           <div className="flex min-w-0 flex-col gap-3">
-            <ItemMetaFields meta={meta} idError={idError} onChange={onMetaChange} />
+            <AutoGrid fit>
+              <ItemIdentityFields
+                value={meta}
+                idError={idError}
+                onChange={onMetaChange}
+                autoFocus
+                displayNameTestId="new-item-display-name"
+              />
+            </AutoGrid>
             {draft.kind === 'png' && template && <TextureSlots draft={draft} template={template} pngs={pngs} onChange={onDraftChange} />}
             {draft.model && <IssueList issues={draft.model.issues} />}
           </div>

@@ -2,10 +2,13 @@
  * State of the "New item" dialog as a reducer: the dropped files, the drafts built from them and the name, ID and
  * material entered per draft (or for one item without a model).
  */
-import type { ImportFile } from '@resourcepackbuilder/core/model/types';
-import { createDrafts, unsupportedFiles, type ImportDraft, type PngMode } from '@resourcepackbuilder/core/model/drafts';
-import { slugify, stripFormatting } from '@resourcepackbuilder/core/text';
-import { DEFAULT_MATERIAL } from '@resourcepackbuilder/core/nexo/material';
+import { DEFAULT_MATERIAL } from '../nexo/material';
+import type { NewItemInput } from '../project/factory';
+import { validateNewItemIds, type ItemIdError } from '../project/ids';
+import type { Project } from '../project/types';
+import { slugify, stripFormatting } from '../text';
+import { createDrafts, unsupportedFiles, type ImportDraft, type PngMode } from './drafts';
+import type { ImportFile } from './types';
 
 /** What the user enters for one new item. */
 export interface ItemMeta {
@@ -117,4 +120,44 @@ export function newItemReducer(state: NewItemState, action: NewItemAction): NewI
 /** Names of dropped files that cannot be imported. */
 export function ignoredFileNames(state: NewItemState): string[] {
   return unsupportedFiles(state.files).map((f) => f.name);
+}
+
+/** One item the dialog will create: its draft (null without a model), what was entered and why the ID cannot be used. */
+export interface NewItemEntry {
+  draft: ImportDraft | null;
+  meta: ItemMeta;
+  idError: ItemIdError | null;
+}
+
+/** The items to create, each with its ID checked against the project and the other new items. */
+export function newItemEntries(project: Project, state: NewItemState): NewItemEntry[] {
+  const entries = state.isWithoutModel
+    ? [{ draft: null, meta: state.plainMeta }]
+    : state.drafts.flatMap((draft) => {
+        const meta = state.metaBySource[sourceKey(draft)];
+        return meta ? [{ draft, meta }] : [];
+      });
+  const idErrors = validateNewItemIds(
+    project,
+    entries.map((entry) => entry.meta.nexoId),
+  );
+  return entries.map((entry, index) => ({ ...entry, idError: idErrors[index] }));
+}
+
+/** Whether the entries cannot be created yet: none, an unusable ID or a draft without a model. */
+export function isCreationBlocked(entries: NewItemEntry[]): boolean {
+  return (
+    entries.length === 0 || entries.some((e) => e.idError !== null || (e.draft !== null && (e.draft.error !== null || !e.draft.model)))
+  );
+}
+
+/** What to create in `folderId` for the entries. */
+export function newItemInputs(entries: NewItemEntry[], folderId: string): NewItemInput[] {
+  return entries.map(({ draft, meta }) => ({
+    displayName: meta.displayName,
+    nexoId: meta.nexoId,
+    folderId,
+    material: meta.material || DEFAULT_MATERIAL,
+    model: draft?.model ?? null,
+  }));
 }

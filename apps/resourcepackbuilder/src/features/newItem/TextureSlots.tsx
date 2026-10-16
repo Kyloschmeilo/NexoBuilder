@@ -2,12 +2,12 @@
 import { useId } from 'react';
 import { useTranslations } from 'next-intl';
 import type { ImportFile } from '@resourcepackbuilder/core/model/types';
-import { MAX_ITEM_LAYERS } from '@resourcepackbuilder/core/minecraft/vanillaModels';
 import {
   TEXTURE_TEMPLATES,
   getTextureTemplate,
   isTextureTemplateId,
   suggestSlotAssignment,
+  templateSlots,
   type TextureTemplate,
 } from '@resourcepackbuilder/core/model/textureModel';
 import { runDraft, type ImportDraft } from '@resourcepackbuilder/core/model/drafts';
@@ -15,11 +15,6 @@ import { Field, FieldDescription, FieldLabel } from '@resourcepackbuilder/ui/com
 import { NativeSelect, NativeSelectOption } from '@resourcepackbuilder/ui/components/native-select';
 import { AutoGrid } from '@resourcepackbuilder/ui';
 import { useSchemaText } from '../../components/useSchemaText';
-
-/** The slots to fill: the template's own, or one layer per PNG for multi-layer items. */
-function slotsOf(template: TextureTemplate, pngCount: number): string[] {
-  return template.multiLayer ? Array.from({ length: Math.min(pngCount, MAX_ITEM_LAYERS) }, (_, i) => `layer${i}`) : template.slots;
-}
 
 interface TextureSlotsProps {
   draft: ImportDraft;
@@ -59,7 +54,7 @@ export function TextureSlots({ draft, template, pngs, onChange }: TextureSlotsPr
       </Field>
       {showSlots && (
         <AutoGrid min="12rem" fit>
-          {slotsOf(template, pngs.length).map((slot) => (
+          {templateSlots(template, pngs.length).map((slot) => (
             <Field key={slot}>
               <FieldLabel htmlFor={`${id}-${slot}`} className="font-mono">
                 {slot}

@@ -115,6 +115,11 @@ export function getTextureTemplate(id: TextureTemplateId): TextureTemplate {
   return template;
 }
 
+/** The texture keys to fill: the template's own, or one layer per PNG (up to the limit) for multi-layer items. */
+export function templateSlots(template: TextureTemplate, pngCount: number): string[] {
+  return template.multiLayer ? Array.from({ length: Math.min(pngCount, MAX_ITEM_LAYERS) }, (_, i) => `layer${i}`) : template.slots;
+}
+
 /** Suggests a PNG → texture key assignment based on the file names. */
 export function suggestSlotAssignment(template: TextureTemplate, pngs: ImportFile[]): Record<string, string> {
   const names = pngs.map((p) => p.name);

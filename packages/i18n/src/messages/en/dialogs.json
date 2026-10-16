@@ -50,10 +50,6 @@
   "newItem": {
     "title": "New item",
     "readFailed": "Files could not be read: {error}",
-    "idRequired": "Please enter an ID.",
-    "idInvalid": "Only lowercase letters, digits and _ are allowed.",
-    "idExists": "This ID already exists in the project.",
-    "idDuplicate": "This ID is used more than once.",
     "created": "{count, plural, one {Item created.} other {# items created.}}",
     "target": "Target: <b>{folder}</b>",
     "create": "{count, plural, one {Create item} other {Create # items}}",
@@ -72,10 +68,6 @@
     "multiplePngs": "Several PNGs:",
     "pngSeparate": "One item per PNG",
     "pngCombined": "All PNGs for one item (layers / block sides)",
-    "displayName": "Display name (MiniMessage allowed)",
-    "displayNamePlaceholder": "e.g. {tag}Ruby sword",
-    "itemId": "Item ID",
-    "material": "Material",
     "source": {
       "bbmodel": "Blockbench (.bbmodel)",
       "json": "Java model (.json)",
