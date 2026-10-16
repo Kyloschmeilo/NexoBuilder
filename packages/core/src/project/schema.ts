@@ -34,6 +34,7 @@ import type { ImportedModel, ModelTexture } from '../model/types';
 import { toArmorSettings, type ArmorSettings } from '../nexo/armor';
 import { CHAT_TEXT_HEIGHT, DEFAULT_FONT_ASCENT, type Glyph } from '../nexo/glyphs/model';
 import type { MediaFile } from '../nexo/media/entry';
+import type { MediaEntryByKind, MediaKind } from '../nexo/media/kinds';
 import type { Painting } from '../nexo/paintings/model';
 import { INGREDIENT_LETTERS, RECIPE_TYPES, type Recipe, type RecipeIngredient } from '../nexo/recipes/model';
 import type { JukeboxSong, Sound, SoundFile } from '../nexo/sounds/model';
@@ -135,6 +136,13 @@ export const PaintingSchema = z.object({
   animated: lenientBoolean(false),
   frametime: lenientNumber(2),
 });
+
+/** The schema of each media kind (see MEDIA_KINDS). */
+export const MEDIA_SCHEMAS: { [K in MediaKind]: z.ZodType<MediaEntryByKind[K], unknown> } = {
+  glyph: GlyphSchema,
+  sound: SoundSchema,
+  painting: PaintingSchema,
+};
 
 /* ------------------------------------------------------------ Recipes */
 

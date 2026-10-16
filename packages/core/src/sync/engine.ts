@@ -9,7 +9,9 @@
  * The sync knows neither Electron nor the browser: file access goes through `SyncFs`,
  * the project through `SyncHost`. This allows testing it with an in-memory file system.
  */
+import { z } from 'zod';
 import { CoreError } from '../issues';
+import { type Covers, type Fits, type SchemaChecks, lenientNumber, lenientRecord, lenientString } from '../lenient';
 import { mediaId, mediaList, type MediaEntry, type MediaKind } from '../nexo/media/kinds';
 import { itemLabel } from '../project/labels';
 import type { Project } from '../project/types';
@@ -67,6 +69,25 @@ export interface SyncState {
   /** Last seen files – so that not everything has to be re-read on startup */
   files: Record<string, FileState>;
 }
+
+const EntityVersionSchema = z.object({ rev: z.number(), by: z.string(), byName: lenientString(), hash: z.string() });
+const FileStateSchema = z.object({ mtimeMs: z.number(), size: z.number(), hash: z.string() });
+
+/** A stored sync state: broken versions and file entries are dropped (those entries are synced again). */
+export const SyncStateSchema = z.object({
+  clock: lenientNumber(0),
+  versions: lenientRecord(EntityVersionSchema),
+  files: lenientRecord(FileStateSchema),
+});
+
+/** Reads a stored sync state; null when it is none at all. */
+export function parseSyncState(raw: unknown): SyncState | null {
+  return SyncStateSchema.safeParse(raw).data ?? null;
+}
+
+export type SyncStateSchemaChecks = SchemaChecks<
+  [Fits<z.output<typeof SyncStateSchema>, SyncState>, Covers<z.output<typeof EntityVersionSchema>, EntityVersion>]
+>;
 
 export interface SyncIdentity {
   /** Random, fixed ID of this installation */
@@ -161,9 +182,11 @@ export class SyncEngine {
     if (!project) throw new CoreError('sync.noProjectOpen');
     this.snapshot = project;
     this.projectId = project.id;
-    this.versions = new Map(Object.entries(state?.versions ?? {}));
-    this.files = new Map(Object.entries(state?.files ?? {}));
-    this.clock = state?.clock ?? 0;
+    // Stored state is untrusted (IndexedDB of any version): broken entries are dropped and simply synced again
+    const saved = parseSyncState(state);
+    this.versions = new Map(Object.entries(saved?.versions ?? {}));
+    this.files = new Map(Object.entries(saved?.files ?? {}));
+    this.clock = saved?.clock ?? 0;
     // Everything that changed locally since the last sync (including deletions) must be written
     for (const key of new Set([...entityKeys(project), ...this.versions.keys()])) {
       const ref = parseEntityKey(key);
