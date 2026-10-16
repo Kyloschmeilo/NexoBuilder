@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import { convertJavaModel } from './javaModel';
 import { createTextureModel, suggestSlotAssignment, getTextureTemplate } from './textureModel';
-import { makePngDataUrl } from '../test/png';
+import { makePngDataUrl } from '../../test-utils/png';
 
 const PNG = makePngDataUrl(16, 16);
 

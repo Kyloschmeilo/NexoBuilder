@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import { createGlyph } from '../nexo/glyphs/model';
 import { createProject } from '../project/factory';
-import { makePngDataUrl } from '../test/png';
+import { makePngDataUrl } from '../../test-utils/png';
 import { PackWriter } from './packWriter';
 import { planExport } from './plan';
 

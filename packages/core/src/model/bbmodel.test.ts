@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { convertBBModel } from './bbmodel';
-import { makePngDataUrl } from '../test/png';
+import { makePngDataUrl } from '../../test-utils/png';
 
 const PNG_32 = makePngDataUrl(32, 32);
 

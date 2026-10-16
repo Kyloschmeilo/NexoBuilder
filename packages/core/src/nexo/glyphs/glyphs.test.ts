@@ -2,9 +2,9 @@ import { describe, expect, it } from 'vitest';
 import { parse } from 'yaml';
 import { planExport } from '../../export/plan';
 import { buildMultiExportZip } from '../../export/zip';
-import { singleExport } from '../../test/export';
+import { singleExport } from '../../../test-utils/export';
 import { createProject } from '../../project/factory';
-import { makePngDataUrl } from '../../test/png';
+import { makePngDataUrl } from '../../../test-utils/png';
 import { createGlyph, glyphFileFromDataUrl } from './model';
 import { validateGlyphs } from './validate';
 
