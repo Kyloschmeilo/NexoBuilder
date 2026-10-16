@@ -1,12 +1,7 @@
-node_modules
-.next
-.turbo
-out
-release
-dist
-coverage
-exe-test
+# Prettier 3 also skips everything in .gitignore (build output, exe-test, .playwright-mcp …); only extras go here.
+# Keep in step with the ignores in eslint.config.js.
 package-lock.json
-next-env.d.ts
-# Vendored shadcn components, kept as generated
+# Vendored shadcn components, hooks and helpers, kept as generated
 packages/ui/src/components
+packages/ui/src/hooks
+packages/ui/src/lib

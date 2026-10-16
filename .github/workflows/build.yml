@@ -29,6 +29,8 @@ jobs:
 
   windows:
     name: Windows app (.exe)
+    # Lint, type check and tests already ran in the build job; this one only packages and tests the program
+    needs: build
     runs-on: windows-latest
     steps:
       - uses: actions/checkout@v4
@@ -37,9 +39,6 @@ jobs:
           node-version: 22
           cache: npm
       - run: npm ci
-      - run: npm run lint
-      - run: npm run typecheck
-      - run: npm test
       - run: npm run dist:win
         env:
           CSC_IDENTITY_AUTO_DISCOVERY: 'false'
@@ -58,7 +57,7 @@ jobs:
       - name: Test the installed app
         shell: pwsh
         env:
-          # Enables the test-only overrides in electron/testHooks.cjs
+          # Enables the test-only overrides in electron/src/testHooks.ts
           RESOURCEPACKBUILDER_E2E: '1'
         run: node apps/resourcepackbuilder/scripts/test-windows-exe.cjs "$env:APP_EXE" exe-test
       - name: Start the portable version
