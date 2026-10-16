@@ -11,8 +11,6 @@
     },
     "itemId": "Item ID",
     "folder": "Folder",
-    "errors": "{count, plural, one {# error} other {# errors}}",
-    "warnings": "{count, plural, one {# warning} other {# warnings}}",
     "ready": "Ready",
     "copyTooltip": "Copy all properties – except name, item ID, model and folder",
     "pasteTooltip": "Paste properties from “{name}”",

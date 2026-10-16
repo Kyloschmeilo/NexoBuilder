@@ -2,10 +2,11 @@
 import { useTranslations } from 'next-intl';
 import { cn } from 'cn';
 import { countSelected, SELECT_ALL, type ExportSelection } from '@resourcepackbuilder/core/export/selection';
+import { treeRowSlots } from '@resourcepackbuilder/ui';
 import { Badge } from '@resourcepackbuilder/ui/components/badge';
 import { Spinner } from '@resourcepackbuilder/ui/components/spinner';
-import { COUNT_CLASS, GroupRow, LABEL_CLASS } from './SelectionRows';
-import { SelectionTree } from './SelectionTree';
+import { GroupRow } from '../../components/selection/SelectionRows';
+import { SelectionTree } from '../../components/selection/SelectionTree';
 import type { ProjectChoice } from './useProjectChoices';
 
 interface ProjectPickerProps {
@@ -64,13 +65,13 @@ export function ProjectPicker({
               onToggle={() => (isIncluded ? onExpand(isExpanded ? null : summary.id) : onIncludedChange(summary.id, true))}
               className="h-10 pl-2.5"
             >
-              <span className={cn(LABEL_CLASS, 'font-medium')}>{summary.name}</span>
+              <span className={cn(treeRowSlots.label, 'font-medium')}>{summary.name}</span>
               {isOpen && (
                 <Badge variant="outline" className="font-heading tracking-wider text-muted-foreground uppercase">
                   {t('open')}
                 </Badge>
               )}
-              <span className={COUNT_CLASS}>
+              <span className={treeRowSlots.count}>
                 {isIncluded && !project ? <Spinner className="size-3.5" /> : selectionSummary(choice, selection, isIncluded)}
               </span>
             </GroupRow>

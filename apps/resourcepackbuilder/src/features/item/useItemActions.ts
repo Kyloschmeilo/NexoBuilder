@@ -3,7 +3,7 @@ import { useTranslations } from 'next-intl';
 import type { Item } from '@resourcepackbuilder/core/project/types';
 import { itemLabel } from '@resourcepackbuilder/core/project/labels';
 import { copyItemProperties } from '../../commands/clipboard';
-import { deleteItem, duplicateItem } from '../../commands/items';
+import { deleteItem, duplicateItem, setItemModel } from '../../commands/items';
 import { clipboardLabel, useClipboardStore } from '../../store/clipboard';
 import { confirm, openDialog } from '../../store/dialogs';
 import { notify } from '../../shell/notify';
@@ -12,6 +12,7 @@ export function useItemActions() {
   const t = useTranslations('layout');
   const tCommon = useTranslations('common');
   const tApp = useTranslations('app');
+  const tItem = useTranslations('item');
 
   return {
     duplicate(item: Item) {
@@ -26,6 +27,16 @@ export function useItemActions() {
         destructive: true,
       });
       if (confirmed) deleteItem(item.id);
+    },
+
+    async removeModel(itemId: string) {
+      const confirmed = await confirm({
+        title: tItem('model.removeTitle'),
+        message: tItem('model.removeMessage'),
+        confirmLabel: tCommon('remove'),
+        destructive: true,
+      });
+      if (confirmed) setItemModel(itemId, null);
     },
 
     copyProperties(itemId: string) {

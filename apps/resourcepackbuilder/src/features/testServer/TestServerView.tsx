@@ -61,7 +61,6 @@ function TestServerPage({ server }: { server: TestServerState }) {
         meta={
           <>
             <StatusBadge tone={TEST_SERVER_STATUS_TONE[server.status]} data-testid="test-server-status" data-status={server.status}>
-              {isWorking && <Spinner />}
               {t(`status.${server.status}`)}
             </StatusBadge>
             {installed && (

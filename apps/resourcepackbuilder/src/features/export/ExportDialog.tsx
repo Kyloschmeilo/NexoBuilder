@@ -21,6 +21,9 @@ import { Field, FieldContent, FieldDescription, FieldLabel, FieldTitle } from '@
 import { RadioGroup, RadioGroupItem } from '@resourcepackbuilder/ui/components/radio-group';
 import { Spinner } from '@resourcepackbuilder/ui/components/spinner';
 import { DialogFrame } from '../../components/DialogFrame';
+import { useBusyAction } from '../../hooks/useBusyAction';
+import { isOneOf } from '../../lib/isOneOf';
+import { SelectionHeader } from '../../components/selection/SelectionTree';
 import { richTags } from '../../i18n/richTags';
 import { closeDialog, confirm } from '../../store/dialogs';
 import { setExportSelection, setOtherProjectIncluded, useExportChoicesStore } from '../../store/exportChoices';
@@ -36,6 +39,7 @@ const MODES: Array<{ id: ExportMode; icon: ReactNode }> = [
   { id: 'pack', icon: <Package /> },
   { id: 'items', icon: <ScrollText /> },
 ];
+const MODE_IDS = MODES.map((m) => m.id);
 
 /** The checked, loaded projects with their selection; `openProject` stands in for the open one. */
 function exportEntries(
@@ -61,7 +65,9 @@ function ModePicker({ mode, onChange }: { mode: ExportMode; onChange: (mode: Exp
   return (
     <RadioGroup
       value={mode}
-      onValueChange={(value) => onChange(MODES.find((m) => m.id === value)?.id ?? 'full')}
+      onValueChange={(value) => {
+        if (isOneOf(MODE_IDS, value)) onChange(value);
+      }}
       className="grid gap-2 @2xl/dialog:grid-cols-3"
     >
       {MODES.map((m) => (
@@ -127,7 +133,7 @@ export function ExportDialog() {
   const deferredProject = useDeferredValue(project);
   const runExport = useRunExport();
   const [mode, setMode] = useState<ExportMode>('full');
-  const [isExporting, setIsExporting] = useState(false);
+  const { isBusy: isExporting, run } = useBusyAction();
   // The open project starts checked; the other projects and all selections are remembered from last time
   const [isOpenProjectIncluded, setIsOpenProjectIncluded] = useState(true);
   const otherProjectIds = useExportChoicesStore((s) => s.otherProjectIds);
@@ -165,9 +171,7 @@ export function ExportDialog() {
       });
       if (!confirmed) return;
     }
-    setIsExporting(true);
-    const isDone = await runExport(exportEntries(choices, includedIds, selections, getProject() ?? project), mode);
-    setIsExporting(false);
+    const isDone = await run(() => runExport(exportEntries(choices, includedIds, selections, getProject() ?? project), mode));
     if (isDone) closeDialog();
   };
 
@@ -193,30 +197,12 @@ export function ExportDialog() {
 
         <div className="grid items-start gap-5 @3xl/dialog:grid-cols-2">
           <section className="flex min-w-0 flex-col gap-2">
-            <SectionLabel
-              actions={
-                <>
-                  <Button
-                    variant="ghost"
-                    size="sm"
-                    disabled={!expandedProject}
-                    onClick={() => expandedProject && setExportSelection(expandedProject.id, SELECT_ALL)}
-                  >
-                    {tSelection('all')}
-                  </Button>
-                  <Button
-                    variant="ghost"
-                    size="sm"
-                    disabled={!expandedProject}
-                    onClick={() => expandedProject && setExportSelection(expandedProject.id, selectNothing(expandedProject))}
-                  >
-                    {tSelection('none')}
-                  </Button>
-                </>
-              }
-            >
-              {tSelection('title')}
-            </SectionLabel>
+            <SelectionHeader
+              title={tSelection('title')}
+              disabled={!expandedProject}
+              onAll={() => expandedProject && setExportSelection(expandedProject.id, SELECT_ALL)}
+              onNone={() => expandedProject && setExportSelection(expandedProject.id, selectNothing(expandedProject))}
+            />
             <ProjectPicker
               choices={choices}
               includedIds={includedIds}

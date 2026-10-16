@@ -2,15 +2,14 @@ import { useTranslations } from 'next-intl';
 import { Box } from 'lucide-react';
 import type { Item } from '@resourcepackbuilder/core/project/types';
 import { itemMaterial } from '@resourcepackbuilder/core/nexo/material';
-import { DropZone } from '@resourcepackbuilder/ui';
+import { DropZone, SectionCard } from '@resourcepackbuilder/ui';
 import { setItemModel } from '../../../commands/items';
-import { EditorCard } from '../EditorCard';
 import { PropertiesPanel } from '../properties/PropertiesPanel';
 import { BlockModelsSection } from './BlockModelsSection';
 import { FurnitureModelsSection } from './FurnitureModelsSection';
 import { ModelCard } from './ModelCard';
 import { TexturesSection } from './TexturesSection';
-import { MODEL_ACCEPT } from './modelFiles';
+import { MODEL_ACCEPT } from '../../../components/modelFiles';
 import { useModelImport } from './useModelImport';
 import { VariantsSection } from './VariantsSection';
 
@@ -21,7 +20,7 @@ function NoModelCard({ item }: { item: Item }) {
   const t = useTranslations('item');
   const { importModel } = useModelImport();
   return (
-    <EditorCard
+    <SectionCard
       icon={<Box className="size-4.5" />}
       title={t('model.noneTitle')}
       description={t('model.noneDescription', { material: itemMaterial(item) })}
@@ -36,7 +35,7 @@ function NoModelCard({ item }: { item: Item }) {
         subtitle={t('model.dropSubtitle')}
         formats={MODEL_FORMATS}
       />
-    </EditorCard>
+    </SectionCard>
   );
 }
 

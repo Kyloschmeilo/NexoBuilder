@@ -7,14 +7,14 @@ import type { Project } from '@resourcepackbuilder/core/project/types';
 import { DEFAULT_MATERIAL } from '@resourcepackbuilder/core/nexo/material';
 import { useErrorMessage } from '../../i18n/errors';
 import { notify } from '../../shell/notify';
-import { readImportFiles } from '../item/model/modelFiles';
+import { readImportFiles } from '../../components/modelFiles';
 import { initialNewItemState, newItemReducer, sourceKey, type ItemMeta } from './newItemState';
 
 /** Why an entered ID cannot be used (message keys in `dialogs.newItem`). */
 export type IdError = 'idRequired' | 'idInvalid' | 'idExists' | 'idDuplicate';
 
 /** One item the dialog will create: its draft (null without a model) and what was entered for it. */
-export interface NewItemEntry {
+interface NewItemEntry {
   draft: ImportDraft | null;
   meta: ItemMeta;
   idError: IdError | null;

@@ -2,15 +2,16 @@ import { useId, useState } from 'react';
 import { useTranslations } from 'next-intl';
 import type { StringListField } from '@resourcepackbuilder/core/nexo/fields';
 import { validateTextFormat } from '@resourcepackbuilder/core/nexo/fieldFormat';
+import { FieldError } from '@resourcepackbuilder/ui/components/field';
 import { Input } from '@resourcepackbuilder/ui/components/input';
+import { useRowKeys } from '@resourcepackbuilder/ui';
 import { MiniMessageBox } from '../../miniMessage/MiniMessageBox';
 import { MiniMessageLoreLine } from '../../miniMessage/MiniMessageLine';
 import { useSchemaText } from '../../useSchemaText';
-import { FieldErrorText, FieldShell } from '../FieldShell';
+import { FieldShell } from '../FieldShell';
 import { AddButton, ListControls } from '../inputs/ListControls';
 import { Datalist } from '../inputs/TextInput';
 import type { EditorProps } from '../types';
-import { useRowKeys } from '../useRowKeys';
 import { insertAt, listOrUndefined, moveInArray, removeAt, replaceAt, toStringList } from '../values';
 
 export function StringListEditor({ field, value, onChange, hideLabel }: EditorProps<StringListField>) {
@@ -67,7 +68,7 @@ export function StringListEditor({ field, value, onChange, hideLabel }: EditorPr
                   <MiniMessageLoreLine text={entry} />
                 </MiniMessageBox>
               )}
-              {error && <FieldErrorText>{error}</FieldErrorText>}
+              <FieldError className="text-xs leading-4">{error}</FieldError>
             </div>
           );
         })}

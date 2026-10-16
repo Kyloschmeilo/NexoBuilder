@@ -4,14 +4,14 @@ import type { ImportedModel } from '@resourcepackbuilder/core/model/types';
 import type { Item } from '@resourcepackbuilder/core/project/types';
 import { itemMaterial } from '@resourcepackbuilder/core/nexo/material';
 import { variantPathSuffix, type VariantDef } from '@resourcepackbuilder/core/nexo/variants';
-import { DropZone, IconButton, pickFiles, Tip } from '@resourcepackbuilder/ui';
+import { DropZone, IconButton, pickFiles, SectionCard, Tip } from '@resourcepackbuilder/ui';
 import { Alert, AlertDescription } from '@resourcepackbuilder/ui/components/alert';
 import { Badge } from '@resourcepackbuilder/ui/components/badge';
 import { Button } from '@resourcepackbuilder/ui/components/button';
 import { removeVariant, setVariantModels, updateItem } from '../../../commands/items';
 import { moveInArray, removeAt, replaceAt } from '../../../components/editor';
-import { EditorCard } from '../EditorCard';
-import { MODEL_ACCEPT } from './modelFiles';
+import { MODEL_ACCEPT } from '../../../components/modelFiles';
+import { useSchemaText } from '../../../components/useSchemaText';
 import { useModelImport } from './useModelImport';
 import { VariantModelRow } from './VariantModelRow';
 
@@ -82,7 +82,7 @@ interface VariantCardProps {
 /** One variant of the item with its models (one, or an ordered list) and a drop zone for more. */
 export function VariantCard({ item, def, removable = true }: VariantCardProps) {
   const t = useTranslations('item');
-  const tSchema = useTranslations('schema');
+  const tSchema = useSchemaText();
   const { importModels } = useModelImport();
   const models = item.variants?.[def.slot] ?? [];
   const setModels = (next: ImportedModel[]) => setVariantModels(item.id, def.slot, next);
@@ -100,13 +100,13 @@ export function VariantCard({ item, def, removable = true }: VariantCardProps) {
   };
 
   return (
-    <EditorCard
-      title={tSchema(def.label as never)}
+    <SectionCard
+      title={tSchema(def.label)}
       badges={<VariantKindBadge def={def} />}
-      description={tSchema(def.description as never)}
+      description={tSchema(def.description)}
       actions={
         removable && (
-          <IconButton label={t('variants.remove')} tone="destructive" onClick={() => removeVariant(item.id, def.slot)}>
+          <IconButton label={t('variants.remove')} variant="ghost-destructive" onClick={() => removeVariant(item.id, def.slot)}>
             <Trash2 />
           </IconButton>
         )
@@ -116,7 +116,7 @@ export function VariantCard({ item, def, removable = true }: VariantCardProps) {
         {def.materials && <MaterialAlert item={item} materials={def.materials} />}
         {def.hint && (
           <Alert variant="info">
-            <AlertDescription>{tSchema(def.hint as never)}</AlertDescription>
+            <AlertDescription>{tSchema(def.hint)}</AlertDescription>
           </Alert>
         )}
         {models.length > 0 && (
@@ -144,6 +144,6 @@ export function VariantCard({ item, def, removable = true }: VariantCardProps) {
           />
         )}
       </div>
-    </EditorCard>
+    </SectionCard>
   );
 }

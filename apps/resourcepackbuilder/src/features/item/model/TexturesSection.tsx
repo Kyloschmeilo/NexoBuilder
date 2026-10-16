@@ -2,7 +2,7 @@ import { useTranslations } from 'next-intl';
 import type { ImportedModel } from '@resourcepackbuilder/core/model/types';
 import { parseTexturePlaceholder } from '@resourcepackbuilder/core/model/common';
 import { AutoGrid } from '@resourcepackbuilder/ui';
-import { EditorSection } from '../EditorSection';
+import { Section } from '../../../components/Section';
 import { TextureCard } from './TextureCard';
 import { TextureReferenceCard } from './TextureReferenceCard';
 
@@ -13,7 +13,7 @@ export function TexturesSection({ itemId, model }: { itemId: string; model: Impo
   const usedTextureIds = new Set(references.map(([, value]) => parseTexturePlaceholder(value)));
   const externalReferences = references.filter(([, value]) => !value.startsWith('#') && !parseTexturePlaceholder(value));
   return (
-    <EditorSection title={t('model.textures')}>
+    <Section title={t('model.textures')}>
       <AutoGrid min="16rem" className="gap-3">
         {model.textures.map((texture) => (
           <TextureCard key={texture.id} itemId={itemId} texture={texture} isUsed={usedTextureIds.has(texture.id)} />
@@ -22,6 +22,6 @@ export function TexturesSection({ itemId, model }: { itemId: string; model: Impo
           <TextureReferenceCard key={key} itemId={itemId} textureKey={key} reference={reference} />
         ))}
       </AutoGrid>
-    </EditorSection>
+    </Section>
   );
 }

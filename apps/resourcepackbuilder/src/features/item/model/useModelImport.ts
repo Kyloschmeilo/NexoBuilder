@@ -4,7 +4,7 @@ import { createDrafts } from '@resourcepackbuilder/core/model/drafts';
 import type { ImportedModel } from '@resourcepackbuilder/core/model/types';
 import { useErrorMessage } from '../../../i18n/errors';
 import { notify } from '../../../shell/notify';
-import { readImportFiles } from './modelFiles';
+import { readImportFiles } from '../../../components/modelFiles';
 
 export function useModelImport() {
   const t = useTranslations('item');

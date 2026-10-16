@@ -22,7 +22,7 @@ export function ListControls({ index, count, onMove, onRemove }: ListControlsPro
       <IconButton label={t('inputs.moveDown')} disabled={index === count - 1} onClick={() => onMove(index, index + 1)}>
         <ArrowDown />
       </IconButton>
-      <IconButton label={tCommon('remove')} tone="destructive" onClick={onRemove}>
+      <IconButton label={tCommon('remove')} variant="ghost-destructive" onClick={onRemove}>
         <Trash2 />
       </IconButton>
     </>

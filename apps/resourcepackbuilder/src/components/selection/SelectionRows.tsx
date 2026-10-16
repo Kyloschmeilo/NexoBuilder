@@ -1,26 +1,9 @@
 /** Rows shared by the export selection lists: a checkbox beside a button that opens and closes the row's children. */
 import type { CSSProperties, ReactNode } from 'react';
-import { ChevronDown, ChevronRight } from 'lucide-react';
-import { cn } from 'cn';
+import { TreeChevron, treeRow } from '@resourcepackbuilder/ui';
 import { Checkbox } from '@resourcepackbuilder/ui/components/checkbox';
 
-export type CheckState = 'all' | 'none' | 'some';
-
-export const ROW_CLASS = 'flex min-h-8 items-center gap-2 rounded-sm pr-3 text-sm text-foreground select-none hover:bg-muted';
-export const LABEL_CLASS = 'min-w-0 flex-1 truncate';
-export const COUNT_CLASS = 'font-mono text-xs whitespace-nowrap text-muted-foreground';
-export const ICON_CLASS = 'size-4 shrink-0 text-muted-foreground';
-
-/** Indentation per level of the selection tree, in pixels. */
-export const INDENT_PX = 16;
-
-export function Chevron({ isOpen }: { isOpen: boolean }) {
-  return (
-    <span className="grid w-3.5 shrink-0 place-items-center text-muted-foreground">
-      {isOpen ? <ChevronDown className="size-3.5" /> : <ChevronRight className="size-3.5" />}
-    </span>
-  );
-}
+type CheckState = 'all' | 'none' | 'some';
 
 interface GroupRowProps {
   /** Accessible name of the checkbox */
@@ -38,7 +21,7 @@ interface GroupRowProps {
 /** A row that groups others (folder, list, project): checkbox for the whole group and a toggle for its children. */
 export function GroupRow({ label, state, onCheckedChange, isOpen, onToggle, style, className, children }: GroupRowProps) {
   return (
-    <div className={cn(ROW_CLASS, className)} style={style}>
+    <div className={treeRow({ surface: 'panel', className })} style={style}>
       <Checkbox
         aria-label={label}
         checked={state === 'all'}
@@ -51,7 +34,7 @@ export function GroupRow({ label, state, onCheckedChange, isOpen, onToggle, styl
         className="flex h-full min-w-0 flex-1 cursor-pointer items-center gap-2 text-left outline-none focus-visible:underline"
         onClick={onToggle}
       >
-        <Chevron isOpen={isOpen} />
+        <TreeChevron isOpen={isOpen} />
         {children}
       </button>
     </div>
@@ -71,7 +54,7 @@ export function EntryRow({
   children: ReactNode;
 }) {
   return (
-    <label className={cn(ROW_CLASS, 'cursor-pointer')} style={style}>
+    <label className={treeRow({ surface: 'panel', className: 'cursor-pointer' })} style={style}>
       <Checkbox checked={isChecked} onCheckedChange={onCheckedChange} />
       {children}
     </label>

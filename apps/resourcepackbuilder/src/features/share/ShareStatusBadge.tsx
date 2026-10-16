@@ -1,6 +1,5 @@
 /** How the share status is shown: one tone and one text per status, used by the top bar and the share dialog. */
 import { useTranslations } from 'next-intl';
-import { Spinner } from '@resourcepackbuilder/ui/components/spinner';
 import { StatusBadge, type Tone } from '@resourcepackbuilder/ui';
 import type { ShareStatus } from '../../store/share';
 
@@ -19,13 +18,11 @@ export function useShareStatusText(): (status: ShareStatus) => string {
   return (status) => t(status);
 }
 
-/** The share status as a coloured badge, with a spinner while busy. */
+/** The share status as a coloured badge (with a spinner while busy). */
 export function ShareStatusBadge({ status }: { status: ShareStatus }) {
   const statusText = useShareStatusText();
-  const tone = SHARE_STATUS_TONE[status];
   return (
-    <StatusBadge tone={tone} data-testid="share-status" data-status={status}>
-      {tone === 'busy' && <Spinner />}
+    <StatusBadge tone={SHARE_STATUS_TONE[status]} data-testid="share-status" data-status={status}>
       {statusText(status)}
     </StatusBadge>
   );

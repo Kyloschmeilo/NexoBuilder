@@ -65,7 +65,7 @@ export function DialogFrame({
         className={cn('flex max-h-[calc(100vh-2.5rem)] flex-col gap-0 overflow-hidden p-0', SIZES[size], className)}
       >
         <DialogHeader className="px-6 pt-5 pr-12 pb-3">
-          <DialogTitle className="flex items-center gap-3 font-heading text-xl leading-6 font-semibold tracking-wider text-primary uppercase [&_svg]:size-5 [&_svg]:shrink-0">
+          <DialogTitle>
             {icon}
             {title}
           </DialogTitle>

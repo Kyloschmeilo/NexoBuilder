@@ -4,19 +4,18 @@ import type { ImportedModel } from '@resourcepackbuilder/core/model/types';
 import type { Item } from '@resourcepackbuilder/core/project/types';
 import { compareVersions, getMcVersion } from '@resourcepackbuilder/core/minecraft/versions';
 import { issuesFor } from '@resourcepackbuilder/core/issues';
-import { CollapsibleSection, pickFiles } from '@resourcepackbuilder/ui';
+import { CollapsibleSection, pickFiles, SectionCard } from '@resourcepackbuilder/ui';
 import { Alert, AlertDescription } from '@resourcepackbuilder/ui/components/alert';
 import { Button } from '@resourcepackbuilder/ui/components/button';
 import { ModelPreview } from '@resourcepackbuilder/preview';
 import { setItemModel } from '../../../commands/items';
 import { IssueList } from '../../../components/IssueList';
-import { confirm } from '../../../store/dialogs';
 import { usePlan } from '../../../store/PlanProvider';
 import { useOpenProject } from '../../../store/project';
-import { EditorCard } from '../EditorCard';
 import { ModelParentSelect } from './ModelParentSelect';
 import { ShadingOptions } from './ShadingOptions';
-import { MODEL_ACCEPT } from './modelFiles';
+import { MODEL_ACCEPT } from '../../../components/modelFiles';
+import { useItemActions } from '../useItemActions';
 import { useModelImport } from './useModelImport';
 
 const PREVIEW_HEIGHT = 360;
@@ -56,27 +55,19 @@ function ModelActions({ itemId }: { itemId: string }) {
   const t = useTranslations('item');
   const tCommon = useTranslations('common');
   const { importModel } = useModelImport();
+  const actions = useItemActions();
   const replace = async () => {
     const files = await pickFiles(MODEL_ACCEPT);
     if (!files.length) return;
     const model = await importModel(files);
     if (model) setItemModel(itemId, model);
   };
-  const remove = async () => {
-    const confirmed = await confirm({
-      title: t('model.removeTitle'),
-      message: t('model.removeMessage'),
-      confirmLabel: tCommon('remove'),
-      destructive: true,
-    });
-    if (confirmed) setItemModel(itemId, null);
-  };
   return (
     <>
       <Button variant="outline" size="sm" onClick={() => void replace()}>
         <RefreshCw /> {t('model.replace')}
       </Button>
-      <Button variant="destructive" size="sm" onClick={() => void remove()}>
+      <Button variant="destructive" size="sm" onClick={() => void actions.removeModel(itemId)}>
         <Trash2 /> {tCommon('remove')}
       </Button>
     </>
@@ -90,7 +81,7 @@ export function ModelCard({ item, model }: { item: Item; model: ImportedModel })
   const summary = useModelSummary(model);
   const issues = plan ? issuesFor(plan.issues, { kind: 'item', id: item.id }).filter((i) => i.code !== 'plan.missingModel') : [];
   return (
-    <EditorCard
+    <SectionCard
       icon={<Box className="size-4.5" />}
       title={model.fileName}
       description={summary}
@@ -113,6 +104,6 @@ export function ModelCard({ item, model }: { item: Item; model: ImportedModel })
           )}
         </div>
       </div>
-    </EditorCard>
+    </SectionCard>
   );
 }

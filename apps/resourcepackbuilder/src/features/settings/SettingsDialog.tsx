@@ -2,25 +2,16 @@ import type { ReactNode } from 'react';
 import { useTranslations } from 'next-intl';
 import { Settings } from 'lucide-react';
 import { Button } from '@resourcepackbuilder/ui/components/button';
+import { Card, CardContent } from '@resourcepackbuilder/ui/components/card';
 import { FieldDescription, FieldLegend, FieldSet } from '@resourcepackbuilder/ui/components/field';
 import { DialogFrame } from '../../components/DialogFrame';
 import { closeDialog } from '../../store/dialogs';
 import { DeviceSettings } from './DeviceSettings';
 import { ProjectSettings } from './ProjectSettings';
 
-function SettingsGroup({
-  title,
-  description,
-  className,
-  children,
-}: {
-  title: string;
-  description: string;
-  className?: string;
-  children: ReactNode;
-}) {
+function SettingsGroup({ title, description, children }: { title: string; description: string; children: ReactNode }) {
   return (
-    <FieldSet className={className}>
+    <FieldSet>
       <div>
         <FieldLegend className="font-heading tracking-wide uppercase">{title}</FieldLegend>
         <FieldDescription>{description}</FieldDescription>
@@ -40,13 +31,13 @@ export function SettingsDialog() {
         <SettingsGroup title={t('project.title')} description={t('project.description')}>
           <ProjectSettings />
         </SettingsGroup>
-        <SettingsGroup
-          title={t('device.title')}
-          description={t('device.description')}
-          className="rounded-lg border border-border bg-muted/40 p-4"
-        >
-          <DeviceSettings />
-        </SettingsGroup>
+        <Card variant="muted">
+          <CardContent>
+            <SettingsGroup title={t('device.title')} description={t('device.description')}>
+              <DeviceSettings />
+            </SettingsGroup>
+          </CardContent>
+        </Card>
       </div>
     </DialogFrame>
   );

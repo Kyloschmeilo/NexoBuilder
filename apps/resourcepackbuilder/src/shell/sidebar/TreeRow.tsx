@@ -1,12 +1,10 @@
 import type { ComponentProps, DragEvent, KeyboardEvent, ReactNode } from 'react';
 import { EllipsisVertical } from 'lucide-react';
 import { useTranslations } from 'next-intl';
-import { Tip } from '@resourcepackbuilder/ui';
+import { MenuEntries, type MenuEntry, Tip, treeRow, treeRowSlots } from '@resourcepackbuilder/ui';
 import { Button } from '@resourcepackbuilder/ui/components/button';
 import { ContextMenu, ContextMenuContent, ContextMenuTrigger } from '@resourcepackbuilder/ui/components/context-menu';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuTrigger } from '@resourcepackbuilder/ui/components/dropdown-menu';
-import { MenuEntries, type MenuEntry } from '../../components/MenuEntries';
-import { ROW_BUTTON_CLASS, rowClass } from './rowStyles';
 
 /** Enter and Space activate a focused tree row like a click. */
 export function activateOnKey(action: () => void) {
@@ -38,9 +36,9 @@ interface TreeRowProps extends Omit<ComponentProps<typeof ContextMenuTrigger>, '
 export function TreeRow({ entries, actions, isSelected, drop, children, ...rowProps }: TreeRowProps) {
   const t = useTranslations('layout.sidebar');
   return (
-    <div className={rowClass(isSelected, drop.isOver)} data-selected={isSelected || undefined} {...drop.handlers}>
+    <div className={treeRow({ selected: isSelected, dropTarget: drop.isOver })} data-selected={isSelected || undefined} {...drop.handlers}>
       <ContextMenu>
-        <ContextMenuTrigger data-testid="tree-row" aria-selected={isSelected} className={ROW_BUTTON_CLASS} {...rowProps}>
+        <ContextMenuTrigger data-testid="tree-row" aria-selected={isSelected} className={treeRowSlots.button} {...rowProps}>
           {children}
         </ContextMenuTrigger>
         <ContextMenuContent className="w-68">

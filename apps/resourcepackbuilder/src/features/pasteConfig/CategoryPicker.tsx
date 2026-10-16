@@ -1,21 +1,20 @@
 /** Which property categories are pasted, and whether they replace or extend the target's values. */
 import { useId } from 'react';
 import { useTranslations } from 'next-intl';
-import { COPY_CATEGORIES, type CategorySummary, type CopyCategory, type SummaryEntry } from '@resourcepackbuilder/core/nexo/copyConfig';
-import { SectionLabel } from '@resourcepackbuilder/ui';
+import {
+  COPY_CATEGORIES,
+  type CategorySummary,
+  type CopyCategory,
+  type PasteOptions,
+  type SummaryEntry,
+} from '@resourcepackbuilder/core/nexo/copyConfig';
+import { SectionLabel, SegmentedControl } from '@resourcepackbuilder/ui';
 import { Alert, AlertDescription } from '@resourcepackbuilder/ui/components/alert';
 import { Checkbox } from '@resourcepackbuilder/ui/components/checkbox';
 import { Field, FieldContent, FieldDescription, FieldLabel } from '@resourcepackbuilder/ui/components/field';
-import { ToggleGroup, ToggleGroupItem } from '@resourcepackbuilder/ui/components/toggle-group';
 import { useSchemaText } from '../../components/useSchemaText';
 
-export type PasteMode = 'replace' | 'merge';
-
-const PASTE_MODES = ['replace', 'merge'] as const satisfies readonly PasteMode[];
-
-function isPasteMode(value: string | undefined): value is PasteMode {
-  return PASTE_MODES.some((mode) => mode === value);
-}
+type PasteMode = PasteOptions['mode'];
 
 interface CategoryPickerProps {
   summary: CategorySummary[];
@@ -27,11 +26,9 @@ interface CategoryPickerProps {
 
 export function CategoryPicker({ summary, categories, onCategoriesChange, mode, onModeChange }: CategoryPickerProps) {
   const t = useTranslations('dialogs.pasteConfig');
-  const tSchema = useTranslations('schema');
-  const schemaText = useSchemaText();
+  const tSchema = useSchemaText();
   const id = useId();
-  // Summary keys are schema keys from core data at runtime, so they cannot be typed as literal keys here.
-  const entryText = (entry: SummaryEntry) => ('text' in entry ? entry.text : tSchema(entry.key as never, entry.params as never));
+  const entryText = (entry: SummaryEntry) => ('text' in entry ? entry.text : tSchema(entry.key, entry.params));
 
   const toggle = (category: CopyCategory) => {
     const next = new Set(categories);
@@ -52,7 +49,7 @@ export function CategoryPicker({ summary, categories, onCategoriesChange, mode, 
               <Checkbox id={checkboxId} checked={categories.has(category.id)} onCheckedChange={() => toggle(category.id)} />
               <FieldContent>
                 <FieldLabel htmlFor={checkboxId} className="font-normal">
-                  {schemaText(category.label)}
+                  {tSchema(category.label)}
                   <span className="font-mono text-xs text-muted-foreground">{entries.length > 0 ? entries.length : '–'}</span>
                 </FieldLabel>
                 <FieldDescription className="text-xs break-words">
@@ -65,23 +62,16 @@ export function CategoryPicker({ summary, categories, onCategoriesChange, mode, 
       </div>
       <div className="flex flex-col gap-1.5">
         <SectionLabel>{t('existing')}</SectionLabel>
-        <ToggleGroup
-          variant="outline"
+        <SegmentedControl
           size="sm"
-          spacing={0}
           aria-label={t('existing')}
-          value={[mode]}
-          onValueChange={([next]) => {
-            if (isPasteMode(next)) onModeChange(next);
-          }}
-        >
-          <ToggleGroupItem value="replace" className="px-3">
-            {t('replace')}
-          </ToggleGroupItem>
-          <ToggleGroupItem value="merge" className="px-3">
-            {t('merge')}
-          </ToggleGroupItem>
-        </ToggleGroup>
+          value={mode}
+          options={[
+            { value: 'replace', label: t('replace') },
+            { value: 'merge', label: t('merge') },
+          ]}
+          onChange={onModeChange}
+        />
         <p className="text-xs text-muted-foreground">{mode === 'replace' ? t('replaceHelp') : t('mergeHelp')}</p>
       </div>
       <Alert variant="info">

@@ -8,7 +8,7 @@ import { Field, FieldLabel } from '@resourcepackbuilder/ui/components/field';
 import { Input } from '@resourcepackbuilder/ui/components/input';
 import { NativeSelect, NativeSelectOption } from '@resourcepackbuilder/ui/components/native-select';
 import { AutoGrid } from '@resourcepackbuilder/ui';
-import { NamespaceProblemText, useNamespaceProblem } from './NamespaceProblem';
+import { NamespaceProblemText, useNamespaceProblem } from '../../components/NamespaceProblem';
 import { useProjectActions } from './useProjectActions';
 
 /** Slug used when even the default project name gives none. */

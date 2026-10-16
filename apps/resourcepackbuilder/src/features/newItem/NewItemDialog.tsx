@@ -3,13 +3,11 @@ import { useTranslations } from 'next-intl';
 import { Box, FilePlus2, PackagePlus, TriangleAlert } from 'lucide-react';
 import { isPngDataUrl } from '@resourcepackbuilder/core/binary/png';
 import { getFolderPathLabel } from '@resourcepackbuilder/core/project/tree';
-import { DropZone } from '@resourcepackbuilder/ui';
+import { DropZone, SectionCard, SegmentedControl } from '@resourcepackbuilder/ui';
 import { Alert, AlertDescription } from '@resourcepackbuilder/ui/components/alert';
 import { Button } from '@resourcepackbuilder/ui/components/button';
-import { Card, CardAction, CardContent, CardDescription, CardHeader, CardTitle } from '@resourcepackbuilder/ui/components/card';
 import { Field, FieldLabel } from '@resourcepackbuilder/ui/components/field';
 import { Spinner } from '@resourcepackbuilder/ui/components/spinner';
-import { ToggleGroup, ToggleGroupItem } from '@resourcepackbuilder/ui/components/toggle-group';
 import { addItems } from '../../commands/items';
 import { DialogFrame } from '../../components/DialogFrame';
 import { FolderSelect } from '../../components/FolderSelect';
@@ -18,7 +16,7 @@ import { closeDialog, type FeatureDialogProps } from '../../store/dialogs';
 import { notify } from '../../shell/notify';
 import { useOpenProject } from '../../store/project';
 import { setEditorTab } from '../../store/ui';
-import { MODEL_ACCEPT, MODEL_FORMATS } from '../item/model/modelFiles';
+import { MODEL_ACCEPT, MODEL_FORMATS } from '../../components/modelFiles';
 import { DraftCard } from './DraftCard';
 import { ItemMetaFields } from './ItemMetaFields';
 import { ignoredFileNames, sourceKey, type NewItemAction, type NewItemState } from './newItemState';
@@ -30,22 +28,16 @@ function PngModeToggle({ state, dispatch }: { state: NewItemState; dispatch: (ac
   return (
     <div className="flex flex-wrap items-center gap-2">
       <span className="text-sm text-muted-foreground">{t('multiplePngs')}</span>
-      <ToggleGroup
-        variant="outline"
+      <SegmentedControl
         size="sm"
-        spacing={0}
-        value={[state.drafts.length > 1 ? 'separate' : 'combined']}
-        onValueChange={([next]) => {
-          if (next === 'separate' || next === 'combined') dispatch({ type: 'pngModeChanged', pngMode: next });
-        }}
-      >
-        <ToggleGroupItem value="separate" className="px-3">
-          {t('pngSeparate')}
-        </ToggleGroupItem>
-        <ToggleGroupItem value="combined" className="px-3">
-          {t('pngCombined')}
-        </ToggleGroupItem>
-      </ToggleGroup>
+        aria-label={t('multiplePngs')}
+        value={state.drafts.length > 1 ? 'separate' : 'combined'}
+        options={[
+          { value: 'separate', label: t('pngSeparate') },
+          { value: 'combined', label: t('pngCombined') },
+        ]}
+        onChange={(pngMode) => dispatch({ type: 'pngModeChanged', pngMode })}
+      />
     </div>
   );
 }
@@ -130,24 +122,22 @@ export function NewItemDialog({ folderId, files: initialFiles }: FeatureDialogPr
         )}
 
         {state.isWithoutModel && (
-          <Card size="sm" className="rounded-lg">
-            <CardHeader>
-              <CardTitle className="font-heading">{t('withoutModelTitle')}</CardTitle>
-              <CardDescription>{t('withoutModelDescription')}</CardDescription>
-              <CardAction>
-                <Button variant="outline" size="sm" onClick={() => dispatch({ type: 'withoutModelChanged', isWithoutModel: false })}>
-                  {t('useModel')}
-                </Button>
-              </CardAction>
-            </CardHeader>
-            <CardContent>
-              <ItemMetaFields
-                meta={state.plainMeta}
-                idError={entries[0]?.idError ?? null}
-                onChange={(patch) => dispatch({ type: 'metaChanged', sourceKey: null, patch })}
-              />
-            </CardContent>
-          </Card>
+          <SectionCard
+            size="sm"
+            title={t('withoutModelTitle')}
+            description={t('withoutModelDescription')}
+            actions={
+              <Button variant="outline" size="sm" onClick={() => dispatch({ type: 'withoutModelChanged', isWithoutModel: false })}>
+                {t('useModel')}
+              </Button>
+            }
+          >
+            <ItemMetaFields
+              meta={state.plainMeta}
+              idError={entries[0]?.idError ?? null}
+              onChange={(patch) => dispatch({ type: 'metaChanged', sourceKey: null, patch })}
+            />
+          </SectionCard>
         )}
 
         {isOnlyPngs && <PngModeToggle state={state} dispatch={dispatch} />}

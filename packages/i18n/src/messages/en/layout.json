@@ -126,8 +126,7 @@
     "dropTitle": "Drop models here to create items",
     "dropSubtitle": "Several .bbmodel files create several items",
     "itemsHeading": "Items in this folder",
-    "subfoldersHeading": "Subfolders",
-    "errors": "{count, plural, one {# error} other {# errors}}"
+    "subfoldersHeading": "Subfolders"
   },
   "rightPanel": {
     "title": "YAML preview",

@@ -2,7 +2,7 @@ import { useTranslations } from 'next-intl';
 import type { Item } from '@resourcepackbuilder/core/project/types';
 import { isPropertyActive } from '@resourcepackbuilder/core/nexo/properties';
 import { PROPERTIES, type PropertyGroup } from '@resourcepackbuilder/core/nexo/schema';
-import { EditorSection } from '../EditorSection';
+import { Section } from '../../../components/Section';
 import { AddPropertyButton } from './AddPropertyButton';
 import { PropertyCard } from './PropertyCard';
 
@@ -15,7 +15,7 @@ export function PropertiesPanel({ item, group }: { item: Item; group: PropertyGr
   const t = useTranslations('item');
   const active = PROPERTIES.filter((p) => p.group === group && isPropertyActive(item, p));
   return (
-    <EditorSection
+    <Section
       title={t(`properties.titles.${group}`)}
       actions={<AddPropertyButton item={item} group={group} />}
       empty={
@@ -26,6 +26,6 @@ export function PropertiesPanel({ item, group }: { item: Item; group: PropertyGr
       {active.map((def) => (
         <PropertyCard key={def.id} item={item} def={def} />
       ))}
-    </EditorSection>
+    </Section>
   );
 }

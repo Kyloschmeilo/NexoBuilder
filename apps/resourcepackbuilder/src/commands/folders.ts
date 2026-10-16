@@ -6,7 +6,7 @@ import { getProject, mutate } from '../store/project';
 import { select, setExpanded } from '../store/ui';
 
 /** Takes `folderId` out of its parent's (or the top-level) folder list. */
-export function detachFolder(draft: Project, folderId: string): void {
+function detachFolder(draft: Project, folderId: string): void {
   const folder = draft.folders[folderId];
   if (!folder) return;
   const parent = folder.parentId ? draft.folders[folder.parentId] : undefined;

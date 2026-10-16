@@ -8,15 +8,12 @@ import { Field, FieldLabel } from '@resourcepackbuilder/ui/components/field';
 import { NativeSelect, NativeSelectOption } from '@resourcepackbuilder/ui/components/native-select';
 import { CheckboxField } from '../../components/CheckboxField';
 import { updateProjectSettings } from '../../commands/settings';
+import { isOneOf } from '../../lib/isOneOf';
 import { useOpenProject } from '../../store/project';
 
 type YamlFileMode = ProjectSettings['yamlFileMode'];
 
 const YAML_FILE_MODES = ['folder', 'item'] as const satisfies readonly YamlFileMode[];
-
-function isYamlFileMode(value: string): value is YamlFileMode {
-  return YAML_FILE_MODES.some((mode) => mode === value);
-}
 
 export function ExportOptions({ mode, hasSeveralProjects }: { mode: ExportMode; hasSeveralProjects: boolean }) {
   const t = useTranslations('dialogs.export');
@@ -55,7 +52,7 @@ export function ExportOptions({ mode, hasSeveralProjects }: { mode: ExportMode; 
             disabled={mode === 'pack'}
             onChange={(e) => {
               const next = e.target.value;
-              if (isYamlFileMode(next)) updateProjectSettings((p) => (p.settings.yamlFileMode = next));
+              if (isOneOf(YAML_FILE_MODES, next)) updateProjectSettings((p) => (p.settings.yamlFileMode = next));
             }}
           >
             <NativeSelectOption value="folder">{t('yamlPerFolder')}</NativeSelectOption>

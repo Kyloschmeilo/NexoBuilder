@@ -9,6 +9,7 @@ import { Command, CommandEmpty, CommandInput, CommandItem, CommandList } from '@
 import { Popover, PopoverContent, PopoverTrigger } from '@resourcepackbuilder/ui/components/popover';
 import { addProperty } from '../../../commands/items';
 import { useOpenProject } from '../../../store/project';
+import { useSchemaText } from '../../../components/useSchemaText';
 import { VersionBadges } from './VersionBadges';
 
 /** Search matches when the label, description or YAML path contains the query (the keywords hold them). */
@@ -26,7 +27,7 @@ function conflictOf(item: Item, def: PropertyDef): PropertyDef | undefined {
 export function AddPropertyButton({ item, group }: { item: Item; group: PropertyGroup }) {
   const t = useTranslations('item');
   const tCommon = useTranslations('common');
-  const tSchema = useTranslations('schema');
+  const tSchema = useSchemaText();
   const [isOpen, setIsOpen] = useState(false);
   const version = useOpenProject().settings.minecraftVersion;
   const available = PROPERTIES.filter((p) => p.group === group && !isPropertyActive(item, p));
@@ -42,8 +43,8 @@ export function AddPropertyButton({ item, group }: { item: Item; group: Property
           <CommandList className="max-h-[min(60vh,30rem)]">
             <CommandEmpty className="p-2.5 text-left text-xs text-muted-foreground">{t('properties.noneAvailable')}</CommandEmpty>
             {available.map((def) => {
-              const label = tSchema(def.label as never);
-              const description = tSchema(def.description as never);
+              const label = tSchema(def.label);
+              const description = tSchema(def.description);
               const conflict = conflictOf(item, def);
               return (
                 <CommandItem
@@ -62,7 +63,7 @@ export function AddPropertyButton({ item, group }: { item: Item; group: Property
                       <VersionBadges def={def} version={version} showBoth />
                     </span>
                     <span className="text-xs text-muted-foreground">
-                      {conflict ? t('properties.conflict', { name: tSchema(conflict.label as never) }) : description}
+                      {conflict ? t('properties.conflict', { name: tSchema(conflict.label) }) : description}
                     </span>
                   </div>
                 </CommandItem>
