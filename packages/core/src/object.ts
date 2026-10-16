@@ -73,3 +73,52 @@ export function deepMerge(base: Record<string, unknown>, patch: Record<string, u
   }
   return result;
 }
+
+/** The value at `path` inside nested objects, undefined if a level is missing or no object. */
+export function getPath(obj: Record<string, unknown>, path: readonly string[]): unknown {
+  let current: unknown = obj;
+  for (const key of path) {
+    if (!isPlainObject(current)) return undefined;
+    current = current[key];
+  }
+  return current;
+}
+
+export function hasPath(obj: Record<string, unknown>, path: readonly string[]): boolean {
+  return getPath(obj, path) !== undefined;
+}
+
+/** Sets a value (mutates `obj`); undefined removes it. Missing intermediate objects are created. */
+export function setPath(obj: Record<string, unknown>, path: readonly string[], value: unknown): void {
+  if (path.length === 0) return;
+  let current = obj;
+  for (const key of path.slice(0, -1)) {
+    const next = current[key];
+    if (!isPlainObject(next)) current[key] = {};
+    current = current[key] as Record<string, unknown>;
+  }
+  const last = path[path.length - 1];
+  if (value === undefined) delete current[last];
+  else current[last] = value;
+}
+
+/** Removes a value and cleans up parent objects that became empty (mutates `obj`). */
+export function deletePath(obj: Record<string, unknown>, path: readonly string[]): void {
+  if (path.length === 0) return;
+  const parents: Array<Record<string, unknown>> = [];
+  let current: unknown = obj;
+  for (const key of path.slice(0, -1)) {
+    if (!isPlainObject(current)) return;
+    parents.push(current);
+    current = current[key];
+  }
+  if (!isPlainObject(current)) return;
+  delete current[path[path.length - 1]];
+  // remove empty parents
+  for (let i = path.length - 2; i >= 0; i--) {
+    const parent = parents[i];
+    const child = parent[path[i]];
+    if (isPlainObject(child) && Object.keys(child).length === 0) delete parent[path[i]];
+    else break;
+  }
+}

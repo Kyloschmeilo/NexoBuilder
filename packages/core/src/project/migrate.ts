@@ -13,7 +13,7 @@ import { toArmorSettings, type ArmorSettings } from '../nexo/armor';
 import { MEDIA_KINDS, mapMediaLists } from '../nexo/media/kinds';
 import { isPlainObject } from '../object';
 import { defaultSettings, DEFAULT_PACK_NAME } from './factory';
-import { uid } from './ids';
+import { uid } from '../id';
 import { repairProject } from './repair';
 import type { ConfigObject, Folder, Item, Project, ProjectSettings } from './types';
 

@@ -2,14 +2,13 @@
 import { labelArg, type IssueContext, type MessageArgs } from '../../issues';
 import { versionSupport } from '../../minecraft/versions';
 import { slotForMaterial } from '../../nexo/armor';
-import { getPath } from '../../nexo/configPath';
 import { validateTextFormat } from '../../nexo/fieldFormat';
 import type { Field } from '../../nexo/fields';
 import { getPropertyValue } from '../../nexo/properties';
 import { MATERIAL_PATTERN } from '../../nexo/material';
 import { PROPERTIES } from '../../nexo/schema';
 import { MODEL_TOKEN } from '../../tokens';
-import { isPlainObject } from '../../object';
+import { getPath, isPlainObject } from '../../object';
 import { itemLabel } from '../../project/labels';
 import type { Item } from '../../project/types';
 import { fieldFrame, listEntryFrame, mapKeyFrame, propertyFrame } from '../../issueFrames';

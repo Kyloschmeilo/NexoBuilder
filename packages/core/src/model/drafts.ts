@@ -6,7 +6,7 @@ import { isPngDataUrl } from '../binary/png';
 import { CoreError } from '../issues';
 import { resourceBaseName } from '../minecraft/resourceLocation';
 import { isPlainObject } from '../object';
-import { uid } from '../project/ids';
+import { uid } from '../id';
 import { fileBaseName, prettyNameFromFile } from '../text';
 import { convertBBModel } from './bbmodel';
 import { convertJavaModel, parentBaseName, parseModelJson, pickMainModel } from './javaModel';

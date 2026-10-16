@@ -5,7 +5,7 @@ import { parseTexturePlaceholder } from '../tokens';
 import { validateTexture } from '../model/textures';
 import type { ImportedModel, JavaModelJson } from '../model/types';
 import { deepClone } from '../object';
-import { uniqueId } from '../project/ids';
+import { uniqueId } from '../id';
 import type { Project } from '../project/types';
 import { slugify } from '../text';
 import type { PackWriter } from './packWriter';

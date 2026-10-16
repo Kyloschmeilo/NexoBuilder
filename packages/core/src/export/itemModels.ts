@@ -5,7 +5,6 @@
  */
 import { formatResourceLocation } from '../minecraft/resourceLocation';
 import { compareVersions, FEATURE_VERSIONS } from '../minecraft/versions';
-import { getPath } from '../nexo/configPath';
 import type { ConfigAddition } from '../nexo/itemConfig';
 import {
   CONNECT_SLOTS,
@@ -18,7 +17,7 @@ import {
   type VariantDef,
   type VariantSlot,
 } from '../nexo/variants';
-import { isPlainObject } from '../object';
+import { getPath, isPlainObject } from '../object';
 import { variantFrame } from '../issueFrames';
 import { itemModelDefinitionFile } from './paths';
 import type { ItemExport } from './types';

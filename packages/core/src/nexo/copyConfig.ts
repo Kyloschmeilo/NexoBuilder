@@ -6,7 +6,7 @@
 import type { ModelTexture } from '../model/types';
 import { deepClone, isPlainObject } from '../object';
 import { referencedAssetIds } from '../project/assets';
-import { uid } from '../project/ids';
+import { uid } from '../id';
 import type { ConfigObject, ConfigValue, Item, Project } from '../project/types';
 import type { ArmorSettings } from './armor';
 import { deletePath, getPath, setPath } from './configPath';
