@@ -5,7 +5,8 @@ import { createProject } from '../project/factory';
 import { INSTALL_GUIDE_FILE } from './installGuide';
 import { planExport } from './plan';
 import { planMultiExport } from './selection';
-import { buildExportZip, buildMultiExportZip } from './zip';
+import { buildMultiExportZip } from './zip';
+import { singleExport } from '../test/export';
 import { nexoFolderFiles } from '../testServer/files';
 import { makePngDataUrl } from '../test/png';
 import type { Issue } from '../issues';
@@ -52,7 +53,7 @@ describe('sounds and paintings', () => {
       animation: { width: 16, height: 16, frametime: 4 },
     });
 
-    const result = await buildExportZip(project, plan, 'full');
+    const result = await buildMultiExportZip(singleExport(project, plan), 'full');
     expect(result.paths).toContain('sounds.yml');
     expect(result.paths).toContain('paintings.yml');
     const zip = await JSZip.loadAsync(result.data);

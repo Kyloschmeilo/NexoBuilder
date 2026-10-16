@@ -17,7 +17,7 @@ function ingredientToYaml(ingredient: RecipeIngredient): Record<string, unknown>
 }
 
 /** Removes empty border rows/columns so the recipe works at any position in the grid. */
-export function trimShape(grid: string[]): string[] {
+function trimShape(grid: string[]): string[] {
   const rows = [0, 1, 2].map((r) => [0, 1, 2].map((c) => grid[r * 3 + c] || ' '));
   const usedRows = [0, 1, 2].filter((r) => rows[r].some((ch) => ch !== ' '));
   const usedCols = [0, 1, 2].filter((c) => rows.some((row) => row[c] !== ' '));
@@ -31,6 +31,7 @@ export function trimShape(grid: string[]): string[] {
   return result;
 }
 
+/** The YAML entry of one recipe (also the unit the recipe tests check). */
 export function recipeToYaml(recipe: Recipe, item: Item): Record<string, unknown> {
   const result: Record<string, unknown> = { nexo_item: item.nexoId };
   if (recipe.resultAmount > 1) result.amount = recipe.resultAmount;

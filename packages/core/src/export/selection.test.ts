@@ -7,7 +7,8 @@ import { makePngDataUrl } from '../test/png';
 import { planExport } from './plan';
 import { countSelected, planMultiExport, selectFromProject, selectNothing } from './selection';
 import { INSTALL_GUIDE_FILE } from './installGuide';
-import { buildMultiExportZip, listExportPaths, listMultiExportPaths } from './zip';
+import { buildMultiExportZip, listMultiExportPaths } from './zip';
+import { singleExport } from '../test/export';
 import type { Project } from '../project/types';
 
 const PNG16 = makePngDataUrl(16, 16);
@@ -42,7 +43,7 @@ describe('Export selection within a project', () => {
     expect(countSelected(p, selection)).toEqual({ items: 1, glyphs: 0, sounds: 0, paintings: 0 });
 
     const plan = planExport(subset);
-    const paths = listExportPaths(subset, plan, 'full');
+    const paths = listMultiExportPaths(singleExport(subset, plan), 'full');
     expect(paths).toContain('items/waffen/waffen.yml');
     expect(paths).toContain('pack/external_packs/mein_pack/assets/meinpack/models/item/waffen/ruby_sword.json');
     expect(paths.some((x) => x.includes('axe'))).toBe(false);
@@ -134,7 +135,7 @@ describe('Export of multiple projects', () => {
   it('behaves exactly like the normal export with a single project', () => {
     const a = project('Alpha', 'alpha', { weapons: ['a1'], furniture: ['a2'] });
     const multi = planMultiExport([{ project: a }]);
-    expect(listMultiExportPaths(multi, 'full')).toEqual(listExportPaths(a, planExport(a), 'full'));
+    expect(listMultiExportPaths(multi, 'full')).toEqual(listMultiExportPaths(singleExport(a, planExport(a)), 'full'));
     expect(multi.issues.every((i) => !i.projectId)).toBe(true);
   });
 });

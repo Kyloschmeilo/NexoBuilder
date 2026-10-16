@@ -1,7 +1,8 @@
 import { describe, expect, it } from 'vitest';
 import { parse } from 'yaml';
 import { planExport } from '../../export/plan';
-import { buildExportZip } from '../../export/zip';
+import { buildMultiExportZip } from '../../export/zip';
+import { singleExport } from '../../test/export';
 import { createProject } from '../../project/factory';
 import { makePngDataUrl } from '../../test/png';
 import { createGlyph, glyphFileFromDataUrl } from './model';
@@ -48,7 +49,7 @@ describe('glyphs', () => {
     });
     expect(plan.packFiles.has('assets/emojis/textures/glyphs/heart.png')).toBe(true);
     expect(plan.packFiles.has('assets/emojis/textures/glyphs/cat.gif')).toBe(true);
-    const zip = await buildExportZip(project, plan, 'full');
+    const zip = await buildMultiExportZip(singleExport(project, plan), 'full');
     expect(zip.paths).toContain('glyphs/emoji_pack.yml');
     expect(zip.paths).toContain('pack/external_packs/emoji_pack/assets/emojis/textures/glyphs/heart.png');
   });

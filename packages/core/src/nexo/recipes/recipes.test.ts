@@ -1,9 +1,10 @@
 import { describe, expect, it } from 'vitest';
 import { parse } from 'yaml';
 import { planExport } from '../../export/plan';
-import { buildExportZip } from '../../export/zip';
+import { buildMultiExportZip } from '../../export/zip';
+import { singleExport } from '../../test/export';
 import { createFolder, createItem, createProject, insertFolder, insertItem } from '../../project/factory';
-import { buildRecipeFiles, recipeToYaml, trimShape } from './files';
+import { buildRecipeFiles, recipeToYaml } from './files';
 import { createRecipe } from './model';
 import { validateRecipe } from './validate';
 
@@ -16,12 +17,14 @@ function setup() {
   return { project, item };
 }
 
-describe('trimShape', () => {
+describe('recipe shape', () => {
   it('removes empty border rows and columns', () => {
-    expect(trimShape(['', 'A', '', '', 'A', '', '', 'B', ''])).toEqual(['A', 'A', 'B']);
-    expect(trimShape(['A', 'A', '', 'A', 'A', '', '', '', ''])).toEqual(['AA', 'AA']);
-    expect(trimShape(['A', '', 'A', '', 'B', '', 'A', '', 'A'])).toEqual(['A A', ' B ', 'A A']);
-    expect(trimShape(Array(9).fill(''))).toEqual([]);
+    const { item } = setup();
+    const shapeOf = (grid: string[]) => recipeToYaml({ ...createRecipe('shaped', 'r'), grid }, item).shape;
+    expect(shapeOf(['', 'A', '', '', 'A', '', '', 'B', ''])).toEqual(['A', 'A', 'B']);
+    expect(shapeOf(['A', 'A', '', 'A', 'A', '', '', '', ''])).toEqual(['AA', 'AA']);
+    expect(shapeOf(['A', '', 'A', '', 'B', '', 'A', '', 'A'])).toEqual(['A A', ' B ', 'A A']);
+    expect(shapeOf(Array(9).fill(''))).toEqual([]);
   });
 });
 
@@ -101,9 +104,9 @@ describe('recipes', () => {
 
     const plan = planExport(project);
     expect(plan.recipeFiles.size).toBe(2);
-    const zip = await buildExportZip(project, plan, 'full');
+    const zip = await buildMultiExportZip(singleExport(project, plan), 'full');
     expect(zip.paths).toContain('recipes/shaped/rezept_test.yml');
-    const pack = await buildExportZip(project, plan, 'pack');
+    const pack = await buildMultiExportZip(singleExport(project, plan), 'pack');
     expect(pack.paths.some((p) => p.startsWith('recipes/'))).toBe(false);
   });
 });

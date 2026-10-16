@@ -8,7 +8,7 @@ import { INSTALL_GUIDE_FILE, installGuide } from './installGuide';
 import { exportPackName, packLocation } from './paths';
 import { buildRootFiles } from './rootFiles';
 import type { MultiExportPlan } from './selection';
-import type { ExportMode, ExportPlan, FileContent } from './types';
+import type { ExportMode, FileContent } from './types';
 
 export interface ExportResult {
   fileName: string;
@@ -22,10 +22,6 @@ export type ArchiveEntry = { content: FileContent } | { zip: Map<string, FileCon
 
 /** Fixed timestamps ensure that the same content yields the same ZIP. */
 const FIXED_DATE = new Date(Date.UTC(2020, 0, 1, 0, 0, 0));
-
-function single(project: Project, plan: ExportPlan): MultiExportPlan {
-  return { projects: [{ project, plan }], issues: plan.issues };
-}
 
 function addAll(entries: Map<string, ArchiveEntry>, files: Map<string, FileContent>, prefix = ''): void {
   for (const [path, content] of files) entries.set(prefix + path, { content });
@@ -76,16 +72,8 @@ function packPrefix(multi: MultiExportPlan, project: Project): string {
 }
 
 /** Lists the paths that end up in the archive (without creating it). */
-export function listExportPaths(project: Project, plan: ExportPlan, mode: ExportMode): string[] {
-  return listMultiExportPaths(single(project, plan), mode);
-}
-
 export function listMultiExportPaths(multi: MultiExportPlan, mode: ExportMode): string[] {
   return [...archiveEntries(multi, mode).keys()].sort();
-}
-
-export async function buildExportZip(project: Project, plan: ExportPlan, mode: ExportMode): Promise<ExportResult> {
-  return buildMultiExportZip(single(project, plan), mode);
 }
 
 export async function buildMultiExportZip(multi: MultiExportPlan, mode: ExportMode): Promise<ExportResult> {

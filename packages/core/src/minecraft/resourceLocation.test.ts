@@ -2,10 +2,24 @@ import { describe, expect, it } from 'vitest';
 import {
   formatResourceLocation,
   isVanillaReference,
+  itemIdSyntaxError,
+  namespaceError,
   parseResourceLocation,
   resourceBaseName,
   stripMinecraftNamespace,
 } from './resourceLocation';
+
+describe('identifiers', () => {
+  it('classifies namespaces and item IDs', () => {
+    expect(namespaceError('mein-pack')).toBeNull();
+    expect(namespaceError('Mein Pack')).toBe('invalid');
+    expect(namespaceError('minecraft')).toBe('minecraft');
+    expect(namespaceError('nexo')).toBe('nexo');
+    expect(itemIdSyntaxError('')).toBe('missing');
+    expect(itemIdSyntaxError('Ruby')).toBe('invalid');
+    expect(itemIdSyntaxError('ruby_2')).toBeNull();
+  });
+});
 
 describe('resource locations', () => {
   it('parses and formats namespace:path', () => {

@@ -1,5 +1,4 @@
 /** Identifier rules of Minecraft resource packs and Nexo. */
-import { toIdentifier } from '../text';
 
 /** Nexo item IDs (also used as a path in the resource pack), glyph and painting IDs. */
 export const ITEM_ID_PATTERN = /^[a-z0-9_]+$/;
@@ -56,11 +55,6 @@ export const SOUND_ID_CHARS = 'a-z0-9_.-';
  */
 export function normalizeTypedId(text: string, allowed: string = ID_CHARS): string {
   return text.toLowerCase().replace(new RegExp(`[^${allowed}]`, 'g'), '_');
-}
-
-/** Turns arbitrary text into a namespace-style ID (a-z, 0-9, _ . -), e.g. for sound IDs. */
-export function sanitizeId(text: string, fallback: string): string {
-  return toIdentifier(text, SOUND_ID_CHARS, fallback);
 }
 
 export type NamespaceError = 'invalid' | 'minecraft' | 'nexo';
