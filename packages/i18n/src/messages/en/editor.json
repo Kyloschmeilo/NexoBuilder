@@ -1,0 +1,46 @@
+{
+  "miniMessage": {
+    "unnamed": "Unnamed"
+  },
+  "inputs": {
+    "default": "Default",
+    "defaultWithHint": "Default ({value})",
+    "defaultTooltip": "Not set – Nexo uses the default value",
+    "allowedRange": "Allowed: {min} to {max}",
+    "selectOrType": "Select or type",
+    "notSetOption": "– not set –",
+    "placeholderOption": "– {placeholder} –",
+    "moveUp": "Move up",
+    "moveDown": "Move down",
+    "pickColor": "Pick colour"
+  },
+  "field": {
+    "minVersion": "from {version}",
+    "minVersionTooLow": "Requires Minecraft {version} or newer",
+    "countSet": "{count} set",
+    "clearSection": "Clear section",
+    "addEntry": "Add entry",
+    "addItem": "Add {item}",
+    "keyTaken": "“{key}” already exists.",
+    "yamlError": "YAML error: {error}",
+    "noTexture": "No texture yet",
+    "noTextureHint": "No texture yet (recommended: {size})",
+    "replace": "Replace",
+    "uploadPng": "Upload PNG"
+  },
+  "typed": {
+    "entry": "Entry",
+    "typePlaceholder": "Choose or type a type",
+    "chooseType": "Choose a type to see its keys.",
+    "unknownType": "The form has no fields for “{type}”. Edit this entry as YAML.",
+    "invert": "Invert",
+    "invertHint": "Writes a leading ! before the type, which negates the condition.",
+    "value": "Value",
+    "valueHint": "A number, a range like 1~3 or an expression",
+    "valuePlaceholder": "1, 1~3 or an expression",
+    "object": "Type",
+    "objectHint": "A typed number provider, such as uniform",
+    "premium": "Premium",
+    "premiumHint": "Only CraftEngine Premium reads this type."
+  }
+}

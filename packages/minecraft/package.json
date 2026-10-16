@@ -1,0 +1,25 @@
+{
+  "name": "@resourcepackbuilder/minecraft",
+  "private": true,
+  "version": "0.0.0",
+  "description": "Minecraft resource-pack knowledge without the project model: versions, resource locations, the vanilla catalog and models, file sniffing (PNG/GIF/OGG), MiniMessage and the Blockbench/Java model import.",
+  "type": "module",
+  "sideEffects": false,
+  "exports": {
+    ".": "./src/index.ts"
+  },
+  "scripts": {
+    "typecheck": "tsc -b",
+    "test": "vitest run",
+    "lint": "eslint ."
+  },
+  "dependencies": {
+    "@resourcepackbuilder/utils": "*",
+    "zod": "^4.6.7"
+  },
+  "devDependencies": {
+    "@resourcepackbuilder/config": "*",
+    "@resourcepackbuilder/test-utils": "*",
+    "vitest": "^5.0.3"
+  }
+}

@@ -1,0 +1,2198 @@
+{
+  "groups": {
+    "general": {
+      "label": "General",
+      "description": "Lore, Unbreakable, ItemFlags and more"
+    },
+    "appearance": {
+      "label": "Pack & Appearance",
+      "description": "Pack options, CustomArmor and Color"
+    },
+    "attributes": {
+      "label": "AttributeModifiers & Enchantments",
+      "description": "Attributes and enchantments"
+    },
+    "components": {
+      "label": "Components",
+      "description": "Minecraft data components (Food, Tool, Equippable …)"
+    },
+    "mechanics": {
+      "label": "Mechanics",
+      "description": "Nexo mechanics (Furniture, Custom Block, Backpack, Commands …)"
+    }
+  },
+  "validation": {
+    "duration": "Expects a duration such as 20t, 1.5s, 2m",
+    "vector": "Expects x,y,z – e.g. 0,0.5,0",
+    "color": "Expects R, G, B – e.g. 255, 128, 0",
+    "colorRange": "Values must be between 0 and 255",
+    "range": "Expects a number or a range such as 1..3",
+    "resource": "Expects a key such as namespace:path (lowercase only)"
+  },
+  "armor": {
+    "layers": {
+      "layer1": "Layer 1",
+      "layer2": "Layer 2",
+      "elytra": "Elytra",
+      "wolfArmor": "Wolf Armor",
+      "horseArmor": "Horse Armor",
+      "llamaArmor": "Llama Armor",
+      "nautilusArmor": "Nautilus Armor",
+      "harness": "Harness",
+      "pigSaddle": "Pig Saddle",
+      "striderSaddle": "Strider Saddle",
+      "horseSaddle": "Horse Saddle",
+      "donkeySaddle": "Donkey Saddle",
+      "muleSaddle": "Mule Saddle",
+      "camelSaddle": "Camel Saddle",
+      "skeletonHorseSaddle": "Skeleton Horse Saddle",
+      "zombieHorseSaddle": "Zombie Horse Saddle",
+      "nautilusSaddle": "Nautilus Saddle",
+      "camelHuskSaddle": "Camel Husk Saddle"
+    }
+  },
+  "variants": {
+    "pullingModels": {
+      "label": "Pulling Models",
+      "description": "Bow/crossbow: models while drawing – usually 3 stages."
+    },
+    "chargedModel": {
+      "label": "Charged Model",
+      "description": "Crossbow: loaded with an arrow."
+    },
+    "fireworkModel": {
+      "label": "Firework Model",
+      "description": "Crossbow: loaded with a firework rocket (optional)."
+    },
+    "blockingModel": {
+      "label": "Blocking Model",
+      "description": "Shield: while blocking.",
+      "hint": "Instead of the SHIELD material, the “Blocks Attacks” component can be used from 1.21.5 on."
+    },
+    "castModel": {
+      "label": "Cast Model",
+      "description": "Fishing rod: line cast."
+    },
+    "throwingModel": {
+      "label": "Throwing Model",
+      "description": "Trident: while winding up to throw – usually the rotated main model.",
+      "hint": "Set the look in flight, damage and sounds under “Mechanics → Trident”."
+    },
+    "damagedModels": {
+      "label": "Damaged Models",
+      "description": "Models shown one after another as durability decreases.",
+      "hint": "The item needs durability (a material with durability or the “Max Damage” component)."
+    },
+    "dyeableModel": {
+      "label": "Dyeable Model",
+      "description": "Model shown when the item has been dyed (/nexo dye).",
+      "hint": "For dyeing, the faces in the model must have “Tint” enabled (Blockbench: Paint tab → Tint)."
+    },
+    "compositeModels": {
+      "label": "Composite Models",
+      "description": "Several models drawn on top of each other (e.g. background, item, overlay)."
+    },
+    "guiModel": {
+      "label": "GUI Model",
+      "description": "A different model in the inventory (e.g. a flat 2D image), while the main model is shown in hand, on the head or as furniture.",
+      "hint": "ResourcepackBuilder generates its own ItemModel for this (Minecraft 1.21.4+). Pulling, Blocking and the like then no longer apply."
+    },
+    "connectStraight": {
+      "label": "Straight",
+      "description": "Middle piece between the left and right end"
+    },
+    "connectLeft": {
+      "label": "Left",
+      "description": "Left end"
+    },
+    "connectRight": {
+      "label": "Right",
+      "description": "Right end"
+    },
+    "connectInner": {
+      "label": "Inner",
+      "description": "Inner corner"
+    },
+    "connectOuter": {
+      "label": "Outer",
+      "description": "Outer corner"
+    },
+    "placementFloor": {
+      "label": "Floor",
+      "description": "Placed on top of a block"
+    },
+    "placementWall": {
+      "label": "Wall",
+      "description": "Attached to the side of a block"
+    },
+    "placementRoof": {
+      "label": "Roof",
+      "description": "Hung below a block"
+    },
+    "lightOn": {
+      "label": "Toggled (Light On)",
+      "description": "Model when the light is switched on"
+    },
+    "stackModels": {
+      "label": "Stackable",
+      "description": "Additional models when the same block is placed several times in one spot (like pink petals)."
+    },
+    "state": {
+      "label": "{name}",
+      "description": "Model in state “{name}”"
+    }
+  },
+  "recipes": {
+    "types": {
+      "shaped": {
+        "label": "Shaped",
+        "description": "Crafting table: ingredients must be arranged in a specific pattern."
+      },
+      "shapeless": {
+        "label": "Shapeless",
+        "description": "Crafting table: ingredients can be anywhere in the grid."
+      },
+      "furnace": {
+        "label": "Furnace",
+        "description": "Smelting in a regular furnace."
+      },
+      "blasting": {
+        "label": "Blasting",
+        "description": "Smelting in a blast furnace."
+      },
+      "smoking": {
+        "label": "Smoking",
+        "description": "Cooking in a smoker."
+      },
+      "campfire": {
+        "label": "Campfire",
+        "description": "Cooking on a campfire."
+      },
+      "stonecutting": {
+        "label": "Stonecutting",
+        "description": "One ingredient is processed in a stonecutter."
+      }
+    },
+    "sources": {
+      "minecraft": "Minecraft item",
+      "nexo": "Nexo item",
+      "tag": "Item tag"
+    }
+  },
+  "copy": {
+    "categories": {
+      "material": {
+        "label": "Material",
+        "description": "Base material (e.g. DIAMOND_SWORD)"
+      },
+      "other": {
+        "label": "Other values",
+        "description": "Values without their own form (e.g. from imported configs)"
+      },
+      "rawYaml": {
+        "label": "Additional YAML (YAML tab)",
+        "description": "The content of the YAML tab"
+      },
+      "recipes": {
+        "label": "Recipes",
+        "description": "Crafting recipes – caution: identical recipes for several items conflict in game"
+      }
+    },
+    "rawYamlLines": "{count, plural, one {# line} other {# lines}}"
+  },
+  "shared": {
+    "sound": {
+      "placeholder": "e.g. block.stone.place"
+    },
+    "potionEffect": {
+      "consumable": {
+        "fields": {
+          "duration": {
+            "label": "Duration",
+            "placeholder": "e.g. 10s or 200t"
+          },
+          "amplifier": {
+            "label": "Level (0 = I)"
+          },
+          "probability": {
+            "label": "Probability",
+            "placeholder": "1.0"
+          },
+          "ambient": {
+            "label": "Ambient (subtle particles)"
+          },
+          "showIcon": {
+            "label": "Show icon"
+          },
+          "showParticles": {
+            "label": "Show particles"
+          }
+        }
+      },
+      "armor": {
+        "fields": {
+          "duration": {
+            "label": "Duration",
+            "placeholder": "e.g. 10t"
+          },
+          "amplifier": {
+            "label": "Level (0 = I)"
+          },
+          "ambient": {
+            "label": "Ambient (subtle particles)"
+          },
+          "particles": {
+            "label": "Show particles"
+          },
+          "icon": {
+            "label": "Show icon"
+          },
+          "requiresFullSet": {
+            "label": "Only with full armor set"
+          }
+        }
+      }
+    },
+    "consumeEffects": {
+      "fields": {
+        "applyEffects": {
+          "label": "Apply effects",
+          "keyLabel": "Effect"
+        },
+        "removeEffects": {
+          "label": "Remove effects",
+          "placeholder": "e.g. poison"
+        },
+        "clearAllEffects": {
+          "label": "Clear all effects (like milk)"
+        },
+        "teleportRandomly": {
+          "label": "Teleport randomly (like chorus fruit)",
+          "fields": {
+            "diameter": {
+              "label": "Diameter",
+              "placeholder": "16.0"
+            }
+          }
+        },
+        "playSound": {
+          "label": "Play sound",
+          "fields": {
+            "sound": {
+              "label": "Sound"
+            }
+          }
+        }
+      }
+    },
+    "drop": {
+      "label": "Drops",
+      "help": "Without “Loot” entries the item drops itself.",
+      "fields": {
+        "silktouch": {
+          "label": "Silk Touch drops the block itself"
+        },
+        "fortune": {
+          "label": "Fortune increases the amount"
+        },
+        "minimalType": {
+          "label": "Minimum tool tier"
+        },
+        "bestTool": {
+          "label": "Best tool"
+        },
+        "loots": {
+          "label": "Loot",
+          "itemLabel": "Loot entry",
+          "fields": {
+            "nexoItem": {
+              "label": "Nexo item",
+              "placeholder": "Item ID"
+            },
+            "minecraftType": {
+              "label": "or Minecraft item"
+            },
+            "amount": {
+              "label": "Amount",
+              "placeholder": "1 or 1..3"
+            },
+            "probability": {
+              "label": "Probability"
+            },
+            "inExplosion": {
+              "label": "Also drop on explosion"
+            }
+          }
+        }
+      }
+    },
+    "blockSounds": {
+      "label": "Block sounds",
+      "fields": {
+        "placeSound": {
+          "label": "Place"
+        },
+        "breakSound": {
+          "label": "Break"
+        },
+        "hitSound": {
+          "label": "Hit"
+        },
+        "stepSound": {
+          "label": "Step"
+        },
+        "fallSound": {
+          "label": "Fall"
+        }
+      }
+    },
+    "storage": {
+      "label": "Storage (chest)",
+      "fields": {
+        "type": {
+          "label": "Type"
+        },
+        "rows": {
+          "label": "Rows",
+          "placeholder": "6"
+        },
+        "title": {
+          "label": "Title",
+          "placeholder": "Storage"
+        },
+        "openSound": {
+          "label": "Sound on open"
+        },
+        "closeSound": {
+          "label": "Sound on close"
+        }
+      }
+    },
+    "limitedPlacing": {
+      "label": "Limited placing",
+      "fields": {
+        "floor": {
+          "label": "On the floor"
+        },
+        "wall": {
+          "label": "On walls"
+        },
+        "roof": {
+          "label": "On the ceiling"
+        },
+        "type": {
+          "label": "List is",
+          "options": {
+            "allow": {
+              "label": "ALLOW – only on these blocks"
+            },
+            "deny": {
+              "label": "DENY – not on these blocks"
+            }
+          }
+        },
+        "blockTypes": {
+          "label": "Block types",
+          "placeholder": "e.g. GRASS_BLOCK"
+        },
+        "blockTags": {
+          "label": "Block tags",
+          "placeholder": "e.g. base_stone_nether"
+        },
+        "nexoBlocks": {
+          "label": "Nexo blocks/furniture",
+          "placeholder": "Item ID"
+        },
+        "radiusLimitation": {
+          "label": "Radius limitation",
+          "fields": {
+            "radius": {
+              "label": "Radius"
+            },
+            "amount": {
+              "label": "Maximum amount"
+            }
+          }
+        }
+      }
+    },
+    "blockLocker": {
+      "label": "BlockLocker protection",
+      "fields": {
+        "canProtect": {
+          "label": "Protectable"
+        },
+        "protectionType": {
+          "label": "Protection type"
+        }
+      }
+    },
+    "furnitureStates": {
+      "label": "States (cycle by clicking)",
+      "help": "Each click switches to the next state; the default state is always included. Upload models for the states in the “Model & Pack” tab.",
+      "fields": {
+        "nextAfter": {
+          "label": "Advance automatically after",
+          "placeholder": "e.g. 3s"
+        },
+        "resetAfter": {
+          "label": "Reset automatically after",
+          "placeholder": "e.g. 10s"
+        },
+        "condition": {
+          "label": "Condition for switching",
+          "placeholder": "e.g. hasPermission(''nexo.tv.use'')"
+        },
+        "entries": {
+          "label": "States",
+          "keyLabel": "State name",
+          "keyPlaceholder": "e.g. on",
+          "value": {
+            "fields": {
+              "type": {
+                "label": "Kind",
+                "placeholder": "ITEM_MODEL (model from the model tab)",
+                "options": {
+                  "itemModel": {
+                    "label": "ITEM_MODEL – different model"
+                  },
+                  "furniture": {
+                    "label": "FURNITURE – model + own furniture values"
+                  },
+                  "customModelData": {
+                    "label": "CUSTOM_MODEL_DATA – different CustomModelData"
+                  },
+                  "modelengine": {
+                    "label": "MODELENGINE – different ModelEngine model"
+                  },
+                  "animation": {
+                    "label": "ANIMATION – play ModelEngine animation"
+                  },
+                  "modelengineAnim": {
+                    "label": "MODELENGINE_ANIM – model + animation"
+                  },
+                  "default": {
+                    "label": "DEFAULT – only remember the state"
+                  }
+                }
+              },
+              "itemModel": {
+                "label": "ItemModel (empty = uploaded model)"
+              },
+              "value": {
+                "label": "CustomModelData value"
+              },
+              "blueprint": {
+                "label": "ModelEngine blueprint"
+              },
+              "animation": {
+                "label": "Animation"
+              },
+              "lerpIn": {
+                "label": "Fade in"
+              },
+              "lerpOut": {
+                "label": "Fade out"
+              },
+              "speed": {
+                "label": "Speed"
+              },
+              "properties": {
+                "label": "Display in this state",
+                "placeholder": "translation: 0,0.5,0"
+              },
+              "hitbox": {
+                "label": "Hitbox in this state",
+                "placeholder": "barriers:\n  - 0,0,0"
+              },
+              "nextAfter": {
+                "label": "Advance automatically after"
+              },
+              "resetAfter": {
+                "label": "Reset automatically after"
+              },
+              "conditions": {
+                "label": "Conditions for this state",
+                "placeholder": "hasPermission(''nexo.tv.premium'')"
+              }
+            }
+          }
+        }
+      }
+    },
+    "textEntities": {
+      "label": "Text displays",
+      "help": "Floating text (glyphs too) on the furniture, e.g. a sign or a price display.",
+      "itemLabel": "Text",
+      "fields": {
+        "text": {
+          "label": "Text (lines, MiniMessage)",
+          "placeholder": "'<'gold>Welcome"
+        },
+        "offset": {
+          "label": "Position relative to the furniture (x,y,z)",
+          "placeholder": "0,1,0"
+        },
+        "lineWidth": {
+          "label": "Line width",
+          "placeholder": "200"
+        },
+        "textOpacity": {
+          "label": "Opacity (-1 = full)"
+        },
+        "backgroundColor": {
+          "label": "Background color",
+          "placeholder": "#AARRGGBB or a,r,g,b"
+        },
+        "alignment": {
+          "label": "Alignment",
+          "options": {
+            "left": {
+              "label": "Left"
+            },
+            "center": {
+              "label": "Center"
+            },
+            "right": {
+              "label": "Right"
+            }
+          }
+        },
+        "trackingRotation": {
+          "label": "Face the player"
+        },
+        "shadow": {
+          "label": "Shadow"
+        },
+        "seeThrough": {
+          "label": "Visible through blocks"
+        },
+        "translation": {
+          "label": "Translation (x,y,z)"
+        },
+        "scale": {
+          "label": "Scale (x,y,z)"
+        }
+      }
+    },
+    "clickActions": {
+      "label": "Click actions",
+      "help": "Actions: [console] command, [player] command, [message] text, [actionbar] text, '{'source=AMBIENT volume=1 pitch=1'}' [sound] sound",
+      "itemLabel": "Action",
+      "fields": {
+        "conditions": {
+          "label": "Conditions",
+          "placeholder": "#player.hasPermission(\"my.permission\")"
+        },
+        "actions": {
+          "label": "Actions",
+          "placeholder": "[console] say hello '<'player>"
+        }
+      }
+    }
+  },
+  "properties": {
+    "lore": {
+      "label": "Lore",
+      "description": "Text lines below the item name (MiniMessage, e.g. '<'gray>).",
+      "field": {
+        "label": "Lines",
+        "placeholder": "'<'gray>A line"
+      }
+    },
+    "unbreakable": {
+      "label": "Unbreakable",
+      "description": "The item does not lose durability.",
+      "field": {
+        "label": "Unbreakable"
+      }
+    },
+    "excludeFromInventory": {
+      "label": "Exclude From Inventory",
+      "description": "The item does not appear in /nexo inventory but can still be given with /nexo give.",
+      "field": {
+        "label": "Hide"
+      }
+    },
+    "excludeFromCommands": {
+      "label": "Exclude From Commands",
+      "description": "The item does not show up in command completion (e.g. for helper items).",
+      "field": {
+        "label": "Hide from commands"
+      }
+    },
+    "template": {
+      "label": "Template",
+      "description": "Inherits all properties of another Nexo item.",
+      "field": {
+        "label": "Template item ID",
+        "placeholder": "e.g. template_item"
+      }
+    },
+    "itemFlags": {
+      "label": "ItemFlags",
+      "description": "Hides parts of the tooltip. From 1.21.5 on, prefer the “Tooltip Display” component.",
+      "field": {
+        "label": "Flags"
+      }
+    },
+    "persistentData": {
+      "label": "PersistentData",
+      "description": "Custom data in the item''s PersistentDataContainer (PublicBukkitValues).",
+      "field": {
+        "label": "Entries",
+        "itemLabel": "Entry",
+        "fields": {
+          "type": {
+            "label": "Type"
+          },
+          "key": {
+            "label": "Key",
+            "placeholder": "namespace:key"
+          },
+          "value": {
+            "label": "Value"
+          }
+        }
+      }
+    },
+    "color": {
+      "label": "Color",
+      "description": "Tints dyeable items (e.g. leather armor) or faces with “Tint” in the model.",
+      "field": {
+        "label": "Color (R, G, B)",
+        "placeholder": "255, 128, 0"
+      }
+    },
+    "packOversizedInGui": {
+      "label": "Oversized In GUI",
+      "description": "Lets models extend beyond the 16×16 slot in the inventory.",
+      "field": {
+        "label": "Oversized in inventory"
+      }
+    },
+    "packCustomModelData": {
+      "label": "Custom Model Data (Pack)",
+      "description": "Only needed if other plugins must recognize the item by CustomModelData. Otherwise Nexo assigns it itself.",
+      "field": {
+        "label": "CustomModelData"
+      }
+    },
+    "armor": {
+      "label": "CustomArmor (Armor, Elytra, Mob Armor, Harness, Saddles)",
+      "description": "Texture shown when worn: player armor, elytra wings, armor for wolf/horse/llama/nautilus, harness for the happy ghast, or saddles. ResourcepackBuilder generates an equipment model in the pack from it and sets Components.equippable (slot, asset_id, allowed animals).",
+      "hint": "All parts of a set get the same set ID; the textures only need to be uploaded on one part. Elytras, animal armor and saddles each need their own set ID.",
+      "field": {
+        "label": "Armor",
+        "fields": {
+          "set": {
+            "label": "Set ID",
+            "placeholder": "e.g. ruby"
+          },
+          "layer1": {
+            "label": "Player: Layer 1 (helmet, chestplate, boots)",
+            "help": "Corresponds to e.g. diamond_layer_1.png"
+          },
+          "layer2": {
+            "label": "Player: Layer 2 (leggings)",
+            "help": "Corresponds to e.g. diamond_layer_2.png"
+          },
+          "elytra": {
+            "label": "Elytra wings",
+            "help": "Like elytra.png. Without material ELYTRA, ResourcepackBuilder adds the glider component automatically."
+          },
+          "mob": {
+            "label": "Animal armor & harness",
+            "fields": {
+              "wolfArmor": {
+                "label": "Wolf armor",
+                "help": "Like wolf_armor.png"
+              },
+              "horseArmor": {
+                "label": "Horse armor",
+                "help": "Like horse_armor_diamond.png"
+              },
+              "llamaArmor": {
+                "label": "Llama carpet",
+                "help": "Like llama/decor/*.png"
+              },
+              "nautilusArmor": {
+                "label": "Nautilus armor"
+              },
+              "harness": {
+                "label": "Harness (happy ghast)"
+              }
+            }
+          },
+          "saddles": {
+            "label": "Saddles (1.21.5+)",
+            "help": "A saddle can have textures for several animals.",
+            "fields": {
+              "horseSaddle": {
+                "label": "Horse"
+              },
+              "pigSaddle": {
+                "label": "Pig"
+              },
+              "striderSaddle": {
+                "label": "Strider"
+              },
+              "donkeySaddle": {
+                "label": "Donkey"
+              },
+              "muleSaddle": {
+                "label": "Mule"
+              },
+              "camelSaddle": {
+                "label": "Camel"
+              },
+              "skeletonHorseSaddle": {
+                "label": "Skeleton horse"
+              },
+              "zombieHorseSaddle": {
+                "label": "Zombie horse"
+              },
+              "nautilusSaddle": {
+                "label": "Nautilus"
+              },
+              "camelHuskSaddle": {
+                "label": "Camel husk"
+              }
+            }
+          }
+        }
+      }
+    },
+    "attributeModifiers": {
+      "label": "AttributeModifiers",
+      "description": "Changes values such as attack damage, speed or health.",
+      "field": {
+        "label": "Attributes",
+        "itemLabel": "Attribute",
+        "fields": {
+          "attribute": {
+            "label": "Attribute"
+          },
+          "amount": {
+            "label": "Value"
+          },
+          "operation": {
+            "label": "Operation"
+          },
+          "slot": {
+            "label": "Slot"
+          },
+          "display": {
+            "label": "Tooltip display (1.21.6+)",
+            "fields": {
+              "type": {
+                "label": "Type",
+                "options": {
+                  "default": {
+                    "label": "default – normal"
+                  },
+                  "hidden": {
+                    "label": "hidden – hide"
+                  },
+                  "override": {
+                    "label": "override – custom text"
+                  }
+                }
+              },
+              "text": {
+                "label": "Text"
+              }
+            }
+          }
+        }
+      }
+    },
+    "enchantments": {
+      "label": "Enchantments",
+      "description": "Fixed enchantments – even above the vanilla maximum (e.g. Sharpness 15).",
+      "field": {
+        "label": "Enchantments",
+        "keyLabel": "Enchantment",
+        "keyPlaceholder": "e.g. sharpness",
+        "value": {
+          "label": "Level"
+        }
+      }
+    },
+    "componentsMaxStackSize": {
+      "label": "Max Stack Size",
+      "description": "How many items fit into one slot (1–99).",
+      "field": {
+        "label": "Stack size"
+      }
+    },
+    "componentsMaxDamage": {
+      "label": "Max Damage",
+      "description": "Maximum durability of the item. Items with durability should have a stack size of 1.",
+      "field": {
+        "label": "Durability"
+      }
+    },
+    "componentsEnchantmentGlintOverride": {
+      "label": "Enchantment Glint Override",
+      "description": "Forces (true) or prevents (false) the enchantment glint.",
+      "field": {
+        "label": "Glint"
+      }
+    },
+    "componentsFireResistant": {
+      "label": "Fire Resistant",
+      "description": "The item does not burn in fire and lava.",
+      "field": {
+        "label": "Fireproof"
+      }
+    },
+    "componentsHideTooltip": {
+      "label": "Hide Tooltip",
+      "description": "No tooltip is shown on hover.",
+      "field": {
+        "label": "Hide tooltip"
+      }
+    },
+    "componentsTooltipDisplay": {
+      "label": "Tooltip Display",
+      "description": "Hides individual components in the tooltip. Replaces the item flags from 1.21.5 on.",
+      "field": {
+        "label": "Components",
+        "placeholder": "minecraft:attribute_modifiers"
+      }
+    },
+    "componentsFood": {
+      "label": "Food",
+      "description": "Makes the item edible. For eating time, animation and effects, also add “Consumable”.",
+      "field": {
+        "label": "Food",
+        "fields": {
+          "nutrition": {
+            "label": "Nutrition (hunger points)"
+          },
+          "saturation": {
+            "label": "Saturation"
+          },
+          "canAlwaysEat": {
+            "label": "Edible even when not hungry"
+          }
+        }
+      }
+    },
+    "componentsConsumable": {
+      "label": "Consumable",
+      "description": "The item can be used/consumed (duration, animation, sound, effects).",
+      "field": {
+        "label": "Consumable",
+        "fields": {
+          "consumeDuration": {
+            "label": "Duration",
+            "placeholder": "1.6s"
+          },
+          "animation": {
+            "label": "Animation",
+            "placeholder": "EAT"
+          },
+          "sound": {
+            "label": "Sound",
+            "help": "Default: entity.generic.eat"
+          },
+          "consumeParticles": {
+            "label": "Particles"
+          },
+          "effects": {
+            "label": "Effects on consumption"
+          }
+        }
+      }
+    },
+    "componentsUseRemainder": {
+      "label": "Use Remainder",
+      "description": "Item left behind after consumption (e.g. an empty bottle).",
+      "field": {
+        "label": "Remainder",
+        "fields": {
+          "nexoItem": {
+            "label": "Nexo item",
+            "placeholder": "Item ID"
+          },
+          "minecraftType": {
+            "label": "or Minecraft item"
+          }
+        }
+      }
+    },
+    "componentsUseCooldown": {
+      "label": "Use Cooldown",
+      "description": "Cooldown after use (like ender pearls).",
+      "field": {
+        "label": "Cooldown",
+        "fields": {
+          "duration": {
+            "label": "Duration",
+            "placeholder": "1s"
+          },
+          "group": {
+            "label": "Group (optional)",
+            "placeholder": "nexo:my_group"
+          }
+        }
+      }
+    },
+    "componentsTool": {
+      "label": "Tool",
+      "description": "Mining speed and rules for specific blocks.",
+      "field": {
+        "label": "Tool",
+        "fields": {
+          "defaultMiningSpeed": {
+            "label": "Default mining speed",
+            "placeholder": "1.0"
+          },
+          "damagePerBlock": {
+            "label": "Durability loss per block",
+            "placeholder": "1"
+          },
+          "rules": {
+            "label": "Rules",
+            "itemLabel": "Rule",
+            "fields": {
+              "speed": {
+                "label": "Speed"
+              },
+              "correctForDrops": {
+                "label": "Correct tool (block drops)"
+              },
+              "materials": {
+                "label": "Blocks",
+                "placeholder": "e.g. DIAMOND_BLOCK"
+              },
+              "tags": {
+                "label": "Block tags",
+                "placeholder": "minecraft:mineable/axe"
+              }
+            }
+          }
+        }
+      }
+    },
+    "componentsWeapon": {
+      "label": "Weapon",
+      "description": "Durability loss per attack and shield disabling.",
+      "field": {
+        "label": "Weapon",
+        "fields": {
+          "damagePerAttack": {
+            "label": "Durability loss per attack"
+          },
+          "disableBlocking": {
+            "label": "Disable shield (seconds)"
+          }
+        }
+      }
+    },
+    "componentsEquippable": {
+      "label": "Equippable",
+      "description": "The item can be worn like armor (e.g. a 3D hat on the head).",
+      "hint": "For a 3D helmet: use slot HEAD and leave asset_id empty.",
+      "field": {
+        "label": "Equippable",
+        "fields": {
+          "slot": {
+            "label": "Slot"
+          },
+          "assetId": {
+            "label": "Equipment asset",
+            "placeholder": "leave empty for 3D models"
+          },
+          "cameraOverlay": {
+            "label": "Camera overlay",
+            "placeholder": "e.g. minecraft:misc/pumpkinblur"
+          },
+          "equipSound": {
+            "label": "Sound on equip",
+            "help": "Default: item.armor.equip_generic"
+          },
+          "allowedEntityTypes": {
+            "label": "Allowed entities",
+            "placeholder": "PLAYER"
+          },
+          "dispensable": {
+            "label": "Equippable by dispenser"
+          },
+          "swappable": {
+            "label": "Swappable by right-click"
+          },
+          "damageOnHurt": {
+            "label": "Takes damage when the wearer is hit"
+          }
+        }
+      }
+    },
+    "componentsGlider": {
+      "label": "Glider",
+      "description": "Allows gliding like elytra while the item is worn (together with “Equippable”).",
+      "field": {
+        "label": "Glider"
+      }
+    },
+    "componentsDamageResistant": {
+      "label": "Damage Resistant",
+      "description": "The item (as an entity) is immune to this damage type tag.",
+      "field": {
+        "label": "Damage type tag"
+      }
+    },
+    "componentsEnchantable": {
+      "label": "Enchantable",
+      "description": "Maximum enchanting cost. 0 = not enchantable.",
+      "field": {
+        "label": "Value"
+      }
+    },
+    "componentsRepairable": {
+      "label": "Repairable",
+      "description": "Vanilla items or tags that repair the item in an anvil.",
+      "field": {
+        "label": "Items / tags",
+        "placeholder": "minecraft:diamond or minecraft:planks"
+      }
+    },
+    "componentsDeathProtection": {
+      "label": "Death Protection",
+      "description": "Protects the player from death while the item is held.",
+      "field": {
+        "label": "Death protection",
+        "fields": {
+          "deathEffects": {
+            "label": "Effects on activation"
+          }
+        }
+      }
+    },
+    "componentsJukeboxPlayable": {
+      "label": "Jukebox Playable",
+      "description": "The item can be put into a jukebox and plays a song.",
+      "field": {
+        "label": "Music disc",
+        "fields": {
+          "songKey": {
+            "label": "Song key",
+            "placeholder": "namespace:song"
+          }
+        }
+      }
+    },
+    "componentsTooltipStyle": {
+      "label": "Tooltip Style",
+      "description": "Custom tooltip background from the resource pack (textures/gui/sprites/tooltip/'<'key>_frame/_background).",
+      "field": {
+        "label": "Style",
+        "placeholder": "namespace:key"
+      }
+    },
+    "componentsBreakSound": {
+      "label": "Break Sound",
+      "description": "Sound when the durability runs out.",
+      "field": {
+        "label": "Sound"
+      }
+    },
+    "componentsCanPlaceOn": {
+      "label": "Can Place On",
+      "description": "Blocks the item may be placed on in adventure mode.",
+      "field": {
+        "label": "Placeable on",
+        "fields": {
+          "blocks": {
+            "label": "Blocks / tags",
+            "placeholder": "stone"
+          }
+        }
+      }
+    },
+    "componentsCanBreak": {
+      "label": "Can Break",
+      "description": "Blocks the item may break in adventure mode.",
+      "field": {
+        "label": "Can break",
+        "fields": {
+          "blocks": {
+            "label": "Blocks / tags",
+            "placeholder": "stone"
+          }
+        }
+      }
+    },
+    "componentsProfile": {
+      "label": "Profile",
+      "description": "Skin for items with material PLAYER_HEAD. Specify a name, UUID or properties.",
+      "field": {
+        "label": "Profile",
+        "fields": {
+          "name": {
+            "label": "Player name"
+          },
+          "uuid": {
+            "label": "UUID"
+          },
+          "properties": {
+            "label": "Properties",
+            "fields": {
+              "name": {
+                "label": "Name",
+                "placeholder": "textures"
+              },
+              "value": {
+                "label": "Value (Base64)"
+              },
+              "signature": {
+                "label": "Signature (optional)"
+              }
+            }
+          }
+        }
+      }
+    },
+    "componentsPaintingVariant": {
+      "label": "Painting Variant",
+      "description": "Which (custom) painting gets placed.",
+      "field": {
+        "label": "Variant",
+        "placeholder": "namespace:key"
+      }
+    },
+    "componentsCustomModelData": {
+      "label": "Custom Model Data",
+      "description": "New CustomModelData format (floats, flags, strings, colors) – for custom ItemModels.",
+      "field": {
+        "label": "Content",
+        "placeholder": "floats: [1.0]\nflags: [true]"
+      }
+    },
+    "componentsCustomData": {
+      "label": "Custom Data",
+      "description": "Data directly in the item''s custom_data section.",
+      "field": {
+        "label": "Content",
+        "placeholder": "nexo:value: \"text\"\nnexo:number: 2"
+      }
+    },
+    "componentsUnsetComponents": {
+      "label": "Unset Components",
+      "description": "Removes components the base material normally has (e.g. minecraft:tool).",
+      "field": {
+        "label": "Components",
+        "placeholder": "minecraft:tool"
+      }
+    },
+    "componentsBlocksAttacks": {
+      "label": "Blocks Attacks",
+      "description": "The item can block attacks like a shield.",
+      "field": {
+        "label": "Settings",
+        "placeholder": "block_delay: 0.25s\ndisable_cooldown_scale: 1.0"
+      }
+    },
+    "componentsAttackRange": {
+      "label": "Attack Range",
+      "description": "Reach and hitbox margin of the weapon.",
+      "field": {
+        "label": "Reach",
+        "fields": {
+          "reach": {
+            "label": "Reach",
+            "placeholder": "0..3"
+          },
+          "hitboxMargin": {
+            "label": "Hitbox margin"
+          },
+          "mobFactor": {
+            "label": "Mob factor"
+          }
+        }
+      }
+    },
+    "componentsPiercingWeapon": {
+      "label": "Piercing Weapon",
+      "description": "Behavior when the weapon pierces targets (spear).",
+      "field": {
+        "label": "Piercing",
+        "fields": {
+          "sound": {
+            "label": "Sound"
+          },
+          "hitSound": {
+            "label": "Hit sound"
+          },
+          "dismounts": {
+            "label": "Dismounts riders"
+          },
+          "dealsKnockback": {
+            "label": "Deals knockback"
+          }
+        }
+      }
+    },
+    "componentsKineticWeapon": {
+      "label": "Kinetic Weapon",
+      "description": "Enables charge attacks while using (lance).",
+      "field": {
+        "label": "Settings",
+        "placeholder": "contact_cooldown: 10t\ndamage_multiplier: 1.0"
+      }
+    },
+    "componentsSwingAnimation": {
+      "label": "Swing Animation",
+      "description": "Animation when swinging. Replaced by attack and interact animations from 26.3 on.",
+      "field": {
+        "label": "Animation",
+        "fields": {
+          "type": {
+            "label": "Type"
+          },
+          "duration": {
+            "label": "Duration",
+            "placeholder": "6t"
+          }
+        }
+      }
+    },
+    "componentsAttackAnimation": {
+      "label": "Attack Animation",
+      "description": "Animation when attacking.",
+      "field": {
+        "label": "Animation",
+        "fields": {
+          "type": {
+            "label": "Type"
+          },
+          "duration": {
+            "label": "Duration",
+            "placeholder": "6t"
+          }
+        }
+      }
+    },
+    "componentsInteractAnimation": {
+      "label": "Interact Animation",
+      "description": "Animation when using.",
+      "field": {
+        "label": "Animation",
+        "fields": {
+          "type": {
+            "label": "Type"
+          },
+          "duration": {
+            "label": "Duration",
+            "placeholder": "6t"
+          }
+        }
+      }
+    },
+    "componentsUseEffects": {
+      "label": "Use Effects",
+      "description": "Sprinting, vibrations and movement speed while using.",
+      "field": {
+        "label": "Usage",
+        "fields": {
+          "canSprint": {
+            "label": "Can sprint"
+          },
+          "interactVibrations": {
+            "label": "Triggers vibrations"
+          },
+          "speedMultiplier": {
+            "label": "Speed multiplier"
+          }
+        }
+      }
+    },
+    "componentsDamageType": {
+      "label": "Damage Type",
+      "description": "The type of damage the item deals.",
+      "field": {
+        "label": "Damage type",
+        "placeholder": "e.g. piercing"
+      }
+    },
+    "componentsMinimumAttackCharge": {
+      "label": "Minimum Attack Charge",
+      "description": "How full the attack indicator must be (0–1).",
+      "field": {
+        "label": "Value"
+      }
+    },
+    "componentsCompostable": {
+      "label": "Compostable",
+      "description": "How many layers the item fills in a composter.",
+      "field": {
+        "label": "Compostable",
+        "fields": {
+          "layers": {
+            "label": "Layers"
+          }
+        }
+      }
+    },
+    "componentsCookingFuel": {
+      "label": "Cooking Fuel",
+      "description": "The item can be burned in a furnace.",
+      "field": {
+        "label": "Fuel",
+        "fields": {
+          "burnTime": {
+            "label": "Burn time",
+            "placeholder": "10s"
+          },
+          "speedMultiplier": {
+            "label": "Speed multiplier"
+          }
+        }
+      }
+    },
+    "componentsBrewingFuel": {
+      "label": "Brewing Fuel",
+      "description": "The item can be used as fuel in a brewing stand.",
+      "field": {
+        "label": "Fuel",
+        "fields": {
+          "uses": {
+            "label": "Number of brews"
+          },
+          "speedMultiplier": {
+            "label": "Speed multiplier"
+          }
+        }
+      }
+    },
+    "mechanicsFurniture": {
+      "label": "Furniture",
+      "description": "The item is placed as furniture (item display) – with hitbox, seats, light and more.",
+      "field": {
+        "label": "Furniture",
+        "fields": {
+          "hitbox": {
+            "label": "Hitbox",
+            "help": "Barriers are solid 1×1 blocks; interactions scale freely but have no collision.",
+            "fields": {
+              "barriers": {
+                "label": "Barriers (x,y,z)",
+                "placeholder": "0,0,0  or range 0..1,0,0"
+              },
+              "interactions": {
+                "label": "Interactions (x,y,z width,height)",
+                "placeholder": "0,0,0 1,1"
+              },
+              "shulkers": {
+                "label": "Shulkers (x,y,z size length [direction])",
+                "placeholder": "0,0,0 1.0 1.0"
+              },
+              "ghasts": {
+                "label": "Ghasts (x,y,z size [rotation])",
+                "placeholder": "0,0,0 0.25"
+              }
+            }
+          },
+          "properties": {
+            "label": "Display",
+            "fields": {
+              "displayTransform": {
+                "label": "Display transform",
+                "placeholder": "NONE"
+              },
+              "trackingRotation": {
+                "label": "Orientation to the player"
+              },
+              "translation": {
+                "label": "Translation (x,y,z)",
+                "placeholder": "0,0,0"
+              },
+              "scale": {
+                "label": "Scale (x,y,z)",
+                "placeholder": "1,1,1"
+              },
+              "leftRotation": {
+                "label": "Left rotation (degrees or x,y,z,w)",
+                "placeholder": "45"
+              },
+              "rightRotation": {
+                "label": "Right rotation (degrees or x,y,z,w)",
+                "placeholder": "0"
+              },
+              "brightness": {
+                "label": "Override brightness",
+                "fields": {
+                  "blockLight": {
+                    "label": "Block light"
+                  },
+                  "skyLight": {
+                    "label": "Sky light"
+                  }
+                }
+              },
+              "viewRange": {
+                "label": "View range"
+              },
+              "shadowRadius": {
+                "label": "Shadow radius"
+              },
+              "shadowStrength": {
+                "label": "Shadow strength"
+              },
+              "glowColor": {
+                "label": "Glow color",
+                "placeholder": "e.g. #FF0000"
+              },
+              "offsetAgainstBlocks": {
+                "label": "Raise on slabs/carpets"
+              },
+              "cullable": {
+                "label": "Allow culling"
+              },
+              "displayWidth": {
+                "label": "Culling width"
+              },
+              "displayHeight": {
+                "label": "Culling height"
+              }
+            }
+          },
+          "rotatable": {
+            "label": "Rotatable"
+          },
+          "restrictedRotation": {
+            "label": "Restricted rotation",
+            "options": {
+              "strict": {
+                "label": "STRICT – 8 directions"
+              },
+              "veryStrict": {
+                "label": "VERY_STRICT – 4 directions"
+              }
+            }
+          },
+          "waterloggable": {
+            "label": "Can be placed underwater"
+          },
+          "seats": {
+            "label": "Seats (x,y,z)",
+            "placeholder": "0,0.5,0"
+          },
+          "beds": {
+            "label": "Beds (x,y,z skip_night reset_phantoms)",
+            "placeholder": "0,0,0 true true"
+          },
+          "lights": {
+            "label": "Light",
+            "fields": {
+              "lights": {
+                "label": "Light sources (x,y,z level)",
+                "placeholder": "0,0,0 15"
+              },
+              "toggleable": {
+                "label": "Toggle by right-click"
+              },
+              "toggledModel": {
+                "label": "Nexo item when switched on",
+                "placeholder": "Item ID"
+              },
+              "toggledItemModel": {
+                "label": "ItemModel when switched on (empty = uploaded “Toggled” model)"
+              }
+            }
+          },
+          "connectable": {
+            "label": "Connectable",
+            "help": "Identical furniture placed side by side connects, e.g. chairs into a sofa. Upload the models (Straight, Left, Right, Inner, Outer) in the “Model & Pack” tab – this is then set automatically.",
+            "fields": {
+              "type": {
+                "label": "Kind",
+                "options": {
+                  "itemModel": {
+                    "label": "ITEM_MODEL (recommended)"
+                  },
+                  "item": {
+                    "label": "ITEM – a separate Nexo item per connection"
+                  }
+                }
+              },
+              "default": {
+                "label": "Default (only for custom item IDs/ItemModels)"
+              },
+              "straight": {
+                "label": "Straight"
+              },
+              "left": {
+                "label": "Left"
+              },
+              "right": {
+                "label": "Right"
+              },
+              "inner": {
+                "label": "Inner corner"
+              },
+              "outer": {
+                "label": "Outer corner"
+              }
+            }
+          },
+          "jukebox": {
+            "label": "Jukebox",
+            "fields": {
+              "volume": {
+                "label": "Volume"
+              },
+              "pitch": {
+                "label": "Pitch"
+              },
+              "permission": {
+                "label": "Permission"
+              }
+            }
+          },
+          "door": {
+            "label": "Door",
+            "fields": {
+              "isSliding": {
+                "label": "Sliding door"
+              },
+              "openSound": {
+                "label": "Sound on open"
+              },
+              "closeSound": {
+                "label": "Sound on close"
+              },
+              "toggleHitboxOnOpen": {
+                "label": "Make hitbox passable when open"
+              },
+              "delayHitboxToggle": {
+                "label": "Switch hitbox only after opening"
+              },
+              "automaticCloseDelay": {
+                "label": "Close automatically after"
+              },
+              "openProperties": {
+                "label": "Display when open",
+                "placeholder": "translation: -0.85,1,0"
+              }
+            }
+          },
+          "evolution": {
+            "label": "Growth (farming)",
+            "fields": {
+              "delay": {
+                "label": "Growth time",
+                "placeholder": "10s"
+              },
+              "probability": {
+                "label": "Growth probability"
+              },
+              "lightBoost": {
+                "label": "Grows faster with light"
+              },
+              "boneMealChance": {
+                "label": "Bone meal chance"
+              },
+              "nextStage": {
+                "label": "Next stage (item ID)"
+              }
+            }
+          },
+          "previewPlacement": {
+            "label": "Placement preview",
+            "help": "Leave empty for the default values.",
+            "fields": {
+              "opacity": {
+                "label": "Opacity"
+              },
+              "requirePermission": {
+                "label": "Permission required"
+              }
+            }
+          },
+          "modelengineId": {
+            "label": "ModelEngine model",
+            "placeholder": "bbmodel_name"
+          },
+          "placements": {
+            "label": "Placement variants (floor/wall/roof)",
+            "help": "Upload custom models for Floor, Wall and Roof in the “Model & Pack” tab. Here you can override further values per variant.",
+            "placeholder": "wall:\n  properties:\n    translation: 0,0.3,-0.3"
+          }
+        }
+      }
+    },
+    "mechanicsCustomBlock": {
+      "label": "Custom Block",
+      "description": "The item is placed as a real block (NoteBlock, StringBlock or ChorusBlock).",
+      "hint": "For blocks, Nexo recommends a non-block material such as PAPER. This item''s model is used automatically.",
+      "field": {
+        "label": "Block",
+        "fields": {
+          "type": {
+            "label": "Block type"
+          },
+          "customVariation": {
+            "label": "Variation (unique number)",
+            "help": "Leave empty to let Nexo assign a free number automatically. Do not change it once blocks have been placed!"
+          },
+          "model": {
+            "label": "Model",
+            "help": "“@model” = this item''s model"
+          },
+          "hardness": {
+            "label": "Hardness"
+          },
+          "blastResistant": {
+            "label": "Blast resistant"
+          },
+          "isFalling": {
+            "label": "Falls like sand"
+          },
+          "beaconBaseBlock": {
+            "label": "Beacon base"
+          },
+          "placeableOnWater": {
+            "label": "Placeable on water"
+          },
+          "requiresSupporting": {
+            "label": "Needs a block below"
+          },
+          "isTall": {
+            "label": "Tall plant (2 blocks)"
+          },
+          "randomPlace": {
+            "label": "Place randomly from",
+            "placeholder": "Item ID"
+          },
+          "directional": {
+            "label": "Orientation when placed (like logs)",
+            "help": "Nexo rotates the model depending on the direction and assigns the required variations itself.",
+            "fields": {
+              "type": {
+                "label": "Kind",
+                "options": {
+                  "log": {
+                    "label": "LOG – 3 axes like logs"
+                  },
+                  "furnace": {
+                    "label": "FURNACE – 4 directions facing the player"
+                  },
+                  "dropper": {
+                    "label": "DROPPER – 6 directions facing the player"
+                  },
+                  "barrel": {
+                    "label": "BARREL – 6 directions"
+                  }
+                }
+              }
+            }
+          },
+          "logStrip": {
+            "label": "Strip with an axe",
+            "fields": {
+              "strippedLog": {
+                "label": "Turns into (item ID of the stripped block)"
+              },
+              "drop": {
+                "label": "Additional drop (item ID)",
+                "placeholder": "e.g. bark"
+              }
+            }
+          },
+          "sapling": {
+            "label": "Sapling (grows into a schematic)",
+            "help": "The schematics must be in the plugins/Nexo/schematics folder (WorldEdit/FAWE).",
+            "fields": {
+              "growsNaturally": {
+                "label": "Grows naturally"
+              },
+              "naturalGrowthTime": {
+                "label": "Growth time (ticks)",
+                "placeholder": "6000"
+              },
+              "growsFromBonemeal": {
+                "label": "Grows with bone meal"
+              },
+              "bonemealGrowthSpeedup": {
+                "label": "Bone meal speed-up (ticks)"
+              },
+              "growSound": {
+                "label": "Sound when growing"
+              },
+              "minLightLevel": {
+                "label": "Minimum light level"
+              },
+              "requiresWaterSource": {
+                "label": "Needs water nearby"
+              },
+              "schematic": {
+                "label": "Schematic",
+                "placeholder": "e.g. palm"
+              },
+              "replaceBlocks": {
+                "label": "Replace blocks"
+              },
+              "copyBiomes": {
+                "label": "Copy biomes"
+              },
+              "copyEntities": {
+                "label": "Copy entities"
+              }
+            }
+          }
+        }
+      }
+    },
+    "mechanicsBackpack": {
+      "label": "Backpack",
+      "description": "Right-click opens a custom inventory.",
+      "hint": "Also set “Max Stack Size” to 1.",
+      "field": {
+        "label": "Backpack",
+        "fields": {
+          "rows": {
+            "label": "Rows"
+          },
+          "title": {
+            "label": "Title",
+            "placeholder": "Backpack"
+          },
+          "openSound": {
+            "label": "Sound on open"
+          },
+          "closeSound": {
+            "label": "Sound on close"
+          },
+          "blacklist": {
+            "label": "Forbidden items",
+            "fields": {
+              "nexoItems": {
+                "label": "Nexo items",
+                "placeholder": "Item ID"
+              },
+              "materials": {
+                "label": "Materials",
+                "placeholder": "DIAMOND"
+              }
+            }
+          }
+        }
+      }
+    },
+    "mechanicsCommands": {
+      "label": "Commands",
+      "description": "Runs commands on use (as console, player or OP). %p% = player name.",
+      "field": {
+        "label": "Commands",
+        "fields": {
+          "console": {
+            "label": "As console",
+            "placeholder": "say %p% used the item"
+          },
+          "player": {
+            "label": "As player",
+            "placeholder": "spawn"
+          },
+          "oppedPlayer": {
+            "label": "As player with OP rights",
+            "placeholder": "give diamond 1"
+          },
+          "cooldown": {
+            "label": "Cooldown (seconds)"
+          },
+          "permission": {
+            "label": "Required permission"
+          },
+          "oneUsage": {
+            "label": "Item is consumed"
+          }
+        }
+      }
+    },
+    "mechanicsCustom": {
+      "label": "Custom Mechanic",
+      "description": "Event → conditions → actions, no programming needed.",
+      "hint": "Actions: [console] command, [player] command, [message] text, [actionbar] text, '{'source=AMBIENT volume=1 pitch=1'}' [sound] sound. Placeholder: '<'player>",
+      "field": {
+        "label": "Actions",
+        "keyLabel": "Name",
+        "keyPlaceholder": "e.g. rightclick",
+        "value": {
+          "fields": {
+            "event": {
+              "label": "Event"
+            },
+            "oneUsage": {
+              "label": "Item is consumed"
+            },
+            "conditions": {
+              "label": "Conditions",
+              "placeholder": "HAS_PERMISSION:my.permission"
+            },
+            "actions": {
+              "label": "Actions",
+              "placeholder": "[console] give '<'player> diamond 1"
+            }
+          }
+        }
+      }
+    },
+    "mechanicsArmorEffects": {
+      "label": "Armor Effects",
+      "description": "Potion effects while the item is worn.",
+      "field": {
+        "label": "Effects",
+        "fields": {
+          "set": {
+            "label": "Set ID for “full set” (optional)",
+            "placeholder": "e.g. forest"
+          },
+          "entries": {
+            "label": "Effects",
+            "keyLabel": "Effect"
+          }
+        }
+      }
+    },
+    "mechanicsTrident": {
+      "label": "Trident",
+      "description": "Throwing behavior of an item with material TRIDENT: damage, sounds and look of the thrown trident.",
+      "hint": "Upload a custom model for throwing in the “Model & Pack” tab under “Special Item Appearance → Throwing Model”.",
+      "field": {
+        "label": "Trident",
+        "fields": {
+          "damage": {
+            "label": "Damage",
+            "placeholder": "8"
+          },
+          "displayTransform": {
+            "label": "Look in flight"
+          },
+          "rotation": {
+            "label": "Rotation in flight (yaw,pitch)",
+            "placeholder": "0,0"
+          },
+          "thrownItem": {
+            "label": "Different Nexo item in flight (item ID)"
+          },
+          "thrownItemModel": {
+            "label": "Different ItemModel in flight"
+          },
+          "sounds": {
+            "label": "Sounds",
+            "fields": {
+              "throw": {
+                "label": "Throw"
+              },
+              "hit": {
+                "label": "Hit"
+              },
+              "hitGround": {
+                "label": "Ground impact"
+              },
+              "return": {
+                "label": "Return (Loyalty)"
+              }
+            }
+          }
+        }
+      }
+    },
+    "mechanicsRepair": {
+      "label": "Repair",
+      "description": "This item can repair other items in the inventory (drag the item onto the damaged item).",
+      "field": {
+        "label": "Repair",
+        "fields": {
+          "ratio": {
+            "label": "Share of durability (0–1)"
+          },
+          "fixedAmount": {
+            "label": "Fixed durability amount"
+          },
+          "nexoDurabilityOnly": {
+            "label": "Only repair Nexo items"
+          }
+        }
+      }
+    },
+    "mechanicsMisc": {
+      "label": "Misc",
+      "description": "Small behavior tweaks such as preventing renaming or allowing vanilla recipes.",
+      "field": {
+        "label": "Miscellaneous",
+        "fields": {
+          "breaksFromCactus": {
+            "label": "Destroyed by cacti"
+          },
+          "burnsInFire": {
+            "label": "Burns in fire"
+          },
+          "burnsInLava": {
+            "label": "Burns in lava"
+          },
+          "disableVanillaInteractions": {
+            "label": "Disable vanilla interactions"
+          },
+          "canStripLogs": {
+            "label": "Can strip logs"
+          },
+          "piglinsIgnoreWhenEquipped": {
+            "label": "Piglins ignore the wearer"
+          },
+          "compostable": {
+            "label": "Compostable"
+          },
+          "allowInVanillaRecipes": {
+            "label": "Allowed in vanilla recipes"
+          },
+          "preventBreaking": {
+            "label": "Prevent breaking"
+          },
+          "preventRenaming": {
+            "label": "Prevent renaming"
+          },
+          "preventItemFrames": {
+            "label": "Cannot be put in item frames"
+          }
+        }
+      }
+    },
+    "mechanicsSoulbound": {
+      "label": "Soulbound",
+      "description": "The item stays in the inventory on death.",
+      "field": {
+        "label": "Soulbound",
+        "fields": {
+          "loseChance": {
+            "label": "Loss chance (0–1)"
+          }
+        }
+      }
+    },
+    "mechanicsHarvesting": {
+      "label": "Harvesting",
+      "description": "Automatically harvests and replants ripe crops in the area.",
+      "field": {
+        "label": "Harvesting",
+        "fields": {
+          "radius": {
+            "label": "Radius"
+          },
+          "height": {
+            "label": "Height"
+          },
+          "cooldown": {
+            "label": "Cooldown (milliseconds)"
+          }
+        }
+      }
+    },
+    "mechanicsSmelting": {
+      "label": "Smelting",
+      "description": "Ores are smelted instantly when mined (supports Fortune and Silk Touch).",
+      "field": {
+        "label": "Smelting",
+        "fields": {
+          "enabled": {
+            "label": "Active"
+          },
+          "playSound": {
+            "label": "Play sound"
+          }
+        }
+      }
+    },
+    "mechanicsItemtype": {
+      "label": "ItemType",
+      "description": "Changes the tool type for Nexo blocks (the type must be defined in mechanics.yml).",
+      "field": {
+        "label": "ItemType",
+        "fields": {
+          "value": {
+            "label": "Type",
+            "placeholder": "SUPER_MATERIAL"
+          }
+        }
+      }
+    }
+  },
+  "options": {
+    "attributeOperations": {
+      "addNumber": {
+        "label": "ADD_NUMBER (add value)"
+      },
+      "addScalar": {
+        "label": "ADD_SCALAR (percent of base value)"
+      },
+      "multiplyScalar1": {
+        "label": "MULTIPLY_SCALAR_1 (multiply)"
+      }
+    },
+    "attributeSlots": {
+      "any": {
+        "label": "ANY (anywhere)"
+      },
+      "mainhand": {
+        "label": "MAINHAND (main hand)"
+      },
+      "offhand": {
+        "label": "OFFHAND (off hand)"
+      },
+      "hand": {
+        "label": "HAND (both hands)"
+      },
+      "head": {
+        "label": "HEAD (head)"
+      },
+      "chest": {
+        "label": "CHEST (chest)"
+      },
+      "legs": {
+        "label": "LEGS (legs)"
+      },
+      "feet": {
+        "label": "FEET (feet)"
+      },
+      "armor": {
+        "label": "ARMOR (any armor piece)"
+      },
+      "body": {
+        "label": "BODY (animal armor)"
+      },
+      "saddle": {
+        "label": "SADDLE (saddle, 1.21.5+)"
+      }
+    },
+    "trackingRotations": {
+      "fixed": {
+        "label": "FIXED (no rotation)"
+      },
+      "vertical": {
+        "label": "VERTICAL (around the vertical axis)"
+      },
+      "horizontal": {
+        "label": "HORIZONTAL (around the horizontal axis)"
+      },
+      "center": {
+        "label": "CENTER (always facing the player)"
+      }
+    },
+    "storageTypes": {
+      "storage": {
+        "label": "STORAGE (like a chest)"
+      },
+      "personal": {
+        "label": "PERSONAL (per player)"
+      },
+      "enderchest": {
+        "label": "ENDERCHEST (ender chest inventory)"
+      },
+      "disposal": {
+        "label": "DISPOSAL (trash can)"
+      }
+    },
+    "customBlockTypes": {
+      "noteblock": {
+        "label": "NOTEBLOCK – regular block (up to 1149)"
+      },
+      "stringblock": {
+        "label": "STRINGBLOCK – plants/decoration (up to 127)"
+      },
+      "chorusblock": {
+        "label": "CHORUSBLOCK – transparent blocks (up to 63)"
+      }
+    },
+    "customEvents": {
+      "clickRightAll": {
+        "label": "Right-click (anywhere)"
+      },
+      "clickRightBlock": {
+        "label": "Right-click on block"
+      },
+      "clickRightAir": {
+        "label": "Right-click in the air"
+      },
+      "clickLeftAll": {
+        "label": "Left-click (anywhere)"
+      },
+      "clickLeftBlock": {
+        "label": "Left-click on block"
+      },
+      "clickLeftAir": {
+        "label": "Left-click in the air"
+      },
+      "clickAllAll": {
+        "label": "Any click"
+      },
+      "invClickAllAll": {
+        "label": "Click in inventory"
+      },
+      "invClickRightShift": {
+        "label": "Shift-right-click in inventory"
+      },
+      "drop": {
+        "label": "Drop"
+      },
+      "pickup": {
+        "label": "Pick up"
+      },
+      "break": {
+        "label": "Item breaks"
+      },
+      "equip": {
+        "label": "Equip"
+      },
+      "unequip": {
+        "label": "Unequip"
+      },
+      "death": {
+        "label": "Player death"
+      },
+      "dropAll": {
+        "label": "Last copy dropped"
+      }
+    }
+  },
+  "textureTemplates": {
+    "generated": {
+      "label": "2D item",
+      "description": "Flat item like paper or gems. Further PNGs are stacked on top as additional layers."
+    },
+    "handheld": {
+      "label": "2D tool / weapon",
+      "description": "Like item/generated, but held at an angle in the hand like a sword or pickaxe."
+    },
+    "handheldRod": {
+      "label": "2D rod / fishing rod",
+      "description": "Held in the hand like a fishing rod or a stick."
+    },
+    "cubeAll": {
+      "label": "Block – one texture",
+      "description": "Cube with the same texture on all sides (e.g. ore, stone)."
+    },
+    "cubeColumn": {
+      "label": "Block – column",
+      "description": "Top/bottom (end) and sides (side), e.g. logs."
+    },
+    "cubeBottomTop": {
+      "label": "Block – top/bottom/side",
+      "description": "Separate textures for top, bottom and the sides (e.g. sandstone)."
+    },
+    "orientable": {
+      "label": "Block – with front",
+      "description": "Front, sides and top (e.g. furnace)."
+    },
+    "cube": {
+      "label": "Block – six sides",
+      "description": "Every side gets its own texture."
+    },
+    "cross": {
+      "label": "Plant (cross)",
+      "description": "Two crossed planes like flowers – ideal for StringBlocks."
+    }
+  }
+}

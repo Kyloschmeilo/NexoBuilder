@@ -1,5 +1,66 @@
 # Changelog
 
+## Unreleased
+
+### New: CraftEngine
+
+- Every project now targets **Nexo** or **CraftEngine**. You choose when you create the project, and it cannot change
+  later. Existing projects stay Nexo projects.
+- CraftEngine projects have their own item form (data components, settings, behaviors), custom blocks (single and
+  multi-state, with an `auto_state` budget check), furniture, block entity renderers, events with conditions and
+  functions, loot tables and loot sources, templates, global variables and the attribute system.
+- The export writes `plugins/CraftEngine/resources/<pack>/` with `pack.yml`, items, recipes, images, emoji, sounds,
+  jukebox songs, paintings, equipments, categories and language files.
+- The local test server runs either plugin, each in its own folder (`testserver/<target>/server`). CraftEngine downloads
+  from Modrinth with a checksum check; a purchased Premium JAR still works. The server loads the project with
+  `ce reload all` and shows the pack state.
+- The Nexo export is unchanged.
+
+### Breaking
+
+- The item id field `nexoId` is now `itemId`. There is no migration: projects saved before this change lose their item
+  ids and get new ones (the lenient fallback applies). Project files and shared folders from earlier versions behave
+  the same.
+
+### Renamed: ResourcepackBuilder
+
+- NexoBuilder is now called **ResourcepackBuilder** (program, installer, window, icon).
+- **Not compatible with NexoBuilder:** saved projects, project files (`.nexobuilder.json`), shared folders and copied
+  properties from NexoBuilder cannot be opened. The installer installs ResourcepackBuilder next to an existing
+  NexoBuilder.
+- The single HTML file for the browser is gone – ResourcepackBuilder is a Windows program only.
+
+### New look and languages
+
+- The whole interface was rebuilt with shadcn/ui components and Tailwind, in the CastCrafter look.
+- **Light and dark mode**: _Settings → This device → Appearance_ (Light, Dark or System) or the toggle in the top bar.
+- **English and German**: the interface is English by default; switch under _Settings → This device → Language_.
+  Menus, native dialogs and test-server messages of the Windows program follow the chosen language.
+
+### Changed
+
+- The export's installation guide is now called `INSTALL.txt` (was `ANLEITUNG.txt`), the info file in shared folders
+  `README.txt` (was `LIESMICH.txt`). Older shared folders keep working.
+- Files ResourcepackBuilder writes for the test server (`server.properties`, `eula.txt`) and new shared subfolders now
+  use English names and comments.
+- Links from the program only open in the browser if they use `https`; websites can no longer ask for permissions
+  such as location or camera.
+
+### Fixed
+
+- Test server: a server that could not be started (e.g. Java missing) no longer leaves the test server stuck in
+  "starting"; a project transfer with an invalid file entry no longer fails; a damaged JAR is reported as
+  "not a valid plugin file".
+- Shared folders: links inside a shared folder that point outside of it are refused.
+- Starting the program a second time only brings the open window to the front.
+
+### Under the hood
+
+- The app is a Next.js static export inside Electron; all texts live in next-intl catalogues (`packages/i18n`).
+- The Electron code is type-checked against a shared IPC contract; the desktop bridge is now
+  `window.resourcepackBuilder`.
+- ESLint and Prettier for the whole repository; CI runs lint, typecheck and tests on Linux and Windows.
+
 ## 1.4.0
 
 ### Neu: Furniture

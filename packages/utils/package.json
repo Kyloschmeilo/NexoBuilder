@@ -1,0 +1,24 @@
+{
+  "name": "@resourcepackbuilder/utils",
+  "private": true,
+  "version": "0.0.0",
+  "description": "Small helpers every other package builds on: plain-object and text utilities, IDs, lenient zod schemas, JSON parsing, issues and asset tokens.",
+  "type": "module",
+  "sideEffects": false,
+  "exports": {
+    ".": "./src/index.ts"
+  },
+  "scripts": {
+    "typecheck": "tsc -b",
+    "test": "vitest run",
+    "lint": "eslint ."
+  },
+  "dependencies": {
+    "@resourcepackbuilder/i18n": "*",
+    "zod": "^4.6.7"
+  },
+  "devDependencies": {
+    "@resourcepackbuilder/config": "*",
+    "vitest": "^5.0.3"
+  }
+}

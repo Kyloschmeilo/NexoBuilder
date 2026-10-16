@@ -1,0 +1,29 @@
+/** How the share status is shown: one tone and one text per status, used by the top bar and the share dialog. */
+import { useTranslations } from 'next-intl';
+import { StatusBadge, type Tone } from '@resourcepackbuilder/ui';
+import type { ShareStatus } from '../../services/shareStore';
+
+export const SHARE_STATUS_TONE: Record<ShareStatus, Tone> = {
+  off: 'neutral',
+  connecting: 'busy',
+  synced: 'success',
+  syncing: 'busy',
+  offline: 'warning',
+  error: 'error',
+};
+
+/** Returns the function that names a share status in the current language. */
+export function useShareStatusText(): (status: ShareStatus) => string {
+  const t = useTranslations('dialogs.share.status');
+  return (status) => t(status);
+}
+
+/** The share status as a coloured badge (with a spinner while busy). */
+export function ShareStatusBadge({ status }: { status: ShareStatus }) {
+  const statusText = useShareStatusText();
+  return (
+    <StatusBadge tone={SHARE_STATUS_TONE[status]} data-testid="share-status" data-status={status}>
+      {statusText(status)}
+    </StatusBadge>
+  );
+}

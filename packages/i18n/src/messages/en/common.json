@@ -1,0 +1,37 @@
+{
+  "cancel": "Cancel",
+  "close": "Close",
+  "save": "Save",
+  "delete": "Delete",
+  "remove": "Remove",
+  "rename": "Rename",
+  "duplicate": "Duplicate",
+  "add": "Add",
+  "create": "Create",
+  "apply": "Apply",
+  "back": "Back",
+  "next": "Next",
+  "done": "Done",
+  "ok": "OK",
+  "yes": "Yes",
+  "no": "No",
+  "copy": "Copy",
+  "paste": "Paste",
+  "edit": "Edit",
+  "search": "Search",
+  "loading": "Loading…",
+  "none": "None",
+  "unset": "Not set",
+  "settings": "Settings",
+  "language": "Language",
+  "languageNames": {
+    "en": "English",
+    "de": "Deutsch"
+  },
+  "theme": "Appearance",
+  "themeNames": {
+    "light": "Light",
+    "dark": "Dark",
+    "system": "System"
+  }
+}

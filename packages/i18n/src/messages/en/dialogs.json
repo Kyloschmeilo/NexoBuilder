@@ -1,0 +1,200 @@
+{
+  "prompt": {
+    "nameRequired": "Please enter a name."
+  },
+  "toast": {
+    "dismiss": "Dismiss"
+  },
+  "selection": {
+    "title": "Selection",
+    "all": "All",
+    "none": "None"
+  },
+  "issues": {
+    "errors": "{count, plural, one {# error} other {# errors}}",
+    "warnings": "{count, plural, one {# warning} other {# warnings}}",
+    "allGood": "All good",
+    "showInfo": "Show {count, plural, one {# hint} other {# hints}}"
+  },
+  "moveItem": {
+    "title": "Move item",
+    "targetFolder": "Target folder",
+    "confirm": "Move"
+  },
+  "settings": {
+    "project": {
+      "title": "Project",
+      "description": "Saved with this project."
+    },
+    "device": {
+      "title": "This device",
+      "description": "Only applies on this device, for every project."
+    },
+    "languageHelp": "The language ResourcepackBuilder is shown in.",
+    "themeHelp": "“System” follows your operating system’s setting.",
+    "projectName": "Project name",
+    "minecraftVersion": "Server Minecraft version",
+    "target": "Server plugin",
+    "targetHelp": "You can't change this later.",
+    "minecraftVersionHelp": "Determines which components are available and which model features are allowed.",
+    "namespace": "Resource pack namespace",
+    "namespaceHelp": "Files go to assets/{namespace}/…",
+    "packName": "External pack name",
+    "packNameInvalid": "Only letters, digits and _ . - are allowed.",
+    "packDescription": "Pack description (pack.mcmeta)",
+    "packIcon": "Pack icon (pack.png, optional)",
+    "packIconHint": "Square PNG, e.g. 128×128",
+    "upload": "Upload",
+    "replace": "Replace",
+    "useItemModel": "Set the ItemModel component (recommended)",
+    "useItemModelHelp": "Sets <code>{component}</code>. This gives every item its own ItemModel instead of CustomModelData, which avoids conflicts (Minecraft 1.21.4+). Left out automatically for items with a fixed CustomModelData.",
+    "ceCategoriesFromFolders": "Categories from folders",
+    "ceCategoriesFromFoldersHelp": "Writes categories.yml with one category per folder, shown in the item browser (<code>/ce</code>). Subfolders become subcategories."
+  },
+  "newItem": {
+    "title": "New item",
+    "readFailed": "Files could not be read: {error}",
+    "created": "{count, plural, one {Item created.} other {# items created.}}",
+    "target": "Target: <b>{folder}</b>",
+    "create": "{count, plural, one {Create item} other {Create # items}}",
+    "folder": "Folder",
+    "dropTitle": "Drop a model here",
+    "dropTitleMore": "Add more files",
+    "dropSubtitle": "Blockbench project (.bbmodel), Java model (.json) with PNG textures, or just PNG textures. Several models make several items.",
+    "dropSubtitleMore": "e.g. missing textures or more models",
+    "reading": "Reading files…",
+    "ignored": "Unsupported files are ignored: {files}",
+    "noModel": "No model at hand?",
+    "createWithoutModel": "Create item without a model",
+    "withoutModelTitle": "Item without a model",
+    "withoutModelDescription": "The item uses the look of the chosen material. A model can be added later.",
+    "useModel": "Drop a model after all",
+    "multiplePngs": "Several PNGs:",
+    "pngSeparate": "One item per PNG",
+    "pngCombined": "All PNGs for one item (layers / block sides)",
+    "source": {
+      "bbmodel": "Blockbench (.bbmodel)",
+      "json": "Java model (.json)",
+      "png": "Texture (.png)"
+    },
+    "textures": "{count, plural, one {# texture} other {# textures}}",
+    "cubes": "{count, plural, one {# cube} other {# cubes}}",
+    "dontImport": "Don’t import",
+    "modelKind": "Model type",
+    "noTexture": "– none –"
+  },
+  "export": {
+    "title": "Export",
+    "modes": {
+      "full": {
+        "title": "For the Nexo folder",
+        "description": "items/ + pack/external_packs/ – just unzip into plugins/Nexo."
+      },
+      "pack": {
+        "title": "Resource pack only",
+        "description": "The external pack as a ZIP (pack.mcmeta + assets). Several projects: one folder per pack."
+      },
+      "items": {
+        "title": "Configs only",
+        "description": "Only the YAML files (items/, recipes/, glyphs/), without a resource pack."
+      }
+    },
+    "created": "{file} was created ({count, plural, one {# file} other {# files}}).",
+    "failed": "Export failed: {error}",
+    "confirmErrors": {
+      "title": "Export despite errors?",
+      "message": "{count, plural, one {There is still # error.} other {There are still # errors.}} Affected items or models probably won’t work properly in Nexo/Minecraft.",
+      "confirm": "Export anyway"
+    },
+    "summary": {
+      "items": "<mono>{count}</mono> {count, plural, one {item} other {items}}",
+      "glyphs": "<mono>{count}</mono> {count, plural, one {glyph} other {glyphs}}",
+      "fromProjects": "from <mono>{count}</mono> projects",
+      "namespace": "Namespace <mono>{namespace}</mono>",
+      "minecraft": "Minecraft {version}"
+    },
+    "busy": "Creating…",
+    "download": "Download ZIP",
+    "severalProjects": "Several projects: every project gets its own folder under items/ and its own resource pack. Other projects use their own export settings.",
+    "contents": "Contents · <mono>{count}</mono> files",
+    "nothingSelected": "Nothing selected.",
+    "options": "Options for “{name}”",
+    "externalPackAsZip": "External pack as .zip",
+    "externalPackAsZipHelp": "A ZIP file instead of a folder pack/external_packs/{packName}/.",
+    "itemsInProjectFolder": "Items in their own project folder",
+    "itemsInProjectFolderSeveral": "Always on with several projects.",
+    "itemsInProjectFolderHelp": "items/{project}/… instead of items/… directly",
+    "projectPlaceholder": "project",
+    "yamlFiles": "YAML files",
+    "yamlPerFolder": "One file per folder (e.g. items/weapons/weapons.yml)",
+    "yamlPerItem": "One file per item (e.g. items/weapons/ruby_sword.yml)",
+    "check": "Check",
+    "noIssues": "No errors or warnings.",
+    "install": "Installation: unzip the ZIP into <code>plugins/Nexo/</code>, then run <code>/nexo reload all</code>. A guide is included as INSTALL.txt."
+  },
+  "exportSelection": {
+    "folder": "Folder {name}",
+    "project": "Project {name}",
+    "glyphs": "Glyphs",
+    "sounds": "Sounds",
+    "paintings": "Paintings",
+    "noItems": "No items.",
+    "emptyProject": "The project is empty.",
+    "open": "open",
+    "selectedItems": "{selected}/{total} items",
+    "glyphCount": "{count} glyphs",
+    "soundCount": "{count} sounds",
+    "paintingCount": "{count} paintings",
+    "itemCount": "{count} items"
+  },
+  "share": {
+    "status": {
+      "off": "Not shared",
+      "connecting": "Connecting…",
+      "synced": "Up to date",
+      "syncing": "Syncing…",
+      "offline": "Folder not reachable",
+      "error": "Error"
+    },
+    "title": "Share project",
+    "yourName": "Your name",
+    "namePlaceholder": "e.g. Kylo",
+    "nameHelp": "The others see it when you change something.",
+    "started": "Project is being shared: {folder}",
+    "stopConfirm": {
+      "title": "Stop sharing?",
+      "message": "Your changes will no longer be copied to the shared folder, and the others’ changes will no longer reach you.\nYour copy of the project and the folder are kept."
+    },
+    "stop": "Stop sharing",
+    "stopped": "The project is no longer shared.",
+    "desktopOnly": "Sharing only works in the Windows app (ResourcepackBuilder.exe), because it needs access to a folder on your PC. In the browser version you can pass the project on via “Save project file”.",
+    "lastSync": "last synced {time}",
+    "syncNowTitle": "Check for changes now",
+    "syncNow": "Sync now",
+    "sharedFolder": "Shared folder",
+    "openFolder": "Open",
+    "sharedHint": "Everyone who has opened this folder in ResourcepackBuilder sees your changes after a few seconds – and you see theirs. If two people change the same item at the same time, the last saved change wins. “Undo” only affects your own changes.",
+    "intro": "Share the project through a folder you all use. Changes then reach everyone automatically – in both directions.",
+    "step1": "In <b>OneDrive</b>, <b>Google Drive</b> or <b>Dropbox</b>, create a folder and share it with your friends.",
+    "step2": "Click <b>Choose folder and share</b> below and pick that folder. ResourcepackBuilder puts the project into it.",
+    "step3": "Your friends open the folder in ResourcepackBuilder via <b>Open shared project</b>.",
+    "start": "Choose folder and share"
+  },
+  "pasteConfig": {
+    "title": "Paste properties",
+    "pasted": "Pasted the properties of “{name}” into {count, plural, one {# item} other {# items}}. Ctrl+Z undoes it.",
+    "source": "Source: <b>{name}</b> <mono>({id})</mono>",
+    "otherProject": "from another project",
+    "apply": "Paste into {count, plural, one {# item} other {# items}}",
+    "what": "What to copy?",
+    "emptyReplace": "Empty in the source – removes this category’s values from the target.",
+    "emptyMerge": "Empty in the source.",
+    "existing": "Existing values in the target",
+    "replace": "Replace",
+    "merge": "Add",
+    "replaceHelp": "The target items get exactly the source’s values in the chosen categories.",
+    "mergeHelp": "Only add and overwrite – values that only the target has are kept.",
+    "neverCopied": "Never copied: display name, item ID, model and variants, folder and custom_model_data. Custom blocks get a free variation if needed.",
+    "targets": "Target items · <mono>{count}</mono>"
+  }
+}

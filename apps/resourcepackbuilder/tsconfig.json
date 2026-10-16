@@ -1,0 +1,9 @@
+{
+  "extends": "@resourcepackbuilder/config/base.json",
+  "compilerOptions": {
+    "plugins": [{ "name": "next" }],
+    "types": ["@resourcepackbuilder/i18n/next-intl"]
+  },
+  "include": ["next-env.d.ts", "next.config.ts", "src", ".next/types/**/*.ts"],
+  "exclude": ["node_modules"]
+}

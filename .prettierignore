@@ -1,0 +1,11 @@
+# Prettier 3 also skips everything in .gitignore (build output, exe-test, .playwright-mcp …); only extras go here.
+# Keep in step with the ignores in eslint.config.js.
+package-lock.json
+# Vendored shadcn components, hooks and helpers, kept as generated
+packages/ui/src/components
+packages/ui/src/hooks
+packages/ui/src/lib
+# CraftEngine's config.yml exactly as it ships in the JAR (the config patch is tested against it)
+packages/test-server/src/craftEngine/__fixtures__/config.yml
+# Local scratch for agent sessions (briefs, reports), never committed
+.superpowers/

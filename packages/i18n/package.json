@@ -1,0 +1,29 @@
+{
+  "name": "@resourcepackbuilder/i18n",
+  "private": true,
+  "version": "0.0.0",
+  "description": "English and German message catalogues, supported locales, typed message keys and the catalogue parity check.",
+  "type": "module",
+  "exports": {
+    ".": "./src/index.ts",
+    "./parity": "./src/parity.ts",
+    "./locale": "./src/locale.ts",
+    "./desktop": "./src/desktop.ts",
+    "./next-intl": {
+      "types": "./src/next-intl.d.ts"
+    }
+  },
+  "scripts": {
+    "typecheck": "tsc -b",
+    "test": "vitest run",
+    "lint": "eslint ."
+  },
+  "devDependencies": {
+    "@resourcepackbuilder/config": "*",
+    "vitest": "^5.0.3"
+  },
+  "dependencies": {
+    "next-intl": "^4.14.9",
+    "use-intl": "^4.14.9"
+  }
+}

@@ -1,0 +1,46 @@
+{
+  "miniMessage": {
+    "unnamed": "Unbenannt"
+  },
+  "inputs": {
+    "default": "Standard",
+    "defaultWithHint": "Standard ({value})",
+    "defaultTooltip": "Nicht gesetzt – Nexo verwendet den Standardwert",
+    "allowedRange": "Erlaubt: {min} bis {max}",
+    "selectOrType": "Auswählen oder eingeben",
+    "notSetOption": "– nicht gesetzt –",
+    "placeholderOption": "– {placeholder} –",
+    "moveUp": "Nach oben",
+    "moveDown": "Nach unten",
+    "pickColor": "Farbe wählen"
+  },
+  "field": {
+    "minVersion": "ab {version}",
+    "minVersionTooLow": "Benötigt Minecraft {version} oder neuer",
+    "countSet": "{count} gesetzt",
+    "clearSection": "Abschnitt leeren",
+    "addEntry": "Eintrag hinzufügen",
+    "addItem": "{item} hinzufügen",
+    "keyTaken": "„{key}“ ist bereits vorhanden.",
+    "yamlError": "YAML-Fehler: {error}",
+    "noTexture": "Noch keine Textur",
+    "noTextureHint": "Noch keine Textur (empfohlen: {size})",
+    "replace": "Ersetzen",
+    "uploadPng": "PNG hochladen"
+  },
+  "typed": {
+    "entry": "Eintrag",
+    "typePlaceholder": "Typ wählen oder eingeben",
+    "chooseType": "Wähle einen Typ, um seine Schlüssel zu sehen.",
+    "unknownType": "Das Formular hat keine Felder für „{type}“. Bearbeite diesen Eintrag als YAML.",
+    "invert": "Umkehren",
+    "invertHint": "Schreibt ein ! vor den Typ, das die Bedingung umkehrt.",
+    "value": "Wert",
+    "valueHint": "Eine Zahl, ein Bereich wie 1~3 oder ein Ausdruck",
+    "valuePlaceholder": "1, 1~3 oder ein Ausdruck",
+    "object": "Typ",
+    "objectHint": "Ein Zahlengeber mit Typ, etwa uniform",
+    "premium": "Premium",
+    "premiumHint": "Nur CraftEngine Premium liest diesen Typ."
+  }
+}

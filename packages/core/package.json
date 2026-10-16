@@ -1,0 +1,34 @@
+{
+  "name": "@resourcepackbuilder/core",
+  "private": true,
+  "version": "0.0.0",
+  "description": "The project model (items, folders, media, recipes, migration, operations) its Nexo and CraftEngine mappings (item config, form schema), the shared form DSL and YAML helpers – no UI.",
+  "type": "module",
+  "sideEffects": false,
+  "exports": {
+    "./project": "./src/project/index.ts",
+    "./form": "./src/form/index.ts",
+    "./nexo": "./src/nexo/index.ts",
+    "./craftEngine": "./src/craftEngine/index.ts",
+    "./targets": "./src/targets/index.ts",
+    "./yaml": "./src/yaml/index.ts"
+  },
+  "scripts": {
+    "typecheck": "tsc -b",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "lint": "eslint ."
+  },
+  "dependencies": {
+    "@resourcepackbuilder/minecraft": "*",
+    "@resourcepackbuilder/utils": "*",
+    "immer": "^11.1.21",
+    "yaml": "^2.9.1",
+    "zod": "^4.6.7"
+  },
+  "devDependencies": {
+    "@resourcepackbuilder/config": "*",
+    "@resourcepackbuilder/test-utils": "*",
+    "vitest": "^5.0.3"
+  }
+}

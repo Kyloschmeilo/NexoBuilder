@@ -1,0 +1,75 @@
+import { useEffect, useState } from 'react';
+import { useTranslations } from 'next-intl';
+import { Empty, EmptyDescription, EmptyHeader, EmptyMedia, EmptyTitle } from '@resourcepackbuilder/ui/components/empty';
+import { Spinner } from '@resourcepackbuilder/ui/components/spinner';
+import { TooltipProvider } from '@resourcepackbuilder/ui/components/tooltip';
+import { BrandMark } from '../components/BrandMark';
+import { I18nProvider } from '../i18n/I18nProvider';
+import { bootstrap, type AppServices } from '../services/bootstrap';
+import { ServicesContext } from '../services/bootstrap';
+import { AppShell } from './AppShell';
+
+type BootState = { kind: 'booting' } | { kind: 'ready'; services: AppServices } | { kind: 'failed'; error: unknown };
+
+/** Shown while the services start (usually only for a moment). */
+function Booting() {
+  const t = useTranslations('layout.boot');
+  return (
+    <div className="grid h-screen place-items-center bg-background text-muted-foreground">
+      <Spinner className="size-6" aria-label={t('starting')} />
+    </div>
+  );
+}
+
+function BootFailed({ error }: { error: unknown }) {
+  const t = useTranslations('layout.boot');
+  return (
+    <Empty role="alert" className="h-screen bg-background p-8">
+      <EmptyHeader className="max-w-md">
+        <EmptyMedia>
+          <BrandMark size="lg" />
+        </EmptyMedia>
+        <EmptyTitle className="font-heading text-xl tracking-wide uppercase">{t('failedTitle')}</EmptyTitle>
+        <EmptyDescription>{error instanceof Error ? error.message : String(error)}</EmptyDescription>
+      </EmptyHeader>
+    </Empty>
+  );
+}
+
+/** Starts the background services, then renders the app with every provider it needs. */
+export default function Root() {
+  const [boot, setBoot] = useState<BootState>({ kind: 'booting' });
+
+  useEffect(() => {
+    let isCancelled = false;
+    let services: AppServices | null = null;
+    bootstrap().then(
+      (started) => {
+        services = started;
+        if (isCancelled) started.dispose();
+        else setBoot({ kind: 'ready', services: started });
+      },
+      (error: unknown) => {
+        if (!isCancelled) setBoot({ kind: 'failed', error });
+      },
+    );
+    return () => {
+      isCancelled = true;
+      services?.dispose();
+    };
+  }, []);
+
+  return (
+    <I18nProvider>
+      <TooltipProvider>
+        {boot.kind === 'booting' && <Booting />}
+        {boot.kind === 'ready' && (
+          <ServicesContext.Provider value={boot.services}>
+            <AppShell />
+          </ServicesContext.Provider>
+        )}
+        {boot.kind === 'failed' && <BootFailed error={boot.error} />}
+      </TooltipProvider>
+    </I18nProvider>
+  );
+}

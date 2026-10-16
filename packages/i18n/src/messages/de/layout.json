@@ -1,0 +1,222 @@
+{
+  "topBar": {
+    "untitled": "Unbenannt",
+    "projectMenu": {
+      "settings": "Projekt-Einstellungen",
+      "settingsDescription": "Name, Namespace, Version, Pack-Icon",
+      "share": "Projekt teilen …",
+      "shareDescription": "Mit anderen gemeinsam bearbeiten",
+      "saveFile": "Projektdatei speichern",
+      "saveFileDescription": "Sicherung / zum Weitergeben (.resourcepackbuilder.json)",
+      "openFile": "Projektdatei öffnen",
+      "switchProjects": "Projekte wechseln …",
+      "openShared": "Geteiltes Projekt öffnen …",
+      "newProject": "Neues Projekt",
+      "close": "Projekt schließen"
+    },
+    "undo": "Rückgängig",
+    "redo": "Wiederholen",
+    "undoShortcut": "Strg+Z",
+    "redoShortcut": "Strg+Y",
+    "saveStatus": {
+      "hint": "Projekte werden automatisch im Browser gespeichert",
+      "saving": "Speichert …",
+      "saved": "Gespeichert",
+      "error": "Nicht gespeichert!"
+    },
+    "share": {
+      "button": "Teilen",
+      "shared": "Geteilt",
+      "sharedHint": "Geteilt über {folder} – {status}",
+      "hint": "Projekt mit anderen teilen"
+    },
+    "checks": {
+      "hint": "Prüfung anzeigen",
+      "errors": "{count, plural, one {# Fehler} other {# Fehler}}",
+      "warnings": "{count, plural, one {# Warnung} other {# Warnungen}}",
+      "ok": "Alles ok"
+    },
+    "preview": {
+      "show": "Vorschau einblenden",
+      "hide": "Vorschau ausblenden"
+    },
+    "export": "Exportieren"
+  },
+  "sidebar": {
+    "title": "Ordner & Items",
+    "newFolder": "Neuer Ordner",
+    "folderButton": "Ordner",
+    "searchPlaceholder": "Items suchen …",
+    "empty": {
+      "title": "Noch keine Ordner",
+      "description": "Ordner werden zu Unterordnern in plugins/Nexo/items. Lege zuerst einen Ordner an, dann kannst du darin Items erstellen.",
+      "action": "Ersten Ordner anlegen"
+    },
+    "addItem": "Item hinzufügen",
+    "newItemInFolder": "Neues Item in diesem Ordner",
+    "more": "Mehr",
+    "status": {
+      "error": "Fehler",
+      "warning": "Warnungen"
+    },
+    "resources": {
+      "glyphs": {
+        "label": "Glyphs",
+        "hint": "Glyphs: Emojis und GUI-Texturen für Chat, Lore und Titel"
+      },
+      "sounds": {
+        "label": "Sounds",
+        "hint": "Sounds: eigene Geräusche und Jukebox Songs (Musik-CDs)"
+      },
+      "paintings": {
+        "label": "Paintings",
+        "hint": "Paintings: eigene Gemälde zum Aufhängen"
+      },
+      "lootSources": {
+        "label": "Loot-Quellen",
+        "hint": "Loot-Quellen: zusätzlicher Loot für Vanilla-Blöcke, Mobs, Truhen und Angeln"
+      },
+      "templates": {
+        "label": "Vorlagen",
+        "hint": "Vorlagen: wiederverwendbare Konfiguration mit Argumenten"
+      },
+      "globalVariables": {
+        "label": "Globale Variablen",
+        "hint": "Globale Variablen: Texte für '<'global:name>"
+      },
+      "attributes": {
+        "label": "Attribute",
+        "hint": "Attribute: eigene Werte, Ausrüstungssets und Schadensregeln"
+      }
+    },
+    "testServer": {
+      "label": "Testserver",
+      "hint": "Lokaler Minecraft-Testserver mit Nexo – aktualisiert sich automatisch"
+    },
+    "folderMenu": {
+      "newItem": "Neues Item",
+      "newSubfolder": "Neuer Unterordner",
+      "delete": "Ordner löschen"
+    },
+    "itemMenu": {
+      "move": "Verschieben …",
+      "copyProperties": "Eigenschaften kopieren",
+      "copyPropertiesDescription": "Alles außer Name, ID und Modell"
+    },
+    "paste": {
+      "label": "Eigenschaften einfügen …",
+      "fromItem": "von „{name}“",
+      "fromItemIntoFolder": "von „{name}“ in alle Items des Ordners",
+      "needsCopy": "Zuerst bei einem Item kopieren",
+      "unsupported": "Vorerst nur in Nexo-Projekten"
+    }
+  },
+  "folder": {
+    "newFolderTitle": "Neuer Ordner",
+    "newSubfolderTitle": "Neuer Unterordner",
+    "nameLabel": "Name des Ordners (wird zu einem Unterordner in plugins/Nexo/items)",
+    "renameTitle": "Ordner umbenennen",
+    "renameLabel": "Neuer Name",
+    "deleteTitle": "Ordner löschen?",
+    "deleteContents": "Der Ordner „{name}“ enthält {items, plural, one {# Item} other {# Items}}{subfolders, plural, =0 {} one { und # Unterordner} other { und # Unterordner}}. Alles wird gelöscht.",
+    "deleteEmpty": "Der Ordner „{name}“ wird gelöscht.",
+    "undoHint": "Du kannst das mit Strg+Z rückgängig machen."
+  },
+  "item": {
+    "deleteTitle": "Item löschen?",
+    "deleteMessage": "„{name}“ ({id}) wird gelöscht."
+  },
+  "main": {
+    "pickTitle": "Wähle links einen Ordner oder ein Item",
+    "pickDescription": "Über das + neben einem Ordner erstellst du ein neues Item. Du kannst Modelle auch direkt auf einen Ordner ziehen.",
+    "startTitle": "Leg los mit einem Ordner",
+    "startDescription": "Ordner werden zu Unterordnern in plugins/Nexo/items. Darin legst du deine Items an.",
+    "createFolder": "Ordner anlegen",
+    "dropNeedsFolder": "Lege zuerst einen Ordner an – darin werden die Items erstellt."
+  },
+  "folderView": {
+    "targetHint": "Ziel im Plugin-Ordner",
+    "itemCount": "{count, plural, one {# Item} other {# Items}}",
+    "newItem": "Neues Item",
+    "newSubfolder": "Unterordner anlegen",
+    "delete": "Ordner löschen",
+    "dropTitle": "Modelle hier ablegen, um Items zu erstellen",
+    "dropSubtitle": "Mehrere .bbmodel-Dateien ergeben mehrere Items",
+    "itemsHeading": "Items in diesem Ordner",
+    "subfoldersHeading": "Unterordner"
+  },
+  "rightPanel": {
+    "title": "YAML-Vorschau",
+    "empty": "Wähle ein Item, um hier das fertige Nexo-YAML zu sehen.",
+    "checks": "Prüfung"
+  },
+  "welcome": {
+    "tagline": "Aus Blockbench-Modellen, Java-Modellen oder Texturen werden fertige Nexo-Items – mit Item-Config und Resourcepack als external pack.",
+    "newProject": "Neues Projekt",
+    "savedProjects": "Gespeicherte Projekte",
+    "openShared": "Geteiltes Projekt öffnen",
+    "openFile": "Projektdatei öffnen",
+    "steps": {
+      "folders": {
+        "title": "Ordner anlegen",
+        "text": "Jeder Ordner wird ein Unterordner in plugins/Nexo/items."
+      },
+      "model": {
+        "title": "Modell ablegen",
+        "text": ".bbmodel, .json + .png oder nur .png per Drag & Drop – mit Namen."
+      },
+      "properties": {
+        "title": "Eigenschaften hinzufügen",
+        "text": "Components, Mechanics (Furniture, Custom Block …), CustomArmor und mehr."
+      },
+      "export": {
+        "title": "Exportieren",
+        "text": "ZIP in plugins/Nexo entpacken und /nexo reload all ausführen."
+      }
+    }
+  },
+  "projectForm": {
+    "name": "Projektname",
+    "namePlaceholder": "z.B. Mittelalter-Pack",
+    "defaultName": "Mein Pack",
+    "namespace": "Namespace (Resourcepack)",
+    "version": "Minecraft-Version (Server)",
+    "create": "Projekt erstellen",
+    "target": "Server-Plugin",
+    "targetHint": "Das lässt sich später nicht ändern.",
+    "targets": {
+      "nexo": { "name": "Nexo", "description": "Items, Blöcke und Möbel für das Nexo-Plugin." },
+      "craftengine": { "name": "CraftEngine", "description": "Items, Blöcke und Möbel für das CraftEngine-Plugin." }
+    }
+  },
+  "projectList": {
+    "storageUnavailable": "Projekte können in diesem Browser nicht gespeichert werden. Bitte Projektdateien verwenden.",
+    "empty": "Noch keine gespeicherten Projekte.",
+    "current": "geöffnet",
+    "shared": "geteilt",
+    "meta": "{count, plural, one {# Item} other {# Items}} · <mono>{namespace}</mono> · zuletzt {date}",
+    "delete": "Projekt löschen",
+    "deleteTitle": "Projekt löschen?",
+    "deleteMessage": "„{name}“ wird aus diesem Browser gelöscht. Das kann nicht rückgängig gemacht werden.\nTipp: Vorher über „Projektdatei speichern“ sichern.",
+    "deleteConfirm": "Endgültig löschen",
+    "replaceTitle": "Geöffnetes Projekt ersetzen?",
+    "replaceMessage": "Die Datei enthält „{name}“, das gerade geöffnete Projekt. Durch die Version aus der Datei ersetzen? Änderungen seitdem gehen verloren.",
+    "replaceConfirm": "Ersetzen",
+    "replaceSharedTitle": "Lokales Projekt ersetzen?",
+    "replaceSharedMessage": "Der geteilte Ordner enthält ein Projekt mit derselben Kennung wie dein lokales Projekt „{name}“, das aber nicht mit diesem Ordner verbunden ist. Lokale Kopie durch das geteilte Projekt ersetzen? Ihre lokalen Änderungen gehen verloren."
+  },
+  "projectsDialog": {
+    "title": "Projekte",
+    "openTab": "Öffnen",
+    "newTab": "Neues Projekt"
+  },
+  "boot": {
+    "failedTitle": "ResourcepackBuilder konnte nicht starten",
+    "starting": "Wird gestartet…"
+  },
+  "namespaceProblem": {
+    "invalid": "Nur Kleinbuchstaben, Zahlen sowie _ . - erlaubt.",
+    "minecraft": "„minecraft“ ist nicht erlaubt.",
+    "nexo": "„nexo“ wird auch von Nexo selbst verwendet – ein eigener Namespace vermeidet Konflikte."
+  }
+}

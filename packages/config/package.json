@@ -1,0 +1,10 @@
+{
+  "name": "@resourcepackbuilder/config",
+  "private": true,
+  "version": "0.0.0",
+  "description": "Shared TypeScript configuration for all packages (base.json for the browser/React code, node.json for Node and Electron).",
+  "exports": {
+    "./base.json": "./base.json",
+    "./node.json": "./node.json"
+  }
+}

@@ -1,0 +1,18 @@
+{
+  "name": "@resourcepackbuilder/test-utils",
+  "private": true,
+  "version": "0.0.0",
+  "description": "Node-only test helpers shared by the package tests (real PNG files); never imported by shipped code.",
+  "type": "module",
+  "exports": {
+    "./png": "./src/png.ts",
+    "./pngEncoder.cjs": "./src/pngEncoder.cjs"
+  },
+  "scripts": {
+    "typecheck": "tsc -b",
+    "lint": "eslint ."
+  },
+  "devDependencies": {
+    "@resourcepackbuilder/config": "*"
+  }
+}

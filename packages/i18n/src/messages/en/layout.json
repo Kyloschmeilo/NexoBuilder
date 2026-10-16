@@ -1,0 +1,222 @@
+{
+  "topBar": {
+    "untitled": "Untitled",
+    "projectMenu": {
+      "settings": "Project settings",
+      "settingsDescription": "Name, namespace, version, pack icon",
+      "share": "Share project…",
+      "shareDescription": "Edit together with others",
+      "saveFile": "Save project file",
+      "saveFileDescription": "Backup / to pass on (.resourcepackbuilder.json)",
+      "openFile": "Open project file",
+      "switchProjects": "Switch projects…",
+      "openShared": "Open shared project…",
+      "newProject": "New project",
+      "close": "Close project"
+    },
+    "undo": "Undo",
+    "redo": "Redo",
+    "undoShortcut": "Ctrl+Z",
+    "redoShortcut": "Ctrl+Y",
+    "saveStatus": {
+      "hint": "Projects are saved automatically in the browser",
+      "saving": "Saving…",
+      "saved": "Saved",
+      "error": "Not saved!"
+    },
+    "share": {
+      "button": "Share",
+      "shared": "Shared",
+      "sharedHint": "Shared via {folder} – {status}",
+      "hint": "Share the project with others"
+    },
+    "checks": {
+      "hint": "Show check results",
+      "errors": "{count, plural, one {# error} other {# errors}}",
+      "warnings": "{count, plural, one {# warning} other {# warnings}}",
+      "ok": "All good"
+    },
+    "preview": {
+      "show": "Show preview",
+      "hide": "Hide preview"
+    },
+    "export": "Export"
+  },
+  "sidebar": {
+    "title": "Folders & items",
+    "newFolder": "New folder",
+    "folderButton": "Folder",
+    "searchPlaceholder": "Search items…",
+    "empty": {
+      "title": "No folders yet",
+      "description": "Folders become subfolders in plugins/Nexo/items. Create a folder first, then you can create items in it.",
+      "action": "Create first folder"
+    },
+    "addItem": "Add item",
+    "newItemInFolder": "New item in this folder",
+    "more": "More",
+    "status": {
+      "error": "Errors",
+      "warning": "Warnings"
+    },
+    "resources": {
+      "glyphs": {
+        "label": "Glyphs",
+        "hint": "Glyphs: emojis and GUI textures for chat, lore and titles"
+      },
+      "sounds": {
+        "label": "Sounds",
+        "hint": "Sounds: custom sounds and jukebox songs (music discs)"
+      },
+      "paintings": {
+        "label": "Paintings",
+        "hint": "Paintings: custom paintings to hang up"
+      },
+      "lootSources": {
+        "label": "Loot sources",
+        "hint": "Loot sources: extra loot for vanilla blocks, mobs, chests and fishing"
+      },
+      "templates": {
+        "label": "Templates",
+        "hint": "Templates: reusable config with arguments"
+      },
+      "globalVariables": {
+        "label": "Global variables",
+        "hint": "Global variables: texts for '<'global:name>"
+      },
+      "attributes": {
+        "label": "Attributes",
+        "hint": "Attributes: custom stats, equipment sets and damage rules"
+      }
+    },
+    "testServer": {
+      "label": "Test server",
+      "hint": "Local Minecraft test server with Nexo – updates automatically"
+    },
+    "folderMenu": {
+      "newItem": "New item",
+      "newSubfolder": "New subfolder",
+      "delete": "Delete folder"
+    },
+    "itemMenu": {
+      "move": "Move…",
+      "copyProperties": "Copy properties",
+      "copyPropertiesDescription": "Everything except name, ID and model"
+    },
+    "paste": {
+      "label": "Paste properties…",
+      "fromItem": "from “{name}”",
+      "fromItemIntoFolder": "from “{name}” into all items of the folder",
+      "needsCopy": "Copy from an item first",
+      "unsupported": "Only in Nexo projects for now"
+    }
+  },
+  "folder": {
+    "newFolderTitle": "New folder",
+    "newSubfolderTitle": "New subfolder",
+    "nameLabel": "Folder name (becomes a subfolder in plugins/Nexo/items)",
+    "renameTitle": "Rename folder",
+    "renameLabel": "New name",
+    "deleteTitle": "Delete folder?",
+    "deleteContents": "The folder “{name}” contains {items, plural, one {# item} other {# items}}{subfolders, plural, =0 {} one { and # subfolder} other { and # subfolders}}. Everything will be deleted.",
+    "deleteEmpty": "The folder “{name}” will be deleted.",
+    "undoHint": "You can undo this with Ctrl+Z."
+  },
+  "item": {
+    "deleteTitle": "Delete item?",
+    "deleteMessage": "“{name}” ({id}) will be deleted."
+  },
+  "main": {
+    "pickTitle": "Pick a folder or an item on the left",
+    "pickDescription": "Use the + next to a folder to create a new item. You can also drag models straight onto a folder.",
+    "startTitle": "Start with a folder",
+    "startDescription": "Folders become subfolders in plugins/Nexo/items. You create your items inside them.",
+    "createFolder": "Create folder",
+    "dropNeedsFolder": "Create a folder first – the items are created inside it."
+  },
+  "folderView": {
+    "targetHint": "Target in the plugin folder",
+    "itemCount": "{count, plural, one {# item} other {# items}}",
+    "newItem": "New item",
+    "newSubfolder": "Create subfolder",
+    "delete": "Delete folder",
+    "dropTitle": "Drop models here to create items",
+    "dropSubtitle": "Several .bbmodel files create several items",
+    "itemsHeading": "Items in this folder",
+    "subfoldersHeading": "Subfolders"
+  },
+  "rightPanel": {
+    "title": "YAML preview",
+    "empty": "Select an item to see the finished Nexo YAML here.",
+    "checks": "Check"
+  },
+  "welcome": {
+    "tagline": "Turns Blockbench models, Java models or textures into finished Nexo items – with item config and a resource pack as external pack.",
+    "newProject": "New project",
+    "savedProjects": "Saved projects",
+    "openShared": "Open shared project",
+    "openFile": "Open project file",
+    "steps": {
+      "folders": {
+        "title": "Create folders",
+        "text": "Every folder becomes a subfolder in plugins/Nexo/items."
+      },
+      "model": {
+        "title": "Drop a model",
+        "text": ".bbmodel, .json + .png or just .png via drag & drop – with names."
+      },
+      "properties": {
+        "title": "Add properties",
+        "text": "Components, mechanics (furniture, custom block …), CustomArmor and more."
+      },
+      "export": {
+        "title": "Export",
+        "text": "Unzip the ZIP into plugins/Nexo and run /nexo reload all."
+      }
+    }
+  },
+  "projectForm": {
+    "name": "Project name",
+    "namePlaceholder": "e.g. Medieval pack",
+    "defaultName": "My pack",
+    "namespace": "Namespace (resource pack)",
+    "version": "Minecraft version (server)",
+    "create": "Create project",
+    "target": "Server plugin",
+    "targetHint": "You can't change this later.",
+    "targets": {
+      "nexo": { "name": "Nexo", "description": "Items, blocks and furniture for the Nexo plugin." },
+      "craftengine": { "name": "CraftEngine", "description": "Items, blocks and furniture for the CraftEngine plugin." }
+    }
+  },
+  "projectList": {
+    "storageUnavailable": "Projects cannot be saved in this browser. Please use project files.",
+    "empty": "No saved projects yet.",
+    "current": "open",
+    "shared": "shared",
+    "meta": "{count, plural, one {# item} other {# items}} · <mono>{namespace}</mono> · last changed {date}",
+    "delete": "Delete project",
+    "deleteTitle": "Delete project?",
+    "deleteMessage": "“{name}” will be deleted from this browser. This cannot be undone.\nTip: back it up first via “Save project file”.",
+    "deleteConfirm": "Delete permanently",
+    "replaceTitle": "Replace the open project?",
+    "replaceMessage": "The file contains “{name}”, the project that is open right now. Replace it with the version from the file? Changes made since then are lost.",
+    "replaceConfirm": "Replace",
+    "replaceSharedTitle": "Replace the local project?",
+    "replaceSharedMessage": "The shared folder contains a project with the same identity as your local project “{name}”, but that project is not linked to this folder. Replace your local copy with the shared one? Its local changes are lost."
+  },
+  "projectsDialog": {
+    "title": "Projects",
+    "openTab": "Open",
+    "newTab": "New project"
+  },
+  "boot": {
+    "failedTitle": "ResourcepackBuilder could not start",
+    "starting": "Starting…"
+  },
+  "namespaceProblem": {
+    "invalid": "Only lowercase letters, digits and _ . - are allowed.",
+    "minecraft": "“minecraft” is not allowed.",
+    "nexo": "“nexo” is also used by Nexo itself – a namespace of your own avoids conflicts."
+  }
+}
