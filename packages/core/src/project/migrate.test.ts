@@ -170,6 +170,15 @@ describe('migrateProject', () => {
     expect(migrateProject({ name: 'Nexo' })).not.toHaveProperty('craftEngine');
   });
 
+  it('keeps the attribute system leniently and leaves out an empty one', () => {
+    const might = { id: 'might', base: 0 };
+    const stored = (attributes: unknown) => migrateProject({ name: 'P', target: 'craftengine', craftEngine: { attributes } }).craftEngine;
+    expect(stored({ definitions: [might, 'nope'], damageRules: 'nope', other: 1 })).toEqual({
+      attributes: { definitions: [might], damageRules: [] },
+    });
+    for (const attributes of [undefined, 'nope', {}, { definitions: undefined }]) expect(stored(attributes)).toBeUndefined();
+  });
+
   it('refuses data that is no project', () => {
     expect(() => migrateProject('nope')).toThrow(CoreError);
     expect(() => migrateProject({ items: {} })).toThrow('project.noName');

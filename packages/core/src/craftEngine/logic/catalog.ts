@@ -11,7 +11,18 @@ import { type FieldSpecs, resolveFields } from '../../form/build';
 import type { Field, TypedType } from '../../form/fields';
 import { fieldMessageKeys } from '../../form/messageKeys';
 
-export type LogicCatalogName = 'conditions' | 'functions' | 'numbers' | 'triggers' | 'lootSources' | 'lootEntries' | 'lootFunctions';
+export type LogicCatalogName =
+  | 'conditions'
+  | 'functions'
+  | 'numbers'
+  | 'triggers'
+  | 'lootSources'
+  | 'lootEntries'
+  | 'lootFunctions'
+  | 'attributeBases'
+  | 'attributeSyncValues'
+  | 'damageFormulas'
+  | 'damageEffects';
 
 /** The objects that fire events (and so have event triggers) */
 export type LogicObjectKind = 'item' | 'block' | 'furniture';

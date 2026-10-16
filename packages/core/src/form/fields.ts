@@ -53,6 +53,8 @@ export interface SelectField extends BaseField {
   type: 'select';
   options: Option[];
   allowCustom?: boolean;
+  /** Name of a list of options the editor adds from the open project (see {@link StringListField}) */
+  dynamicSuggestions?: string;
 }
 
 /** List of strings. With `singleAsString`, a single value is written when there is exactly one entry. */

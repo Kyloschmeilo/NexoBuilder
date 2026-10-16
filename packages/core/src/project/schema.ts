@@ -51,7 +51,16 @@ import type { JukeboxSong, Sound, SoundFile } from './media/sound';
 import { itemIdFromName } from './ids';
 import { defaultSettings, DEFAULT_PACK_NAME } from './factory';
 import { DEFAULT_PACK_TARGET, PACK_TARGETS } from './target';
-import type { ConfigObject, ConfigValue, CraftEngineProjectData, Folder, Item, Project, ProjectSettings } from './types';
+import type {
+  ConfigObject,
+  ConfigValue,
+  CraftEngineAttributeData,
+  CraftEngineProjectData,
+  Folder,
+  Item,
+  Project,
+  ProjectSettings,
+} from './types';
 
 /** Former location of the armor settings inside the item configuration */
 const LEGACY_ARMOR_KEY = '$armor';
@@ -270,12 +279,24 @@ export function settingsSchema(projectName: string) {
     .catch(defaults);
 }
 
+/** The project's attribute system; like the CraftEngine configuration, an empty one is left out. */
+export const CraftEngineAttributeSchema = z
+  .object({
+    definitions: optional(lenientList(ConfigObjectSchema)),
+    operations: optional(lenientList(ConfigObjectSchema)),
+    equipmentSets: optional(lenientList(ConfigObjectSchema)),
+    damageRules: optional(lenientList(ConfigObjectSchema)),
+  })
+  .transform((data) => withoutUndefined(data))
+  .transform((data) => (Object.keys(data).length > 0 ? data : undefined));
+
 /** The project-wide CraftEngine configuration; a bad part is dropped, an empty one leaves the whole out. */
 export const CraftEngineProjectSchema = z
   .object({
     lootSources: optional(lenientList(ConfigObjectSchema)),
     templates: optional(lenientList(ConfigObjectSchema)),
     globalVariables: optional(lenientRecord(z.string())),
+    attributes: optional(CraftEngineAttributeSchema),
   })
   .transform((data) => withoutUndefined(data))
   .transform((data) => (Object.keys(data).length > 0 ? data : undefined));
@@ -368,5 +389,7 @@ export type ProjectSchemaChecks = SchemaChecks<
     Covers<SettingsOut, ProjectSettings>,
     Fits<NonNullable<Out<typeof CraftEngineProjectSchema>>, CraftEngineProjectData>,
     Covers<NonNullable<Out<typeof CraftEngineProjectSchema>>, CraftEngineProjectData>,
+    Fits<NonNullable<Out<typeof CraftEngineAttributeSchema>>, CraftEngineAttributeData>,
+    Covers<NonNullable<Out<typeof CraftEngineAttributeSchema>>, CraftEngineAttributeData>,
   ]
 >;

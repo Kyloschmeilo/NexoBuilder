@@ -16,6 +16,9 @@ export const CE_DOCS = {
   lootSources: `${WIKI}/configuration/loot_source`,
   templates: `${WIKI}/reference/template`,
   globalVariables: `${WIKI}/configuration/global_variable`,
+  attributes: `${WIKI}/configuration/attribute`,
+  attributeModifiers: `${WIKI}/configuration/attribute/modifier`,
+  equipmentSets: `${WIKI}/configuration/attribute/equipment-set`,
 };
 
 /** Links every property of a group to its wiki page. */

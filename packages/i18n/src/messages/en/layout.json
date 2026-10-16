@@ -83,6 +83,10 @@
       "globalVariables": {
         "label": "Global variables",
         "hint": "Global variables: texts for '<'global:name>"
+      },
+      "attributes": {
+        "label": "Attributes",
+        "hint": "Attributes: custom stats, equipment sets and damage rules"
       }
     },
     "testServer": {

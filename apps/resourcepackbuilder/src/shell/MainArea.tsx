@@ -6,6 +6,7 @@ import { Empty, EmptyContent, EmptyDescription, EmptyHeader, EmptyMedia, EmptyTi
 import { FolderView } from '../features/folder/FolderView';
 import { useFolderActions } from '../features/folder/useFolderActions';
 import { ItemEditor } from '../features/item/ItemEditor';
+import { AttributesView } from '../features/craftEngine/AttributesView';
 import { GlobalVariablesView } from '../features/craftEngine/GlobalVariablesView';
 import { TemplatesView } from '../features/craftEngine/TemplatesView';
 import { LootSourcesView } from '../features/lootSources/LootSourcesView';
@@ -22,6 +23,7 @@ const VIEWS: Record<ViewName, ComponentType> = {
   lootSources: LootSourcesView,
   templates: TemplatesView,
   globalVariables: GlobalVariablesView,
+  attributes: AttributesView,
   testServer: TestServerView,
 };
 

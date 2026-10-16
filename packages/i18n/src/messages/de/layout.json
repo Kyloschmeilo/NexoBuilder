@@ -83,6 +83,10 @@
       "globalVariables": {
         "label": "Globale Variablen",
         "hint": "Globale Variablen: Texte für '<'global:name>"
+      },
+      "attributes": {
+        "label": "Attribute",
+        "hint": "Attribute: eigene Werte, Ausrüstungssets und Schadensregeln"
       }
     },
     "testServer": {

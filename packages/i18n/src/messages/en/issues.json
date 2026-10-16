@@ -16,7 +16,11 @@
     "variantModel": "{variant} ({suffix})",
     "armorLayer": "{layer}",
     "lootSource": "Loot source “{id}”",
-    "template": "Template “{id}”"
+    "template": "Template “{id}”",
+    "attribute": "Attribute “{id}”",
+    "attributeOperation": "Attribute operation “{id}”",
+    "equipmentSet": "Equipment set “{id}”",
+    "damageRule": "Damage rule “{id}”"
   },
   "plan": {
     "missingModel": "No model – the item uses the look of its base material.",
@@ -271,7 +275,19 @@
     "templateIdInvalid": "The template id “{id}” may only contain lowercase letters, digits and _ . - / (and one : after the namespace).",
     "templateIdDuplicate": "Another template already uses the id “{id}”, so this one is left out.",
     "templateBodyMissing": "The template has no body, so it is left out.",
-    "globalVariableNameInvalid": "The global variable name “{name}” may only contain letters, digits and _ . - /, so it is left out."
+    "globalVariableNameInvalid": "The global variable name “{name}” may only contain letters, digits and _ . - /, so it is left out.",
+    "attributeEntryIdMissing": "The entry has no id, so it is left out.",
+    "attributeEntryIdDuplicate": "Another entry already uses the id “{id}”, so this one is left out.",
+    "attributeUnknown": "There is no attribute “{attribute}” in this project. Unless another pack defines it, the modifier does nothing.",
+    "attributeOperationUnknown": "There is no attribute operation “{operation}” in this project or in CraftEngine. Unless another pack defines it, CraftEngine rejects the attribute or the modifier does nothing.",
+    "attributeModifierFieldMissing": "The modifier has no {field}, so CraftEngine rejects it.",
+    "attributeConstraintOneSided": "The constraint sets only one bound. CraftEngine then takes a missing min as just above 0, so set both min and max.",
+    "attributeOperationExpressionMissing": "The operation has no expression, so CraftEngine rejects it.",
+    "equipmentSetUnknown": "There is no equipment set “{set}” in this project. Unless another pack defines it, the piece counts for nothing.",
+    "equipmentSetPiecesMissing": "The equipment set has no tiers (pieces), so CraftEngine rejects it.",
+    "equipmentSetTierInvalid": "The tier “{tier}” must be a whole number of pieces from 1 up, so CraftEngine rejects the set.",
+    "damageRuleTypeMissing": "The damage rule has no damage type, so it is left out.",
+    "damageRuleEmpty": "The damage rule has neither a formula nor effects, so CraftEngine rejects it."
   },
   "issueList": {
     "openItem": "Go to item",

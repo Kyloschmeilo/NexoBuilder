@@ -10,6 +10,7 @@ import { recipeFrame } from '@resourcepackbuilder/core/project';
 import type { JavaModelJson } from '@resourcepackbuilder/minecraft';
 import type { ItemExport, ItemSections } from '../../types';
 import type { BuiltItem, ItemShared, PackTarget, WrittenItemModels } from '../types';
+import { validateCraftEngineAttributes } from './attributes';
 import { craftEngineInstallGuide } from './installGuide';
 import {
   CRAFT_ENGINE_MEDIA_FILES,
@@ -88,6 +89,7 @@ function buildItem(itemExport: ItemExport, written: CraftEngineWrittenModels, sh
   for (const locale of craftEngineTranslations(item).invalidLocales)
     itemExport.report('warning', 'ce.translationLocaleInvalid', { locale });
   validateCraftEngineItem(itemExport, built.config);
+  validateCraftEngineAttributes(itemExport, built.config);
   const key = craftEngineItemKey(project, item);
   const sections: ItemSections = {};
   if (built.furniture) {

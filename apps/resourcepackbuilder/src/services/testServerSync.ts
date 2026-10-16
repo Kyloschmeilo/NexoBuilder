@@ -5,6 +5,7 @@
  * target (e.g. plugins/Nexo) shortly afterwards and the plugin is reloaded ("nexo reload all"); players get the new
  * resource pack automatically. A server that runs another target's plugin is never written to.
  */
+import { craftEngineUsesAttributes } from '@resourcepackbuilder/core/craftEngine';
 import { DEFAULT_PACK_TARGET, type Item, type PackTargetId } from '@resourcepackbuilder/core/project';
 import { exportPackName, packTargetFor, planExport } from '@resourcepackbuilder/export';
 import { compareVersions } from '@resourcepackbuilder/minecraft';
@@ -92,7 +93,11 @@ export function createTestServerSync(api: DesktopTestServerApi): TestServerSync 
         const { target } = project;
         const plan = planExport(project, { includeBinaries: true });
         const files = pluginFolderFiles(project, plan);
-        const config = serverAdapterFor(target).patchConfig(await api.readPluginConfig(target), { packPort: server.config.packPort });
+        // CraftEngine's attribute system is switched on for a project that uses it (it takes effect on the next start)
+        const config = serverAdapterFor(target).patchConfig(await api.readPluginConfig(target), {
+          packPort: server.config.packPort,
+          attributes: craftEngineUsesAttributes(project),
+        });
         // An empty config means the adapter has nothing to set: the plugin writes its own file
         const options = { target, packName: exportPackName(project), reload, ...(config && { settings: config }) };
         const result = await api.sync(files, options);

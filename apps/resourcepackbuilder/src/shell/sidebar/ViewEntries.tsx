@@ -1,11 +1,12 @@
 /**
  * The entries below the tree that open project-wide views: glyphs, sounds, paintings, a CraftEngine project's loot
- * sources, templates and global variables, and the test server.
+ * sources, templates, global variables and attributes, and the test server.
  */
 import type { ReactNode } from 'react';
-import { Braces, Frame, Gem, LayoutTemplate, Music, Server, Smile } from 'lucide-react';
+import { Braces, Dumbbell, Frame, Gem, LayoutTemplate, Music, Server, Smile } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 import { cn } from 'cn';
+import { projectAttributeData } from '@resourcepackbuilder/core/craftEngine';
 import type { Project } from '@resourcepackbuilder/core/project';
 import type { IssueTarget } from '@resourcepackbuilder/utils';
 import { StatusDot, Tip, treeRow, treeRowSlots } from '@resourcepackbuilder/ui';
@@ -55,6 +56,11 @@ const CRAFT_ENGINE_VIEWS = [
     view: 'globalVariables',
     icon: <Braces className="size-4" />,
     count: (p: Project) => Object.keys(p.craftEngine?.globalVariables ?? {}).length,
+  },
+  {
+    view: 'attributes',
+    icon: <Dumbbell className="size-4" />,
+    count: (p: Project) => Object.values(projectAttributeData(p)).reduce((sum, list) => sum + (list?.length ?? 0), 0),
   },
 ] as const satisfies ReadonlyArray<{ view: ViewName; icon: ReactNode; count: (project: Project) => number }>;
 

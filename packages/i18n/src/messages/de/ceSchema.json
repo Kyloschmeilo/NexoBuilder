@@ -1182,6 +1182,33 @@
     "furnitureLoot": {
       "label": "Loot",
       "description": "Was das Möbelstück beim Abbauen fallen lässt. default:loot_table/furniture lässt das Item fallen, mit dem es platziert wurde. Ohne Loot lässt es nichts fallen."
+    },
+    "settingsAttributeModifiers": {
+      "label": "Custom Attribute Modifiers",
+      "description": "Modifikatoren der eigenen Attribute des Projekts (siehe Attribute), solange das Item in einem Slot ist. Braucht das Attributsystem von CraftEngine.",
+      "field": {
+        "label": "Modifikatoren",
+        "itemLabel": "Modifikator"
+      }
+    },
+    "settingsEquipmentSetPart": {
+      "label": "Equipment Set Piece",
+      "description": "Macht das Item zu einem Teil von Ausrüstungssets (siehe Attribute), solange es in einem der Slots ist. Braucht das Attributsystem von CraftEngine.",
+      "field": {
+        "label": "Einträge",
+        "itemLabel": "Eintrag",
+        "fields": {
+          "slots": {
+            "label": "slots",
+            "help": "Die Slots, in denen das Item als Teil zählt. Slotgruppen wie armor sind hier nicht erlaubt."
+          },
+          "sets": {
+            "label": "sets",
+            "help": "Die Ausrüstungssets, für die das Item zählt.",
+            "placeholder": "z.B. namespace:guardian"
+          }
+        }
+      }
     }
   },
   "recipes": {
@@ -2538,6 +2565,19 @@
       "quality": {
         "label": "quality",
         "help": "Wie viel jeder Glückspunkt zum Gewicht addiert."
+      },
+      "vanillaAttribute": {
+        "label": "attribute",
+        "placeholder": "z.B. minecraft:armor"
+      },
+      "fallback": {
+        "label": "fallback",
+        "help": "Der Wert, wenn das Wesen das Vanilla-Attribut nicht hat. Standard: 0."
+      },
+      "transform": {
+        "label": "transform",
+        "help": "Ein Ausdruck, der auf den gelesenen Wert angewendet wird, mit value als Variable.",
+        "placeholder": "z.B. value * 0.5"
       }
     },
     "numbers": {
@@ -2971,6 +3011,150 @@
           }
         }
       }
+    },
+    "attributeBases": {
+      "constant": {
+        "label": "constant",
+        "help": "Eine feste Zahl.",
+        "fields": {
+          "value": {
+            "label": "value"
+          }
+        }
+      },
+      "vanilla": {
+        "label": "vanilla",
+        "help": "Der aktuelle Wert eines Vanilla-Attributs des Wesens.",
+        "fields": {
+          "updateInterval": {
+            "label": "update_interval"
+          }
+        }
+      },
+      "byEntityType": {
+        "label": "by_entity_type",
+        "help": "Der Standardwert eines Vanilla-Attributs für den Typ des Wesens."
+      }
+    },
+    "attributeSyncValues": {
+      "expression": {
+        "label": "expression",
+        "help": "Das Ergebnis eines Ausdrucks über value und base.",
+        "fields": {
+          "expression": {
+            "label": "expression",
+            "placeholder": "z.B. (value - base) * 0.5"
+          }
+        }
+      },
+      "delta": {
+        "label": "delta",
+        "help": "Nur die Änderung gegenüber der Basis: value - base."
+      },
+      "ratio": {
+        "label": "ratio",
+        "help": "Der Wert im Verhältnis zur Basis: value / base."
+      }
+    },
+    "damageFormulas": {
+      "expression": {
+        "label": "expression",
+        "help": "Das Ergebnis eines Ausdrucks.",
+        "fields": {
+          "expression": {
+            "label": "expression",
+            "placeholder": "z.B. damage * 1.25"
+          }
+        }
+      },
+      "composition": {
+        "label": "composition",
+        "help": "Die Summe mehrerer Teile, jeder mit eigener Formel.",
+        "fields": {
+          "parts": {
+            "label": "parts",
+            "keyLabel": "Teil",
+            "keyPlaceholder": "z.B. physical",
+            "value": {
+              "label": "Formel",
+              "placeholder": "z.B. damage + '<'attacker_attr:namespace:might>"
+            }
+          }
+        }
+      },
+      "js": {
+        "label": "js",
+        "help": "Das Ergebnis einer JavaScript-Funktion im Pack.",
+        "fields": {
+          "script": {
+            "label": "script",
+            "placeholder": "z.B. namespace:combat/damage"
+          },
+          "function": {
+            "label": "function",
+            "placeholder": "main"
+          },
+          "args": {
+            "label": "args"
+          }
+        }
+      }
+    },
+    "damageEffects": {
+      "lifeSteal": {
+        "label": "life_steal",
+        "help": "Heilt den Angreifer um einen Anteil des Schadens plus einen festen Wert.",
+        "fields": {
+          "ratio": {
+            "label": "ratio"
+          },
+          "amount": {
+            "label": "amount"
+          },
+          "functions": {
+            "label": "functions"
+          }
+        }
+      },
+      "potionEffect": {
+        "label": "potion_effect",
+        "help": "Gibt dem Opfer oder dem Angreifer einen Trankeffekt.",
+        "fields": {
+          "target": {
+            "label": "target"
+          },
+          "potionEffect": {
+            "label": "potion_effect"
+          },
+          "duration": {
+            "label": "duration"
+          },
+          "amplifier": {
+            "label": "amplifier"
+          },
+          "ambient": {
+            "label": "ambient"
+          },
+          "particles": {
+            "label": "particles"
+          },
+          "showIcon": {
+            "label": "show_icon"
+          },
+          "functions": {
+            "label": "functions"
+          }
+        }
+      },
+      "function": {
+        "label": "function",
+        "help": "Führt nur seine Funktionen aus (wenn seine Bedingungen erfüllt sind).",
+        "fields": {
+          "functions": {
+            "label": "functions"
+          }
+        }
+      }
     }
   },
   "lootSources": {
@@ -3017,6 +3201,200 @@
           "label": "Text",
           "placeholder": "z.B. '<'gold>[Selten]"
         }
+      },
+      "attributes": {
+        "label": "attributes",
+        "itemLabel": "Attribut",
+        "fields": {
+          "id": {
+            "label": "id",
+            "help": "Modifikatoren und Formeln nennen das Attribut mit dieser ID. Ohne Namespace bekommt es den des Projekts.",
+            "placeholder": "z.B. might"
+          },
+          "base": {
+            "label": "base",
+            "help": "Der Startwert: eine Zahl oder aus einem Vanilla-Attribut des Wesens gelesen."
+          },
+          "derived": {
+            "label": "derived",
+            "help": "Macht das Attribut zu einem abgeleiteten, aus anderen berechnet, z.B. demo:might * 2. Es braucht dann keine base, operations oder sync.",
+            "placeholder": "z.B. namespace:might * (1 + namespace:critical_chance)"
+          },
+          "operations": {
+            "label": "operations",
+            "help": "Die Operationen, die auf die Modifikatoren angewendet werden, in dieser Reihenfolge. Leer: add_value, add_multiplied_base, add_multiplied_total."
+          },
+          "constraint": {
+            "label": "constraint",
+            "help": "Begrenzt den Endwert. Setze min und max: Ein fehlendes min nimmt CraftEngine als knapp über 0.",
+            "fields": {
+              "min": {
+                "label": "min"
+              },
+              "max": {
+                "label": "max"
+              }
+            }
+          },
+          "entities": {
+            "label": "entities",
+            "help": "Die Wesenstypen (oder #Tags), die das Attribut haben. Leer: alle.",
+            "placeholder": "z.B. minecraft:player"
+          },
+          "sync": {
+            "label": "sync",
+            "help": "Schreibt den Wert in Vanilla-Attribute, z.B. die maximale Gesundheit.",
+            "itemLabel": "Sync-Ziel",
+            "fields": {
+              "target": {
+                "label": "target"
+              },
+              "operation": {
+                "label": "operation"
+              },
+              "value": {
+                "label": "value",
+                "help": "Der geschriebene Wert: ein Ausdruck über value und base, delta (value - base) oder ratio (value / base). Standard: value."
+              }
+            }
+          }
+        }
+      },
+      "attributeOperations": {
+        "label": "attribute_operations",
+        "itemLabel": "Operation",
+        "fields": {
+          "id": {
+            "label": "id",
+            "placeholder": "z.B. add_capped"
+          },
+          "expression": {
+            "label": "expression",
+            "help": "Läuft einmal für jeden Modifikator mit dieser Operation. base ist der Wert zu Beginn der Stufe, current der bisherige Wert, amount der Wert des Modifikators.",
+            "placeholder": "z.B. MIN(current + amount, base * 2)"
+          }
+        }
+      },
+      "equipmentSets": {
+        "label": "equipment_sets",
+        "itemLabel": "Ausrüstungsset",
+        "fields": {
+          "id": {
+            "label": "id",
+            "placeholder": "z.B. guardian"
+          },
+          "pieces": {
+            "label": "pieces",
+            "help": "Die Bonusstufen nach Anzahl getragener Teile. Stufen addieren sich nicht: Es gilt die höchste erreichte, gib ihr also alle ihre Boni.",
+            "keyLabel": "Teile",
+            "keyPlaceholder": "z.B. 2",
+            "value": {
+              "fields": {
+                "attribute": {
+                  "label": "attribute",
+                  "itemLabel": "Modifikator"
+                },
+                "potionEffects": {
+                  "label": "potion_effects",
+                  "itemLabel": "Trankeffekt",
+                  "fields": {
+                    "type": {
+                      "label": "type"
+                    },
+                    "amplifier": {
+                      "label": "amplifier"
+                    },
+                    "ambient": {
+                      "label": "ambient"
+                    },
+                    "particles": {
+                      "label": "particles"
+                    },
+                    "showIcon": {
+                      "label": "show_icon"
+                    },
+                    "updateInterval": {
+                      "label": "update_interval"
+                    }
+                  }
+                },
+                "events": {
+                  "label": "events",
+                  "help": "Funktionen, die einmal laufen, wenn die Stufe erreicht und wenn sie verlassen wird.",
+                  "fields": {
+                    "activate": {
+                      "label": "activate"
+                    },
+                    "deactivate": {
+                      "label": "deactivate"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "damageRules": {
+        "label": "damage_rules",
+        "itemLabel": "Schadensregel",
+        "fields": {
+          "damageType": {
+            "label": "damage_type",
+            "help": "Der Vanilla-Schadenstyp, den die Regel ändert, z.B. minecraft:player_attack."
+          },
+          "target": {
+            "label": "target",
+            "help": "Die Opfer, für die sie gilt: Wesens-IDs oder #Tags. Leer: die Standardregel für alle anderen Opfer.",
+            "placeholder": "z.B. minecraft:zombie"
+          },
+          "formula": {
+            "label": "formula",
+            "help": "Der neue Schaden: ein Ausdruck wie damage + '<'attacker_attr:namespace:might>, eine Zusammensetzung oder ein Skript."
+          },
+          "effects": {
+            "label": "effects",
+            "help": "Effekte nach dem Schaden: Lebensraub, Trankeffekte oder Funktionen."
+          }
+        }
+      }
+    }
+  },
+  "attributes": {
+    "modifier": {
+      "type": {
+        "label": "type",
+        "help": "Das eigene Attribut, das der Modifikator ändert.",
+        "placeholder": "z.B. namespace:might"
+      },
+      "id": {
+        "label": "id",
+        "help": "Eine eindeutige ID für diesen Modifikator. CraftEngine findet, ersetzt und entfernt ihn über diese ID.",
+        "placeholder": "z.B. namespace:item/war_blade/might"
+      },
+      "amount": {
+        "label": "amount",
+        "help": "Der Wert für die Operation: eine Zahl, ein Bereich wie 5~10, ein Ausdruck oder ein Zahlengeber."
+      },
+      "operation": {
+        "label": "operation",
+        "help": "Wie der Wert angewendet wird: eine eingebaute Operation oder eine des Projekts."
+      },
+      "scope": {
+        "label": "scope",
+        "help": "entity: zählt zum Attribut des Trägers. weapon: zählt nur in Schadensformeln für Angriffe mit diesem Item. Standard: entity."
+      },
+      "slot": {
+        "label": "slot",
+        "help": "Der Slot oder die Slotgruppe, in der der Modifikator gilt (mainhand, armor, any …)."
+      },
+      "conditions": {
+        "label": "conditions",
+        "help": "Der Modifikator gilt nur, solange alle Bedingungen erfüllt sind."
+      },
+      "updateInterval": {
+        "label": "update_interval",
+        "help": "Wie oft ein veränderlicher Wert oder die Bedingungen geprüft werden, in Ticks. Standard: 20."
       }
     }
   }

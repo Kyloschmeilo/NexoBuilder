@@ -1,9 +1,17 @@
-/** CraftEngine's config.yml as the test server needs it: the resource pack served locally (localhost). */
+/**
+ * CraftEngine's config.yml as the test server needs it: the resource pack served locally (localhost), and the
+ * attribute system on for projects that use it.
+ */
 import { Document, isMap, parseDocument } from 'yaml';
 
 export interface CraftEngineServerConfig {
   /** Port over which CraftEngine serves the resource pack */
   packPort: number;
+  /**
+   * The open project uses CraftEngine's attribute system: `attribute.enable` is set to true (CraftEngine reads it on
+   * startup only). Otherwise the key is left as it is.
+   */
+  attributes?: boolean;
 }
 
 /** Values that ResourcepackBuilder sets in plugins/CraftEngine/config.yml */
@@ -19,6 +27,7 @@ function configOverrides(options: CraftEngineServerConfig): Array<[string[], unk
     [['resource-pack', 'delivery', 'send-on-join'], true],
     // A declined pack should not lock the tester out of their own server
     [['resource-pack', 'delivery', 'kick-if-declined'], false],
+    ...(options.attributes ? [[['attribute', 'enable'], true] satisfies [string[], unknown]] : []),
   ];
 }
 

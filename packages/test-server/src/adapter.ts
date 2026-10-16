@@ -20,8 +20,11 @@ export interface ServerAdapter {
   jar: { kind: 'manual'; descriptorName: string } | { kind: 'modrinth'; project: 'craftengine'; loader: 'paper'; descriptorName: string };
   /** Plugin config the app patches, relative to pluginDir: 'settings.yml' | 'config.yml' */
   configFile: string;
-  /** The plugin config with the values the test server needs (served locally on `packPort`). */
-  patchConfig(current: string | null, options: { packPort: number }): string;
+  /**
+   * The plugin config with the values the test server needs (served locally on `packPort`). `attributes`: the open
+   * project uses CraftEngine's attribute system, which the CraftEngine config then switches on.
+   */
+  patchConfig(current: string | null, options: { packPort: number; attributes?: boolean }): string;
   /** Values the plugin needs in Paper's config/paper-global.yml. */
   paperGlobalOverrides: Array<[string[], unknown]>;
   /** Caches (relative to pluginDir) removed before every start, because aborted runs can leave them corrupt. */

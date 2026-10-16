@@ -1,4 +1,5 @@
 /** Public API of @resourcepackbuilder/core/craftEngine. */
+export * from './attributes';
 export * from './block';
 export * from './blockBehaviors';
 export * from './blockRenderer';

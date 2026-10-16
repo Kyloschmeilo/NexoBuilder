@@ -7,6 +7,7 @@ import { readFileSync } from 'node:fs';
 import { describe, expect, it } from 'vitest';
 import { checkFieldValue, fieldToSchema } from '../../form/fieldSchema';
 import { fieldMessageKeys, formMessageKeys } from '../../form/messageKeys';
+import { CE_ATTRIBUTE_LISTS } from '../attributes';
 import { CE_LOGIC, logicMessageKeys } from '../logic';
 import { CE_LOOT_SOURCE_LIST } from '../loot';
 import { CE_GLOBAL_VARIABLE_MAP, CE_TEMPLATE_LIST } from '../templates';
@@ -94,6 +95,7 @@ describe('ceSchema message keys', () => {
     ...fieldMessageKeys(CE_LOOT_SOURCE_LIST),
     ...fieldMessageKeys(CE_TEMPLATE_LIST),
     ...fieldMessageKeys(CE_GLOBAL_VARIABLE_MAP),
+    ...Object.values(CE_ATTRIBUTE_LISTS).flatMap((list) => fieldMessageKeys(list)),
   ]);
 
   it('references only keys that are well-formed', () => {

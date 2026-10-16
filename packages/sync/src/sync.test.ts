@@ -533,6 +533,40 @@ describe('Shared CraftEngine projects', () => {
     expect(anna.project.target).toBe('craftengine');
   });
 
+  it("round-trips the attribute system and the items' attribute settings", async () => {
+    const folder = new MemoryFolder();
+    const clock = { t: 10_000 };
+    const project = craftEngineProject();
+    project.craftEngine = {
+      attributes: {
+        definitions: [{ id: 'burg:might', base: 0, constraint: { min: 0, max: 100 } }],
+        operations: [{ id: 'burg:capped', expression: 'MIN(current + amount, 10)' }],
+        equipmentSets: [{ id: 'burg:guardian', pieces: { 2: { attribute: [{ type: 'burg:might', id: 'burg:set', amount: 2 }] } } }],
+        damageRules: [{ damage_type: 'minecraft:player_attack', formula: 'damage + <attacker_attr:burg:might>' }],
+      },
+    };
+    firstItem(project).config.settings = {
+      attribute_modifiers: [{ type: 'burg:might', id: 'burg:ore', amount: 1, operation: 'minecraft:add_value', slot: 'mainhand' }],
+      equipment_set_part: [{ slots: ['head'], sets: ['burg:guardian'] }],
+    };
+    const anna = new Client(project, folder, 'Anna', clock);
+    await anna.sync();
+    const shared = await readShareFolder(folder.fs());
+    const ben = new Client(shared!.project, folder, 'Ben', clock, shared!.state);
+    expect(ben.project.craftEngine).toEqual(anna.project.craftEngine);
+    expect(firstItem(ben.project).config).toEqual(firstItem(anna.project).config);
+
+    // A change to one list reaches the others
+    clock.t += 10;
+    anna.edit((d) => {
+      d.craftEngine!.attributes!.operations = [{ id: 'burg:other', expression: 'current' }];
+    });
+    expect((await anna.sync()).written).toBe(1);
+    await ben.sync();
+    expect(ben.project.craftEngine?.attributes?.operations).toEqual([{ id: 'burg:other', expression: 'current' }]);
+    expect(ben.project.craftEngine?.attributes?.definitions).toEqual(anna.project.craftEngine?.attributes?.definitions);
+  });
+
   it('keeps the own target and CraftEngine data for project files of versions without them', async () => {
     const folder = new MemoryFolder();
     const clock = { t: 10_000 };

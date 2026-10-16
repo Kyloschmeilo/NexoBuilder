@@ -208,5 +208,27 @@
     "count": "{count, plural, one {# Variable} other {# Variablen}}",
     "hint": "Eine globale Variable ist ein MiniMessage-Text, den CraftEngine überall einsetzt, wo ein Text '<'global:name> sagt: in Item-Namen, Lore und mehr. Die Vorschauen im Item-Editor zeigen ihn auch.",
     "docs": "Globale Variablen im CraftEngine-Wiki"
+  },
+  "attributes": {
+    "title": "Attribute",
+    "count": "{count, plural, one {# Eintrag} other {# Einträge}}",
+    "hint": "Das Attributsystem von CraftEngine ist experimentell und läuft nur mit attribute.enable: true in seiner config.yml, die es beim Start liest. Der Testserver schaltet es für ein Projekt mit Attributen ein; starte ihn nach dem ersten Attribut neu.",
+    "docs": "Attribute im CraftEngine-Wiki",
+    "definitions": {
+      "title": "Attribute",
+      "hint": "Eigene Werte wie Stärke oder kritische Trefferchance, jeweils mit Basiswert und Grenzen. Items ändern sie in ihren Einstellungen (Custom Attribute Modifiers)."
+    },
+    "operations": {
+      "title": "Operationen",
+      "hint": "Eigene Arten, einen Modifikator anzuwenden, neben add_value, add_multiplied_base und add_multiplied_total."
+    },
+    "equipmentSets": {
+      "title": "Ausrüstungssets",
+      "hint": "Boni für mehrere getragene Teile eines Sets. Items werden in ihren Einstellungen zu Teilen (Equipment Set Piece)."
+    },
+    "damageRules": {
+      "title": "Schadensregeln",
+      "hint": "Formeln, die den Schaden eines Schadenstyps aus den Attributen von Angreifer und Opfer berechnen."
+    }
   }
 }

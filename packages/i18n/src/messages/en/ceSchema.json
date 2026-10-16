@@ -1182,6 +1182,33 @@
     "furnitureLoot": {
       "label": "Loot",
       "description": "What the furniture drops when it breaks. default:loot_table/furniture drops the item it was placed with. Without loot it drops nothing."
+    },
+    "settingsAttributeModifiers": {
+      "label": "Custom Attribute Modifiers",
+      "description": "Modifiers of the project's custom attributes (see Attributes) while the item is in a slot. Needs CraftEngine's attribute system.",
+      "field": {
+        "label": "Modifiers",
+        "itemLabel": "Modifier"
+      }
+    },
+    "settingsEquipmentSetPart": {
+      "label": "Equipment Set Piece",
+      "description": "Makes the item a piece of equipment sets (see Attributes) while it is in one of the slots. Needs CraftEngine's attribute system.",
+      "field": {
+        "label": "Entries",
+        "itemLabel": "Entry",
+        "fields": {
+          "slots": {
+            "label": "slots",
+            "help": "The slots in which the item counts as a piece. Slot groups such as armor are not allowed here."
+          },
+          "sets": {
+            "label": "sets",
+            "help": "The equipment sets the item counts for.",
+            "placeholder": "e.g. namespace:guardian"
+          }
+        }
+      }
     }
   },
   "recipes": {
@@ -2538,6 +2565,19 @@
       "quality": {
         "label": "quality",
         "help": "How much each point of luck adds to the weight."
+      },
+      "vanillaAttribute": {
+        "label": "attribute",
+        "placeholder": "e.g. minecraft:armor"
+      },
+      "fallback": {
+        "label": "fallback",
+        "help": "The value when the entity lacks the vanilla attribute. Default: 0."
+      },
+      "transform": {
+        "label": "transform",
+        "help": "An expression applied to the value read, with value as its variable.",
+        "placeholder": "e.g. value * 0.5"
       }
     },
     "numbers": {
@@ -2971,6 +3011,150 @@
           }
         }
       }
+    },
+    "attributeBases": {
+      "constant": {
+        "label": "constant",
+        "help": "A fixed number.",
+        "fields": {
+          "value": {
+            "label": "value"
+          }
+        }
+      },
+      "vanilla": {
+        "label": "vanilla",
+        "help": "The entity's current value of a vanilla attribute.",
+        "fields": {
+          "updateInterval": {
+            "label": "update_interval"
+          }
+        }
+      },
+      "byEntityType": {
+        "label": "by_entity_type",
+        "help": "The default value of a vanilla attribute for the entity's type."
+      }
+    },
+    "attributeSyncValues": {
+      "expression": {
+        "label": "expression",
+        "help": "The result of an expression over value and base.",
+        "fields": {
+          "expression": {
+            "label": "expression",
+            "placeholder": "e.g. (value - base) * 0.5"
+          }
+        }
+      },
+      "delta": {
+        "label": "delta",
+        "help": "Only the change from the base: value - base."
+      },
+      "ratio": {
+        "label": "ratio",
+        "help": "The value relative to the base: value / base."
+      }
+    },
+    "damageFormulas": {
+      "expression": {
+        "label": "expression",
+        "help": "The result of an expression.",
+        "fields": {
+          "expression": {
+            "label": "expression",
+            "placeholder": "e.g. damage * 1.25"
+          }
+        }
+      },
+      "composition": {
+        "label": "composition",
+        "help": "The sum of several parts, each its own formula.",
+        "fields": {
+          "parts": {
+            "label": "parts",
+            "keyLabel": "Part",
+            "keyPlaceholder": "e.g. physical",
+            "value": {
+              "label": "Formula",
+              "placeholder": "e.g. damage + '<'attacker_attr:namespace:might>"
+            }
+          }
+        }
+      },
+      "js": {
+        "label": "js",
+        "help": "The result of a JavaScript function in the pack.",
+        "fields": {
+          "script": {
+            "label": "script",
+            "placeholder": "e.g. namespace:combat/damage"
+          },
+          "function": {
+            "label": "function",
+            "placeholder": "main"
+          },
+          "args": {
+            "label": "args"
+          }
+        }
+      }
+    },
+    "damageEffects": {
+      "lifeSteal": {
+        "label": "life_steal",
+        "help": "Heals the attacker by a share of the damage plus a fixed amount.",
+        "fields": {
+          "ratio": {
+            "label": "ratio"
+          },
+          "amount": {
+            "label": "amount"
+          },
+          "functions": {
+            "label": "functions"
+          }
+        }
+      },
+      "potionEffect": {
+        "label": "potion_effect",
+        "help": "Gives the victim or the attacker a potion effect.",
+        "fields": {
+          "target": {
+            "label": "target"
+          },
+          "potionEffect": {
+            "label": "potion_effect"
+          },
+          "duration": {
+            "label": "duration"
+          },
+          "amplifier": {
+            "label": "amplifier"
+          },
+          "ambient": {
+            "label": "ambient"
+          },
+          "particles": {
+            "label": "particles"
+          },
+          "showIcon": {
+            "label": "show_icon"
+          },
+          "functions": {
+            "label": "functions"
+          }
+        }
+      },
+      "function": {
+        "label": "function",
+        "help": "Only runs its functions (when its conditions hold).",
+        "fields": {
+          "functions": {
+            "label": "functions"
+          }
+        }
+      }
     }
   },
   "lootSources": {
@@ -3017,6 +3201,200 @@
           "label": "Text",
           "placeholder": "e.g. '<'gold>[Rare]"
         }
+      },
+      "attributes": {
+        "label": "attributes",
+        "itemLabel": "Attribute",
+        "fields": {
+          "id": {
+            "label": "id",
+            "help": "Modifiers and formulas name the attribute by this id. Without a namespace it gets the project's.",
+            "placeholder": "e.g. might"
+          },
+          "base": {
+            "label": "base",
+            "help": "The starting value: a number, or read from a vanilla attribute of the entity."
+          },
+          "derived": {
+            "label": "derived",
+            "help": "Makes the attribute a derived one, computed from others, e.g. demo:might * 2. It then needs no base, operations or sync.",
+            "placeholder": "e.g. namespace:might * (1 + namespace:critical_chance)"
+          },
+          "operations": {
+            "label": "operations",
+            "help": "The operations applied to the modifiers, in this order. Unset: add_value, add_multiplied_base, add_multiplied_total."
+          },
+          "constraint": {
+            "label": "constraint",
+            "help": "Limits the final value. Set both min and max: CraftEngine takes a missing min as just above 0.",
+            "fields": {
+              "min": {
+                "label": "min"
+              },
+              "max": {
+                "label": "max"
+              }
+            }
+          },
+          "entities": {
+            "label": "entities",
+            "help": "The entity types (or #tags) that have the attribute. Unset: all.",
+            "placeholder": "e.g. minecraft:player"
+          },
+          "sync": {
+            "label": "sync",
+            "help": "Writes the value into vanilla attributes, e.g. max health.",
+            "itemLabel": "Sync target",
+            "fields": {
+              "target": {
+                "label": "target"
+              },
+              "operation": {
+                "label": "operation"
+              },
+              "value": {
+                "label": "value",
+                "help": "The amount written: an expression over value and base, delta (value - base) or ratio (value / base). Default: value."
+              }
+            }
+          }
+        }
+      },
+      "attributeOperations": {
+        "label": "attribute_operations",
+        "itemLabel": "Operation",
+        "fields": {
+          "id": {
+            "label": "id",
+            "placeholder": "e.g. add_capped"
+          },
+          "expression": {
+            "label": "expression",
+            "help": "Runs once for each modifier with this operation. base is the value at the start of the stage, current the value so far, amount the modifier's amount.",
+            "placeholder": "e.g. MIN(current + amount, base * 2)"
+          }
+        }
+      },
+      "equipmentSets": {
+        "label": "equipment_sets",
+        "itemLabel": "Equipment set",
+        "fields": {
+          "id": {
+            "label": "id",
+            "placeholder": "e.g. guardian"
+          },
+          "pieces": {
+            "label": "pieces",
+            "help": "The bonus tiers by the number of pieces worn. Tiers do not add up: the highest one reached applies, so give it all its bonuses.",
+            "keyLabel": "Pieces",
+            "keyPlaceholder": "e.g. 2",
+            "value": {
+              "fields": {
+                "attribute": {
+                  "label": "attribute",
+                  "itemLabel": "Modifier"
+                },
+                "potionEffects": {
+                  "label": "potion_effects",
+                  "itemLabel": "Potion effect",
+                  "fields": {
+                    "type": {
+                      "label": "type"
+                    },
+                    "amplifier": {
+                      "label": "amplifier"
+                    },
+                    "ambient": {
+                      "label": "ambient"
+                    },
+                    "particles": {
+                      "label": "particles"
+                    },
+                    "showIcon": {
+                      "label": "show_icon"
+                    },
+                    "updateInterval": {
+                      "label": "update_interval"
+                    }
+                  }
+                },
+                "events": {
+                  "label": "events",
+                  "help": "Functions that run once when the tier is reached and when it is left.",
+                  "fields": {
+                    "activate": {
+                      "label": "activate"
+                    },
+                    "deactivate": {
+                      "label": "deactivate"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "damageRules": {
+        "label": "damage_rules",
+        "itemLabel": "Damage rule",
+        "fields": {
+          "damageType": {
+            "label": "damage_type",
+            "help": "The vanilla damage type the rule changes, e.g. minecraft:player_attack."
+          },
+          "target": {
+            "label": "target",
+            "help": "The victims it applies to: entity ids or #tags. Unset: the default rule for every other victim.",
+            "placeholder": "e.g. minecraft:zombie"
+          },
+          "formula": {
+            "label": "formula",
+            "help": "The new damage: an expression such as damage + '<'attacker_attr:namespace:might>, or a composition or script."
+          },
+          "effects": {
+            "label": "effects",
+            "help": "Effects after the damage: life steal, potion effects or functions."
+          }
+        }
+      }
+    }
+  },
+  "attributes": {
+    "modifier": {
+      "type": {
+        "label": "type",
+        "help": "The custom attribute the modifier changes.",
+        "placeholder": "e.g. namespace:might"
+      },
+      "id": {
+        "label": "id",
+        "help": "A unique id for this modifier. CraftEngine finds, replaces and removes it by this id.",
+        "placeholder": "e.g. namespace:item/war_blade/might"
+      },
+      "amount": {
+        "label": "amount",
+        "help": "The value given to the operation: a number, a range like 5~10, an expression or a number provider."
+      },
+      "operation": {
+        "label": "operation",
+        "help": "How the amount is applied: a built-in operation or one of the project."
+      },
+      "scope": {
+        "label": "scope",
+        "help": "entity: adds to the holder's attribute. weapon: only counts in damage formulas for attacks with this item. Default: entity."
+      },
+      "slot": {
+        "label": "slot",
+        "help": "The slot or slot group in which the modifier applies (mainhand, armor, any …)."
+      },
+      "conditions": {
+        "label": "conditions",
+        "help": "The modifier only applies while all conditions hold."
+      },
+      "updateInterval": {
+        "label": "update_interval",
+        "help": "How often a changing amount or the conditions are checked, in ticks. Default: 20."
       }
     }
   }

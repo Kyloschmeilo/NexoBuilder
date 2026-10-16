@@ -1,6 +1,7 @@
 import { CE_DAMAGE_CAUSES, CE_EQUIPMENT_SLOTS, CE_GLOW_COLORS, CE_ITEM_TAGS } from '../options';
 import { ARMOR_PROPERTY } from '../../../form/armor';
 import { field, properties, type FieldSpecs } from '../../../form/build';
+import { attributeModifierList, equipmentSetPartList } from '../../attributes';
 import { CE_DOCS, withDocs } from './docs';
 
 /** One repair entry: which items (ids or `#tags`) it repairs and how much durability it restores */
@@ -73,5 +74,16 @@ export const CE_SETTINGS_PROPERTIES = properties(
     'settings.destroy_on_death_chance': { field: chance(), defaultValue: () => 0.5 },
     'settings.glow_color': { field: field.select(CE_GLOW_COLORS), defaultValue: () => 'white' },
     'settings.projectile': { field: field.yaml(), defaultValue: () => ({ display: { item: '' } }) },
+    // CraftEngine's attribute system (experimental): the test server turns it on for projects that use it
+    'settings.attribute_modifiers': {
+      field: attributeModifierList(),
+      defaultValue: () => [{ type: '', id: '', amount: 1, operation: 'minecraft:add_value', slot: 'mainhand' }],
+      docs: CE_DOCS.attributeModifiers,
+    },
+    'settings.equipment_set_part': {
+      field: equipmentSetPartList(),
+      defaultValue: () => [{ slots: ['head'], sets: [''] }],
+      docs: CE_DOCS.equipmentSets,
+    },
   }),
 );

@@ -208,5 +208,27 @@
     "count": "{count, plural, one {# variable} other {# variables}}",
     "hint": "A global variable is a MiniMessage text that CraftEngine puts in wherever a text says '<'global:name>: in item names, lore and more. The previews in the item editor show it too.",
     "docs": "Global variables in the CraftEngine wiki"
+  },
+  "attributes": {
+    "title": "Attributes",
+    "count": "{count, plural, one {# entry} other {# entries}}",
+    "hint": "CraftEngine's attribute system is experimental and only runs with attribute.enable: true in its config.yml, which it reads on startup. The test server switches it on for a project that uses attributes; restart it after adding the first one.",
+    "docs": "Attributes in the CraftEngine wiki",
+    "definitions": {
+      "title": "Attributes",
+      "hint": "Custom values such as strength or critical chance, each with a base value and limits. Items change them in their settings (Custom Attribute Modifiers)."
+    },
+    "operations": {
+      "title": "Operations",
+      "hint": "Your own ways to apply a modifier, besides add_value, add_multiplied_base and add_multiplied_total."
+    },
+    "equipmentSets": {
+      "title": "Equipment sets",
+      "hint": "Bonuses for wearing several pieces of a set. Items become pieces in their settings (Equipment Set Piece)."
+    },
+    "damageRules": {
+      "title": "Damage rules",
+      "hint": "Formulas that compute the damage of a damage type from the attributes of attacker and victim."
+    }
   }
 }

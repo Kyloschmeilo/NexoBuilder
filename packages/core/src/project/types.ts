@@ -81,6 +81,23 @@ export interface CraftEngineProjectData {
   templates?: ConfigObject[];
   /** The global variables (`global_variables`): name → MiniMessage text, used as `<global:name>` */
   globalVariables?: Record<string, string>;
+  /** The attribute system (experimental): its definitions, operations, equipment sets and damage rules */
+  attributes?: CraftEngineAttributeData;
+}
+
+/**
+ * The project's part of CraftEngine's attribute system (core/craftEngine/attributes.ts). Each list entry is a config
+ * with its `id`; a damage rule has its `damage_type` instead.
+ */
+export interface CraftEngineAttributeData {
+  /** Custom attributes (`attributes`) */
+  definitions?: ConfigObject[];
+  /** Custom operations (`attribute_operations`) */
+  operations?: ConfigObject[];
+  /** Equipment sets (`equipment_sets`) */
+  equipmentSets?: ConfigObject[];
+  /** Damage rules (`damage_rules`), grouped by their `damage_type` on export */
+  damageRules?: ConfigObject[];
 }
 
 export interface Project {

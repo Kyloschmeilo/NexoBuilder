@@ -16,7 +16,11 @@
     "variantModel": "{variant} ({suffix})",
     "armorLayer": "{layer}",
     "lootSource": "Loot-Quelle „{id}“",
-    "template": "Vorlage „{id}“"
+    "template": "Vorlage „{id}“",
+    "attribute": "Attribut „{id}“",
+    "attributeOperation": "Attribut-Operation „{id}“",
+    "equipmentSet": "Ausrüstungsset „{id}“",
+    "damageRule": "Schadensregel „{id}“"
   },
   "plan": {
     "missingModel": "Kein Modell – das Item nutzt das Aussehen des Basis-Materials.",
@@ -271,7 +275,19 @@
     "templateIdInvalid": "Die Vorlagen-ID „{id}“ darf nur Kleinbuchstaben, Ziffern und _ . - / enthalten (und ein : nach dem Namespace).",
     "templateIdDuplicate": "Eine andere Vorlage nutzt schon die ID „{id}“, deshalb wird diese weggelassen.",
     "templateBodyMissing": "Die Vorlage hat keinen Inhalt und wird deshalb weggelassen.",
-    "globalVariableNameInvalid": "Der Name der globalen Variable „{name}“ darf nur Buchstaben, Ziffern und _ . - / enthalten und wird deshalb weggelassen."
+    "globalVariableNameInvalid": "Der Name der globalen Variable „{name}“ darf nur Buchstaben, Ziffern und _ . - / enthalten und wird deshalb weggelassen.",
+    "attributeEntryIdMissing": "Der Eintrag hat keine ID und wird deshalb weggelassen.",
+    "attributeEntryIdDuplicate": "Ein anderer Eintrag nutzt schon die ID „{id}“, deshalb wird dieser weggelassen.",
+    "attributeUnknown": "Es gibt kein Attribut „{attribute}“ in diesem Projekt. Wenn kein anderes Pack es definiert, bewirkt der Modifikator nichts.",
+    "attributeOperationUnknown": "Es gibt keine Attribut-Operation „{operation}“ in diesem Projekt oder in CraftEngine. Wenn kein anderes Pack sie definiert, lehnt CraftEngine das Attribut ab oder der Modifikator bewirkt nichts.",
+    "attributeModifierFieldMissing": "Dem Modifikator fehlt {field}, deshalb lehnt CraftEngine ihn ab.",
+    "attributeConstraintOneSided": "Die Begrenzung setzt nur eine Grenze. Ein fehlendes min nimmt CraftEngine dann als knapp über 0, setze also min und max.",
+    "attributeOperationExpressionMissing": "Die Operation hat keinen Ausdruck, deshalb lehnt CraftEngine sie ab.",
+    "equipmentSetUnknown": "Es gibt kein Ausrüstungsset „{set}“ in diesem Projekt. Wenn kein anderes Pack es definiert, zählt das Teil für nichts.",
+    "equipmentSetPiecesMissing": "Das Ausrüstungsset hat keine Stufen (pieces), deshalb lehnt CraftEngine es ab.",
+    "equipmentSetTierInvalid": "Die Stufe „{tier}“ muss eine ganze Anzahl Teile ab 1 sein, deshalb lehnt CraftEngine das Set ab.",
+    "damageRuleTypeMissing": "Die Schadensregel hat keinen Schadenstyp und wird deshalb weggelassen.",
+    "damageRuleEmpty": "Die Schadensregel hat weder eine Formel noch Effekte, deshalb lehnt CraftEngine sie ab."
   },
   "issueList": {
     "openItem": "Zum Item",

@@ -5,7 +5,7 @@ import type { Project } from '@resourcepackbuilder/core/project';
 import { useProjectStore } from './project';
 
 /** Project-wide pages that are not tied to a single folder or item. */
-export type ViewName = 'glyphs' | 'sounds' | 'paintings' | 'lootSources' | 'templates' | 'globalVariables' | 'testServer';
+export type ViewName = 'glyphs' | 'sounds' | 'paintings' | 'lootSources' | 'templates' | 'globalVariables' | 'attributes' | 'testServer';
 
 export type Selection = { kind: 'item'; id: string } | { kind: 'folder'; id: string } | { kind: 'view'; view: ViewName } | null;
 

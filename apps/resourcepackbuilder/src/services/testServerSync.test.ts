@@ -189,4 +189,19 @@ describe('a server that runs another target', () => {
     await service.sync(false);
     expect(sync).toHaveBeenCalledWith(expect.any(Array), expect.objectContaining({ target: 'craftengine', reload: false }));
   });
+
+  it("switches CraftEngine's attribute system on for a project that uses it", async () => {
+    const sync = vi.fn((_files: unknown, _options: { settings?: string }) =>
+      Promise.resolve({ written: 1, deleted: 0, skipped: 0, settingsChanged: true, reloaded: false, total: 1 }),
+    );
+    const api: DesktopTestServerApi = { ...fakeApi(() => Promise.resolve([])), sync };
+    const service = await startService(api, '1.21.4', 'craftengine');
+    await service.sync(false);
+    expect(sync.mock.calls[0][1].settings).not.toContain('attribute:');
+    const project = createProject('Test', undefined, undefined, 'craftengine');
+    project.craftEngine = { attributes: { definitions: [{ id: 'might', base: 0 }] } };
+    setProject(project);
+    await service.sync(false);
+    expect(sync.mock.calls[1][1].settings).toMatch(/attribute:\s+enable: true/);
+  });
 });

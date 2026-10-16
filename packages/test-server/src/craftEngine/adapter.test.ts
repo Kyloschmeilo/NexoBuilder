@@ -51,6 +51,22 @@ describe('patchCraftEngineConfig', () => {
     expect(patchCraftEngineConfig(once, { packPort: 9000 })).toContain('port: 9000');
   });
 
+  it('switches the attribute system on for projects that use it and leaves it alone otherwise', () => {
+    const attribute = (text: string) => (parse(text) as { attribute: Record<string, unknown> }).attribute;
+    const off = patchCraftEngineConfig(JAR_CONFIG, { packPort: 8082 });
+    expect(attribute(off).enable).toBe(false);
+    const on = patchCraftEngineConfig(off, { packPort: 8082, attributes: true });
+    // Only the switch changes: health scaling and the comments stay
+    expect(attribute(on)).toEqual({ ...attribute(off), enable: true });
+    expect(on).toContain('# Master switch for custom attribute system');
+    expect(patchCraftEngineConfig(on, { packPort: 8082, attributes: true })).toBe(on);
+    // A project without attributes turns nothing off
+    for (const attributes of [false, undefined]) expect(patchCraftEngineConfig(on, { packPort: 8082, attributes })).toBe(on);
+    expect(patchCraftEngineConfig(off, { packPort: 8082, attributes: false })).toBe(off);
+    // A new file gets the switch too
+    expect(attribute(patchCraftEngineConfig(null, { packPort: 8082, attributes: true }))).toEqual({ enable: true });
+  });
+
   it('rewrites a broken file with only its own values', () => {
     const patched = patchCraftEngineConfig('resource-pack: [unclosed', { packPort: 8082 });
     expect(selfHost(patched)['self-host']).toEqual({ ip: '127.0.0.1', port: 8082, one_time_token: false });

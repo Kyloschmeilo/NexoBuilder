@@ -78,7 +78,19 @@ function pruned(field: Field, value: unknown): unknown {
 describe('the logic catalogs', () => {
   it('have the types of the plugin registries', () => {
     const counts = Object.fromEntries(Object.entries(CE_LOGIC).map(([name, types]) => [name, types.length]));
-    expect(counts).toEqual({ conditions: 37, functions: 55, numbers: 13, triggers: 12, lootSources: 12, lootEntries: 8, lootFunctions: 6 });
+    expect(counts).toEqual({
+      conditions: 37,
+      functions: 55,
+      numbers: 13,
+      triggers: 12,
+      lootSources: 12,
+      lootEntries: 8,
+      lootFunctions: 6,
+      attributeBases: 3,
+      attributeSyncValues: 3,
+      damageFormulas: 3,
+      damageEffects: 3,
+    });
   });
 
   for (const [name, types] of Object.entries(CE_LOGIC)) {

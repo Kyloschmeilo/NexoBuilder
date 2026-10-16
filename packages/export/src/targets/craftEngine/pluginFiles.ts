@@ -2,11 +2,13 @@
  * The files of plugins/CraftEngine: the project's pack.yml, its item configs (with their blocks, furniture and
  * recipes) grouped by file, the configs of its glyphs, sounds and paintings, its armor sets (equipments.yml), its
  * folders as categories (categories.yml, when the project setting is on), its lang files, its loot sources
- * (loot_sources.yml), its templates (templates.yml) and its global variables (global_variables.yml).
+ * (loot_sources.yml), its templates (templates.yml), its global variables (global_variables.yml) and its
+ * attribute system (attributes.yml).
  */
 import { createIssue, groupBy, type Issue, type IssueCode, type IssueLevel, type MessageArgs } from '@resourcepackbuilder/utils';
 import { formatResourceLocation } from '@resourcepackbuilder/minecraft';
 import {
+  craftEngineAttributeSections,
   craftEngineCategories,
   craftEngineGlobalVariables,
   craftEngineGlyphs,
@@ -28,6 +30,7 @@ import type { FileContent, ItemPlan } from '../../types';
 import type { TargetPluginFiles } from '../types';
 import { exportPackName } from '../../paths';
 import { CRAFT_ENGINE_RESERVED_PACK_NAME, craftEngineConfigFile, craftEngineMediaFile, packYmlFile } from './layout';
+import { attributeProjectIssues } from './attributes';
 import { blockProjectIssues, lootSourceIssues, templateProjectIssues } from './validate';
 
 export function planCraftEnginePluginFiles(project: Project, plans: ItemPlan[], writer: PackWriter, issues: Issue[]): TargetPluginFiles {
@@ -47,7 +50,12 @@ export function planCraftEnginePluginFiles(project: Project, plans: ItemPlan[], 
       plans.map((p) => p.item),
     ),
   );
-  issues.push(...blockProjectIssues(project), ...lootSourceIssues(project), ...templateProjectIssues(project));
+  issues.push(
+    ...blockProjectIssues(project),
+    ...lootSourceIssues(project),
+    ...templateProjectIssues(project),
+    ...attributeProjectIssues(project),
+  );
   const projectSections = [
     ['loot_sources', craftEngineLootSources(project), 'loot sources'],
     ['templates', craftEngineTemplates(project), 'templates'],
@@ -56,6 +64,14 @@ export function planCraftEnginePluginFiles(project: Project, plans: ItemPlan[], 
   for (const [name, section, label] of projectSections) {
     if (Object.keys(section).length === 0) continue;
     pluginFiles.set(craftEngineConfigFile(project, name), sectionsToYaml({ [name]: section }, `${label} of "${project.name}"`));
+  }
+  // The attribute system in one file: CraftEngine replaces all damage rules with each `damage_rules` section it reads
+  const attributes = craftEngineAttributeSections(project);
+  if (Object.values(attributes).some((section) => Object.keys(section).length > 0)) {
+    pluginFiles.set(
+      craftEngineConfigFile(project, 'attributes'),
+      sectionsToYaml(attributes, `attributes of "${project.name}" (needs attribute.enable: true in config.yml)`),
+    );
   }
   for (const [path, text] of planMedia(project, writer, issues)) pluginFiles.set(path, text);
   for (const [path, text] of planItemExtras(project, plans)) pluginFiles.set(path, text);

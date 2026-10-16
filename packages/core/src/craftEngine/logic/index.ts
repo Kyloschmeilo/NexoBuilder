@@ -1,4 +1,8 @@
-/** The CraftEngine logic catalogs: conditions, functions, number providers, event triggers, loot sources and loot tables. */
+/**
+ * The CraftEngine logic catalogs: conditions, functions, number providers, event triggers, loot sources, loot tables
+ * and the typed values of the attribute system.
+ */
+import { CE_ATTRIBUTE_BASES, CE_ATTRIBUTE_SYNC_VALUES, CE_DAMAGE_EFFECTS, CE_DAMAGE_FORMULAS } from './attributes';
 import type { LogicCatalogName, LogicType } from './catalog';
 import { CE_CONDITIONS } from './conditions';
 import { CE_FUNCTIONS } from './functions';
@@ -7,6 +11,7 @@ import { CE_LOOT_SOURCES } from './lootSources';
 import { CE_NUMBERS } from './numbers';
 import { CE_TRIGGERS } from './triggers';
 
+export { CE_ATTRIBUTE_BASES, CE_ATTRIBUTE_SYNC_VALUES, CE_DAMAGE_EFFECTS, CE_DAMAGE_FORMULAS } from './attributes';
 export * from './catalog';
 export { CE_CONDITIONS } from './conditions';
 export { CE_FUNCTIONS } from './functions';
@@ -25,4 +30,8 @@ export const CE_LOGIC: Record<LogicCatalogName, readonly LogicType[]> = {
   lootSources: CE_LOOT_SOURCES,
   lootEntries: CE_LOOT_ENTRIES,
   lootFunctions: CE_LOOT_FUNCTIONS,
+  attributeBases: CE_ATTRIBUTE_BASES,
+  attributeSyncValues: CE_ATTRIBUTE_SYNC_VALUES,
+  damageFormulas: CE_DAMAGE_FORMULAS,
+  damageEffects: CE_DAMAGE_EFFECTS,
 };
