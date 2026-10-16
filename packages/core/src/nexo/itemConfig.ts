@@ -9,7 +9,7 @@ import type { ConfigObject, ConfigValue, Item, Project } from '../project/types'
 import { slotForMaterial } from './armor';
 import type { Field } from './fields';
 import { getPath, setPath } from './configPath';
-import { DEFAULT_MATERIAL } from './material';
+import { itemMaterial } from './material';
 import { CONFIG_PROPERTIES } from './schema';
 import { MODEL_TOKEN } from './tokens';
 import { parseYaml } from './yaml';
@@ -91,7 +91,7 @@ export function buildItemConfig(context: BuildContext): BuildResult {
   const result: Record<string, unknown> = {};
   const name = item.displayName.trim();
   if (name) result.itemname = name;
-  const material = typeof source.material === 'string' && source.material.trim() ? source.material.trim() : DEFAULT_MATERIAL;
+  const material = itemMaterial(item);
   result.material = material;
   delete resolved.material;
   delete resolved.itemname;
@@ -122,7 +122,7 @@ export function buildItemConfig(context: BuildContext): BuildResult {
         ? { allowed_entity_types: entities }
         : {};
     // Elytra wings without material ELYTRA need the glider component, otherwise you cannot fly
-    const needsGlider = context.armor?.glider && material.toUpperCase() !== 'ELYTRA' && components.glider === undefined;
+    const needsGlider = context.armor?.glider && material !== 'ELYTRA' && components.glider === undefined;
     resolved.Components = {
       ...components,
       equippable: {

@@ -2,9 +2,8 @@ import type { Issue, IssueContext } from '../../issues';
 import { RESOURCE_LOCATION_PATTERN } from '../../minecraft/resourceLocation';
 import type { Project } from '../../project/types';
 import { issueReporter } from '../issueReporter';
+import { MATERIAL_PATTERN } from '../material';
 import { getRecipeTypeInfo, MAX_INGREDIENT_AMOUNT, MAX_RESULT_AMOUNT, type Recipe, type RecipeIngredient } from './model';
-
-const MATERIAL_PATTERN = /^[A-Za-z0-9_]+$/;
 
 function validateIngredient(ingredient: RecipeIngredient | null | undefined, context: IssueContext, project: Project, issues: Issue[]) {
   const add = issueReporter(issues, { context: [context] });
@@ -13,7 +12,7 @@ function validateIngredient(ingredient: RecipeIngredient | null | undefined, con
     add('error', 'recipe.ingredientMissing');
     return;
   }
-  if (ingredient.source === 'minecraft' && !MATERIAL_PATTERN.test(id)) add('error', 'recipe.materialInvalid', { id });
+  if (ingredient.source === 'minecraft' && !MATERIAL_PATTERN.test(id.toUpperCase())) add('error', 'recipe.materialInvalid', { id });
   if (ingredient.source === 'tag' && !RESOURCE_LOCATION_PATTERN.test(id)) add('error', 'recipe.tagInvalid', { id });
   if (ingredient.source === 'nexo' && !Object.values(project.items).some((i) => i.nexoId === id)) {
     add('info', 'recipe.nexoItemNotInProject', { id });

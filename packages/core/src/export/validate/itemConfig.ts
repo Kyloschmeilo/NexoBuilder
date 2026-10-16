@@ -6,6 +6,7 @@ import { getPath } from '../../nexo/configPath';
 import { validateTextFormat } from '../../nexo/fieldFormat';
 import type { Field } from '../../nexo/fields';
 import { getPropertyValue } from '../../nexo/properties';
+import { MATERIAL_PATTERN } from '../../nexo/material';
 import { PROPERTIES } from '../../nexo/schema';
 import { MODEL_TOKEN } from '../../nexo/tokens';
 import { isPlainObject } from '../../object';
@@ -30,7 +31,7 @@ export function validateItemConfig(itemExport: ItemExport, { config, usedVariati
   const { item, report } = itemExport;
   const targetVersion = itemExport.project.settings.minecraftVersion;
   const material = config.material;
-  if (typeof material !== 'string' || !/^[A-Z0-9_]+$/.test(material)) {
+  if (typeof material !== 'string' || !MATERIAL_PATTERN.test(material)) {
     report('error', 'plan.materialInvalid', { material: String(material) });
   }
 
