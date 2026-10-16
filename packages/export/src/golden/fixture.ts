@@ -122,6 +122,20 @@ export function goldenCraftEngineProject(): Project {
 
   insertItem(project, createItem({ displayName: 'Stein', itemId: 'pebble', folderId: misc.id, material: 'PAPER', model: null }));
 
+  const block = createItem({
+    displayName: 'Kristallblock',
+    itemId: 'crystal_block',
+    folderId: misc.id,
+    material: 'PAPER',
+    model: createTextureModel('cube_all', { all: 'crystal_block.png' }, [{ name: 'crystal_block.png', dataUrl: PNG16 }]),
+  });
+  block.config.block = {
+    state: { auto_state: 'solid' },
+    settings: { hardness: 3, tags: ['minecraft:mineable/pickaxe'] },
+    loot: { template: 'default:loot_table/self' },
+  };
+  insertItem(project, block);
+
   project.glyphs = [createGlyph('g1', 'gem', glyphFileFromDataUrl('gem.png', makePngDataUrl(8, 8)))];
   return project;
 }

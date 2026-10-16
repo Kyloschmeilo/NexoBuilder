@@ -209,7 +209,12 @@
     "recipesNotExported": "The CraftEngine export does not include recipes yet ({count}). They follow in a later version.",
     "materialInvalid": "The material “{material}” is invalid for CraftEngine (e.g. diamond_sword or minecraft:diamond_sword).",
     "variantExtraModels": "CraftEngine uses only the first {used, plural, one {model} other {# models}} of this variant. The other {count} {count, plural, one {is} other {are}} not exported.",
-    "reservedPackName": "The pack name “{name}” belongs to one of CraftEngine's own packs (default, default_…, internal). Choose another pack name in the project settings."
+    "reservedPackName": "The pack name “{name}” belongs to one of CraftEngine's own packs (default, default_…, internal). Choose another pack name in the project settings.",
+    "blockStateMissing": "The block has no state. Choose a block state group in the Block section of the model tab.",
+    "blockAutoStateInvalid": "CraftEngine has no block state group “{group}”. Choose one in the Block section of the model tab.",
+    "blockMissingModel": "The block has no model, so CraftEngine cannot load it. Import a model or textures on the model tab.",
+    "blockExtraTextures": "A block made from textures uses at most {max} of them, so {count, plural, one {one more texture is} other {# more textures are}} left out of the block.",
+    "autoStateBudget": "The project’s blocks need {used} block states of the group “{group}”, but CraftEngine has only {capacity}. Move some blocks to another group."
   },
   "issueList": {
     "openItem": "Go to item",

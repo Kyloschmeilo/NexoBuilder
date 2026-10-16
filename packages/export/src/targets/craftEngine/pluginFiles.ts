@@ -1,4 +1,4 @@
-/** The files of plugins/CraftEngine: the project's pack.yml and its item configs grouped by file. */
+/** The files of plugins/CraftEngine: the project's pack.yml and its item configs (with their blocks) grouped by file. */
 import { createIssue, groupBy, type Issue } from '@resourcepackbuilder/utils';
 import { buildPackYml, sectionsToYaml } from '@resourcepackbuilder/core/craftEngine';
 import type { Project } from '@resourcepackbuilder/core/project';
@@ -7,16 +7,18 @@ import type { FileContent, ItemPlan } from '../../types';
 import type { TargetPluginFiles } from '../types';
 import { exportPackName } from '../../paths';
 import { CRAFT_ENGINE_RESERVED_PACK_NAME, packYmlFile } from './layout';
+import { autoStateBudgetIssues } from './validate';
 
 export function planCraftEnginePluginFiles(project: Project, plans: ItemPlan[], _writer: PackWriter, issues: Issue[]): TargetPluginFiles {
   const pluginFiles = new Map<string, FileContent>([[packYmlFile(project), buildPackYml(project)]]);
   for (const [file, list] of groupBy(plans, (p) => p.yamlFile)) {
     const items = Object.fromEntries(list.map((p) => [p.yamlKey, p.config]));
-    pluginFiles.set(file, sectionsToYaml({ items }, `project "${project.name}"`));
+    const blocks = Object.assign({}, ...list.map((p) => p.sections?.blocks));
+    pluginFiles.set(file, sectionsToYaml({ items, blocks }, `project "${project.name}"`));
   }
   const packName = exportPackName(project);
   if (CRAFT_ENGINE_RESERVED_PACK_NAME.test(packName)) issues.push(createIssue('error', 'ce.reservedPackName', { name: packName }));
-  issues.push(...notYetExported(project, plans));
+  issues.push(...autoStateBudgetIssues(project), ...notYetExported(project, plans));
   return { pluginFiles };
 }
 

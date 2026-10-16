@@ -3,16 +3,23 @@
  *  1. clean up the structured config (remove empty fields, keep values without a property)
  *  2. add the automatic values (material, data.item_name, model or models)
  *  3. overlay the user's additional YAML, which wins
+ * A block definition in `block` is no item key: it is returned as the block of the same key, with its state's model
+ * filled in, and the item gets the behavior that places it.
  */
+import type { JavaModelJson } from '@resourcepackbuilder/minecraft';
 import { deepClone, deepMerge, isPlainObject } from '@resourcepackbuilder/utils';
 import type { Item, Project } from '../project/types';
 import { itemMaterial } from '../project/item';
 import { cleanConfig } from '../form/prune';
 import { parseRawYaml, type RawYamlError } from '../yaml';
 import { CRAFT_ENGINE_FORM } from './form/schema';
+import { craftEngineBlockModel, type CraftEngineBlockModel } from './block';
 
 /** Order of the keys in the YAML (as in the CraftEngine docs); other keys follow in their own order. */
 const TOP_LEVEL_ORDER = ['material', 'client_bound_material', 'data', 'model', 'models', 'settings', 'behavior', 'events'];
+/** Order of the keys of a block and of its state */
+const BLOCK_ORDER = ['state', 'states', 'settings', 'behavior', 'behaviors', 'loot', 'events'];
+const STATE_ORDER = ['auto_state', 'state', 'model', 'models'];
 
 /**
  * The keys CraftEngine builds an item's look from (AbstractItemManager: `model(s)|texture(s)|blueprint|legacy_model`).
@@ -28,10 +35,16 @@ export interface CraftEngineBuildContext {
   modelKey: string | null;
   /** All models in CraftEngine's slot order for materials with several states (bow, crossbow …); written as `models:` */
   models?: string[] | null;
+  /** The written main model, which a block's state shows */
+  modelJson?: JavaModelJson | null;
 }
 
 export interface CraftEngineBuildResult {
   config: Record<string, unknown>;
+  /** The block the item places (its entry under `blocks:`), null if the item is no block */
+  block: Record<string, unknown> | null;
+  /** How the block's state got its model (null if the item is no block or its state sets a model itself) */
+  blockModel: CraftEngineBlockModel | null;
   rawYamlError: RawYamlError | null;
 }
 
@@ -49,9 +62,33 @@ export function craftEngineMaterial(item: Item): string {
   return typeof raw === 'string' ? raw : itemMaterial(item).toLowerCase();
 }
 
+/** Copies the keys of `source` in the given order first, the others after them. */
+function ordered(source: Record<string, unknown>, order: string[]): Record<string, unknown> {
+  const result: Record<string, unknown> = {};
+  for (const key of order) if (source[key] !== undefined) result[key] = source[key];
+  for (const [key, value] of Object.entries(source)) if (result[key] === undefined) result[key] = value;
+  return result;
+}
+
+/** The block of the item with its state's model from the main model (unless the state sets a model itself). */
+function buildBlock(source: Record<string, unknown>, context: CraftEngineBuildContext) {
+  const state = isPlainObject(source.state) ? { ...source.state } : {};
+  let blockModel: CraftEngineBlockModel | null = null;
+  if (state.model === undefined && state.models === undefined) {
+    blockModel = craftEngineBlockModel(context.modelKey, context.modelJson ?? null);
+    if (blockModel.model) state.model = blockModel.model;
+  }
+  const block = ordered({ ...source, state: ordered(state, STATE_ORDER) }, BLOCK_ORDER);
+  return { block, blockModel };
+}
+
 export function buildCraftEngineItem(context: CraftEngineBuildContext): CraftEngineBuildResult {
-  const { item, modelKey, models } = context;
+  const { project, item, modelKey, models } = context;
   const resolved: Record<string, unknown> = cleanConfig(CRAFT_ENGINE_FORM, deepClone(item.config));
+
+  const built = isPlainObject(resolved.block) ? buildBlock(resolved.block, context) : null;
+  delete resolved.block;
+  if (built) resolved.behavior = { type: 'block_item', block: craftEngineItemKey(project, item) };
 
   // The managed paths are set below, whatever the config holds there
   delete resolved.material;
@@ -64,18 +101,17 @@ export function buildCraftEngineItem(context: CraftEngineBuildContext): CraftEng
 
   const raw = parseRawYaml(item.rawYaml);
   const rawSetsModel = raw.value !== null && CE_MODEL_KEYS.some((key) => raw.value?.[key] !== undefined);
-  const result: Record<string, unknown> = { material: itemMaterial(item).toLowerCase() };
   if (rawSetsModel) {
     delete resolved.model;
     delete resolved.models;
   } else if (models && models.length > 0) resolved.models = models;
   else if (modelKey) resolved.model = modelKey;
-  for (const key of TOP_LEVEL_ORDER) {
-    if (resolved[key] !== undefined && result[key] === undefined) result[key] = resolved[key];
-  }
-  for (const [key, value] of Object.entries(resolved)) {
-    if (result[key] === undefined) result[key] = value;
-  }
+  const config = { material: itemMaterial(item).toLowerCase(), ...ordered(resolved, TOP_LEVEL_ORDER) };
 
-  return { config: raw.value ? deepMerge(result, raw.value) : result, rawYamlError: raw.error };
+  return {
+    config: raw.value ? deepMerge(config, raw.value) : config,
+    block: built?.block ?? null,
+    blockModel: built?.blockModel ?? null,
+    rawYamlError: raw.error,
+  };
 }

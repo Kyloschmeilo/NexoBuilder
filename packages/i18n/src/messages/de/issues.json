@@ -209,7 +209,12 @@
     "recipesNotExported": "Der CraftEngine-Export enthält noch keine Rezepte ({count}). Sie folgen in einer späteren Version.",
     "materialInvalid": "Das Material „{material}“ ist für CraftEngine ungültig (z. B. diamond_sword oder minecraft:diamond_sword).",
     "variantExtraModels": "CraftEngine nutzt nur {used, plural, one {das erste Modell} other {die ersten # Modelle}} dieser Variante. {count, plural, one {Das andere wird} other {Die anderen # werden}} nicht exportiert.",
-    "reservedPackName": "Der Pack-Name „{name}“ gehört zu einem eigenen Pack von CraftEngine (default, default_…, internal). Wähle in den Projekteinstellungen einen anderen Pack-Namen."
+    "reservedPackName": "Der Pack-Name „{name}“ gehört zu einem eigenen Pack von CraftEngine (default, default_…, internal). Wähle in den Projekteinstellungen einen anderen Pack-Namen.",
+    "blockStateMissing": "Der Block hat keinen Zustand. Wähle im Block-Bereich des Modell-Tabs eine Blockzustand-Gruppe.",
+    "blockAutoStateInvalid": "CraftEngine kennt keine Blockzustand-Gruppe „{group}“. Wähle eine im Block-Bereich des Modell-Tabs.",
+    "blockMissingModel": "Der Block hat kein Modell, deshalb kann CraftEngine ihn nicht laden. Importiere im Modell-Tab ein Modell oder Texturen.",
+    "blockExtraTextures": "Ein Block aus Texturen nutzt höchstens {max} davon. {count, plural, one {Die andere Textur fehlt} other {Die anderen # Texturen fehlen}} im Block.",
+    "autoStateBudget": "Die Blöcke des Projekts brauchen {used} Blockzustände der Gruppe „{group}“, CraftEngine hat aber nur {capacity}. Verschiebe einige Blöcke in eine andere Gruppe."
   },
   "issueList": {
     "openItem": "Zum Item",

@@ -6,7 +6,7 @@ import type { Issue, IssueCode } from '@resourcepackbuilder/utils';
 import type { Item, ItemArmor, PackTargetId, Project } from '@resourcepackbuilder/core/project';
 import type { PackWriter } from '../packWriter';
 import type { MultiExportPlan } from '../selection';
-import type { ExportPlan, ItemExport, ItemPlan } from '../types';
+import type { ExportPlan, ItemExport, ItemPlan, WrittenModel } from '../types';
 
 /** What the shared steps and the target wrote for an item; the target builds its config from it. */
 export interface WrittenItemModels {
@@ -19,6 +19,13 @@ export interface ItemShared {
   armor: ItemArmor | null;
   /** Custom block variations already used by earlier items ("TYPE:variation" → item) */
   usedVariations: Map<string, Item>;
+}
+
+/** An item's config and the further entries it adds to its YAML file. */
+export interface BuiltItem {
+  config: Record<string, unknown>;
+  /** Entries of other top-level sections of the item's YAML file by section and key (CraftEngine: its block under `blocks`) */
+  sections?: Record<string, Record<string, Record<string, unknown>>>;
 }
 
 /** What a target adds to the plan besides the items. */
@@ -39,10 +46,10 @@ export interface PackTarget<W extends WrittenItemModels = WrittenItemModels> {
   itemIds: ItemIdRule;
   /** File (relative to `layout.pluginDir`) that holds the config of `item` in the folder `folderSlugs`. */
   itemFile(project: Project, folderSlugs: string[], item: Item): string;
-  /** Writes the item's further models (variants, item model definitions) after its main model `mainKey`. */
-  writeModels(itemExport: ItemExport, mainKey: string | null): W;
+  /** Writes the item's further models (variants, item model definitions) after its main model `main`. */
+  writeModels(itemExport: ItemExport, main: WrittenModel | null): W;
   /** Builds the item's config from the written models and checks it; reports through itemExport. */
-  buildItem(itemExport: ItemExport, written: W, shared: ItemShared): Record<string, unknown>;
+  buildItem(itemExport: ItemExport, written: W, shared: ItemShared): BuiltItem;
   /** Item key in the YAML: Nexo `itemId`, CraftEngine `<namespace>:<itemId>`. */
   yamlKey(project: Project, item: Item): string;
   /** The planned item as it appears in its YAML file (the live preview of the editor). */

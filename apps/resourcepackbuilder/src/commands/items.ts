@@ -4,6 +4,7 @@ import {
   type ConfigValue,
   createRecipe,
   furnitureStatePath,
+  getPath,
   type Item,
   type NewItemInput,
   pruneUnusedAssets,
@@ -20,9 +21,10 @@ import {
   withTextureAnimation,
 } from '@resourcepackbuilder/minecraft';
 import * as operations from '@resourcepackbuilder/core/project';
-import { assetToken, texturePlaceholder, uid } from '@resourcepackbuilder/utils';
+import { assetToken, isPlainObject, texturePlaceholder, uid } from '@resourcepackbuilder/utils';
 import { propertyById, type PropertyDef, setPropertyValue } from '@resourcepackbuilder/core/form';
 import { formFor } from '@resourcepackbuilder/core/targets';
+import { newCraftEngineBlock } from '@resourcepackbuilder/core/craftEngine';
 import { getProject, mutate } from '../store/project';
 import { select, setExpanded } from '../store/ui';
 
@@ -176,6 +178,24 @@ export function removeVariant(itemId: string, slot: VariantSlot): void {
 /** Adds an empty state to the item's furniture mechanic (Mechanics.furniture.states.<name>). */
 export function addFurnitureState(itemId: string, name: string): void {
   updateItem(itemId, (item) => setPath(item.config, furnitureStatePath(name), {}));
+}
+
+// --- CraftEngine blocks ------------------------------------------------------------------------------
+
+/** Turns the item into a CraftEngine block (a new block definition) or back into a plain item. */
+export function setCraftEngineBlock(itemId: string, isBlock: boolean): void {
+  updateItem(itemId, (item) => {
+    if (isBlock) item.config.block = newCraftEngineBlock();
+    else delete item.config.block;
+  });
+}
+
+/** Sets the `auto_state` group of the item's block; a shared state (`{ type, id }`) keeps its id. */
+export function setBlockAutoState(itemId: string, group: string): void {
+  updateItem(itemId, (item) => {
+    const current = getPath(item.config, ['block', 'state', 'auto_state']);
+    setPath(item.config, ['block', 'state', 'auto_state'], isPlainObject(current) ? { ...current, type: group } : group);
+  });
 }
 
 // --- Recipes -----------------------------------------------------------------------------------------

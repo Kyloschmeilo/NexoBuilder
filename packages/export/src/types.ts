@@ -20,6 +20,8 @@ export interface ItemPlan {
   modelFile: string | null;
   modelJson: JavaModelJson | null;
   config: Record<string, unknown>;
+  /** Further entries of the item's YAML file by section and key (CraftEngine: its block under `blocks`) */
+  sections?: Record<string, Record<string, Record<string, unknown>>>;
   /** The item's key in its YAML file (Nexo: the item ID, CraftEngine: namespace:item ID) */
   yamlKey: string;
   /** File of the item's config, relative to the target's plugin folder */

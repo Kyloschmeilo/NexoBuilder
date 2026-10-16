@@ -32,7 +32,8 @@
       "components": "Components",
       "mechanics": "Mechanics",
       "data": "Data",
-      "settings": "Settings"
+      "settings": "Settings",
+      "blockSettings": "Block Settings"
     },
     "empty": {
       "general": "Noch nichts hinzugefügt (z.B. Lore).",
@@ -41,7 +42,8 @@
       "components": "Noch keine Components.",
       "mechanics": "Noch keine Mechanics.",
       "data": "Noch keine Item-Daten (z.B. Food, Equippable).",
-      "settings": "Noch keine Settings (z.B. Tags, Fuel Time)."
+      "settings": "Noch keine Settings (z.B. Tags, Fuel Time).",
+      "blockSettings": "Noch keine Block-Einstellungen (z. B. Hardness, Sounds, Loot)."
     },
     "fromVersion": "ab {version}",
     "untilVersion": "bis {version}",
@@ -196,5 +198,14 @@
     "placeholderNexo": "Item-ID",
     "placeholderTag": "z.B. planks",
     "amount": "Benötigte Anzahl pro Feld (optional)"
+  },
+  "ceBlock": {
+    "title": "Block",
+    "description": "CraftEngine platziert das Item als eigenen Block.",
+    "toggle": "Als Block platzieren",
+    "toggleHelp": "Das Item platziert einen eigenen Block mit derselben ID.",
+    "autoState": "Blockzustand-Gruppe",
+    "autoStateHelp": "CraftEngine zeigt den Block über einen freien Zustand dieser Vanilla-Blöcke. Die Gruppe bestimmt die Kollisionsbox: solid für volle Blöcke, leaves für durchsichtige Blöcke, tripwire für flache Pflanzen.",
+    "model": "Der Block zeigt das Modell des Items. Ein flaches Item-Modell wird zu einem Würfel aus seinen Texturen: 1 Textur auf allen Seiten, 2 als Stirn- und Seitenfläche (wie ein Stamm), 3 als Unterseite, Seite und Oberseite."
   }
 }

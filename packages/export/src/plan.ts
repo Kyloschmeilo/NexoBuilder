@@ -66,7 +66,7 @@ function planItem(target: PackTarget, project: Project, item: Item, writer: Pack
   };
 
   const main = item.model ? itemExport.writeModel(item.model, itemExport.modelPath, null) : null;
-  const config = target.buildItem(itemExport, target.writeModels(itemExport, main?.key ?? null), shared);
+  const built = target.buildItem(itemExport, target.writeModels(itemExport, main), shared);
 
   return {
     item,
@@ -74,7 +74,8 @@ function planItem(target: PackTarget, project: Project, item: Item, writer: Pack
     modelKey: main?.key ?? null,
     modelFile: main?.file ?? null,
     modelJson: main?.json ?? null,
-    config,
+    config: built.config,
+    ...(built.sections && { sections: built.sections }),
     yamlKey: target.yamlKey(project, item),
     yamlFile: target.itemFile(project, itemExport.folderSlugs, item),
   };

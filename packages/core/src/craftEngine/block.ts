@@ -1,0 +1,170 @@
+/**
+ * CraftEngine blocks: an item becomes a block when its config holds a block definition in `block` (state, settings,
+ * loot). The export writes it under `blocks:` with the item's key and makes the item place it (`block_item`).
+ */
+import { compareVersions, isGeneratedItemParent, type JavaModelJson } from '@resourcepackbuilder/minecraft';
+import { isPlainObject } from '@resourcepackbuilder/utils';
+import type { ConfigObject, Item, Project } from '../project/types';
+
+/**
+ * The `auto_state` groups: the vanilla block states CraftEngine borrows for a block's look, with how many of them
+ * its default `block_state_mappings` (internal/configuration/mappings.yml of the 26.9 jar) free up. Each group lists
+ * the smaller groups whose states it contains (`solid` holds the note block and the three mushroom blocks); `extra`
+ * are states that only newer Minecraft versions have (the note block instruments of 26.1); the counts are those of
+ * 1.21.4, the oldest version the app exports for.
+ * The group names and their vanilla blocks come from the plugin's AutoStateGroup.
+ */
+export interface AutoStateGroup {
+  id: string;
+  capacity: number;
+  includes?: string[];
+  extra?: { from: string; count: number };
+}
+
+export const CE_AUTO_STATE_GROUPS: AutoStateGroup[] = [
+  {
+    id: 'solid',
+    capacity: 1289,
+    includes: ['note_block', 'mushroom', 'mushroom_stem', 'red_mushroom_block', 'brown_mushroom_block'],
+    extra: { from: '26.1', count: 200 },
+  },
+  { id: 'note_block', capacity: 1100, extra: { from: '26.1', count: 200 } },
+  { id: 'mushroom', capacity: 189, includes: ['mushroom_stem', 'red_mushroom_block', 'brown_mushroom_block'] },
+  { id: 'mushroom_stem', capacity: 63 },
+  { id: 'red_mushroom_block', capacity: 63 },
+  { id: 'brown_mushroom_block', capacity: 63 },
+  { id: 'leaves', capacity: 117, includes: ['tintable_leaves', 'non_tintable_leaves'] },
+  {
+    id: 'waterlogged_leaves',
+    capacity: 117,
+    includes: ['waterlogged_tintable_leaves', 'waterlogged_non_tintable_leaves'],
+  },
+  { id: 'tintable_leaves', capacity: 65 },
+  { id: 'waterlogged_tintable_leaves', capacity: 65 },
+  { id: 'non_tintable_leaves', capacity: 52 },
+  { id: 'waterlogged_non_tintable_leaves', capacity: 52 },
+  { id: 'tripwire', capacity: 126, includes: ['lower_tripwire', 'higher_tripwire'] },
+  { id: 'lower_tripwire', capacity: 63 },
+  { id: 'higher_tripwire', capacity: 63 },
+  { id: 'sapling', capacity: 8 },
+  { id: 'pressure_plate', capacity: 28 },
+  { id: 'cactus', capacity: 15 },
+  { id: 'sugar_cane', capacity: 15 },
+  { id: 'weeping_vine', capacity: 25 },
+  { id: 'twisting_vine', capacity: 25 },
+  { id: 'cave_vine', capacity: 48 },
+  { id: 'kelp', capacity: 25 },
+  // The default mappings leave the chorus plant out (commented out in mappings.yml): it has no free states
+  { id: 'chorus', capacity: 0 },
+];
+
+export const CE_AUTO_STATE_GROUP_IDS = CE_AUTO_STATE_GROUPS.map((group) => group.id);
+
+/** The group a new block uses: full-block collision from note blocks and mushroom blocks. */
+export const CE_DEFAULT_AUTO_STATE = 'solid';
+
+/** Free vanilla states of the group on the Minecraft version. */
+export function autoStateCapacity(group: AutoStateGroup, minecraftVersion: string): number {
+  const extra = group.extra && compareVersions(minecraftVersion, group.extra.from) >= 0 ? group.extra.count : 0;
+  return group.capacity + extra;
+}
+
+/** The item's block definition, or null when the item is no block. */
+export function craftEngineBlock(config: ConfigObject): Record<string, unknown> | null {
+  const block = config.block;
+  return isPlainObject(block) ? block : null;
+}
+
+/** A new block: a full block from the `solid` group that drops itself (CraftEngine's built-in loot template). */
+export function newCraftEngineBlock(): ConfigObject {
+  return { state: { auto_state: CE_DEFAULT_AUTO_STATE }, loot: { template: 'default:loot_table/self' } };
+}
+
+/** The group of the block's `auto_state` (simple form `solid`, shared form `{ type: solid, id: … }`). */
+function autoStateOf(block: Record<string, unknown>): { group: string; shared: string | null } | null {
+  const state = isPlainObject(block.state) ? block.state : null;
+  const auto = state?.auto_state;
+  if (typeof auto === 'string') return { group: auto, shared: null };
+  if (isPlainObject(auto) && typeof auto.type === 'string')
+    return { group: auto.type, shared: auto.id === undefined ? null : String(auto.id) };
+  return null;
+}
+
+/** How many vanilla states the project's blocks take from each `auto_state` group; shared ids count once. */
+export function countAutoStates(project: Pick<Project, 'items'>): Map<string, number> {
+  const counts = new Map<string, number>();
+  const shared = new Set<string>();
+  for (const item of Object.values(project.items) as Item[]) {
+    const block = craftEngineBlock(item.config);
+    const auto = block && autoStateOf(block);
+    if (!auto) continue;
+    if (auto.shared !== null) {
+      const key = `${auto.group}\u0000${auto.shared}`;
+      if (shared.has(key)) continue;
+      shared.add(key);
+    }
+    counts.set(auto.group, (counts.get(auto.group) ?? 0) + 1);
+  }
+  return counts;
+}
+
+export interface AutoStateOverrun {
+  group: string;
+  used: number;
+  capacity: number;
+}
+
+/**
+ * The groups whose blocks need more states than the group has: a group's own blocks plus those of the groups it
+ * contains share its states. CraftEngine's own packs and other packs on the server use states too, so this only
+ * catches what the project alone cannot fit.
+ */
+export function autoStateOverruns(project: Pick<Project, 'items' | 'settings'>): AutoStateOverrun[] {
+  const counts = countAutoStates(project);
+  return CE_AUTO_STATE_GROUPS.flatMap((group) => {
+    const used = [group.id, ...(group.includes ?? [])].reduce((sum, id) => sum + (counts.get(id) ?? 0), 0);
+    const capacity = autoStateCapacity(group, project.settings.minecraftVersion);
+    return used > capacity ? [{ group: group.id, used, capacity }] : [];
+  });
+}
+
+/** Parents CraftEngine generates a block model with, by the number of textures (CraftEngine's own slot order). */
+const PARENTS_BY_TEXTURE_COUNT: Array<{ parent: string; slots: string[] }> = [
+  { parent: 'minecraft:block/cube_all', slots: ['all'] },
+  { parent: 'minecraft:block/cube_column', slots: ['end', 'side'] },
+  { parent: 'minecraft:block/cube_bottom_top', slots: ['bottom', 'side', 'top'] },
+];
+
+/** The most textures a block generated from a flat item model uses. */
+export const CE_BLOCK_MAX_TEXTURES = PARENTS_BY_TEXTURE_COUNT.length;
+
+export interface CraftEngineBlockModel {
+  /** The state's `model:` (null = the item has no model to show) */
+  model: Record<string, unknown> | null;
+  /** Textures of a flat model beyond CE_BLOCK_MAX_TEXTURES that the block leaves out */
+  unusedTextures: number;
+}
+
+/**
+ * The model of the block's state, from the item's main model:
+ *  - a model with a shape of its own (a cube parent, elements, a Blockbench model) is used as it is;
+ *  - a flat item model (item/generated …) has no block shape, so CraftEngine generates a cube from its layer textures:
+ *    1 texture is cube_all, 2 are cube_column (end, side), 3 are cube_bottom_top (bottom, side, top). The generated
+ *    model goes to `<main model>-block`, next to the main model.
+ */
+export function craftEngineBlockModel(modelKey: string | null, modelJson: JavaModelJson | null): CraftEngineBlockModel {
+  if (!modelKey || !modelJson) return { model: null, unusedTextures: 0 };
+  if (modelJson.elements || !isGeneratedItemParent(modelJson.parent ?? '')) return { model: { path: modelKey }, unusedTextures: 0 };
+  const layers = Object.entries(modelJson.textures ?? {})
+    .filter(([key]) => /^layer\d+$/.test(key))
+    .sort(([a], [b]) => Number(a.slice(5)) - Number(b.slice(5)))
+    .map(([, texture]) => texture);
+  if (layers.length === 0) return { model: { path: modelKey }, unusedTextures: 0 };
+  const used = layers.slice(0, CE_BLOCK_MAX_TEXTURES);
+  const { parent, slots } = PARENTS_BY_TEXTURE_COUNT[used.length - 1];
+  const textures = Object.fromEntries(slots.map((slot, i) => [slot, used[i]]));
+  return {
+    model: { path: `${modelKey}-block`, generation: { parent, textures } },
+    unusedTextures: layers.length - used.length,
+  };
+}

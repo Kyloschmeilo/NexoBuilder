@@ -32,7 +32,8 @@
       "components": "Components",
       "mechanics": "Mechanics",
       "data": "Data",
-      "settings": "Settings"
+      "settings": "Settings",
+      "blockSettings": "Block Settings"
     },
     "empty": {
       "general": "Nothing added yet (e.g. Lore).",
@@ -41,7 +42,8 @@
       "components": "No components yet.",
       "mechanics": "No mechanics yet.",
       "data": "No item data yet (e.g. Food, Equippable).",
-      "settings": "No settings yet (e.g. Tags, Fuel Time)."
+      "settings": "No settings yet (e.g. Tags, Fuel Time).",
+      "blockSettings": "No block settings yet (e.g. Hardness, Sounds, Loot)."
     },
     "fromVersion": "from {version}",
     "untilVersion": "until {version}",
@@ -196,5 +198,14 @@
     "placeholderNexo": "Item ID",
     "placeholderTag": "e.g. planks",
     "amount": "Required amount per slot (optional)"
+  },
+  "ceBlock": {
+    "title": "Block",
+    "description": "CraftEngine places the item as a block of its own.",
+    "toggle": "Place as a block",
+    "toggleHelp": "The item places a custom block with the same ID.",
+    "autoState": "Block state group",
+    "autoStateHelp": "CraftEngine shows the block through a free state of these vanilla blocks. The group decides the collision box: solid for full blocks, leaves for see-through blocks, tripwire for thin plants.",
+    "model": "The block shows the item’s model. A flat item model becomes a cube from its textures: 1 texture on all sides, 2 as end and side (like a log), 3 as bottom, side and top."
   }
 }

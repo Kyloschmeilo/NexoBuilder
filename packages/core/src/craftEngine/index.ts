@@ -1,6 +1,8 @@
 /** Public API of @resourcepackbuilder/core/craftEngine. */
+export * from './block';
 export * from './form/options';
 export * from './form/schema';
+export * from './form/schema/blockSettings';
 export * from './form/schema/data';
 export * from './form/schema/general';
 export * from './form/schema/settings';

@@ -3,7 +3,7 @@
  * values. CraftEngine writes vanilla ids in lowercase (`minecraft:sharpness`, `attack_speed`), so the vanilla data
  * from minecraft/catalog is turned into that spelling here.
  */
-import { ATTRIBUTE_NAMES, COMPONENT_NAMES, ENCHANTMENT_NAMES, ITEM_TAG_NAMES } from '@resourcepackbuilder/minecraft';
+import { ATTRIBUTE_NAMES, COMPONENT_NAMES, ENCHANTMENT_NAMES, ITEM_TAG_NAMES, SOUND_EVENTS } from '@resourcepackbuilder/minecraft';
 import { plainOptions } from '../../form/options';
 
 /** Vanilla attributes (`attack_damage`). */
@@ -100,4 +100,56 @@ export const CE_GLOW_COLORS = plainOptions([
   'light_purple',
   'yellow',
   'white',
+]);
+
+/** Block sound events (`minecraft:block.stone.break` …) for a block's `settings.sounds`. */
+export const CE_BLOCK_SOUNDS = plainOptions(SOUND_EVENTS.filter((name) => name.startsWith('block.')).map((name) => `minecraft:${name}`));
+
+/** Common vanilla block tags: the tool that mines the block fast, the tool tier it needs, and block families. */
+export const CE_BLOCK_TAGS = plainOptions(
+  [
+    'mineable/pickaxe',
+    'mineable/axe',
+    'mineable/shovel',
+    'mineable/hoe',
+    'needs_stone_tool',
+    'needs_iron_tool',
+    'needs_diamond_tool',
+    'sword_efficient',
+    'logs',
+    'logs_that_burn',
+    'planks',
+    'leaves',
+    'saplings',
+    'flowers',
+    'crops',
+    'dirt',
+    'replaceable',
+    'replaceable_by_trees',
+    'beacon_base_blocks',
+    'climbable',
+  ].map((name) => `minecraft:${name}`),
+);
+
+/** How pistons treat the block (`settings.push_reaction`), in the names of Minecraft 26.3; CraftEngine maps them on older servers. */
+export const CE_PUSH_REACTIONS = plainOptions(['PUSH_PULL', 'PUSH', 'POPPED', 'IMMOVEABLE', 'IGNORE_ENTITY']);
+
+/** The note block sound when a note block sits on the block (`settings.instrument`). */
+export const CE_INSTRUMENTS = plainOptions([
+  'harp',
+  'basedrum',
+  'snare',
+  'hat',
+  'bass',
+  'flute',
+  'bell',
+  'guitar',
+  'chime',
+  'xylophone',
+  'iron_xylophone',
+  'cow_bell',
+  'didgeridoo',
+  'bit',
+  'banjo',
+  'pling',
 ]);

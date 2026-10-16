@@ -1,5 +1,6 @@
 /** Helpers around the folder structure of a project (all guarded against folder cycles). */
 import { hasPath, slugify } from '@resourcepackbuilder/utils';
+import type { PackTargetId } from './target';
 import type { Folder, Item, Project } from './types';
 
 export function folderSlug(folder: Folder): string {
@@ -75,6 +76,10 @@ export function itemIdsInFolder(project: Project, folderId: string): string[] {
   return result;
 }
 
-export function isBlockItem(item: Item): boolean {
-  return hasPath(item.config, ['Mechanics', 'custom_block']);
+/**
+ * Whether the item places a custom block, so its model and textures go to models/block and textures/block (the
+ * block atlas). Nexo: the custom_block mechanic; CraftEngine: a block definition in `block`.
+ */
+export function isBlockItem(item: Item, target: PackTargetId): boolean {
+  return hasPath(item.config, target === 'craftengine' ? ['block'] : ['Mechanics', 'custom_block']);
 }

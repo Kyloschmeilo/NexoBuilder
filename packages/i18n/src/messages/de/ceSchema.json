@@ -11,6 +11,10 @@
     "settings": {
       "label": "Settings",
       "description": "Item-Einstellungen von CraftEngine (Tags, Fuel Time, Reparatur …)"
+    },
+    "blockSettings": {
+      "label": "Block Settings",
+      "description": "Eigenschaften des platzierten Blocks (Hardness, Sounds, Tags, Loot …)"
     }
   },
   "properties": {
@@ -545,6 +549,234 @@
       "description": "Eine eigene Projektil-Entity, z.B. für einen Dreizack.",
       "field": {
         "label": "Projektil (YAML)"
+      }
+    },
+    "blockSettingsHardness": {
+      "label": "Hardness",
+      "description": "Wie lange das Abbauen des Blocks dauert. Stein hat 1,5, Obsidian 50.",
+      "field": {
+        "label": "Härte"
+      }
+    },
+    "blockSettingsResistance": {
+      "label": "Resistance",
+      "description": "Wie gut der Block Explosionen standhält.",
+      "field": {
+        "label": "Widerstand"
+      }
+    },
+    "blockSettingsTags": {
+      "label": "Tags",
+      "description": "Block-Tags des Blocks, z. B. das Werkzeug, das ihn schnell abbaut (minecraft:mineable/pickaxe).",
+      "field": {
+        "label": "Tags",
+        "placeholder": "namespace:tag"
+      }
+    },
+    "blockSettingsSounds": {
+      "label": "Sounds",
+      "description": "Die Sounds des Blocks: Abbauen, Schritt, Platzieren, Treffer beim Abbauen und Fallen.",
+      "field": {
+        "label": "Sounds",
+        "fields": {
+          "break": {
+            "label": "Abbauen",
+            "placeholder": "minecraft:block.stone.break"
+          },
+          "step": {
+            "label": "Schritt",
+            "placeholder": "minecraft:block.stone.step"
+          },
+          "place": {
+            "label": "Platzieren",
+            "placeholder": "minecraft:block.stone.place"
+          },
+          "hit": {
+            "label": "Treffer beim Abbauen",
+            "placeholder": "minecraft:block.stone.hit"
+          },
+          "fall": {
+            "label": "Fallen",
+            "placeholder": "minecraft:block.stone.fall"
+          }
+        }
+      }
+    },
+    "blockSettingsCorrectTools": {
+      "label": "Correct Tools",
+      "description": "Werkzeuge oder Item-Tags, mit denen der Block etwas fallen lässt. Damit ist Require Correct Tools an.",
+      "field": {
+        "label": "Werkzeuge",
+        "placeholder": "#minecraft:pickaxes"
+      }
+    },
+    "blockSettingsRequireCorrectTools": {
+      "label": "Require Correct Tools",
+      "description": "Der Block lässt nur etwas fallen, wenn er mit einem passenden Werkzeug abgebaut wird.",
+      "field": {
+        "label": "Passendes Werkzeug nötig"
+      }
+    },
+    "blockSettingsRequiredBreakPower": {
+      "label": "Required Break Power",
+      "description": "Die Abbaustärke, die ein Werkzeug braucht: Holz und Gold 1, Stein und Kupfer 2, Eisen 3, Diamant 4, Netherit 5.",
+      "field": {
+        "label": "Abbaustärke"
+      }
+    },
+    "blockSettingsIncorrectToolDigSpeed": {
+      "label": "Incorrect Tool Dig Speed",
+      "description": "Abbaugeschwindigkeit mit einem falschen Werkzeug als Anteil der normalen (0 bis 1).",
+      "field": {
+        "label": "Faktor"
+      }
+    },
+    "blockSettingsLuminance": {
+      "label": "Luminance",
+      "description": "Die Lichtstärke, die der Block abgibt (0 bis 15).",
+      "field": {
+        "label": "Lichtstärke"
+      }
+    },
+    "blockSettingsMapColor": {
+      "label": "Map Color",
+      "description": "Die Farb-ID des Blocks auf Karten, z. B. 11 für Stein.",
+      "field": {
+        "label": "Farb-ID"
+      }
+    },
+    "blockSettingsPushReaction": {
+      "label": "Push Reaction",
+      "description": "Was ein Kolben mit dem Block macht.",
+      "field": {
+        "label": "Reaktion"
+      }
+    },
+    "blockSettingsInstrument": {
+      "label": "Instrument",
+      "description": "Der Klang eines Notenblocks, der auf dem Block steht.",
+      "field": {
+        "label": "Instrument"
+      }
+    },
+    "blockSettingsBurnable": {
+      "label": "Burnable",
+      "description": "Feuer aus der Umgebung kann den Block entzünden.",
+      "field": {
+        "label": "Brennbar"
+      }
+    },
+    "blockSettingsBurnChance": {
+      "label": "Burn Chance",
+      "description": "Wie wahrscheinlich der Block Feuer fängt (0 bis 100).",
+      "field": {
+        "label": "Chance"
+      }
+    },
+    "blockSettingsFireSpreadChance": {
+      "label": "Fire Spread Chance",
+      "description": "Wie wahrscheinlich sich Feuer vom Block auf die Nachbarn ausbreitet (0 bis 100).",
+      "field": {
+        "label": "Chance"
+      }
+    },
+    "blockSettingsReplaceable": {
+      "label": "Replaceable",
+      "description": "Ein anderer Block ersetzt ihn beim Platzieren, wie Gras.",
+      "field": {
+        "label": "Ersetzbar"
+      }
+    },
+    "blockSettingsIsRedstoneConductor": {
+      "label": "Is Redstone Conductor",
+      "description": "Der Block leitet Redstone-Signale weiter.",
+      "field": {
+        "label": "Leitet Redstone"
+      }
+    },
+    "blockSettingsIsSuffocating": {
+      "label": "Is Suffocating",
+      "description": "Wesen im Block nehmen Erstickungsschaden.",
+      "field": {
+        "label": "Erstickt"
+      }
+    },
+    "blockSettingsIsViewBlocking": {
+      "label": "Is View Blocking",
+      "description": "Der Block versperrt Mobs die Sicht. Spieler sehen, was das Modell zeigt.",
+      "field": {
+        "label": "Versperrt die Sicht"
+      }
+    },
+    "blockSettingsIsRandomlyTicking": {
+      "label": "Is Randomly Ticking",
+      "description": "Der Block bekommt zufällige Ticks, die manche Block-Verhalten brauchen (Wachsen, Ausbreiten).",
+      "field": {
+        "label": "Zufällige Ticks"
+      }
+    },
+    "blockSettingsCanOcclude": {
+      "label": "Can Occlude",
+      "description": "Der Block hält Licht auf und lässt Gras unter ihm zu Erde werden.",
+      "field": {
+        "label": "Verdeckt"
+      }
+    },
+    "blockSettingsBlockLight": {
+      "label": "Block Light",
+      "description": "Wie stark der Block durchscheinendes Licht abschwächt (0 bis 15).",
+      "field": {
+        "label": "Lichtminderung"
+      }
+    },
+    "blockSettingsPropagateSkylight": {
+      "label": "Propagate Skylight",
+      "description": "Tageslicht geht durch den Block hindurch.",
+      "field": {
+        "label": "Lässt Tageslicht durch"
+      }
+    },
+    "blockSettingsFriction": {
+      "label": "Friction",
+      "description": "Wie rutschig der Block für Mobs und Items ist. Eis hat 0,98. Für Spieler gilt das nicht.",
+      "field": {
+        "label": "Reibung"
+      }
+    },
+    "blockSettingsSpeedFactor": {
+      "label": "Speed Factor",
+      "description": "Ändert, wie schnell Mobs auf dem Block laufen. Für Spieler gilt das nicht.",
+      "field": {
+        "label": "Faktor"
+      }
+    },
+    "blockSettingsJumpFactor": {
+      "label": "Jump Factor",
+      "description": "Ändert, wie hoch Mobs vom Block springen. Für Spieler gilt das nicht.",
+      "field": {
+        "label": "Faktor"
+      }
+    },
+    "blockSettingsBounceRestitution": {
+      "label": "Bounce Restitution",
+      "description": "Wie hoch Mobs nach der Landung auf dem Block abprallen. Schleim hat 1. Für Spieler gilt das nicht.",
+      "field": {
+        "label": "Abprall"
+      }
+    },
+    "blockSettingsSupportShape": {
+      "label": "Support Shape",
+      "description": "Der Vanilla-Block, dessen Form der Block seinen Nachbarn bietet, z. B. für Fackeln an der Seite.",
+      "field": {
+        "label": "Block",
+        "placeholder": "minecraft:stone"
+      }
+    },
+    "blockLoot": {
+      "label": "Loot",
+      "description": "Was der Block beim Abbauen fallen lässt. default:loot_table/self lässt den Block selbst fallen. Ohne Loot fällt nichts.",
+      "field": {
+        "label": "Loot-Tabelle (YAML)"
       }
     }
   }

@@ -16,13 +16,13 @@
 import { PACK_NAME_PATTERN } from '@resourcepackbuilder/minecraft';
 import { DEFAULT_PACK_NAME, getFolderSlugs, isBlockItem, type Item, type Project } from '@resourcepackbuilder/core/project';
 
-function textureDirFor(item: Item): 'item' | 'block' {
-  return isBlockItem(item) ? 'block' : 'item';
+function textureDirFor(project: Project, item: Item): 'item' | 'block' {
+  return isBlockItem(item, project.target) ? 'block' : 'item';
 }
 
 /** Model path of an item's main model, e.g. "item/weapons/ruby_sword" */
 export function modelPathFor(project: Project, item: Item): string {
-  return [textureDirFor(item), ...getFolderSlugs(project, item.folderId), item.itemId].join('/');
+  return [textureDirFor(project, item), ...getFolderSlugs(project, item.folderId), item.itemId].join('/');
 }
 
 export function modelFile(namespace: string, modelPath: string): string {
