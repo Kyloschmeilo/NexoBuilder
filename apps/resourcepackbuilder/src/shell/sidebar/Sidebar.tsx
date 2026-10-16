@@ -2,7 +2,7 @@ import { useMemo, useState } from 'react';
 import { FolderPlus, Search } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 import { cn } from 'cn';
-import { Tip } from '@resourcepackbuilder/ui';
+import { SectionLabel, Tip } from '@resourcepackbuilder/ui';
 import { Button } from '@resourcepackbuilder/ui/components/button';
 import { Empty, EmptyContent, EmptyDescription, EmptyHeader, EmptyMedia, EmptyTitle } from '@resourcepackbuilder/ui/components/empty';
 import { InputGroup, InputGroupAddon, InputGroupInput } from '@resourcepackbuilder/ui/components/input-group';
@@ -66,14 +66,18 @@ export function Sidebar() {
 
   return (
     <aside className="flex min-h-0 min-w-0 flex-col border-r border-sidebar-border bg-sidebar text-sidebar-foreground">
-      <div className="flex items-center justify-between gap-2 pt-3 pr-3 pb-2 pl-4">
-        <h2 className="truncate font-heading text-xs font-semibold tracking-[0.14em] text-muted-foreground uppercase">{t('title')}</h2>
-        <Tip label={t('newFolder')}>
-          <Button variant="ghost" size="sm" onClick={() => void folders.create(null)}>
-            <FolderPlus /> {t('folderButton')}
-          </Button>
-        </Tip>
-      </div>
+      <SectionLabel
+        className="pt-3 pr-3 pb-2 pl-4"
+        actions={
+          <Tip label={t('newFolder')}>
+            <Button variant="ghost" size="sm" onClick={() => void folders.create(null)}>
+              <FolderPlus /> {t('folderButton')}
+            </Button>
+          </Tip>
+        }
+      >
+        <h2 className="truncate">{t('title')}</h2>
+      </SectionLabel>
       <div className="px-3 pb-2">
         <InputGroup className="h-7.5">
           <InputGroupAddon>

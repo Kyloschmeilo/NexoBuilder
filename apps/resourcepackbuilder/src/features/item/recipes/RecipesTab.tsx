@@ -8,7 +8,7 @@ import { Button } from '@resourcepackbuilder/ui/components/button';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@resourcepackbuilder/ui/components/dropdown-menu';
 import { richTags } from '../../../i18n/richTags';
 import { addRecipe } from '../../../commands/items';
-import { EditorSection } from '../EditorSection';
+import { Section } from '../../../components/Section';
 import { RecipeCard } from './RecipeCard';
 
 /** The command that loads exported recipes on the server. */
@@ -40,7 +40,7 @@ export function RecipesTab({ item }: { item: Item }) {
   const keys = recipeKeys(item);
   return (
     <div className="flex flex-col gap-4">
-      <EditorSection
+      <Section
         title={t('recipes.title')}
         actions={<AddRecipeButton itemId={item.id} />}
         empty={item.recipes.length === 0 && t.rich('recipes.empty', { b: (chunks) => <strong>{chunks}</strong> })}
@@ -48,7 +48,7 @@ export function RecipesTab({ item }: { item: Item }) {
         {item.recipes.map((recipe) => (
           <RecipeCard key={recipe.id} item={item} recipe={recipe} recipeKey={keys.get(recipe.id) ?? recipe.type} />
         ))}
-      </EditorSection>
+      </Section>
       <Alert variant="info">
         <AlertDescription>
           {t.rich('recipes.exportHint', {

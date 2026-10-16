@@ -5,7 +5,7 @@ import { VARIANTS } from '@resourcepackbuilder/core/nexo/variants';
 import { Button } from '@resourcepackbuilder/ui/components/button';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@resourcepackbuilder/ui/components/dropdown-menu';
 import { setVariantModels } from '../../../commands/items';
-import { EditorSection } from '../EditorSection';
+import { Section } from '../../../components/Section';
 import { VariantCard } from './VariantCard';
 
 function AddVariantButton({ item }: { item: Item }) {
@@ -34,7 +34,7 @@ export function VariantsSection({ item }: { item: Item }) {
   const t = useTranslations('item');
   const active = VARIANTS.filter((v) => item.variants?.[v.slot] !== undefined);
   return (
-    <EditorSection
+    <Section
       title={t('variants.title')}
       actions={<AddVariantButton item={item} />}
       empty={active.length === 0 && t.rich('variants.empty', { b: (chunks) => <strong>{chunks}</strong> })}
@@ -42,6 +42,6 @@ export function VariantsSection({ item }: { item: Item }) {
       {active.map((def) => (
         <VariantCard key={def.slot} item={item} def={def} />
       ))}
-    </EditorSection>
+    </Section>
   );
 }

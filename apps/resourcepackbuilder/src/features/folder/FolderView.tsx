@@ -1,4 +1,3 @@
-import type { ReactNode } from 'react';
 import { Box, FolderOpen, FolderPlus, Pencil, Plus, Trash2 } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 import type { Item } from '@resourcepackbuilder/core/project/types';
@@ -6,11 +5,12 @@ import { folderYamlFile } from '@resourcepackbuilder/core/export/paths';
 import { issuesFor } from '@resourcepackbuilder/core/issues';
 import { itemLabel } from '@resourcepackbuilder/core/project/labels';
 import { getFolderPathLabel } from '@resourcepackbuilder/core/project/tree';
-import { AutoGrid, DropZone, IconButton, PageHeader, PageShell, SectionLabel, Thumb, Tip } from '@resourcepackbuilder/ui';
+import { AutoGrid, DropZone, IconButton, PageHeader, PageShell, Thumb, Tip } from '@resourcepackbuilder/ui';
 import { Badge } from '@resourcepackbuilder/ui/components/badge';
 import { Button } from '@resourcepackbuilder/ui/components/button';
 import { useThumbnail } from '@resourcepackbuilder/preview';
 import { IssueCountBadges } from '../../components/IssueCountBadges';
+import { Section } from '../../components/Section';
 import { openDialog } from '../../store/dialogs';
 import { usePlan } from '../../store/PlanProvider';
 import { useOpenProject } from '../../store/project';
@@ -71,16 +71,16 @@ export function FolderView({ folderId }: { folderId: string }) {
       />
 
       {items.length > 0 && (
-        <FolderSection title={t('itemsHeading')}>
+        <Section className="mt-2 gap-2" title={t('itemsHeading')}>
           <AutoGrid min="190px" className="gap-2.5">
             {items.map((item) => (
               <ItemTile key={item.id} item={item} />
             ))}
           </AutoGrid>
-        </FolderSection>
+        </Section>
       )}
       {folder.folderIds.length > 0 && (
-        <FolderSection title={t('subfoldersHeading')}>
+        <Section className="mt-2 gap-2" title={t('subfoldersHeading')}>
           <div className="flex flex-wrap gap-2">
             {folder.folderIds.map((id) => (
               <Button key={id} variant="outline" className="max-w-full" onClick={() => select({ kind: 'folder', id })}>
@@ -89,18 +89,9 @@ export function FolderView({ folderId }: { folderId: string }) {
               </Button>
             ))}
           </div>
-        </FolderSection>
+        </Section>
       )}
     </PageShell>
-  );
-}
-
-function FolderSection({ title, children }: { title: string; children: ReactNode }) {
-  return (
-    <section className="mt-2 flex flex-col gap-2">
-      <SectionLabel>{title}</SectionLabel>
-      {children}
-    </section>
   );
 }
 
