@@ -18,12 +18,14 @@ import {
   furnitureElementType,
   furnitureHitboxType,
   furnitureVariants,
+  isTransparentState,
   missingBehaviorProperties,
   parseCeRotation,
   parseCeVector,
   parseFurnitureSeat,
   parseVariantKey,
   propertyValues,
+  rendererElements,
   requiredElementKey,
   sharedBaseBlocks,
   stateAutoState,
@@ -56,7 +58,10 @@ export function validateCraftEngineItem(itemExport: ItemExport, config: Record<s
   if (!CE_MODEL_KEYS.some((key) => config[key] !== undefined)) report('warning', 'ce.missingModel');
 }
 
-/** A state or appearance: a known `auto_state` group or a fixed vanilla `state`. */
+/**
+ * A state or appearance: a known `auto_state` group or a fixed vanilla `state`, and the elements of its entity
+ * renderer. A transparent one without a renderer shows nothing.
+ */
 function validateState(itemExport: ItemExport, state: Record<string, unknown>, appearance: string | null): void {
   const { report } = itemExport;
   const auto = stateAutoState(state);
@@ -66,6 +71,11 @@ function validateState(itemExport: ItemExport, state: Record<string, unknown>, a
   } else if (state.auto_state !== undefined && !(auto && autoStateGroupOf(auto.group))) {
     report('error', 'ce.blockAutoStateInvalid', { group: auto?.group ?? String(state.auto_state) });
   }
+  // The single state is named by its key in the YAML
+  const where = { look: appearance ?? 'state' };
+  const elements = rendererElements(state);
+  for (const element of elements) validateDisplayElement(itemExport, element, RENDERER_ELEMENT_CODES, where);
+  if (isTransparentState(state) && elements.length === 0) report('warning', 'ce.blockTransparentInvisible', where);
 }
 
 /**
@@ -151,11 +161,60 @@ const RULE_VALUES: Record<string, readonly string[]> = { rotation: CE_FURNITURE_
 const VECTOR_KEYS = ['position', 'translation'];
 const ROTATION_KEY = 'rotation';
 
-/** A vector, rotation or seat CraftEngine cannot read. */
-function checkValue(itemExport: ItemExport, variant: string, key: string, value: unknown, valid: boolean): void {
+/** Where a checked value is: the furniture's variant or the block's state or appearance. */
+type Where = Record<string, string>;
+
+/** A vector, rotation or seat CraftEngine cannot read, reported with `code`. */
+function checkValue(itemExport: ItemExport, code: string, where: Where, key: string, value: unknown, valid: boolean): void {
   if (value !== undefined && !valid) {
-    itemExport.report('error', 'ce.furnitureValueInvalid', { variant, key, value: typeof value === 'string' ? value : JSON.stringify(value) });
+    itemExport.report('error', code, { ...where, key, value: typeof value === 'string' ? value : JSON.stringify(value) });
   }
+}
+
+/** The issue codes of the checks of a display element. */
+interface ElementCodes {
+  typeInvalid: string;
+  keyMissing: string;
+  itemUnknown: string;
+  valueInvalid: string;
+}
+
+const FURNITURE_ELEMENT_CODES: ElementCodes = {
+  typeInvalid: 'ce.furnitureElementTypeInvalid',
+  keyMissing: 'ce.furnitureElementKeyMissing',
+  itemUnknown: 'ce.furnitureItemUnknown',
+  valueInvalid: 'ce.furnitureValueInvalid',
+};
+
+const RENDERER_ELEMENT_CODES: ElementCodes = {
+  typeInvalid: 'ce.blockRendererTypeInvalid',
+  keyMissing: 'ce.blockRendererKeyMissing',
+  itemUnknown: 'ce.blockRendererItemUnknown',
+  valueInvalid: 'ce.blockRendererValueInvalid',
+};
+
+/**
+ * An element of a furniture variant or of a block's entity renderer: a known type with what it shows, and readable
+ * positions, scale and rotation. Items of the pack it shows must exist.
+ */
+function validateDisplayElement(itemExport: ItemExport, element: Record<string, unknown>, codes: ElementCodes, where: Where): void {
+  const { report, project } = itemExport;
+  const type = furnitureElementType(element);
+  if (!type || !ELEMENT_TYPES.includes(type)) {
+    report('error', codes.typeInvalid, { ...where, type: type ?? '' });
+    return;
+  }
+  const required = requiredElementKey(type);
+  if (required && element[required] === undefined) report('error', codes.keyMissing, { ...where, type, key: required });
+  const item = element.item;
+  if (typeof item === 'string' && item.startsWith(`${project.namespace}:`)) {
+    const exists = Object.values(project.items).some((other) => `${project.namespace}:${other.itemId}` === item);
+    if (!exists) report('warning', codes.itemUnknown, { ...where, item });
+  }
+  const check = (key: string, valid: boolean) => checkValue(itemExport, codes.valueInvalid, where, key, element[key], valid);
+  for (const key of VECTOR_KEYS) check(key, parseCeVector(element[key]) !== null);
+  if (type !== 'armor_stand') check('scale', parseCeVector(element.scale) !== null);
+  check(ROTATION_KEY, parseCeRotation(element[ROTATION_KEY]) !== null);
 }
 
 /**
@@ -168,41 +227,26 @@ export function validateCraftEngineFurniture(
   furniture: Record<string, unknown>,
   itemConfig: Record<string, unknown>,
 ): void {
-  const { report, project } = itemExport;
+  const { report } = itemExport;
   const variants = furnitureVariants(furniture);
   const names = Object.keys(variants);
   if (names.length === 0) report('error', 'ce.furnitureNoVariant');
   else if (!names.some((name) => ANCHORS.includes(name))) report('warning', 'ce.furnitureNoPlaceableVariant');
-  const items = new Set(Object.values(project.items).map((item) => `${project.namespace}:${item.itemId}`));
 
   for (const [name, variant] of Object.entries(variants)) {
     const elements = variantList(variant, 'elements');
     if (elements.length === 0 && variant.blueprint === undefined) report('warning', 'ce.furnitureVariantEmpty', { variant: name });
-    for (const element of elements) {
-      const type = furnitureElementType(element);
-      if (!type || !ELEMENT_TYPES.includes(type)) {
-        report('error', 'ce.furnitureElementTypeInvalid', { variant: name, type: type ?? '' });
-        continue;
-      }
-      const required = requiredElementKey(type);
-      if (required && element[required] === undefined) report('error', 'ce.furnitureElementKeyMissing', { variant: name, type, key: required });
-      const item = element.item;
-      if (typeof item === 'string' && item.startsWith(`${project.namespace}:`) && !items.has(item)) {
-        report('warning', 'ce.furnitureItemUnknown', { variant: name, item });
-      }
-      for (const key of VECTOR_KEYS) checkValue(itemExport, name, key, element[key], parseCeVector(element[key]) !== null);
-      if (type !== 'armor_stand') checkValue(itemExport, name, 'scale', element.scale, parseCeVector(element.scale) !== null);
-      checkValue(itemExport, name, ROTATION_KEY, element[ROTATION_KEY], parseCeRotation(element[ROTATION_KEY]) !== null);
-    }
+    const where = { variant: name };
+    for (const element of elements) validateDisplayElement(itemExport, element, FURNITURE_ELEMENT_CODES, where);
     for (const hitbox of variantList(variant, 'hitboxes')) {
       const type = furnitureHitboxType(hitbox);
       if (!HITBOX_TYPES.includes(type)) report('error', 'ce.furnitureHitboxTypeInvalid', { variant: name, type });
-      if (type === 'custom' && hitbox.entity_type === undefined) {
-        report('error', 'ce.furnitureElementKeyMissing', { variant: name, type, key: 'entity_type' });
-      }
-      checkValue(itemExport, name, 'position', hitbox.position, parseCeVector(hitbox.position) !== null);
+      if (type === 'custom' && hitbox.entity_type === undefined) report('error', 'ce.furnitureHitboxEntityMissing', where);
+      const check = (key: string, value: unknown, valid: boolean) =>
+        checkValue(itemExport, 'ce.furnitureValueInvalid', where, key, value, valid);
+      check('position', hitbox.position, parseCeVector(hitbox.position) !== null);
       const seats = Array.isArray(hitbox.seats) ? hitbox.seats : [];
-      for (const seat of seats) checkValue(itemExport, name, 'seats', seat, parseFurnitureSeat(seat) !== null);
+      for (const seat of seats) check('seats', seat, parseFurnitureSeat(seat) !== null);
     }
   }
 

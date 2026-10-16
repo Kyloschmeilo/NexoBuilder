@@ -67,9 +67,23 @@ const REQUIRED_ELEMENT_KEY: Record<string, string> = {
 };
 
 /** Order of the keys of a furniture, of a variant, of an element and of a hitbox (as in the jar's examples). */
-const FURNITURE_ORDER = ['settings', 'variants', 'behavior', 'behaviors', 'events', 'loot'];
+const FURNITURE_ORDER = ['settings', 'variants', 'variant', 'placement', 'behavior', 'behaviors', 'events', 'loot'];
+/** The keys CraftEngine reads a furniture's variants from, in the order it tries them (`variant(s)|placement`) */
+const VARIANTS_KEYS = ['variant', 'variants', 'placement'];
 const VARIANT_ORDER = ['loot_spawn_offset', 'blueprint', 'elements', 'hitboxes'];
-const ELEMENT_ORDER = ['type', 'item', 'block', 'text', 'model', 'display_transform', 'billboard', 'position', 'translation', 'rotation', 'scale'];
+const ELEMENT_ORDER = [
+  'type',
+  'item',
+  'block',
+  'text',
+  'model',
+  'display_transform',
+  'billboard',
+  'position',
+  'translation',
+  'rotation',
+  'scale',
+];
 const HITBOX_ORDER = ['type', 'position', 'width', 'height', 'scale', 'peek', 'direction', 'entity_type'];
 
 export type Vec3 = [number, number, number];
@@ -111,9 +125,15 @@ export function newCraftEngineFurniture(): ConfigObject {
 
 /** The variants of a furniture by name (CraftEngine also reads `variant` and the old `placement`). */
 export function furnitureVariants(furniture: Record<string, unknown>): Record<string, Record<string, unknown>> {
-  const variants = furniture.variants ?? furniture.variant ?? furniture.placement;
+  const key = variantsKey(furniture);
+  const variants = key === null ? undefined : furniture[key];
   if (!isPlainObject(variants)) return {};
   return Object.fromEntries(Object.entries(variants).map(([name, value]) => [name, isPlainObject(value) ? value : {}]));
+}
+
+/** The key the furniture's variants are under (`variants`, `variant` or `placement`), null without one. */
+function variantsKey(furniture: Record<string, unknown>): string | null {
+  return VARIANTS_KEYS.find((key) => furniture[key] !== undefined && furniture[key] !== null) ?? null;
 }
 
 /** A list of objects of a variant (`elements`, `hitboxes`); other entries are left out. */
@@ -122,9 +142,15 @@ export function variantList(variant: Record<string, unknown>, key: 'elements' | 
   return Array.isArray(list) ? list.filter(isPlainObject) : [];
 }
 
+/**
+ * A type as CraftEngine looks it up: its registries hold element and hitbox types under the `craftengine` namespace
+ * (Key.ce), which a type may name or leave out. Another namespace stays (CraftEngine knows no such type).
+ */
+const ceType = (type: string) => (type.startsWith('craftengine:') ? type.slice('craftengine:'.length) : type);
+
 /** The type of an element: its own, or the one CraftEngine guesses from its keys (text, item, block), else null. */
 export function furnitureElementType(element: Record<string, unknown>): string | null {
-  if (typeof element.type === 'string') return element.type;
+  if (typeof element.type === 'string') return ceType(element.type);
   if (element.text !== undefined) return 'text_display';
   if (element.item !== undefined) return 'item_display';
   if (element.block !== undefined) return 'block_display';
@@ -138,7 +164,7 @@ export function requiredElementKey(type: string): string | undefined {
 
 /** The type of a hitbox (`interaction` when it sets none, as CraftEngine reads it). */
 export function furnitureHitboxType(hitbox: Record<string, unknown>): string {
-  return typeof hitbox.type === 'string' ? hitbox.type : 'interaction';
+  return typeof hitbox.type === 'string' ? ceType(hitbox.type) : 'interaction';
 }
 
 const toNumber = (value: unknown): number | null => {
@@ -174,12 +200,7 @@ function eulerQuaternion(yaw: number, pitch: number, roll: number): Quat {
   const [cy, sy] = [Math.cos(yaw / 2), Math.sin(yaw / 2)];
   const [cp, sp] = [Math.cos(pitch / 2), Math.sin(pitch / 2)];
   const [cr, sr] = [Math.cos(roll / 2), Math.sin(roll / 2)];
-  return [
-    sr * cp * cy - cr * sp * sy,
-    cr * sp * cy + sr * cp * sy,
-    cr * cp * sy - sr * sp * cy,
-    cr * cp * cy + sr * sp * sy,
-  ];
+  return [sr * cp * cy - cr * sp * sy, cr * sp * cy + sr * cp * sy, cr * cp * sy - sr * sp * cy, cr * cp * cy + sr * sp * sy];
 }
 
 const rad = (degrees: number) => (degrees * Math.PI) / 180;
@@ -253,8 +274,11 @@ function ordered(source: Record<string, unknown>, order: string[]): Record<strin
   return result;
 }
 
-/** An element with its type written out, and the furniture's own item when it shows an item but names none. */
-function builtElement(element: Record<string, unknown>, itemKey: string): Record<string, unknown> {
+/**
+ * An element (of a furniture or a block's entity renderer) with its type written out, and the furniture's or block's
+ * own item when it shows an item but names none.
+ */
+export function builtDisplayElement(element: Record<string, unknown>, itemKey: string): Record<string, unknown> {
   const type = furnitureElementType(element) ?? (element.model === undefined ? 'item_display' : null);
   const result: Record<string, unknown> = type ? { ...element, type } : { ...element };
   if (type && ITEM_ELEMENT_TYPES.has(type) && result.item === undefined) result.item = itemKey;
@@ -285,13 +309,15 @@ export function buildCraftEngineFurniture(
   const settings = isPlainObject(merged.settings) ? merged.settings : {};
   merged.settings = { item: itemKey, ...settings };
 
-  if (isPlainObject(merged.variants)) {
-    merged.variants = Object.fromEntries(
-      Object.entries(merged.variants).map(([name, value]) => {
+  const key = variantsKey(merged);
+  const variants = key === null ? undefined : merged[key];
+  if (key !== null && isPlainObject(variants)) {
+    merged[key] = Object.fromEntries(
+      Object.entries(variants).map(([name, value]) => {
         if (!isPlainObject(value)) return [name, value];
         const variant: Record<string, unknown> = { ...value };
         if (Array.isArray(variant.elements)) {
-          variant.elements = variant.elements.map((e) => (isPlainObject(e) ? builtElement(e, itemKey) : e));
+          variant.elements = variant.elements.map((e) => (isPlainObject(e) ? builtDisplayElement(e, itemKey) : e));
         }
         if (Array.isArray(variant.hitboxes)) {
           variant.hitboxes = variant.hitboxes.map((h) =>
@@ -330,16 +356,16 @@ export interface FurnitureElementPose {
 
 /**
  * The pose of an element for the preview; values CraftEngine cannot read fall back to their defaults (the export
- * reports them). Billboards are ignored, the preview shows each element as placed.
+ * reports them), a missing position to `defaultPosition`. Billboards are ignored, the preview shows each element as placed.
  */
-export function furnitureElementPose(element: Record<string, unknown>): FurnitureElementPose {
+export function furnitureElementPose(element: Record<string, unknown>, defaultPosition: Vec3 = [0, 0, 0]): FurnitureElementPose {
   const type = furnitureElementType(element) ?? 'item_display';
   const item = typeof element.item === 'string' && element.item.trim() ? element.item.trim() : null;
   const scale = typeof element.scale === 'number' && type === 'armor_stand' ? element.scale : null;
   return {
     type,
     item,
-    position: parseCeVector(element.position) ?? [0, 0, 0],
+    position: parseCeVector(element.position) ?? defaultPosition,
     translation: parseCeVector(element.translation) ?? [0, 0, 0],
     scale: scale !== null ? [scale, scale, scale] : (parseCeVector(element.scale) ?? [1, 1, 1]),
     rotation: parseCeRotation(element.rotation) ?? [0, 0, 0, 1],
@@ -368,6 +394,16 @@ const DIRECTION_AXES: Record<string, Vec3> = {
 };
 
 /**
+ * The width and height of an interaction hitbox: `scale: width,height` (one number for both) when it is set, else
+ * `width` and `height`; null where it sets none (CraftEngine takes 1).
+ */
+export function interactionHitboxSize(hitbox: Record<string, unknown>): { width: number | null; height: number | null } {
+  const scale = hitbox.scale === undefined ? null : numberList(hitbox.scale);
+  if (scale) return { width: scale[0], height: scale[1] ?? scale[0] };
+  return { width: toNumber(hitbox.width), height: toNumber(hitbox.height) };
+}
+
+/**
  * The space a hitbox takes, in the furniture's frame (blocks): a box standing on its position, centered on it
  * horizontally. Interaction: `width` × `height` (or `scale: width,height`); shulker: a cube of `scale` that opens by
  * `peek` towards `direction`; happy ghast: a 4-block cube of `scale`; custom: a cube of `scale` (the entity's own size
@@ -382,9 +418,8 @@ export function furnitureHitboxBox(hitbox: Record<string, unknown>): FurnitureBo
     max: [x + width / 2, y + height, z + depth / 2],
   });
   if (type === 'interaction') {
-    const width = scale ? scale[0] : (toNumber(hitbox.width) ?? 1);
-    const height = scale ? (scale[1] ?? scale[0]) : (toNumber(hitbox.height) ?? 1);
-    return box(width, height);
+    const size = interactionHitboxSize(hitbox);
+    return box(size.width ?? 1, size.height ?? 1);
   }
   const size = scale?.length === 1 ? scale[0] : 1;
   if (type === 'happy_ghast') return box(4 * size, 4 * size);

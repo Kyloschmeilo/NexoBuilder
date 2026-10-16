@@ -1,21 +1,31 @@
-/** 3D preview of one variant of a CraftEngine furniture: its elements with their transforms, hitboxes and seats. */
+/**
+ * 3D previews of CraftEngine display elements: one variant of a furniture (its elements with their transforms,
+ * hitboxes and seats) and the entity renderer of a block's state (its elements in the block's outline).
+ */
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { RotateCcw } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 import {
   craftEngineItemKey,
+  type FurnitureElementPose,
   furnitureElementPose,
   furnitureHitboxBox,
   hitboxSeats,
+  rendererElementPose,
+  rendererElements,
   variantList,
+  type Vec3,
 } from '@resourcepackbuilder/core/craftEngine';
 import type { Item, Project } from '@resourcepackbuilder/core/project';
 import type { DisplaySlot, ImportedModel } from '@resourcepackbuilder/minecraft';
 import {
+  blockElementMatrix,
   buildPreviewModel,
   createStage,
   furnitureElementMatrix,
+  type FurnitureElementTransform,
   type FurnitureScene,
+  type FurnitureSceneElement,
   type PreviewModel,
   showFurniture,
   type Stage,
@@ -34,20 +44,24 @@ function previewModel(model: ImportedModel): PreviewModel {
 const displaySlot = (transform: string) => transform.replace('_person_', 'person_').replace(/_hand$/, 'hand') as DisplaySlot;
 
 /**
- * The scene of a variant. Item displays and dropped items show the model of the item they name (the furniture's own
- * item when they name none), if the project has it; other elements and items of other packs are placeholder blocks.
- * Dropped items (`item`) are shown at their position in the model's ground slot, without bobbing.
+ * The scene elements of display elements, placed in the furniture's frame or the block's. Item displays and dropped
+ * items show the model of the item they name (the furniture's or block's own item when they name none), if the
+ * project has it; other elements and items of other packs are placeholder blocks. Dropped items (`item`) are shown at
+ * their position in the model's ground slot, without bobbing.
  */
-function furnitureScene(project: Project, item: Item, variant: Record<string, unknown>): FurnitureScene {
+function sceneElements(
+  project: Project,
+  item: Item,
+  poses: FurnitureElementPose[],
+  matrixOf: (transform: FurnitureElementTransform) => number[],
+): FurnitureSceneElement[] {
   const ownKey = craftEngineItemKey(project, item);
-  const modelOf = (key: string) =>
-    Object.values(project.items).find((other) => craftEngineItemKey(project, other) === key)?.model ?? null;
-  const elements = variantList(variant, 'elements').map((element) => {
-    const pose = furnitureElementPose(element);
+  const modelOf = (key: string) => Object.values(project.items).find((other) => craftEngineItemKey(project, other) === key)?.model ?? null;
+  return poses.map((pose) => {
     const showsItem = pose.type === 'item_display' || pose.type === 'item';
     const model = showsItem ? modelOf(pose.item ?? ownKey) : null;
     if (pose.type === 'item') {
-      const matrix = furnitureElementMatrix({
+      const matrix = matrixOf({
         position: pose.position,
         translation: [0, 0, 0],
         scale: [1, 1, 1],
@@ -61,38 +75,39 @@ function furnitureScene(project: Project, item: Item, variant: Record<string, un
     const display = pose.displayTransform === 'none' ? undefined : model?.json.display?.[displaySlot(pose.displayTransform)];
     return {
       model: model && previewModel(model),
-      matrix: furnitureElementMatrix({ ...pose, flip: pose.type === 'item_display' }),
+      matrix: matrixOf({ ...pose, flip: pose.type === 'item_display' }),
       display,
     };
   });
+}
+
+/** The scene of a furniture variant. */
+function furnitureScene(project: Project, item: Item, variant: Record<string, unknown>): FurnitureScene {
+  const poses = variantList(variant, 'elements').map((element) => furnitureElementPose(element));
   const hitboxes = variantList(variant, 'hitboxes');
   return {
-    elements,
+    elements: sceneElements(project, item, poses, furnitureElementMatrix),
     hitboxes: hitboxes.map(furnitureHitboxBox),
     seats: hitboxes.flatMap((hitbox) => hitboxSeats(hitbox).map((seat) => seat.position)),
   };
 }
 
-/** The preview of `variant`; the camera is framed on it when the variant name changes or the view is reset. */
-export function FurniturePreview({
-  project,
-  item,
-  variantName,
-  variant,
-  height = 300,
-}: {
-  project: Project;
-  item: Item;
-  variantName: string;
-  variant: Record<string, unknown>;
-  height?: number;
-}) {
+/** The outline of the block, in the furniture frame the scene's boxes are in (the block on the middle grid block). */
+const BLOCK_OUTLINE: { min: Vec3; max: Vec3 } = { min: [-0.5, 0, -0.5], max: [0.5, 1, 0.5] };
+
+/** The scene of a block state's entity renderer, with the block's outline. */
+function rendererScene(project: Project, item: Item, state: Record<string, unknown>): FurnitureScene {
+  const poses = rendererElements(state).map(rendererElementPose);
+  return { elements: sceneElements(project, item, poses, blockElementMatrix), hitboxes: [BLOCK_OUTLINE], seats: [] };
+}
+
+/** A stage showing `scene`; the camera is framed on it when `frameKey` changes or the view is reset. */
+function ScenePreview({ scene, frameKey, height }: { scene: FurnitureScene; frameKey: string; height: number }) {
   const t = useTranslations('preview');
   const stageRef = useRef<Stage | null>(null);
   const [resetCounter, setResetCounter] = useState(0);
   const [isWebglUnavailable, setIsWebglUnavailable] = useState(false);
   const framedFor = useRef<string | null>(null);
-  const scene = useMemo(() => furnitureScene(project, item, variant), [project, item, variant]);
 
   const attachStage = useCallback((container: HTMLDivElement) => {
     try {
@@ -112,11 +127,11 @@ export function FurniturePreview({
   useEffect(() => {
     const stage = stageRef.current;
     if (!stage) return;
-    const frameKey = `${variantName}|${resetCounter}`;
-    const frame = framedFor.current !== frameKey;
-    framedFor.current = frameKey;
+    const key = `${frameKey}|${resetCounter}`;
+    const frame = framedFor.current !== key;
+    framedFor.current = key;
     return showFurniture(stage, scene, frame);
-  }, [scene, variantName, resetCounter]);
+  }, [scene, frameKey, resetCounter]);
 
   return (
     <div className="relative overflow-hidden rounded-lg border border-border bg-background" style={{ height }}>
@@ -134,4 +149,40 @@ export function FurniturePreview({
       )}
     </div>
   );
+}
+
+/** The preview of `variant`; the camera is framed on it when the variant name changes or the view is reset. */
+export function FurniturePreview({
+  project,
+  item,
+  variantName,
+  variant,
+  height = 300,
+}: {
+  project: Project;
+  item: Item;
+  variantName: string;
+  variant: Record<string, unknown>;
+  height?: number;
+}) {
+  const scene = useMemo(() => furnitureScene(project, item, variant), [project, item, variant]);
+  return <ScenePreview scene={scene} frameKey={variantName} height={height} />;
+}
+
+/** The preview of the entity renderer of `state` (named `stateName`, framed again when it changes). */
+export function BlockRendererPreview({
+  project,
+  item,
+  stateName,
+  state,
+  height = 260,
+}: {
+  project: Project;
+  item: Item;
+  stateName: string;
+  state: Record<string, unknown>;
+  height?: number;
+}) {
+  const scene = useMemo(() => rendererScene(project, item, state), [project, item, state]);
+  return <ScenePreview scene={scene} frameKey={stateName} height={height} />;
 }

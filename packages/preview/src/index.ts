@@ -3,6 +3,7 @@ export { buildPreviewModel, type PreviewModel, type PreviewNote } from './modelG
 export { createStage, showModel, type Stage } from './stage';
 export { cachedThumbnail, renderThumbnail } from './thumbnail';
 export {
+  blockElementMatrix,
   furnitureElementMatrix,
   furniturePoint,
   showFurniture,

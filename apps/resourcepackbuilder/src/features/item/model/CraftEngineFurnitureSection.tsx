@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useRef, useState } from 'react';
 import { useTranslations } from 'next-intl';
 import { Plus, Trash2 } from 'lucide-react';
 import {
@@ -22,7 +22,8 @@ import { Section } from '../../../components/Section';
 import { setCraftEngineFurniture, updateCraftEngineFurniture } from '../../../commands/items';
 import { useOpenProject } from '../../../store/project';
 import { FurniturePreview } from './FurniturePreview';
-import { FurnitureVariantEditor, NumberInput, withKey } from './FurnitureVariantEditor';
+import { NumberInput, withKey } from './DisplayElementsEditor';
+import { FurnitureVariantEditor } from './FurnitureVariantEditor';
 
 const ANCHORS: readonly string[] = CE_FURNITURE_ANCHORS;
 const SOUNDS = ['break', 'place', 'hit'] as const;
@@ -67,14 +68,18 @@ function FurnitureEditor({ item, furniture }: { item: Item; furniture: Record<st
   const variant = variants[name] as Record<string, unknown> | undefined;
   const isAnchor = ANCHORS.includes(name);
 
-  const edit = (next: (furniture: ConfigObject) => ConfigObject, historyKey?: string) => updateCraftEngineFurniture(item.id, next, historyKey);
+  const edit = (next: (furniture: ConfigObject) => ConfigObject, historyKey?: string) =>
+    updateCraftEngineFurniture(item.id, next, historyKey);
   const setVariant = (value: ConfigObject | undefined, historyKey?: string) =>
     edit((f) => withKey(f, 'variants', withKey(objectAt(f.variants), name, value)), historyKey);
   const editVariant = (next: (variant: ConfigObject) => ConfigObject, historyKey?: string) =>
-    edit((f) => {
-      const all = objectAt(f.variants);
-      return withKey(f, 'variants', withKey(all, name, next(objectAt(all[name]))));
-    }, historyKey && `${name}-${historyKey}`);
+    edit(
+      (f) => {
+        const all = objectAt(f.variants);
+        return withKey(f, 'variants', withKey(all, name, next(objectAt(all[name]))));
+      },
+      historyKey && `${name}-${historyKey}`,
+    );
   const rules = objectAt(furniture.rules);
   const rule = objectAt(rules[name]);
   const setRule = (key: string, value: string) =>
@@ -93,6 +98,13 @@ function FurnitureEditor({ item, furniture }: { item: Item; furniture: Record<st
     }, historyKey);
   const loot = objectAt(furniture.loot);
   const dropsItem = loot.template === CE_FURNITURE_LOOT_TEMPLATE;
+  // The loot turned off last (with its arguments), so turning it on again in the session brings it back
+  const lastLoot = useRef<ConfigObject | null>(null);
+  const setDropsItem = (checked: boolean) => {
+    if (!checked) lastLoot.current = loot;
+    const restored = lastLoot.current?.template === CE_FURNITURE_LOOT_TEMPLATE ? lastLoot.current : null;
+    edit((f) => withKey(f, 'loot', checked ? (restored ?? { template: CE_FURNITURE_LOOT_TEMPLATE }) : undefined));
+  };
 
   return (
     <div className="flex flex-col gap-5">
@@ -188,12 +200,7 @@ function FurnitureEditor({ item, furniture }: { item: Item; furniture: Record<st
         <p className="text-xs text-muted-foreground">{t('ceFurniture.settingsHelp')}</p>
       </div>
 
-      <CheckboxField
-        checked={dropsItem}
-        onChange={(checked) => edit((f) => withKey(f, 'loot', checked ? { template: CE_FURNITURE_LOOT_TEMPLATE } : undefined))}
-        label={t('ceFurniture.loot')}
-        description={t('ceFurniture.lootHelp')}
-      />
+      <CheckboxField checked={dropsItem} onChange={setDropsItem} label={t('ceFurniture.loot')} description={t('ceFurniture.lootHelp')} />
     </div>
   );
 }

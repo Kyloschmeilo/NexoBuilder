@@ -28,6 +28,7 @@ import {
 } from './block';
 import { blockBehaviorForm, blockBehaviorType } from './blockBehaviors';
 import { blockStates, CE_STATE_TEMPLATES, statesTemplate, templateArguments } from './blockStates';
+import { buildRenderer, rendererElements } from './blockRenderer';
 import { buildCraftEngineFurniture, craftEngineFurniture } from './furniture';
 
 /** Order of the keys in the YAML (as in the CraftEngine docs); other keys follow in their own order. */
@@ -35,7 +36,7 @@ const TOP_LEVEL_ORDER = ['material', 'client_bound_material', 'data', 'model', '
 /** Order of the keys of a block, of its states, of a state (or appearance) and of its model */
 const BLOCK_ORDER = ['state', 'states', 'settings', 'behavior', 'behaviors', 'loot', 'events'];
 const STATES_ORDER = ['template', 'arguments', 'merges', 'properties', 'appearances', 'variants'];
-const STATE_ORDER = ['auto_state', 'state', 'model', 'models'];
+const STATE_ORDER = ['auto_state', 'state', 'model', 'models', 'transparent', 'entity_renderer'];
 const MODEL_ORDER = ['path', 'x', 'y', 'uvlock', 'weight', 'generation'];
 /** Keys of a state that give it its look (block/states.mdx, appearance keys); the generated model is added only without them */
 const STATE_APPEARANCE_KEYS = ['model', 'models', 'texture', 'textures', 'blueprint', 'transparent'];
@@ -103,11 +104,13 @@ const asList = (value: unknown): unknown[] => (value === undefined ? [] : Array.
 
 /**
  * A state or appearance with the item's model when it sets no look itself. A `model` with only a rotation
- * (`{ y: 90 }`, as a block facing the player has) gets the item's model path too.
+ * (`{ y: 90 }`, as a block facing the player has) gets the item's model path too. An entity renderer on a fixed
+ * vanilla `state` is its look (the jar's sofa draws on a barrier); on an `auto_state` the block keeps the model below.
  */
 function withModel(state: Record<string, unknown>, model: () => Record<string, unknown> | null): Record<string, unknown> {
   const result = { ...state };
-  if (STATE_APPEARANCE_KEYS.every((key) => result[key] === undefined)) {
+  const rendererOnly = result.auto_state === undefined && rendererElements(result).length > 0;
+  if (!rendererOnly && STATE_APPEARANCE_KEYS.every((key) => result[key] === undefined)) {
     const generated = model();
     if (generated) result.model = generated;
   } else if (isPlainObject(result.model) && result.model.path === undefined) {
@@ -183,6 +186,10 @@ function buildBlock(source: Record<string, unknown>, context: CraftEngineBuildCo
     return result;
   };
 
+  // A state's look: its model (the item's when it sets none) and its entity renderer, which shows the item by default
+  const itemKey = craftEngineItemKey(context.project, context.item);
+  const look = (state: Record<string, unknown>) => buildRenderer(withModel(state, model), itemKey);
+
   const states = blockStates(merged);
   const template = states && statesTemplate(states);
   if (states && template) {
@@ -194,7 +201,7 @@ function buildBlock(source: Record<string, unknown>, context: CraftEngineBuildCo
     if (!modelKey && TEMPLATES_WITH_TEXTURES.has(template)) blockModel = { model: null, unusedTextures: 0 };
     // The form's vanilla block is filled in too when the user removed it
     const base = CE_STATE_TEMPLATES[template]?.baseArgument;
-    const presetArgs = form?.preset(craftEngineItemKey(context.project, context.item)).states?.arguments;
+    const presetArgs = form?.preset(itemKey).states?.arguments;
     const presetBase = base && isPlainObject(presetArgs) && presetArgs[base] !== undefined ? { [base]: presetArgs[base] } : {};
     const args = { ...presetBase, ...templateArguments(states) };
     // The arguments set in the config first (as the jar writes the vanilla block first), then the filled ones
@@ -209,11 +216,11 @@ function buildBlock(source: Record<string, unknown>, context: CraftEngineBuildCo
   } else if (states) {
     const appearances = isPlainObject(states.appearances) ? states.appearances : {};
     const filled = Object.fromEntries(
-      Object.entries(appearances).map(([name, value]) => [name, isPlainObject(value) ? withModel(value, model) : value]),
+      Object.entries(appearances).map(([name, value]) => [name, isPlainObject(value) ? look(value) : value]),
     );
     merged.states = ordered({ ...states, appearances: filled }, STATES_ORDER);
   } else {
-    merged.state = withModel(isPlainObject(merged.state) ? merged.state : {}, model);
+    merged.state = look(isPlainObject(merged.state) ? merged.state : {});
   }
 
   // CraftEngine reads one of `behavior` and `behaviors`: the form's behavior goes after the other ones

@@ -27,6 +27,7 @@ import { Input } from '@resourcepackbuilder/ui/components/input';
 import { NativeSelect, NativeSelectOption } from '@resourcepackbuilder/ui/components/native-select';
 import { isPlainObject } from '@resourcepackbuilder/utils';
 import { updateCraftEngineBlock } from '../../../commands/items';
+import { BlockRendererSection } from './BlockRendererEditor';
 
 type StatesEdit = (states: ConfigObject) => ConfigObject;
 const ROTATIONS = ['0', '90', '180', '270'];
@@ -120,6 +121,13 @@ export function CraftEngineStatesEditor({ item, block }: { item: Item; block: Re
             {t('ceBlock.states.toMulti')}
           </Button>
         </div>
+        <BlockRendererSection
+          item={item}
+          looks={[['state', isPlainObject(block.state) ? block.state : {}]]}
+          edit={(_name, next, historyKey) =>
+            editBlock((b) => ({ ...b, state: next(isPlainObject(b.state) ? (b.state as ConfigObject) : {}) }), historyKey)
+          }
+        />
       </div>
     );
   }
@@ -129,11 +137,27 @@ export function CraftEngineStatesEditor({ item, block }: { item: Item; block: Re
   const editStates = (next: StatesEdit, historyKey?: string) =>
     editBlock((b) => ({ ...b, states: next(isPlainObject(b.states) ? (b.states as ConfigObject) : {}) }), historyKey);
   return (
-    <MultiStateEditor
-      states={states}
-      editStates={editStates}
-      toSingle={() => editBlock((b) => toSingleState(b, { auto_state: CE_DEFAULT_AUTO_STATE }))}
-    />
+    <div className="flex flex-col gap-5">
+      <MultiStateEditor
+        states={states}
+        editStates={editStates}
+        toSingle={() => editBlock((b) => toSingleState(b, { auto_state: CE_DEFAULT_AUTO_STATE }))}
+      />
+      <BlockRendererSection
+        item={item}
+        looks={Object.entries(statesMap(states, 'appearances')).map(([name, value]) => [name, isPlainObject(value) ? value : {}])}
+        edit={(name, next, historyKey) =>
+          editStates((s) => {
+            const appearances = statesMap(s, 'appearances');
+            const look = appearances[name];
+            return {
+              ...s,
+              appearances: { ...appearances, [name]: next(isPlainObject(look) ? (look as ConfigObject) : {}) } as ConfigObject,
+            };
+          }, historyKey)
+        }
+      />
+    </div>
   );
 }
 

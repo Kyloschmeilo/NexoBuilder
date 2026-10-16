@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { furnitureElementMatrix, type FurnitureElementTransform, furniturePoint } from './furniture';
+import { blockElementMatrix, furnitureElementMatrix, type FurnitureElementTransform, furniturePoint } from './furniture';
 
 const IDENTITY: FurnitureElementTransform = {
   position: [0, 0, 0],
@@ -45,5 +45,23 @@ describe('furniture element transforms', () => {
 
   it('maps furniture points to the scene', () => {
     expect(furniturePoint([1, 0.5, -0.1])).toEqual([16, 8, 1.6]);
+  });
+});
+
+describe('block entity renderer transforms', () => {
+  it('places an element in the block frame, the block centered on the grid', () => {
+    // The default position of an item display is the block's center
+    const m = blockElementMatrix({ ...IDENTITY, position: [0.5, 0.5, 0.5] });
+    close(apply(m, [0, 0, 0]), [0, 8, 0]);
+    // With yaw 0 the item display shows its model half turned (no furniture yaw to cancel it)
+    close(apply(m, [1, 0, 0]), [-1, 8, 0]);
+    // A block display at the corner
+    close(apply(blockElementMatrix({ ...IDENTITY, flip: false }), [0, 0, 0]), [-8, 0, -8]);
+  });
+
+  it('turns the element by its yaw, as the furniture preview does', () => {
+    const block = blockElementMatrix({ ...IDENTITY, position: [0.5, 0, 0.5], yaw: 90 });
+    const furniture = furnitureElementMatrix({ ...IDENTITY, yaw: -90 });
+    close(apply(block, [1, 0, 0]), apply(furniture, [1, 0, 0]));
   });
 });

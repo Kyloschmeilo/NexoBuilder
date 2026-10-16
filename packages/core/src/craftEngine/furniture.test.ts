@@ -3,7 +3,11 @@ import {
   buildCraftEngineFurniture,
   formatFurnitureSeat,
   furnitureElementPose,
+  furnitureElementType,
   furnitureHitboxBox,
+  furnitureHitboxType,
+  furnitureVariants,
+  interactionHitboxSize,
   parseCeRotation,
   parseCeVector,
   parseFurnitureSeat,
@@ -58,8 +62,50 @@ describe('buildCraftEngineFurniture', () => {
     expect(built.rules).toEqual({ ground: { rotation: 'four' } });
     expect(built.furniture).toEqual({
       settings: { item: 'm:chair', hit_times: 2 },
-      variants: { ground: { elements: [{ type: 'item_display', item: 'm:chair', position: '0,0.5,0' }], hitboxes: [{ type: 'interaction' }] } },
+      variants: {
+        ground: { elements: [{ type: 'item_display', item: 'm:chair', position: '0,0.5,0' }], hitboxes: [{ type: 'interaction' }] },
+      },
     });
+  });
+});
+
+describe('furniture keys CraftEngine also reads', () => {
+  it('reads types with the craftengine namespace, and fills in the own item for them', () => {
+    expect(furnitureElementType({ type: 'craftengine:item_display' })).toBe('item_display');
+    expect(furnitureElementType({ type: 'minecraft:item_display' })).toBe('minecraft:item_display');
+    expect(furnitureHitboxType({ type: 'craftengine:shulker' })).toBe('shulker');
+    const built = buildCraftEngineFurniture({ variants: { ground: { elements: [{ type: 'craftengine:item_display' }] } } }, null, 'm:lamp');
+    expect(built.furniture.variants).toEqual({ ground: { elements: [{ type: 'item_display', item: 'm:lamp' }] } });
+  });
+
+  it('builds variants written under variant or placement', () => {
+    for (const key of ['variant', 'placement']) {
+      const furniture = { [key]: { ground: { elements: [{}], hitboxes: [{ width: 1 }] } } };
+      expect(Object.keys(furnitureVariants(furniture))).toEqual(['ground']);
+      expect(buildCraftEngineFurniture(furniture, null, 'm:x').furniture[key]).toEqual({
+        ground: { elements: [{ type: 'item_display', item: 'm:x' }], hitboxes: [{ type: 'interaction', width: 1 }] },
+      });
+    }
+  });
+
+  it('keeps the item and loot arguments the definition sets', () => {
+    const built = buildCraftEngineFurniture(
+      {
+        settings: { item: 'm:other' },
+        variants: { ground: {} },
+        loot: { template: 'default:loot_table/furniture', arguments: { item: 'm:drop', count: 2 } },
+      },
+      null,
+      'm:x',
+    );
+    expect(built.furniture.settings).toEqual({ item: 'm:other' });
+    expect(built.furniture.loot).toEqual({ template: 'default:loot_table/furniture', arguments: { item: 'm:drop', count: 2 } });
+  });
+
+  it('moves rules written in the raw furniture: to the item', () => {
+    const built = buildCraftEngineFurniture({ variants: { ground: {} } }, { rules: { ground: { alignment: 'center' } } }, 'm:x');
+    expect(built.rules).toEqual({ ground: { alignment: 'center' } });
+    expect(built.furniture.rules).toBeUndefined();
   });
 });
 
@@ -84,6 +130,9 @@ describe('furniture preview geometry', () => {
       max: [0.35, 1.2, 0.35],
     });
     expect(furnitureHitboxBox({ scale: '2,3' })).toEqual({ min: [-1, 0, -1], max: [1, 3, 1] });
+    expect(interactionHitboxSize({ scale: '2,3' })).toEqual({ width: 2, height: 3 });
+    expect(interactionHitboxSize({ scale: 0.5 })).toEqual({ width: 0.5, height: 0.5 });
+    expect(interactionHitboxSize({ width: 0.7 })).toEqual({ width: 0.7, height: null });
     // A fully open shulker reaches one more block towards its direction
     const shulker = furnitureHitboxBox({ type: 'shulker', position: '0,0,0', direction: 'east', peek: 100 });
     close(shulker.min, [-0.5, 0, -0.5]);

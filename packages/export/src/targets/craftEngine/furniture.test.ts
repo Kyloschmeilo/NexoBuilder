@@ -1,6 +1,14 @@
 import { describe, expect, it } from 'vitest';
 import { parse } from 'yaml';
-import { createFolder, createItem, createProject, insertFolder, insertItem, type Item, type Project } from '@resourcepackbuilder/core/project';
+import {
+  createFolder,
+  createItem,
+  createProject,
+  insertFolder,
+  insertItem,
+  type Item,
+  type Project,
+} from '@resourcepackbuilder/core/project';
 import { newCraftEngineBlock, newCraftEngineFurniture } from '@resourcepackbuilder/core/craftEngine';
 import { createTextureModel } from '@resourcepackbuilder/minecraft';
 import { makePngDataUrl } from '@resourcepackbuilder/test-utils/png';
@@ -35,7 +43,8 @@ function furnitureProject(...edits: Array<[string, (item: Item) => void]>): Proj
   return project;
 }
 
-const fileOf = (project: Project) => parse(pluginText(planExport(project), FILE)) as Record<string, Record<string, Record<string, unknown>>>;
+const fileOf = (project: Project) =>
+  parse(pluginText(planExport(project), FILE)) as Record<string, Record<string, Record<string, unknown>>>;
 const codes = (project: Project) => planExport(project).issues.map((i) => [i.code, i.args]);
 
 /** The jar's default:bench (configuration/furniture/bench.yml), as the editor stores it. */
@@ -161,13 +170,7 @@ describe('CraftEngine furniture', () => {
     const project = furnitureProject(['wooden_chair', woodenChair]);
     const yaml = pluginText(planExport(project), FILE);
     expect(yaml).toContain(
-      [
-        'furniture:',
-        '  moebel:wooden_chair:',
-        '    settings:',
-        '      item: moebel:wooden_chair',
-        '      hit_times: 3',
-      ].join('\n'),
+      ['furniture:', '  moebel:wooden_chair:', '    settings:', '      item: moebel:wooden_chair', '      hit_times: 3'].join('\n'),
     );
     expect(yaml).toContain(
       [
@@ -208,15 +211,20 @@ describe('CraftEngine furniture', () => {
 
   it('lets elements show other items of the pack', () => {
     const project = furnitureProject(
-      ['globe', (item) => ((item.config.furniture as never as { variants: { ground: { elements: unknown[] } } }).variants.ground.elements = [
-        { type: 'item', item: 'moebel:globe_earth', position: '0,0.4,0' },
-        { item: 'moebel:globe_base', position: '0,0.5,0' },
-        { item: 'moebel:missing' },
-      ])],
+      [
+        'globe',
+        (item) =>
+          ((item.config.furniture as never as { variants: { ground: { elements: unknown[] } } }).variants.ground.elements = [
+            { type: 'item', item: 'moebel:globe_earth', position: '0,0.4,0' },
+            { item: 'moebel:globe_base', position: '0,0.5,0' },
+            { item: 'moebel:missing' },
+          ]),
+      ],
       ['globe_earth', (item) => delete item.config.furniture],
       ['globe_base', (item) => delete item.config.furniture],
     );
-    const elements = (fileOf(project).furniture['moebel:globe'] as { variants: { ground: { elements: unknown[] } } }).variants.ground.elements;
+    const elements = (fileOf(project).furniture['moebel:globe'] as { variants: { ground: { elements: unknown[] } } }).variants.ground
+      .elements;
     expect(elements).toEqual([
       { type: 'item', item: 'moebel:globe_earth', position: '0,0.4,0' },
       { type: 'item_display', item: 'moebel:globe_base', position: '0,0.5,0' },
@@ -251,6 +259,45 @@ describe('the furniture in the additional YAML', () => {
   });
 });
 
+describe('the furniture item in the additional YAML', () => {
+  it('keeps placement rules written in the raw behavior:', () => {
+    const project = furnitureProject(['lamp', (item) => (item.rawYaml = 'behavior:\n  rules:\n    ground:\n      rotation: eight\n')]);
+    expect(fileOf(project).items['moebel:lamp'].behavior).toEqual({
+      type: 'furniture_item',
+      furniture: 'moebel:lamp',
+      rules: { ground: { rotation: 'eight', alignment: 'center' } },
+    });
+    expect(codes(project)).toEqual([]);
+  });
+
+  it('moves placement rules written in the raw furniture: to the item', () => {
+    const project = furnitureProject(['lamp', (item) => (item.rawYaml = 'furniture:\n  rules:\n    wall:\n      alignment: half\n')]);
+    const file = fileOf(project);
+    expect((file.items['moebel:lamp'].behavior as Record<string, unknown>).rules).toEqual({
+      ground: { rotation: 'four', alignment: 'center' },
+      wall: { alignment: 'half' },
+    });
+    expect(file.furniture['moebel:lamp'].rules).toBeUndefined();
+  });
+
+  it('keeps an item and loot arguments the definition sets', () => {
+    const project = furnitureProject(
+      [
+        'lamp',
+        (item) => {
+          const furniture = item.config.furniture as Record<string, unknown>;
+          furniture.settings = { item: 'moebel:lamp_off' };
+          furniture.loot = { template: 'default:loot_table/furniture', arguments: { item: 'moebel:lamp_off' } };
+        },
+      ],
+      ['lamp_off', (item) => delete item.config.furniture],
+    );
+    const furniture = fileOf(project).furniture['moebel:lamp'];
+    expect(furniture.settings).toEqual({ item: 'moebel:lamp_off' });
+    expect(furniture.loot).toEqual({ template: 'default:loot_table/furniture', arguments: { item: 'moebel:lamp_off' } });
+  });
+});
+
 describe('furniture checks', () => {
   it('builds the block of an item that is a block and furniture at once, with an error', () => {
     const project = furnitureProject(['both', (item) => (item.config.block = newCraftEngineBlock())]);
@@ -268,11 +315,7 @@ describe('furniture checks', () => {
           rules: { ground: { rotation: 'five' } },
           variants: {
             lit: {
-              elements: [
-                { type: 'hologram' },
-                { type: 'block_display' },
-                { type: 'item_display', position: 'up', rotation: '1,2,3,4,5' },
-              ],
+              elements: [{ type: 'hologram' }, { type: 'block_display' }, { type: 'item_display', position: 'up', rotation: '1,2,3,4,5' }],
               hitboxes: [{ type: 'slime' }, { type: 'custom', seats: ['a,b'] }],
             },
             dark: { loot_spawn_offset: '0,0,0' },
@@ -287,7 +330,7 @@ describe('furniture checks', () => {
       ['ce.furnitureValueInvalid', { variant: 'lit', key: 'position', value: 'up' }],
       ['ce.furnitureValueInvalid', { variant: 'lit', key: 'rotation', value: '1,2,3,4,5' }],
       ['ce.furnitureHitboxTypeInvalid', { variant: 'lit', type: 'slime' }],
-      ['ce.furnitureElementKeyMissing', { variant: 'lit', type: 'custom', key: 'entity_type' }],
+      ['ce.furnitureHitboxEntityMissing', { variant: 'lit' }],
       ['ce.furnitureValueInvalid', { variant: 'lit', key: 'seats', value: 'a,b' }],
       ['ce.furnitureVariantEmpty', { variant: 'dark' }],
       ['ce.furnitureRuleInvalid', { variant: 'ground', key: 'rotation', value: 'five' }],

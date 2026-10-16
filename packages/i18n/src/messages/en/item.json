@@ -258,6 +258,16 @@
       "noAppearance": "No appearance",
       "withSettings": "+ settings",
       "addFacing": "Face the player"
+    },
+    "renderer": {
+      "title": "Entity renderer",
+      "help": "Display entities CraftEngine shows at the block, on top of its model. With them a block can look like any item model, beyond what a block model can do.",
+      "look": "Appearance",
+      "transparent": "Hide the block’s model",
+      "transparentHelp": "The block shows only the entity renderer. Blocks that hide their model can share one vanilla state: give the state group an id, for example sugar_cane with the id transparent.",
+      "elements": "Elements",
+      "elementsHelp": "What the block shows. An item display without an item shows this item’s model. Positions are in blocks from the block’s corner; without one, an element stands at the block’s center (a block display at the corner).",
+      "previewHelp": "The block’s outline is yellow. Other blocks and texts show as grey blocks."
     }
   },
   "ceFurniture": {

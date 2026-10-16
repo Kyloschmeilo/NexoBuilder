@@ -236,6 +236,12 @@
     "furnitureValueInvalid": "CraftEngine cannot read “{value}” as {key} in the variant “{variant}”.",
     "furnitureHitboxTypeInvalid": "A hitbox of the variant “{variant}” has the unknown type “{type}”.",
     "furnitureRuleInvalid": "The placement rule {key} of the variant “{variant}” has the unknown value “{value}”.",
+    "furnitureHitboxEntityMissing": "A custom hitbox of the variant “{variant}” needs an entity type (“entity_type”).",
+    "blockRendererTypeInvalid": "An entity renderer element of “{look}” has the unknown type “{type}”.",
+    "blockRendererKeyMissing": "An entity renderer element of the type {type} in “{look}” needs “{key}”.",
+    "blockRendererItemUnknown": "The entity renderer of “{look}” shows the item “{item}”, which the project does not have.",
+    "blockRendererValueInvalid": "CraftEngine cannot read “{value}” as {key} in the entity renderer of “{look}”.",
+    "blockTransparentInvisible": "“{look}” hides the block’s model but has no entity renderer, so the block is invisible there. Add an element to its entity renderer.",
     "rawBlockNotMapping": "The additional YAML’s block: holds no key-value pairs, so it is left out. Write the block’s keys below it (e.g. behavior:)."
   },
   "issueList": {

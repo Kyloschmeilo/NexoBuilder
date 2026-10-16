@@ -1,6 +1,7 @@
 /**
  * The furniture preview: the elements of one variant, each a model placed by its display entity transform, with the
- * hitboxes as wireframe boxes and the seats as small markers.
+ * hitboxes as wireframe boxes and the seats as small markers. A block's entity renderer shows the same way, with the
+ * block's outline as its box.
  *
  * Values are in the furniture's own frame as CraftEngine's config writes them (blocks); the scene shows the furniture
  * as placed with yaw 180, where CraftEngine turns no offset and only mirrors z (FurniturePlacement.position). 1 block
@@ -38,21 +39,35 @@ export function furniturePoint([x, y, z]: Vec3): Vec3 {
 
 /**
  * The matrix (column-major, 16 numbers) that places an element's model (centered, in model pixels) in the scene: the
- * entity at its position with the furniture's and its own yaw and pitch (Display: rotationYXZ(-yaw, pitch, 0)), then
+ * entity at `point` (scene units) with the yaw `yaw` and its own pitch (Display: rotationYXZ(-yaw, pitch, 0)), then
  * the display transform (translation, left rotation, scale), then the item display's half turn.
  */
-export function furnitureElementMatrix(transform: FurnitureElementTransform): number[] {
+function displayMatrix(point: Vec3, yaw: number, transform: FurnitureElementTransform): number[] {
   const [tx, ty, tz] = transform.translation;
   const [qx, qy, qz, qw] = transform.rotation;
   const matrix = new THREE.Matrix4()
-    .makeTranslation(...furniturePoint(transform.position))
-    .multiply(new THREE.Matrix4().makeRotationY(deg(-(PREVIEW_YAW + transform.yaw))))
+    .makeTranslation(...point)
+    .multiply(new THREE.Matrix4().makeRotationY(deg(-yaw)))
     .multiply(new THREE.Matrix4().makeRotationX(deg(transform.pitch)))
     .multiply(new THREE.Matrix4().makeTranslation(tx * BLOCK, ty * BLOCK, tz * BLOCK))
     .multiply(new THREE.Matrix4().makeRotationFromQuaternion(new THREE.Quaternion(qx, qy, qz, qw)))
     .multiply(new THREE.Matrix4().makeScale(...transform.scale));
   if (transform.flip) matrix.multiply(new THREE.Matrix4().makeRotationY(Math.PI));
   return matrix.toArray();
+}
+
+/** The matrix of a furniture element: the furniture placed with yaw 180, the element's yaw on top of it. */
+export function furnitureElementMatrix(transform: FurnitureElementTransform): number[] {
+  return displayMatrix(furniturePoint(transform.position), PREVIEW_YAW + transform.yaw, transform);
+}
+
+/**
+ * The matrix of an element of a block's entity renderer: its position is in the block's frame (blocks from the
+ * block's corner, as in the world), the scene centers the block on the grid's middle block; its yaw is its own.
+ */
+export function blockElementMatrix(transform: FurnitureElementTransform): number[] {
+  const [x, y, z] = transform.position;
+  return displayMatrix([(x - 0.5) * BLOCK, y * BLOCK, (z - 0.5) * BLOCK], transform.yaw, transform);
 }
 
 export interface FurnitureSceneElement {
@@ -103,7 +118,9 @@ export function showFurniture(stage: Stage, scene: FurnitureScene, frame = true)
   for (const { min, max } of scene.hitboxes) {
     const [x0, y0, z0] = furniturePoint(min);
     const [x1, y1, z1] = furniturePoint(max);
-    const geometry = new THREE.EdgesGeometry(new THREE.BoxGeometry(Math.abs(x1 - x0), Math.abs(y1 - y0), Math.abs(z1 - z0)));
+    const solid = new THREE.BoxGeometry(Math.abs(x1 - x0), Math.abs(y1 - y0), Math.abs(z1 - z0));
+    const geometry = new THREE.EdgesGeometry(solid);
+    solid.dispose();
     const box = new THREE.LineSegments(geometry, hitboxMaterial);
     box.position.set((x0 + x1) / 2, (y0 + y1) / 2, (z0 + z1) / 2);
     root.add(box);
