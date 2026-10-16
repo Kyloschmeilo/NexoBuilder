@@ -235,7 +235,8 @@
     "furnitureItemUnknown": "Die Variante „{variant}“ zeigt das Item „{item}“, das es im Projekt nicht gibt.",
     "furnitureValueInvalid": "CraftEngine kann „{value}“ in der Variante „{variant}“ nicht als {key} lesen.",
     "furnitureHitboxTypeInvalid": "Eine Hitbox der Variante „{variant}“ hat den unbekannten Typ „{type}“.",
-    "furnitureRuleInvalid": "Die Platzierungsregel {key} der Variante „{variant}“ hat den unbekannten Wert „{value}“."
+    "furnitureRuleInvalid": "Die Platzierungsregel {key} der Variante „{variant}“ hat den unbekannten Wert „{value}“.",
+    "rawBlockNotMapping": "Der Abschnitt block: im zusätzlichen YAML enthält keine Schlüssel-Wert-Paare, daher fehlt er. Schreibe die Schlüssel des Blocks darunter (z. B. behavior:)."
   },
   "issueList": {
     "openItem": "Zum Item",

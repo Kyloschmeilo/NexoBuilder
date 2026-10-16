@@ -82,12 +82,44 @@ describe('editing states', () => {
     });
     expect(states.properties).toEqual({ facing: { type: 'horizontal_direction', default: 'north' } });
     expect(states.appearances).toEqual({
-      north: { auto_state: 'solid', model: { path: 'a:block/b' } },
-      east: { auto_state: 'solid', model: { path: 'a:block/b', y: 90 } },
-      south: { auto_state: 'solid', model: { path: 'a:block/b', y: 180 } },
-      west: { auto_state: 'solid', model: { path: 'a:block/b', y: 270 } },
+      default_north: { auto_state: 'solid', model: { path: 'a:block/b' } },
+      default_east: { auto_state: 'solid', model: { path: 'a:block/b', y: 90 } },
+      default_south: { auto_state: 'solid', model: { path: 'a:block/b', y: 180 } },
+      default_west: { auto_state: 'solid', model: { path: 'a:block/b', y: 270 } },
     });
-    expect(Object.keys(states.variants as object)).toEqual(['facing=north', 'facing=east', 'facing=south', 'facing=west']);
+    expect(states.variants).toEqual({
+      'facing=north': { appearance: 'default_north' },
+      'facing=east': { appearance: 'default_east' },
+      'facing=south': { appearance: 'default_south' },
+      'facing=west': { appearance: 'default_west' },
+    });
+  });
+
+  it('keeps every appearance and variant of a lamp when it faces the player', () => {
+    const lamp = withBehavior('lamp_block');
+    const states = withFacing(lamp.states as ConfigObject);
+    expect(Object.keys(states.appearances as object)).toEqual([
+      'off_north',
+      'off_east',
+      'off_south',
+      'off_west',
+      'on_north',
+      'on_east',
+      'on_south',
+      'on_west',
+    ]);
+    expect((states.appearances as Record<string, unknown>).on_west).toEqual({ auto_state: 'solid', model: { y: 270 } });
+    const variants = states.variants as Record<string, Record<string, unknown>>;
+    expect(variants['facing=east,lit=true']).toEqual({ appearance: 'on_east', settings: { luminance: 15 } });
+    expect(variants['facing=south,lit=false']).toEqual({ appearance: 'off_south' });
+    expect(Object.keys(variants).slice(-4)).toEqual(['facing=north', 'facing=east', 'facing=south', 'facing=west']);
+    // Every variant names an existing appearance, and the states count 4 times as many appearances
+    const names = Object.keys(states.appearances as object);
+    expect(Object.values(variants).every((v) => names.includes(String(v.appearance)))).toBe(true);
+    expect(missingBehaviorProperties({ ...lamp, states }, blockPropertyTypes({ ...lamp, states }))).toEqual([]);
+    // A turned model adds to its own rotation
+    const turned = withFacing({ appearances: { a: { model: { y: 270 } } } });
+    expect((turned.appearances as Record<string, unknown>).a_east).toEqual({ model: {} });
   });
 });
 
@@ -134,6 +166,28 @@ describe('block behaviors', () => {
     expect(missingBehaviorProperties(withBehavior('stairs_block'), blockPropertyTypes(withBehavior('stairs_block')))).toEqual([]);
     const unknown = { states: { template: 'my:states' }, behavior: { type: 'lamp_block' } };
     expect(missingBehaviorProperties(unknown, blockPropertyTypes(unknown))).toEqual([]);
+  });
+
+  it('reads the additional YAML’s block: for the budget and the vanilla blocks', () => {
+    const project = projectWith(withBehavior('slab_block'), { state: SOLID });
+    const plain = Object.values(project.items).find((item) => item.itemId === 'b1');
+    if (!plain) throw new Error('no item');
+    plain.rawYaml = [
+      'block:',
+      '  states:',
+      '    template: default:block_state/slab',
+      '    arguments:',
+      '      slab_base_block: cut_copper_slab',
+    ].join('\n');
+    expect(sharedBaseBlocks(project)).toEqual([{ block: 'cut_copper_slab', blocks: ['bloecke:b0', 'bloecke:b1'] }]);
+    plain.rawYaml = [
+      'block:',
+      '  states:',
+      '    appearances:',
+      '      a: { auto_state: tripwire }',
+      '      b: { auto_state: tripwire }',
+    ].join('\n');
+    expect(Object.fromEntries(countAutoStates(project))).toEqual({ tripwire: 2 });
   });
 
   it('finds vanilla blocks that several blocks borrow', () => {

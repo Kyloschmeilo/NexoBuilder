@@ -58,6 +58,7 @@ function buildItem(itemExport: ItemExport, written: CraftEngineWrittenModels): B
   if (built.rawYamlError?.kind === 'syntax') itemExport.report('error', 'plan.rawYamlError', { error: built.rawYamlError.message });
   else if (built.rawYamlError) itemExport.report('error', 'plan.rawYamlNotMapping');
   if (built.rawBlockIgnored) itemExport.report('warning', 'ce.rawBlockWithoutBlock');
+  if (built.rawBlockInvalid) itemExport.report('warning', 'ce.rawBlockNotMapping');
   if (built.rawFurnitureIgnored) itemExport.report('warning', 'ce.rawFurnitureWithoutFurniture');
   if (built.furnitureIgnored) itemExport.report('error', 'ce.furnitureWithBlock');
   validateCraftEngineItem(itemExport, built.config);

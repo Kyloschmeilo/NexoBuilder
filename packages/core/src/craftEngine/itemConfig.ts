@@ -18,7 +18,14 @@ import { itemMaterial } from '../project/item';
 import { cleanConfig } from '../form/prune';
 import { parseRawYaml, type RawYamlError } from '../yaml';
 import { CRAFT_ENGINE_FORM } from './form/schema';
-import { craftEngineBlock, craftEngineBlockModel, craftEngineBlockTextures, type CraftEngineBlockModel } from './block';
+import {
+  craftEngineBlock,
+  craftEngineBlockModel,
+  mergeBlockOverlay,
+  rawBlockOverlay,
+  craftEngineBlockTextures,
+  type CraftEngineBlockModel,
+} from './block';
 import { blockBehaviorForm, blockBehaviorType } from './blockBehaviors';
 import { blockStates, CE_STATE_TEMPLATES, statesTemplate, templateArguments } from './blockStates';
 import { buildCraftEngineFurniture, craftEngineFurniture } from './furniture';
@@ -60,6 +67,8 @@ export interface CraftEngineBuildResult {
   rawYamlError: RawYamlError | null;
   /** The additional YAML has a `block:` but the item is no block (it is left out) */
   rawBlockIgnored: boolean;
+  /** The additional YAML's `block:` is no mapping (it is left out) */
+  rawBlockInvalid: boolean;
   /** The furniture the item places (its entry under `furniture:`), null if the item is no furniture */
   furniture: Record<string, unknown> | null;
   /** The item is a block and furniture at once (the furniture is left out) */
@@ -160,7 +169,7 @@ const TEMPLATES_WITH_TEXTURES = new Set(
 
 /** The block of the item with the models of its states (or a template's arguments) from the main model. */
 function buildBlock(source: Record<string, unknown>, context: CraftEngineBuildContext, rawBlock: Record<string, unknown> | null) {
-  const merged = rawBlock ? deepMerge(source, rawBlock) : { ...source };
+  const merged = mergeBlockOverlay(source, rawBlock);
   const form = blockBehaviorForm(blockBehaviorType(merged));
   const modelJson = context.modelJson ?? null;
   let blockModel: CraftEngineBlockModel | null = null;
@@ -208,6 +217,12 @@ function buildBlock(source: Record<string, unknown>, context: CraftEngineBuildCo
   }
 
   // CraftEngine reads one of `behavior` and `behaviors`: the form's behavior goes after the other ones
+  // A behavior's type comes first (the form's keys may sit before it in the config)
+  const typeFirst = (value: unknown) => (isPlainObject(value) ? ordered(value, ['type']) : value);
+  if (merged.behavior !== undefined)
+    merged.behavior = Array.isArray(merged.behavior) ? merged.behavior.map(typeFirst) : typeFirst(merged.behavior);
+  if (merged.behaviors !== undefined)
+    merged.behaviors = Array.isArray(merged.behaviors) ? merged.behaviors.map(typeFirst) : typeFirst(merged.behaviors);
   if (merged.behavior !== undefined && merged.behaviors !== undefined) {
     merged.behaviors = [...asList(merged.behaviors), ...asList(merged.behavior)];
     delete merged.behavior;
@@ -221,7 +236,9 @@ export function buildCraftEngineItem(context: CraftEngineBuildContext): CraftEng
 
   const raw = parseRawYaml(item.rawYaml);
   const rawItem = raw.value ? { ...raw.value } : null;
-  const rawBlock = rawItem && isPlainObject(rawItem.block) ? rawItem.block : null;
+  // The same overlay the auto_state budget and the base block check read (effectiveCraftEngineBlock)
+  const rawBlockYaml = rawBlockOverlay(item.rawYaml);
+  const rawBlock = rawBlockYaml.block;
   const rawFurniture = rawItem && isPlainObject(rawItem.furniture) ? rawItem.furniture : null;
   if (rawItem) {
     delete rawItem.block;
@@ -266,6 +283,7 @@ export function buildCraftEngineItem(context: CraftEngineBuildContext): CraftEng
     blockModel: built?.blockModel ?? null,
     rawYamlError: raw.error,
     rawBlockIgnored: rawBlock !== null && !isBlock,
+    rawBlockInvalid: rawBlockYaml.invalid,
     furniture: furniture?.furniture ?? null,
     furnitureIgnored: isFurniture && isBlock,
     rawFurnitureIgnored: rawFurniture !== null && !isFurniture,

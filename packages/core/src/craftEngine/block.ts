@@ -3,8 +3,9 @@
  * loot). The export writes it under `blocks:` with the item's key and makes the item place it (`block_item`).
  */
 import { compareVersions, isGeneratedItemParent, type JavaModelJson } from '@resourcepackbuilder/minecraft';
-import { isPlainObject } from '@resourcepackbuilder/utils';
+import { deepMerge, isPlainObject } from '@resourcepackbuilder/utils';
 import type { ConfigObject, Item, Project } from '../project/types';
+import { parseRawYaml } from '../yaml';
 import { blockAppearances, blockStates, CE_STATE_TEMPLATES, statesTemplate, templateArguments } from './blockStates';
 
 /**
@@ -91,6 +92,42 @@ export function craftEngineBlock(config: ConfigObject): Record<string, unknown> 
   return isPlainObject(block) ? block : null;
 }
 
+export interface RawBlockOverlay {
+  /** The additional YAML's `block:` mapping, null without one */
+  block: Record<string, unknown> | null;
+  /** The additional YAML has a `block:` that is no mapping (it is left out) */
+  invalid: boolean;
+}
+
+/** The additional YAML's `block:`, the overlay of the item's block. */
+export function rawBlockOverlay(rawYaml: string): RawBlockOverlay {
+  const value = parseRawYaml(rawYaml).value?.block;
+  if (value === undefined || value === null) return { block: null, invalid: false };
+  return isPlainObject(value) ? { block: value, invalid: false } : { block: null, invalid: true };
+}
+
+/**
+ * The block the export writes for the item, before it fills in models: the config's block with the additional
+ * YAML's `block:` merged over it (the YAML wins); null when the item is no block.
+ */
+export function effectiveCraftEngineBlock(item: Pick<Item, 'config' | 'rawYaml'>): Record<string, unknown> | null {
+  const block = craftEngineBlock(item.config);
+  return block && mergeBlockOverlay(block, rawBlockOverlay(item.rawYaml).block);
+}
+
+/**
+ * A block with the additional YAML's `block:` merged over it. CraftEngine reads `state` before `states`, so a block
+ * keeps one of them: the one the YAML sets, else `states`.
+ */
+export function mergeBlockOverlay(block: Record<string, unknown>, raw: Record<string, unknown> | null): Record<string, unknown> {
+  const merged = raw ? deepMerge(block, raw) : { ...block };
+  if (merged.state !== undefined && merged.states !== undefined) {
+    if (raw?.state !== undefined && raw.states === undefined) delete merged.states;
+    else delete merged.state;
+  }
+  return merged;
+}
+
 /** A new block: a full block from the `solid` group that drops itself (CraftEngine's built-in loot template). */
 export function newCraftEngineBlock(): ConfigObject {
   return { state: { auto_state: CE_DEFAULT_AUTO_STATE }, loot: { template: 'default:loot_table/self' } };
@@ -140,7 +177,7 @@ export function countAutoStates(project: Pick<Project, 'items'>): Map<string, nu
   const counts = new Map<string, number>();
   const shared = new Set<string>();
   for (const item of Object.values(project.items) as Item[]) {
-    const block = craftEngineBlock(item.config);
+    const block = effectiveCraftEngineBlock(item);
     for (const auto of block ? blockAutoStates(block) : []) {
       const group = autoStateGroupOf(auto.group);
       if (!group) continue;

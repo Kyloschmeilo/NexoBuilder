@@ -217,7 +217,7 @@ describe('CraftEngine block behaviors', () => {
     const yaml = blocksOf(project);
     expect(yaml).toContain(
       [
-        '        east:',
+        '        default_east:',
         '          auto_state: solid',
         '          model:',
         '            path: bloecke:block/steine/block_0-block',
@@ -317,5 +317,179 @@ describe('checks of blocks with several states', () => {
     const tripwires = Array.from({ length: 127 }, (_, i) => `t${i}`);
     const project = blockProject(states({ appearances: Object.fromEntries(tripwires.map((name) => [name, { auto_state: 'tripwire' }])) }));
     expect(issues(project)).toContainEqual(['ce.autoStateBudget', { group: 'tripwire', used: 127, capacity: 126 }]);
+  });
+});
+
+describe('the YAML of the other behavior forms', () => {
+  const yamlOf = (type: string) => blocksOf(blockProject(behavior(type)));
+  /** The lines of a template block: its template, arguments, behavior and loot. */
+  const templateBlock = (template: string, args: string[], type: string, loot = 'default:loot_table/self') =>
+    [
+      'blocks:',
+      '  bloecke:block_0:',
+      '    states:',
+      `      template: default:block_state/${template}`,
+      '      arguments:',
+      ...args.map((line) => `        ${line}`),
+      '    behavior:',
+      `      type: ${type}`,
+      '    loot:',
+      `      template: ${loot}`,
+      '',
+    ].join('\n');
+  const T = 'bloecke:block/steine/block_0';
+
+  it('writes a door, a trapdoor, a fence gate and leaves from their templates', () => {
+    expect(yamlOf('door_block')).toBe(
+      templateBlock(
+        'door',
+        ['door_base_block: spruce_door', `door_model: ${T}-door`, `door_texture_bottom: ${T}/planks`, `door_texture_top: ${T}/planks`],
+        'door_block',
+        'default:loot_table/door',
+      ),
+    );
+    expect(yamlOf('trapdoor_block')).toBe(
+      templateBlock(
+        'trapdoor',
+        ['trapdoor_base_block: spruce_trapdoor', `trapdoor_model: ${T}-trapdoor`, `trapdoor_texture: ${T}/planks`],
+        'trapdoor_block',
+      ),
+    );
+    expect(yamlOf('fence_gate_block')).toBe(
+      templateBlock(
+        'fence_gate',
+        ['fence_gate_base_block: spruce_fence_gate', `fence_gate_model: ${T}-fence_gate`, `fence_gate_texture: ${T}/planks`],
+        'fence_gate_block',
+      ),
+    );
+    expect(yamlOf('leaves_block')).toBe(
+      templateBlock('leaves', ['leaves_tintable: false', `leaves_model: ${T}-leaves`, `leaves_texture: ${T}/planks`], 'leaves_block'),
+    );
+  });
+
+  it('writes a sapling like the jar’s palm sapling: a stage, the sapling group, a cross and its support', () => {
+    expect(yamlOf('sapling_block')).toBe(
+      [
+        'blocks:',
+        '  bloecke:block_0:',
+        '    states:',
+        '      properties:',
+        '        stage:',
+        '          type: int',
+        '          default: 0',
+        '          range: 0~1',
+        '      appearances:',
+        '        default:',
+        '          auto_state: sapling',
+        '          model:',
+        `            path: ${T}-block`,
+        '            generation:',
+        '              parent: minecraft:block/cross',
+        '              textures:',
+        `                cross: ${T}/planks`,
+        '    behaviors:',
+        '      - type: liquid_flowable_block',
+        '      - type: bush_block',
+        '        bottom_block_tags:',
+        '          - minecraft:dirt',
+        '          - minecraft:supports_vegetation',
+        '      - type: sapling_block',
+        '        feature: minecraft:oak',
+        '    loot:',
+        '      template: default:loot_table/self',
+        '',
+      ].join('\n'),
+    );
+  });
+
+  it('writes a lamp like the jar’s copper coil: lit, an off and an on appearance, light while lit', () => {
+    expect(yamlOf('lamp_block')).toBe(
+      [
+        'blocks:',
+        '  bloecke:block_0:',
+        '    states:',
+        '      properties:',
+        '        lit:',
+        '          type: boolean',
+        '          default: false',
+        '      appearances:',
+        '        "off":',
+        '          auto_state: solid',
+        '          model:',
+        `            path: ${T}-block`,
+        '            generation:',
+        '              parent: minecraft:block/cube_all',
+        '              textures:',
+        `                all: ${T}/planks`,
+        '        "on":',
+        '          auto_state: solid',
+        '          model:',
+        `            path: ${T}-block`,
+        '      variants:',
+        '        lit=false:',
+        '          appearance: "off"',
+        '        lit=true:',
+        '          appearance: "on"',
+        '          settings:',
+        '            luminance: 15',
+        '    behavior:',
+        '      type: lamp_block',
+        '    loot:',
+        '      template: default:loot_table/self',
+        '',
+      ].join('\n'),
+    );
+  });
+
+  it('keeps every look of a lamp that faces the player', () => {
+    const project = blockProject((item) => {
+      behavior('lamp_block')(item);
+      const block = item.config.block as ConfigObject;
+      block.states = withFacing(block.states as ConfigObject);
+    });
+    expect(codes(project)).toEqual([]);
+    expect(blocksOf(project)).toContain(
+      ['        facing=west,lit=true:', '          appearance: on_west', '          settings:', '            luminance: 15'].join('\n'),
+    );
+  });
+
+  it('lets a template argument of the additional YAML win over the filled one', () => {
+    const project = blockProject((item) => {
+      behavior('slab_block')(item);
+      item.rawYaml = 'block:\n  states:\n    arguments:\n      slab_model: my:block/slab\n      planks_model: my:block/planks\n';
+    });
+    const yaml = blocksOf(project);
+    expect(yaml).toContain('        slab_model: my:block/slab\n');
+    expect(yaml).toContain('        planks_model: my:block/planks\n');
+    // The user's double slab model needs no generated cube
+    expect(yaml).not.toContain('merges:');
+  });
+
+  it('keeps the states of the additional YAML only, as CraftEngine reads a single state first', () => {
+    const rawSlab = blockProject((item) => {
+      item.rawYaml = [
+        'block:',
+        '  behavior:',
+        '    type: slab_block',
+        '  states:',
+        '    template: default:block_state/slab',
+        '    arguments:',
+        '      slab_base_block: weathered_cut_copper_slab',
+      ].join('\n');
+    });
+    const yaml = blocksOf(rawSlab);
+    expect(yaml).not.toContain('    state:');
+    expect(yaml).toContain('      template: default:block_state/slab');
+    expect(codes(rawSlab)).toEqual([]);
+    const rawState = blockProject((item) => {
+      behavior('lamp_block')(item);
+      item.rawYaml = 'block:\n  state:\n    auto_state: leaves\n';
+    });
+    expect(blocksOf(rawState)).not.toContain('    states:');
+    expect(codes(rawState)).toContain('ce.blockBehaviorProperty');
+  });
+
+  it('warns about a block: that is no mapping', () => {
+    expect(codes(blockProject((item) => (item.rawYaml = 'block: falling_block\n')))).toContain('ce.rawBlockNotMapping');
   });
 });

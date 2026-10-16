@@ -222,27 +222,43 @@ const FACING_ROTATION: Record<string, number> = { north: 0, east: 90, south: 180
 
 /**
  * Makes the block face the player: a `facing` property (horizontal_direction, which CraftEngine sets on placement)
- * and one appearance per direction with the first appearance's look turned around the y axis. The model path is
- * left to the export when the first appearance has none.
+ * and each appearance four times (`<look>_<direction>`), its model turned around the y axis. Each variant that picks
+ * an appearance becomes one variant per direction (`facing=east,lit=true` picks `on_east`); variants with settings
+ * only stay. Last, `facing=<direction>` picks the first appearance turned, for the states no other variant matches
+ * (CraftEngine takes the appearance of the first matching variant). The model path is left to the export when an
+ * appearance has none.
  */
 export function withFacing(states: ConfigObject): ConfigObject {
-  const appearances = statesMap(states, 'appearances');
-  const base = Object.values(appearances)[0];
-  const look: Record<string, unknown> = isPlainObject(base) ? base : {};
-  const model = isPlainObject(look.model) ? look.model : {};
-  const next: Record<string, unknown> = {};
-  const variants: Record<string, unknown> = { ...statesMap(states, 'variants') };
-  for (const [direction, y] of Object.entries(FACING_ROTATION)) {
-    const rotated = { ...model };
-    if (y === 0) delete rotated.y;
-    else rotated.y = y;
-    next[direction] = { ...look, model: rotated };
-    variants[`facing=${direction}`] = { appearance: direction };
+  const appearances: Record<string, unknown> = {};
+  for (const [name, value] of Object.entries(statesMap(states, 'appearances'))) {
+    const look: Record<string, unknown> = isPlainObject(value) ? value : {};
+    const model = isPlainObject(look.model) ? look.model : {};
+    for (const [direction, turn] of Object.entries(FACING_ROTATION)) {
+      const y = ((Number(model.y) || 0) + turn) % 360;
+      const rotated: Record<string, unknown> = { ...model, y };
+      if (y === 0) delete rotated.y;
+      appearances[`${name}_${direction}`] = { ...look, model: rotated };
+    }
+  }
+  const variants: Record<string, unknown> = {};
+  for (const [key, value] of Object.entries(statesMap(states, 'variants'))) {
+    const appearance = isPlainObject(value) ? value.appearance : undefined;
+    if (typeof appearance !== 'string') {
+      variants[key] = value;
+      continue;
+    }
+    for (const direction of Object.keys(FACING_ROTATION)) {
+      variants[`facing=${direction},${key}`] = { ...(value as object), appearance: `${appearance}_${direction}` };
+    }
+  }
+  const first = Object.keys(statesMap(states, 'appearances'))[0];
+  if (first !== undefined) {
+    for (const direction of Object.keys(FACING_ROTATION)) variants[`facing=${direction}`] = { appearance: `${first}_${direction}` };
   }
   return {
     ...states,
     properties: { ...statesMap(states, 'properties'), facing: { type: 'horizontal_direction', default: 'north' } },
-    appearances: next,
+    appearances,
     variants,
   } as ConfigObject;
 }

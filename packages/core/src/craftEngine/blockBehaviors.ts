@@ -6,7 +6,7 @@
  */
 import { isPlainObject } from '@resourcepackbuilder/utils';
 import type { ConfigObject, ConfigValue, Item, Project } from '../project/types';
-import { craftEngineBlock } from './block';
+import { effectiveCraftEngineBlock } from './block';
 import { blockStates, CE_STATE_TEMPLATES, statesTemplate, templateArguments } from './blockStates';
 
 /** Behavior types the plugin checks a property's Java type for: both direction types are one type there. */
@@ -113,6 +113,24 @@ export const CE_BASE_BLOCKS = {
   fence_base_block: [...WOOD_TYPES, 'nether_brick'].map((type) => `${type}_fence`),
 };
 
+/**
+ * The vanilla block a form starts with (and the form property adds). They avoid those of CraftEngine's own default
+ * pack (petrified oak slab, cut copper stairs, oak door, trapdoor and fence gate), which servers usually load too;
+ * fences may share one, as their look comes from item displays.
+ */
+export const CE_DEFAULT_BASE_BLOCKS: Record<keyof typeof CE_BASE_BLOCKS, string> = {
+  slab_base_block: 'cut_copper_slab',
+  stairs_base_block: 'exposed_cut_copper_stairs',
+  door_base_block: 'spruce_door',
+  trapdoor_base_block: 'spruce_trapdoor',
+  fence_gate_base_block: 'spruce_fence_gate',
+  fence_base_block: 'oak_fence',
+};
+
+/** Leaves take no biome tint unless chosen (CraftEngine's default of the leaves template) */
+export const CE_DEFAULT_LEAVES_TINTABLE = false;
+const base = (key: keyof typeof CE_BASE_BLOCKS) => ({ [key]: CE_DEFAULT_BASE_BLOCKS[key] });
+
 export interface BlockBehaviorForm {
   /** The behavior type (`slab_block`) */
   type: string;
@@ -161,31 +179,28 @@ function stagedStates(name: string, last: number, autoState: string): ConfigObje
   };
 }
 
-/**
- * The behaviors the editor has a form for. The default vanilla blocks avoid those of CraftEngine's own default pack
- * (petrified oak slab, cut copper stairs, oak door, trapdoor and fence gate), which servers usually load too.
- */
+/** The behaviors the editor has a form for (their vanilla blocks: CE_DEFAULT_BASE_BLOCKS). */
 export const CE_BLOCK_BEHAVIOR_FORMS: BlockBehaviorForm[] = [
   {
     type: 'slab_block',
     properties: [arg('slab_base_block')],
     preset: () => ({
       behavior: { type: 'slab_block' },
-      states: template('slab', { slab_base_block: 'cut_copper_slab' }),
+      states: template('slab', base('slab_base_block')),
       loot: { template: 'default:loot_table/slab' },
     }),
   },
   {
     type: 'stairs_block',
     properties: [arg('stairs_base_block')],
-    preset: () => ({ behavior: { type: 'stairs_block' }, states: template('stairs', { stairs_base_block: 'exposed_cut_copper_stairs' }) }),
+    preset: () => ({ behavior: { type: 'stairs_block' }, states: template('stairs', base('stairs_base_block')) }),
   },
   {
     type: 'door_block',
     properties: [arg('door_base_block'), ...OPENABLE],
     preset: () => ({
       behavior: { type: 'door_block' },
-      states: template('door', { door_base_block: 'spruce_door' }),
+      states: template('door', base('door_base_block')),
       loot: { template: 'default:loot_table/door' },
     }),
     itemBehavior: 'double_high_block_item',
@@ -193,14 +208,14 @@ export const CE_BLOCK_BEHAVIOR_FORMS: BlockBehaviorForm[] = [
   {
     type: 'trapdoor_block',
     properties: [arg('trapdoor_base_block'), ...OPENABLE],
-    preset: () => ({ behavior: { type: 'trapdoor_block' }, states: template('trapdoor', { trapdoor_base_block: 'spruce_trapdoor' }) }),
+    preset: () => ({ behavior: { type: 'trapdoor_block' }, states: template('trapdoor', base('trapdoor_base_block')) }),
   },
   {
     type: 'fence_block',
     properties: [arg('fence_base_block'), arg('fence_post_item'), arg('fence_side_item'), prop('connectable_block_tag'), prop('can_leash')],
     preset: (itemKey) => ({
       behavior: { type: 'fence_block' },
-      states: template('fence', { fence_base_block: 'oak_fence', fence_post_item: `${itemKey}_post`, fence_side_item: `${itemKey}_side` }),
+      states: template('fence', { ...base('fence_base_block'), fence_post_item: `${itemKey}_post`, fence_side_item: `${itemKey}_side` }),
     }),
   },
   {
@@ -208,7 +223,7 @@ export const CE_BLOCK_BEHAVIOR_FORMS: BlockBehaviorForm[] = [
     properties: [arg('fence_gate_base_block'), ...OPENABLE],
     preset: () => ({
       behavior: { type: 'fence_gate_block' },
-      states: template('fence_gate', { fence_gate_base_block: 'spruce_fence_gate' }),
+      states: template('fence_gate', base('fence_gate_base_block')),
     }),
   },
   {
@@ -238,7 +253,7 @@ export const CE_BLOCK_BEHAVIOR_FORMS: BlockBehaviorForm[] = [
   {
     type: 'leaves_block',
     properties: [arg('leaves_tintable'), arg('leaves_max_distance')],
-    preset: () => ({ behavior: { type: 'leaves_block' }, states: template('leaves', { leaves_tintable: false }) }),
+    preset: () => ({ behavior: { type: 'leaves_block' }, states: template('leaves', { leaves_tintable: CE_DEFAULT_LEAVES_TINTABLE }) }),
   },
   {
     type: 'lamp_block',
@@ -322,7 +337,7 @@ export interface SharedBaseBlock {
 export function sharedBaseBlocks(project: Pick<Project, 'items' | 'namespace'>): SharedBaseBlock[] {
   const users = new Map<string, string[]>();
   for (const item of Object.values(project.items) as Item[]) {
-    const block = craftEngineBlock(item.config);
+    const block = effectiveCraftEngineBlock(item);
     const states = block && blockStates(block);
     const template = states && statesTemplate(states);
     const argument = template && CE_STATE_TEMPLATES[template]?.baseArgument;

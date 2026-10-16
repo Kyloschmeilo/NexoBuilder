@@ -1,6 +1,6 @@
 import { plainOptions } from '../../../form/options';
 import { field, properties, type PropertySpec } from '../../../form/build';
-import { CE_BASE_BLOCKS } from '../../blockBehaviors';
+import { CE_BASE_BLOCKS, CE_DEFAULT_BASE_BLOCKS, CE_DEFAULT_LEAVES_TINTABLE } from '../../blockBehaviors';
 import { CE_BLOCK_SOUNDS } from '../options';
 import { CE_DOCS } from './docs';
 
@@ -9,7 +9,7 @@ const lightLevel = () => field.number({ integer: true, min: 0, max: 15 });
 const sound = () => field.text({ suggestions: CE_BLOCK_SOUNDS, placeholder: true });
 const baseBlock = (key: keyof typeof CE_BASE_BLOCKS, docs: string): PropertySpec => ({
   field: field.select(plainOptions(CE_BASE_BLOCKS[key])),
-  defaultValue: () => CE_BASE_BLOCKS[key][1],
+  defaultValue: () => CE_DEFAULT_BASE_BLOCKS[key],
   hint: true,
   docs,
 });
@@ -37,7 +37,11 @@ const BEHAVIOR: Record<string, PropertySpec> = {
     defaultValue: () => '',
     docs: behaviorDocs('fence_block'),
   },
-  'block.states.arguments.leaves_tintable': { field: field.boolean(), defaultValue: () => true, docs: behaviorDocs('leaves_block') },
+  'block.states.arguments.leaves_tintable': {
+    field: field.boolean({ defaultHint: CE_DEFAULT_LEAVES_TINTABLE }),
+    defaultValue: () => CE_DEFAULT_LEAVES_TINTABLE,
+    docs: behaviorDocs('leaves_block'),
+  },
   'block.states.arguments.leaves_max_distance': {
     field: field.number({ integer: true, min: 1, max: 32 }),
     defaultValue: () => 7,
