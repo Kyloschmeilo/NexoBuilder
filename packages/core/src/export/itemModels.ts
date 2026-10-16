@@ -6,6 +6,7 @@
 import { formatResourceLocation } from '../minecraft/resourceLocation';
 import { compareVersions, FEATURE_VERSIONS } from '../minecraft/versions';
 import { getPath } from '../nexo/configPath';
+import type { ConfigAddition } from '../nexo/itemConfig';
 import {
   CONNECT_SLOTS,
   FURNITURE_MODEL_SLOTS,
@@ -21,13 +22,6 @@ import { isPlainObject } from '../object';
 import { variantFrame } from '../issueFrames';
 import { itemModelDefinitionFile } from './paths';
 import type { ItemExport } from './types';
-
-export interface ConfigAddition {
-  path: string[];
-  value: unknown;
-  /** Only set if the user has not entered anything there themselves */
-  ifMissing?: boolean;
-}
 
 export interface ItemModelsResult {
   /** Custom item model of the item (Components.item_model) */

@@ -7,7 +7,7 @@ import { compareVersions } from '../minecraft/versions';
 import { formatResourceLocation, NAMESPACE_PATTERN } from '../minecraft/resourceLocation';
 import { validateTexture } from '../model/textures';
 import type { ModelTexture } from '../model/types';
-import { ARMOR_LAYERS, armorTexture, type ArmorGroup } from '../nexo/armor';
+import { ARMOR_LAYERS, armorTexture, type ArmorGroup, type ItemArmor } from '../nexo/armor';
 import { resolveAsset } from '../project/assets';
 import type { Item, Project } from '../project/types';
 import { armorLayerFrame, itemFrame, itemTarget } from '../issueFrames';
@@ -118,15 +118,6 @@ export function writeArmorSets(writer: PackWriter, project: Project, sets: Map<s
     }
     writer.json(equipmentModelFile(ns, set.id), { layers });
   }
-}
-
-/** What the item configuration needs to know about the item's armor set. */
-export interface ItemArmor {
-  /** Equipment asset (namespace:set) */
-  assetId: string;
-  slot: string | null;
-  entities: string[];
-  glider: boolean;
 }
 
 /** The armor of an item for its configuration (null = no usable set). */

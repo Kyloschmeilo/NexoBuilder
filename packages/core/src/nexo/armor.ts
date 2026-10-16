@@ -41,6 +41,17 @@ interface ArmorLayerBase {
   help?: boolean;
 }
 
+/** What the item configuration needs to know about the item's armor set (see export/equipment). */
+export interface ItemArmor {
+  /** Equipment asset (namespace:set) */
+  assetId: string;
+  /** From the set's layers (elytra → CHEST, animal armor → BODY, saddle → SADDLE); null = from the material */
+  slot: string | null;
+  entities: string[];
+  /** Elytra wings: the item needs the glider component */
+  glider: boolean;
+}
+
 /** Where the layer's texture lives in {@link ArmorSettings}: `settings[key]` or `settings[section][key]`. */
 export type ArmorLayerDef = ArmorLayerBase &
   ({ section: null; key: 'layer1' | 'layer2' | 'elytra' } | { section: ArmorSection; key: string });

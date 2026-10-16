@@ -16,7 +16,8 @@ import { VARIANTS, variantPathSuffix, type VariantSlot } from '../nexo/variants'
 import { itemsToYaml } from '../nexo/yaml';
 import { getFolderSlugs, getItemsInTreeOrder } from '../project/tree';
 import type { Item, Project } from '../project/types';
-import { collectArmorSets, itemArmor, writeArmorSets, type ItemArmor } from './armor';
+import type { ItemArmor } from '../nexo/armor';
+import { collectArmorSets, itemArmor, writeArmorSets } from './equipment';
 import { itemFrame, itemTarget, variantFrame } from '../issueFrames';
 import { writeItemModels } from './itemModels';
 import { writeMedia } from './media';
@@ -101,7 +102,6 @@ function planItem(project: Project, item: Item, writer: PackWriter, issues: Issu
     project,
     item,
     modelKey: main?.key ?? null,
-    armorAssetId: shared.armor?.assetId ?? null,
     armor: shared.armor,
     variantKeys,
     itemModel: itemModels.itemModel,
