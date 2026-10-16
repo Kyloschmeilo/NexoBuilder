@@ -6,7 +6,7 @@ import { folderYamlFile } from '@resourcepackbuilder/core/export/paths';
 import { countIssues, issuesFor } from '@resourcepackbuilder/core/issues';
 import { itemLabel } from '@resourcepackbuilder/core/project/labels';
 import { getFolderPathLabel } from '@resourcepackbuilder/core/project/tree';
-import { AutoGrid, DropZone, IconButton, PageHeader, PageShell, SectionLabel, Tip } from '@resourcepackbuilder/ui';
+import { AutoGrid, DropZone, IconButton, PageHeader, PageShell, SectionLabel, Thumb, Tip } from '@resourcepackbuilder/ui';
 import { Badge } from '@resourcepackbuilder/ui/components/badge';
 import { Button } from '@resourcepackbuilder/ui/components/button';
 import { useThumbnail } from '@resourcepackbuilder/preview';
@@ -114,13 +114,7 @@ function ItemTile({ item }: { item: Item }) {
       className="flex min-w-0 cursor-pointer items-center gap-2.5 rounded-lg border border-border bg-card p-3 text-left text-card-foreground transition-colors outline-none hover:bg-muted focus-visible:ring-3 focus-visible:ring-ring/50"
       onClick={() => select({ kind: 'item', id: item.id })}
     >
-      <div className="grid size-12 shrink-0 place-items-center overflow-hidden rounded-sm border border-border bg-muted">
-        {thumb ? (
-          <img src={thumb} alt="" className="size-9 object-contain [image-rendering:pixelated]" />
-        ) : (
-          <Box className="size-5 text-muted-foreground" />
-        )}
-      </div>
+      <Thumb size={48} src={thumb} bordered fallback={<Box className="size-5" />} />
       <div className="min-w-0 flex-1">
         <div className="truncate font-semibold">{itemLabel(item)}</div>
         <div className="truncate font-mono text-xs text-muted-foreground">{item.nexoId}</div>

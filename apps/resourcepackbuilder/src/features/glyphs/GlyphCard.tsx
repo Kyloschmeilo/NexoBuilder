@@ -53,9 +53,7 @@ export function GlyphCard({ glyph, glyphs, plan }: { glyph: Glyph; glyphs: Glyph
       preview={
         glyph.kind !== 'reference' && (
           <>
-            <PreviewFrame>
-              {file && <img src={file.dataUrl} alt="" className="size-full object-contain [image-rendering:pixelated]" />}
-            </PreviewFrame>
+            <PreviewFrame src={file?.dataUrl} />
             {file && <ChatPreview glyph={glyph} file={file} />}
           </>
         )

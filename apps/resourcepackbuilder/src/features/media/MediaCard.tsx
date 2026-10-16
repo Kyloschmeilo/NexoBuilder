@@ -1,6 +1,6 @@
 import type { ReactNode } from 'react';
 import { Trash2 } from 'lucide-react';
-import { CopyButton, IconButton, SectionCard } from '@resourcepackbuilder/ui';
+import { CopyButton, IconButton, SectionCard, Thumb } from '@resourcepackbuilder/ui';
 
 interface MediaCardProps {
   /** The entry's ID, shown as the heading. */
@@ -50,7 +50,11 @@ export function MediaCard({ title, badges, usage, copyLabel, actions, deleteLabe
   );
 }
 
-/** Fixed-size frame for an entry's image in the {@link MediaCard} preview column. */
-export function PreviewFrame({ children }: { children?: ReactNode }) {
-  return <div className="grid h-40 w-48 place-items-center rounded-md border border-border bg-background p-2.5">{children}</div>;
+/** Fixed-size frame for an entry's image (or custom preview) in the {@link MediaCard} preview column. */
+export function PreviewFrame({ src, children }: { src?: string; children?: ReactNode }) {
+  return (
+    <Thumb src={src} size={192} height={160} bordered checkered={false} fill className="rounded-md bg-background p-2.5">
+      {children}
+    </Thumb>
+  );
 }

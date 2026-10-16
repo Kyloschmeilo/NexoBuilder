@@ -1,7 +1,7 @@
 import { Box, ClipboardCopy, ClipboardPaste, Copy, FolderInput, Trash2 } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 import { itemLabel } from '@resourcepackbuilder/core/project/labels';
-import { StatusDot } from '@resourcepackbuilder/ui';
+import { StatusDot, Thumb } from '@resourcepackbuilder/ui';
 import { useThumbnail } from '@resourcepackbuilder/preview';
 import { moveItem } from '../../commands/items';
 import type { MenuEntry } from '../../components/MenuEntries';
@@ -68,11 +68,7 @@ export function ItemNode({ itemId, depth, tree }: { itemId: string; depth: numbe
       onClick={show}
       onKeyDown={activateOnKey(show)}
     >
-      {thumb ? (
-        <img className="size-5 shrink-0 rounded-sm object-contain [image-rendering:pixelated]" src={thumb} alt="" />
-      ) : (
-        <Box className="size-3.75 shrink-0 text-muted-foreground" />
-      )}
+      <Thumb size={20} src={thumb} checkered={false} fallback={<Box className="size-3.75" />} />
       <span className={ROW_LABEL_CLASS}>{itemLabel(item)}</span>
       {level && <StatusDot tone={level} label={level === 'error' ? t('status.error') : t('status.warning')} />}
     </TreeRow>
