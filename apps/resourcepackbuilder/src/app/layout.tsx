@@ -21,7 +21,7 @@ export default function RootLayout({ children }: { children: ReactNode }) {
         <script dangerouslySetInnerHTML={{ __html: THEME_INIT_SCRIPT }} />
       </head>
       <body>
-        <div id="root">{children}</div>
+        {children}
       </body>
     </html>
   );
