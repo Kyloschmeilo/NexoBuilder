@@ -46,6 +46,20 @@ async function installPlugin(target: PackTargetId) {
   await fsp.copyFile(source, path.join(pluginsDir(target), wanted));
 }
 
+/**
+ * A plugin that builds no pack on startup gets the app's reload right after "Done", before the renderer patches the
+ * plugin config (which the plugin only creates on its first start). So a missing config is written here already;
+ * CraftEngine needs `forced-locale: en` from it to log the English lines the app reads.
+ */
+async function seedPluginConfig(target: PackTargetId) {
+  const adapter = serverAdapterFor(target);
+  if (adapter.buildsPackOnStart) return;
+  const configPath = path.join(pluginDir(target), ...adapter.configFile.split('/'));
+  if (fs.existsSync(configPath)) return;
+  await fsp.mkdir(path.dirname(configPath), { recursive: true });
+  await fsp.writeFile(configPath, adapter.patchConfig(null, { packPort: state.config.packPort }));
+}
+
 export async function prepareServerFiles(target: PackTargetId): Promise<void> {
   await fsp.mkdir(pluginsDir(target), { recursive: true });
   await fsp.writeFile(path.join(serverDir(target), 'eula.txt'), EULA_TEXT);
@@ -55,4 +69,5 @@ export async function prepareServerFiles(target: PackTargetId): Promise<void> {
     await fsp.rm(path.join(pluginDir(target), ...cache.split('/')), { recursive: true, force: true });
   }
   await installPlugin(target);
+  await seedPluginConfig(target);
 }

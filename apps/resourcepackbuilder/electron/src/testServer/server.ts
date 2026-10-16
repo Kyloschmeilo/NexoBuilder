@@ -158,11 +158,13 @@ function launch(paper: PaperInstallation, java: JavaInstallation, target: PackTa
   logInfo(t('testServer.startingPaper', { version: paper.version, java: java.version, ram: state.config.ramGb }));
   reloadPending = false;
   setState({ status: 'starting', message: t('testServer.starting') });
-  // The plugin builds the pack on startup (or right after it, see 'started'); no reload until then
-  if (tracksPackBuild()) setPack('building', t('testServer.packBuildingOnStart', pluginArgs()));
+  // The plugin builds the pack on startup; no reload until then. One that doesn't gets a reload at 'started'.
+  if (tracksPackBuild() && adapter().buildsPackOnStart) setPack('building', t('testServer.packBuildingOnStart', pluginArgs()));
   else setPack('idle');
 
-  const args = ['-Xms512M', `-Xmx${state.config.ramGb}G`, '-Dfile.encoding=UTF-8', '-jar', paper.jar, '--nogui'];
+  // Console output in UTF-8 (Java uses the system code page for stdout otherwise, which garbles e.g. "»" and umlauts)
+  const encoding = ['-Dfile.encoding=UTF-8', '-Dstdout.encoding=UTF-8', '-Dstderr.encoding=UTF-8'];
+  const args = ['-Xms512M', `-Xmx${state.config.ramGb}G`, ...encoding, '-jar', paper.jar, '--nogui'];
   const child = spawn(java.path, args, { cwd: serverDir(target), windowsHide: true, stdio: ['pipe', 'pipe', 'pipe'] });
   serverProcess = child;
   readLines(child.stdout, handleLine);

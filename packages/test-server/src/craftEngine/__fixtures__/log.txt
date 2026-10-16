@@ -65,7 +65,7 @@
 [11:42:24 INFO]: [CraftEngine] Loaded blocks in 53,50ms (40)
 [11:42:24 INFO]: [CraftEngine] Loaded configured features in 1,41ms (1)
 [11:42:24 INFO]: [CraftEngine] Loaded recipes in 102,89ms (45)
-[11:42:25 INFO]: [38;2;85;85;85m� [1m[38;2;255;85;85mC[38;2;255;255;85mraft[38;2;255;170;0mEngine[0m [38;2;170;170;170m�[0m [38;2;255;255;255mConfigs reloaded [38;2;170;170;170m([38;2;255;170;0m229[38;2;170;170;170m/[38;2;255;85;85m3[38;2;170;170;170m ms)[0m
+[11:42:25 INFO]: [38;2;85;85;85m» [1m[38;2;255;85;85mC[38;2;255;255;85mraft[38;2;255;170;0mEngine[0m [38;2;170;170;170m•[0m [38;2;255;255;255mConfigs reloaded [38;2;170;170;170m([38;2;255;170;0m229[38;2;170;170;170m/[38;2;255;85;85m3[38;2;170;170;170m ms)[0m
 [11:42:25 INFO]: [CraftEngine] Generating resource pack...
 [11:42:25 INFO]: [CraftEngine] Generated resource pack in 179ms
 [11:42:25 INFO]: [CraftEngine] Validating resource pack... (Progress: 1/1 | Pack Format: 97.1~97.1 | Overlays: [])
@@ -74,7 +74,7 @@
 [11:42:25 INFO]: [CraftEngine] Compressed resource pack in 63ms
 [11:42:25 INFO]: [CraftEngine] Initiating resource pack upload...
 [11:42:25 INFO]: [CraftEngine] Successfully uploaded resource pack in 22 ms
-[11:42:25 INFO]: [38;2;85;85;85m� [1m[38;2;255;85;85mC[38;2;255;255;85mraft[38;2;255;170;0mEngine[0m [38;2;170;170;170m�[0m [38;2;255;255;255mResource pack generated [38;2;170;170;170m([38;2;255;170;0m341[38;2;170;170;170m ms)[0m
+[11:42:25 INFO]: [38;2;85;85;85m» [1m[38;2;255;85;85mC[38;2;255;255;85mraft[38;2;255;170;0mEngine[0m [38;2;170;170;170m•[0m [38;2;255;255;255mResource pack generated [38;2;170;170;170m([38;2;255;170;0m341[38;2;170;170;170m ms)[0m
 > ce reload pack
 [11:42:28 INFO]: [CraftEngine] Generating resource pack...
 [11:42:28 INFO]: [CraftEngine] Generated resource pack in 78ms
@@ -84,7 +84,7 @@
 [11:42:28 INFO]: [CraftEngine] Compressed resource pack in 46ms
 [11:42:28 INFO]: [CraftEngine] Initiating resource pack upload...
 [11:42:28 INFO]: [CraftEngine] Successfully uploaded resource pack in 23 ms
-[11:42:28 INFO]: [38;2;85;85;85m� [1m[38;2;255;85;85mC[38;2;255;255;85mraft[38;2;255;170;0mEngine[0m [38;2;170;170;170m�[0m [38;2;255;255;255mResource pack generated [38;2;170;170;170m([38;2;255;170;0m178[38;2;170;170;170m ms)[0m
+[11:42:28 INFO]: [38;2;85;85;85m» [1m[38;2;255;85;85mC[38;2;255;255;85mraft[38;2;255;170;0mEngine[0m [38;2;170;170;170m•[0m [38;2;255;255;255mResource pack generated [38;2;170;170;170m([38;2;255;170;0m178[38;2;170;170;170m ms)[0m
 > ce reload
 [11:42:36 INFO]: [CraftEngine] Loaded pack: default_assets. Default namespace: default
 [11:42:36 INFO]: [CraftEngine] Loaded pack: default_feature_populator. Default namespace: default
@@ -107,7 +107,7 @@
 [11:42:36 INFO]: [CraftEngine] Loaded furniture in 23,50ms (6)
 [11:42:36 INFO]: [CraftEngine] Loaded blocks in 48,61ms (40)
 [11:42:36 INFO]: [CraftEngine] Loaded configured features in 2,46ms (1)
-[11:42:36 INFO]: [38;2;85;85;85m� [1m[38;2;255;85;85mC[38;2;255;255;85mraft[38;2;255;170;0mEngine[0m [38;2;170;170;170m�[0m [38;2;255;255;255mConfigs reloaded [38;2;170;170;170m([38;2;255;170;0m142[38;2;170;170;170m/[38;2;255;85;85m1[38;2;170;170;170m ms)[0m
+[11:42:36 INFO]: [38;2;85;85;85m» [1m[38;2;255;85;85mC[38;2;255;255;85mraft[38;2;255;170;0mEngine[0m [38;2;170;170;170m•[0m [38;2;255;255;255mConfigs reloaded [38;2;170;170;170m([38;2;255;170;0m142[38;2;170;170;170m/[38;2;255;85;85m1[38;2;170;170;170m ms)[0m
 > ce item give Steve kristall:crystal_sword 2
 > ce feature send-pack Steve
 > ce help
@@ -126,7 +126,7 @@
 [11:44:34 INFO]: [CraftEngine] Compressed resource pack in 46ms
 [11:44:34 INFO]: [CraftEngine] Initiating resource pack upload...
 [11:44:34 INFO]: [CraftEngine] Successfully uploaded resource pack in 28 ms
-[11:44:34 INFO]: [38;2;85;85;85m� [1m[38;2;255;85;85mC[38;2;255;255;85mraft[38;2;255;170;0mEngine[0m [38;2;170;170;170m�[0m [38;2;255;255;255mResource pack generated [38;2;170;170;170m([38;2;255;170;0m201[38;2;170;170;170m ms)[0m
+[11:44:34 INFO]: [38;2;85;85;85m» [1m[38;2;255;85;85mC[38;2;255;255;85mraft[38;2;255;170;0mEngine[0m [38;2;170;170;170m•[0m [38;2;255;255;255mResource pack generated [38;2;170;170;170m([38;2;255;170;0m201[38;2;170;170;170m ms)[0m
 > ce reload all
 [11:46:10 INFO]: [CraftEngine] Loaded pack: default_assets. Default namespace: default
 [11:46:10 INFO]: [CraftEngine] Loaded pack: default_feature_populator. Default namespace: default
@@ -150,7 +150,7 @@
 [11:46:10 INFO]: [CraftEngine] Loaded blocks in 78,36ms (40)
 [11:46:10 INFO]: [CraftEngine] Loaded configured features in 1,57ms (1)
 [11:46:10 INFO]: [CraftEngine] Loaded recipes in 135,40ms (45)
-[11:46:11 INFO]: [38;2;85;85;85m� [1m[38;2;255;85;85mC[38;2;255;255;85mraft[38;2;255;170;0mEngine[0m [38;2;170;170;170m�[0m [38;2;255;255;255mConfigs reloaded [38;2;170;170;170m([38;2;255;170;0m269[38;2;170;170;170m/[38;2;255;85;85m4[38;2;170;170;170m ms)[0m
+[11:46:11 INFO]: [38;2;85;85;85m» [1m[38;2;255;85;85mC[38;2;255;255;85mraft[38;2;255;170;0mEngine[0m [38;2;170;170;170m•[0m [38;2;255;255;255mConfigs reloaded [38;2;170;170;170m([38;2;255;170;0m269[38;2;170;170;170m/[38;2;255;85;85m4[38;2;170;170;170m ms)[0m
 [11:46:11 INFO]: [CraftEngine] Generating resource pack...
 [11:46:11 INFO]: [CraftEngine] Generated resource pack in 195ms
 [11:46:11 INFO]: [CraftEngine] Validating resource pack... (Progress: 1/1 | Pack Format: 97.1~97.1 | Overlays: [])
@@ -203,7 +203,7 @@ java.nio.file.FileSystemException: C:\server\plugins\CraftEngine\generated\resou
 [11:46:42 INFO]: [CraftEngine] Loaded blocks in 19,07ms (40)
 [11:46:42 INFO]: [CraftEngine] Loaded configured features in 1,15ms (1)
 [11:46:42 INFO]: [CraftEngine] Loaded recipes in 66,65ms (45)
-[11:46:42 INFO]: [38;2;85;85;85m� [1m[38;2;255;85;85mC[38;2;255;255;85mraft[38;2;255;170;0mEngine[0m [38;2;170;170;170m�[0m [38;2;255;255;255mConfigs reloaded [38;2;170;170;170m([38;2;255;170;0m155[38;2;170;170;170m/[38;2;255;85;85m2[38;2;170;170;170m ms)[0m
+[11:46:42 INFO]: [38;2;85;85;85m» [1m[38;2;255;85;85mC[38;2;255;255;85mraft[38;2;255;170;0mEngine[0m [38;2;170;170;170m•[0m [38;2;255;255;255mConfigs reloaded [38;2;170;170;170m([38;2;255;170;0m155[38;2;170;170;170m/[38;2;255;85;85m2[38;2;170;170;170m ms)[0m
 [11:46:42 INFO]: [CraftEngine] Generating resource pack...
 [11:46:42 INFO]: [CraftEngine] Generated resource pack in 83ms
 [11:46:42 INFO]: [CraftEngine] Validating resource pack... (Progress: 1/1 | Pack Format: 97.1~97.1 | Overlays: [])
@@ -212,7 +212,7 @@ java.nio.file.FileSystemException: C:\server\plugins\CraftEngine\generated\resou
 [11:46:42 INFO]: [CraftEngine] Compressed resource pack in 36ms
 [11:46:42 INFO]: [CraftEngine] Initiating resource pack upload...
 [11:46:42 INFO]: [CraftEngine] Successfully uploaded resource pack in 27 ms
-[11:46:42 INFO]: [38;2;85;85;85m� [1m[38;2;255;85;85mC[38;2;255;255;85mraft[38;2;255;170;0mEngine[0m [38;2;170;170;170m�[0m [38;2;255;255;255mResource pack generated [38;2;170;170;170m([38;2;255;170;0m171[38;2;170;170;170m ms)[0m
+[11:46:42 INFO]: [38;2;85;85;85m» [1m[38;2;255;85;85mC[38;2;255;255;85mraft[38;2;255;170;0mEngine[0m [38;2;170;170;170m•[0m [38;2;255;255;255mResource pack generated [38;2;170;170;170m([38;2;255;170;0m171[38;2;170;170;170m ms)[0m
 > stop
 [11:42:44 INFO]: System chat: Stopping the server
 [11:42:44 INFO]: Stopping server
