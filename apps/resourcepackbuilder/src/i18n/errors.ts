@@ -4,8 +4,8 @@ import { CoreError, type IssueCode, type MessageArgs } from '@resourcepackbuilde
 import { DesktopError } from '@resourcepackbuilder/desktop-contract/errors';
 import type { MessageKey } from '@resourcepackbuilder/i18n';
 
-/** Codes of the app's own errors: messages in the `app` namespace. */
-export type AppErrorCode = MessageKey<'app'>;
+/** Codes of the app's own errors: the messages under `errors` in the `app` namespace. */
+export type AppErrorCode = Extract<MessageKey<'app'>, `errors.${string}`>;
 
 /** An error of the app (not of core) whose user-facing text is the message `code` in the `app` namespace. */
 export class AppError extends Error {

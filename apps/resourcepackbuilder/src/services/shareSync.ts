@@ -209,7 +209,7 @@ export function createShareSync({ api, repository, autosave }: ShareSyncOptions)
       let folder = chosen;
       const info = await api.inspect(chosen);
       if (info.project) {
-        if (info.project.id !== project.id) throw new AppError('share.folderHasOtherProject', { name: info.project.name });
+        if (info.project.id !== project.id) throw new AppError('errors.share.folderHasOtherProject', { name: info.project.name });
       } else {
         const same = info.children.find((c) => c.projectId === project.id);
         if (same) folder = same.path;
@@ -230,13 +230,15 @@ export function createShareSync({ api, repository, autosave }: ShareSyncOptions)
       if (!info.project) {
         if (info.children.length === 1) folder = info.children[0].path;
         else if (info.children.length > 1) {
-          throw new AppError('share.folderHasSeveralProjects', { names: info.children.map((c) => c.projectName || c.name).join(', ') });
+          throw new AppError('errors.share.folderHasSeveralProjects', {
+            names: info.children.map((c) => c.projectName || c.name).join(', '),
+          });
         } else {
-          throw new AppError('share.folderHasNoProject');
+          throw new AppError('errors.share.folderHasNoProject');
         }
       }
       const shared = await readShareFolder(folderFs(folder));
-      if (!shared) throw new AppError('share.unreadable');
+      if (!shared) throw new AppError('errors.share.unreadable');
       return { folder, project: migrateProject(deepClone(shared.project)), state: shared.state };
     },
 

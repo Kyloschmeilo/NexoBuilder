@@ -14,9 +14,6 @@
     "copied": "Eigenschaften von „{name}“ kopiert. Zum Einfügen im Menü eines anderen Items „Eigenschaften einfügen“ wählen.",
     "nothingCopied": "Zuerst bei einem Item „Eigenschaften kopieren“ wählen."
   },
-  "storage": {
-    "unavailable": "Dieser Browser bietet keinen Projektspeicher (IndexedDB), Projekte können hier nicht gespeichert werden. Bitte das Projekt als Datei speichern."
-  },
   "autosave": {
     "failed": "Automatisches Speichern im Browser ist nicht möglich. Bitte das Projekt regelmäßig als Datei speichern."
   },
@@ -26,18 +23,7 @@
     "entryCount": "{count, plural, one {# Eintrag} other {# Einträge}}",
     "quoted": "„{label}“",
     "andMore": "{list} und {count} weitere",
-    "offline": "Der geteilte Ordner ist gerade nicht erreichbar. Änderungen werden nachgeholt.",
-    "folderHasOtherProject": "In diesem Ordner liegt schon das geteilte Projekt „{name}“. Wähle einen anderen Ordner oder öffne es über „Geteiltes Projekt öffnen“.",
-    "folderHasSeveralProjects": "In diesem Ordner liegen mehrere geteilte Projekte ({names}). Bitte direkt den Ordner des Projekts wählen.",
-    "folderHasNoProject": "In diesem Ordner liegt kein geteiltes ResourcepackBuilder-Projekt (project.json fehlt).",
-    "unreadable": "Das geteilte Projekt konnte nicht gelesen werden. Ist der Ordner schon vollständig heruntergeladen?"
-  },
-  "testServer": {
-    "notRunning": "Der Testserver läuft nicht.",
-    "playerNameMissing": "Bitte im Testserver-Tab deinen Minecraft-Namen eintragen."
-  },
-  "storage": {
-    "unavailable": "Projekte können in diesem Browser nicht gespeichert werden (IndexedDB ist nicht verfügbar)."
+    "offline": "Der geteilte Ordner ist gerade nicht erreichbar. Änderungen werden nachgeholt."
   },
   "project": {
     "created": "Projekt „{name}“ wurde angelegt.",
@@ -45,5 +31,20 @@
     "fileSaved": "Projektdatei gespeichert.",
     "opened": "Projekt „{name}“ geöffnet.",
     "sharedOpened": "Geteiltes Projekt „{name}“ geöffnet. Änderungen werden jetzt automatisch abgeglichen."
+  },
+  "errors": {
+    "storage": {
+      "unavailable": "Projekte können in diesem Browser nicht gespeichert werden (IndexedDB ist nicht verfügbar)."
+    },
+    "share": {
+      "folderHasOtherProject": "In diesem Ordner liegt schon das geteilte Projekt „{name}“. Wähle einen anderen Ordner oder öffne es über „Geteiltes Projekt öffnen“.",
+      "folderHasSeveralProjects": "In diesem Ordner liegen mehrere geteilte Projekte ({names}). Bitte direkt den Ordner des Projekts wählen.",
+      "folderHasNoProject": "In diesem Ordner liegt kein geteiltes ResourcepackBuilder-Projekt (project.json fehlt).",
+      "unreadable": "Das geteilte Projekt konnte nicht gelesen werden. Ist der Ordner schon vollständig heruntergeladen?"
+    },
+    "testServer": {
+      "notRunning": "Der Testserver läuft nicht.",
+      "playerNameMissing": "Bitte im Testserver-Tab deinen Minecraft-Namen eintragen."
+    }
   }
 }

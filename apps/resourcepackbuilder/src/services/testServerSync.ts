@@ -201,9 +201,9 @@ export function createTestServerSync(api: DesktopTestServerApi): TestServerSync 
 
     async give(nexoId, amount = 1) {
       const { server } = store.getState();
-      if (!server || server.status !== 'running') throw new AppError('testServer.notRunning');
+      if (!server || server.status !== 'running') throw new AppError('errors.testServer.notRunning');
       const player = server.config.playerName;
-      if (!player) throw new AppError('testServer.playerNameMissing');
+      if (!player) throw new AppError('errors.testServer.playerNameMissing');
       // Transfer the latest files first so the item is sure to exist
       const result = await transfer.run(true);
       if (result?.reloaded) await reloadDone();

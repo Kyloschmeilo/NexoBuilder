@@ -68,7 +68,7 @@ export function createProjectRepository(): ProjectRepository {
   const db: UseStore | null = typeof indexedDB === 'undefined' ? null : createStore('resourcepackbuilder', 'projects');
 
   const requireDb = (): UseStore => {
-    if (!db) throw new AppError('storage.unavailable');
+    if (!db) throw new AppError('errors.storage.unavailable');
     return db;
   };
   /** Stored data is untrusted (any earlier version, or damaged): a value that does not match `schema` reads as null. */
