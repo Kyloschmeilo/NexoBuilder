@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
 import type { Project } from '@resourcepackbuilder/core/project/types';
-import { summarizeProject, type ProjectSummary } from '../../services/projectRepository';
+import { summarizeProject, type ProjectSummary } from '@resourcepackbuilder/core/project/summary';
 import { useServices } from '../../services/bootstrap';
 import { setOtherProjectIncluded } from '../../store/exportChoices';
 

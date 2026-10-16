@@ -1,38 +1,10 @@
 // @vitest-environment jsdom
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { createProject } from '@resourcepackbuilder/core/project/factory';
-import type { Project } from '@resourcepackbuilder/core/project/types';
 import { mutate, setProject } from '../store/project';
 import { useSaveStore } from '../store/save';
 import { createAutosave, type Autosave } from './autosave';
-import type { ProjectRepository } from './projectRepository';
-
-/** An in-memory repository that records every save; `failing` makes saves throw. */
-function fakeRepository() {
-  const saved: Project[] = [];
-  const control = { failing: false };
-  const unused = () => Promise.reject(new Error('not used in this test'));
-  const repository: ProjectRepository = {
-    available: true,
-    save: async (project) => {
-      if (control.failing) throw new Error('disk full');
-      saved.push(project);
-    },
-    list: unused,
-    load: unused,
-    remove: unused,
-    lastProjectId: unused,
-    clearLastProjectId: unused,
-    loadShareConfig: unused,
-    saveShareConfig: unused,
-    removeShare: unused,
-    sharedProjectIds: unused,
-    loadSyncState: unused,
-    saveSyncState: unused,
-    clientId: unused,
-  };
-  return { repository, saved, control };
-}
+import { memoryRepository } from './memoryRepository';
 
 let autosave: Autosave | null = null;
 
@@ -55,7 +27,7 @@ const rename = (name: string) =>
 
 describe('autosave', () => {
   it('saves shortly after a change', async () => {
-    const { repository, saved } = fakeRepository();
+    const { repository, saved } = memoryRepository();
     autosave = createAutosave({ repository, delayMs: 600 });
     setProject(createProject('A'));
     rename('A1');
@@ -66,7 +38,7 @@ describe('autosave', () => {
   });
 
   it('saves the latest state of the project that changed when switching projects right after a change', async () => {
-    const { repository, saved } = fakeRepository();
+    const { repository, saved } = memoryRepository();
     autosave = createAutosave({ repository, delayMs: 600 });
     const a = createProject('A');
     setProject(a);
@@ -81,7 +53,7 @@ describe('autosave', () => {
   });
 
   it('flush() saves pending changes at once', async () => {
-    const { repository, saved } = fakeRepository();
+    const { repository, saved } = memoryRepository();
     autosave = createAutosave({ repository, delayMs: 600 });
     setProject(createProject('A'));
     rename('A1');
@@ -90,7 +62,7 @@ describe('autosave', () => {
   });
 
   it('does not save for a change that changes nothing', async () => {
-    const { repository, saved } = fakeRepository();
+    const { repository, saved } = memoryRepository();
     setProject(createProject('A'));
     autosave = createAutosave({ repository, delayMs: 600 });
     rename('A');
@@ -99,7 +71,7 @@ describe('autosave', () => {
   });
 
   it('warns once per series of failures and again after a successful save', async () => {
-    const { repository, control } = fakeRepository();
+    const { repository, control } = memoryRepository();
     autosave = createAutosave({ repository, delayMs: 10 });
     const failed = vi.fn();
     autosave.events.subscribe(failed);
@@ -122,7 +94,7 @@ describe('autosave', () => {
   });
 
   it('stores the sync state together with the project', async () => {
-    const { repository } = fakeRepository();
+    const { repository } = memoryRepository();
     const save = vi.spyOn(repository, 'save');
     const state = { clock: 3, versions: {}, files: {} };
     autosave = createAutosave({ repository, delayMs: 10, syncStateFor: () => state });

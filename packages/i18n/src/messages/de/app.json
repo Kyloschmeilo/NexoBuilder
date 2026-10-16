@@ -33,6 +33,9 @@
     "notRunning": "Der Testserver läuft nicht.",
     "playerNameMissing": "Bitte im Testserver-Tab deinen Minecraft-Namen eintragen."
   },
+  "storage": {
+    "unavailable": "Projekte können in diesem Browser nicht gespeichert werden (IndexedDB ist nicht verfügbar)."
+  },
   "project": {
     "created": "Projekt „{name}“ wurde angelegt.",
     "loadFailed": "Das Projekt konnte nicht geladen werden.",
