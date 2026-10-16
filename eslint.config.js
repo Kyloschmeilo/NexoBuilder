@@ -13,7 +13,9 @@ const APP = 'apps/resourcepackbuilder';
 /** TypeScript that runs in Node rather than the browser. */
 const NODE_SOURCES = [`${APP}/electron/**`, 'packages/s3/**', 'packages/test-utils/**'];
 /** Framework-free domain packages (no React, no DOM-only code). */
-const DOMAIN_PACKAGES = ['utils', 'minecraft', 'core', 'desktop-contract'].map((name) => `packages/${name}/**`);
+const DOMAIN_PACKAGES = ['utils', 'minecraft', 'core', 'export', 'sync', 'test-server', 'desktop-contract'].map(
+  (name) => `packages/${name}/**`,
+);
 
 /**
  * Import boundaries: a workspace may only import the @resourcepackbuilder packages its package.json declares.

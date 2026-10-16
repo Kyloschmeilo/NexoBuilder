@@ -1,7 +1,7 @@
 import { afterEach, describe, expect, it, vi } from 'vitest';
 import { createProject } from '@resourcepackbuilder/core/project/factory';
 import type { Project } from '@resourcepackbuilder/core/project/types';
-import type { SyncState } from '@resourcepackbuilder/core/sync/engine';
+import type { SyncState } from '@resourcepackbuilder/sync';
 import type { Autosave } from '../services/autosave';
 import type { AppServices } from '../services/bootstrap';
 import { createEvents } from '../services/events';

@@ -2,7 +2,7 @@
 import { useMemo, useState } from 'react';
 import { useTranslations } from 'next-intl';
 import { ClipboardPaste } from 'lucide-react';
-import { selectFromProject } from '@resourcepackbuilder/core/export/selection';
+import { selectFromProject } from '@resourcepackbuilder/export';
 import {
   clipboardLabel,
   COPY_CATEGORIES,

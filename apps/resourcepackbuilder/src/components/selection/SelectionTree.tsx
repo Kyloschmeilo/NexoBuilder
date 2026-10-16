@@ -14,7 +14,7 @@ import {
   setListSelected,
   type ExportSelection,
   type ListSelectionKey,
-} from '@resourcepackbuilder/core/export/selection';
+} from '@resourcepackbuilder/export';
 import { SectionLabel, TREE_INDENT_PX, treeRowSlots } from '@resourcepackbuilder/ui';
 import { Button } from '@resourcepackbuilder/ui/components/button';
 import { Empty, EmptyDescription } from '@resourcepackbuilder/ui/components/empty';

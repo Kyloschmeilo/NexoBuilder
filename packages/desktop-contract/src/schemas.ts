@@ -14,7 +14,7 @@ import {
   NEXO_JAR_FILE_PATTERN,
   PAPER_VERSION_PATTERN,
   PLAYER_NAME_PATTERN,
-} from '@resourcepackbuilder/core/testServer/config';
+} from '@resourcepackbuilder/test-server';
 import { SUPPORTED_LOCALES } from '@resourcepackbuilder/i18n/locale';
 import { z } from 'zod';
 import type { DesktopInvokeArgs, DesktopInvokeChannel, NexoJarInfo, TestServerConfig, TestServerConfigPatch } from './api';

@@ -2,9 +2,7 @@
 import type { ReactNode } from 'react';
 import { Frame, Link2, Music, Smile } from 'lucide-react';
 import { useTranslations } from 'next-intl';
-import { nexoPluginPath } from '@resourcepackbuilder/core/export/paths';
-import { PAINTINGS_FILE, SOUNDS_FILE } from '@resourcepackbuilder/core/export/rootFiles';
-import type { ExportPlan } from '@resourcepackbuilder/core/export/types';
+import { type ExportPlan, nexoPluginPath, PAINTINGS_FILE, SOUNDS_FILE } from '@resourcepackbuilder/export';
 import { glyphFilePath } from '@resourcepackbuilder/core/nexo/glyphs/files';
 import { glyphKindOf } from '@resourcepackbuilder/core/project/media/glyph';
 import { mediaList, type MediaEntryByKind, type MediaKind } from '@resourcepackbuilder/core/project/media/kinds';

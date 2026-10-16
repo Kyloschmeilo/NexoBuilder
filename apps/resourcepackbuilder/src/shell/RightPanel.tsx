@@ -1,8 +1,7 @@
 import { useMemo } from 'react';
 import { Code } from 'lucide-react';
 import { useTranslations } from 'next-intl';
-import { findItemPlan, itemYamlPreview } from '@resourcepackbuilder/core/export/itemPreview';
-import type { ExportPlan } from '@resourcepackbuilder/core/export/types';
+import { type ExportPlan, findItemPlan, itemYamlPreview } from '@resourcepackbuilder/export';
 import { issuesFor, type Issue } from '@resourcepackbuilder/utils';
 import type { Project } from '@resourcepackbuilder/core/project/types';
 import { Tip } from '@resourcepackbuilder/ui';

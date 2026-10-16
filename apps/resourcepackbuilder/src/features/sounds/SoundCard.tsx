@@ -1,5 +1,5 @@
 import { useTranslations } from 'next-intl';
-import type { ExportPlan } from '@resourcepackbuilder/core/export/types';
+import type { ExportPlan } from '@resourcepackbuilder/export';
 import { issuesFor } from '@resourcepackbuilder/utils';
 import { normalizeTypedId, SOUND_ID_CHARS } from '@resourcepackbuilder/minecraft';
 import type { Sound } from '@resourcepackbuilder/core/project/media/sound';

@@ -4,7 +4,7 @@ import type { Item } from '@resourcepackbuilder/core/project/types';
 import { itemMaterial } from '@resourcepackbuilder/core/project/item';
 import type { Issue } from '@resourcepackbuilder/utils';
 import { getFolderPathLabel } from '@resourcepackbuilder/core/project/tree';
-import { PLAYER_NAME_PATTERN } from '@resourcepackbuilder/core/testServer/config';
+import { PLAYER_NAME_PATTERN } from '@resourcepackbuilder/test-server';
 import { clipboardLabel } from '@resourcepackbuilder/core/nexo/copyConfig';
 import { IconButton, PageHeader, Thumb, Tip } from '@resourcepackbuilder/ui';
 import { Badge } from '@resourcepackbuilder/ui/components/badge';

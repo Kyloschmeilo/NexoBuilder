@@ -1,5 +1,5 @@
 import type { Tone } from '@resourcepackbuilder/ui';
-import type { PackStatus, TestServerStatus } from '@resourcepackbuilder/core/testServer/status';
+import type { PackStatus, TestServerStatus } from '@resourcepackbuilder/test-server';
 
 /** Tone per server status; the label is `media.testServer.status.<status>`. */
 export const TEST_SERVER_STATUS_TONE: Record<TestServerStatus, Tone> = {

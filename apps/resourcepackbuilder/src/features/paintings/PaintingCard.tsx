@@ -1,6 +1,6 @@
 import { ImagePlus, RefreshCw } from 'lucide-react';
 import { useTranslations } from 'next-intl';
-import type { ExportPlan } from '@resourcepackbuilder/core/export/types';
+import type { ExportPlan } from '@resourcepackbuilder/export';
 import { issuesFor } from '@resourcepackbuilder/utils';
 import { DEFAULT_ANIMATION_FRAMETIME, normalizeTypedId } from '@resourcepackbuilder/minecraft';
 import { MAX_PAINTING_BLOCKS, paintingFrameSize, type Painting } from '@resourcepackbuilder/core/project/media/painting';

@@ -3,7 +3,7 @@ import { useTranslations } from 'next-intl';
 import { Button } from '@resourcepackbuilder/ui/components/button';
 import { Tip } from '@resourcepackbuilder/ui';
 import type { TestServerState } from '../../platform/desktopApi';
-import { isTransitioning } from '@resourcepackbuilder/core/testServer/status';
+import { isTransitioning } from '@resourcepackbuilder/test-server';
 import { useBusyAction } from '../../hooks/useBusyAction';
 import { useTestServer } from './useTestServer';
 

@@ -3,8 +3,7 @@
  * It is deferred, so typing stays responsive while the plan of a large project is recomputed.
  */
 import { createContext, useContext, useDeferredValue, useMemo, type ReactNode } from 'react';
-import { planExport } from '@resourcepackbuilder/core/export/plan';
-import type { ExportPlan } from '@resourcepackbuilder/core/export/types';
+import { type ExportPlan, planExport } from '@resourcepackbuilder/export';
 import { useProjectStore } from '../store/project';
 
 const PlanContext = createContext<ExportPlan | null>(null);

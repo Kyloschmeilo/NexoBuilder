@@ -1,6 +1,5 @@
 /** The user's Nexo plugin JAR: picked once, checked, and kept in the test server's plugin store. */
-import { nexoJarFileName } from '@resourcepackbuilder/core/testServer/config';
-import { readPluginDescriptor } from '@resourcepackbuilder/core/testServer/pluginJar';
+import { nexoJarFileName, readPluginDescriptor } from '@resourcepackbuilder/test-server';
 import { DesktopError, type NexoJarInfo } from '@resourcepackbuilder/desktop-contract';
 import { dialog, type BrowserWindow, type OpenDialogOptions } from 'electron';
 import fsp from 'node:fs/promises';

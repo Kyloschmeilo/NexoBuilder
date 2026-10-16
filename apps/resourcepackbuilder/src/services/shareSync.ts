@@ -8,15 +8,16 @@
 import { deepClone } from '@resourcepackbuilder/utils';
 import { migrateProject } from '@resourcepackbuilder/core/project/migrate';
 import type { Project } from '@resourcepackbuilder/core/project/types';
-import { README_FILE, README_TEXT } from '@resourcepackbuilder/core/sync/format';
 import {
+  README_FILE,
+  README_TEXT,
   readShareFolder,
+  type RemoteChange,
   ShareFolderError,
   SyncEngine,
-  type RemoteChange,
   type SyncFs,
   type SyncState,
-} from '@resourcepackbuilder/core/sync/engine';
+} from '@resourcepackbuilder/sync';
 import { AppError } from '../i18n/errors';
 import { asError } from '../lib/asError';
 import type { DesktopShareApi } from '../platform/desktopApi';

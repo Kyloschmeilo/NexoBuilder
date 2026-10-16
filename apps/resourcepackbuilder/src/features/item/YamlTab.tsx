@@ -1,7 +1,6 @@
 import { useTranslations } from 'next-intl';
 import type { Item } from '@resourcepackbuilder/core/project/types';
-import { findItemPlan, itemYamlPreview } from '@resourcepackbuilder/core/export/itemPreview';
-import { nexoPluginPath } from '@resourcepackbuilder/core/export/paths';
+import { findItemPlan, itemYamlPreview, nexoPluginPath } from '@resourcepackbuilder/export';
 import { parseRawYaml } from '@resourcepackbuilder/core/nexo/itemConfig';
 import { SectionCard } from '@resourcepackbuilder/ui';
 import { FieldDescription, FieldError } from '@resourcepackbuilder/ui/components/field';

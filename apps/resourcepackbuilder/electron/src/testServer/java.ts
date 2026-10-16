@@ -1,5 +1,5 @@
 /** Java runtime for the server: the bundled one, the system one, or a downloaded Eclipse Temurin JRE. */
-import { parseJavaVersion } from '@resourcepackbuilder/core/testServer/java';
+import { parseJavaVersion } from '@resourcepackbuilder/test-server';
 import { execFile } from 'node:child_process';
 import fs from 'node:fs';
 import fsp from 'node:fs/promises';

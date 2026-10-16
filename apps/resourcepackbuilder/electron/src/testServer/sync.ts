@@ -2,7 +2,7 @@
  * Writes the project's files to plugins/Nexo. Whatever was written last time and is now missing (deleted items,
  * a different project) is removed; other files are left untouched. `sync-manifest.json` remembers what was written.
  */
-import { syncPathSegments } from '@resourcepackbuilder/core/testServer/syncPaths';
+import { syncPathSegments } from '@resourcepackbuilder/test-server';
 import type { TestServerSyncFile, TestServerSyncOptions, TestServerSyncResult } from '@resourcepackbuilder/desktop-contract';
 import crypto from 'node:crypto';
 import fs from 'node:fs';

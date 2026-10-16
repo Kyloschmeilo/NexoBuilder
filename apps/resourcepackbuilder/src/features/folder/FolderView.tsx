@@ -1,7 +1,7 @@
 import { Box, FolderOpen, FolderPlus, Pencil, Plus, Trash2 } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 import type { Item as ProjectItem } from '@resourcepackbuilder/core/project/types';
-import { folderYamlFile, nexoPluginPath } from '@resourcepackbuilder/core/export/paths';
+import { folderYamlFile, nexoPluginPath } from '@resourcepackbuilder/export';
 import { issuesFor } from '@resourcepackbuilder/utils';
 import { itemLabel } from '@resourcepackbuilder/core/project/item';
 import { getFolderPathLabel } from '@resourcepackbuilder/core/project/tree';

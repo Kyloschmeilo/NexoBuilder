@@ -7,13 +7,7 @@ import { Field, FieldContent, FieldDescription, FieldLabel } from '@resourcepack
 import { Input } from '@resourcepackbuilder/ui/components/input';
 import { NativeSelect, NativeSelectOption } from '@resourcepackbuilder/ui/components/native-select';
 import { AutoGrid, SectionCard, StatusBadge, useDraft } from '@resourcepackbuilder/ui';
-import {
-  MAX_PLAYER_NAME_LENGTH,
-  MAX_PORT,
-  MIN_PORT,
-  PLAYER_NAME_INVALID_CHARS,
-  RAM_OPTIONS_GB,
-} from '@resourcepackbuilder/core/testServer/config';
+import { MAX_PLAYER_NAME_LENGTH, MAX_PORT, MIN_PORT, PLAYER_NAME_INVALID_CHARS, RAM_OPTIONS_GB } from '@resourcepackbuilder/test-server';
 import { FormField, FormHelp } from '../../components/FormField';
 import type { TestServerConfig } from '../../platform/desktopApi';
 import { notify } from '../../shell/notify';

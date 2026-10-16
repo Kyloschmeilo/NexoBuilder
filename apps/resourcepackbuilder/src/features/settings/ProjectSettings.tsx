@@ -2,7 +2,7 @@
 import { useId } from 'react';
 import { useTranslations } from 'next-intl';
 import { MC_VERSIONS, PACK_NAME_PATTERN } from '@resourcepackbuilder/minecraft';
-import { nexoPluginPath, packLocation } from '@resourcepackbuilder/core/export/paths';
+import { nexoPluginPath, packLocation } from '@resourcepackbuilder/export';
 import { Field, FieldDescription, FieldError, FieldLabel } from '@resourcepackbuilder/ui/components/field';
 import { Input } from '@resourcepackbuilder/ui/components/input';
 import { NativeSelect, NativeSelectOption } from '@resourcepackbuilder/ui/components/native-select';

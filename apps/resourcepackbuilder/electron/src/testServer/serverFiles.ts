@@ -1,5 +1,5 @@
 /** Sets up the server folder before every start: EULA, server.properties, Paper settings and the Nexo plugin. */
-import { DEFAULT_SERVER_PROPERTIES, EULA_TEXT, patchPaperGlobal, setProperty } from '@resourcepackbuilder/core/testServer/serverFiles';
+import { DEFAULT_SERVER_PROPERTIES, EULA_TEXT, patchPaperGlobal, setProperty } from '@resourcepackbuilder/test-server';
 import fs from 'node:fs';
 import fsp from 'node:fs/promises';
 import path from 'node:path';

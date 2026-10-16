@@ -9,7 +9,7 @@ import { describe, expect, it } from 'vitest';
 type MessageTree = { [key: string]: string | MessageTree };
 
 /** Packages that emit issue and error codes (their `src` folders are scanned) */
-const CODE_PACKAGES = ['utils', 'minecraft', 'core'];
+const CODE_PACKAGES = ['utils', 'minecraft', 'core', 'export', 'sync', 'test-server'];
 
 /** First segments of the keys in `issues` that are used for issue and error codes */
 const CODE_GROUPS = [

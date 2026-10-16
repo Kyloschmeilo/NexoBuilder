@@ -1,4 +1,4 @@
-import { DEFAULT_TEST_SERVER_CONFIG } from '@resourcepackbuilder/core/testServer/config';
+import { DEFAULT_TEST_SERVER_CONFIG } from '@resourcepackbuilder/test-server';
 import { describe, expect, it } from 'vitest';
 import { DESKTOP_API } from './api';
 import { DesktopError, rehydrateDesktopError, toDesktopErrorPayload } from './errors';

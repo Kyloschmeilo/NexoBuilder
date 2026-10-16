@@ -13,7 +13,7 @@ import { ConnectCard } from './ConnectCard';
 import { ServerConsole } from './ServerConsole';
 import { ServerControls } from './ServerControls';
 import { ServerSetup } from './ServerSetup';
-import { isConfigLocked, isTransitioning } from '@resourcepackbuilder/core/testServer/status';
+import { isConfigLocked, isTransitioning } from '@resourcepackbuilder/test-server';
 import { TEST_SERVER_STATUS_TONE } from './status';
 import { SyncCard } from './SyncCard';
 

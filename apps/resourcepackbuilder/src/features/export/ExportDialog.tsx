@@ -2,18 +2,18 @@ import { useDeferredValue, useId, useMemo, useState, type Dispatch, type ReactNo
 import { useTranslations } from 'next-intl';
 import { Download, FileArchive, FolderTree, Package, ScrollText } from 'lucide-react';
 import { countIssues } from '@resourcepackbuilder/utils';
-import type { ExportMode } from '@resourcepackbuilder/core/export/types';
-import type { Project } from '@resourcepackbuilder/core/project/types';
-import { MEDIA_KIND_LIST, mediaList } from '@resourcepackbuilder/core/project/media/kinds';
 import {
+  type ExportEntry,
+  type ExportMode,
+  type ExportSelection,
+  listMultiExportPaths,
+  type MultiExportPlan,
   planMultiExport,
   SELECT_ALL,
   selectNothing,
-  type ExportEntry,
-  type ExportSelection,
-  type MultiExportPlan,
-} from '@resourcepackbuilder/core/export/selection';
-import { listMultiExportPaths } from '@resourcepackbuilder/core/export/zip';
+} from '@resourcepackbuilder/export';
+import type { Project } from '@resourcepackbuilder/core/project/types';
+import { MEDIA_KIND_LIST, mediaList } from '@resourcepackbuilder/core/project/media/kinds';
 import { getMcVersion } from '@resourcepackbuilder/minecraft';
 import { SectionLabel } from '@resourcepackbuilder/ui';
 import { Alert, AlertDescription } from '@resourcepackbuilder/ui/components/alert';
