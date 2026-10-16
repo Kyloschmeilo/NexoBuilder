@@ -4,10 +4,10 @@ import { CoreError } from '@resourcepackbuilder/core/issues';
 import { DesktopError } from '@resourcepackbuilder/desktop-contract/errors';
 import type { MessageKey } from '@resourcepackbuilder/i18n';
 
-/** Codes of the app's own errors: messages in the `state` namespace. */
+/** Codes of the app's own errors: messages in the `app` namespace. */
 export type AppErrorCode = MessageKey<'app'>;
 
-/** An error of the app (not of core) whose user-facing text is the message `code` in the `state` namespace. */
+/** An error of the app (not of core) whose user-facing text is the message `code` in the `app` namespace. */
 export class AppError extends Error {
   constructor(
     readonly code: AppErrorCode,
@@ -20,7 +20,7 @@ export class AppError extends Error {
 
 /**
  * Returns the function that words a caught error in the current language: {@link CoreError}s from the `issues`
- * namespace, {@link AppError}s from `state`, {@link DesktopError}s (reported by the desktop program) from
+ * namespace, {@link AppError}s from `app`, {@link DesktopError}s (reported by the desktop program) from
  * `desktopErrors`, anything else by its own message.
  */
 export function useErrorMessage(): (err: unknown) => string {
