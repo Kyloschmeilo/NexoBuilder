@@ -9,6 +9,8 @@ export interface CraftEngineServerConfig {
 /** Values that ResourcepackBuilder sets in plugins/CraftEngine/config.yml */
 function configOverrides(options: CraftEngineServerConfig): Array<[string[], unknown]> {
   return [
+    // CraftEngine logs in the system language otherwise; the app reads the pack build from the English lines
+    [['forced-locale'], 'en'],
     // Serve the pack from this machine; "auto" would pick the public address
     [['resource-pack', 'self-host', 'ip'], '127.0.0.1'],
     [['resource-pack', 'self-host', 'port'], options.packPort],

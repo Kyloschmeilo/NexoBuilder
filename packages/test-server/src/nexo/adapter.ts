@@ -50,5 +50,6 @@ export const NEXO_SERVER_ADAPTER: ServerAdapter = {
     return `nexo pack ${player}`;
   },
   reportsPackBuild: true,
+  buildsPackOnStart: true,
   parsePluginLogLine: parseNexoLogLine,
 };

@@ -37,6 +37,11 @@ export interface ServerAdapter {
   resendPackCommand(player: string): string | null;
   /** Whether {@link parsePluginLogLine} reports the pack build; without it nobody waits for a build. */
   reportsPackBuild: boolean;
+  /**
+   * Whether the plugin builds the pack on startup by itself. If not, the app sends {@link reloadCommand} once the
+   * server is up, so the pack matches the project files.
+   */
+  buildsPackOnStart: boolean;
   /** The plugin's own console lines (the pack build); the shared Paper lines are read by `parseServerLogLine`. */
   parsePluginLogLine(line: string): ServerLogEvent | null;
 }

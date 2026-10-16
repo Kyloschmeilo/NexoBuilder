@@ -8,6 +8,8 @@ import { patchCraftEngineConfig } from './config';
 
 /** config.yml as it ships in the CraftEngine JAR. */
 const JAR_CONFIG = readFileSync(fileURLToPath(new URL('./__fixtures__/config.yml', import.meta.url)), 'utf8');
+/** Console lines of a real test server run (paths shortened); "> …" lines are the commands sent. */
+const LOG = readFileSync(fileURLToPath(new URL('./__fixtures__/log.txt', import.meta.url)), 'utf8').split(/\r?\n/);
 
 const selfHost = (text: string) => (parse(text) as { 'resource-pack': Record<string, Record<string, unknown>> })['resource-pack'];
 
@@ -16,6 +18,7 @@ describe('patchCraftEngineConfig', () => {
     for (const current of [null, '', '  \n']) {
       const patched = patchCraftEngineConfig(current, { packPort: 8082 });
       expect(patched).toContain('Created by ResourcepackBuilder');
+      expect(parse(patched)).toMatchObject({ 'forced-locale': 'en' });
       expect(selfHost(patched)).toEqual({
         'self-host': { ip: '127.0.0.1', port: 8082, one_time_token: false },
         delivery: { 'send-on-join': true, 'kick-if-declined': false },
@@ -29,7 +32,8 @@ describe('patchCraftEngineConfig', () => {
     expect(pack['self-host']).toMatchObject({ ip: '127.0.0.1', port: 8090, one_time_token: false, protocol: 'http' });
     expect(pack.delivery).toMatchObject({ 'send-on-join': true, 'kick-if-declined': false, 'kick-if-failed-to-apply': false });
     // Every other value stays as it was
-    const expected = parse(JAR_CONFIG) as { 'resource-pack': Record<string, Record<string, unknown>> };
+    const expected = parse(JAR_CONFIG) as { 'forced-locale': string; 'resource-pack': Record<string, Record<string, unknown>> };
+    expected['forced-locale'] = 'en';
     Object.assign(expected['resource-pack']['self-host'], { ip: '127.0.0.1', port: 8090, one_time_token: false });
     Object.assign(expected['resource-pack'].delivery, { 'kick-if-declined': false });
     expect(parse(patched)).toEqual(expected);
@@ -62,12 +66,23 @@ describe('the CraftEngine adapter', () => {
     expect(() => ce.giveCommand('ruby', 1, '@a')).toThrow(RangeError);
   });
 
-  it('reloads with "ce reload all" and recognises reloads typed by the user', () => {
+  it('reloads with "ce reload all" and recognises the user\'s reloads that rebuild the pack', () => {
     expect(ce.reloadCommand).toBe('ce reload all');
-    for (const command of ['ce reload', '/ce reload all', 'craftengine reload pack', ' CE RELOAD ']) {
+    for (const command of ['ce reload all', '/ce reload all', 'craftengine reload pack', ' CE RELOAD PACK ']) {
       expect(ce.isReloadCommand(command), command).toBe(true);
     }
-    for (const command of ['ce item give Steve a:b', 'nexo reload all', 'reload', 'ce reloadx']) {
+    // "ce reload" is "ce reload config": the configs only, no pack (see the fixture log)
+    for (const command of [
+      'ce reload',
+      'ce reload config',
+      'ce reload recipe',
+      'ce reload host',
+      'ce reload allx',
+      'ce item give Steve a:b',
+      'nexo reload all',
+      'reload',
+      'ce reloadx',
+    ]) {
       expect(ce.isReloadCommand(command), command).toBe(false);
     }
   });
@@ -106,16 +121,29 @@ describe('the CraftEngine adapter', () => {
     }
   });
 
-  it('reads the pack build from the console (provisional lines)', () => {
-    const read = (line: string) => parseServerLogLine(ce, line);
-    expect(read('[14:02:12 INFO]: [CraftEngine] Generating resource pack...')).toEqual({ type: 'packBuilding' });
-    expect(read('[14:02:15 INFO]: [CraftEngine] Successfully uploaded resource pack in 42 ms')).toEqual({ type: 'packReady', url: null });
-    expect(read('[14:02:15 WARN]: [CraftEngine] Failed to run reload_pack workflows')).toEqual({ type: 'packFailed', message: null });
-    expect(read('[14:02:15 INFO]: Failed to generate the resource pack. Please check console logs')).toEqual({
-      type: 'packFailed',
-      message: null,
-    });
-    expect(read('[14:02:13 INFO]: [CraftEngine] Generated resource pack in 812ms')).toBeNull();
-    expect(ce.reportsPackBuild).toBe(false);
+  it('reads the pack build from the lines of a real run', () => {
+    // CraftEngine 26.9.2 on Paper 26.3: startup, "ce reload all", "ce reload pack", "ce reload", warnings about the
+    // pack's files, a failed build (ZIP locked) and a reload while another one runs
+    const events = LOG.map((line) => parseServerLogLine(ce, line)).filter((event) => event !== null);
+    const building = { type: 'packBuilding' };
+    const ready = { type: 'packReady', url: null };
+    const failed = { type: 'packFailed', message: null };
+    expect(events).toEqual([
+      { type: 'started' },
+      ...[building, ready], // ce reload all
+      ...[building, ready], // ce reload pack
+      ...[building, ready], // ce reload pack with two WARN lines about the pack's files
+      ...[building, failed, failed], // ce reload all with the ZIP locked
+      ...[building, ready], // ce reload all + ce reload pack ("busy")
+    ]);
+    // The steps in between and the command replies tell nothing about the pack's state
+    for (const line of LOG.filter((l) =>
+      /Generated resource pack in|Resource pack generated|Configs reloaded|command\.resource\.busy/.test(l),
+    )) {
+      expect(parseServerLogLine(ce, line), line).toBeNull();
+    }
+    expect(ce.reportsPackBuild).toBe(true);
+    // CraftEngine builds nothing on startup; the app sends "ce reload all" once the server is up
+    expect(ce.buildsPackOnStart).toBe(false);
   });
 });

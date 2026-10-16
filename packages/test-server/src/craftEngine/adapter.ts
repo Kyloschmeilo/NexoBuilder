@@ -13,8 +13,11 @@ import { parseCraftEngineLogLine } from './log';
 const SYNC_FILES = ['pack.yml'];
 const SYNC_DIRS = ['configuration/', 'resourcepack/'];
 
-/** A CraftEngine reload typed by the user ("ce reload …", "craftengine reload …"). */
-const RELOAD_COMMAND_PATTERN = /^\/?(ce|craftengine)\s+reload\b/i;
+/**
+ * A CraftEngine reload typed by the user that rebuilds the pack: "ce reload all" or "ce reload pack". "ce reload" (=
+ * "ce reload config"), "… recipe" and "… host" only reload the configs.
+ */
+const RELOAD_COMMAND_PATTERN = /^\/?(ce|craftengine)\s+reload\s+(all|pack)$/i;
 
 /** Whether the project's pack may live in resources/<packName>/ (a safe name that is not one of CraftEngine's packs, which the app never writes or deletes). */
 export function isCraftEnginePackName(packName: string): boolean {
@@ -53,8 +56,8 @@ export const CRAFT_ENGINE_SERVER_ADAPTER: ServerAdapter = {
     assertPlayerName(player);
     return `ce feature send-pack ${player}`;
   },
-  // CraftEngine builds no pack on startup (only its reload_pack workflow does), and the log patterns are not yet
-  // checked against a real run: a missed "ready" line would hold every reload back.
-  reportsPackBuild: false,
+  reportsPackBuild: true,
+  // CraftEngine only builds the pack in its reload_pack workflow; on startup it serves the ZIP of the last run, if any
+  buildsPackOnStart: false,
   parsePluginLogLine: parseCraftEngineLogLine,
 };

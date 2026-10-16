@@ -1,18 +1,20 @@
 /**
- * CraftEngine's resource pack builds as they appear in the server console. Provisional: written from the plugin's
- * English messages (translations/en.yml), not yet checked against the lines of a real run.
+ * CraftEngine's resource pack builds as they appear in the server console. The lines are English because the test
+ * server sets `forced-locale: en` (see config.ts); __fixtures__/log.txt holds them from a real run (CraftEngine 26.9.2
+ * on Paper 26.3).
  */
 import type { ServerLogEvent } from '../serverLog';
 
-/** "Generating resource pack..." (resource_pack.generation_started) */
+/** "Generating resource pack..." (resource_pack.generation_started), the first step of the reload_pack workflow */
 const PACK_BUILDING = /Generating resource pack\.\.\./i;
-/** "Successfully uploaded resource pack in 12 ms" (host.upload_finished), the last log line of the default workflow */
+/** "Successfully uploaded resource pack in 12 ms" (host.upload_finished): the pack is served from now on */
 const PACK_READY = /Successfully uploaded resource pack in \d+\s*ms/i;
 /**
- * "Failed to run reload_pack workflows" (logged by /ce reload) and "Failed to generate the resource pack. Please check
- * console logs" (command.reload.pack.failure, the reply to the console)
+ * "Failed to run reload_pack workflows" (logged by /ce reload, a stack trace follows), "Failed to generate the
+ * resource pack. Please check console logs" (command.reload.pack.failure, the reply to the console) and "Failed to
+ * reload configs" (command.reload.config.failure: "ce reload all" then builds no pack)
  */
-const PACK_FAILED = /Failed to run reload_pack workflows|Failed to generate the resource pack/i;
+const PACK_FAILED = /Failed to run reload_pack workflows|Failed to generate the resource pack|Failed to reload configs/i;
 
 /** What a CraftEngine console line tells about the resource pack, or null for any other line. */
 export function parseCraftEngineLogLine(line: string): ServerLogEvent | null {

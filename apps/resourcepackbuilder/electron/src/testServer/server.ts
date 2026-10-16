@@ -100,6 +100,10 @@ function handleLine(line: string) {
       if (state.status !== 'starting') break;
       setState({ status: 'running', message: null, startedAt: Date.now() });
       if (isPlayerName(state.config.playerName)) sendCommand(opCommand(state.config.playerName));
+      // A plugin that builds no pack on startup serves the one of its last run (if any): build it from the current files
+      if (tracksPackBuild() && !adapter().buildsPackOnStart && sendCommand(adapter().reloadCommand)) {
+        setPack('building', t('testServer.packBuilding', pluginArgs()));
+      }
       break;
     case 'portInUse':
       setState({ message: t('testServer.portInUse', { port: state.config.port }) });
@@ -154,7 +158,7 @@ function launch(paper: PaperInstallation, java: JavaInstallation, target: PackTa
   logInfo(t('testServer.startingPaper', { version: paper.version, java: java.version, ram: state.config.ramGb }));
   reloadPending = false;
   setState({ status: 'starting', message: t('testServer.starting') });
-  // The plugin builds the pack on startup; no reload until then
+  // The plugin builds the pack on startup (or right after it, see 'started'); no reload until then
   if (tracksPackBuild()) setPack('building', t('testServer.packBuildingOnStart', pluginArgs()));
   else setPack('idle');
 
