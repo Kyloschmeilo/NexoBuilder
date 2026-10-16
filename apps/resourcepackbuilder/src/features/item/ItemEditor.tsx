@@ -1,6 +1,7 @@
 import { useTranslations } from 'next-intl';
 import type { Item } from '@resourcepackbuilder/core/project/types';
 import { issuesFor } from '@resourcepackbuilder/core/issues';
+import { PageShell } from '@resourcepackbuilder/ui';
 import { Badge } from '@resourcepackbuilder/ui/components/badge';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@resourcepackbuilder/ui/components/tabs';
 import { FieldContext } from '../../components/editor';
@@ -42,57 +43,55 @@ function ItemEditorContent({ item }: { item: Item }) {
 
   return (
     <FieldContext.Provider value={fieldContext}>
-      {/* The editor is a size container: its layout follows the width of the main area, not of the window */}
-      <div className="@container">
-        <div className="mx-auto flex max-w-6xl flex-col gap-5 px-4 pt-5 pb-12 @3xl:px-8 @3xl:pt-6 @3xl:pb-16">
-          <ItemHeader item={item} issues={issues} />
-          <Tabs
-            value={activeTab}
-            onValueChange={(value) => {
-              if (isEditorTab(value)) setEditorTab(value);
-            }}
-            className="gap-5"
-          >
-            <TabsList variant="line" className="w-full flex-wrap justify-start gap-1 border-b p-0 group-data-horizontal/tabs:h-auto">
-              {TABS.map((tab) => (
-                <TabsTrigger
-                  key={tab}
-                  value={tab}
-                  className="group/tab h-10 flex-none rounded-b-none px-3 after:bg-primary group-data-horizontal/tabs:after:-bottom-px hover:bg-muted"
-                >
-                  {t(`editor.tabs.${tab}`)}
-                  {!!counts[tab] && (
-                    <Badge
-                      variant="outline"
-                      className="h-4 px-1.5 font-mono text-muted-foreground group-data-active/tab:border-primary group-data-active/tab:bg-primary/10 group-data-active/tab:text-primary"
-                    >
-                      {counts[tab]}
-                    </Badge>
-                  )}
-                </TabsTrigger>
-              ))}
-            </TabsList>
-
-            <TabsContent value="general">
-              <GeneralTab item={item} />
-            </TabsContent>
-            <TabsContent value="model">
-              <ModelTab item={item} />
-            </TabsContent>
-            {PROPERTY_TABS.map((group) => (
-              <TabsContent key={group} value={group}>
-                <PropertiesPanel item={item} group={group} />
-              </TabsContent>
+      {/* PageShell is a size container: the editor's layout follows the width of the main area, not of the window */}
+      <PageShell className="gap-5">
+        <ItemHeader item={item} issues={issues} />
+        <Tabs
+          value={activeTab}
+          onValueChange={(value) => {
+            if (isEditorTab(value)) setEditorTab(value);
+          }}
+          className="gap-5"
+        >
+          <TabsList variant="line" className="w-full flex-wrap justify-start gap-1 border-b p-0 group-data-horizontal/tabs:h-auto">
+            {TABS.map((tab) => (
+              <TabsTrigger
+                key={tab}
+                value={tab}
+                className="group/tab h-10 flex-none rounded-b-none px-3 after:bg-primary group-data-horizontal/tabs:after:-bottom-px hover:bg-muted"
+              >
+                {t(`editor.tabs.${tab}`)}
+                {!!counts[tab] && (
+                  <Badge
+                    variant="outline"
+                    className="h-4 px-1.5 font-mono text-muted-foreground group-data-active/tab:border-primary group-data-active/tab:bg-primary/10 group-data-active/tab:text-primary"
+                  >
+                    {counts[tab]}
+                  </Badge>
+                )}
+              </TabsTrigger>
             ))}
-            <TabsContent value="recipes">
-              <RecipesTab item={item} />
+          </TabsList>
+
+          <TabsContent value="general">
+            <GeneralTab item={item} />
+          </TabsContent>
+          <TabsContent value="model">
+            <ModelTab item={item} />
+          </TabsContent>
+          {PROPERTY_TABS.map((group) => (
+            <TabsContent key={group} value={group}>
+              <PropertiesPanel item={item} group={group} />
             </TabsContent>
-            <TabsContent value="yaml">
-              <YamlTab item={item} />
-            </TabsContent>
-          </Tabs>
-        </div>
-      </div>
+          ))}
+          <TabsContent value="recipes">
+            <RecipesTab item={item} />
+          </TabsContent>
+          <TabsContent value="yaml">
+            <YamlTab item={item} />
+          </TabsContent>
+        </Tabs>
+      </PageShell>
     </FieldContext.Provider>
   );
 }

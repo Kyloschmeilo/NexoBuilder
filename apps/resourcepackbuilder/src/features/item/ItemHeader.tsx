@@ -4,7 +4,7 @@ import type { Item } from '@resourcepackbuilder/core/project/types';
 import { itemMaterial } from '@resourcepackbuilder/core/nexo/material';
 import type { Issue } from '@resourcepackbuilder/core/issues';
 import { getFolderPathLabel } from '@resourcepackbuilder/core/project/tree';
-import { IconButton, Thumb, Tip } from '@resourcepackbuilder/ui';
+import { IconButton, PageHeader, Thumb, Tip } from '@resourcepackbuilder/ui';
 import { Badge } from '@resourcepackbuilder/ui/components/badge';
 import { Button } from '@resourcepackbuilder/ui/components/button';
 import { useThumbnail } from '@resourcepackbuilder/preview';
@@ -46,7 +46,7 @@ function ItemBadges({ item, issues }: { item: Item; issues: Issue[] }) {
   const t = useTranslations('item');
   const project = useOpenProject();
   return (
-    <div className="flex flex-wrap gap-2">
+    <>
       <Tip label={t('editor.itemId')}>
         <Badge variant="outline" className="border-primary font-mono text-primary">
           {item.nexoId}
@@ -59,7 +59,7 @@ function ItemBadges({ item, issues }: { item: Item; issues: Issue[] }) {
         {itemMaterial(item)}
       </Badge>
       <IssueCountBadges issues={issues} okLabel={t('editor.ready')} />
-    </div>
+    </>
   );
 }
 
@@ -70,7 +70,7 @@ function ItemActions({ item }: { item: Item }) {
   const actions = useItemActions();
   const canPaste = !!clip && clip.sourceItemId !== item.id;
   return (
-    <div className="flex flex-wrap gap-2">
+    <>
       <GiveButton nexoId={item.nexoId} />
       <Tip label={t('editor.copyTooltip')}>
         <Button variant="outline" size="sm" onClick={() => actions.copyProperties(item.id)}>
@@ -91,7 +91,7 @@ function ItemActions({ item }: { item: Item }) {
       <IconButton label={tCommon('delete')} variant="destructive" onClick={() => void actions.remove(item)}>
         <Trash2 />
       </IconButton>
-    </div>
+    </>
   );
 }
 
@@ -99,18 +99,16 @@ function ItemActions({ item }: { item: Item }) {
 export function ItemHeader({ item, issues }: { item: Item; issues: Issue[] }) {
   const thumb = useThumbnail(item.model);
   return (
-    <header className="flex flex-wrap items-start gap-x-4 gap-y-3">
-      <Thumb src={thumb} fallback={<Box className="size-6 opacity-60" />} className="border" />
-      <div className="flex min-w-0 flex-1 basis-48 flex-col gap-2">
-        <h1 className="m-0 min-w-0 font-heading text-2xl leading-8 font-semibold">
-          {/* Minecraft colours are made for a dark background, so the name sits in a dark box in both themes */}
-          <MiniMessageBox className="min-w-0 px-3 py-0.5 align-top font-heading text-2xl leading-8">
-            <MiniMessageLine text={item.displayName || item.nexoId} />
-          </MiniMessageBox>
-        </h1>
-        <ItemBadges item={item} issues={issues} />
-      </div>
-      <ItemActions item={item} />
-    </header>
+    <PageHeader
+      icon={<Thumb src={thumb} size={48} checkered={false} fallback={<Box className="size-6 opacity-60" />} />}
+      title={
+        // Minecraft colours are made for a dark background, so the name sits in a dark box in both themes
+        <MiniMessageBox className="min-w-0 px-3 py-0.5 align-top font-heading text-2xl leading-8">
+          <MiniMessageLine text={item.displayName || item.nexoId} />
+        </MiniMessageBox>
+      }
+      meta={<ItemBadges item={item} issues={issues} />}
+      actions={<ItemActions item={item} />}
+    />
   );
 }
