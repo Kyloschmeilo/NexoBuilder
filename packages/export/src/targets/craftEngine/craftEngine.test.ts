@@ -92,6 +92,23 @@ describe('CraftEngine item config', () => {
     });
   });
 
+  it('drops the generated model when the raw YAML sets one (CraftEngine reads only the first of model/models)', () => {
+    const withModels = oneItemProject((item) => (item.rawYaml = 'models:\n  - a:item/one\n  - a:item/two'));
+    const config = planExport(withModels).items[0].config;
+    expect(config.model).toBeUndefined();
+    expect(config.models).toEqual(['a:item/one', 'a:item/two']);
+
+    const bow = oneItemProject((item) => {
+      item.config.material = 'BOW';
+      item.variants = { pulling_models: [png('p0.png'), png('p1.png'), png('p2.png')] };
+      item.rawYaml = 'texture: a:item/bow';
+    });
+    const bowConfig = planExport(bow).items[0].config;
+    expect(bowConfig.models).toBeUndefined();
+    expect(bowConfig.model).toBeUndefined();
+    expect(bowConfig.texture).toBe('a:item/bow');
+  });
+
   it('writes the display name, not a stored data.item_name', () => {
     const project = oneItemProject((item) => (item.config.data = { item_name: 'stale' }));
     expect(planExport(project).items[0].config.data).toEqual({ item_name: 'Ding' });
@@ -131,7 +148,28 @@ describe('CraftEngine variants', () => {
       'einzeln:item/dinge/thing-firework',
     ]);
     expect(plan.items[0].config.model).toBeUndefined();
-    expect(plan.issues.find((i) => i.code === 'ce.variantSlotsFilled')?.args).toEqual({ count: 6, material: 'CROSSBOW' });
+    expect(plan.issues.find((i) => i.code === 'ce.variantSlotsFilled')?.args).toEqual({ count: 6, material: 'crossbow' });
+  });
+
+  it('picks the slots from the material after the raw YAML', () => {
+    const project = oneItemProject((item) => {
+      item.variants = { blocking_model: [png('b.png')] };
+      item.rawYaml = 'material: minecraft:shield';
+    });
+    const plan = planExport(project);
+    expect(plan.items[0].config.models).toEqual(['einzeln:item/dinge/thing', 'einzeln:item/dinge/thing-blocking']);
+    expect(plan.issues.map((i) => i.code)).not.toContain('plan.variantWrongMaterial');
+  });
+
+  it('reports models beyond the slots of the material', () => {
+    const project = oneItemProject((item) => {
+      item.config.material = 'BOW';
+      item.variants = { pulling_models: ['p0', 'p1', 'p2', 'p3'].map((n) => png(`${n}.png`)) };
+    });
+    const plan = planExport(project);
+    expect(plan.items[0].config.models).toHaveLength(4);
+    expect(plan.issues.find((i) => i.code === 'ce.variantExtraModels')?.args).toEqual({ used: 3, count: 1 });
+    expect([...plan.packFiles.keys()].some((path) => path.includes('pulling_3'))).toBe(false);
   });
 
   it('maps the shield, fishing rod and elytra slots', () => {
@@ -154,9 +192,9 @@ describe('CraftEngine variants', () => {
 });
 
 describe('CraftEngine checks', () => {
-  it('reports an item without a model as an error', () => {
+  it('warns about an item without a model', () => {
     const project = oneItemProject((item) => (item.model = null));
-    expect(planExport(project).issues.find((i) => i.code === 'ce.missingModel')?.level).toBe('error');
+    expect(planExport(project).issues.find((i) => i.code === 'ce.missingModel')?.level).toBe('warning');
     expect(codes(project)).not.toContain('plan.missingModel');
     // A texture in the raw YAML is a model, too
     const textured = oneItemProject((item) => {
@@ -166,11 +204,38 @@ describe('CraftEngine checks', () => {
     expect(codes(textured)).not.toContain('ce.missingModel');
   });
 
-  it('checks item IDs against the characters CraftEngine allows', () => {
-    expect(codes(oneItemProject((item) => (item.itemId = 'Bad Id')))).toContain('ce.itemIdInvalid');
-    const accepted = codes(oneItemProject((item) => (item.itemId = 'gems/ruby.v2-x')));
+  it('accepts only the item IDs the editor writes', () => {
+    for (const id of ['Bad Id', '../evil', 'a/../../b', 'gems/ruby', '/abs', 'a.b']) {
+      expect(codes(oneItemProject((item) => (item.itemId = id)))).toContain('ce.itemIdInvalid');
+    }
+    const accepted = codes(oneItemProject((item) => (item.itemId = 'ruby_2')));
     expect(accepted).not.toContain('ce.itemIdInvalid');
     expect(accepted).not.toContain('plan.itemIdInvalid');
+  });
+
+  it('never writes a path outside the export for a traversing item ID', async () => {
+    const project = oneItemProject((item) => {
+      item.itemId = '../../../evil';
+      item.config.material = 'BOW';
+      item.variants = { pulling_models: [png('p0.png')] };
+    });
+    project.settings.yamlFileMode = 'item';
+    const plan = planExport(project);
+    expect(plan.issues.map((i) => i.code)).toContain('plan.unsafePath');
+    const multi = planMultiExport([{ project }]);
+    for (const mode of ['full', 'pack', 'items'] as const) {
+      expect(listMultiExportPaths(multi, mode).every((p) => !p.split('/').includes('..'))).toBe(true);
+    }
+  });
+
+  it('reports invalid materials and reserved pack names', () => {
+    expect(codes(oneItemProject((item) => (item.rawYaml = 'material: Not Valid')))).toContain('ce.materialInvalid');
+    for (const name of ['internal', 'default', 'default_assets']) {
+      const project = oneItemProject(() => {});
+      project.settings.packName = name;
+      expect(planExport(project).issues.find((i) => i.code === 'ce.reservedPackName')?.level).toBe('error');
+    }
+    expect(codes(oneItemProject(() => {}))).not.toContain('ce.reservedPackName');
   });
 
   it('notes the glyphs, sounds, paintings and recipes that are not exported yet', () => {
@@ -258,6 +323,7 @@ describe('mixed multi export', () => {
     expect(guide).toContain('/ce item give Steve kristall:crystal_sword 1');
     expect(guide).toContain('/nexo reload all');
     expect(guide).not.toContain('Extract the contents of this ZIP archive into the folder');
+    expect(guide.match(/ResourcepackBuilder –/g)).toHaveLength(1);
   });
 
   it('keeps the name of a Nexo-only archive', async () => {

@@ -1,19 +1,24 @@
 /** Checks of a CraftEngine item config (the shared property checks run over CraftEngine's form). */
-import { CE_PROPERTIES } from '@resourcepackbuilder/core/craftEngine';
-import { itemMaterial, MATERIAL_PATTERN } from '@resourcepackbuilder/core/project';
+import { CE_MODEL_KEYS, CE_PROPERTIES } from '@resourcepackbuilder/core/craftEngine';
+import { ITEM_ID_PATTERN } from '@resourcepackbuilder/minecraft';
 import type { ItemExport } from '../../types';
 import { validateProperties } from '../../validate/itemConfig';
 
-/** Keys CraftEngine builds the item's look from; without one it refuses to load the item. */
-const MODEL_KEYS = ['model', 'models', 'texture', 'textures', 'blueprint', 'legacy_model'];
+/**
+ * Item IDs of CraftEngine items. CraftEngine itself accepts `.`, `-` and `/` too, but the item ID names files and
+ * folders of the export, and the editor writes only these characters, so the export accepts no more.
+ */
+export const CE_ITEM_ID_PATTERN = ITEM_ID_PATTERN;
 
-/** Item IDs CraftEngine accepts (the path of a resource location). */
-export const CE_ITEM_ID_PATTERN = /^[a-z0-9_.\-/]+$/;
+/** A material as CraftEngine reads it: an item ID, optionally with a namespace ("diamond", "minecraft:diamond"). */
+const CE_MATERIAL_PATTERN = /^([a-z0-9_.-]+:)?[a-z0-9_./-]+$/;
 
 export function validateCraftEngineItem(itemExport: ItemExport, config: Record<string, unknown>): void {
-  const { item, report } = itemExport;
-  const material = itemMaterial(item);
-  if (!MATERIAL_PATTERN.test(material)) report('error', 'plan.materialInvalid', { material });
+  const { report } = itemExport;
+  const material = config.material;
+  if (typeof material !== 'string' || !CE_MATERIAL_PATTERN.test(material)) {
+    report('error', 'ce.materialInvalid', { material: String(material) });
+  }
   validateProperties(itemExport, CE_PROPERTIES);
-  if (!MODEL_KEYS.some((key) => config[key] !== undefined)) report('error', 'ce.missingModel');
+  if (!CE_MODEL_KEYS.some((key) => config[key] !== undefined)) report('warning', 'ce.missingModel');
 }

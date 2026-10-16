@@ -4,7 +4,7 @@
  */
 import JSZip from 'jszip';
 import type { Project } from '@resourcepackbuilder/core/project';
-import { exportPackName } from './paths';
+import { exportPackName, isSafeRelativePath } from './paths';
 import type { MultiExportPlan } from './selection';
 import { buildRootFiles, packTargetFor, type PackTarget } from './targets';
 import type { ExportMode, FileContent } from './types';
@@ -25,8 +25,14 @@ export type ArchiveEntry = { content: FileContent } | { zip: Map<string, FileCon
 /** Fixed timestamps ensure that the same content yields the same ZIP. */
 const FIXED_DATE = new Date(Date.UTC(2020, 0, 1, 0, 0, 0));
 
+/** Adds an entry; a path that could reach outside the archive (planning reports and drops those) is refused. */
+function setEntry(entries: Map<string, ArchiveEntry>, path: string, entry: ArchiveEntry): void {
+  if (!isSafeRelativePath(path)) throw new Error(`Unsafe path in the export archive: ${path}`);
+  entries.set(path, entry);
+}
+
 function addAll(entries: Map<string, ArchiveEntry>, files: Map<string, FileContent>, prefix = ''): void {
-  for (const [path, content] of files) entries.set(prefix + path, { content });
+  for (const [path, content] of files) setEntry(entries, prefix + path, { content });
 }
 
 /** How the resource pack goes into the plugin folder: as the project setting says, always as a folder, or not at all. */
@@ -57,7 +63,8 @@ function pluginEntries(multi: MultiExportPlan, pack: PackPlacement): Map<string,
     const { layout } = packTargetFor(project);
     const prefix = pluginPrefix(multi, project);
     addAll(entries, plan.pluginFiles, prefix);
-    if (pack === 'setting' && layout.packAsZip(project)) entries.set(prefix + layout.packLocation(project, true), { zip: plan.packFiles });
+    if (pack === 'setting' && layout.packAsZip(project))
+      setEntry(entries, prefix + layout.packLocation(project, true), { zip: plan.packFiles });
     else if (pack !== 'none') addAll(entries, plan.packFiles, prefix + layout.packLocation(project, false));
   }
   // Only Nexo plans carry root file entries; the files lie in the Nexo plugin folder

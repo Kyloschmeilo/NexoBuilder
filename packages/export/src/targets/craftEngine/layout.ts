@@ -14,6 +14,9 @@ export const CRAFT_ENGINE_PLUGIN_DIR = 'plugins/CraftEngine';
 /** Reloads CraftEngine's configuration and rebuilds the resource pack. */
 export const CRAFT_ENGINE_RELOAD_COMMAND = 'ce reload all';
 
+/** CraftEngine's own packs in resources/ ("default", "default_assets", "internal" …); a project may not use their names. */
+export const CRAFT_ENGINE_RESERVED_PACK_NAME = /^(default_.*|default|internal)$/i;
+
 /** The project's pack folder relative to plugins/CraftEngine, e.g. "resources/golden". */
 export function craftEnginePackDir(project: Project): string {
   return `resources/${exportPackName(project)}`;

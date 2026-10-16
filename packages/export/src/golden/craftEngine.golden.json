@@ -1,6 +1,6 @@
 {
   "single-full": {
-    "INSTALL.txt": "40126066d0c0816893ce91b70c063f77a566f3a723d1ccff0078d582b273ffee",
+    "INSTALL.txt": "bc63160b08926e3ba397f2ec9addb1d5f06d896069657944a2fa46a7a5f701c7",
     "resources/kristall_pack/configuration/items/kram/kram.yml": "c20833ddedca1cbdea37d9d46b3a7e3efeec917e509f9168ace3d44f1fc20fe3",
     "resources/kristall_pack/configuration/items/waffen/waffen.yml": "0b824eb0e46fdf703c20151561f6c1c9581958f809b23e1245b1a361f1bbe46f",
     "resources/kristall_pack/pack.yml": "8804c3fc270fdb276916d9698c527abf2ffcdc023c2976b544707cf09570f516",
@@ -35,7 +35,7 @@
     "resources/kristall_pack/pack.yml": "8804c3fc270fdb276916d9698c527abf2ffcdc023c2976b544707cf09570f516"
   },
   "mixed-full": {
-    "INSTALL.txt": "eabef987ac5b9dad3c0d722c30b1774214d83743ef6b22c3ac0c894f4adb6086",
+    "INSTALL.txt": "113a9e1b69314b234ea9397dbe3f66f72fe1d5503d92e957e8eefeb24951ac8f",
     "plugins/CraftEngine/resources/kristall_pack/configuration/items/kram/kram.yml": "c20833ddedca1cbdea37d9d46b3a7e3efeec917e509f9168ace3d44f1fc20fe3",
     "plugins/CraftEngine/resources/kristall_pack/configuration/items/waffen/waffen.yml": "0b824eb0e46fdf703c20151561f6c1c9581958f809b23e1245b1a361f1bbe46f",
     "plugins/CraftEngine/resources/kristall_pack/pack.yml": "8804c3fc270fdb276916d9698c527abf2ffcdc023c2976b544707cf09570f516",

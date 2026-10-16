@@ -34,6 +34,11 @@ export function nexoInstallGuide(multi: MultiExportPlan, rootFiles: Map<string, 
     : multiGuide(multi, rootFiles, options);
 }
 
+/** The guide's heading; in an archive of several plugins the archive has its own, and this part is headed by the plugin. */
+function heading(title: string, { prefixed }: InstallGuideOptions): string[] {
+  return prefixed ? ['Nexo', '===='] : [`ResourcepackBuilder – ${title}`, '=========================================='];
+}
+
 /** Step 1: where the files go (an archive of several plugins holds plugins/Nexo/ itself). */
 function extractLine({ prefixed }: InstallGuideOptions): string {
   return prefixed
@@ -48,8 +53,7 @@ function hasFilesIn(plan: ExportPlan, dir: string): boolean {
 function singleGuide(project: Project, plan: ExportPlan, rootFiles: Map<string, string>, options: InstallGuideOptions): string {
   const ids = plan.items.map((p) => `  - ${p.yamlKey}`).join('\n');
   return [
-    `ResourcepackBuilder – project "${project.name}"`,
-    '==========================================',
+    ...heading(`project "${project.name}"`, options),
     '',
     'Installation',
     '------------',
@@ -76,8 +80,7 @@ function singleGuide(project: Project, plan: ExportPlan, rootFiles: Map<string, 
 
 function multiGuide(multi: MultiExportPlan, rootFiles: Map<string, string>, options: InstallGuideOptions): string {
   const lines = [
-    `ResourcepackBuilder – ${multi.projects.length} projects`,
-    '==========================================',
+    ...heading(`${multi.projects.length} projects`, options),
     '',
     'Installation',
     '------------',

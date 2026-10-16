@@ -4,9 +4,9 @@
  * SimplifiedItemModelReader classes, which read the list with a fixed size). Each slot takes a model of one of the
  * app's variant slots; slot 0 is always the main model.
  */
+import { craftEngineMaterial } from '@resourcepackbuilder/core/craftEngine';
 import {
   FURNITURE_MODEL_SLOTS,
-  itemMaterial,
   STACK_MODELS,
   stateDef,
   type VariantDef,
@@ -23,22 +23,22 @@ interface ModelSlot {
   index: number;
 }
 
-/** The slots after the main model, per material (upper case, as the app stores it). */
+/** The slots after the main model, per material (as CraftEngine writes it, without the minecraft: namespace). */
 export const CE_MODEL_SLOTS: Record<string, ModelSlot[]> = {
   // idle, pulling 0/1/2
-  BOW: [0, 1, 2].map((index) => ({ slot: 'pulling_models', index })),
+  bow: [0, 1, 2].map((index) => ({ slot: 'pulling_models', index })),
   // idle, pulling 0/1/2, loaded with an arrow, loaded with a firework
-  CROSSBOW: [
+  crossbow: [
     ...[0, 1, 2].map((index) => ({ slot: 'pulling_models' as const, index })),
     { slot: 'charged_model', index: 0 },
     { slot: 'firework_model', index: 0 },
   ],
   // idle, cast
-  FISHING_ROD: [{ slot: 'cast_model', index: 0 }],
+  fishing_rod: [{ slot: 'cast_model', index: 0 }],
   // idle, blocking
-  SHIELD: [{ slot: 'blocking_model', index: 0 }],
+  shield: [{ slot: 'blocking_model', index: 0 }],
   // intact, broken (the first damaged model)
-  ELYTRA: [{ slot: 'damaged_models', index: 0 }],
+  elytra: [{ slot: 'damaged_models', index: 0 }],
 };
 
 const SLOT_DEFS = new Map<VariantSlot, VariantDef>([...VARIANTS, ...FURNITURE_MODEL_SLOTS, STACK_MODELS].map((def) => [def.slot, def]));
@@ -56,12 +56,13 @@ function materialsFor(slot: VariantSlot): string[] {
 
 /**
  * Writes the variant models CraftEngine uses for the item's material and returns the `models:` list in slot order
- * (null = the item has a single model). Missing slots show the main model; other variants are reported.
+ * (null = the item has a single model). The material is the final one, after the raw YAML. Missing slots show the
+ * main model; other variants and models beyond the slots are reported.
  */
 export function writeCraftEngineVariants(itemExport: ItemExport, mainKey: string | null): string[] | null {
   const { item } = itemExport;
-  const material = itemMaterial(item);
-  const slots = CE_MODEL_SLOTS[material] ?? [];
+  const material = craftEngineMaterial(item);
+  const slots = CE_MODEL_SLOTS[material.replace(/^minecraft:/, '')] ?? [];
   const written = new Map<string, string>();
 
   for (const [slot, models] of Object.entries(item.variants ?? {}) as Array<[VariantSlot, unknown[] | undefined]>) {
@@ -85,6 +86,9 @@ export function writeCraftEngineVariants(itemExport: ItemExport, mainKey: string
     if (models.length === 0) {
       itemExport.report('warning', 'plan.variantEmpty', {}, [frame]);
       continue;
+    }
+    if (models.length > used.length) {
+      itemExport.report('info', 'ce.variantExtraModels', { used: used.length, count: models.length - used.length }, [frame]);
     }
     for (const { index } of used) {
       const model = item.variants?.[slot]?.[index];

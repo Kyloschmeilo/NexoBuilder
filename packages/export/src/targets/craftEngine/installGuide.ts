@@ -15,8 +15,8 @@ export function craftEngineInstallGuide(
   const example = projects.flatMap((e) => e.plan.items)[0]?.yamlKey ?? 'namespace:item_id';
   const title = projects.length === 1 ? `project "${projects[0].project.name}"` : `${projects.length} CraftEngine projects`;
   const lines = [
-    `ResourcepackBuilder – ${title}`,
-    '==========================================',
+    // In an archive of several plugins the archive's own heading comes first; this part is headed by the plugin
+    ...(prefixed ? ['CraftEngine', '==========='] : [`ResourcepackBuilder – ${title}`, '==========================================']),
     '',
     'Installation',
     '------------',
@@ -38,7 +38,7 @@ export function craftEngineInstallGuide(
     '',
     '2. Run in game or in the console:',
     `      /${CRAFT_ENGINE_RELOAD_COMMAND}`,
-    '   (reloads items and rebuilds the resource pack – or restart the server)',
+    '   (reloads the items and rebuilds the resource pack; restarting the server works too)',
     '',
     '3. Get the items:',
     `      /ce item give <player> <namespace:item_id> [amount]   (e.g. /ce item give Steve ${example} 1)`,

@@ -5,7 +5,8 @@ import type { Project } from '@resourcepackbuilder/core/project';
 import type { PackWriter } from '../../packWriter';
 import type { FileContent, ItemPlan } from '../../types';
 import type { TargetPluginFiles } from '../types';
-import { packYmlFile } from './layout';
+import { exportPackName } from '../../paths';
+import { CRAFT_ENGINE_RESERVED_PACK_NAME, packYmlFile } from './layout';
 
 export function planCraftEnginePluginFiles(project: Project, plans: ItemPlan[], _writer: PackWriter, issues: Issue[]): TargetPluginFiles {
   const pluginFiles = new Map<string, FileContent>([[packYmlFile(project), buildPackYml(project)]]);
@@ -13,6 +14,8 @@ export function planCraftEnginePluginFiles(project: Project, plans: ItemPlan[], 
     const items = Object.fromEntries(list.map((p) => [p.yamlKey, p.config]));
     pluginFiles.set(file, sectionsToYaml({ items }, `project "${project.name}"`));
   }
+  const packName = exportPackName(project);
+  if (CRAFT_ENGINE_RESERVED_PACK_NAME.test(packName)) issues.push(createIssue('error', 'ce.reservedPackName', { name: packName }));
   issues.push(...notYetExported(project, plans));
   return { pluginFiles };
 }

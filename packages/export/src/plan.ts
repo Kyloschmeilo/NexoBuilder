@@ -7,13 +7,13 @@
  * exists in the export, the target's own checks in targets/<target>/); this module only calls them and puts
  * their issues into the item's context.
  */
-import { inContext, type Issue, type IssueContext, issueReporter } from '@resourcepackbuilder/utils';
+import { createIssue, inContext, type Issue, type IssueContext, issueReporter } from '@resourcepackbuilder/utils';
 import { buildPackMcmeta } from '@resourcepackbuilder/minecraft';
 import { getFolderSlugs, getItemsInTreeOrder, type Item, itemFrame, itemTarget, type Project } from '@resourcepackbuilder/core/project';
 import { collectArmorSets, itemArmor, writeArmorSets } from './equipment';
 import { writeModel } from './models';
 import { PackWriter } from './packWriter';
-import { modelPathFor } from './paths';
+import { isSafeRelativePath, modelPathFor } from './paths';
 import { packTargetFor } from './targets';
 import type { ItemShared, PackTarget } from './targets/types';
 import type { ExportPlan, ItemExport, ItemPlan, PlanOptions } from './types';
@@ -38,6 +38,11 @@ export function planExport(project: Project, options: PlanOptions = {}): ExportP
   if (project.settings.packIcon) writer.binary('pack.png', project.settings.packIcon, { level: 'warning' });
 
   const plugin = target.planPluginFiles(project, plans, writer, issues);
+  for (const path of plugin.pluginFiles.keys()) {
+    if (isSafeRelativePath(path)) continue;
+    plugin.pluginFiles.delete(path);
+    issues.push(createIssue('error', 'plan.unsafePath', { path }));
+  }
 
   issues.push(...writer.issues, ...writer.duplicateIssues());
   return { target: target.id, items: plans, packFiles: writer.files, ...plugin, issues };

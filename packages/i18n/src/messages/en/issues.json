@@ -76,7 +76,8 @@
     "stateTypeUnused": "State “{state}” is of type {type} – the uploaded model is not used for it.",
     "customBlockMechanicMissing": "Stackable models are uploaded, but the “Custom Block” mechanic is missing – they are not exported.",
     "stackableNeedsStringblock": "Stackable only works with the block type STRINGBLOCK.",
-    "fileUnreadable": "The file “{path}” could not be read and is left out."
+    "fileUnreadable": "The file “{path}” could not be read and is left out.",
+    "unsafePath": "The path “{path}” would leave its folder and is not exported."
   },
   "selection": {
     "packNameClash": "“{first}” and “{second}” use the same pack name “{pack}”. Rename it in the settings of one of the projects.",
@@ -198,14 +199,17 @@
     "duplicateKey": "The key in line {line} appears twice ({detail})."
   },
   "ce": {
-    "itemIdInvalid": "The item ID “{id}” is invalid for CraftEngine (lowercase letters, digits, _ . - and / only).",
-    "missingModel": "No model: CraftEngine does not load an item without a model. Import a model or set model or texture in the additional YAML.",
+    "itemIdInvalid": "The item ID “{id}” is invalid (lowercase letters, digits and _ only).",
+    "missingModel": "No model: CraftEngine shows the item with the look of its base material. Import a model or set model or texture in the additional YAML.",
     "variantUnsupported": "CraftEngine does not use this model yet, so it is not exported.",
     "variantSlotsFilled": "CraftEngine needs {count} models for {material}. The missing ones show the main model.",
     "glyphsNotExported": "The CraftEngine export does not include glyphs yet ({count}). They follow in a later version.",
     "soundsNotExported": "The CraftEngine export does not include sounds yet ({count}). They follow in a later version.",
     "paintingsNotExported": "The CraftEngine export does not include paintings yet ({count}). They follow in a later version.",
-    "recipesNotExported": "The CraftEngine export does not include recipes yet ({count}). They follow in a later version."
+    "recipesNotExported": "The CraftEngine export does not include recipes yet ({count}). They follow in a later version.",
+    "materialInvalid": "The material “{material}” is invalid for CraftEngine (e.g. diamond_sword or minecraft:diamond_sword).",
+    "variantExtraModels": "CraftEngine uses only the first {used, plural, one {model} other {# models}} of this variant. The other {count} {count, plural, one {is} other {are}} not exported.",
+    "reservedPackName": "The pack name “{name}” belongs to one of CraftEngine's own packs (default, default_…, internal). Choose another pack name in the project settings."
   },
   "issueList": {
     "openItem": "Go to item",

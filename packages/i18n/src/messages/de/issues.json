@@ -76,7 +76,8 @@
     "stateTypeUnused": "State „{state}“ ist vom Typ {type} – das hochgeladene Modell wird dafür nicht verwendet.",
     "customBlockMechanicMissing": "Es sind Stackable-Modelle hochgeladen, aber die Mechanic „Custom Block“ fehlt – sie werden nicht exportiert.",
     "stackableNeedsStringblock": "Stackable funktioniert nur mit dem Block-Typ STRINGBLOCK.",
-    "fileUnreadable": "Die Datei „{path}“ konnte nicht gelesen werden und wird weggelassen."
+    "fileUnreadable": "Die Datei „{path}“ konnte nicht gelesen werden und wird weggelassen.",
+    "unsafePath": "Der Pfad „{path}“ würde seinen Ordner verlassen und wird nicht exportiert."
   },
   "selection": {
     "packNameClash": "„{first}“ und „{second}“ verwenden denselben Pack-Namen „{pack}“. Bitte in den Einstellungen eines Projekts umbenennen.",
@@ -198,14 +199,17 @@
     "duplicateKey": "Der Schlüssel in Zeile {line} kommt doppelt vor ({detail})."
   },
   "ce": {
-    "itemIdInvalid": "Die Item-ID „{id}“ ist für CraftEngine ungültig (nur Kleinbuchstaben, Ziffern, _ . - und /).",
-    "missingModel": "Kein Modell: CraftEngine lädt kein Item ohne Modell. Importiere ein Modell oder setze model oder texture im zusätzlichen YAML.",
+    "itemIdInvalid": "Die Item-ID „{id}“ ist ungültig (nur Kleinbuchstaben, Ziffern und _).",
+    "missingModel": "Kein Modell: CraftEngine zeigt das Item mit dem Aussehen seines Basis-Materials. Importiere ein Modell oder setze model oder texture im zusätzlichen YAML.",
     "variantUnsupported": "CraftEngine nutzt dieses Modell noch nicht, deshalb wird es nicht exportiert.",
     "variantSlotsFilled": "CraftEngine braucht {count} Modelle für {material}. Die fehlenden zeigen das Hauptmodell.",
     "glyphsNotExported": "Der CraftEngine-Export enthält noch keine Glyphen ({count}). Sie folgen in einer späteren Version.",
     "soundsNotExported": "Der CraftEngine-Export enthält noch keine Sounds ({count}). Sie folgen in einer späteren Version.",
     "paintingsNotExported": "Der CraftEngine-Export enthält noch keine Gemälde ({count}). Sie folgen in einer späteren Version.",
-    "recipesNotExported": "Der CraftEngine-Export enthält noch keine Rezepte ({count}). Sie folgen in einer späteren Version."
+    "recipesNotExported": "Der CraftEngine-Export enthält noch keine Rezepte ({count}). Sie folgen in einer späteren Version.",
+    "materialInvalid": "Das Material „{material}“ ist für CraftEngine ungültig (z. B. diamond_sword oder minecraft:diamond_sword).",
+    "variantExtraModels": "CraftEngine nutzt nur {used, plural, one {das erste Modell} other {die ersten # Modelle}} dieser Variante. {count, plural, one {Das andere wird} other {Die anderen # werden}} nicht exportiert.",
+    "reservedPackName": "Der Pack-Name „{name}“ gehört zu einem eigenen Pack von CraftEngine (default, default_…, internal). Wähle in den Projekteinstellungen einen anderen Pack-Namen."
   },
   "issueList": {
     "openItem": "Zum Item",

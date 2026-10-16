@@ -59,6 +59,16 @@ export function soundFile(namespace: string, soundPath: string): string {
   return `assets/${namespace}/sounds/${soundPath}.ogg`;
 }
 
+/**
+ * Whether `path` stays inside the folder it is relative to: not absolute, no drive, no backslash, and no empty,
+ * "." or ".." segment. Every path the export writes (pack, plugin files, archive entries) has to pass, so an odd
+ * item ID or folder name can never reach outside the archive or the test server's plugin folder.
+ */
+export function isSafeRelativePath(path: string): boolean {
+  if (!path || path.includes('\\') || path.startsWith('/') || /^[A-Za-z]:/.test(path)) return false;
+  return path.split('/').every((segment) => segment !== '' && segment !== '.' && segment !== '..');
+}
+
 /** Name of the exported resource pack (its folder or ZIP); an invalid name (reported by the checks) falls back to a default. */
 export function exportPackName(project: Project): string {
   const name = project.settings.packName;

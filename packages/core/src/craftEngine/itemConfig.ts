@@ -14,6 +14,13 @@ import { CRAFT_ENGINE_FORM } from './form/schema';
 /** Order of the keys in the YAML (as in the CraftEngine docs); other keys follow in their own order. */
 const TOP_LEVEL_ORDER = ['material', 'client_bound_material', 'data', 'model', 'models', 'settings', 'behavior', 'events'];
 
+/**
+ * The keys CraftEngine builds an item's look from (AbstractItemManager: `model(s)|texture(s)|blueprint|legacy_model`).
+ * CraftEngine reads only the first of `model`/`models` it finds, so the raw YAML replaces the generated model
+ * whenever it sets any of them.
+ */
+export const CE_MODEL_KEYS = ['model', 'models', 'texture', 'textures', 'blueprint', 'legacy_model'];
+
 export interface CraftEngineBuildContext {
   project: Project;
   item: Item;
@@ -33,9 +40,13 @@ export function craftEngineItemKey(project: Pick<Project, 'namespace'>, item: Pi
   return `${project.namespace}:${item.itemId}`;
 }
 
-/** The item's base material as CraftEngine writes it (lower case, e.g. "diamond_sword"). */
+/**
+ * The item's base material as CraftEngine gets it: the raw YAML's `material` if it sets one, otherwise the app's
+ * material in lower case (e.g. "diamond_sword").
+ */
 export function craftEngineMaterial(item: Item): string {
-  return itemMaterial(item).toLowerCase();
+  const raw = parseRawYaml(item.rawYaml).value?.material;
+  return typeof raw === 'string' ? raw : itemMaterial(item).toLowerCase();
 }
 
 export function buildCraftEngineItem(context: CraftEngineBuildContext): CraftEngineBuildResult {
@@ -51,8 +62,13 @@ export function buildCraftEngineItem(context: CraftEngineBuildContext): CraftEng
   if (Object.keys(withName).length > 0) resolved.data = withName;
   else delete resolved.data;
 
-  const result: Record<string, unknown> = { material: craftEngineMaterial(item) };
-  if (models && models.length > 0) resolved.models = models;
+  const raw = parseRawYaml(item.rawYaml);
+  const rawSetsModel = raw.value !== null && CE_MODEL_KEYS.some((key) => raw.value?.[key] !== undefined);
+  const result: Record<string, unknown> = { material: itemMaterial(item).toLowerCase() };
+  if (rawSetsModel) {
+    delete resolved.model;
+    delete resolved.models;
+  } else if (models && models.length > 0) resolved.models = models;
   else if (modelKey) resolved.model = modelKey;
   for (const key of TOP_LEVEL_ORDER) {
     if (resolved[key] !== undefined && result[key] === undefined) result[key] = resolved[key];
@@ -61,6 +77,5 @@ export function buildCraftEngineItem(context: CraftEngineBuildContext): CraftEng
     if (result[key] === undefined) result[key] = value;
   }
 
-  const raw = parseRawYaml(item.rawYaml);
   return { config: raw.value ? deepMerge(result, raw.value) : result, rawYamlError: raw.error };
 }

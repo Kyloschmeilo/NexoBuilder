@@ -2,6 +2,7 @@
  * The test server's CraftEngine plugin: plugins/CraftEngine, config.yml, the CraftEngine commands (as in its
  * commands.yml) and its pack build log lines. The JAR comes from Modrinth (see modrinth.ts).
  */
+import { CRAFT_ENGINE_RESERVED_PACK_NAME } from '@resourcepackbuilder/export';
 import type { ServerAdapter } from '../adapter';
 import { assertCommandArg, assertPlayerName } from '../commands';
 import { isSafeSegment, isUnderSyncPaths, safePathSegments } from '../syncPaths';
@@ -12,15 +13,12 @@ import { parseCraftEngineLogLine } from './log';
 const SYNC_FILES = ['pack.yml'];
 const SYNC_DIRS = ['configuration/', 'resourcepack/'];
 
-/** CraftEngine's own packs in resources/ ("default_assets", "internal" …); the app never writes or deletes them. */
-const RESERVED_PACK_NAME = /^(default_.*|default|internal)$/i;
-
 /** A CraftEngine reload typed by the user ("ce reload …", "craftengine reload …"). */
 const RELOAD_COMMAND_PATTERN = /^\/?(ce|craftengine)\s+reload\b/i;
 
-/** Whether the project's pack may live in resources/<packName>/ (a safe name that is not one of CraftEngine's packs). */
+/** Whether the project's pack may live in resources/<packName>/ (a safe name that is not one of CraftEngine's packs, which the app never writes or deletes). */
 export function isCraftEnginePackName(packName: string): boolean {
-  return isSafeSegment(packName) && !RESERVED_PACK_NAME.test(packName);
+  return isSafeSegment(packName) && !CRAFT_ENGINE_RESERVED_PACK_NAME.test(packName);
 }
 
 export const CRAFT_ENGINE_SERVER_ADAPTER: ServerAdapter = {
