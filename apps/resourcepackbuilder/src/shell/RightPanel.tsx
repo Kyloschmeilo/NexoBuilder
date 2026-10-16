@@ -1,9 +1,8 @@
 import { useMemo } from 'react';
 import { Code } from 'lucide-react';
 import { useTranslations } from 'next-intl';
-import { type ExportPlan, findItemPlan, itemYamlPreview } from '@resourcepackbuilder/export';
+import { type ExportPlan, findItemPlan, itemYamlPreview, packTargetFor } from '@resourcepackbuilder/export';
 import { issuesFor, type Issue } from '@resourcepackbuilder/utils';
-import { glyphFilePath } from '@resourcepackbuilder/core/nexo';
 import type { Project } from '@resourcepackbuilder/core/project';
 import { Tip } from '@resourcepackbuilder/ui';
 import { ScrollArea } from '@resourcepackbuilder/ui/components/scroll-area';
@@ -48,8 +47,8 @@ function previewFor(project: Project, plan: ExportPlan | null, selection: Select
       return entry ? { file: entry.yamlFile, text: pluginText(plan, entry.yamlFile), issues: [] } : NOTHING;
     }
     case 'view': {
-      // Only Nexo writes a glyph file so far (CraftEngine's images follow with its media)
-      const glyphFile = selection.view === 'glyphs' && project.target === 'nexo' ? glyphFilePath(project) : null;
+      // Nexo's glyph file, CraftEngine's images.yml (with the emoji)
+      const glyphFile = selection.view === 'glyphs' ? packTargetFor(project).layout.mediaFile(project, 'glyph') : null;
       const text = glyphFile ? pluginText(plan, glyphFile) : '';
       return glyphFile && text ? { file: glyphFile, text, issues: [] } : NOTHING;
     }

@@ -8,7 +8,7 @@
   "sounds": {
     "title": "Sounds",
     "count": "{count, plural, one {# Sound} other {# Sounds}}",
-    "hint": "Eigene Geräusche und Musik. Die ID (z.B. <code>namespace:block.rubin.place</code>) kannst du überall eintragen, wo ein Sound verlangt wird – etwa bei Block-Sounds, Türen oder <code>/playsound</code>. Mit „Jukebox Playable“ wird der Sound zur Musik-CD. Achtung: Die exportierte <code>sounds.yml</code> ersetzt eine vorhandene Datei auf dem Server.",
+    "hint": "Eigene Geräusche und Musik. Die ID (z.B. <code>namespace:block.rubin.place</code>) kannst du überall eintragen, wo ein Sound verlangt wird – etwa bei Block-Sounds, Türen oder <code>/playsound</code>. Mit „Jukebox Playable“ wird der Sound zur Musik-CD.{target, select, nexo { Achtung: Die exportierte <code>sounds.yml</code> ersetzt eine vorhandene Datei auf dem Server.} other { Neue Musik-CDs hören Spieler erst, wenn sie neu beitreten. Spielt ein Item eine neue Musik-CD ab, starte den Server einmal neu.}}",
     "dropTitle": "OGG-Dateien hier ablegen",
     "dropSubtitle": "Jede Datei wird ein eigener Sound. Weitere Varianten (zufällig abgespielt) fügst du im Sound hinzu.",
     "notOgg": "„{name}“ ist keine OGG-Datei. Minecraft spielt nur .ogg ab (z.B. mit Audacity umwandeln).",
@@ -37,7 +37,7 @@
   "paintings": {
     "title": "Paintings",
     "count": "{count, plural, one {# Painting} other {# Paintings}}",
-    "hint": "Eigene Bilder zum Aufhängen (ab Minecraft 1.21.5 erzeugt Nexo das nötige Datapack). Neue Gemälde werden erst nach einem Server-Neustart registriert – im Testserver also „Neu starten“. Die exportierte <code>paintings.yml</code> ersetzt eine vorhandene Datei auf dem Server.",
+    "hint": "Eigene Bilder zum Aufhängen.{target, select, nexo { Ab Minecraft 1.21.5 erzeugt Nexo das nötige Datapack. Neue Gemälde werden erst nach einem Server-Neustart registriert – im Testserver also „Neu starten“. Die exportierte <code>paintings.yml</code> ersetzt eine vorhandene Datei auf dem Server.} other { Neue Gemälde sehen Spieler erst, wenn sie neu beitreten.}}",
     "dropTitle": "Bilder (PNG) hier ablegen",
     "dropSubtitle": "16 Pixel pro Block, z.B. 32×16 für ein Gemälde mit 2×1 Blöcken. Für Animationen die Bilder untereinander anordnen.",
     "notPng": "„{name}“ ist kein PNG.",

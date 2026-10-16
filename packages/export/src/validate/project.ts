@@ -12,7 +12,8 @@ const NAMESPACE_ISSUES = {
 export function validateProjectSettings(project: Project): Issue[] {
   const issues: Issue[] = [];
   const nsError = namespaceError(project.namespace);
-  if (nsError) {
+  // Only Nexo uses the namespace "nexo" itself
+  if (nsError && !(nsError === 'nexo' && project.target !== 'nexo')) {
     const { level, code } = NAMESPACE_ISSUES[nsError];
     issues.push(createIssue(level, code, { namespace: project.namespace }));
   }

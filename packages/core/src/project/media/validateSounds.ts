@@ -1,7 +1,7 @@
 import { isOggDataUrl, NAMESPACE_PATTERN } from '@resourcepackbuilder/minecraft';
 import type { Issue } from '@resourcepackbuilder/utils';
-import type { Project } from '../../project/types';
-import { validateEntries } from '../../project/media/entry';
+import type { Project } from '../types';
+import { validateEntries } from './entry';
 
 const DURATION_PATTERN = /^\s*\d+(\.\d+)?\s*[tsmhd]?(\s+\d+(\.\d+)?\s*[tsmhd])*\s*$/;
 

@@ -30,7 +30,7 @@ export function craftEngineInstallGuide(
     const dir = craftEnginePackDir(project);
     lines.push(
       `   ${`${dir}/pack.yml`.padEnd(40)} -> the pack (namespace ${project.namespace})`,
-      `   ${`${dir}/configuration/`.padEnd(40)} -> the item configurations`,
+      `   ${`${dir}/configuration/`.padEnd(40)} -> the configurations (items, images, sounds …)`,
       `   ${`${dir}/resourcepack/`.padEnd(40)} -> the resource pack (CraftEngine includes it automatically)`,
     );
   }
@@ -39,6 +39,14 @@ export function craftEngineInstallGuide(
     '2. Run in game or in the console:',
     `      /${CRAFT_ENGINE_RELOAD_COMMAND}`,
     '   (reloads the items and rebuilds the resource pack; restarting the server works too)',
+    // Paintings and jukebox songs are registry entries, which a client only receives when it joins. An item that plays
+    // a new song fails the reload that adds the song; at the next startup CraftEngine registers the song first.
+    ...(projects.some(({ project }) => project.paintings.length > 0 || project.sounds.some((s) => s.jukebox))
+      ? [
+          '   Players see new paintings and music discs after they rejoin. If an item plays a new music disc,',
+          '   restart the server once.',
+        ]
+      : []),
     '',
     '3. Get the items:',
     `      /ce item give <player> <namespace:item_id> [amount]   (e.g. /ce item give Steve ${example} 1)`,

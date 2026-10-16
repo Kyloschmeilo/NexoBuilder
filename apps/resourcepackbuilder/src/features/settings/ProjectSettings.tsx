@@ -19,7 +19,7 @@ export function ProjectSettings() {
   const tTargets = useTranslations('layout.projectForm.targets');
   const project = useOpenProject();
   const checkNamespace = useNamespaceProblem();
-  const namespaceProblem = checkNamespace(project.namespace);
+  const namespaceProblem = checkNamespace(project.namespace, project.target);
   const { settings } = project;
   const isPackNameValid = PACK_NAME_PATTERN.test(settings.packName);
   const { layout } = packTargetFor(project);
@@ -90,12 +90,15 @@ export function ProjectSettings() {
 
       <PackIconField packIcon={settings.packIcon} />
 
-      <CheckboxField
-        checked={settings.useItemModel}
-        onChange={(checked) => updateProjectSettings((p) => (p.settings.useItemModel = checked))}
-        label={t('useItemModel')}
-        description={t.rich('useItemModelHelp', { ...richTags, component: 'Components.item_model: nexo:<item_id>' })}
-      />
+      {/* A Nexo setting: the CraftEngine export does not read it */}
+      {project.target === 'nexo' && (
+        <CheckboxField
+          checked={settings.useItemModel}
+          onChange={(checked) => updateProjectSettings((p) => (p.settings.useItemModel = checked))}
+          label={t('useItemModel')}
+          description={t.rich('useItemModelHelp', { ...richTags, component: 'Components.item_model: nexo:<item_id>' })}
+        />
+      )}
     </div>
   );
 }

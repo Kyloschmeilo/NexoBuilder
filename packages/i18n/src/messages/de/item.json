@@ -196,7 +196,7 @@
     "shapelessIngredients": "Zutaten (beliebige Anordnung, max. 9)",
     "removeIngredient": "Zutat entfernen",
     "addIngredient": "Zutat hinzufügen",
-    "placeholderMinecraft": "z.B. DIAMOND",
+    "placeholderMinecraft": "z.B. {target, select, craftengine {diamond} other {DIAMOND}}",
     "placeholderNexo": "Item-ID",
     "placeholderTag": "z.B. planks",
     "amount": "Benötigte Anzahl pro Feld (optional)"

@@ -2,12 +2,14 @@ import { RefreshCw } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 import type { ExportPlan } from '@resourcepackbuilder/export';
 import { issuesFor } from '@resourcepackbuilder/utils';
-import { glyphKindOf, glyphTag, type Glyph } from '@resourcepackbuilder/core/project';
+import { glyphKindOf, type Glyph } from '@resourcepackbuilder/core/project';
+import { glyphTagFor } from '@resourcepackbuilder/core/targets';
 import { Badge } from '@resourcepackbuilder/ui/components/badge';
 import { IconButton, pickFiles } from '@resourcepackbuilder/ui';
 import { updateGlyph } from '../../commands/media';
 import { IssueList } from '../../components/IssueList';
 import { useMediaFileReader } from '../../hooks/useFileReaders';
+import { useOpenProject } from '../../store/project';
 import { MEDIA_FILES } from '../../lib/mediaFiles';
 import { MediaCard, PreviewFrame } from '../media/MediaCard';
 import { useMediaActions } from '../media/useMediaActions';
@@ -21,6 +23,7 @@ export function GlyphCard({ glyph, glyphs, plan }: { glyph: Glyph; glyphs: Glyph
   const media = useMediaActions();
   const issues = plan ? issuesFor(plan.issues, { kind: 'glyph', id: glyph.id }) : [];
   const { file } = glyph;
+  const project = useOpenProject();
 
   const replaceImage = async () => {
     const [entry] = await readFiles(await pickFiles(MEDIA_FILES.glyph.accept, false));
@@ -40,7 +43,7 @@ export function GlyphCard({ glyph, glyphs, plan }: { glyph: Glyph; glyphs: Glyph
           {file && <Badge variant="secondary">{t('pixelSize', { width: file.width, height: file.height })}</Badge>}
         </>
       }
-      usage={glyphTag(glyph)}
+      usage={glyphTagFor(project, glyph)}
       copyLabel={t('copyTag')}
       actions={
         glyph.kind !== 'reference' && (

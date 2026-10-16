@@ -35,7 +35,7 @@ export function NewProjectForm({ onDone }: { onDone?: () => void }) {
   const tTargets = useTranslations('layout.projectForm.targets');
   const defaultName = t('defaultName');
   const namespace = editedNamespace ?? defaultNamespace(name || defaultName);
-  const problem = checkNamespace(namespace);
+  const problem = checkNamespace(namespace, target);
   const isInvalid = problem?.isError ?? false;
 
   const submit = async () => {

@@ -254,11 +254,19 @@ describe('CraftEngine checks', () => {
     expect(codes(oneItemProject(() => {}))).not.toContain('ce.reservedPackName');
   });
 
-  it('notes the glyphs, sounds and paintings that are not exported yet', () => {
+  it('does not warn about the namespace "nexo", which only Nexo uses itself', () => {
+    const project = oneItemProject(() => {});
+    project.namespace = 'nexo';
+    expect(codes(project)).not.toContain('plan.namespaceNexo');
+    expect(planExport({ ...project, target: 'nexo' }).issues.map((i) => i.code)).toContain('plan.namespaceNexo');
+  });
+
+  it('writes the glyph as an image and leaves out media files without entries', () => {
     const plan = planExport(goldenCraftEngineProject());
-    const notes = plan.issues.filter((i) => i.code.endsWith('NotExported'));
-    expect(notes.map((i) => [i.level, i.code, i.args])).toEqual([['info', 'ce.glyphsNotExported', { count: 1 }]]);
-    expect([...plan.pluginFiles.keys()].some((path) => path.includes('glyph') || path.includes('recipe'))).toBe(false);
+    expect([...plan.pluginFiles.keys()].filter((path) => path.includes('/configuration/') && !path.includes('/items/'))).toEqual([
+      'resources/kristall_pack/configuration/images.yml',
+    ]);
+    expect(plan.packFiles.has('assets/kristall/textures/glyphs/gem.png')).toBe(true);
   });
 });
 

@@ -1,8 +1,8 @@
 import { createIssue, type Issue } from '@resourcepackbuilder/utils';
 import { compareVersions, FEATURE_VERSIONS, ITEM_ID_PATTERN } from '@resourcepackbuilder/minecraft';
-import type { Project } from '../../project/types';
-import { validateEntries } from '../../project/media/entry';
-import { MAX_PAINTING_BLOCKS, paintingFrameSize, type Painting } from '../../project/media/painting';
+import type { Project } from '../types';
+import { validateEntries } from './entry';
+import { MAX_PAINTING_BLOCKS, paintingFrameSize, type Painting } from './painting';
 
 /** Checks all paintings of the project; each issue targets its painting and carries a `context.painting` frame. */
 export function validatePaintings(project: Project): Issue[] {

@@ -8,7 +8,7 @@
   "sounds": {
     "title": "Sounds",
     "count": "{count, plural, one {# sound} other {# sounds}}",
-    "hint": "Your own sounds and music. You can enter the ID (e.g. <code>namespace:block.ruby.place</code>) anywhere a sound is expected – for block sounds, doors or <code>/playsound</code>, for example. “Jukebox Playable” turns the sound into a music disc. Note: the exported <code>sounds.yml</code> replaces an existing file on the server.",
+    "hint": "Your own sounds and music. You can enter the ID (e.g. <code>namespace:block.ruby.place</code>) anywhere a sound is expected – for block sounds, doors or <code>/playsound</code>, for example. “Jukebox Playable” turns the sound into a music disc.{target, select, nexo { Note: the exported <code>sounds.yml</code> replaces an existing file on the server.} other { Players hear new music discs after they rejoin. If an item plays a new music disc, restart the server once.}}",
     "dropTitle": "Drop OGG files here",
     "dropSubtitle": "Each file becomes its own sound. Add more variants (played at random) inside the sound.",
     "notOgg": "“{name}” is not an OGG file. Minecraft only plays .ogg (convert it with Audacity, for example).",
@@ -37,7 +37,7 @@
   "paintings": {
     "title": "Paintings",
     "count": "{count, plural, one {# painting} other {# paintings}}",
-    "hint": "Your own pictures to hang up (from Minecraft 1.21.5 Nexo generates the required datapack). New paintings are only registered after a server restart – in the test server, use “Restart”. The exported <code>paintings.yml</code> replaces an existing file on the server.",
+    "hint": "Your own pictures to hang up.{target, select, nexo { From Minecraft 1.21.5 on, Nexo generates the required datapack. New paintings are only registered after a server restart – in the test server, use “Restart”. The exported <code>paintings.yml</code> replaces an existing file on the server.} other { Players see new paintings after they rejoin.}}",
     "dropTitle": "Drop images (PNG) here",
     "dropSubtitle": "16 pixels per block, e.g. 32×16 for a painting of 2×1 blocks. For animations, stack the frames vertically.",
     "notPng": "“{name}” is not a PNG.",

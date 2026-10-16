@@ -2,10 +2,11 @@
  * Where the CraftEngine export puts things inside plugins/CraftEngine (one pack per project):
  *   resources/<pack>/pack.yml
  *   resources/<pack>/configuration/items/<folder…>/<folder|item_id>.yml
+ *   resources/<pack>/configuration/{images,sounds,paintings}.yml (glyphs with their emoji, sounds with their jukebox songs)
  *   resources/<pack>/resourcepack/ (the resource pack: pack.mcmeta, pack.png, assets/…)
  * The test server's CraftEngine adapter accepts exactly these paths.
  */
-import type { Project } from '@resourcepackbuilder/core/project';
+import type { MediaKind, Project } from '@resourcepackbuilder/core/project';
 import { exportPackName } from '../../paths';
 
 /** The CraftEngine plugin folder on a server; every exported config file is relative to it. */
@@ -25,6 +26,17 @@ export function craftEnginePackDir(project: Project): string {
 /** The pack's pack.yml relative to plugins/CraftEngine. */
 export function packYmlFile(project: Project): string {
   return `${craftEnginePackDir(project)}/pack.yml`;
+}
+
+/** The media config files: images.yml (with the emoji), sounds.yml (with the jukebox songs), paintings.yml. */
+export const CRAFT_ENGINE_MEDIA_FILES = { glyph: 'images', sound: 'sounds', painting: 'paintings' } as const satisfies Record<
+  MediaKind,
+  string
+>;
+
+/** A config file of the pack's media (relative to plugins/CraftEngine), e.g. "resources/golden/configuration/images.yml". */
+export function craftEngineMediaFile(project: Project, name: (typeof CRAFT_ENGINE_MEDIA_FILES)[MediaKind]): string {
+  return `${craftEnginePackDir(project)}/configuration/${name}.yml`;
 }
 
 /** Config file (relative to plugins/CraftEngine) for items in the folder `folderSlugs`; `itemId` names it in "one file per item" mode. */

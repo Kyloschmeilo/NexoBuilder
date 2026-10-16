@@ -1,14 +1,7 @@
-/** Export of paintings: animation metadata and the paintings.yml entry (texture: see export/paths). */
+/** Export of paintings: the paintings.yml entry (texture: see export/paths, animation: paintingMcmeta). */
 import type { Project } from '../../project/types';
 import { mediaKey } from '../../project/media/entry';
-import { paintingFrameSize, type Painting } from '../../project/media/painting';
-
-export function paintingMcmeta(painting: Painting): Record<string, unknown> | null {
-  if (!painting.animated) return null;
-  const frame = paintingFrameSize(painting);
-  if (!frame || frame.frames < 2) return null;
-  return { animation: { width: frame.width, height: frame.height, frametime: Math.max(1, Math.round(painting.frametime)) } };
-}
+import type { Painting } from '../../project/media/painting';
 
 /** Entry for paintings.yml */
 export function paintingToYaml(project: Project, painting: Painting): Record<string, unknown> {

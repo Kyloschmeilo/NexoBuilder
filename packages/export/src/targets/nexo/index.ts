@@ -1,7 +1,7 @@
 /** The Nexo pack target: item configs as Nexo YAML in plugins/Nexo, the pack as an external pack. */
 import { getPath } from '@resourcepackbuilder/utils';
 import { ITEM_ID_PATTERN } from '@resourcepackbuilder/minecraft';
-import { buildItemConfig, type ConfigAddition } from '@resourcepackbuilder/core/nexo';
+import { buildItemConfig, type ConfigAddition, glyphFilePath } from '@resourcepackbuilder/core/nexo';
 import { itemMaterial, variantFrame, variantPathSuffix, VARIANTS, type VariantSlot } from '@resourcepackbuilder/core/project';
 import { toYaml } from '@resourcepackbuilder/core/yaml';
 import type { ItemExport } from '../../types';
@@ -11,6 +11,7 @@ import { nexoInstallGuide } from './installGuide';
 import { writeItemModels } from './itemModels';
 import { itemYamlFile, NEXO_PLUGIN_DIR, NEXO_RELOAD_COMMAND, packLocation } from './layout';
 import { planNexoPluginFiles } from './pluginFiles';
+import { PAINTINGS_FILE, SOUNDS_FILE } from './rootFiles';
 
 export * from './installGuide';
 export * from './itemModels';
@@ -46,6 +47,7 @@ export const NEXO_TARGET: PackTarget<NexoWrittenModels> = {
     packLocation,
     installGuide: nexoInstallGuide,
     reloadCommand: NEXO_RELOAD_COMMAND,
+    mediaFile: (project, kind) => ({ glyph: glyphFilePath(project), sound: SOUNDS_FILE, painting: PAINTINGS_FILE })[kind],
   },
 };
 

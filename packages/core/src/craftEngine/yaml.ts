@@ -7,9 +7,24 @@ export interface CraftEngineSections {
   blocks?: Record<string, Record<string, unknown>>;
   furniture?: Record<string, Record<string, unknown>>;
   recipes?: Record<string, Record<string, unknown>>;
+  images?: Record<string, Record<string, unknown>>;
+  emoji?: Record<string, Record<string, unknown>>;
+  sounds?: Record<string, Record<string, unknown>>;
+  jukebox_songs?: Record<string, Record<string, unknown>>;
+  paintings?: Record<string, Record<string, unknown>>;
 }
 
-const SECTION_ORDER: Array<keyof CraftEngineSections> = ['items', 'blocks', 'furniture', 'recipes'];
+const SECTION_ORDER: Array<keyof CraftEngineSections> = [
+  'items',
+  'blocks',
+  'furniture',
+  'recipes',
+  'images',
+  'emoji',
+  'sounds',
+  'jukebox_songs',
+  'paintings',
+];
 
 /** Writes the non-empty sections, separated by a blank line, with an optional header comment. */
 export function sectionsToYaml(sections: CraftEngineSections, description?: string): string {

@@ -196,7 +196,7 @@
     "shapelessIngredients": "Ingredients (any arrangement, max. 9)",
     "removeIngredient": "Remove ingredient",
     "addIngredient": "Add ingredient",
-    "placeholderMinecraft": "e.g. DIAMOND",
+    "placeholderMinecraft": "e.g. {target, select, craftengine {diamond} other {DIAMOND}}",
     "placeholderNexo": "Item ID",
     "placeholderTag": "e.g. planks",
     "amount": "Required amount per slot (optional)"

@@ -53,3 +53,11 @@ export function paintingFrameSize(painting: Painting): { width: number; height: 
   if (height <= 0) return null;
   return { width, height, frames: Math.floor(painting.file.height / height) };
 }
+
+/** The .mcmeta of an animated painting texture; null for a still one. */
+export function paintingMcmeta(painting: Painting): Record<string, unknown> | null {
+  if (!painting.animated) return null;
+  const frame = paintingFrameSize(painting);
+  if (!frame || frame.frames < 2) return null;
+  return { animation: { width: frame.width, height: frame.height, frametime: Math.max(1, Math.round(painting.frametime)) } };
+}

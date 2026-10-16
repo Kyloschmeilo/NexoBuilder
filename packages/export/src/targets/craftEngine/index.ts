@@ -5,7 +5,14 @@ import type { JavaModelJson } from '@resourcepackbuilder/minecraft';
 import type { ItemExport, ItemSections } from '../../types';
 import type { BuiltItem, PackTarget, WrittenItemModels } from '../types';
 import { craftEngineInstallGuide } from './installGuide';
-import { CRAFT_ENGINE_PLUGIN_DIR, CRAFT_ENGINE_RELOAD_COMMAND, craftEngineItemFile, craftEnginePackLocation } from './layout';
+import {
+  CRAFT_ENGINE_MEDIA_FILES,
+  CRAFT_ENGINE_PLUGIN_DIR,
+  CRAFT_ENGINE_RELOAD_COMMAND,
+  craftEngineItemFile,
+  craftEngineMediaFile,
+  craftEnginePackLocation,
+} from './layout';
 import { planCraftEnginePluginFiles } from './pluginFiles';
 import { CE_ITEM_ID_PATTERN, validateCraftEngineBlock, validateCraftEngineFurniture, validateCraftEngineItem } from './validate';
 import { writeCraftEngineVariants } from './variants';
@@ -43,6 +50,7 @@ export const CRAFT_ENGINE_TARGET: PackTarget<CraftEngineWrittenModels> = {
     packLocation: (project) => craftEnginePackLocation(project),
     installGuide: craftEngineInstallGuide,
     reloadCommand: CRAFT_ENGINE_RELOAD_COMMAND,
+    mediaFile: (project, kind) => craftEngineMediaFile(project, CRAFT_ENGINE_MEDIA_FILES[kind]),
   },
 };
 

@@ -3,9 +3,16 @@ import { parse } from 'yaml';
 import { planExport } from './plan';
 import { buildMultiExportZip } from './zip';
 import { pluginText, singleExport } from '../test-utils/export';
-import { createGlyph, createProject, glyphFileFromDataUrl, glyphKindOf, glyphTag, isMultiBitmap } from '@resourcepackbuilder/core/project';
+import {
+  createGlyph,
+  createProject,
+  glyphFileFromDataUrl,
+  glyphKindOf,
+  glyphTag,
+  isMultiBitmap,
+  validateGlyphs,
+} from '@resourcepackbuilder/core/project';
 import { makePngDataUrl } from '@resourcepackbuilder/test-utils/png';
-import { validateGlyphs } from '@resourcepackbuilder/core/nexo';
 
 // Minimal GIF (1×1) with width/height in the header
 const GIF_9x11 =
