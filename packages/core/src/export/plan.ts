@@ -1,14 +1,17 @@
 /**
  * Plans the complete export of a project: item YAMLs, models, textures, armor and all checks.
  * The result contains finished file contents and can be zipped directly (see paths.ts for the layout).
+ *
+ * Convention: each domain owns its checks (nexo/<domain>/validate.ts, export/validate/* for what only
+ * exists in the export); this module only calls them and puts their issues into the item's context.
  */
 import { inContext, issueReporter, type Issue, type IssueContext } from '../issues';
 import { buildPackMcmeta } from '../minecraft/versions';
 import { getPath } from '../nexo/configPath';
 import { buildItemConfig } from '../nexo/itemConfig';
 import { itemMaterial } from '../nexo/material';
-import { buildRecipeFiles, recipeKeys } from '../nexo/recipes/files';
-import { validateRecipe } from '../nexo/recipes/validate';
+import { buildRecipeFiles } from '../nexo/recipes/files';
+import { validateRecipes } from '../nexo/recipes/validate';
 import { VARIANTS, variantPathSuffix, type VariantSlot } from '../nexo/variants';
 import { itemsToYaml } from '../nexo/yaml';
 import { getFolderSlugs, getItemsInTreeOrder } from '../project/tree';
@@ -53,6 +56,7 @@ export function planExport(project: Project, options: PlanOptions = {}): ExportP
   if (project.settings.packIcon) writer.binary('pack.png', project.settings.packIcon, { level: 'warning' });
 
   const media = writeMedia(writer, project, issues);
+  issues.push(...validateRecipes(project, items));
 
   issues.push(...writer.issues, ...writer.duplicateIssues());
   return {
@@ -106,10 +110,6 @@ function planItem(project: Project, item: Item, writer: PackWriter, issues: Issu
   if (built.rawYamlError?.kind === 'syntax') itemExport.report('error', 'plan.rawYamlError', { error: built.rawYamlError.message });
   else if (built.rawYamlError) itemExport.report('error', 'plan.rawYamlNotMapping');
   validateItemConfig(itemExport, { config: built.config, usedVariations: shared.usedVariations, armorSlot: shared.armor?.slot ?? null });
-  const keys = recipeKeys(item);
-  for (const recipe of item.recipes) {
-    for (const issue of validateRecipe(recipe, project, keys.get(recipe.id) ?? recipe.type)) reportIn(issue);
-  }
 
   return {
     item,

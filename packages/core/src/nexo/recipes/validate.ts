@@ -1,7 +1,8 @@
-import { recipeFrame, recipeIngredientFrame, recipeInputFrame } from '../../issueFrames';
-import { issueReporter, type Issue, type IssueContext } from '../../issues';
+import { itemFrame, itemTarget, recipeFrame, recipeIngredientFrame, recipeInputFrame } from '../../issueFrames';
+import { inContext, issueReporter, type Issue, type IssueContext } from '../../issues';
 import { RESOURCE_LOCATION_PATTERN } from '../../minecraft/resourceLocation';
-import type { Project } from '../../project/types';
+import type { Item, Project } from '../../project/types';
+import { recipeKeys } from './files';
 import { MATERIAL_PATTERN } from '../material';
 import { getRecipeTypeInfo, MAX_INGREDIENT_AMOUNT, MAX_RESULT_AMOUNT, type Recipe, type RecipeIngredient } from './model';
 
@@ -55,4 +56,16 @@ export function validateRecipe(recipe: Recipe, project: Project, key: string): I
     }
   }
   return issues;
+}
+
+/** Checks the recipes of all `items`; each issue targets its item and carries its `context.item` frame first. */
+export function validateRecipes(project: Project, items: Item[]): Issue[] {
+  return items.flatMap((item) => {
+    const keys = recipeKeys(item);
+    return (item.recipes ?? []).flatMap((recipe) =>
+      validateRecipe(recipe, project, keys.get(recipe.id) ?? recipe.type).map((issue) =>
+        inContext(issue, [itemFrame(item)], itemTarget(item)),
+      ),
+    );
+  });
 }
