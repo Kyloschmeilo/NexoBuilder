@@ -12,6 +12,7 @@ import { itemLabel } from '@resourcepackbuilder/core/project/labels';
 import { NativeSelect, NativeSelectOption } from '@resourcepackbuilder/ui/components/native-select';
 import { NumberInput, TextInput, type LiteralChoice } from '../../../components/editor';
 import { useOpenProject } from '../../../store/project';
+import { useSchemaText } from '../../../components/useSchemaText';
 
 /** The project's items as suggestions for a Nexo ingredient: their item id, shown with their name. */
 function itemChoices(project: Project): LiteralChoice[] {
@@ -23,7 +24,7 @@ const sourceOf = (value: string): IngredientSource | undefined => INGREDIENT_SOU
 /** Source (Minecraft material, Nexo item or tag), id with suggestions and the optional amount of an ingredient. */
 export function IngredientRow({ value, onChange }: { value: RecipeIngredient; onChange: (value: RecipeIngredient) => void }) {
   const t = useTranslations('item');
-  const tSchema = useTranslations('schema');
+  const tSchema = useSchemaText();
   const project = useOpenProject();
   const nexoItems = useMemo(() => itemChoices(project), [project]);
   const suggestions = value.source === 'minecraft' ? CRAFTING_MATERIALS : value.source === 'nexo' ? nexoItems : ITEM_TAGS;
@@ -46,7 +47,7 @@ export function IngredientRow({ value, onChange }: { value: RecipeIngredient; on
       >
         {INGREDIENT_SOURCES.map((source) => (
           <NativeSelectOption key={source.value} value={source.value}>
-            {tSchema(source.label as never)}
+            {tSchema(source.label)}
           </NativeSelectOption>
         ))}
       </NativeSelect>

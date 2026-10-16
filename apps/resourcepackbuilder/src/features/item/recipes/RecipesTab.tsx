@@ -1,14 +1,13 @@
 import { useTranslations } from 'next-intl';
-import { Plus } from 'lucide-react';
 import type { Item } from '@resourcepackbuilder/core/project/types';
 import { RECIPE_TYPES } from '@resourcepackbuilder/core/nexo/recipes/model';
 import { recipeKeys } from '@resourcepackbuilder/core/nexo/recipes/files';
 import { Alert, AlertDescription } from '@resourcepackbuilder/ui/components/alert';
-import { Button } from '@resourcepackbuilder/ui/components/button';
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@resourcepackbuilder/ui/components/dropdown-menu';
 import { richTags } from '../../../i18n/richTags';
 import { addRecipe } from '../../../commands/items';
+import { AddMenuButton } from '../../../components/AddMenuButton';
 import { Section } from '../../../components/Section';
+import { useSchemaText } from '../../../components/useSchemaText';
 import { RecipeCard } from './RecipeCard';
 
 /** The command that loads exported recipes on the server. */
@@ -16,21 +15,14 @@ const RELOAD_COMMAND = '/nexo reload all';
 
 function AddRecipeButton({ itemId }: { itemId: string }) {
   const tCommon = useTranslations('common');
-  const tSchema = useTranslations('schema');
+  const schemaText = useSchemaText();
   return (
-    <DropdownMenu>
-      <DropdownMenuTrigger render={<Button size="sm" />}>
-        <Plus /> {tCommon('add')}
-      </DropdownMenuTrigger>
-      <DropdownMenuContent align="end" className="w-82 max-w-[calc(100vw-2rem)]">
-        {RECIPE_TYPES.map((type) => (
-          <DropdownMenuItem key={type.type} className="flex-col items-start gap-0.5" onClick={() => addRecipe(itemId, type.type)}>
-            <span className="font-medium">{tSchema(type.label as never)}</span>
-            <span className="text-xs text-muted-foreground">{tSchema(type.description as never)}</span>
-          </DropdownMenuItem>
-        ))}
-      </DropdownMenuContent>
-    </DropdownMenu>
+    <AddMenuButton
+      label={tCommon('add')}
+      menuClassName="w-82"
+      options={RECIPE_TYPES.map((type) => ({ value: type.type, label: schemaText(type.label), description: schemaText(type.description) }))}
+      onSelect={(type) => addRecipe(itemId, type)}
+    />
   );
 }
 

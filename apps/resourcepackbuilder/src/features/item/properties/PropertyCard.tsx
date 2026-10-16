@@ -11,6 +11,7 @@ import { Badge } from '@resourcepackbuilder/ui/components/badge';
 import { removeProperty, setItemProperty } from '../../../commands/items';
 import { FieldRenderer } from '../../../components/editor';
 import { useOpenProject } from '../../../store/project';
+import { useSchemaText } from '../../../components/useSchemaText';
 import { VersionBadges } from './VersionBadges';
 
 /** The value a property keeps when its editor is cleared: the property stays on the item until it is removed. */
@@ -31,7 +32,7 @@ function emptyValueFor(def: PropertyDef): ConfigValue {
 
 function PropertyHints({ def, version }: { def: PropertyDef; version: string }) {
   const t = useTranslations('item');
-  const tSchema = useTranslations('schema');
+  const tSchema = useSchemaText();
   const support = versionSupport(version, def);
   return (
     <>
@@ -47,7 +48,7 @@ function PropertyHints({ def, version }: { def: PropertyDef; version: string }) 
       )}
       {def.hint && (
         <Alert variant="info">
-          <AlertDescription>{tSchema(def.hint as never)}</AlertDescription>
+          <AlertDescription>{tSchema(def.hint)}</AlertDescription>
         </Alert>
       )}
     </>
@@ -57,11 +58,11 @@ function PropertyHints({ def, version }: { def: PropertyDef; version: string }) 
 /** One property of an item: its editor with version hints, YAML path, docs link and remove button. */
 export function PropertyCard({ item, def }: { item: Item; def: PropertyDef }) {
   const t = useTranslations('item');
-  const tSchema = useTranslations('schema');
+  const tSchema = useSchemaText();
   const version = useOpenProject().settings.minecraftVersion;
   return (
     <SectionCard
-      title={tSchema(def.label as never)}
+      title={tSchema(def.label)}
       badges={
         <>
           <VersionBadges def={def} version={version} />
@@ -72,7 +73,7 @@ export function PropertyCard({ item, def }: { item: Item; def: PropertyDef }) {
           </Tip>
         </>
       }
-      description={tSchema(def.description as never)}
+      description={tSchema(def.description)}
       actions={
         <>
           {def.docs && (

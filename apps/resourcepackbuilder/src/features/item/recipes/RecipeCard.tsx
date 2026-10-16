@@ -11,6 +11,7 @@ import { removeRecipe, updateRecipe } from '../../../commands/items';
 import { NumberInput } from '../../../components/editor';
 import { IssueList } from '../../../components/IssueList';
 import { useOpenProject } from '../../../store/project';
+import { useSchemaText } from '../../../components/useSchemaText';
 import { IngredientList } from './IngredientList';
 import { IngredientRow } from './IngredientRow';
 import { sortRecipeIssues } from './recipeIssues';
@@ -31,7 +32,7 @@ interface RecipeCardProps {
 /** One recipe of the item: its ingredients (by type), result amount and problems. */
 export function RecipeCard({ item, recipe, recipeKey }: RecipeCardProps) {
   const t = useTranslations('item');
-  const tSchema = useTranslations('schema');
+  const tSchema = useSchemaText();
   const project = useOpenProject();
   const info = getRecipeTypeInfo(recipe.type);
   const issues = sortRecipeIssues(validateRecipe(recipe, project, recipeKey), Object.keys(recipe.ingredients));
@@ -39,7 +40,7 @@ export function RecipeCard({ item, recipe, recipeKey }: RecipeCardProps) {
 
   return (
     <SectionCard
-      title={tSchema(info.label as never)}
+      title={tSchema(info.label)}
       badges={
         <Tip label={t('recipes.key')}>
           <Badge variant="outline" className="font-mono">
@@ -49,7 +50,7 @@ export function RecipeCard({ item, recipe, recipeKey }: RecipeCardProps) {
       }
       description={
         <>
-          {tSchema(info.description as never)} {t('recipes.file')}{' '}
+          {tSchema(info.description)} {t('recipes.file')}{' '}
           <span className="font-mono break-all">{recipeFilePath(project, recipe.type)}</span>
         </>
       }

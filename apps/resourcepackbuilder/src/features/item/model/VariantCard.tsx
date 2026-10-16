@@ -11,6 +11,7 @@ import { Button } from '@resourcepackbuilder/ui/components/button';
 import { removeVariant, setVariantModels, updateItem } from '../../../commands/items';
 import { moveInArray, removeAt, replaceAt } from '../../../components/editor';
 import { MODEL_ACCEPT } from '../../../components/modelFiles';
+import { useSchemaText } from '../../../components/useSchemaText';
 import { useModelImport } from './useModelImport';
 import { VariantModelRow } from './VariantModelRow';
 
@@ -81,7 +82,7 @@ interface VariantCardProps {
 /** One variant of the item with its models (one, or an ordered list) and a drop zone for more. */
 export function VariantCard({ item, def, removable = true }: VariantCardProps) {
   const t = useTranslations('item');
-  const tSchema = useTranslations('schema');
+  const tSchema = useSchemaText();
   const { importModels } = useModelImport();
   const models = item.variants?.[def.slot] ?? [];
   const setModels = (next: ImportedModel[]) => setVariantModels(item.id, def.slot, next);
@@ -100,9 +101,9 @@ export function VariantCard({ item, def, removable = true }: VariantCardProps) {
 
   return (
     <SectionCard
-      title={tSchema(def.label as never)}
+      title={tSchema(def.label)}
       badges={<VariantKindBadge def={def} />}
-      description={tSchema(def.description as never)}
+      description={tSchema(def.description)}
       actions={
         removable && (
           <IconButton label={t('variants.remove')} variant="ghost-destructive" onClick={() => removeVariant(item.id, def.slot)}>
@@ -115,7 +116,7 @@ export function VariantCard({ item, def, removable = true }: VariantCardProps) {
         {def.materials && <MaterialAlert item={item} materials={def.materials} />}
         {def.hint && (
           <Alert variant="info">
-            <AlertDescription>{tSchema(def.hint as never)}</AlertDescription>
+            <AlertDescription>{tSchema(def.hint)}</AlertDescription>
           </Alert>
         )}
         {models.length > 0 && (

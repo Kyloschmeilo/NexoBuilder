@@ -26,11 +26,9 @@ interface CategoryPickerProps {
 
 export function CategoryPicker({ summary, categories, onCategoriesChange, mode, onModeChange }: CategoryPickerProps) {
   const t = useTranslations('dialogs.pasteConfig');
-  const tSchema = useTranslations('schema');
-  const schemaText = useSchemaText();
+  const tSchema = useSchemaText();
   const id = useId();
-  // Summary keys are schema keys from core data at runtime, so they cannot be typed as literal keys here.
-  const entryText = (entry: SummaryEntry) => ('text' in entry ? entry.text : tSchema(entry.key as never, entry.params as never));
+  const entryText = (entry: SummaryEntry) => ('text' in entry ? entry.text : tSchema(entry.key, entry.params));
 
   const toggle = (category: CopyCategory) => {
     const next = new Set(categories);
@@ -51,7 +49,7 @@ export function CategoryPicker({ summary, categories, onCategoriesChange, mode, 
               <Checkbox id={checkboxId} checked={categories.has(category.id)} onCheckedChange={() => toggle(category.id)} />
               <FieldContent>
                 <FieldLabel htmlFor={checkboxId} className="font-normal">
-                  {schemaText(category.label)}
+                  {tSchema(category.label)}
                   <span className="font-mono text-xs text-muted-foreground">{entries.length > 0 ? entries.length : '–'}</span>
                 </FieldLabel>
                 <FieldDescription className="text-xs break-words">
