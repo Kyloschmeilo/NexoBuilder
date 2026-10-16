@@ -6,7 +6,7 @@ import { soundKey, type Sound } from '@resourcepackbuilder/core/nexo/sounds/mode
 import { Badge } from '@resourcepackbuilder/ui/components/badge';
 import { Input } from '@resourcepackbuilder/ui/components/input';
 import { AutoGrid } from '@resourcepackbuilder/ui';
-import { deleteSound, setSoundJukebox, updateSound } from '../../commands/media';
+import { setSoundJukebox, updateSound } from '../../commands/media';
 import { NumberInput } from '../../components/editor';
 import { CheckboxField } from '../../components/CheckboxField';
 import { FormField } from '../../components/FormField';
@@ -14,12 +14,14 @@ import { IssueList } from '../../components/IssueList';
 import { useOpenProject } from '../../store/project';
 import { MediaCard } from '../media/MediaCard';
 import { NexoKey } from '../media/NexoKey';
+import { useMediaActions } from '../media/useMediaActions';
 import { JukeboxFields } from './JukeboxFields';
 import { SoundFileList } from './SoundFileList';
 
 export function SoundCard({ sound, plan }: { sound: Sound; plan: ExportPlan | null }) {
   const t = useTranslations('media.sounds');
   const tShared = useTranslations('media.shared');
+  const media = useMediaActions();
   const project = useOpenProject();
   const update = (recipe: (draft: Sound) => void, historyKey?: string) => updateSound(sound.id, recipe, historyKey);
   const issues = plan ? issuesFor(plan.issues, { kind: 'sound', id: sound.id }) : [];
@@ -31,7 +33,7 @@ export function SoundCard({ sound, plan }: { sound: Sound; plan: ExportPlan | nu
       usage={soundKey(project, sound)}
       copyLabel={tShared('copyId')}
       deleteLabel={t('delete')}
-      onDelete={() => deleteSound(sound.id)}
+      onDelete={() => void media.removeSound(sound)}
     >
       <AutoGrid>
         <FormField label={<NexoKey>ID</NexoKey>} help={t('idHelp')}>

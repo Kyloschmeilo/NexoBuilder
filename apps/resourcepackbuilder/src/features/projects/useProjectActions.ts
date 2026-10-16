@@ -41,11 +41,21 @@ export function useProjectActions() {
       }
     },
 
-    async remove(id: string) {
+    /** Asks, then deletes the stored project; resolves with whether it was deleted. */
+    async remove(project: { id: string; name: string }): Promise<boolean> {
+      const confirmed = await confirm({
+        title: tProjectList('deleteTitle'),
+        message: tProjectList('deleteMessage', { name: project.name }),
+        confirmLabel: tProjectList('deleteConfirm'),
+        destructive: true,
+      });
+      if (!confirmed) return false;
       try {
-        await deleteStoredProject(services, id);
+        await deleteStoredProject(services, project.id);
+        return true;
       } catch (err) {
         report(err);
+        return false;
       }
     },
 

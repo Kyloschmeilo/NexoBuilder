@@ -2,7 +2,8 @@
   "shared": {
     "copyId": "Copy ID",
     "replaceImage": "Replace image",
-    "optional": "optional"
+    "optional": "optional",
+    "deleteMessage": "“{name}” will be deleted."
   },
   "sounds": {
     "title": "Sounds",
@@ -30,7 +31,8 @@
     "rangeHelp": "Hearing range in blocks (optional)",
     "createDisc": "Create music disc item",
     "createDiscHint": "A new item with the “Jukebox Playable” component for this song.",
-    "discCreated": "Music disc item created – you can still add a model or texture."
+    "discCreated": "Music disc item created – you can still add a model or texture.",
+    "deleteTitle": "Delete sound?"
   },
   "paintings": {
     "title": "Paintings",
@@ -54,7 +56,8 @@
     "animatedHint": "(frames stacked vertically)",
     "createItem": "Create item for hanging",
     "createItemHint": "An item with material PAINTING that hangs exactly this painting.",
-    "itemCreated": "Painting item created."
+    "itemCreated": "Painting item created.",
+    "deleteTitle": "Delete painting?"
   },
   "glyphs": {
     "title": "Glyphs",
@@ -92,7 +95,8 @@
     "sizeHelp": "Height = size in game (chat text is 8 high). Ascent shifts the glyph up and must not be larger than the height. Split images over 256×256 into rows/columns.",
     "largeNoPreview": "Large glyph (e.g. GUI) – no chat preview.",
     "previewBefore": "Hello",
-    "previewAfter": "world"
+    "previewAfter": "world",
+    "deleteTitle": "Delete glyph?"
   },
   "testServer": {
     "title": "Test server",

@@ -1,14 +1,14 @@
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useState, type ReactNode } from 'react';
 import { Package, Trash2 } from 'lucide-react';
 import { useFormatter, useTranslations } from 'next-intl';
 import { IconButton } from '@resourcepackbuilder/ui';
 import { Badge } from '@resourcepackbuilder/ui/components/badge';
+import { Empty, EmptyDescription } from '@resourcepackbuilder/ui/components/empty';
 import { Item, ItemActions, ItemContent, ItemDescription, ItemMedia, ItemTitle } from '@resourcepackbuilder/ui/components/item';
 import { Spinner } from '@resourcepackbuilder/ui/components/spinner';
 import { richTags } from '../../i18n/richTags';
 import { useServices } from '../../services/servicesContext';
 import type { ProjectSummary } from '../../services/projectRepository';
-import { confirm } from '../../store/dialogs';
 import { useProjectStore } from '../../store/project';
 import { useProjectActions } from './useProjectActions';
 
@@ -59,6 +59,15 @@ function ProjectRow({ project, isOpen, isShared, onOpen, onDelete }: ProjectRowP
   );
 }
 
+/** Shown instead of the list (loading, nothing saved, no storage). */
+function ListNotice({ children }: { children: ReactNode }) {
+  return (
+    <Empty className="p-4">
+      <EmptyDescription className="flex items-center gap-2 text-xs">{children}</EmptyDescription>
+    </Empty>
+  );
+}
+
 /** The projects saved in this browser; `onOpened` runs after one was opened. */
 export function ProjectList({ onOpened }: { onOpened?: () => void }) {
   const t = useTranslations('layout.projectList');
@@ -75,30 +84,22 @@ export function ProjectList({ onOpened }: { onOpened?: () => void }) {
   }, [repository]);
   useEffect(refresh, [refresh]);
 
-  if (!repository.available) return <p className="text-xs text-muted-foreground">{t('storageUnavailable')}</p>;
+  if (!repository.available) return <ListNotice>{t('storageUnavailable')}</ListNotice>;
   if (!projects) {
     return (
-      <p className="flex items-center gap-2 text-xs text-muted-foreground">
+      <ListNotice>
         <Spinner /> {tCommon('loading')}
-      </p>
+      </ListNotice>
     );
   }
-  if (projects.length === 0) return <p className="text-xs text-muted-foreground">{t('empty')}</p>;
+  if (projects.length === 0) return <ListNotice>{t('empty')}</ListNotice>;
 
   const open = async (id: string) => {
     await actions.open(id);
     onOpened?.();
   };
   const remove = async (project: ProjectSummary) => {
-    const confirmed = await confirm({
-      title: t('deleteTitle'),
-      message: t('deleteMessage', { name: project.name }),
-      confirmLabel: t('deleteConfirm'),
-      destructive: true,
-    });
-    if (!confirmed) return;
-    await actions.remove(project.id);
-    refresh();
+    if (await actions.remove(project)) refresh();
   };
 
   return (
