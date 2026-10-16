@@ -7,7 +7,7 @@ import { createSound } from '../nexo/sounds/model';
 import { createPainting } from '../nexo/paintings/model';
 import { readShareFolder, SyncEngine, ShareFolderError, type ShareFileInfo, type SyncFs, type SyncState } from './engine';
 import { RECOVERY_FOLDER_ID } from './merge';
-import { entityPath, parseEntityKey, parseEntityPath, PROJECT_FILE, README_FILE } from './format';
+import { entityPath, isShareFilePath, parseEntityKey, parseEntityPath, PROJECT_FILE, README_FILE } from './format';
 
 /** Shared in-memory folder – like a OneDrive folder that both see */
 class MemoryFolder {
@@ -129,6 +129,8 @@ describe('entity keys and paths', () => {
     expect(parseEntityKey('toString:x')).toBeNull();
     expect(parseEntityPath('constructor/x.json')).toBeNull();
     expect(parseEntityPath('items/x (1).json')).toBeNull();
+    expect(isShareFilePath('items/x_1.json')).toBe(true);
+    expect(isShareFilePath('other/x_1.json')).toBe(false);
   });
 });
 

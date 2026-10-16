@@ -74,7 +74,7 @@ export const ENTITY_DIRS: readonly string[] = Object.values(DIRS);
 
 /** Whether `path` (relative, forward slashes) is a file a shared project folder may contain. */
 export function isShareFilePath(path: string): boolean {
-  return path === PROJECT_FILE || path === README_FILE || ENTITY_PATH_PATTERN.test(path);
+  return path === README_FILE || parseEntityPath(path) !== null;
 }
 
 /**
