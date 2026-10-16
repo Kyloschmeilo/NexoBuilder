@@ -1,7 +1,7 @@
 /** Types of the export plan. */
 import type { Issue, IssueContext, IssueLevel, MessageArgs } from '@resourcepackbuilder/utils';
 import type { ImportedModel, JavaModelJson } from '@resourcepackbuilder/minecraft';
-import type { Item, Project } from '@resourcepackbuilder/core/project/types';
+import type { Item, Project } from '@resourcepackbuilder/core/project';
 import type { PackWriter } from './packWriter';
 
 export type ExportMode = 'full' | 'pack' | 'items';

@@ -3,7 +3,7 @@ import { Code } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 import { type ExportPlan, findItemPlan, itemYamlPreview } from '@resourcepackbuilder/export';
 import { issuesFor, type Issue } from '@resourcepackbuilder/utils';
-import type { Project } from '@resourcepackbuilder/core/project/types';
+import type { Project } from '@resourcepackbuilder/core/project';
 import { Tip } from '@resourcepackbuilder/ui';
 import { ScrollArea } from '@resourcepackbuilder/ui/components/scroll-area';
 import { IssueList } from '../components/IssueList';

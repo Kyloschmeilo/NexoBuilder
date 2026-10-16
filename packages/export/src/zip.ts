@@ -3,7 +3,7 @@
  * path preview, so they cannot drift apart.
  */
 import JSZip from 'jszip';
-import type { Project } from '@resourcepackbuilder/core/project/types';
+import type { Project } from '@resourcepackbuilder/core/project';
 import { INSTALL_GUIDE_FILE, installGuide } from './installGuide';
 import { exportPackName, packLocation } from './paths';
 import { buildRootFiles } from './rootFiles';

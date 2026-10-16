@@ -2,7 +2,7 @@
 import { useTranslations } from 'next-intl';
 import { cn } from 'cn';
 import { countSelected, SELECT_ALL, type ExportSelection } from '@resourcepackbuilder/export';
-import { MEDIA_KIND_LIST, MEDIA_KINDS, type MediaKind } from '@resourcepackbuilder/core/project/media/kinds';
+import { MEDIA_KIND_LIST, MEDIA_KINDS, type MediaKind } from '@resourcepackbuilder/core/project';
 import { treeRowSlots } from '@resourcepackbuilder/ui';
 import { Badge } from '@resourcepackbuilder/ui/components/badge';
 import { Spinner } from '@resourcepackbuilder/ui/components/spinner';

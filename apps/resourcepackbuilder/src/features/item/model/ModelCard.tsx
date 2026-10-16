@@ -1,7 +1,7 @@
 import { useTranslations } from 'next-intl';
 import { Box, RefreshCw, Trash2 } from 'lucide-react';
 import { compareVersions, getMcVersion, type ImportedModel } from '@resourcepackbuilder/minecraft';
-import type { Item } from '@resourcepackbuilder/core/project/types';
+import type { Item } from '@resourcepackbuilder/core/project';
 import { issuesFor } from '@resourcepackbuilder/utils';
 import { CollapsibleSection, pickFiles, SectionCard } from '@resourcepackbuilder/ui';
 import { Alert, AlertDescription } from '@resourcepackbuilder/ui/components/alert';

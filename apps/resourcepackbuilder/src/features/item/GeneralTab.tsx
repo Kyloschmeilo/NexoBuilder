@@ -1,8 +1,6 @@
 import { useId } from 'react';
 import { useTranslations } from 'next-intl';
-import type { Item } from '@resourcepackbuilder/core/project/types';
-import { DEFAULT_MATERIAL } from '@resourcepackbuilder/core/project/item';
-import { validateItemId } from '@resourcepackbuilder/core/project/ids';
+import { DEFAULT_MATERIAL, type Item, validateItemId } from '@resourcepackbuilder/core/project';
 import { SectionCard } from '@resourcepackbuilder/ui';
 import { Field, FieldLabel } from '@resourcepackbuilder/ui/components/field';
 import { moveItem, updateItem } from '../../commands/items';

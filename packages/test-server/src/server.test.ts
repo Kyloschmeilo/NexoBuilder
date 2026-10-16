@@ -2,7 +2,7 @@ import JSZip from 'jszip';
 import { describe, expect, it } from 'vitest';
 import { parse } from 'yaml';
 import { NEXO_RELOAD_COMMAND, planExport } from '@resourcepackbuilder/export';
-import { createFolder, createItem, createProject, insertFolder, insertItem } from '@resourcepackbuilder/core/project/factory';
+import { createFolder, createItem, createProject, insertFolder, insertItem } from '@resourcepackbuilder/core/project';
 import { createTextureModel } from '@resourcepackbuilder/minecraft';
 import { makePngDataUrl } from '@resourcepackbuilder/test-utils/png';
 import { consoleCommandText, isNexoReloadCommand, opCommand } from './commands';

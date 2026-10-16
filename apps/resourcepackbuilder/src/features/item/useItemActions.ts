@@ -1,8 +1,7 @@
 /** Item actions offered in the sidebar and the item editor, with their questions and notices. */
 import { useTranslations } from 'next-intl';
-import type { Item } from '@resourcepackbuilder/core/project/types';
-import { itemLabel } from '@resourcepackbuilder/core/project/item';
-import { clipboardLabel } from '@resourcepackbuilder/core/nexo/copyConfig';
+import { type Item, itemLabel } from '@resourcepackbuilder/core/project';
+import { clipboardLabel } from '@resourcepackbuilder/core/nexo';
 import { copyItemProperties } from '../../commands/clipboard';
 import { deleteItem, duplicateItem, setItemModel } from '../../commands/items';
 import { useClipboardStore } from '../../store/clipboard';

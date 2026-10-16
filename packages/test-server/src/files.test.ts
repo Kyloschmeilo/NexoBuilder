@@ -1,11 +1,17 @@
 import { describe, expect, it } from 'vitest';
 import { parse } from 'yaml';
-import { createFolder, createItem, createProject, insertFolder, insertItem } from '@resourcepackbuilder/core/project/factory';
+import {
+  createFolder,
+  createItem,
+  createPainting,
+  createProject,
+  createSound,
+  insertFolder,
+  insertItem,
+} from '@resourcepackbuilder/core/project';
 import { planExport } from '@resourcepackbuilder/export';
 import { nexoFolderFiles, nexoGiveCommand, nexoPackCommand, patchNexoSettings } from './files';
 import { createTextureModel } from '@resourcepackbuilder/minecraft';
-import { createPainting } from '@resourcepackbuilder/core/project/media/painting';
-import { createSound } from '@resourcepackbuilder/core/project/media/sound';
 import { makePngDataUrl } from '@resourcepackbuilder/test-utils/png';
 
 describe('Test server: files for plugins/Nexo', () => {

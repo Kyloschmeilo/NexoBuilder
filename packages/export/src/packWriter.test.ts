@@ -1,6 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { createGlyph } from '@resourcepackbuilder/core/project/media/glyph';
-import { createProject } from '@resourcepackbuilder/core/project/factory';
+import { createGlyph, createProject } from '@resourcepackbuilder/core/project';
 import { makePngDataUrl } from '@resourcepackbuilder/test-utils/png';
 import { PackWriter } from './packWriter';
 import { planExport } from './plan';

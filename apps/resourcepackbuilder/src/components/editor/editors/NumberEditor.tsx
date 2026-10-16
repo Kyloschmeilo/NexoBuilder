@@ -1,4 +1,4 @@
-import type { NumberField } from '@resourcepackbuilder/core/nexo/form/fields';
+import type { NumberField } from '@resourcepackbuilder/core/nexo';
 import { useSchemaText } from '../../useSchemaText';
 import { FieldShell } from '../FieldShell';
 import { NumberInput } from '../inputs/NumberInput';

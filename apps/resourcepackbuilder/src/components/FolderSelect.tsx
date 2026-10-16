@@ -1,4 +1,4 @@
-import { flattenFolderTree } from '@resourcepackbuilder/core/project/tree';
+import { flattenFolderTree } from '@resourcepackbuilder/core/project';
 import { NativeSelect, NativeSelectOption } from '@resourcepackbuilder/ui/components/native-select';
 import { useOpenProject } from '../store/project';
 

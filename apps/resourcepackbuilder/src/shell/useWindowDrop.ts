@@ -1,6 +1,6 @@
 import { useEffect } from 'react';
 import { useTranslations } from 'next-intl';
-import type { Project } from '@resourcepackbuilder/core/project/types';
+import type { Project } from '@resourcepackbuilder/core/project';
 import { carriesFiles, filesFromDataTransfer } from '@resourcepackbuilder/ui';
 import { newItemDialog } from '../features/newItem/NewItemDialog';
 import { isAnyDialogOpen } from '../store/dialogs';

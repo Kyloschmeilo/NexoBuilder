@@ -1,12 +1,18 @@
 import { describe, expect, it } from 'vitest';
 import { produce } from 'immer';
-import type { Project } from '@resourcepackbuilder/core/project/types';
-import { createFolder, createItem, createProject, insertFolder, insertItem } from '@resourcepackbuilder/core/project/factory';
-import { createGlyph } from '@resourcepackbuilder/core/project/media/glyph';
-import { createSound } from '@resourcepackbuilder/core/project/media/sound';
-import { createPainting } from '@resourcepackbuilder/core/project/media/painting';
+import {
+  createFolder,
+  createGlyph,
+  createItem,
+  createPainting,
+  createProject,
+  createSound,
+  insertFolder,
+  insertItem,
+  type Project,
+  RECOVERY_FOLDER_ID,
+} from '@resourcepackbuilder/core/project';
 import { readShareFolder, SyncEngine, ShareFolderError, type ShareFileInfo, type SyncFs, type SyncState } from './engine';
-import { RECOVERY_FOLDER_ID } from '@resourcepackbuilder/core/project/repair';
 import { entityPath, isShareFilePath, parseEntityKey, parseEntityPath, PROJECT_FILE, README_FILE } from './format';
 
 /** Shared in-memory folder – like a OneDrive folder that both see */

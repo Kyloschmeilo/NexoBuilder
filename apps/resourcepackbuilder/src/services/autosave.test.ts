@@ -1,6 +1,6 @@
 // @vitest-environment jsdom
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
-import { createProject } from '@resourcepackbuilder/core/project/factory';
+import { createProject } from '@resourcepackbuilder/core/project';
 import { mutate, setProject } from '../store/project';
 import { useSaveStore } from './autosaveStore';
 import { createAutosave, type Autosave } from './autosave';

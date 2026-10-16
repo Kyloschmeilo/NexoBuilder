@@ -1,15 +1,21 @@
 import { describe, expect, it } from 'vitest';
 import JSZip from 'jszip';
-import { createFolder, createItem, createProject, insertFolder, insertItem } from '@resourcepackbuilder/core/project/factory';
+import {
+  createFolder,
+  createGlyph,
+  createItem,
+  createProject,
+  insertFolder,
+  insertItem,
+  type Project,
+} from '@resourcepackbuilder/core/project';
 import { createTextureModel } from '@resourcepackbuilder/minecraft';
-import { createGlyph } from '@resourcepackbuilder/core/project/media/glyph';
 import { makePngDataUrl } from '@resourcepackbuilder/test-utils/png';
 import { planExport } from './plan';
 import { countSelected, planMultiExport, selectFromProject, selectNothing } from './selection';
 import { INSTALL_GUIDE_FILE } from './installGuide';
 import { buildMultiExportZip, listMultiExportPaths } from './zip';
 import { singleExport } from '../test-utils/export';
-import type { Project } from '@resourcepackbuilder/core/project/types';
 
 const PNG16 = makePngDataUrl(16, 16);
 

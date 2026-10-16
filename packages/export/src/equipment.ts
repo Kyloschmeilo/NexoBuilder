@@ -10,10 +10,18 @@ import {
   NAMESPACE_PATTERN,
   validateTexture,
 } from '@resourcepackbuilder/minecraft';
-import { ARMOR_LAYERS, armorTexture, type ArmorGroup, type ItemArmor } from '@resourcepackbuilder/core/project/armor';
-import { resolveAsset } from '@resourcepackbuilder/core/project/assets';
-import type { Item, Project } from '@resourcepackbuilder/core/project/types';
-import { armorLayerFrame, itemFrame, itemTarget } from '@resourcepackbuilder/core/project/issueFrames';
+import {
+  ARMOR_LAYERS,
+  type ArmorGroup,
+  armorLayerFrame,
+  armorTexture,
+  type Item,
+  type ItemArmor,
+  itemFrame,
+  itemTarget,
+  type Project,
+  resolveAsset,
+} from '@resourcepackbuilder/core/project';
 import type { PackWriter } from './packWriter';
 import { equipmentModelFile, equipmentTextureFile } from './paths';
 

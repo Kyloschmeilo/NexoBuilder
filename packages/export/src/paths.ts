@@ -12,9 +12,14 @@
  * automatically in Minecraft's item or block atlas (also from 1.21.11 on with separate atlases).
  */
 import { PACK_NAME_PATTERN } from '@resourcepackbuilder/minecraft';
-import { DEFAULT_PACK_NAME, projectFileName } from '@resourcepackbuilder/core/project/factory';
-import { getFolderSlugs, isBlockItem } from '@resourcepackbuilder/core/project/tree';
-import type { Item, Project } from '@resourcepackbuilder/core/project/types';
+import {
+  DEFAULT_PACK_NAME,
+  getFolderSlugs,
+  isBlockItem,
+  type Item,
+  type Project,
+  projectFileName,
+} from '@resourcepackbuilder/core/project';
 
 /** The Nexo plugin folder on a server; every exported config file is relative to it. */
 export const NEXO_PLUGIN_DIR = 'plugins/Nexo';

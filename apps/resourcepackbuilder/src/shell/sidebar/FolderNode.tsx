@@ -1,8 +1,8 @@
 import { ClipboardPaste, Folder as FolderIcon, FolderOpen, FolderPlus, Pencil, Plus, Trash2 } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 import { cn } from 'cn';
-import { itemIdsInFolder } from '@resourcepackbuilder/core/project/tree';
-import { clipboardLabel } from '@resourcepackbuilder/core/nexo/copyConfig';
+import { itemIdsInFolder } from '@resourcepackbuilder/core/project';
+import { clipboardLabel } from '@resourcepackbuilder/core/nexo';
 import {
   FILES_DRAG_TYPE,
   filesFromDataTransfer,

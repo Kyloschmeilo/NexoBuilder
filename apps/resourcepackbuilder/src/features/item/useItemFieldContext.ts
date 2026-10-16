@@ -1,5 +1,4 @@
-import type { Item } from '@resourcepackbuilder/core/project/types';
-import { resolveAsset } from '@resourcepackbuilder/core/project/assets';
+import { type Item, resolveAsset } from '@resourcepackbuilder/core/project';
 import { addItemAsset } from '../../commands/items';
 import type { FieldContextValue } from '../../components/editor';
 import { useOpenProject } from '../../store/project';

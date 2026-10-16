@@ -29,14 +29,20 @@ import {
   withoutUndefined,
 } from '@resourcepackbuilder/utils';
 import {
+  type Folder,
+  FolderSchema,
+  type Item,
   MEDIA_KIND_LIST,
   MEDIA_KINDS,
-  mediaList,
+  MEDIA_SCHEMAS,
   type MediaEntryByKind,
   type MediaKind,
-} from '@resourcepackbuilder/core/project/media/kinds';
-import { FolderSchema, MEDIA_SCHEMAS, parseItem, settingsSchema } from '@resourcepackbuilder/core/project/schema';
-import type { Folder, Item, Project, ProjectSettings } from '@resourcepackbuilder/core/project/types';
+  mediaList,
+  parseItem,
+  type Project,
+  type ProjectSettings,
+  settingsSchema,
+} from '@resourcepackbuilder/core/project';
 
 export const SHARE_FORMAT = 'resourcepackbuilder-share';
 const SHARE_VERSION = 1;

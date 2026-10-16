@@ -1,8 +1,5 @@
 /** Which files glyphs, sounds and paintings take, and how a picked or dropped file is read for each. */
-import { glyphFileFromDataUrl } from '@resourcepackbuilder/core/project/media/glyph';
-import { pngMediaFile, type MediaFile } from '@resourcepackbuilder/core/project/media/entry';
-import type { MediaKind } from '@resourcepackbuilder/core/project/media/kinds';
-import type { SoundFile } from '@resourcepackbuilder/core/project/media/sound';
+import { glyphFileFromDataUrl, type MediaFile, type MediaKind, pngMediaFile, type SoundFile } from '@resourcepackbuilder/core/project';
 import { PNG_ACCEPT, readAsDataUrl, readPngAsDataUrl } from '@resourcepackbuilder/ui';
 
 /** The stored form of an uploaded file, per kind. */

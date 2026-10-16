@@ -1,6 +1,5 @@
 /** An in-memory {@link ProjectRepository} for tests: it records every save, and `control.failing` makes saves throw. */
-import { summarizeProject } from '@resourcepackbuilder/core/project/summary';
-import type { Project } from '@resourcepackbuilder/core/project/types';
+import { type Project, summarizeProject } from '@resourcepackbuilder/core/project';
 import type { SyncState } from '@resourcepackbuilder/sync';
 import type { ProjectRepository, ShareConfig } from './projectRepository';
 

@@ -10,7 +10,7 @@ import {
   type CopyCategory,
   type ItemConfigClipboard,
   type PasteOptions,
-} from '@resourcepackbuilder/core/nexo/copyConfig';
+} from '@resourcepackbuilder/core/nexo';
 import { Button } from '@resourcepackbuilder/ui/components/button';
 import { createDialogHandle } from '@resourcepackbuilder/ui/components/dialog';
 import { pasteItemProperties } from '../../commands/clipboard';

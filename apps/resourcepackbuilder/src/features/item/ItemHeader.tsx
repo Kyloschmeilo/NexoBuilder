@@ -1,11 +1,9 @@
 import { useTranslations } from 'next-intl';
 import { Box, ClipboardCopy, ClipboardPaste, Copy, FolderInput, Gift, Trash2 } from 'lucide-react';
-import type { Item } from '@resourcepackbuilder/core/project/types';
-import { itemMaterial } from '@resourcepackbuilder/core/project/item';
+import { getFolderPathLabel, type Item, itemMaterial } from '@resourcepackbuilder/core/project';
 import type { Issue } from '@resourcepackbuilder/utils';
-import { getFolderPathLabel } from '@resourcepackbuilder/core/project/tree';
 import { PLAYER_NAME_PATTERN } from '@resourcepackbuilder/test-server';
-import { clipboardLabel } from '@resourcepackbuilder/core/nexo/copyConfig';
+import { clipboardLabel } from '@resourcepackbuilder/core/nexo';
 import { IconButton, PageHeader, Thumb, Tip } from '@resourcepackbuilder/ui';
 import { Badge } from '@resourcepackbuilder/ui/components/badge';
 import { Button } from '@resourcepackbuilder/ui/components/button';

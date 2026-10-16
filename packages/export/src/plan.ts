@@ -7,17 +7,22 @@
  */
 import { getPath, groupBy, inContext, type Issue, type IssueContext, issueReporter } from '@resourcepackbuilder/utils';
 import { buildPackMcmeta } from '@resourcepackbuilder/minecraft';
-import { buildItemConfig } from '@resourcepackbuilder/core/nexo/itemConfig';
-import { itemMaterial } from '@resourcepackbuilder/core/project/item';
-import { buildRecipeFiles } from '@resourcepackbuilder/core/nexo/recipes/files';
-import { validateRecipes } from '@resourcepackbuilder/core/nexo/recipes/validate';
-import { VARIANTS, variantPathSuffix, type VariantSlot } from '@resourcepackbuilder/core/project/variants';
-import { itemsToYaml } from '@resourcepackbuilder/core/nexo/yaml';
-import { getFolderSlugs, getItemsInTreeOrder } from '@resourcepackbuilder/core/project/tree';
-import type { Item, Project } from '@resourcepackbuilder/core/project/types';
-import type { ItemArmor } from '@resourcepackbuilder/core/project/armor';
+import { buildItemConfig, buildRecipeFiles, itemsToYaml, validateRecipes } from '@resourcepackbuilder/core/nexo';
+import {
+  getFolderSlugs,
+  getItemsInTreeOrder,
+  type Item,
+  type ItemArmor,
+  itemFrame,
+  itemMaterial,
+  itemTarget,
+  type Project,
+  variantFrame,
+  variantPathSuffix,
+  VARIANTS,
+  type VariantSlot,
+} from '@resourcepackbuilder/core/project';
 import { collectArmorSets, itemArmor, writeArmorSets } from './equipment';
-import { itemFrame, itemTarget, variantFrame } from '@resourcepackbuilder/core/project/issueFrames';
 import { writeItemModels } from './itemModels';
 import { writeMedia } from './media';
 import { writeModel } from './models';

@@ -1,8 +1,6 @@
 /** Creating, opening, closing, deleting and exchanging whole projects. */
-import { createProject } from '@resourcepackbuilder/core/project/factory';
+import { createProject, parseProjectFile, type Project, PROJECT_FILE_EXTENSION, serializeProject } from '@resourcepackbuilder/core/project';
 import { slugify, uid } from '@resourcepackbuilder/utils';
-import { parseProjectFile, PROJECT_FILE_EXTENSION, serializeProject } from '@resourcepackbuilder/core/project/projectFile';
-import type { Project } from '@resourcepackbuilder/core/project/types';
 import { downloadBytes } from '@resourcepackbuilder/ui';
 import type { AppServices } from '../services/bootstrap';
 import { getProject, setProject } from '../store/project';

@@ -19,9 +19,7 @@ import {
   lenientString,
   type SchemaChecks,
 } from '@resourcepackbuilder/utils';
-import { mediaId, mediaList, type MediaEntry, type MediaKind } from '@resourcepackbuilder/core/project/media/kinds';
-import { itemLabel } from '@resourcepackbuilder/core/project/item';
-import type { Project } from '@resourcepackbuilder/core/project/types';
+import { itemLabel, type MediaEntry, mediaId, type MediaKind, mediaList, type Project } from '@resourcepackbuilder/core/project';
 import {
   changedEntityKeys,
   entityKey,

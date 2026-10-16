@@ -12,8 +12,7 @@ import {
   SELECT_ALL,
   selectNothing,
 } from '@resourcepackbuilder/export';
-import type { Project } from '@resourcepackbuilder/core/project/types';
-import { MEDIA_KIND_LIST, mediaList } from '@resourcepackbuilder/core/project/media/kinds';
+import { MEDIA_KIND_LIST, mediaList, type Project } from '@resourcepackbuilder/core/project';
 import { getMcVersion } from '@resourcepackbuilder/minecraft';
 import { SectionLabel } from '@resourcepackbuilder/ui';
 import { Alert, AlertDescription } from '@resourcepackbuilder/ui/components/alert';

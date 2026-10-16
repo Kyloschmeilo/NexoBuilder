@@ -1,6 +1,17 @@
 /** Creating, changing, moving and deleting items. */
 import { produce } from 'immer';
-import type { ConfigValue, Item } from '@resourcepackbuilder/core/project/types';
+import {
+  type ConfigValue,
+  createRecipe,
+  furnitureStatePath,
+  type Item,
+  type NewItemInput,
+  pruneUnusedAssets,
+  type Recipe,
+  type RecipeType,
+  setPath,
+  type VariantSlot,
+} from '@resourcepackbuilder/core/project';
 import {
   createTexture,
   type ImportedModel,
@@ -8,15 +19,9 @@ import {
   type TextureAnimationSettings,
   withTextureAnimation,
 } from '@resourcepackbuilder/minecraft';
-import type { NewItemInput } from '@resourcepackbuilder/core/project/factory';
-import * as operations from '@resourcepackbuilder/core/project/operations';
+import * as operations from '@resourcepackbuilder/core/project';
 import { assetToken, texturePlaceholder, uid } from '@resourcepackbuilder/utils';
-import { pruneUnusedAssets } from '@resourcepackbuilder/core/project/assets';
-import { setPath } from '@resourcepackbuilder/core/project/config';
-import { PROPERTY_BY_ID, type PropertyDef } from '@resourcepackbuilder/core/nexo/form/schema';
-import { setPropertyValue } from '@resourcepackbuilder/core/nexo/form/properties';
-import { furnitureStatePath, type VariantSlot } from '@resourcepackbuilder/core/project/variants';
-import { createRecipe, type Recipe, type RecipeType } from '@resourcepackbuilder/core/project/recipes/model';
+import { PROPERTY_BY_ID, type PropertyDef, setPropertyValue } from '@resourcepackbuilder/core/nexo';
 import { getProject, mutate } from '../store/project';
 import { select, setExpanded } from '../store/ui';
 

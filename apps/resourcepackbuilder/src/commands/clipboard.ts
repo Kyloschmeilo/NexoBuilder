@@ -1,5 +1,5 @@
 /** Copying item properties and pasting them into other items. */
-import { copyItemConfig, pasteItemConfig, type ItemConfigClipboard, type PasteOptions } from '@resourcepackbuilder/core/nexo/copyConfig';
+import { copyItemConfig, pasteItemConfig, type ItemConfigClipboard, type PasteOptions } from '@resourcepackbuilder/core/nexo';
 import { useClipboardStore } from '../store/clipboard';
 import { getProject, mutate } from '../store/project';
 

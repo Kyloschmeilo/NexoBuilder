@@ -1,6 +1,5 @@
 import { useTranslations } from 'next-intl';
-import { DEFAULT_FONT_ASCENT, type Glyph } from '@resourcepackbuilder/core/project/media/glyph';
-import type { MediaFile } from '@resourcepackbuilder/core/project/media/entry';
+import { DEFAULT_FONT_ASCENT, type Glyph, type MediaFile } from '@resourcepackbuilder/core/project';
 
 /** Screen pixels per Minecraft pixel in the preview. */
 const PREVIEW_SCALE = 2;

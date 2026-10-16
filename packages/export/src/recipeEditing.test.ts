@@ -1,18 +1,25 @@
 import { describe, expect, it } from 'vitest';
 import { planExport } from './plan';
-import { recipeFrame, recipeIngredientFrame, recipeInputFrame } from '@resourcepackbuilder/core/project/issueFrames';
-import { issuesFor, type Issue, type IssueCode, type IssueContext } from '@resourcepackbuilder/utils';
-import { createFolder, createItem, createProject, insertFolder, insertItem } from '@resourcepackbuilder/core/project/factory';
-import { recipeIssues } from '@resourcepackbuilder/core/nexo/recipes/issues';
-import { createRecipe, emptyIngredient } from '@resourcepackbuilder/core/project/recipes/model';
 import {
   addIngredient,
+  createFolder,
+  createItem,
+  createProject,
+  createRecipe,
+  emptyIngredient,
   ingredientLetters,
+  insertFolder,
+  insertItem,
   nextIngredientLetter,
+  recipeFrame,
+  recipeIngredientFrame,
+  recipeInputFrame,
   removeIngredient,
   withIngredientAmount,
   withIngredientId,
-} from '@resourcepackbuilder/core/project/recipes/operations';
+} from '@resourcepackbuilder/core/project';
+import { issuesFor, type Issue, type IssueCode, type IssueContext } from '@resourcepackbuilder/utils';
+import { recipeIssues } from '@resourcepackbuilder/core/nexo';
 
 const issue = (code: IssueCode, context?: Issue['context']): Issue => ({ level: 'error', code, context });
 const itemFrame: IssueContext = { code: 'context.item', args: { item: 'Ruby' } };

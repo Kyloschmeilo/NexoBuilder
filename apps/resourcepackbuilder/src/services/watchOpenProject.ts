@@ -3,7 +3,7 @@
  * "changes settled" and the page being closed – the one subscription pattern autosave, share sync and test-server sync
  * share.
  */
-import type { Project } from '@resourcepackbuilder/core/project/types';
+import type { Project } from '@resourcepackbuilder/core/project';
 import { useProjectStore } from '../store/project';
 
 export interface WatchOpenProjectOptions {

@@ -3,11 +3,17 @@ import { useState, type ReactNode } from 'react';
 import { useTranslations } from 'next-intl';
 import { Folder as FolderIcon, Frame, Music, Smile, type LucideIcon } from 'lucide-react';
 import { cn } from 'cn';
-import type { Project } from '@resourcepackbuilder/core/project/types';
-import { itemLabel } from '@resourcepackbuilder/core/project/item';
-import { glyphTag } from '@resourcepackbuilder/core/project/media/glyph';
-import { MEDIA_KIND_LIST, MEDIA_KINDS, mediaId, mediaList, type MediaKind } from '@resourcepackbuilder/core/project/media/kinds';
-import { itemIdsInFolder } from '@resourcepackbuilder/core/project/tree';
+import {
+  glyphTag,
+  itemIdsInFolder,
+  itemLabel,
+  MEDIA_KIND_LIST,
+  MEDIA_KINDS,
+  mediaId,
+  type MediaKind,
+  mediaList,
+  type Project,
+} from '@resourcepackbuilder/core/project';
 import {
   selectionState,
   setItemsSelected,

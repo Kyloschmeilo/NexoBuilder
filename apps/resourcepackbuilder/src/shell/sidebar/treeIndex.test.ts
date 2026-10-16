@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { createFolder, createItem, createProject, insertFolder, insertItem } from '@resourcepackbuilder/core/project/factory';
+import { createFolder, createItem, createProject, insertFolder, insertItem } from '@resourcepackbuilder/core/project';
 import type { Issue } from '@resourcepackbuilder/utils';
 import { countItemsPerFolder, foldersContaining, levelsByTarget, searchItems, worstLevel } from './treeIndex';
 

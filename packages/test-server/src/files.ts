@@ -4,7 +4,7 @@
  */
 import { Document, isMap, parseDocument } from 'yaml';
 import { type ExportPlan, type FileContent, nexoFolderEntries } from '@resourcepackbuilder/export';
-import type { Project } from '@resourcepackbuilder/core/project/types';
+import type { Project } from '@resourcepackbuilder/core/project';
 import { assertCommandArg, assertPlayerName } from './commands';
 
 export interface ServerFile {

@@ -1,14 +1,13 @@
 import { describe, expect, it } from 'vitest';
 import JSZip from 'jszip';
 import { parse } from 'yaml';
-import { createFolder, createItem, createProject, insertFolder, insertItem } from '@resourcepackbuilder/core/project/factory';
+import { createFolder, createItem, createProject, insertFolder, insertItem, type Project } from '@resourcepackbuilder/core/project';
 import { convertBBModel, createTexture, createTextureModel } from '@resourcepackbuilder/minecraft';
 import { planExport } from './plan';
 import { INSTALL_GUIDE_FILE } from './installGuide';
 import { buildMultiExportZip } from './zip';
 import { singleExport } from '../test-utils/export';
 import { makePngDataUrl } from '@resourcepackbuilder/test-utils/png';
-import type { Project } from '@resourcepackbuilder/core/project/types';
 
 const PNG16 = makePngDataUrl(16, 16);
 const PNG64x32 = makePngDataUrl(64, 32);

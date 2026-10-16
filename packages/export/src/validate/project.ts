@@ -1,10 +1,7 @@
 /** Project-wide checks: namespace, pack settings, folder names and item IDs. */
 import { isPngDataUrl, itemIdSyntaxError, namespaceError, PACK_NAME_PATTERN } from '@resourcepackbuilder/minecraft';
 import { createIssue, issueReporter, type Issue, type IssueCode, type MessageArgs } from '@resourcepackbuilder/utils';
-import { itemFrame, itemTarget } from '@resourcepackbuilder/core/project/issueFrames';
-import { itemLabel } from '@resourcepackbuilder/core/project/item';
-import { folderSlug } from '@resourcepackbuilder/core/project/tree';
-import type { Item, Project } from '@resourcepackbuilder/core/project/types';
+import { folderSlug, type Item, itemFrame, itemLabel, itemTarget, type Project } from '@resourcepackbuilder/core/project';
 
 const NAMESPACE_ISSUES = {
   invalid: { level: 'error', code: 'plan.namespaceInvalid' },

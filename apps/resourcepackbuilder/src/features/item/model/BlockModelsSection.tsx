@@ -1,6 +1,5 @@
 import { useTranslations } from 'next-intl';
-import type { Item } from '@resourcepackbuilder/core/project/types';
-import { isStringBlock, STACK_MODELS } from '@resourcepackbuilder/core/project/variants';
+import { isStringBlock, type Item, STACK_MODELS } from '@resourcepackbuilder/core/project';
 import { Section } from '../../../components/Section';
 import { VariantCard } from './VariantCard';
 

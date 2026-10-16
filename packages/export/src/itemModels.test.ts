@@ -1,10 +1,9 @@
 import { describe, expect, it } from 'vitest';
 import { parse } from 'yaml';
-import { createFolder, createItem, createProject, insertFolder, insertItem } from '@resourcepackbuilder/core/project/factory';
+import { createFolder, createItem, createProject, insertFolder, insertItem, type Project } from '@resourcepackbuilder/core/project';
 import { createTextureModel, type ImportedModel } from '@resourcepackbuilder/minecraft';
 import { makePngDataUrl } from '@resourcepackbuilder/test-utils/png';
 import { planExport } from './plan';
-import type { Project } from '@resourcepackbuilder/core/project/types';
 
 const PNG16 = makePngDataUrl(16, 16);
 const model = (name: string): ImportedModel =>

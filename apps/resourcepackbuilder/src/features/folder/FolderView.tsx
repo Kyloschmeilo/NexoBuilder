@@ -1,10 +1,8 @@
 import { Box, FolderOpen, FolderPlus, Pencil, Plus, Trash2 } from 'lucide-react';
 import { useTranslations } from 'next-intl';
-import type { Item as ProjectItem } from '@resourcepackbuilder/core/project/types';
+import { getFolderPathLabel, type Item as ProjectItem, itemLabel } from '@resourcepackbuilder/core/project';
 import { folderYamlFile, nexoPluginPath } from '@resourcepackbuilder/export';
 import { issuesFor } from '@resourcepackbuilder/utils';
-import { itemLabel } from '@resourcepackbuilder/core/project/item';
-import { getFolderPathLabel } from '@resourcepackbuilder/core/project/tree';
 import { AutoGrid, DropZone, IconButton, PageHeader, PageShell, Thumb, Tip } from '@resourcepackbuilder/ui';
 import { Badge } from '@resourcepackbuilder/ui/components/badge';
 import { Button } from '@resourcepackbuilder/ui/components/button';

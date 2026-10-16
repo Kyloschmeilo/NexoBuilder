@@ -1,5 +1,5 @@
 /** The export of a single item as the editor previews it. */
-import { toYaml } from '@resourcepackbuilder/core/nexo/yaml';
+import { toYaml } from '@resourcepackbuilder/core/nexo';
 import type { ExportPlan, ItemPlan } from './types';
 
 /** The planned export of an item, if the plan contains it. */

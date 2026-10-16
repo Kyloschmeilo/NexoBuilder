@@ -1,9 +1,7 @@
 import { useTranslations } from 'next-intl';
 import { ExternalLink, Trash2 } from 'lucide-react';
-import type { Item } from '@resourcepackbuilder/core/project/types';
-import { toConfigValue } from '@resourcepackbuilder/core/project/config';
-import { emptyPropertyValue, getPropertyValue, propertyYamlPath } from '@resourcepackbuilder/core/nexo/form/properties';
-import type { PropertyDef } from '@resourcepackbuilder/core/nexo/form/schema';
+import { type Item, toConfigValue } from '@resourcepackbuilder/core/project';
+import { emptyPropertyValue, getPropertyValue, type PropertyDef, propertyYamlPath } from '@resourcepackbuilder/core/nexo';
 import { versionSupport } from '@resourcepackbuilder/minecraft';
 import { IconButton, SectionCard, Tip } from '@resourcepackbuilder/ui';
 import { Alert, AlertDescription } from '@resourcepackbuilder/ui/components/alert';

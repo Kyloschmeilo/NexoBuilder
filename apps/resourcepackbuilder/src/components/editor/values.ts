@@ -1,5 +1,5 @@
 /** Pure helpers of the field editors: visibility, value shapes and immutable list/object updates. */
-import type { Field } from '@resourcepackbuilder/core/nexo/form/fields';
+import type { Field } from '@resourcepackbuilder/core/nexo';
 import { isPlainObject } from '@resourcepackbuilder/utils';
 
 /** Field types that take the full width of the form grid. */

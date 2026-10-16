@@ -1,6 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { createFolder, createItem, createProject, insertFolder, insertItem } from '@resourcepackbuilder/core/project/factory';
-import { getItemsInTreeOrder } from '@resourcepackbuilder/core/project/tree';
+import { createFolder, createItem, createProject, getItemsInTreeOrder, insertFolder, insertItem } from '@resourcepackbuilder/core/project';
 import { validateItemIds } from './project';
 
 describe('validateItemIds', () => {

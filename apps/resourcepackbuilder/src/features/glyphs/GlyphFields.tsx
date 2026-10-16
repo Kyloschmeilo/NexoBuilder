@@ -1,5 +1,5 @@
 import { useTranslations } from 'next-intl';
-import { CHAT_TEXT_HEIGHT, isMultiBitmap, type Glyph } from '@resourcepackbuilder/core/project/media/glyph';
+import { CHAT_TEXT_HEIGHT, isMultiBitmap, type Glyph } from '@resourcepackbuilder/core/project';
 import { normalizeTypedId } from '@resourcepackbuilder/minecraft';
 import { Input } from '@resourcepackbuilder/ui/components/input';
 import { AutoGrid } from '@resourcepackbuilder/ui';

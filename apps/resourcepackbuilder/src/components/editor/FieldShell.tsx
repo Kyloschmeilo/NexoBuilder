@@ -2,7 +2,7 @@
 import type { ReactNode } from 'react';
 import { useTranslations } from 'next-intl';
 import { cn } from 'cn';
-import { type Field, fieldName } from '@resourcepackbuilder/core/nexo/form/fields';
+import { type Field, fieldName } from '@resourcepackbuilder/core/nexo';
 import { compareVersions } from '@resourcepackbuilder/minecraft';
 import { Tip } from '@resourcepackbuilder/ui';
 import { Badge } from '@resourcepackbuilder/ui/components/badge';

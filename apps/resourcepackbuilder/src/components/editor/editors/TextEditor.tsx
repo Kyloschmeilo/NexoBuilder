@@ -1,4 +1,4 @@
-import { type TextField, validateTextFormat } from '@resourcepackbuilder/core/nexo/form/fields';
+import { type TextField, validateTextFormat } from '@resourcepackbuilder/core/nexo';
 import { Textarea } from '@resourcepackbuilder/ui/components/textarea';
 import { MiniMessageBox } from '../../miniMessage/MiniMessageBox';
 import { MiniMessageLine } from '../../miniMessage/MiniMessageLine';

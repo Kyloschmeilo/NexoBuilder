@@ -2,8 +2,7 @@
 import { useTranslations } from 'next-intl';
 import { Box, Image as ImageIcon, Trash2, TriangleAlert } from 'lucide-react';
 import { getTextureTemplate, type ImportDraft, isPngDataUrl } from '@resourcepackbuilder/minecraft';
-import type { ItemMeta, MetaPatch } from '@resourcepackbuilder/core/project/newItems';
-import type { ItemIdError } from '@resourcepackbuilder/core/project/ids';
+import type { ItemIdError, ItemMeta, MetaPatch } from '@resourcepackbuilder/core/project';
 import { AutoGrid, IconButton, SectionCard } from '@resourcepackbuilder/ui';
 import { Alert, AlertDescription } from '@resourcepackbuilder/ui/components/alert';
 import { ModelPreview } from '@resourcepackbuilder/preview';

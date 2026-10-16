@@ -1,15 +1,17 @@
 /** Glyphs, sounds and paintings: their pack files, plugin files and checks. */
-import { mediaFrame } from '@resourcepackbuilder/core/project/issueFrames';
+import { mediaFrame, mediaKey, type MediaKind, type Project } from '@resourcepackbuilder/core/project';
 import { inContext, type Issue } from '@resourcepackbuilder/utils';
-import { buildGlyphFile, glyphFilePath } from '@resourcepackbuilder/core/nexo/glyphs/files';
-import { validateGlyphs } from '@resourcepackbuilder/core/nexo/glyphs/validate';
-import type { MediaKind } from '@resourcepackbuilder/core/project/media/kinds';
-import { paintingMcmeta, paintingToYaml } from '@resourcepackbuilder/core/nexo/paintings/files';
-import { mediaKey } from '@resourcepackbuilder/core/project/media/entry';
-import { validatePaintings } from '@resourcepackbuilder/core/nexo/paintings/validate';
-import { soundFilePath, soundToYaml } from '@resourcepackbuilder/core/nexo/sounds/files';
-import { validateSounds } from '@resourcepackbuilder/core/nexo/sounds/validate';
-import type { Project } from '@resourcepackbuilder/core/project/types';
+import {
+  buildGlyphFile,
+  glyphFilePath,
+  paintingMcmeta,
+  paintingToYaml,
+  soundFilePath,
+  soundToYaml,
+  validateGlyphs,
+  validatePaintings,
+  validateSounds,
+} from '@resourcepackbuilder/core/nexo';
 import type { PackWriter } from './packWriter';
 import { glyphTextureFile, paintingTextureFile, soundFile } from './paths';
 import type { ExportPlan } from './types';

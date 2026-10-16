@@ -1,7 +1,6 @@
 import { useTranslations } from 'next-intl';
-import type { Item } from '@resourcepackbuilder/core/project/types';
-import { RECIPE_TYPES } from '@resourcepackbuilder/core/project/recipes/model';
-import { recipeKeys } from '@resourcepackbuilder/core/nexo/recipes/files';
+import { type Item, RECIPE_TYPES } from '@resourcepackbuilder/core/project';
+import { recipeKeys } from '@resourcepackbuilder/core/nexo';
 import { NEXO_RELOAD_COMMAND, nexoPluginPath } from '@resourcepackbuilder/export';
 import { Alert, AlertDescription } from '@resourcepackbuilder/ui/components/alert';
 import { richTags } from '../../../i18n/richTags';

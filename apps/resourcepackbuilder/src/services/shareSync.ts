@@ -6,8 +6,7 @@
  *   reliably): every few seconds without a working file watcher, rarely while it works.
  */
 import { deepClone } from '@resourcepackbuilder/utils';
-import { migrateProject } from '@resourcepackbuilder/core/project/migrate';
-import type { Project } from '@resourcepackbuilder/core/project/types';
+import { migrateProject, type Project } from '@resourcepackbuilder/core/project';
 import {
   README_FILE,
   README_TEXT,

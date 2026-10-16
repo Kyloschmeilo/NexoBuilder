@@ -1,9 +1,8 @@
 import { useState } from 'react';
 import { useTranslations } from 'next-intl';
 import { Plus } from 'lucide-react';
-import type { Item } from '@resourcepackbuilder/core/project/types';
-import { availableProperties, propertyConflict, propertyYamlPath } from '@resourcepackbuilder/core/nexo/form/properties';
-import type { PropertyGroup } from '@resourcepackbuilder/core/nexo/form/schema';
+import type { Item } from '@resourcepackbuilder/core/project';
+import { availableProperties, propertyConflict, type PropertyGroup, propertyYamlPath } from '@resourcepackbuilder/core/nexo';
 import { Button } from '@resourcepackbuilder/ui/components/button';
 import { Command, CommandEmpty, CommandInput, CommandItem, CommandList } from '@resourcepackbuilder/ui/components/command';
 import { Popover, PopoverContent, PopoverTrigger } from '@resourcepackbuilder/ui/components/popover';

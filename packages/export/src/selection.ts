@@ -7,16 +7,16 @@
  */
 import { inContext, issueReporter, type Issue, type IssueCode, type MessageArgs } from '@resourcepackbuilder/utils';
 import {
+  mapMediaLists,
   MEDIA_KIND_LIST,
   MEDIA_KINDS,
-  mapMediaLists,
   mediaGlobalId,
-  mediaList,
   type MediaKind,
-} from '@resourcepackbuilder/core/project/media/kinds';
-import type { Project } from '@resourcepackbuilder/core/project/types';
-import { projectFrame } from '@resourcepackbuilder/core/project/issueFrames';
-import { projectFileName } from '@resourcepackbuilder/core/project/factory';
+  mediaList,
+  type Project,
+  projectFileName,
+  projectFrame,
+} from '@resourcepackbuilder/core/project';
 import { planExport } from './plan';
 import type { ExportPlan, PlanOptions } from './types';
 

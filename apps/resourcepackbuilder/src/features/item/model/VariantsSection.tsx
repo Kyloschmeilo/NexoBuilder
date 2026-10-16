@@ -1,6 +1,5 @@
 import { useTranslations } from 'next-intl';
-import type { Item } from '@resourcepackbuilder/core/project/types';
-import { VARIANTS } from '@resourcepackbuilder/core/project/variants';
+import { type Item, VARIANTS } from '@resourcepackbuilder/core/project';
 import { setVariantModels } from '../../../commands/items';
 import { AddMenuButton } from '../../../components/AddMenuButton';
 import { Section } from '../../../components/Section';

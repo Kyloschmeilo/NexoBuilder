@@ -4,24 +4,24 @@
  * as well as stack stages of blocks. The matching values in the item configuration are returned too.
  */
 import { compareVersions, FEATURE_VERSIONS, formatResourceLocation } from '@resourcepackbuilder/minecraft';
-import type { ConfigAddition } from '@resourcepackbuilder/core/nexo/itemConfig';
+import type { ConfigAddition } from '@resourcepackbuilder/core/nexo';
 import {
   CONNECT_SLOTS,
   customBlockConfig,
-  furnitureConfig,
   FURNITURE_MODEL_SLOTS,
+  furnitureConfig,
   isStringBlock,
   PLACEMENT_SLOTS,
   STACK_MODELS,
   STACKABLE_PATH,
   stateDef,
-  VARIANTS,
   type StateSlot,
   type VariantDef,
+  variantFrame,
+  VARIANTS,
   type VariantSlot,
-} from '@resourcepackbuilder/core/project/variants';
+} from '@resourcepackbuilder/core/project';
 import { getPath, isPlainObject } from '@resourcepackbuilder/utils';
-import { variantFrame } from '@resourcepackbuilder/core/project/issueFrames';
 import { itemModelDefinitionFile } from './paths';
 import type { ItemExport } from './types';
 

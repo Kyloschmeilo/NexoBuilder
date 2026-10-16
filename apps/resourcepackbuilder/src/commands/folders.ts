@@ -1,6 +1,6 @@
 /** Creating, renaming, moving and deleting folders. */
-import { createFolder, insertFolder } from '@resourcepackbuilder/core/project/factory';
-import * as operations from '@resourcepackbuilder/core/project/operations';
+import { createFolder, insertFolder } from '@resourcepackbuilder/core/project';
+import * as operations from '@resourcepackbuilder/core/project';
 import { mutate } from '../store/project';
 import { select, setExpanded } from '../store/ui';
 

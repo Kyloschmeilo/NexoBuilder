@@ -7,7 +7,7 @@
  * project saves.
  */
 import type { SyncState } from '@resourcepackbuilder/sync';
-import type { Project } from '@resourcepackbuilder/core/project/types';
+import type { Project } from '@resourcepackbuilder/core/project';
 import { useProjectStore } from '../store/project';
 import { useSaveStore } from './autosaveStore';
 import type { ProjectRepository } from './projectRepository';

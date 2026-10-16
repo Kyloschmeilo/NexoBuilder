@@ -1,15 +1,16 @@
 import { useMemo } from 'react';
 import { useTranslations } from 'next-intl';
-import type { Project } from '@resourcepackbuilder/core/project/types';
 import {
   INGREDIENT_SOURCES,
-  MAX_INGREDIENT_AMOUNT,
   type IngredientSource,
+  itemLabel,
+  MAX_INGREDIENT_AMOUNT,
+  type Project,
   type RecipeIngredient,
-} from '@resourcepackbuilder/core/project/recipes/model';
-import { withIngredientAmount, withIngredientId } from '@resourcepackbuilder/core/project/recipes/operations';
-import { CRAFTING_MATERIALS, ITEM_TAGS } from '@resourcepackbuilder/core/nexo/form/options';
-import { itemLabel } from '@resourcepackbuilder/core/project/item';
+  withIngredientAmount,
+  withIngredientId,
+} from '@resourcepackbuilder/core/project';
+import { CRAFTING_MATERIALS, ITEM_TAGS } from '@resourcepackbuilder/core/nexo';
 import { NativeSelect, NativeSelectOption } from '@resourcepackbuilder/ui/components/native-select';
 import { NumberInput, TextInput, type LiteralChoice } from '../../../components/editor';
 import { useOpenProject } from '../../../store/project';

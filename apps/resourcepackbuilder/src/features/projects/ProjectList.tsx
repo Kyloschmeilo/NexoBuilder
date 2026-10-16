@@ -8,7 +8,7 @@ import { Item, ItemActions, ItemContent, ItemDescription, ItemMedia, ItemTitle }
 import { Spinner } from '@resourcepackbuilder/ui/components/spinner';
 import { richTags } from '../../i18n/richTags';
 import { useServices } from '../../services/bootstrap';
-import type { ProjectSummary } from '@resourcepackbuilder/core/project/summary';
+import type { ProjectSummary } from '@resourcepackbuilder/core/project';
 import { useProjectStore } from '../../store/project';
 import { useProjectActions } from './useProjectActions';
 

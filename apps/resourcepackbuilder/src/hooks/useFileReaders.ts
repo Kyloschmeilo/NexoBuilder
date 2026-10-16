@@ -1,7 +1,6 @@
 /** Readers for picked or dropped files that report unsupported files with a toast. */
 import { useTranslations } from 'next-intl';
-import type { MediaFile } from '@resourcepackbuilder/core/project/media/entry';
-import type { MediaKind } from '@resourcepackbuilder/core/project/media/kinds';
+import type { MediaFile, MediaKind } from '@resourcepackbuilder/core/project';
 import { fileStem, pickFiles, PNG_ACCEPT } from '@resourcepackbuilder/ui';
 import { MEDIA_FILES, readPngFile, type MediaFileByKind } from '../lib/mediaFiles';
 import { notify } from '../shell/notify';

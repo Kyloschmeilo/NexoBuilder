@@ -1,13 +1,8 @@
 /** Checks of an item's configuration (properties, field formats, custom block, stack size). */
 import { getPath, isPlainObject, labelArg, MODEL_TOKEN, schemaKey } from '@resourcepackbuilder/utils';
 import { versionSupport } from '@resourcepackbuilder/minecraft';
-import { slotForMaterial } from '@resourcepackbuilder/core/project/armor';
-import { checkFieldValue } from '@resourcepackbuilder/core/nexo/form/fieldSchema';
-import { getPropertyValue } from '@resourcepackbuilder/core/nexo/form/properties';
-import { itemLabel, MATERIAL_PATTERN } from '@resourcepackbuilder/core/project/item';
-import { PROPERTIES } from '@resourcepackbuilder/core/nexo/form/schema';
-import type { Item } from '@resourcepackbuilder/core/project/types';
-import { propertyFrame } from '@resourcepackbuilder/core/project/issueFrames';
+import { type Item, itemLabel, MATERIAL_PATTERN, propertyFrame, slotForMaterial } from '@resourcepackbuilder/core/project';
+import { checkFieldValue, getPropertyValue, PROPERTIES } from '@resourcepackbuilder/core/nexo';
 import type { ItemExport } from '../types';
 
 /** Highest custom_variation per block type (Nexo limits) */

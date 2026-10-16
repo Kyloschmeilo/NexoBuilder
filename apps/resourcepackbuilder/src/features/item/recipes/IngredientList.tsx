@@ -1,13 +1,7 @@
 import { useTranslations } from 'next-intl';
 import { Plus, Trash2 } from 'lucide-react';
 import type { Issue } from '@resourcepackbuilder/utils';
-import type { Recipe } from '@resourcepackbuilder/core/project/recipes/model';
-import {
-  addIngredient,
-  ingredientLetters,
-  nextIngredientLetter,
-  removeIngredient,
-} from '@resourcepackbuilder/core/project/recipes/operations';
+import { addIngredient, ingredientLetters, nextIngredientLetter, type Recipe, removeIngredient } from '@resourcepackbuilder/core/project';
 import { IconButton } from '@resourcepackbuilder/ui';
 import { Badge } from '@resourcepackbuilder/ui/components/badge';
 import { Button } from '@resourcepackbuilder/ui/components/button';

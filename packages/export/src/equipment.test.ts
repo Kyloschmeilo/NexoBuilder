@@ -1,11 +1,17 @@
 import { describe, expect, it } from 'vitest';
 import { parse } from 'yaml';
-import { createFolder, createItem, createProject, insertFolder, insertItem } from '@resourcepackbuilder/core/project/factory';
+import {
+  type ArmorSettings,
+  createFolder,
+  createItem,
+  createProject,
+  insertFolder,
+  insertItem,
+  type Project,
+} from '@resourcepackbuilder/core/project';
 import { createTexture } from '@resourcepackbuilder/minecraft';
 import { makePngDataUrl } from '@resourcepackbuilder/test-utils/png';
 import { planExport } from './plan';
-import type { ArmorSettings } from '@resourcepackbuilder/core/project/armor';
-import type { Project } from '@resourcepackbuilder/core/project/types';
 
 const PNG = makePngDataUrl(64, 32);
 

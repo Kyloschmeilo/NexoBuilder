@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import JSZip from 'jszip';
 import { parse } from 'yaml';
-import { createProject } from '@resourcepackbuilder/core/project/factory';
+import { createPainting, createProject, createSound, type Project } from '@resourcepackbuilder/core/project';
 import { INSTALL_GUIDE_FILE } from './installGuide';
 import { planExport } from './plan';
 import { planMultiExport } from './selection';
@@ -9,9 +9,6 @@ import { buildMultiExportZip } from './zip';
 import { singleExport } from '../test-utils/export';
 import { makePngDataUrl } from '@resourcepackbuilder/test-utils/png';
 import type { Issue } from '@resourcepackbuilder/utils';
-import type { Project } from '@resourcepackbuilder/core/project/types';
-import { createPainting } from '@resourcepackbuilder/core/project/media/painting';
-import { createSound } from '@resourcepackbuilder/core/project/media/sound';
 
 /** The context codes of an issue (outermost first), then its own code. */
 const issueCodes = (issue: Issue): string[] => [...(issue.context ?? []).map((c) => c.code), issue.code];

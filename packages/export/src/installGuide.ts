@@ -1,5 +1,5 @@
 /** The installation guide put into a full export (English – the exported pack is not localised). */
-import type { Project } from '@resourcepackbuilder/core/project/types';
+import type { Project } from '@resourcepackbuilder/core/project';
 import { NEXO_PLUGIN_DIR, packLocation } from './paths';
 import { PAINTINGS_FILE, SOUNDS_FILE } from './rootFiles';
 import type { MultiExportPlan } from './selection';

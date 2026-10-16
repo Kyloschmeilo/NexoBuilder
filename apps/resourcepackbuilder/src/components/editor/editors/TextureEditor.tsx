@@ -1,5 +1,5 @@
 import { useTranslations } from 'next-intl';
-import type { TextureField } from '@resourcepackbuilder/core/nexo/form/fields';
+import type { TextureField } from '@resourcepackbuilder/core/nexo';
 import { pickFiles, PNG_ACCEPT } from '@resourcepackbuilder/ui';
 import { ImageUploadField } from '../../ImageUploadField';
 import { useFieldContext } from '../fieldContext';

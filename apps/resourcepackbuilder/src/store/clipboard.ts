@@ -3,6 +3,6 @@
  * other projects.
  */
 import { create } from 'zustand';
-import type { ItemConfigClipboard } from '@resourcepackbuilder/core/nexo/copyConfig';
+import type { ItemConfigClipboard } from '@resourcepackbuilder/core/nexo';
 
 export const useClipboardStore = create<{ clip: ItemConfigClipboard | null }>(() => ({ clip: null }));
