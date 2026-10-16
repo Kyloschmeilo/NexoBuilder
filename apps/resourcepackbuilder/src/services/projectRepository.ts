@@ -7,7 +7,14 @@ import { z } from 'zod';
 import { lenientEnum, lenientList, lenientNumber, lenientString, plainObject, uid } from '@resourcepackbuilder/utils';
 import { SyncStateSchema, type SyncState } from '@resourcepackbuilder/sync';
 import { AppError } from '../i18n/errors';
-import { DEFAULT_PACK_TARGET, migrateProject, PACK_TARGETS, type Project, type ProjectSummary, summarizeProject } from '@resourcepackbuilder/core/project';
+import {
+  DEFAULT_PACK_TARGET,
+  migrateProject,
+  PACK_TARGETS,
+  type Project,
+  type ProjectSummary,
+  summarizeProject,
+} from '@resourcepackbuilder/core/project';
 
 /** Where a shared project lives and under which name this user edits it. */
 export interface ShareConfig {

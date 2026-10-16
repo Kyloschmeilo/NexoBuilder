@@ -66,10 +66,7 @@ describe('migrateProject', () => {
   });
 
   it('keeps stored duplicate item IDs unchanged', () => {
-    const project = migrateProject(
-      { name: 'Alt', items: { i_1: { itemId: 'x', createdAt: 1 }, i_2: { itemId: 'x', createdAt: 2 } } },
-      5,
-    );
+    const project = migrateProject({ name: 'Alt', items: { i_1: { itemId: 'x', createdAt: 1 }, i_2: { itemId: 'x', createdAt: 2 } } }, 5);
     expect(project.items.i_1.itemId).toBe('x');
     expect(project.items.i_2.itemId).toBe('x');
   });

@@ -34,7 +34,13 @@ import {
   uniqueId,
   withoutUndefined,
 } from '@resourcepackbuilder/utils';
-import { type ImportedModel, itemIdSyntaxError, JavaModelSchema, type ModelTexture, ModelTextureSchema } from '@resourcepackbuilder/minecraft';
+import {
+  type ImportedModel,
+  itemIdSyntaxError,
+  JavaModelSchema,
+  type ModelTexture,
+  ModelTextureSchema,
+} from '@resourcepackbuilder/minecraft';
 import { toArmorSettings, type ArmorSettings } from './armor';
 import { CHAT_TEXT_HEIGHT, DEFAULT_FONT_ASCENT, type Glyph } from './media/glyph';
 import type { MediaFile } from './media/entry';
@@ -201,25 +207,27 @@ function migrateItemInput(raw: unknown, fallbackId: string | undefined): unknown
 
 /** An item; `now` is the fallback for its timestamps. */
 export function itemSchema(now: number) {
-  return z
-    .object({
-      id: id(),
-      itemId: lenientString(),
-      displayName: lenientString(),
-      folderId: lenientString(),
-      model: ImportedModelSchema.nullable().catch(null),
-      config: ConfigObjectSchema.catch({}),
-      rawYaml: lenientString(),
-      assets: lenientRecord(ModelTextureSchema),
-      recipes: lenientList(RecipeSchema),
-      variants: optional(lenientRecord(lenientList(ImportedModelSchema))),
-      armor: optional(ArmorSchema),
-      createdAt: lenientNumber(now),
-      updatedAt: lenientNumber(now),
-    })
-    // A missing or invalid item ID is derived from the display name like for new items (projectSchema makes it unique)
-    .transform((item) => ({ ...item, itemId: itemIdSyntaxError(item.itemId) ? itemIdFromName(item.displayName) : item.itemId }))
-    .transform(withoutUndefined);
+  return (
+    z
+      .object({
+        id: id(),
+        itemId: lenientString(),
+        displayName: lenientString(),
+        folderId: lenientString(),
+        model: ImportedModelSchema.nullable().catch(null),
+        config: ConfigObjectSchema.catch({}),
+        rawYaml: lenientString(),
+        assets: lenientRecord(ModelTextureSchema),
+        recipes: lenientList(RecipeSchema),
+        variants: optional(lenientRecord(lenientList(ImportedModelSchema))),
+        armor: optional(ArmorSchema),
+        createdAt: lenientNumber(now),
+        updatedAt: lenientNumber(now),
+      })
+      // A missing or invalid item ID is derived from the display name like for new items (projectSchema makes it unique)
+      .transform((item) => ({ ...item, itemId: itemIdSyntaxError(item.itemId) ? itemIdFromName(item.displayName) : item.itemId }))
+      .transform(withoutUndefined)
+  );
 }
 
 /** Projects are migrated with one `now` for all their items – the schema is built once for it. */
@@ -273,7 +281,11 @@ export function projectSchema(now: number) {
       }
     }
     // Derived IDs may collide; they get numbered. IDs the user stored stay as they are, duplicates included.
-    const taken = new Set(Object.entries(items).filter(([key]) => !derivedIds.includes(key)).map(([, item]) => item.itemId));
+    const taken = new Set(
+      Object.entries(items)
+        .filter(([key]) => !derivedIds.includes(key))
+        .map(([, item]) => item.itemId),
+    );
     for (const key of derivedIds.sort((a, b) => items[a].createdAt - items[b].createdAt || (a < b ? -1 : 1))) {
       items[key].itemId = uniqueId(items[key].itemId, taken);
       taken.add(items[key].itemId);

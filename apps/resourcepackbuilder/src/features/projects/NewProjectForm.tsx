@@ -4,7 +4,15 @@ import { useTranslations } from 'next-intl';
 import { DEFAULT_MC_VERSION, MC_VERSIONS } from '@resourcepackbuilder/minecraft';
 import { DEFAULT_PACK_TARGET, defaultNamespace, PACK_TARGETS } from '@resourcepackbuilder/core/project';
 import { Button } from '@resourcepackbuilder/ui/components/button';
-import { Field, FieldContent, FieldDescription, FieldLabel, FieldLegend, FieldSet, FieldTitle } from '@resourcepackbuilder/ui/components/field';
+import {
+  Field,
+  FieldContent,
+  FieldDescription,
+  FieldLabel,
+  FieldLegend,
+  FieldSet,
+  FieldTitle,
+} from '@resourcepackbuilder/ui/components/field';
 import { Input } from '@resourcepackbuilder/ui/components/input';
 import { NativeSelect, NativeSelectOption } from '@resourcepackbuilder/ui/components/native-select';
 import { RadioGroup, RadioGroupItem } from '@resourcepackbuilder/ui/components/radio-group';

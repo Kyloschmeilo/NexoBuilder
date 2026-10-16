@@ -5,28 +5,33 @@ Date: 2026-10-16 · Branch: `craftengine` (from `ammo-rework` at e5e09cd) · Des
 ## Goal
 
 Each project targets one server plugin: **Nexo** (today) or **CraftEngine**. You choose the target when you create the project, and it never changes. These parts stay shared:
+
 - the item tree
 - model import and the 3D preview
 - assets, media, issues and share sync
 - the test server's Paper and Java handling
 
 Only these parts differ per target:
+
 - the editor's property schema
 - the generated YAML and the file layout
 - the plugin-specific spots of the test server
 
 Non-goals:
+
 - Converting projects between targets.
 - Storage locations S2–S4 (separate plan).
 - CraftEngine Premium-only features beyond a badge.
 - JS scripting, worldgen features, subpacks, `$$version` keys and the item updater. These stay in the raw YAML overlay, written out unchanged.
 
 Decided by the user:
+
 - `Item.nexoId` is **hard-renamed to `itemId`, with no migration**. Old data loses its IDs, and the lenient schema's fallback applies.
 - Work happens on local commits only.
 - A local Paper and CraftEngine server may be run to capture log lines.
 
 CraftEngine reference material (earlier research, read-only) is in `C:\Users\hombe\AppData\Local\Temp\claude\C--Workspaces-ResourcepackBuilder\8de5f319-7a69-4a89-a141-c4edc400b117\scratchpad\`:
+
 - `craftengine-docs-map.md`: all 177 wiki pages condensed, with gaps from the code marked "(code)".
 - `ce-jar/x/`: the extracted 26.9.2 jar, with `config.yml`, `commands.yml` and the bundled packs `resources/default_assets` and `resources/default_templates`.
 - `ce/plugin/`: the plugin source.
@@ -94,6 +99,7 @@ export const PACK_TARGET_IMPLS: Record<PackTargetId, PackTarget>;
 ```
 
 `ExportPlan` changes:
+
 - It loses `itemFiles`, `recipeFiles`, `glyphFiles`, `soundEntries` and `paintingEntries`.
 - It gains `target: PackTargetId` and `pluginFiles: Map<string, FileContent>`.
 - Nexo's root files `sounds.yml` and `paintings.yml` are merged across projects. They stay a Nexo concern: the Nexo target keeps the entries in a target-private part of the plan (`plan.nexo`), and `buildRootFiles` reads them from there.
@@ -130,12 +136,13 @@ export interface ServerAdapter {
   isReloadCommand(command: string): boolean;
   giveCommand(yamlKey: string, amount: number, player: string): string;
   resendPackCommand(player: string): string | null;
-  parseLogLine(line: string): ServerLogEvent | null;   // shared Paper patterns + plugin patterns
+  parseLogLine(line: string): ServerLogEvent | null; // shared Paper patterns + plugin patterns
 }
 export const SERVER_ADAPTERS: Record<PackTargetId, ServerAdapter>;
 ```
 
 Config, contract and runtime changes:
+
 - `TestServerConfig.nexoJar` becomes `pluginJars: Partial<Record<PackTargetId, PluginJarInfo>>`. The lenient read of `testserver.json` maps an old `nexoJar` to `pluginJars.nexo`. It's local machine state, so this costs one line.
 - The IPC channel `testserver:choose-nexo-jar` becomes `testserver:choose-plugin-jar(target)`. `testserver:download-plugin(target)` is new, for Modrinth.
 - `read-settings` becomes `read-plugin-config(target)`.
@@ -144,6 +151,7 @@ Config, contract and runtime changes:
 - The CraftEngine JAR comes from `https://api.modrinth.com/v2/project/craftengine/version?loaders=["paper"]&game_versions=["<paper version>"]`. The response is parsed with zod, the file is checked against the `sha512` Modrinth lists, and the newest release is picked. A manual JAR (Premium) is still possible through `choose-plugin-jar`.
 
 CraftEngine's `config.yml` patch uses the yaml Document API, so comments survive. It sets:
+
 - `resource-pack.self-host.ip: 127.0.0.1`
 - `resource-pack.self-host.port: <packPort>`
 - `resource-pack.self-host.one_time_token: false`
@@ -153,6 +161,7 @@ CraftEngine's `config.yml` patch uses the yaml Document API, so comments survive
 CraftEngine uses no paper-global overrides.
 
 The CraftEngine commands are:
+
 - Reload: `ce reload all`.
 - Give: `ce item give <player> <ns:id> <n>`. Check the argument order against `commands.yml` in the jar.
 - Resend the pack: `ce resource send <player>` if the jar has it; otherwise null.
@@ -161,15 +170,15 @@ The CraftEngine log patterns are captured from a real server run and pinned as f
 
 ## CraftEngine item mapping (P1)
 
-| App | CraftEngine YAML |
-|---|---|
-| `itemId` | key `<namespace>:<itemId>` under `items:` |
-| `displayName` | `data.item_name` |
-| material | `material` |
-| main model (written by PackWriter to `assets/<ns>/models/<path>.json`) | `model: <ns>:<path>` |
+| App                                                                                     | CraftEngine YAML                                                                                          |
+| --------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------- |
+| `itemId`                                                                                | key `<namespace>:<itemId>` under `items:`                                                                 |
+| `displayName`                                                                           | `data.item_name`                                                                                          |
+| material                                                                                | `material`                                                                                                |
+| main model (written by PackWriter to `assets/<ns>/models/<path>.json`)                  | `model: <ns>:<path>`                                                                                      |
 | variant slots (bow pulling, crossbow, fishing rod cast, shield blocking, elytra broken) | `models: [...]`, in CraftEngine's fixed slot order (bow 4, crossbow 6, fishing_rod 2, shield 2, elytra 2) |
-| properties | `data.*` (components), `settings.*`, `behavior`, `events` (P4) |
-| raw YAML | merged over the built config last (same as Nexo) |
+| properties                                                                              | `data.*` (components), `settings.*`, `behavior`, `events` (P4)                                            |
+| raw YAML                                                                                | merged over the built config last (same as Nexo)                                                          |
 
 The CraftEngine form schema groups are `general` (material, lore, …), `data` (item components), `settings` and `behavior`. `settings.equipment` and armor follow in P3 (`equipments:`).
 
@@ -198,6 +207,7 @@ Issues use the existing `Issue` and `issueReporter` with message codes in the `i
 ## Testing
 
 vitest in each package, run with `npm test` (turbo; typecheck first), plus `npm run lint`. Each phase adds:
+
 - unit tests for its builders (golden YAML strings for a fixture item, block or furniture)
 - export layout tests
 - adapter tests (config patch, commands, log fixtures, sync whitelist)

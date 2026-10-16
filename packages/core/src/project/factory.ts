@@ -27,7 +27,12 @@ export function defaultNamespace(name: string): string {
   return slugify(name, DEFAULT_PACK_NAME);
 }
 
-export function createProject(name: string, namespace?: string, minecraftVersion?: string, target: PackTargetId = DEFAULT_PACK_TARGET): Project {
+export function createProject(
+  name: string,
+  namespace?: string,
+  minecraftVersion?: string,
+  target: PackTargetId = DEFAULT_PACK_TARGET,
+): Project {
   const now = Date.now();
   const settings = defaultSettings(name);
   if (minecraftVersion) settings.minecraftVersion = minecraftVersion;

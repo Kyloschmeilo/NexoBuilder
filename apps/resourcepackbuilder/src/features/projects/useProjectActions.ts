@@ -29,7 +29,13 @@ export function useProjectActions() {
     isShareAvailable: services.share !== null,
 
     async create(name: string, namespace: string, minecraftVersion: string, target: PackTargetId) {
-      const project = await createNewProject(services, name.trim() || t('defaults.newProjectName'), namespace.trim(), minecraftVersion, target);
+      const project = await createNewProject(
+        services,
+        name.trim() || t('defaults.newProjectName'),
+        namespace.trim(),
+        minecraftVersion,
+        target,
+      );
       notify('success', t('project.created', { name: project.name }));
     },
 

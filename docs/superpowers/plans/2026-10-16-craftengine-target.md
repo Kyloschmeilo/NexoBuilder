@@ -5,6 +5,7 @@
 **Goal:** Projects can target CraftEngine as well as Nexo. Editor, export and test server each follow the project's target.
 
 **Architecture:** Each package that holds Nexo-specific code gets a target seam, with Nexo as its first implementation:
+
 - `core/form`: the generic form DSL plus a `FormSchema`.
 - `export/targets`: `PackTarget`.
 - `test-server`: `ServerAdapter`.
@@ -18,6 +19,7 @@ CraftEngine is added next to Nexo in each package: `core/craftEngine`, `export/t
 **Commits:** one commit or more per task. Each message starts with `CraftEngine (Tn):`, is written in English, and ends with the co-author line from the session. Before every commit, `npm run typecheck`, `npm run lint` and `npm test` pass from the repo root. Commit locally only, never push.
 
 **About the detail level:** this plan covers P0–P4, roughly 20 features in an existing 8k-line core plus app, so it can't spell out every line in advance. Each task names:
+
 - the files it touches
 - the interfaces it produces and consumes
 - the behavior its tests must pin
@@ -50,6 +52,7 @@ Implementers read the files they touch first and follow the patterns they find t
 ### Task 1: Golden snapshot of the Nexo export
 
 **Files:**
+
 - Create: `packages/export/src/golden/fixture.ts`. It builds a fixture project with:
   - two folders and items with models
   - a bow with variants, an armor item and an item with a recipe
@@ -57,10 +60,12 @@ Implementers read the files they touch first and follow the patterns they find t
   - `useItemModel` on
 
   Reuse the helpers in `packages/test-utils` and the existing export tests.
+
 - Create: `packages/export/src/golden/golden.test.ts`.
 - Create: `packages/export/src/golden/nexo.golden.json`, written by the test on its first run when it's missing, then checked in.
 
 **Produces:**
+
 - `goldenSnapshot(multi, mode) => Record<path, sha256hex>` (in the test file), covering every mode (`full`, `pack`, `items`) and both pack placements (folder and zip).
 
 - [ ] Step 1: Write the fixture and the test. The test compares sorted paths and a sha256 of each file's content (nested zips hashed by their sorted entries) against the JSON.
@@ -70,9 +75,11 @@ Implementers read the files they touch first and follow the patterns they find t
 ### Task 2: `Project.target` and the hard rename `nexoId` → `itemId`
 
 **Files:**
+
 - Modify: `packages/core/src/project/types.ts`, `schema.ts` (`itemSchema`, `projectSchema`), `factory.ts`, `ids.ts`, `newItems.ts`, `operations.ts`, `repair.ts`, and every `nexoId` use found by `rg -n nexoId` across `packages/` and `apps/`. That includes the sync format (`packages/sync/src/format.ts`), export, test-server, the app, Electron and the i18n message args named `nexoId`.
 
 **Produces:**
+
 - `PackTargetId`, `PACK_TARGETS` and `DEFAULT_PACK_TARGET = 'nexo'`, exported from `@resourcepackbuilder/core/project`.
 - `Project.target: PackTargetId`, which the lenient schema defaults to `'nexo'`.
 - `createProject(..., target)`, a factory parameter defaulting to `'nexo'`.
@@ -89,6 +96,7 @@ Implementers read the files they touch first and follow the patterns they find t
 ### Task 3: `core/form` and `core/targets` entry points
 
 **Files:**
+
 - Move: `packages/core/src/nexo/form/{fields,fieldSchema,options,properties}.ts` and `form/schema/build.ts` (the generic builder) to `packages/core/src/form/`. `PropertyGroup` becomes `string`.
 - Create: `packages/core/src/form/index.ts` and `packages/core/src/form/types.ts`, with `FormSchema` as in the spec plus `tabs: Array<{ id: string; group: string }>`.
 - Modify: `packages/core/src/nexo/form/schema.ts` exports `NEXO_FORM: FormSchema` built from the existing groups. Keep `PROPERTIES`, `PROPERTY_BY_ID` and the rest as Nexo-only aliases only where Nexo code still needs them.
@@ -97,6 +105,7 @@ Implementers read the files they touch first and follow the patterns they find t
 - Modify the app: `features/item/ItemEditor.tsx` (tabs from `formFor(project.target).tabs`), `features/item/properties/*`, `components/editor/*` and every import of the moved names. They pass the schema into `activeProperties(schema, owner, group)` and the rest.
 
 **Produces:**
+
 - `FormSchema`.
 - `activeProperties(schema, owner, group)`, `availableProperties(schema, owner, group)`, `propertyConflict(schema, owner, def)`, `unknownConfigPaths(schema, config)` and `propertyById(schema, id)`.
 - `formFor(target)`.
@@ -108,6 +117,7 @@ Implementers read the files they touch first and follow the patterns they find t
 ### Task 4: Export `PackTarget` seam with the Nexo implementation
 
 **Files:**
+
 - Create: `packages/export/src/targets/types.ts` (`PackTarget`, `TargetLayout`, `WrittenItemModels = { mainKey: string | null; variantKeys; itemModel; extraConfig }`).
 - Create: `packages/export/src/targets/nexo/` (`index.ts`, `layout.ts`, `pluginFiles.ts`). Move the Nexo specifics from these files into it:
   - `plan.ts`: `buildItemConfig`, `writeVariants` and the item YAML grouping.
@@ -122,6 +132,7 @@ Implementers read the files they touch first and follow the patterns they find t
   - The callers: `packages/test-server/src/files.ts`, the app's `shell/PlanProvider.tsx`, `services/testServerSync.ts`, `features/export/*` and `useRunExport.ts`.
 
 **Produces:**
+
 - `planExport(project, options)` (same signature).
 - `ExportPlan.pluginFiles`.
 - `pluginFolderEntries(multi, { packAsFolder? })`, which replaces `nexoFolderEntries`.
@@ -133,6 +144,7 @@ Implementers read the files they touch first and follow the patterns they find t
 ### Task 5: Test-server `ServerAdapter`, `pluginJars` and target-aware desktop
 
 **Files:**
+
 - Create: `packages/test-server/src/adapter.ts` (`ServerAdapter`, `SERVER_ADAPTERS`, `serverAdapterFor(target)`).
 - Create: `packages/test-server/src/nexo/` (`adapter.ts`, `settings.ts`, `log.ts`), moving `patchNexoSettings`, the give and pack commands, the Nexo log regexes, `SYNC_DIRS` and `NEXO_BLOCK_UPDATE_SETTINGS`.
 - Keep in `serverLog.ts` the shared Paper patterns (`started`, `portInUse`) and `stripAnsi`. `parseServerLogLine(adapter, line)` combines them with the plugin patterns.
@@ -160,6 +172,7 @@ Implementers read the files they touch first and follow the patterns they find t
   - The "choose Nexo JAR" UI becomes "choose plugin JAR" for the target.
 
 **Produces:**
+
 - `ServerAdapter`, `serverAdapterFor(target)` and `PluginJarInfo`.
 - The IPC `choosePluginJar(target)`, `readPluginConfig(target)`, `start(target)` and `downloadPlugin(target)`.
 
@@ -172,6 +185,7 @@ Implementers read the files they touch first and follow the patterns they find t
 ### Task 6: Target choice when creating a project
 
 **Files:**
+
 - Modify: `apps/resourcepackbuilder/src/features/projects/NewProjectForm.tsx`. Add two cards (radio group) for Nexo and CraftEngine, each with one line of description. Nexo is the default.
 - Modify: the project list (`ProjectsDialog`, `Welcome`, and the project summaries in `core/project`), which gain `target` and a badge.
 - Modify: `packages/core/src/project/` (summary type) and i18n `app.json` in `en` and `de`.
@@ -183,12 +197,14 @@ Implementers read the files they touch first and follow the patterns they find t
 ### Task 7: `core/craftEngine` form schema (general, data, settings, behavior)
 
 **Files:**
+
 - Create: `packages/core/src/craftEngine/form/schema/{general,data,settings}.ts`, `form/schema.ts` (`CRAFT_ENGINE_FORM`, `messages: 'ceSchema'`, tabs `general | model | data | settings | recipes | yaml`) and `index.ts`.
 - Create: `packages/i18n/src/messages/{en,de}/ceSchema.json`, registered wherever namespaces are listed (follow how `schema` is registered).
 - Modify: `packages/core/package.json` (export `./craftEngine`), `core/targets/index.ts` (`formFor('craftEngine')`) and the ESLint boundaries.
 - Modify: the app's properties panel, which reads labels from `schema.messages`.
 
 **Content:** take the properties from `craftengine-docs-map.md` §3a "Item data (`data`)" and "Item settings (`settings`)", checked against the jar's `default_assets` items:
+
 - `material` and `data.item_name` are managed keys, the same as Nexo's `material` and `itemname`.
 - `data`: lore, custom_name, tooltip_style, hide_tooltip, dyed_color, trim, food, equippable, use_remainder, unbreakable, max_damage, enchantment, jukebox_playable, painting_variant, components (map), remove_components, and so on.
 - `settings`: the documented keys, such as fuel_time, break_power, tags, repairable, renameable, dye_color, the anvil and drag repair keys, and equipment.
@@ -200,6 +216,7 @@ Implementers read the files they touch first and follow the patterns they find t
 ### Task 8: CraftEngine export target
 
 **Files:**
+
 - Create in `packages/core/src/craftEngine/`:
   - `itemConfig.ts`: `buildCraftEngineItem(ctx) => { config, rawYamlError }`. It maps per the spec table and merges raw YAML last, reusing `parseRawYaml`, which moves to `core/form` or a shared `core/yaml` entry point if it's target-neutral.
   - `yaml.ts`: `sectionsToYaml({ items, blocks?, furniture?, recipes? })`.
@@ -211,6 +228,7 @@ Implementers read the files they touch first and follow the patterns they find t
 - Create: `packages/export/src/golden/craftEngine.golden.json`, plus a CraftEngine fixture and a YAML string test for one item.
 
 **Tests:**
+
 - A CraftEngine fixture item with a model, a bow with pulling variants, and raw YAML overriding `data.item_name` and adding an unknown key. The exact YAML string is asserted.
 - The layout paths.
 - A mixed multi export (Review Focus 4).
@@ -221,6 +239,7 @@ Implementers read the files they touch first and follow the patterns they find t
 ### Task 9: CraftEngine `ServerAdapter` and the Modrinth download
 
 **Files:**
+
 - Create: `packages/test-server/src/craftEngine/{adapter,config,log}.ts`:
   - `patchCraftEngineConfig(current, { packPort })`, with the keys from the spec, unchanged text when already correct, and comments preserved.
   - Commands, checked against `ce-jar/x/commands.yml`.
@@ -231,6 +250,7 @@ Implementers read the files they touch first and follow the patterns they find t
 - Modify: the app's test-server UI. For a CraftEngine project it shows "Download CraftEngine" instead of "Choose JAR", with "choose manually" kept as a secondary action.
 
 **Tests:**
+
 - The config patch: an empty file, the real jar `config.yml` (copy it to `src/craftEngine/__fixtures__/config.yml`), and idempotence.
 - Commands.
 - The sync whitelist, including traversal (Review Focus 3).
@@ -241,6 +261,7 @@ Implementers read the files they touch first and follow the patterns they find t
 ### Task 10: Real server run and log fixtures
 
 **Do:**
+
 - Write a node script in the scratchpad (not in the repo) that uses the repo's own Paper and Java download code, or the PaperMC API directly. It:
   - downloads Paper for a version CraftEngine 26.9.2 supports (e.g. 1.21.11 or the newest in `game_versions`) and a Java 21+ runtime, if `java` isn't on PATH
   - copies the jar from `ce-jar/` into `plugins/`
@@ -257,11 +278,13 @@ Implementers read the files they touch first and follow the patterns they find t
 ### Task 11: Single-state blocks
 
 **Data model:**
+
 - `Item.config.block` for a CraftEngine item holds the CraftEngine block definition (`settings`, `state`).
 - The builder emits `blocks: { <ns:id>: config.block }` and sets the item's `behavior: { type: block_item, block: <ns:id> }`.
 - The UI adds a "Block" section to the model tab, shown when the item is a block (`isBlockItem`, or a toggle).
 
 **Content:**
+
 - `state.auto_state` is a select of the 24 groups from the docs map §3b.
 - The texture count decides the parent: 1 means `cube_all`, 2 means column, 3 means bottom, side and top. The textures come from the imported model or uploaded textures.
 - Block settings properties (hardness, sounds, tags, luminance, map_color, …) go in a new `blockSettings` group of `CRAFT_ENGINE_FORM`.
@@ -271,6 +294,7 @@ Implementers read the files they touch first and follow the patterns they find t
 ### Task 12: Multi-state blocks and common behaviors
 
 **Content:**
+
 - Properties (13 types), appearances and variants as an editor, a table of properties and an appearance per variant.
 - Behaviors as forms: slab, stairs, door, trapdoor, fence, fence_gate, crop, sapling, leaves, lamp (togglable light), seat and storage.
 - Other behaviors fall back to raw YAML.
@@ -282,6 +306,7 @@ Implementers read the files they touch first and follow the patterns they find t
 **Data model:** `Item.config.furniture` holds the CraftEngine furniture definition (`settings`, `variants: { ground|wall|ceiling: { elements, hitboxes, seats } }`, `loot`). The item gets `behavior: { type: furniture_item, furniture: <ns:id> }`.
 
 **UI:**
+
 - A furniture section with variant tabs.
 - An element list: item_display and others, with model, position, rotation, scale and billboard.
 - A hitbox list: interaction, shulker and custom, with size and position.
@@ -300,6 +325,7 @@ Elements are attached to block states (`state.entity_renderer` or the documented
 ### Task 15: CraftEngine recipes
 
 Map the shared `Recipe` model (`core/project/recipes/model.ts`) to CraftEngine's `recipes:` section:
+
 - shaped, shapeless, smelting, blasting, smoking, campfire_cooking, stonecutting and smithing_transform
 - tags as `#ns:tag`, results as `{ id, count }`
 
@@ -308,6 +334,7 @@ The recipes go into the item's YAML file under `recipes:`. Tests: one YAML strin
 ### Task 16: Images, emoji, sounds, jukebox songs, paintings
 
 The CraftEngine target's `planPluginFiles` writes:
+
 - `configuration/images.yml` from glyphs, with `emoji.yml` entries when a glyph has a chat shortcut
 - `configuration/sounds.yml` from sounds, plus `jukebox_songs` for sounds marked as music discs (add the field in core if needed)
 - `configuration/paintings.yml` from paintings
@@ -327,11 +354,13 @@ Tests: YAML strings.
 ### Task 18: Logic catalog and the `typedList` field
 
 **Files:**
+
 - Create: `packages/core/src/craftEngine/logic/{conditions,functions,numbers,triggers,lootSources}.ts`. Each entry is `{ type, fields: FieldSpecs, objectKinds?, premium? }`, taken from the docs map §shared reference and checked against the plugin source registries.
 - Create: `packages/core/src/form/fields.ts`, with the new `TypedListField { type: 'typedList'; catalog: string; … }`, and `fieldToSchema` support.
 - Create the app editor: `components/editor/editors/TypedListEditor.tsx`. Each entry has a type select and that type's fields. An unknown type shows a YAML textarea for that entry.
 
 **Tests:**
+
 - The catalog's types are unique.
 - `fieldToSchema` round-trips a sample entry per type.
 - Unknown types are kept unchanged.
