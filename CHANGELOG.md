@@ -2,6 +2,26 @@
 
 ## Unreleased
 
+### New: CraftEngine
+
+- Every project now targets **Nexo** or **CraftEngine**. You choose when you create the project, and it cannot change
+  later. Existing projects stay Nexo projects.
+- CraftEngine projects have their own item form (data components, settings, behaviors), custom blocks (single and
+  multi-state, with an `auto_state` budget check), furniture, block entity renderers, events with conditions and
+  functions, loot tables and loot sources, templates, global variables and the attribute system.
+- The export writes `plugins/CraftEngine/resources/<pack>/` with `pack.yml`, items, recipes, images, emoji, sounds,
+  jukebox songs, paintings, equipments, categories and language files.
+- The local test server runs either plugin, each in its own folder (`testserver/<target>/server`). CraftEngine downloads
+  from Modrinth with a checksum check; a purchased Premium JAR still works. The server loads the project with
+  `ce reload all` and shows the pack state.
+- The Nexo export is unchanged.
+
+### Breaking
+
+- The item id field `nexoId` is now `itemId`. There is no migration: projects saved before this change lose their item
+  ids and get new ones (the lenient fallback applies). Project files and shared folders from earlier versions behave
+  the same.
+
 ### Renamed: ResourcepackBuilder
 
 - NexoBuilder is now called **ResourcepackBuilder** (program, installer, window, icon).

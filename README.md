@@ -1,14 +1,17 @@
 # ResourcepackBuilder
 
-**Turn Blockbench models into ready-to-use [Nexo](https://docs.nexomc.com/) items – resource pack included.**
+**Turn Blockbench models into ready-to-use [Nexo](https://docs.nexomc.com/) or
+[CraftEngine](https://mo-mi.gitbook.io/xiaomomi-plugins-docs/) items – resource pack included.**
 
-ResourcepackBuilder is a **Windows program (.exe)**. You create folders, drop your models in, set the Nexo properties in
-forms and export everything as a ZIP that you unpack straight into `plugins/Nexo/`.
+ResourcepackBuilder is a **Windows program (.exe)**. You create folders, drop your models in, set the properties in
+forms and export everything as a ZIP that you unpack straight into `plugins/Nexo/` or `plugins/CraftEngine/`.
 
 ![ResourcepackBuilder](docs/screenshot.png)
 
 ## Features
 
+- **Nexo or CraftEngine** – every project targets one plugin, chosen when you create it. It cannot change later. Models,
+  folders, glyphs, sounds, paintings, recipes, the 3D preview and sharing work the same for both.
 - **Folders & items** – folders (also nested) become subfolders of `plugins/Nexo/items`. Move items by drag & drop,
   duplicate and search them.
 - **Copy & paste properties** – take the complete configuration of an item (material, lore, attributes, components,
@@ -65,8 +68,17 @@ forms and export everything as a ZIP that you unpack straight into `plugins/Nexo
 - **Automatic saving**, undo/redo (Ctrl+Z / Ctrl+Y), project files for backups and handing over.
 - **Sharing projects** – work on a project together through a shared folder in OneDrive, Google Drive or Dropbox;
   changes reach everyone within seconds, in both directions.
-- **Local test server** – a Paper server with Nexo on your PC that updates itself: changes in the project are in the
+- **Local test server** – a Paper server with Nexo or CraftEngine on your PC that updates itself: changes in the project are in the
   game within seconds, including a new resource pack.
+- **CraftEngine projects** (CraftEngine 26.9) add:
+  - Items with data components, settings and behaviors, plus custom blocks (single and multi-state, `auto_state` budget
+    check) and furniture (variants, hitboxes, seats) with block entity renderers
+  - Events, conditions and functions for items, blocks and furniture, loot tables and project loot sources
+  - Templates, global variables and the attribute system
+  - Recipes, images and emoji, sounds and jukebox songs, paintings, armor as equipments, folders as categories and
+    language files for display names
+  - Export to `plugins/CraftEngine/resources/<pack>/` with `pack.yml`; the test server downloads CraftEngine from
+    Modrinth (a purchased Premium JAR also works)
 - **English and German, light and dark** – _Settings → This device_ sets the language and the appearance (Light, Dark
   or System); the top bar has a quick theme toggle. Menus and native dialogs follow the chosen language.
 
@@ -197,16 +209,17 @@ push a tag `v<version>`). GitHub Actions lints, type-checks and tests, builds an
 ### Architecture
 
 A monorepo with npm workspaces. All packages are named `@resourcepackbuilder/<folder>` and export only what their
-`index.ts` barrels list (core has six: `core/project`, `core/form`, `core/yaml`, `core/nexo`, `core/craftEngine` and `core/targets`).
+`index.ts` barrels list (core has six: `core/project`, `core/form`, `core/yaml`, `core/nexo`, `core/craftEngine` and `core/targets`; the test
+server exports its adapters from its single entry point).
 
 | Package                     | Purpose                                                                                                                                                                                                                                                                                                                                                                                                                                                                                  |
 | --------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | `packages/utils`            | Helpers without domain knowledge: plain objects and config walking, text and IDs, lenient zod schemas, JSON parsing, issues and `CoreError`, asset tokens.                                                                                                                                                                                                                                                                                                                               |
 | `packages/minecraft`        | Minecraft resource-pack knowledge without the project model: versions, resource locations, the vanilla catalog and models, PNG/GIF/OGG sniffing, MiniMessage, and the model import (`.bbmodel`, Java JSON, textures).                                                                                                                                                                                                                                                                    |
 | `packages/core`             | The project model (`core/project`: items, folders, glyphs, sounds, paintings, recipes, migration, tree repair, operations) the generic form DSL behind the field editor (`core/form`), the YAML 1.1 helpers every target writes with (`core/yaml`), its Nexo mapping (`core/nexo`: item config, the Nexo form schema, item files), its CraftEngine mapping (`core/craftEngine`: item config, form schema, pack.yml) and `core/targets`, which picks a project's form by its pack target. |
-| `packages/export`           | Export planning, checks and the pack writer: the pack targets (`targets/nexo`, `targets/craftEngine`) with their YAML, layout and install guide, item models, equipment, media, selection over several projects and the ZIP.                                                                                                                                                                                                                                                             |
+| `packages/export`           | Export planning, checks and the pack writer. A `PackTarget` (`targets/`, generic over the models it writes; implemented by `targets/nexo` and `targets/craftEngine`) owns the YAML, file layout, install guide and item ID rule. Also item models, equipment, media, selection over several projects and the ZIP.                                                                                                                                                                        |
 | `packages/sync`             | Sharing projects through a folder: the file format, merging and the sync engine.                                                                                                                                                                                                                                                                                                                                                                                                         |
-| `packages/test-server`      | The local test server's rules: config and limits, console commands, log parsing, status, Java/Paper versions and the files synced into `plugins/Nexo`.                                                                                                                                                                                                                                                                                                                                   |
+| `packages/test-server`      | The local test server's rules. A `ServerAdapter` per target (`nexo/`, `craftEngine/`) holds the plugin config patch, commands, log patterns, reload behavior (`buildsPackOnStart`, `reportsPackBuild`) and the paths a project may sync. Shared: config and limits, console commands, log parsing, status, Java/Paper versions, plugin JAR handling, the Modrinth download (CraftEngine) and the sync manifest.                                                                          |
 | `packages/preview`          | 3D model preview and thumbnails with three.js – no React; the app's `ModelPreview` and `useThumbnail` wrap it.                                                                                                                                                                                                                                                                                                                                                                           |
 | `packages/i18n`             | English and German message catalogues per namespace (`src/messages/<locale>/<namespace>.json`), supported locales, typed message keys and the parity check that keeps both languages in step. `./desktop` exports the texts of the Electron main process (`desktop` namespace, not in the UI catalogue).                                                                                                                                                                                 |
 | `packages/ui`               | Generic React building blocks: the vendored shadcn/ui components (Base UI flavour) in `src/components`, shared components on top of them, and the CastCrafter theme (`src/styles.css`: Tailwind v4 with light/dark design tokens; fonts Chakra Petch, Hanken Grotesk and Martian Mono bundled via `src/fonts.css`).                                                                                                                                                                      |
@@ -221,7 +234,8 @@ Packages build on each other in one direction: `minecraft` on `utils`, `core` on
 on all of them. A package may only import the workspace packages
 its `package.json` declares (an ESLint rule; turbo rejects cyclic declarations), and inside core `project/` may not
 import a target (`nexo/`, `craftEngine/`) or `targets/`, `form/` may not import one either, and the targets do not
-import each other.
+import each other. Only `core/targets` imports both targets. The same holds in `export` and `test-server`: the target
+folders (`nexo/`, `craftEngine/`) do not import each other, and only the registry picks between them.
 
 The app lists its runtime libraries (Next.js, React, zustand …) as `devDependencies` on purpose: the renderer is a
 static export and the Electron main process is a self-contained bundle, so the installer ships no `node_modules`, and
@@ -256,8 +270,9 @@ The app (`apps/resourcepackbuilder`):
     channel's schema; errors travel as `{ code, args }` and are translated by the UI;
   - `share.ts` gives access to shared folders – only folders the user picked, only project files (core's share
     format), no links leading outside;
-  - `testServer/` downloads Paper and Java (responses and SHA-256 checksums verified), prepares and runs the server,
-    and syncs the project into `plugins/Nexo`; the pure parts (log parsing, commands, file edits) live in
+  - `testServer/` downloads Paper, Java and (for CraftEngine) the plugin from Modrinth (responses and checksums
+    verified), prepares and runs the server in `testserver/<target>/server`, and syncs the project into
+    `plugins/Nexo` or `plugins/CraftEngine`; the pure parts (adapters, log parsing, commands, file edits) live in
     `packages/test-server`;
   - `i18n.ts` translates with `@resourcepackbuilder/i18n/desktop`; `fileHelpers.ts` holds the atomic write, folder and
     JSON-with-backup helpers;

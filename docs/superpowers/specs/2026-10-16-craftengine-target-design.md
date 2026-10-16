@@ -43,10 +43,11 @@ When the wiki and the jar disagree, the jar's bundled configs and the plugin sou
 
 ```ts
 // core/project
-export type PackTargetId = 'nexo' | 'craftEngine';
-export const PACK_TARGETS: readonly PackTargetId[] = ['nexo', 'craftEngine'];
+export type PackTargetId = 'nexo' | 'craftengine';   // lowercase id; the entry point is still `core/craftEngine`
+export const PACK_TARGETS = ['nexo', 'craftengine'] as const;
 interface Project { …; target: PackTargetId }      // lenient schema default: 'nexo'
 interface Item { …; itemId: string }               // was nexoId; config stays the target's own shape
+interface Project { …; craftEngine?: { lootSources?; templates?; globalVariables?; attributes? } }   // project-wide CraftEngine data
 ```
 
 `Item.config` stays a `ConfigObject`, and its shape belongs to the project's target: Nexo YAML for Nexo, CraftEngine item YAML for CraftEngine. Folders, media (glyphs, sounds, paintings), recipes, variants, armor, assets and settings stay shared. The CraftEngine target writes them in its own format.
@@ -63,7 +64,8 @@ export interface FormSchema {
   properties: PropertyDef[];                                             // group: string
   /** i18n namespace of label/description keys ('schema' for Nexo, 'ceSchema' for CraftEngine) */
   messages: string;
-  managedTopLevelKeys: string[];
+  /** Dotted config paths the form manages (CraftEngine: `data.item_name`; Nexo: its top-level keys) */
+  managedPaths: string[];
 }
 activeProperties(schema, owner, group) / availableProperties / propertyConflict / unknownConfigPaths(schema, config) …
 ```
@@ -76,10 +78,12 @@ The editor tabs come from the schema: `FormSchema.tabs` lists the property tabs 
 
 ```ts
 // export/src/targets/types.ts
-export interface PackTarget {
+export interface PackTarget<W extends WrittenItemModels = WrittenItemModels> {
   id: PackTargetId;
+  /** Item ID rule. Nexo keeps its own; CraftEngine follows the editor rule `[a-z0-9_]+`. */
+  itemIds: ItemIdRule;
   /** Builds the item's config from the written models; reports through itemExport. */
-  buildItem(itemExport: ItemExport, written: WrittenItemModels): Record<string, unknown>;
+  buildItem(itemExport: ItemExport, written: W): Record<string, unknown>; // W: what this target's writeModels returned
   /** Item key in YAML: Nexo `itemId`, CraftEngine `<namespace>:<itemId>`. */
   yamlKey(project: Project, item: Item): string;
   /** Every plugin-side file (item YAML, recipes, media, pack.yml …) relative to `layout.pluginDir`. */
@@ -136,6 +140,10 @@ export interface ServerAdapter {
   isReloadCommand(command: string): boolean;
   giveCommand(yamlKey: string, amount: number, player: string): string;
   resendPackCommand(player: string): string | null;
+  /** The plugin's log reports the pack build; without it nobody waits for a build. Nexo and CraftEngine: true */
+  reportsPackBuild: boolean;
+  /** The plugin builds the pack on startup by itself. Nexo: true. CraftEngine: false, so the app sends the reload command once the server logs "Done". */
+  buildsPackOnStart: boolean;
   parseLogLine(line: string): ServerLogEvent | null; // shared Paper patterns + plugin patterns
 }
 export const SERVER_ADAPTERS: Record<PackTargetId, ServerAdapter>;
@@ -158,11 +166,11 @@ CraftEngine's `config.yml` patch uses the yaml Document API, so comments survive
 - `resource-pack.delivery.send-on-join: true`
 - `resource-pack.delivery.kick-if-declined: false`
 
-CraftEngine uses no paper-global overrides.
+CraftEngine uses no paper-global overrides. The patch also sets `forced-locale: en`, because CraftEngine logs in the system language and the log patterns are English. The app seeds this file before the first start.
 
 The CraftEngine commands are:
 
-- Reload: `ce reload all`.
+- Reload: `ce reload all`. CraftEngine builds no pack on startup, so the app sends it once after "Done".
 - Give: `ce item give <player> <ns:id> <n>`. Check the argument order against `commands.yml` in the jar.
 - Resend the pack: `ce resource send <player>` if the jar has it; otherwise null.
 
@@ -200,6 +208,7 @@ Issues use the existing `Issue` and `issueReporter` with message codes in the `i
 ## Security
 
 - The Modrinth download is checked against the hash before the file is moved into the plugin store, and the file name is checked against `CRAFT_ENGINE_JAR_FILE_PATTERN`.
+- The sync manifest (`sync-manifest.json`) stores the pack name next to the file list. After a pack rename, stale files are checked and deleted against the name they were written for.
 - Sync paths go through the adapter's `syncPathSegments`. For CraftEngine, only `resources/<this project's pack>/(pack.yml|configuration/**|resourcepack/**)` with safe segments is allowed.
 - The app never deletes CraftEngine's own packs (`default_*`, `internal`).
 - Command builders check every argument (`assertCommandArg`, `assertPlayerName`).
