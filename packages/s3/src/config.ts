@@ -1,3 +1,4 @@
+import { z } from 'zod';
 import { S3Error } from './errors';
 
 export interface S3ClientConfig {
@@ -16,28 +17,72 @@ function invalid(message: string): S3Error {
   return new S3Error('invalidConfig', { message });
 }
 
-/** Parses the endpoint; HTTPS is required unless the host is the local machine (MinIO during development). */
-export function parseEndpoint(endpoint: string): URL {
+/** Why `endpoint` cannot be used, or null. HTTPS is required unless the host is the local machine (MinIO during development). */
+function endpointProblem(endpoint: string): string | null {
   let url: URL;
   try {
     url = new URL(endpoint);
   } catch {
-    throw invalid('The endpoint is not a valid URL.');
+    return 'The endpoint is not a valid URL.';
   }
   if (url.protocol !== 'https:' && !(url.protocol === 'http:' && LOCAL_HOSTS.has(url.hostname))) {
-    throw invalid('The endpoint must use HTTPS (plain HTTP is only allowed for localhost).');
+    return 'The endpoint must use HTTPS (plain HTTP is only allowed for localhost).';
   }
-  if (url.username || url.password || url.search || url.hash) {
-    throw invalid('The endpoint must not contain credentials, a query or a fragment.');
-  }
-  return url;
+  if (url.username || url.password || url.search || url.hash) return 'The endpoint must not contain credentials, a query or a fragment.';
+  return null;
 }
 
-/** Throws an `invalidConfig` {@link S3Error} when the configuration cannot work. */
-export function validateConfig(config: S3ClientConfig): void {
-  if (!config.region.trim()) throw invalid('The region is required.');
-  if (!config.accessKeyId.trim() || !config.secretAccessKey) throw invalid('The access key and secret key are required.');
-  if (config.endpoint !== undefined) parseEndpoint(config.endpoint);
+/** Parses the endpoint; throws an `invalidConfig` {@link S3Error} when it cannot be used. */
+export function parseEndpoint(endpoint: string): URL {
+  const problem = endpointProblem(endpoint);
+  if (problem) throw invalid(problem);
+  return new URL(endpoint);
+}
+
+/** Why a public URL base (CDN or R2 public bucket domain) cannot be used, or null. */
+function publicUrlBaseProblem(base: string): string | null {
+  let url: URL;
+  try {
+    url = new URL(base);
+  } catch {
+    return 'The public URL is not a valid URL.';
+  }
+  if (url.protocol !== 'https:' && url.protocol !== 'http:') return 'The public URL must use HTTP or HTTPS.';
+  if (url.username || url.password || url.search || url.hash) return 'The public URL must not contain credentials, a query or a fragment.';
+  return null;
+}
+
+const KEYS_REQUIRED = 'The access key and secret key are required.';
+const checked = (problem: (value: string) => string | null) => (value: string, ctx: z.RefinementCtx) => {
+  const message = problem(value);
+  if (message) ctx.addIssue({ code: 'custom', message });
+};
+
+/**
+ * A client configuration as entered by the user (or stored): every field is checked, the region and access key are
+ * trimmed. Error messages never contain the values, so the secret is not echoed.
+ */
+export const S3ClientConfigSchema = z.object({
+  endpoint: z.string().superRefine(checked(endpointProblem)).optional(),
+  region: z.string({ error: 'The region is required.' }).trim().min(1, 'The region is required.'),
+  forcePathStyle: z.boolean().default(false),
+  accessKeyId: z.string({ error: KEYS_REQUIRED }).trim().min(1, KEYS_REQUIRED),
+  secretAccessKey: z.string({ error: KEYS_REQUIRED }).min(1, KEYS_REQUIRED),
+}) satisfies z.ZodType<S3ClientConfig, unknown>;
+
+/** A public URL base for {@link buildObjectUrl}. */
+export const PublicUrlBaseSchema = z.string().superRefine(checked(publicUrlBaseProblem));
+
+/** Parses `schema`; the first problem becomes an `invalidConfig` {@link S3Error}. */
+function parseOrThrow<S extends z.ZodType>(schema: S, value: unknown): z.output<S> {
+  const parsed = schema.safeParse(value);
+  if (!parsed.success) throw invalid(parsed.error.issues[0]?.message ?? 'The storage configuration is invalid.');
+  return parsed.data;
+}
+
+/** The checked configuration; throws an `invalidConfig` {@link S3Error} when it cannot work. */
+export function validateConfig(config: unknown): S3ClientConfig {
+  return parseOrThrow(S3ClientConfigSchema, config);
 }
 
 function encodeKey(key: string): string {
@@ -50,7 +95,7 @@ function encodeKey(key: string): string {
  */
 export function buildObjectUrl(config: S3ClientConfig, bucket: string, key: string, publicUrlBase?: string): string {
   const path = encodeKey(key);
-  if (publicUrlBase) return `${publicUrlBase.replace(/\/+$/, '')}/${path}`;
+  if (publicUrlBase) return `${parseOrThrow(PublicUrlBaseSchema, publicUrlBase).replace(/\/+$/, '')}/${path}`;
   const endpoint = config.endpoint ? parseEndpoint(config.endpoint) : new URL(`https://s3.${config.region}.amazonaws.com`);
   const base = endpoint.pathname.replace(/\/+$/, '');
   if (config.forcePathStyle) return `${endpoint.origin}${base}/${bucket}/${path}`;

@@ -21,15 +21,28 @@ function safeSegments(path: string, what: string): string[] {
   return segments;
 }
 
+declare const OBJECT_KEY: unique symbol;
+
+/**
+ * An object key that was checked by {@link joinKey} (or reported by the service in a listing). The client only takes
+ * these, so a raw, unchecked string (e.g. with `..` segments from a manifest) cannot reach a request by accident.
+ */
+export type ObjectKey = string & { readonly [OBJECT_KEY]: true };
+
 /**
  * Joins a prefix and a relative path into an object key confined to that prefix. Leading and trailing slashes of the
  * prefix are ignored (an empty prefix means the bucket root); the relative path must not be absolute, contain
  * backslashes, empty segments, `.` or `..`.
  */
-export function joinKey(prefix: string, relativePath: string): string {
+export function joinKey(prefix: string, relativePath: string): ObjectKey {
   const trimmedPrefix = prefix.replace(/^\/+|\/+$/g, '');
   const prefixSegments = trimmedPrefix ? safeSegments(trimmedPrefix, 'prefix') : [];
-  return [...prefixSegments, ...safeSegments(relativePath, 'path')].join('/');
+  return [...prefixSegments, ...safeSegments(relativePath, 'path')].join('/') as ObjectKey;
+}
+
+/** A key the service itself reported (listing): it exists, so it is used as it is. */
+export function listedKey(key: string): ObjectKey {
+  return key as ObjectKey;
 }
 
 const CONTENT_TYPES: Record<string, string> = {

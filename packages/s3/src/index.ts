@@ -7,6 +7,6 @@ export {
   type S3ObjectInfo,
   type S3Storage,
 } from './client';
-export { buildObjectUrl, validateConfig, type S3ClientConfig } from './config';
+export { buildObjectUrl, PublicUrlBaseSchema, S3ClientConfigSchema, validateConfig, type S3ClientConfig } from './config';
 export { S3Error, toS3Error, type S3ErrorCode } from './errors';
-export { contentTypeFor, isValidBucketName, joinKey } from './keys';
+export { contentTypeFor, isValidBucketName, joinKey, type ObjectKey } from './keys';
