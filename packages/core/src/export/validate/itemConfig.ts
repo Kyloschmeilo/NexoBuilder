@@ -1,5 +1,5 @@
 /** Checks of an item's configuration (properties, field formats, custom block, stack size). */
-import { labelArg } from '../../issues';
+import { labelArg, schemaKey } from '../../issues';
 import { versionSupport } from '../../minecraft/versions';
 import { slotForMaterial } from '../../nexo/armor';
 import { checkFieldValue } from '../../nexo/fieldSchema';
@@ -44,7 +44,7 @@ export function validateItemConfig(itemExport: ItemExport, { config, usedVariati
     for (const conflict of def.conflicts ?? []) {
       const other = PROPERTIES.find((p) => p.id === conflict);
       if (other && getPropertyValue(item, other) !== undefined && def.id < other.id) {
-        report('error', 'plan.propertyConflict', { other: labelArg(other.label) }, [frame]);
+        report('error', 'plan.propertyConflict', { other: labelArg(schemaKey(other.label)) }, [frame]);
       }
     }
     for (const found of checkFieldValue(value, def.field)) {

@@ -1,3 +1,5 @@
+import type { MessageKey } from '@resourcepackbuilder/i18n';
+
 /** Stable error codes the app translates; never derived from free-form SDK messages. */
 export type S3ErrorCode =
   'invalidCredentials' | 'accessDenied' | 'noSuchBucket' | 'noSuchKey' | 'unreachable' | 'aclNotSupported' | 'invalidConfig' | 'unknown';
@@ -13,24 +15,73 @@ const MESSAGES: Record<S3ErrorCode, string> = {
   unknown: 'The storage request failed.',
 };
 
+/** Why a configuration, bucket name or key is unusable (the reason of an `invalidConfig` error). */
+export type S3ConfigProblem =
+  | 'regionMissing'
+  | 'keysMissing'
+  | 'endpointInvalid'
+  | 'endpointNotHttps'
+  | 'endpointHasExtras'
+  | 'publicUrlInvalid'
+  | 'publicUrlNotHttp'
+  | 'publicUrlHasExtras'
+  | 'bucketInvalid'
+  | 'prefixInvalid'
+  | 'pathInvalid';
+
+/** English texts of the problems (for logs; the UI translates {@link S3Error.messageKey}). */
+const PROBLEM_MESSAGES: Record<S3ConfigProblem, string> = {
+  regionMissing: 'The region is required.',
+  keysMissing: 'The access key and secret key are required.',
+  endpointInvalid: 'The endpoint is not a valid URL.',
+  endpointNotHttps: 'The endpoint must use HTTPS (plain HTTP is only allowed for localhost).',
+  endpointHasExtras: 'The endpoint must not contain credentials, a query or a fragment.',
+  publicUrlInvalid: 'The public URL is not a valid URL.',
+  publicUrlNotHttp: 'The public URL must use HTTP or HTTPS.',
+  publicUrlHasExtras: 'The public URL must not contain credentials, a query or a fragment.',
+  bucketInvalid: 'Invalid bucket name.',
+  prefixInvalid: 'Invalid prefix.',
+  pathInvalid: 'Invalid path.',
+};
+
+export function isS3ConfigProblem(value: string): value is S3ConfigProblem {
+  return Object.hasOwn(PROBLEM_MESSAGES, value);
+}
+
+/** The message of an S3 error in the `desktopErrors` namespace (the desktop program reports S3 errors to the UI). */
+export type S3MessageKey = Extract<MessageKey<'desktopErrors'>, `s3.${string}`>;
+
 /**
  * Error thrown by every operation of this package. The message only contains our own text plus the SDK error name,
  * HTTP status or network error code, never credentials or request details.
  */
 export class S3Error extends Error {
   readonly code: S3ErrorCode;
+  /** For `invalidConfig`: what exactly is wrong. */
+  readonly problem?: S3ConfigProblem;
   /** Error name reported by the SDK or service (e.g. `SignatureDoesNotMatch`, `ENOTFOUND`). */
   readonly detail?: string;
   readonly httpStatus?: number;
 
-  constructor(code: S3ErrorCode, options: { message?: string; detail?: string; httpStatus?: number } = {}) {
+  constructor(code: S3ErrorCode, options: { problem?: S3ConfigProblem; detail?: string; httpStatus?: number } = {}) {
     const suffix = [options.detail, options.httpStatus === undefined ? undefined : `HTTP ${options.httpStatus}`].filter(Boolean).join(', ');
-    super(`${options.message ?? MESSAGES[code]}${suffix ? ` (${suffix})` : ''}`);
+    super(`${options.problem ? PROBLEM_MESSAGES[options.problem] : MESSAGES[code]}${suffix ? ` (${suffix})` : ''}`);
     this.name = 'S3Error';
     this.code = code;
+    this.problem = options.problem;
     this.detail = options.detail;
     this.httpStatus = options.httpStatus;
   }
+
+  /** The translatable message: `s3.config.<problem>` or `s3.<code>` in the `desktopErrors` namespace. */
+  get messageKey(): S3MessageKey {
+    return this.problem ? `s3.config.${this.problem}` : `s3.${this.code}`;
+  }
+}
+
+/** An `invalidConfig` error for `problem`. */
+export function invalidConfig(problem: S3ConfigProblem): S3Error {
+  return new S3Error('invalidConfig', { problem });
 }
 
 /** Whether the failed request was about a bucket or an object; decides what a bare 404 means. */

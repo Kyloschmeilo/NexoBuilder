@@ -6,6 +6,7 @@ import { createStore, del, delMany, get, keys, set, setMany, type UseStore } fro
 import { z } from 'zod';
 import { lenientList, lenientNumber, lenientString, plainObject } from '@resourcepackbuilder/core/lenient';
 import { SyncStateSchema, type SyncState } from '@resourcepackbuilder/core/sync/engine';
+import { AppError } from '../i18n/errors';
 import { uid } from '@resourcepackbuilder/core/project/ids';
 import { migrateProject } from '@resourcepackbuilder/core/project/migrate';
 import type { Project } from '@resourcepackbuilder/core/project/types';
@@ -80,9 +81,10 @@ const IndexSchema = lenientList(
 ) satisfies z.ZodType<ProjectSummary[], unknown>;
 const ShareConfigSchema = z.object({ folder: z.string(), userName: z.string() }) satisfies z.ZodType<ShareConfig, unknown>;
 
-export class StorageUnavailableError extends Error {
+/** The browser offers no IndexedDB; worded by the app's error messages (`app` namespace, `storage.unavailable`). */
+export class StorageUnavailableError extends AppError {
   constructor() {
-    super('IndexedDB is not available');
+    super('storage.unavailable');
     this.name = 'StorageUnavailableError';
   }
 }

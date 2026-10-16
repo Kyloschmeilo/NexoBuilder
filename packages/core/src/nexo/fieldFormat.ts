@@ -1,5 +1,6 @@
 /** Validation of single text values against their field format (duration, vector, color …). */
 import { RESOURCE_LOCATION_PATTERN } from '../minecraft/resourceLocation';
+import type { LabelKey } from '../issues';
 import type { TextField } from './fields';
 import { MODEL_TOKEN } from '../tokens';
 
@@ -12,7 +13,7 @@ const RANGE = /^-?\d+(\.\d+)?(\.\.-?\d+(\.\d+)?)?$/;
  * Checks a text value against its format.
  * @returns null if valid, otherwise a message key in the `schema` namespace (`validation.*`)
  */
-export function validateTextFormat(format: TextField['format'], value: string): string | null {
+export function validateTextFormat(format: TextField['format'], value: string): LabelKey | null {
   if (!value || value === MODEL_TOKEN) return null;
   switch (format) {
     case 'duration':

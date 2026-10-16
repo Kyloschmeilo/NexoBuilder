@@ -11,7 +11,7 @@
  */
 import { z } from 'zod';
 import { uid } from '../id';
-import type { Issue, LabelArg } from '../issues';
+import { issueCode, schemaKey, type Issue, type LabelArg } from '../issues';
 import {
   type Covers,
   type Fits,
@@ -50,7 +50,7 @@ const id = () => z.string().min(1);
 /* ------------------------------------------------------------ Issues */
 
 const LabelArgSchema = z
-  .object({ key: z.string(), args: optional(lenientRecord(z.union([z.string(), z.number()]))) })
+  .object({ key: z.string().transform(schemaKey), args: optional(lenientRecord(z.union([z.string(), z.number()]))) })
   .transform(withoutUndefined);
 const MessageArgsSchema = recordOf(z.union([z.string(), z.number(), LabelArgSchema]));
 
@@ -61,7 +61,7 @@ export const IssueSchema = z.preprocess(
   z
     .object({
       level: lenientEnum(['error', 'warning', 'info'], 'info'),
-      code: z.string(),
+      code: z.string().transform(issueCode),
       args: optional(MessageArgsSchema),
     })
     .transform(withoutUndefined),

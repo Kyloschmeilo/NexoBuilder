@@ -3,14 +3,14 @@
  * shape with a zod schema. Every caller gets either the typed value or a {@link CoreError} – never a cast.
  */
 import type { z } from 'zod';
-import { CoreError, type MessageArgs } from './issues';
+import { CoreError, type IssueCode, type MessageArgs } from './issues';
 
 export type JsonResult<T> = { ok: true; value: T } | { ok: false; error: CoreError };
 
 /** Error codes (message keys in `issues`) for text that is no JSON (`syntax`, gets an `error` arg) or has the wrong shape. */
 export interface JsonErrorCodes {
-  syntax?: string;
-  shape?: string;
+  syntax?: IssueCode;
+  shape?: IssueCode;
   /** Args of both errors, e.g. the file name */
   args?: MessageArgs;
 }

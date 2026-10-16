@@ -193,6 +193,10 @@
     "invalidFile": "The file is not a valid ResourcepackBuilder project file.",
     "notProjectFile": "The file is not a ResourcepackBuilder project file."
   },
+  "yaml": {
+    "syntax": "YAML error in line {line}, column {column}: {detail}",
+    "duplicateKey": "The key in line {line} appears twice ({detail})."
+  },
   "issueList": {
     "openItem": "Go to item",
     "openGlyphs": "Open glyphs",

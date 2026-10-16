@@ -1,5 +1,5 @@
 import { z } from 'zod';
-import { S3Error } from './errors';
+import { invalidConfig, isS3ConfigProblem, S3Error, type S3ConfigProblem } from './errors';
 
 export interface S3ClientConfig {
   /** Custom endpoint for S3-compatible services (R2, MinIO, …); omitted for AWS S3. */
@@ -13,61 +13,60 @@ export interface S3ClientConfig {
 
 const LOCAL_HOSTS = new Set(['localhost', '127.0.0.1', '[::1]']);
 
-function invalid(message: string): S3Error {
-  return new S3Error('invalidConfig', { message });
-}
-
 /** Why `endpoint` cannot be used, or null. HTTPS is required unless the host is the local machine (MinIO during development). */
-function endpointProblem(endpoint: string): string | null {
+function endpointProblem(endpoint: string): S3ConfigProblem | null {
   let url: URL;
   try {
     url = new URL(endpoint);
   } catch {
-    return 'The endpoint is not a valid URL.';
+    return 'endpointInvalid';
   }
-  if (url.protocol !== 'https:' && !(url.protocol === 'http:' && LOCAL_HOSTS.has(url.hostname))) {
-    return 'The endpoint must use HTTPS (plain HTTP is only allowed for localhost).';
-  }
-  if (url.username || url.password || url.search || url.hash) return 'The endpoint must not contain credentials, a query or a fragment.';
+  if (url.protocol !== 'https:' && !(url.protocol === 'http:' && LOCAL_HOSTS.has(url.hostname))) return 'endpointNotHttps';
+  if (url.username || url.password || url.search || url.hash) return 'endpointHasExtras';
   return null;
 }
 
 /** Parses the endpoint; throws an `invalidConfig` {@link S3Error} when it cannot be used. */
 export function parseEndpoint(endpoint: string): URL {
   const problem = endpointProblem(endpoint);
-  if (problem) throw invalid(problem);
+  if (problem) throw invalidConfig(problem);
   return new URL(endpoint);
 }
 
 /** Why a public URL base (CDN or R2 public bucket domain) cannot be used, or null. */
-function publicUrlBaseProblem(base: string): string | null {
+function publicUrlBaseProblem(base: string): S3ConfigProblem | null {
   let url: URL;
   try {
     url = new URL(base);
   } catch {
-    return 'The public URL is not a valid URL.';
+    return 'publicUrlInvalid';
   }
-  if (url.protocol !== 'https:' && url.protocol !== 'http:') return 'The public URL must use HTTP or HTTPS.';
-  if (url.username || url.password || url.search || url.hash) return 'The public URL must not contain credentials, a query or a fragment.';
+  if (url.protocol !== 'https:' && url.protocol !== 'http:') return 'publicUrlNotHttp';
+  if (url.username || url.password || url.search || url.hash) return 'publicUrlHasExtras';
   return null;
 }
 
-const KEYS_REQUIRED = 'The access key and secret key are required.';
-const checked = (problem: (value: string) => string | null) => (value: string, ctx: z.RefinementCtx) => {
+/** A refinement whose issue message is the problem code (turned into an {@link S3Error} by parseOrThrow). */
+const checked = (problem: (value: string) => S3ConfigProblem | null) => (value: string, ctx: z.RefinementCtx) => {
   const message = problem(value);
   if (message) ctx.addIssue({ code: 'custom', message });
 };
+const REGION_MISSING: S3ConfigProblem = 'regionMissing';
+const KEYS_MISSING: S3ConfigProblem = 'keysMissing';
 
 /**
  * A client configuration as entered by the user (or stored): every field is checked, the region and access key are
- * trimmed. Error messages never contain the values, so the secret is not echoed.
+ * trimmed. Issue messages are problem codes and never contain the values, so the secret is not echoed.
  */
 export const S3ClientConfigSchema = z.object({
-  endpoint: z.string().superRefine(checked(endpointProblem)).optional(),
-  region: z.string({ error: 'The region is required.' }).trim().min(1, 'The region is required.'),
+  endpoint: z
+    .string({ error: 'endpointInvalid' satisfies S3ConfigProblem })
+    .superRefine(checked(endpointProblem))
+    .optional(),
+  region: z.string({ error: REGION_MISSING }).trim().min(1, REGION_MISSING),
   forcePathStyle: z.boolean().default(false),
-  accessKeyId: z.string({ error: KEYS_REQUIRED }).trim().min(1, KEYS_REQUIRED),
-  secretAccessKey: z.string({ error: KEYS_REQUIRED }).min(1, KEYS_REQUIRED),
+  accessKeyId: z.string({ error: KEYS_MISSING }).trim().min(1, KEYS_MISSING),
+  secretAccessKey: z.string({ error: KEYS_MISSING }).min(1, KEYS_MISSING),
 }) satisfies z.ZodType<S3ClientConfig, unknown>;
 
 /** A public URL base for {@link buildObjectUrl}. */
@@ -76,8 +75,9 @@ export const PublicUrlBaseSchema = z.string().superRefine(checked(publicUrlBaseP
 /** Parses `schema`; the first problem becomes an `invalidConfig` {@link S3Error}. */
 function parseOrThrow<S extends z.ZodType>(schema: S, value: unknown): z.output<S> {
   const parsed = schema.safeParse(value);
-  if (!parsed.success) throw invalid(parsed.error.issues[0]?.message ?? 'The storage configuration is invalid.');
-  return parsed.data;
+  if (parsed.success) return parsed.data;
+  const message = parsed.error.issues[0]?.message ?? '';
+  throw isS3ConfigProblem(message) ? invalidConfig(message) : new S3Error('invalidConfig');
 }
 
 /** The checked configuration; throws an `invalidConfig` {@link S3Error} when it cannot work. */

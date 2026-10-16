@@ -20,6 +20,7 @@
     "zod": "^4.6.7"
   },
   "devDependencies": {
-    "@resourcepackbuilder/config": "*"
+    "@resourcepackbuilder/config": "*",
+    "@resourcepackbuilder/i18n": "*"
   }
 }

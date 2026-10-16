@@ -193,6 +193,10 @@
     "invalidFile": "Die Datei ist keine gültige ResourcepackBuilder-Projektdatei.",
     "notProjectFile": "Die Datei ist keine ResourcepackBuilder-Projektdatei."
   },
+  "yaml": {
+    "syntax": "YAML-Fehler in Zeile {line}, Spalte {column}: {detail}",
+    "duplicateKey": "Der Schlüssel in Zeile {line} kommt doppelt vor ({detail})."
+  },
   "issueList": {
     "openItem": "Zum Item",
     "openGlyphs": "Glyphs öffnen",

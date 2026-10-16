@@ -9,5 +9,28 @@
   "notNexo": "Das ist nicht Nexo, sondern „{name}“.",
   "requestFailed": "Anfrage fehlgeschlagen ({status}): {url}",
   "requestFailedWithMessage": "{message} ({status})",
-  "unexpected": "{message}"
+  "unexpected": "{message}",
+  "s3": {
+    "invalidCredentials": "Der Zugriffsschlüssel oder geheime Schlüssel wurde abgelehnt.",
+    "accessDenied": "Zugriff verweigert.",
+    "noSuchBucket": "Den Bucket gibt es nicht.",
+    "noSuchKey": "Das Objekt gibt es nicht.",
+    "unreachable": "Der Speicher-Endpunkt ist nicht erreichbar.",
+    "aclNotSupported": "Der Bucket unterstützt keine Objekt-ACLs (public-read).",
+    "invalidConfig": "Die Speicher-Einstellungen sind ungültig.",
+    "unknown": "Die Anfrage an den Speicher ist fehlgeschlagen.",
+    "config": {
+      "regionMissing": "Die Region fehlt.",
+      "keysMissing": "Zugriffsschlüssel und geheimer Schlüssel werden benötigt.",
+      "endpointInvalid": "Der Endpunkt ist keine gültige URL.",
+      "endpointNotHttps": "Der Endpunkt muss HTTPS verwenden (einfaches HTTP nur für localhost).",
+      "endpointHasExtras": "Der Endpunkt darf keine Zugangsdaten, Query oder Fragment enthalten.",
+      "publicUrlInvalid": "Die öffentliche URL ist keine gültige URL.",
+      "publicUrlNotHttp": "Die öffentliche URL muss HTTP oder HTTPS verwenden.",
+      "publicUrlHasExtras": "Die öffentliche URL darf keine Zugangsdaten, Query oder Fragment enthalten.",
+      "bucketInvalid": "Ungültiger Bucket-Name.",
+      "prefixInvalid": "Ungültiges Präfix.",
+      "pathInvalid": "Ungültiger Pfad."
+    }
+  }
 }

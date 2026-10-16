@@ -15,6 +15,7 @@
   },
   "devDependencies": {
     "@resourcepackbuilder/config": "*",
+    "@resourcepackbuilder/i18n": "*",
     "@smithy/util-stream": "^4.8.2",
     "aws-sdk-client-mock": "^4.1.0"
   },

@@ -14,6 +14,9 @@
     "copied": "Copied the properties of “{name}”. To paste them, choose “Paste properties” in another item’s menu.",
     "nothingCopied": "First choose “Copy properties” on an item."
   },
+  "storage": {
+    "unavailable": "This browser offers no project storage (IndexedDB), so projects can’t be saved here. Please save the project as a file."
+  },
   "autosave": {
     "failed": "Projects can’t be saved automatically in the browser. Please save the project as a file regularly."
   },
