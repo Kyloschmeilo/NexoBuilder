@@ -22,6 +22,7 @@ import { RadioGroup, RadioGroupItem } from '@resourcepackbuilder/ui/components/r
 import { Spinner } from '@resourcepackbuilder/ui/components/spinner';
 import { DialogFrame } from '../../components/DialogFrame';
 import { useBusyAction } from '../../hooks/useBusyAction';
+import { isOneOf } from '../../lib/isOneOf';
 import { SelectionHeader } from '../../components/selection/SelectionTree';
 import { richTags } from '../../i18n/richTags';
 import { closeDialog, confirm } from '../../store/dialogs';
@@ -38,6 +39,7 @@ const MODES: Array<{ id: ExportMode; icon: ReactNode }> = [
   { id: 'pack', icon: <Package /> },
   { id: 'items', icon: <ScrollText /> },
 ];
+const MODE_IDS = MODES.map((m) => m.id);
 
 /** The checked, loaded projects with their selection; `openProject` stands in for the open one. */
 function exportEntries(
@@ -63,7 +65,9 @@ function ModePicker({ mode, onChange }: { mode: ExportMode; onChange: (mode: Exp
   return (
     <RadioGroup
       value={mode}
-      onValueChange={(value) => onChange(MODES.find((m) => m.id === value)?.id ?? 'full')}
+      onValueChange={(value) => {
+        if (isOneOf(MODE_IDS, value)) onChange(value);
+      }}
       className="grid gap-2 @2xl/dialog:grid-cols-3"
     >
       {MODES.map((m) => (

@@ -5,6 +5,7 @@ import { PageShell } from '@resourcepackbuilder/ui';
 import { Badge } from '@resourcepackbuilder/ui/components/badge';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@resourcepackbuilder/ui/components/tabs';
 import { FieldContext } from '../../components/editor';
+import { isOneOf } from '../../lib/isOneOf';
 import { usePlan } from '../../store/PlanProvider';
 import { useOpenProject } from '../../store/project';
 import { setEditorTab, useUiStore, type EditorTab } from '../../store/ui';
@@ -20,8 +21,6 @@ const TABS: EditorTab[] = ['general', 'model', 'attributes', 'components', 'mech
 
 /** Tabs that only hold properties of one group. */
 const PROPERTY_TABS = ['attributes', 'components', 'mechanics'] as const;
-
-const isEditorTab = (value: unknown): value is EditorTab => TABS.some((tab) => tab === value);
 
 /** Number shown on a tab: how many entries it has. */
 function tabCounts(item: Item): Partial<Record<EditorTab, number>> {
@@ -49,7 +48,7 @@ function ItemEditorContent({ item }: { item: Item }) {
         <Tabs
           value={activeTab}
           onValueChange={(value) => {
-            if (isEditorTab(value)) setEditorTab(value);
+            if (isOneOf(TABS, value)) setEditorTab(value);
           }}
           className="gap-5"
         >

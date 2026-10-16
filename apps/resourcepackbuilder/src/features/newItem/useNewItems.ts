@@ -14,7 +14,7 @@ import { initialNewItemState, newItemReducer, sourceKey, type ItemMeta } from '.
 export type IdError = 'idRequired' | 'idInvalid' | 'idExists' | 'idDuplicate';
 
 /** One item the dialog will create: its draft (null without a model) and what was entered for it. */
-export interface NewItemEntry {
+interface NewItemEntry {
   draft: ImportDraft | null;
   meta: ItemMeta;
   idError: IdError | null;

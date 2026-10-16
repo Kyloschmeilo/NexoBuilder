@@ -6,6 +6,7 @@ import { SegmentedControl } from '@resourcepackbuilder/ui';
 import { Field, FieldDescription, FieldLabel, FieldTitle } from '@resourcepackbuilder/ui/components/field';
 import { NativeSelect, NativeSelectOption } from '@resourcepackbuilder/ui/components/native-select';
 import { setLocale, useLocaleStore } from '../../i18n/locale';
+import { isOneOf } from '../../lib/isOneOf';
 import { THEME_CHOICES } from '../../theme/choices';
 import { useTheme } from '../../theme/ThemeProvider';
 
@@ -24,8 +25,8 @@ export function DeviceSettings() {
           className="w-full"
           value={locale}
           onChange={(e) => {
-            const next = SUPPORTED_LOCALES.find((l) => l === e.target.value);
-            if (next) setLocale(next);
+            const next = e.target.value;
+            if (isOneOf(SUPPORTED_LOCALES, next)) setLocale(next);
           }}
         >
           {SUPPORTED_LOCALES.map((l) => (
