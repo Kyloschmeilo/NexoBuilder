@@ -4,13 +4,13 @@
  *  2. add automatic values (itemname, material, Pack.model, Components.item_model)
  *  3. overlay the user's additional YAML
  */
-import { deepClone, deepMerge, isPlainObject } from '../object';
+import { deepClone, deepMerge, isPlainObject, mapData } from '../object';
 import type { ConfigObject, ConfigValue, Item, Project } from '../project/types';
 import { slotForMaterial, type ItemArmor } from './armor';
 import type { Field } from './fields';
 import { getPath, setPath } from './configPath';
 import { itemMaterial } from './material';
-import { CONFIG_PROPERTIES } from './schema';
+import { CONFIG_PROPERTIES, unknownConfigPaths } from './schema';
 import { MODEL_TOKEN } from './tokens';
 import { parseYaml } from './yaml';
 
@@ -75,20 +75,19 @@ export function buildItemConfig(context: BuildContext): BuildResult {
   const source = deepClone(item.config);
 
   // 1. Clean up properties according to the schema
-  const cleaned: Record<string, unknown> = {};
-  const handled = new Set<string>();
-  const handledParents = new Set<string>();
+  const cleaned: ConfigObject = {};
   for (const def of CONFIG_PROPERTIES) {
     const value = getPath(source, def.path);
     if (value === undefined) continue;
-    handled.add(def.path.join('.'));
-    for (let i = 1; i < def.path.length; i++) handledParents.add(def.path.slice(0, i).join('.'));
     let pruned = pruneByField(value, def.field);
     if (pruned === undefined && def.keepEmpty && isPlainObject(value)) pruned = {};
-    if (pruned !== undefined) setPath(cleaned as ConfigObject, def.path, pruned as ConfigValue);
+    if (pruned !== undefined) setPath(cleaned, def.path, pruned as ConfigValue);
   }
-  // Take over values that belong to no known property unchanged
-  copyUnknown(source, cleaned, [], handled, handledParents);
+  // Take over values that belong to no known property (only empty ones are dropped)
+  for (const path of unknownConfigPaths(source)) {
+    const pruned = pruneGeneric(getPath(source, path));
+    if (pruned !== undefined) setPath(cleaned, path, pruned as ConfigValue);
+  }
 
   // 2. Resolve placeholders
   const resolved = resolveTokens(cleaned, modelKey) as Record<string, unknown>;
@@ -169,40 +168,9 @@ function section(parent: Record<string, unknown>, key: string): Record<string, u
   return isPlainObject(value) ? value : {};
 }
 
-function copyUnknown(
-  source: Record<string, unknown>,
-  target: Record<string, unknown>,
-  path: string[],
-  handled: Set<string>,
-  handledParents: Set<string>,
-) {
-  for (const [key, value] of Object.entries(source)) {
-    const full = [...path, key];
-    const id = full.join('.');
-    if (handled.has(id)) continue;
-    if (handledParents.has(id) && isPlainObject(value)) {
-      const nested = section(target, key);
-      copyUnknown(value, nested, full, handled, handledParents);
-      if (Object.keys(nested).length > 0) target[key] = nested;
-      continue;
-    }
-    const pruned = pruneGeneric(value);
-    if (pruned !== undefined) target[key] = pruned;
-  }
-}
-
+/** Replaces @model with the model's key (dropped if the item has no model). */
 function resolveTokens(value: unknown, modelKey: string | null): unknown {
-  if (value === MODEL_TOKEN) return modelKey ?? undefined;
-  if (Array.isArray(value)) return value.map((v) => resolveTokens(v, modelKey)).filter((v) => v !== undefined);
-  if (isPlainObject(value)) {
-    const out: Record<string, unknown> = {};
-    for (const [k, v] of Object.entries(value)) {
-      const r = resolveTokens(v, modelKey);
-      if (r !== undefined) out[k] = r;
-    }
-    return out;
-  }
-  return value;
+  return mapData(value, (leaf) => (leaf === MODEL_TOKEN ? (modelKey ?? undefined) : leaf));
 }
 
 /* ====================================================================== Pruning */
@@ -298,20 +266,12 @@ function trimTrailingEmpty(list: string[]): string[] {
 
 /** Pruning for values without a schema: remove empty strings/lists/objects. */
 function pruneGeneric(value: unknown): unknown {
+  return mapData(value, pruneScalar, { dropEmpty: true });
+}
+
+function pruneScalar(value: unknown): unknown {
   if (value === undefined || value === null) return undefined;
   if (typeof value === 'string') return isEmptyString(value) ? undefined : value;
   if (typeof value === 'number') return Number.isFinite(value) ? value : undefined;
-  if (Array.isArray(value)) {
-    const list = value.map(pruneGeneric).filter((v) => v !== undefined);
-    return list.length > 0 ? list : undefined;
-  }
-  if (isPlainObject(value)) {
-    const out: Record<string, unknown> = {};
-    for (const [k, v] of Object.entries(value)) {
-      const pruned = pruneGeneric(v);
-      if (pruned !== undefined) out[k] = pruned;
-    }
-    return Object.keys(out).length > 0 ? out : undefined;
-  }
   return value;
 }

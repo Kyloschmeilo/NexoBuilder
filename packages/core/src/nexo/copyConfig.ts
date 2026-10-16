@@ -12,7 +12,7 @@ import type { ArmorSettings } from './armor';
 import { deletePath, getPath, setPath } from './configPath';
 import { getPropertyValue, isPropertyActive, setPropertyValue } from './properties';
 import { getRecipeTypeInfo, type Recipe } from './recipes/model';
-import { CONFIG_PROPERTIES, MANAGED_TOP_LEVEL_KEYS, PROPERTIES, PROPERTY_GROUPS, type PropertyDef, type PropertyGroup } from './schema';
+import { MANAGED_TOP_LEVEL_KEYS, PROPERTIES, PROPERTY_GROUPS, unknownConfigPaths, type PropertyDef, type PropertyGroup } from './schema';
 import { ASSET_TOKEN_PREFIX } from './tokens';
 
 export type CopyCategory = 'material' | PropertyGroup | 'other' | 'rawYaml' | 'recipes';
@@ -76,29 +76,14 @@ export function copyItemConfig(item: Item, projectId: string): ItemConfigClipboa
 const copyableProperties = (group: PropertyGroup): PropertyDef[] =>
   PROPERTIES.filter((p) => p.group === group && !NEVER_COPIED_PROPERTIES.has(p.id));
 
-/** Top-level keys that belong to no property (e.g. from imported configs) */
-function otherKeys(config: ConfigObject): string[] {
-  const roots = new Set(CONFIG_PROPERTIES.map((p) => p.path[0]));
-  return Object.keys(config).filter((k) => !roots.has(k) && !MANAGED_TOP_LEVEL_KEYS.includes(k));
-}
-
 /**
- * Unknown sub-keys in Components/Mechanics (that have no property of their own).
- * Unknown keys under Pack (model, textures, parent_model …) belong to the model and stay with the target.
+ * Config values of the "other" category: everything without a property (see unknownConfigPaths), top-level keys
+ * first. Unknown keys under Pack (model, textures, parent_model …) belong to the model and stay with the target.
  */
-function otherNestedPaths(config: ConfigObject): string[][] {
-  const known = new Set(CONFIG_PROPERTIES.map((p) => p.path.join('.')));
-  const sections = new Set(CONFIG_PROPERTIES.filter((p) => p.path.length > 1 && p.path[0] !== 'Pack').map((p) => p.path[0]));
-  const result: string[][] = [];
-  for (const section of sections) {
-    const value = config[section];
-    if (!isPlainObject(value)) continue;
-    for (const key of Object.keys(value)) {
-      const path = [section, key];
-      if (!known.has(path.join('.')) && !NEVER_COPIED_PROPERTIES.has(path.join('.'))) result.push(path);
-    }
-  }
-  return result;
+function otherPaths(config: ConfigObject): string[][] {
+  return unknownConfigPaths(config)
+    .filter((path) => path[0] !== 'Pack' && !MANAGED_TOP_LEVEL_KEYS.includes(path[0]) && !NEVER_COPIED_PROPERTIES.has(path.join('.')))
+    .sort((a, b) => a.length - b.length);
 }
 
 /**
@@ -120,7 +105,7 @@ export function summarizeClipboard(clip: ItemConfigClipboard): CategorySummary[]
     const text = (t: string): SummaryEntry => ({ text: t });
     let entries: SummaryEntry[];
     if (id === 'material') entries = typeof config.material === 'string' ? [text(config.material)] : [];
-    else if (id === 'other') entries = [...otherKeys(config), ...otherNestedPaths(config).map((p) => p.join('.'))].map(text);
+    else if (id === 'other') entries = otherPaths(config).map((p) => text(p.join('.')));
     else if (id === 'rawYaml')
       entries = clip.rawYaml.trim() ? [{ key: 'copy.rawYamlLines', params: { count: clip.rawYaml.trim().split('\n').length } }] : [];
     else if (id === 'recipes') entries = clip.recipes.map((r) => ({ key: getRecipeTypeInfo(r.type).label }));
@@ -172,12 +157,9 @@ export function pasteItemConfig(project: Project, target: Item, clip: ItemConfig
     for (const def of copyableProperties(group.id)) transferProperty(def);
   }
   if (categories.has('other')) {
-    const keys = new Set([...otherKeys(source), ...(mode === 'replace' ? otherKeys(config) : [])]);
-    for (const key of keys) transfer([key]);
-    const nested = new Map<string, string[]>();
-    for (const path of [...otherNestedPaths(source), ...(mode === 'replace' ? otherNestedPaths(config) : [])])
-      nested.set(path.join('.'), path);
-    for (const path of nested.values()) transfer(path);
+    const paths = new Map<string, string[]>();
+    for (const path of [...otherPaths(source), ...(mode === 'replace' ? otherPaths(config) : [])]) paths.set(path.join('.'), path);
+    for (const path of paths.values()) transfer(path);
   }
   if (categories.has('rawYaml') && (clip.rawYaml.trim() || mode === 'replace')) target.rawYaml = clip.rawYaml;
   if (categories.has('recipes') && (clip.recipes.length > 0 || mode === 'replace')) {

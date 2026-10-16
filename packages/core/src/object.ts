@@ -9,6 +9,41 @@ export function deepClone<T>(value: T): T {
   return structuredClone(value);
 }
 
+export interface MapDataOptions {
+  /** What an undefined list entry becomes; by default it is removed from the list */
+  listHole?: null;
+  /** Lists and objects that end up empty become undefined too */
+  dropEmpty?: boolean;
+}
+
+/**
+ * Rebuilds plain data (lists and plain objects) bottom-up: `leaf` maps every other value. A leaf or
+ * child that becomes undefined is dropped from its object and, unless `listHole` says otherwise, its list.
+ */
+export function mapData(value: unknown, leaf: (value: unknown) => unknown, options: MapDataOptions = {}): unknown {
+  if (Array.isArray(value)) {
+    const mapped = value.map((entry) => mapData(entry, leaf, options));
+    const list = options.listHole === null ? mapped.map((v) => (v === undefined ? null : v)) : mapped.filter((v) => v !== undefined);
+    return options.dropEmpty && list.length === 0 ? undefined : list;
+  }
+  if (isPlainObject(value)) {
+    const out: Record<string, unknown> = {};
+    for (const [key, entry] of Object.entries(value)) {
+      const mapped = mapData(entry, leaf, options);
+      if (mapped !== undefined) out[key] = mapped;
+    }
+    return options.dropEmpty && Object.keys(out).length === 0 ? undefined : out;
+  }
+  return leaf(value);
+}
+
+/** Calls `visit` for every value inside lists and objects that is neither (strings, numbers …). */
+export function forEachLeaf(value: unknown, visit: (value: unknown) => void): void {
+  if (Array.isArray(value)) value.forEach((entry) => forEachLeaf(entry, visit));
+  else if (typeof value === 'object' && value !== null) Object.values(value).forEach((entry) => forEachLeaf(entry, visit));
+  else visit(value);
+}
+
 /**
  * Recursively merges `patch` into `base` (objects are merged, everything else is replaced).
  * Returns a new object; the inputs are not modified.
