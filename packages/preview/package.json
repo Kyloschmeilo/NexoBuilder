@@ -2,11 +2,11 @@
   "name": "@resourcepackbuilder/preview",
   "private": true,
   "version": "0.0.0",
-  "description": "3D preview and thumbnails for Minecraft models (three.js).",
+  "description": "3D preview and thumbnails of imported Minecraft models with three.js – no React, no UI.",
   "type": "module",
+  "sideEffects": false,
   "exports": {
-    ".": "./src/index.ts",
-    "./styles.css": "./src/styles.css"
+    ".": "./src/index.ts"
   },
   "scripts": {
     "typecheck": "tsc -b",
@@ -14,18 +14,11 @@
     "lint": "eslint ."
   },
   "dependencies": {
-    "@resourcepackbuilder/i18n": "*",
     "@resourcepackbuilder/minecraft": "*",
-    "@resourcepackbuilder/ui": "*",
-    "lucide-react": "^1.52.0",
-    "next-intl": "^4.14.9",
     "three": "^0.186.1"
   },
   "devDependencies": {
     "@resourcepackbuilder/config": "*",
     "@types/three": "^0.186.0"
-  },
-  "peerDependencies": {
-    "react": "^19.3.0"
   }
 }

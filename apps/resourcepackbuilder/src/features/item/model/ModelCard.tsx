@@ -6,7 +6,7 @@ import { issuesFor } from '@resourcepackbuilder/utils';
 import { CollapsibleSection, pickFiles, SectionCard } from '@resourcepackbuilder/ui';
 import { Alert, AlertDescription } from '@resourcepackbuilder/ui/components/alert';
 import { Button } from '@resourcepackbuilder/ui/components/button';
-import { ModelPreview } from '@resourcepackbuilder/preview';
+import { ModelPreview } from '../../../components/ModelPreview';
 import { setItemModel } from '../../../commands/items';
 import { IssueList } from '../../../components/IssueList';
 import { usePlan } from '../../../shell/PlanProvider';

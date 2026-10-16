@@ -5,7 +5,7 @@ import { getTextureTemplate, type ImportDraft, isPngDataUrl } from '@resourcepac
 import type { ItemIdError, ItemMeta, MetaPatch } from '@resourcepackbuilder/core/project';
 import { AutoGrid, IconButton, SectionCard } from '@resourcepackbuilder/ui';
 import { Alert, AlertDescription } from '@resourcepackbuilder/ui/components/alert';
-import { ModelPreview } from '@resourcepackbuilder/preview';
+import { ModelPreview } from '../../components/ModelPreview';
 import { IssueCountBadges } from '../../components/IssueCountBadges';
 import { IssueList } from '../../components/IssueList';
 import { useErrorMessage } from '../../i18n/errors';

@@ -1,15 +1,13 @@
+/** Interactive 3D preview of an imported model: the React frame (display slot select, reset, notes) around the preview package. */
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import * as THREE from 'three';
 import { RotateCcw } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 import { IconButton } from '@resourcepackbuilder/ui';
 import { NativeSelect, NativeSelectOption } from '@resourcepackbuilder/ui/components/native-select';
 import type { DisplaySlot, ImportedModel } from '@resourcepackbuilder/minecraft';
-import { buildPreviewModel } from './modelGeometry';
-import { createStage, type Stage } from './stage';
-import { createModelObject } from './threeModel';
+import { buildPreviewModel, createStage, showModel, type Stage } from '@resourcepackbuilder/preview';
 
-/** Display slots that can be previewed (a choice of core's DISPLAY_SLOTS); labels live in the `preview.display` messages. */
+/** Display slots that can be previewed (a choice of minecraft's DISPLAY_SLOTS); labels live in the `preview.display` messages. */
 const DISPLAY_OPTIONS = [
   'none',
   'gui',
@@ -22,24 +20,6 @@ const DISPLAY_OPTIONS = [
 type DisplayOption = (typeof DISPLAY_OPTIONS)[number];
 
 const isDisplayOption = (value: string): value is DisplayOption => (DISPLAY_OPTIONS as readonly string[]).includes(value);
-
-/** Ground grid and block outline (one block = 16 pixels). */
-function createBlockHelpers(): { object: THREE.Object3D; dispose: () => void } {
-  const group = new THREE.Group();
-  const grid = new THREE.GridHelper(16, 16, 0x54766a, 0x1f302a);
-  grid.position.y = -8;
-  const outlineMaterial = new THREE.LineBasicMaterial({ color: 0x54766a, transparent: true, opacity: 0.6 });
-  const outline = new THREE.LineSegments(new THREE.EdgesGeometry(new THREE.BoxGeometry(16, 16, 16)), outlineMaterial);
-  group.add(grid, outline);
-  return {
-    object: group,
-    dispose: () => {
-      grid.dispose();
-      outline.geometry.dispose();
-      outlineMaterial.dispose();
-    },
-  };
-}
 
 export interface ModelPreviewProps {
   model: ImportedModel;
@@ -75,26 +55,8 @@ export function ModelPreview({ model, height = 340, showToolbar = true }: ModelP
 
   useEffect(() => {
     const stage = stageRef.current;
-    if (!stage || preview.kind === 'empty') return;
-    const object = createModelObject(preview, displayTransform, stage.render);
-    const helpers = !displayTransform && preview.kind === 'elements' ? createBlockHelpers() : null;
-    stage.scene.add(object.root);
-    if (helpers) stage.scene.add(helpers.object);
-
-    const box = new THREE.Box3().setFromObject(object.root);
-    if (box.isEmpty()) box.set(new THREE.Vector3(-8, -8, -8), new THREE.Vector3(8, 8, 8));
-    const direction = preview.kind === 'generated' && !displayTransform ? new THREE.Vector3(0, 0.12, 1) : new THREE.Vector3(1, 0.75, 1.15);
-    stage.frame(box, direction);
-
-    return () => {
-      stage.scene.remove(object.root);
-      object.dispose();
-      if (helpers) {
-        stage.scene.remove(helpers.object);
-        helpers.dispose();
-      }
-      stage.render();
-    };
+    if (!stage) return;
+    return showModel(stage, preview, displayTransform);
   }, [preview, displayTransform, resetCounter]);
 
   const hasDisplay = (slot: DisplayOption) => slot === 'none' || !!model.json.display?.[slot];

@@ -3,7 +3,7 @@ import { ArrowDown, ArrowUp, Box, RefreshCw, Trash2 } from 'lucide-react';
 import type { ImportedModel } from '@resourcepackbuilder/minecraft';
 import { IconButton, Thumb } from '@resourcepackbuilder/ui';
 import { Item, ItemActions, ItemContent, ItemDescription, ItemMedia, ItemTitle } from '@resourcepackbuilder/ui/components/item';
-import { useThumbnail } from '@resourcepackbuilder/preview';
+import { useThumbnail } from '../../../components/useThumbnail';
 import { IssueCountBadges } from '../../../components/IssueCountBadges';
 
 const THUMB_SIZE = 44;

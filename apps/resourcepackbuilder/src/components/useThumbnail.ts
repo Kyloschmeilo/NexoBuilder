@@ -1,7 +1,7 @@
-/** React access to the model thumbnails (rendering and caching: see thumbnail.ts). */
+/** React access to the model thumbnails (rendering and caching live in the preview package). */
 import { useEffect, useState } from 'react';
 import type { ImportedModel } from '@resourcepackbuilder/minecraft';
-import { cachedThumbnail, renderThumbnail } from './thumbnail';
+import { cachedThumbnail, renderThumbnail } from '@resourcepackbuilder/preview';
 
 /** The thumbnail of `model` (PNG data URL), or `null` while rendering or when there is nothing to show. */
 export function useThumbnail(model: ImportedModel | null): string | null {

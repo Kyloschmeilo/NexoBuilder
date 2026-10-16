@@ -7,7 +7,7 @@ import { clipboardLabel } from '@resourcepackbuilder/core/nexo';
 import { IconButton, PageHeader, Thumb, Tip } from '@resourcepackbuilder/ui';
 import { Badge } from '@resourcepackbuilder/ui/components/badge';
 import { Button } from '@resourcepackbuilder/ui/components/button';
-import { useThumbnail } from '@resourcepackbuilder/preview';
+import { useThumbnail } from '../../components/useThumbnail';
 import { IssueCountBadges } from '../../components/IssueCountBadges';
 import { MiniMessageBox } from '../../components/miniMessage/MiniMessageBox';
 import { MiniMessageLine } from '../../components/miniMessage/MiniMessageLine';

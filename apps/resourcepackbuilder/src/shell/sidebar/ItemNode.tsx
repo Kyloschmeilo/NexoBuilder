@@ -3,7 +3,7 @@ import { useTranslations } from 'next-intl';
 import { itemLabel } from '@resourcepackbuilder/core/project';
 import { clipboardLabel } from '@resourcepackbuilder/core/nexo';
 import { type MenuEntry, StatusDot, Thumb, TREE_INDENT_PX, treeRowSlots } from '@resourcepackbuilder/ui';
-import { useThumbnail } from '@resourcepackbuilder/preview';
+import { useThumbnail } from '../../components/useThumbnail';
 import { moveItem } from '../../commands/items';
 import { useItemActions } from '../../features/item/useItemActions';
 import { useClipboardStore } from '../../store/clipboard';

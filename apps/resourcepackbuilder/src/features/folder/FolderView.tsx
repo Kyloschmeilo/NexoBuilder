@@ -7,7 +7,7 @@ import { AutoGrid, DropZone, IconButton, PageHeader, PageShell, Thumb, Tip } fro
 import { Badge } from '@resourcepackbuilder/ui/components/badge';
 import { Button } from '@resourcepackbuilder/ui/components/button';
 import { Item, ItemContent, ItemDescription, ItemMedia, ItemTitle } from '@resourcepackbuilder/ui/components/item';
-import { useThumbnail } from '@resourcepackbuilder/preview';
+import { useThumbnail } from '../../components/useThumbnail';
 import { IssueCountBadges } from '../../components/IssueCountBadges';
 import { Section } from '../../components/Section';
 import { usePlan } from '../../shell/PlanProvider';
