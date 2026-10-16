@@ -186,9 +186,11 @@ function crossProjectIssues(projects: PlannedProject[]): Issue[] {
     if (otherPack) {
       error('selection.packNameClash', { first: otherPack, second: name, pack });
     }
-    for (const { item } of plan.items) {
-      const other = firstOwner(itemIds, item.itemId, index);
-      if (other) error('selection.itemIdClash', { id: item.itemId, first: other, second: name });
+    // Items clash only on the same key within one target (CraftEngine keys carry the namespace)
+    const targetId = packTargetFor(project).id;
+    for (const { yamlKey } of plan.items) {
+      const other = firstOwner(itemIds, `${targetId}|${yamlKey}`, index);
+      if (other) error('selection.itemIdClash', { id: yamlKey, first: other, second: name });
     }
     for (const kind of MEDIA_KIND_LIST) {
       for (const entry of mediaList(project, kind)) {

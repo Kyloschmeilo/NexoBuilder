@@ -43,25 +43,22 @@ function archiveTargets(multi: MultiExportPlan): PackTarget[] {
   return [...new Set(multi.projects.map((e) => packTargetFor(e.project)))];
 }
 
-/** Whether the archive holds several plugin folders (projects of different targets) and is extracted into the server folder. */
-function isPrefixed(multi: MultiExportPlan): boolean {
-  return archiveTargets(multi).length > 1;
-}
-
 /**
  * Where a project's plugin files go in the archive. When all projects share a plugin folder, the
- * archive is extracted into it (no prefix); projects of different targets each get their plugin folder.
+ * archive is extracted into it (no prefix); projects of different targets (`prefixed`, the archive
+ * then holds several plugin folders and is extracted into the server folder) each get their plugin folder.
  */
-function pluginPrefix(multi: MultiExportPlan, project: Project): string {
-  return isPrefixed(multi) ? `${packTargetFor(project).layout.pluginDir}/` : '';
+function pluginPrefix(prefixed: boolean, project: Project): string {
+  return prefixed ? `${packTargetFor(project).layout.pluginDir}/` : '';
 }
 
 /** The files of the plugin folders (item configs, recipes, glyphs, the pack and Nexo's sounds.yml/paintings.yml), by path. */
 function pluginEntries(multi: MultiExportPlan, pack: PackPlacement): Map<string, ArchiveEntry> {
   const entries = new Map<string, ArchiveEntry>();
+  const prefixed = archiveTargets(multi).length > 1;
   for (const { project, plan } of multi.projects) {
     const { layout } = packTargetFor(project);
-    const prefix = pluginPrefix(multi, project);
+    const prefix = pluginPrefix(prefixed, project);
     addAll(entries, plan.pluginFiles, prefix);
     if (pack === 'setting' && layout.packAsZip(project))
       setEntry(entries, prefix + layout.packLocation(project, true), { zip: plan.packFiles });
@@ -69,7 +66,7 @@ function pluginEntries(multi: MultiExportPlan, pack: PackPlacement): Map<string,
   }
   // Only Nexo plans carry root file entries; the files lie in the Nexo plugin folder
   const nexo = multi.projects.find((e) => e.plan.nexo);
-  if (nexo) addAll(entries, buildRootFiles(multi.projects.map((e) => e.plan)), pluginPrefix(multi, nexo.project));
+  if (nexo) addAll(entries, buildRootFiles(multi.projects.map((e) => e.plan)), pluginPrefix(prefixed, nexo.project));
   return entries;
 }
 

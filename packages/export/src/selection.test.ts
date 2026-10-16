@@ -18,8 +18,8 @@ import { singleExport } from '../test-utils/export';
 
 const PNG16 = makePngDataUrl(16, 16);
 
-function project(name: string, ns: string, ids: { weapons: string[]; furniture: string[] }): Project {
-  const p = createProject(name, ns);
+function project(name: string, ns: string, ids: { weapons: string[]; furniture: string[] }, target: Project['target'] = 'nexo'): Project {
+  const p = createProject(name, ns, undefined, target);
   const weapons = createFolder('Waffen', null);
   const furniture = createFolder('Möbel', null);
   const chairs = createFolder('Stühle', furniture.id);
@@ -125,6 +125,24 @@ describe('Export of multiple projects', () => {
     expect(
       warnings.some((i) => i.code === 'selection.assetFileClash' && i.args?.path === 'assets/shared/models/item/waffen/ruby_sword.json'),
     ).toBe(true);
+  });
+
+  it('compares item IDs by their YAML key and only within the same target', () => {
+    const clashes = (a: Project, b: Project) =>
+      planMultiExport([{ project: a }, { project: b }]).issues.filter((i) => i.code === 'selection.itemIdClash');
+    // CraftEngine keys carry the namespace, so the same ID in two namespaces is fine
+    const ceA = project('Alpha', 'alpha', { weapons: ['ruby_sword'], furniture: [] }, 'craftengine');
+    const ceB = project('Beta', 'beta', { weapons: ['ruby_sword'], furniture: [] }, 'craftengine');
+    expect(clashes(ceA, ceB)).toEqual([]);
+    // Nexo and CraftEngine never share a registry
+    const nexo = project('Gamma', 'gamma', { weapons: ['ruby_sword'], furniture: [] });
+    expect(clashes(nexo, ceA)).toEqual([]);
+    // The same namespaced key within CraftEngine still clashes
+    const ceC = project('Delta', 'alpha', { weapons: ['ruby_sword'], furniture: [] }, 'craftengine');
+    expect(clashes(ceA, ceC).map((i) => i.args?.id)).toEqual(['alpha:ruby_sword']);
+    // Two Nexo projects with the same ID still clash
+    const nexo2 = project('Epsilon', 'epsilon', { weapons: ['ruby_sword'], furniture: [] });
+    expect(clashes(nexo, nexo2).map((i) => i.args?.id)).toEqual(['ruby_sword']);
   });
 
   it('tags messages with the project', () => {
