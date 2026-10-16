@@ -19,6 +19,7 @@
   },
   "devDependencies": {
     "@resourcepackbuilder/config": "*",
-    "@resourcepackbuilder/test-utils": "*"
+    "@resourcepackbuilder/test-utils": "*",
+    "vitest": "^5.0.3"
   }
 }

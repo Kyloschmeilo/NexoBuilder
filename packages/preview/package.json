@@ -19,6 +19,7 @@
   },
   "devDependencies": {
     "@resourcepackbuilder/config": "*",
-    "@types/three": "^0.186.0"
+    "@types/three": "^0.186.0",
+    "vitest": "^5.0.3"
   }
 }
