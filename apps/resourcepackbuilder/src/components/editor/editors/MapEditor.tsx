@@ -6,10 +6,11 @@ import { isPlainObject } from '@resourcepackbuilder/core/object';
 import { IconButton } from '@resourcepackbuilder/ui';
 import { Card, CardContent, CardHeader } from '@resourcepackbuilder/ui/components/card';
 import { Button } from '@resourcepackbuilder/ui/components/button';
+import { FieldError } from '@resourcepackbuilder/ui/components/field';
 import { Input } from '@resourcepackbuilder/ui/components/input';
 import { useSchemaText } from '../../useSchemaText';
 import { FieldRenderer } from '../FieldRenderer';
-import { FieldErrorText, FieldShell } from '../FieldShell';
+import { FieldShell } from '../FieldShell';
 import { Datalist } from '../inputs/TextInput';
 import type { EditorProps } from '../types';
 import { useDraft } from '../useDraft';
@@ -120,7 +121,7 @@ export function MapEditor({ field, value, onChange, hideLabel }: EditorProps<Map
             <Plus /> {t('field.addItem', { item: keyLabel })}
           </Button>
         </div>
-        {keyTaken && <FieldErrorText>{t('field.keyTaken', { key: trimmedKey })}</FieldErrorText>}
+        {keyTaken && <FieldError className="text-xs leading-4">{t('field.keyTaken', { key: trimmedKey })}</FieldError>}
         <Datalist id={listId} choices={field.keyOptions?.filter((option) => !(option.value in map))} />
       </div>
     </FieldShell>
