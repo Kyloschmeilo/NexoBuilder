@@ -12,8 +12,8 @@ import { Item, ItemContent, ItemDescription, ItemMedia, ItemTitle } from '@resou
 import { useThumbnail } from '@resourcepackbuilder/preview';
 import { IssueCountBadges } from '../../components/IssueCountBadges';
 import { Section } from '../../components/Section';
-import { openDialog } from '../../store/dialogs';
 import { usePlan } from '../../store/PlanProvider';
+import { newItemDialog } from '../newItem/NewItemDialog';
 import { useOpenProject } from '../../store/project';
 import { select } from '../../store/ui';
 import { MODEL_ACCEPT, MODEL_FORMATS } from '../../components/modelFiles';
@@ -46,7 +46,7 @@ export function FolderView({ folderId }: { folderId: string }) {
         }
         actions={
           <>
-            <Button onClick={() => openDialog({ id: 'newItem', props: { folderId } })}>
+            <Button onClick={() => newItemDialog.openWithPayload({ folderId })}>
               <Plus /> {t('newItem')}
             </Button>
             <IconButton label={t('newSubfolder')} variant="outline" size="icon" onClick={() => void folders.create(folderId)}>
@@ -63,7 +63,7 @@ export function FolderView({ folderId }: { folderId: string }) {
       />
 
       <DropZone
-        onFiles={(files) => openDialog({ id: 'newItem', props: { folderId, files } })}
+        onFiles={(files) => newItemDialog.openWithPayload({ folderId, files })}
         accept={MODEL_ACCEPT}
         title={t('dropTitle')}
         subtitle={t('dropSubtitle')}

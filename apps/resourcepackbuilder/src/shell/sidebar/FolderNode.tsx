@@ -16,8 +16,8 @@ import { moveFolder } from '../../commands/folders';
 import { moveItem } from '../../commands/items';
 import { useFolderActions } from '../../features/folder/useFolderActions';
 import { useItemActions } from '../../features/item/useItemActions';
+import { newItemDialog } from '../../features/newItem/NewItemDialog';
 import { clipboardLabel, useClipboardStore } from '../../store/clipboard';
-import { openDialog } from '../../store/dialogs';
 import { select, setExpanded, useUiStore } from '../../store/ui';
 import { ItemNode } from './ItemNode';
 import { FOLDER_ICON_PADDING_PX, FOLDER_PADDING_PX } from './rowStyles';
@@ -35,7 +35,7 @@ function useFolderDrop(folderId: string) {
       if (draggedFolderId !== folderId) moveFolder(draggedFolderId, folderId);
     } else {
       void filesFromDataTransfer(data).then((files) => {
-        if (files.length) openDialog({ id: 'newItem', props: { folderId, files } });
+        if (files.length) newItemDialog.openWithPayload({ folderId, files });
       });
     }
   });
@@ -56,7 +56,7 @@ export function FolderNode({ folderId, depth, tree }: { folderId: string; depth:
 
   const isOpen = search !== null || isExpanded;
   const count = tree.itemCounts.get(folderId) ?? 0;
-  const newItem = () => openDialog({ id: 'newItem', props: { folderId } });
+  const newItem = () => newItemDialog.openWithPayload({ folderId });
   const activate = () => {
     select({ kind: 'folder', id: folderId });
     if (!search) setExpanded(folderId, !isExpanded);

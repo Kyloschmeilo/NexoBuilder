@@ -2,7 +2,8 @@ import { useEffect } from 'react';
 import { useTranslations } from 'next-intl';
 import type { Project } from '@resourcepackbuilder/core/project/types';
 import { carriesFiles, filesFromDataTransfer } from '@resourcepackbuilder/ui';
-import { isAnyDialogOpen, openDialog } from '../store/dialogs';
+import { newItemDialog } from '../features/newItem/NewItemDialog';
+import { isAnyDialogOpen } from '../store/dialogs';
 import { notify } from './notify';
 import { getProject } from '../store/project';
 import { useUiStore, type Selection } from '../store/ui';
@@ -42,7 +43,7 @@ export function useWindowDrop(): void {
         return;
       }
       const files = await filesFromDataTransfer(e.dataTransfer);
-      if (files.length) openDialog({ id: 'newItem', props: { folderId, files } });
+      if (files.length) newItemDialog.openWithPayload({ folderId, files });
     };
     window.addEventListener('dragover', handleDragOver);
     window.addEventListener('drop', handleDrop);

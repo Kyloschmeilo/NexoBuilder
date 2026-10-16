@@ -15,9 +15,9 @@ import { MiniMessageLine } from '../../components/miniMessage/MiniMessageLine';
 import { useBusyAction } from '../../hooks/useBusyAction';
 import { useServices } from '../../services/bootstrap';
 import { clipboardLabel, useClipboardStore } from '../../store/clipboard';
-import { openDialog } from '../../store/dialogs';
 import { useOpenProject } from '../../store/project';
 import { useTestServerStore } from '../../store/testServer';
+import { moveItemDialog } from '../moveItem/MoveItemDialog';
 import { useItemActions } from './useItemActions';
 
 /** "Give in test server" – only visible while the local test server is running. */
@@ -89,7 +89,7 @@ function ItemActions({ item }: { item: Item }) {
       <Button variant="outline" size="sm" onClick={() => actions.duplicate(item)}>
         <Copy /> {tCommon('duplicate')}
       </Button>
-      <IconButton label={t('editor.move')} variant="outline" onClick={() => openDialog({ id: 'moveItem', props: { itemId: item.id } })}>
+      <IconButton label={t('editor.move')} variant="outline" onClick={() => moveItemDialog.openWithPayload({ itemId: item.id })}>
         <FolderInput />
       </IconButton>
       <IconButton label={tCommon('delete')} variant="destructive" onClick={() => void actions.remove(item)}>

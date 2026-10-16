@@ -6,7 +6,7 @@ import { useThumbnail } from '@resourcepackbuilder/preview';
 import { moveItem } from '../../commands/items';
 import { useItemActions } from '../../features/item/useItemActions';
 import { clipboardLabel, useClipboardStore } from '../../store/clipboard';
-import { openDialog } from '../../store/dialogs';
+import { moveItemDialog } from '../../features/moveItem/MoveItemDialog';
 import { select, useUiStore } from '../../store/ui';
 import { ITEM_PADDING_PX } from './rowStyles';
 import type { SidebarTree } from './treeIndex';
@@ -32,7 +32,7 @@ export function ItemNode({ itemId, depth, tree }: { itemId: string; depth: numbe
 
   const entries: MenuEntry[] = [
     { icon: <Copy />, label: tCommon('duplicate'), onSelect: () => actions.duplicate(item) },
-    { icon: <FolderInput />, label: t('itemMenu.move'), onSelect: () => openDialog({ id: 'moveItem', props: { itemId } }) },
+    { icon: <FolderInput />, label: t('itemMenu.move'), onSelect: () => moveItemDialog.openWithPayload({ itemId }) },
     'separator',
     {
       icon: <ClipboardCopy />,

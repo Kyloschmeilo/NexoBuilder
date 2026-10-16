@@ -1,8 +1,7 @@
-import { useEffect, useMemo, useRef, useState } from 'react';
+import { useEffect, useEffectEvent, useMemo, useState } from 'react';
 import type { Project } from '@resourcepackbuilder/core/project/types';
 import { summarizeProject, type ProjectSummary } from '@resourcepackbuilder/core/project/summary';
 import { useServices } from '../../services/bootstrap';
-import { setOtherProjectIncluded } from '../../store/exportChoices';
 
 /** A project the export dialog offers. */
 export interface ProjectChoice {
@@ -13,42 +12,52 @@ export interface ProjectChoice {
 }
 
 /**
- * The open project followed by the other saved projects. Other projects are only loaded once they are checked; one
- * that cannot be loaded is unchecked again.
+ * The open project followed by the other saved projects. Other projects are loaded once they are checked – each at
+ * most once per dialog opening (the loads are kept by id); one that cannot be loaded is reported via `onLoadFailed`.
  */
-export function useProjectChoices(openProject: Project, includedIds: ReadonlySet<string>) {
+export function useProjectChoices(openProject: Project, includedIds: ReadonlySet<string>, onLoadFailed: (projectId: string) => void) {
   const { repository } = useServices();
   const [others, setOthers] = useState<ProjectSummary[]>([]);
+  const [loads] = useState(() => new Map<string, Promise<Project | null>>());
   const [loaded, setLoaded] = useState<Record<string, Project>>({});
-  const requested = useRef(new Set<string>());
+  const reportFailure = useEffectEvent(onLoadFailed);
 
   useEffect(() => {
     let isCurrent = true;
-    void repository.list().then((list) => {
-      if (isCurrent) setOthers(list.filter((p) => p.id !== openProject.id));
-    });
+    repository.list().then(
+      (list) => {
+        if (isCurrent) setOthers(list.filter((p) => p.id !== openProject.id));
+      },
+      (err: unknown) => console.warn('Could not list the saved projects', err),
+    );
     return () => {
       isCurrent = false;
     };
   }, [openProject.id, repository]);
 
   useEffect(() => {
+    let isCurrent = true;
     for (const { id } of others) {
-      if (!includedIds.has(id) || requested.current.has(id)) continue;
-      requested.current.add(id);
-      repository
-        .load(id)
-        .catch(() => null)
-        .then((project) => {
-          if (project) {
-            setLoaded((prev) => ({ ...prev, [id]: project }));
-          } else {
-            requested.current.delete(id);
-            setOtherProjectIncluded(id, false);
-          }
-        });
+      if (!includedIds.has(id)) continue;
+      let load = loads.get(id);
+      if (!load) {
+        load = repository.load(id).catch(() => null);
+        loads.set(id, load);
+      }
+      void load.then((project) => {
+        if (!isCurrent) return;
+        if (project) {
+          setLoaded((prev) => (prev[id] === project ? prev : { ...prev, [id]: project }));
+        } else {
+          loads.delete(id); // checking it again tries again
+          reportFailure(id);
+        }
+      });
     }
-  }, [others, includedIds, repository]);
+    return () => {
+      isCurrent = false;
+    };
+  }, [others, includedIds, loads, repository]);
 
   const choices = useMemo(
     (): ProjectChoice[] => [

@@ -4,15 +4,16 @@ import { FolderOpen, FolderSync, RefreshCw, TriangleAlert, Unplug, Users } from 
 import { Tip } from '@resourcepackbuilder/ui';
 import { Alert, AlertDescription } from '@resourcepackbuilder/ui/components/alert';
 import { Button } from '@resourcepackbuilder/ui/components/button';
+import { createDialogHandle } from '@resourcepackbuilder/ui/components/dialog';
 import { Field, FieldDescription, FieldLabel, FieldTitle } from '@resourcepackbuilder/ui/components/field';
 import { Input } from '@resourcepackbuilder/ui/components/input';
 import { Spinner } from '@resourcepackbuilder/ui/components/spinner';
-import { DialogFrame } from '../../components/DialogFrame';
+import { DialogFrame, FeatureDialog } from '../../components/DialogFrame';
 import { useErrorMessage } from '../../i18n/errors';
 import { richTags } from '../../i18n/richTags';
 import { useServices } from '../../services/bootstrap';
 import type { ShareSync } from '../../services/shareSync';
-import { closeDialog, confirm } from '../../store/dialogs';
+import { confirm } from '../../store/dialogs';
 import { useBusyAction } from '../../hooks/useBusyAction';
 import { notify } from '../../shell/notify';
 import { useOpenProject } from '../../store/project';
@@ -160,14 +161,17 @@ function SharedProject({ shareSync }: { shareSync: ShareSync }) {
   );
 }
 
-export function ShareDialog() {
+/** Opens the sharing settings of the open project. */
+export const shareDialog = createDialogHandle<void>();
+
+function ShareFrame() {
   const t = useTranslations('dialogs.share');
   const tCommon = useTranslations('common');
   const shareSync = useServices().share;
   const project = useOpenProject();
   const isShared = useShareStore((share) => isProjectShared(share, project.id));
   return (
-    <DialogFrame title={t('title')} icon={<Users />} footer={<Button onClick={closeDialog}>{tCommon('done')}</Button>}>
+    <DialogFrame title={t('title')} icon={<Users />} footer={<Button onClick={() => shareDialog.close()}>{tCommon('done')}</Button>}>
       {!shareSync ? (
         <Alert variant="warning">
           <TriangleAlert />
@@ -180,4 +184,9 @@ export function ShareDialog() {
       )}
     </DialogFrame>
   );
+}
+
+/** Shares the open project via a folder, or shows and changes how it is shared. */
+export function ShareDialog() {
+  return <FeatureDialog handle={shareDialog}>{() => <ShareFrame />}</FeatureDialog>;
 }

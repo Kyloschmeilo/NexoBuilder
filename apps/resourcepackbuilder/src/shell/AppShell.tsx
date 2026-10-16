@@ -1,4 +1,11 @@
+import { ExportDialog } from '../features/export/ExportDialog';
+import { MoveItemDialog } from '../features/moveItem/MoveItemDialog';
+import { NewItemDialog } from '../features/newItem/NewItemDialog';
+import { PasteConfigDialog } from '../features/pasteConfig/PasteConfigDialog';
+import { ProjectsDialog } from '../features/projects/ProjectsDialog';
 import { Welcome } from '../features/projects/Welcome';
+import { SettingsDialog } from '../features/settings/SettingsDialog';
+import { ShareDialog } from '../features/share/ShareDialog';
 import { PlanProvider } from '../store/PlanProvider';
 import { useProjectStore } from '../store/project';
 import { useUiStore } from '../store/ui';
@@ -33,6 +40,13 @@ export function AppShell() {
         ) : (
           <Welcome />
         )}
+        <ProjectsDialog />
+        <NewItemDialog />
+        <MoveItemDialog />
+        <PasteConfigDialog />
+        <ExportDialog />
+        <ShareDialog />
+        <SettingsDialog />
         <DialogHost />
         <Toasts />
       </div>

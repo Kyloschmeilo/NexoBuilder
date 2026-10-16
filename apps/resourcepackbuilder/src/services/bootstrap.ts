@@ -4,7 +4,8 @@
 import { createContext, useContext } from 'react';
 import { useLocaleStore } from '../i18n/locale';
 import { desktopApi } from '../platform/desktop';
-import { setProject } from '../store/project';
+import { closeProjectDialogs } from '../store/dialogs';
+import { setProject, useProjectStore } from '../store/project';
 import { followOpenProject } from '../store/ui';
 import { createAutosave, type Autosave } from './autosave';
 import { createProjectRepository, type ProjectRepository } from './projectRepository';
@@ -33,6 +34,10 @@ async function openLastProject(repository: ProjectRepository): Promise<void> {
 
 export async function bootstrap(): Promise<AppServices> {
   const stopFollowing = followOpenProject();
+  // Dialogs of the open project close when it is closed or another one is opened
+  const stopClosingDialogs = useProjectStore.subscribe(({ project }, { project: previous }) => {
+    if (project?.id !== previous?.id) closeProjectDialogs();
+  });
   const repository = createProjectRepository();
   await openLastProject(repository);
 
@@ -60,6 +65,7 @@ export async function bootstrap(): Promise<AppServices> {
     testServer,
     dispose() {
       stopFollowing();
+      stopClosingDialogs();
       stopLocaleSync();
       testServer?.dispose();
       share?.dispose();
