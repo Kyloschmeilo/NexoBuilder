@@ -5,6 +5,7 @@ import { cn } from 'cn';
 import { Button } from '@resourcepackbuilder/ui/components/button';
 import { Input } from '@resourcepackbuilder/ui/components/input';
 import { SectionCard, Tip } from '@resourcepackbuilder/ui';
+import { consoleCommandText } from '@resourcepackbuilder/core/testServer/commands';
 import type { TestServerLogLine } from '../../platform/desktopApi';
 import { useTestServerStore } from '../../store/testServer';
 import { useCommandHistory } from './useCommandHistory';
@@ -34,7 +35,7 @@ export function ServerConsole() {
   }, [log]);
 
   const send = () => {
-    const text = command.trim().replace(/^\//, '');
+    const text = consoleCommandText(command);
     if (!text) return;
     void testServer.command(text);
     commit(text);

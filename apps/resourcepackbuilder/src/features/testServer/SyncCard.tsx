@@ -10,7 +10,7 @@ import { useErrorMessage } from '../../i18n/errors';
 import type { TestServerState } from '../../platform/desktopApi';
 import { usePlan } from '../../store/PlanProvider';
 import { useTestServerStore } from '../../store/testServer';
-import { syncSummary, type SyncSummaryPart } from './syncSummary';
+import { syncSummary, type SyncSummaryPart } from '@resourcepackbuilder/core/testServer/status';
 import { useSetConfig, useTestServer } from './useTestServer';
 
 /** Transfer of the project into the server: manual, automatic, and how the last transfers went. */

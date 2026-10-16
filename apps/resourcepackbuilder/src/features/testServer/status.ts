@@ -1,5 +1,5 @@
 import type { Tone } from '@resourcepackbuilder/ui';
-import type { PackStatus, TestServerStatus } from '../../platform/desktopApi';
+import type { PackStatus, TestServerStatus } from '@resourcepackbuilder/core/testServer/status';
 
 /** Tone per server status; the label is `media.testServer.status.<status>`. */
 export const TEST_SERVER_STATUS_TONE: Record<TestServerStatus, Tone> = {
@@ -18,13 +18,3 @@ export const PACK_STATUS_TONE: Record<PackStatus, Tone> = {
   ready: 'success',
   failed: 'error',
 };
-
-/** The server is on its way between stopped and running. */
-export function isTransitioning(status: TestServerStatus): boolean {
-  return status === 'preparing' || status === 'starting' || status === 'stopping';
-}
-
-/** Settings that only apply on start cannot be changed while the server is up (or on its way). */
-export function isConfigLocked(status: TestServerStatus): boolean {
-  return status !== 'stopped' && status !== 'error';
-}

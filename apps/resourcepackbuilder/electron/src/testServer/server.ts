@@ -4,7 +4,13 @@
  * Nexo builds the pack in the background. A "nexo reload" in the meantime starts a second build in parallel and both
  * fail (e.g. "items.json already exists"), so reloads wait until the current build is done.
  */
-import { isNexoReloadCommand, isPlayerName, NEXO_RELOAD_COMMAND, opCommand } from '@resourcepackbuilder/core/testServer/commands';
+import {
+  consoleCommandText,
+  isNexoReloadCommand,
+  isPlayerName,
+  NEXO_RELOAD_COMMAND,
+  opCommand,
+} from '@resourcepackbuilder/core/testServer/commands';
 import { parseServerLogLine } from '@resourcepackbuilder/core/testServer/serverLog';
 import { DesktopError, type PackStatus, type TestServerState } from '@resourcepackbuilder/desktop-contract';
 import { spawn, type ChildProcess, type ChildProcessWithoutNullStreams } from 'node:child_process';
@@ -102,7 +108,7 @@ function readLines(stream: Readable, onLine: (line: string) => void) {
 
 /** Sends a console command (without a leading slash). Returns false if the server is not running. */
 function sendCommand(command: string): boolean {
-  const text = command.replace(/[\r\n]+/g, ' ').trim();
+  const text = consoleCommandText(command);
   if (!text || !serverProcess) return false;
   pushLog(`> ${text}`, 'info');
   serverProcess.stdin.write(`${text}\n`);
