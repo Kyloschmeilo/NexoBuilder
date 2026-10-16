@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import {
+  type ConfigObject,
   createFolder,
   createItem,
   createProject,
@@ -150,6 +151,30 @@ describe('CraftEngine blocks', () => {
     const project = blockProject('1.21.11', (item) => (item.model = layered('a', 'b', 'c', 'd')));
     expect(blockOf(project)).toContain('parent: minecraft:block/cube_bottom_top');
     expect(planExport(project).issues.find((i) => i.code === 'ce.blockExtraTextures')?.args).toEqual({ max: 3, count: 1 });
+  });
+
+  it('accepts the aliases CraftEngine accepts for a group', () => {
+    for (const autoState of ['cave_vine', 'leaves_no_tint', { type: 'waterlogged_no_tint_leaves', id: 'x' }]) {
+      expect(codes(blockProject('1.21.11', (item) => (item.config.block = { state: { auto_state: autoState } })))).not.toContain(
+        'ce.blockAutoStateInvalid',
+      );
+    }
+  });
+
+  it('treats an empty block as a block, the same as the model paths do', () => {
+    const project = blockProject('1.21.11', (item) => (item.config.block = {}));
+    const plan = planExport(project);
+    expect(plan.items[0].config.behavior).toEqual({ type: 'block_item', block: 'bloecke:block_0' });
+    expect(plan.items[0].modelKey).toBe('bloecke:block/steine/block_0');
+    expect(plan.issues.map((i) => i.code)).toContain('ce.blockStateMissing');
+  });
+
+  it('adds no model to a state that sets its look with another appearance key', () => {
+    const looks: ConfigObject[] = [{ texture: 'a:block/t' }, { textures: ['a:block/t'] }, { blueprint: 'rocket' }, { transparent: true }];
+    for (const look of looks) {
+      const project = blockProject('1.21.11', (item) => (item.config.block = { state: { auto_state: 'solid', ...look } }));
+      expect(blockOf(project)).not.toContain('model:');
+    }
   });
 
   it('keeps a model the state sets itself', () => {

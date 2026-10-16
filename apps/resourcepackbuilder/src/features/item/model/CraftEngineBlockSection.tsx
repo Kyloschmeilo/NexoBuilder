@@ -1,8 +1,7 @@
 import { useId } from 'react';
 import { useTranslations } from 'next-intl';
-import { CE_AUTO_STATE_GROUP_IDS, craftEngineBlock } from '@resourcepackbuilder/core/craftEngine';
+import { autoStateGroupOf, blockAutoState, CE_AUTO_STATE_GROUP_IDS, craftEngineBlock } from '@resourcepackbuilder/core/craftEngine';
 import { type Item } from '@resourcepackbuilder/core/project';
-import { isPlainObject } from '@resourcepackbuilder/utils';
 import { Field, FieldDescription, FieldLabel } from '@resourcepackbuilder/ui/components/field';
 import { NativeSelect, NativeSelectOption } from '@resourcepackbuilder/ui/components/native-select';
 import { CheckboxField } from '../../../components/CheckboxField';
@@ -12,11 +11,10 @@ import { PropertiesPanel } from '../properties/PropertiesPanel';
 
 const BLOCK_SETTINGS_GROUP = 'blockSettings';
 
-/** The block's `auto_state` group (simple or shared form), '' when it has none. */
+/** The block's `auto_state` group by its canonical id (an alias shows its group), '' when it has none. */
 function autoStateGroup(block: Record<string, unknown>): string {
-  const state = isPlainObject(block.state) ? block.state : {};
-  const auto = isPlainObject(state.auto_state) ? state.auto_state.type : state.auto_state;
-  return typeof auto === 'string' ? auto : '';
+  const name = blockAutoState(block)?.group ?? '';
+  return autoStateGroupOf(name)?.id ?? name;
 }
 
 /**

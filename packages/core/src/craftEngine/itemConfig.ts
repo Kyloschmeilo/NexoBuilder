@@ -13,13 +13,15 @@ import { itemMaterial } from '../project/item';
 import { cleanConfig } from '../form/prune';
 import { parseRawYaml, type RawYamlError } from '../yaml';
 import { CRAFT_ENGINE_FORM } from './form/schema';
-import { craftEngineBlockModel, type CraftEngineBlockModel } from './block';
+import { craftEngineBlock, craftEngineBlockModel, type CraftEngineBlockModel } from './block';
 
 /** Order of the keys in the YAML (as in the CraftEngine docs); other keys follow in their own order. */
 const TOP_LEVEL_ORDER = ['material', 'client_bound_material', 'data', 'model', 'models', 'settings', 'behavior', 'events'];
 /** Order of the keys of a block and of its state */
 const BLOCK_ORDER = ['state', 'states', 'settings', 'behavior', 'behaviors', 'loot', 'events'];
 const STATE_ORDER = ['auto_state', 'state', 'model', 'models'];
+/** Keys of a state that give it its look (block/states.mdx, appearance keys); the generated model is added only without them */
+const STATE_APPEARANCE_KEYS = ['model', 'models', 'texture', 'textures', 'blueprint', 'transparent'];
 
 /**
  * The keys CraftEngine builds an item's look from (AbstractItemManager: `model(s)|texture(s)|blueprint|legacy_model`).
@@ -70,11 +72,11 @@ function ordered(source: Record<string, unknown>, order: string[]): Record<strin
   return result;
 }
 
-/** The block of the item with its state's model from the main model (unless the state sets a model itself). */
+/** The block of the item with its state's model from the main model (unless the state sets its look itself). */
 function buildBlock(source: Record<string, unknown>, context: CraftEngineBuildContext) {
   const state = isPlainObject(source.state) ? { ...source.state } : {};
   let blockModel: CraftEngineBlockModel | null = null;
-  if (state.model === undefined && state.models === undefined) {
+  if (STATE_APPEARANCE_KEYS.every((key) => state[key] === undefined)) {
     blockModel = craftEngineBlockModel(context.modelKey, context.modelJson ?? null);
     if (blockModel.model) state.model = blockModel.model;
   }
@@ -86,7 +88,8 @@ export function buildCraftEngineItem(context: CraftEngineBuildContext): CraftEng
   const { project, item, modelKey, models } = context;
   const resolved: Record<string, unknown> = cleanConfig(CRAFT_ENGINE_FORM, deepClone(item.config));
 
-  const built = isPlainObject(resolved.block) ? buildBlock(resolved.block, context) : null;
+  // Whether the item is a block is decided on the item's own config (as isBlockItem does), not on the cleaned one
+  const built = craftEngineBlock(item.config) ? buildBlock(isPlainObject(resolved.block) ? resolved.block : {}, context) : null;
   delete resolved.block;
   if (built) resolved.behavior = { type: 'block_item', block: craftEngineItemKey(project, item) };
 

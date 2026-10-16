@@ -2,7 +2,8 @@
 import { createIssue, isPlainObject, type Issue } from '@resourcepackbuilder/utils';
 import {
   autoStateOverruns,
-  CE_AUTO_STATE_GROUP_IDS,
+  autoStateGroupOf,
+  blockAutoState,
   CE_BLOCK_MAX_TEXTURES,
   CE_MODEL_KEYS,
   CE_PROPERTIES,
@@ -40,11 +41,10 @@ export function validateCraftEngineBlock(
 ): void {
   const { report } = itemExport;
   const state = isPlainObject(block.state) ? block.state : {};
-  const auto = state.auto_state;
-  const group = isPlainObject(auto) ? auto.type : auto;
-  if (auto === undefined && state.state === undefined) report('error', 'ce.blockStateMissing');
-  else if (auto !== undefined && (typeof group !== 'string' || !CE_AUTO_STATE_GROUP_IDS.includes(group))) {
-    report('error', 'ce.blockAutoStateInvalid', { group: String(group) });
+  const auto = blockAutoState(block);
+  if (state.auto_state === undefined && state.state === undefined) report('error', 'ce.blockStateMissing');
+  else if (state.auto_state !== undefined && !(auto && autoStateGroupOf(auto.group))) {
+    report('error', 'ce.blockAutoStateInvalid', { group: auto?.group ?? String(state.auto_state) });
   }
   if (blockModel && !blockModel.model) report('error', 'ce.blockMissingModel');
   if (blockModel && blockModel.unusedTextures > 0) {

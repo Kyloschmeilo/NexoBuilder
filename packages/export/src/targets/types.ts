@@ -6,7 +6,7 @@ import type { Issue, IssueCode } from '@resourcepackbuilder/utils';
 import type { Item, ItemArmor, PackTargetId, Project } from '@resourcepackbuilder/core/project';
 import type { PackWriter } from '../packWriter';
 import type { MultiExportPlan } from '../selection';
-import type { ExportPlan, ItemExport, ItemPlan, WrittenModel } from '../types';
+import type { ExportPlan, ItemExport, ItemPlan, ItemSections, WrittenModel } from '../types';
 
 /** What the shared steps and the target wrote for an item; the target builds its config from it. */
 export interface WrittenItemModels {
@@ -24,8 +24,7 @@ export interface ItemShared {
 /** An item's config and the further entries it adds to its YAML file. */
 export interface BuiltItem {
   config: Record<string, unknown>;
-  /** Entries of other top-level sections of the item's YAML file by section and key (CraftEngine: its block under `blocks`) */
-  sections?: Record<string, Record<string, Record<string, unknown>>>;
+  sections?: ItemSections;
 }
 
 /** What a target adds to the plan besides the items. */

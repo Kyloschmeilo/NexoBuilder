@@ -2,7 +2,9 @@ import { describe, expect, it } from 'vitest';
 import { createFolder, createItem, createProject, insertFolder, insertItem, type ConfigValue, type Project } from '../project';
 import {
   autoStateCapacity,
+  autoStateGroupOf,
   autoStateOverruns,
+  blockAutoState,
   CE_AUTO_STATE_GROUPS,
   countAutoStates,
   craftEngineBlockModel,
@@ -59,6 +61,52 @@ describe('auto_state budget', () => {
       ['lower_tripwire', 64, 63],
     ]);
     expect(autoStateOverruns(projectWith('1.21.11', ['chorus']))).toEqual([{ group: 'chorus', used: 1, capacity: 0 }]);
+  });
+});
+
+describe('auto_state aliases', () => {
+  it('resolves every name CraftEngine accepts to its canonical group', () => {
+    expect(
+      [
+        'cave_vine',
+        'weeping_vine',
+        'twisting_vine',
+        'no_tint_leaves',
+        'leaves_no_tint',
+        'waterlogged_no_tint_leaves',
+        'waterlogged_leaves_no_tint',
+      ].map((name) => autoStateGroupOf(name)?.id),
+    ).toEqual([
+      'cave_vines',
+      'weeping_vines',
+      'twisting_vines',
+      'non_tintable_leaves',
+      'non_tintable_leaves',
+      'waterlogged_non_tintable_leaves',
+      'waterlogged_non_tintable_leaves',
+    ]);
+    expect(autoStateGroupOf('cave_vines')?.id).toBe('cave_vines');
+    expect(autoStateGroupOf('glass')).toBeUndefined();
+  });
+
+  it('counts aliases under their group and checks them against its budget', () => {
+    const vines = [...Array<string>(20).fill('weeping_vine'), ...Array<string>(6).fill('weeping_vines')];
+    expect(Object.fromEntries(countAutoStates(projectWith('1.21.11', vines)))).toEqual({ weeping_vines: 26 });
+    expect(autoStateOverruns(projectWith('1.21.11', vines))).toEqual([{ group: 'weeping_vines', used: 26, capacity: 25 }]);
+    // An alias of a contained group counts for the containing group, too; unknown groups are left out
+    const shared = { type: 'leaves_no_tint', id: 'x' };
+    expect(
+      Object.fromEntries(countAutoStates(projectWith('1.21.11', [shared, { type: 'non_tintable_leaves', id: 'x' }, 'glass']))),
+    ).toEqual({
+      non_tintable_leaves: 1,
+    });
+  });
+
+  it('reads the simple and the shared form', () => {
+    expect(blockAutoState({ state: { auto_state: 'solid' } })).toEqual({ group: 'solid', shared: null });
+    expect(blockAutoState({ state: { auto_state: { type: 'solid', id: 7 } } })).toEqual({ group: 'solid', shared: '7' });
+    expect(blockAutoState({ state: { auto_state: 3 } })).toBeNull();
+    expect(blockAutoState({})).toBeNull();
   });
 });
 

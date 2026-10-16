@@ -13,6 +13,9 @@ export interface PlanOptions {
   includeBinaries?: boolean;
 }
 
+/** Further entries an item adds to its YAML file, by top-level section and key (CraftEngine: its block under `blocks`). */
+export type ItemSections = Record<string, Record<string, Record<string, unknown>>>;
+
 export interface ItemPlan {
   item: Item;
   folderSlugs: string[];
@@ -20,8 +23,7 @@ export interface ItemPlan {
   modelFile: string | null;
   modelJson: JavaModelJson | null;
   config: Record<string, unknown>;
-  /** Further entries of the item's YAML file by section and key (CraftEngine: its block under `blocks`) */
-  sections?: Record<string, Record<string, Record<string, unknown>>>;
+  sections?: ItemSections;
   /** The item's key in its YAML file (Nexo: the item ID, CraftEngine: namespace:item ID) */
   yamlKey: string;
   /** File of the item's config, relative to the target's plugin folder */

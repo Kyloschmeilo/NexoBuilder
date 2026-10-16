@@ -12,10 +12,13 @@ import type { ConfigObject, Item, Project } from '../project/types';
  * the smaller groups whose states it contains (`solid` holds the note block and the three mushroom blocks); `extra`
  * are states that only newer Minecraft versions have (the note block instruments of 26.1); the counts are those of
  * 1.21.4, the oldest version the app exports for.
- * The group names and their vanilla blocks come from the plugin's AutoStateGroup.
+ * The group names (the canonical id first, then the other names CraftEngine accepts) and their vanilla blocks come
+ * from the plugin's AutoStateGroup.
  */
 export interface AutoStateGroup {
   id: string;
+  /** Other names CraftEngine accepts for the group (AutoStateGroup.byId) */
+  aliases?: string[];
   capacity: number;
   includes?: string[];
   extra?: { from: string; count: number };
@@ -41,8 +44,12 @@ export const CE_AUTO_STATE_GROUPS: AutoStateGroup[] = [
   },
   { id: 'tintable_leaves', capacity: 65 },
   { id: 'waterlogged_tintable_leaves', capacity: 65 },
-  { id: 'non_tintable_leaves', capacity: 52 },
-  { id: 'waterlogged_non_tintable_leaves', capacity: 52 },
+  { id: 'non_tintable_leaves', aliases: ['no_tint_leaves', 'leaves_no_tint'], capacity: 52 },
+  {
+    id: 'waterlogged_non_tintable_leaves',
+    aliases: ['waterlogged_no_tint_leaves', 'waterlogged_leaves_no_tint'],
+    capacity: 52,
+  },
   { id: 'tripwire', capacity: 126, includes: ['lower_tripwire', 'higher_tripwire'] },
   { id: 'lower_tripwire', capacity: 63 },
   { id: 'higher_tripwire', capacity: 63 },
@@ -50,15 +57,23 @@ export const CE_AUTO_STATE_GROUPS: AutoStateGroup[] = [
   { id: 'pressure_plate', capacity: 28 },
   { id: 'cactus', capacity: 15 },
   { id: 'sugar_cane', capacity: 15 },
-  { id: 'weeping_vine', capacity: 25 },
-  { id: 'twisting_vine', capacity: 25 },
-  { id: 'cave_vine', capacity: 48 },
+  { id: 'weeping_vines', aliases: ['weeping_vine'], capacity: 25 },
+  { id: 'twisting_vines', aliases: ['twisting_vine'], capacity: 25 },
+  { id: 'cave_vines', aliases: ['cave_vine'], capacity: 48 },
   { id: 'kelp', capacity: 25 },
   // The default mappings leave the chorus plant out (commented out in mappings.yml): it has no free states
   { id: 'chorus', capacity: 0 },
 ];
 
+/** The canonical group ids (the editor offers these). */
 export const CE_AUTO_STATE_GROUP_IDS = CE_AUTO_STATE_GROUPS.map((group) => group.id);
+
+const GROUPS_BY_NAME = new Map(CE_AUTO_STATE_GROUPS.flatMap((group) => [group.id, ...(group.aliases ?? [])].map((name) => [name, group])));
+
+/** The group of a canonical id or an alias (`cave_vine` is `cave_vines`), undefined for an unknown name. */
+export function autoStateGroupOf(name: string): AutoStateGroup | undefined {
+  return GROUPS_BY_NAME.get(name);
+}
 
 /** The group a new block uses: full-block collision from note blocks and mushroom blocks. */
 export const CE_DEFAULT_AUTO_STATE = 'solid';
@@ -80,30 +95,45 @@ export function newCraftEngineBlock(): ConfigObject {
   return { state: { auto_state: CE_DEFAULT_AUTO_STATE }, loot: { template: 'default:loot_table/self' } };
 }
 
-/** The group of the block's `auto_state` (simple form `solid`, shared form `{ type: solid, id: … }`). */
-function autoStateOf(block: Record<string, unknown>): { group: string; shared: string | null } | null {
+export interface BlockAutoState {
+  /** The group name as written (a canonical id, an alias or an unknown name) */
+  group: string;
+  /** The id of a shared state (`{ type, id }`), null for the simple form */
+  shared: string | null;
+}
+
+/**
+ * The block's `auto_state` (simple form `solid`, shared form `{ type: solid, id: … }`); null when the state has none
+ * or it has neither form.
+ */
+export function blockAutoState(block: Record<string, unknown>): BlockAutoState | null {
   const state = isPlainObject(block.state) ? block.state : null;
   const auto = state?.auto_state;
   if (typeof auto === 'string') return { group: auto, shared: null };
-  if (isPlainObject(auto) && typeof auto.type === 'string')
+  if (isPlainObject(auto) && typeof auto.type === 'string') {
     return { group: auto.type, shared: auto.id === undefined ? null : String(auto.id) };
+  }
   return null;
 }
 
-/** How many vanilla states the project's blocks take from each `auto_state` group; shared ids count once. */
+/**
+ * How many vanilla states the project's blocks take from each `auto_state` group, by canonical id (aliases count for
+ * their group); shared ids count once. Unknown groups are left out (the export reports them).
+ */
 export function countAutoStates(project: Pick<Project, 'items'>): Map<string, number> {
   const counts = new Map<string, number>();
   const shared = new Set<string>();
   for (const item of Object.values(project.items) as Item[]) {
     const block = craftEngineBlock(item.config);
-    const auto = block && autoStateOf(block);
-    if (!auto) continue;
+    const auto = block && blockAutoState(block);
+    const group = auto && autoStateGroupOf(auto.group);
+    if (!auto || !group) continue;
     if (auto.shared !== null) {
-      const key = `${auto.group}\u0000${auto.shared}`;
+      const key = `${group.id}\u0000${auto.shared}`;
       if (shared.has(key)) continue;
       shared.add(key);
     }
-    counts.set(auto.group, (counts.get(auto.group) ?? 0) + 1);
+    counts.set(group.id, (counts.get(group.id) ?? 0) + 1);
   }
   return counts;
 }
