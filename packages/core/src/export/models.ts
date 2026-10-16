@@ -5,6 +5,7 @@ import { parseTexturePlaceholder } from '../tokens';
 import { validateTexture } from '../model/textures';
 import type { ImportedModel, JavaModelJson } from '../model/types';
 import { deepClone } from '../object';
+import { uniqueId } from '../project/ids';
 import type { Project } from '../project/types';
 import { slugify } from '../text';
 import type { PackWriter } from './packWriter';
@@ -27,9 +28,7 @@ export function writeModel(
   const textureRefs = new Map<string, string>();
   const usedNames = new Set<string>();
   for (const texture of model.textures) {
-    const base = slugify(texture.name, 'texture');
-    let name = base;
-    for (let n = 2; usedNames.has(name); n++) name = `${base}_${n}`;
+    const name = uniqueId(slugify(texture.name, 'texture'), usedNames);
     usedNames.add(name);
     const texturePath = `${modelPath}/${name}`;
     textureRefs.set(texture.id, formatResourceLocation(ns, texturePath));

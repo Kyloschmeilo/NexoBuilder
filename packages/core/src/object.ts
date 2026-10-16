@@ -44,6 +44,18 @@ export function forEachLeaf(value: unknown, visit: (value: unknown) => void): vo
   else visit(value);
 }
 
+/** Groups `values` by `key`, keeping their order within each group (and the order in which keys first appear). */
+export function groupBy<T, K>(values: readonly T[], key: (value: T) => K): Map<K, T[]> {
+  const groups = new Map<K, T[]>();
+  for (const value of values) {
+    const k = key(value);
+    const group = groups.get(k);
+    if (group) group.push(value);
+    else groups.set(k, [value]);
+  }
+  return groups;
+}
+
 /** Whether two lists have the same entries in the same order, compared by `key` (default: the entries themselves). */
 export function sameList<T>(a: readonly T[], b: readonly T[], key: (value: T) => unknown = (value) => value): boolean {
   return a.length === b.length && a.every((value, i) => key(value) === key(b[i]));

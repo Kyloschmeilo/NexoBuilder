@@ -1,4 +1,5 @@
 /** Export of recipes: one file per recipe type under recipes/<type>/. */
+import { groupBy } from '../../object';
 import type { Item, Project } from '../../project/types';
 import { englishName } from '../fieldNames';
 import { projectFileName } from '../projectFiles';
@@ -83,19 +84,14 @@ export function recipeFilePath(project: Project, type: RecipeType): string {
 
 /** Generates all recipe files of the project (path → YAML). */
 export function buildRecipeFiles(project: Project, items: Item[]): Map<string, string> {
-  const byType = new Map<RecipeType, Array<{ id: string; config: Record<string, unknown> }>>();
-  for (const item of items) {
-    for (const { key, recipe } of keyedRecipes(item)) {
-      const list = byType.get(recipe.type) ?? [];
-      list.push({ id: key, config: recipeToYaml(recipe, item) });
-      byType.set(recipe.type, list);
-    }
-  }
+  const keyed = items.flatMap((item) => keyedRecipes(item).map(({ key, recipe }) => ({ type: recipe.type, id: key, recipe, item })));
+  const byType = groupBy(keyed, (entry) => entry.type);
   const files = new Map<string, string>();
   for (const info of RECIPE_TYPES) {
     const list = byType.get(info.type);
     if (!list?.length) continue;
-    files.set(recipeFilePath(project, info.type), itemsToYaml(list, `${englishName(info.type)} recipes`));
+    const entries = list.map(({ id, recipe, item }) => ({ id, config: recipeToYaml(recipe, item) }));
+    files.set(recipeFilePath(project, info.type), itemsToYaml(entries, `${englishName(info.type)} recipes`));
   }
   return files;
 }

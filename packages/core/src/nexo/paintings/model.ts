@@ -8,6 +8,8 @@ import { mediaKey, type MediaFile } from '../media/entry';
 
 /** Largest painting side in blocks. */
 export const MAX_PAINTING_BLOCKS = 16;
+/** Pixels of a vanilla painting texture per block */
+const PIXELS_PER_BLOCK = 16;
 
 export type PaintingFile = MediaFile;
 
@@ -30,7 +32,7 @@ export interface Painting {
 
 export function createPainting(id: string, paintingId: string, file: PaintingFile | null): Painting {
   // Estimate size in blocks from the image (16 pixels per block)
-  const blocks = (px: number) => Math.min(16, Math.max(1, Math.round(px / 16)));
+  const blocks = (px: number) => Math.min(MAX_PAINTING_BLOCKS, Math.max(1, Math.round(px / PIXELS_PER_BLOCK)));
   return {
     id,
     paintingId,
