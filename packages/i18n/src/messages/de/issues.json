@@ -130,7 +130,9 @@
     "noProjectOpen": "Es ist kein Projekt geöffnet."
   },
   "file": {
-    "invalidDataUrl": "Ungültige Data-URL."
+    "invalidDataUrl": "Ungültige Data-URL.",
+    "invalidJson": "Die Datei ist kein gültiges JSON: {error}",
+    "unexpectedContent": "Die Datei hat nicht den erwarteten Inhalt."
   },
   "recipe": {
     "resultAmountRange": "Die Ergebnis-Anzahl muss zwischen 1 und 99 liegen.",

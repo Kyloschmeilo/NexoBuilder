@@ -130,7 +130,9 @@
     "noProjectOpen": "No project is open."
   },
   "file": {
-    "invalidDataUrl": "Invalid data URL."
+    "invalidDataUrl": "Invalid data URL.",
+    "invalidJson": "The file is not valid JSON: {error}",
+    "unexpectedContent": "The file does not have the expected content."
   },
   "recipe": {
     "resultAmountRange": "The result amount must be between 1 and 99.",
