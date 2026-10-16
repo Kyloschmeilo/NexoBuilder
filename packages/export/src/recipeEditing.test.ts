@@ -53,7 +53,7 @@ describe('recipe issues', () => {
     const project = createProject('Test');
     const folder = createFolder('F', null);
     insertFolder(project, folder);
-    const item = createItem({ displayName: 'Ruby', nexoId: 'ruby', folderId: folder.id, model: null });
+    const item = createItem({ displayName: 'Ruby', itemId: 'ruby', folderId: folder.id, model: null });
     item.recipes.push(createRecipe('shaped', 'r_1'));
     insertItem(project, item);
     const plan = planExport(project);

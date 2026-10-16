@@ -171,7 +171,7 @@ function crossProjectIssues(projects: PlannedProject[]): Issue[] {
   };
 
   const packNames = new Map<string, number>();
-  const nexoIds = new Map<string, number>();
+  const itemIds = new Map<string, number>();
   const mediaIds: Record<MediaKind, Map<string, number>> = { glyph: new Map(), sound: new Map(), painting: new Map() };
   const pluginFiles = new Map<string, number>();
   const assetFiles = new Map<string, number>();
@@ -186,8 +186,8 @@ function crossProjectIssues(projects: PlannedProject[]): Issue[] {
       error('selection.packNameClash', { first: otherPack, second: name, pack });
     }
     for (const { item } of plan.items) {
-      const other = firstOwner(nexoIds, item.nexoId, index);
-      if (other) error('selection.itemIdClash', { id: item.nexoId, first: other, second: name });
+      const other = firstOwner(itemIds, item.itemId, index);
+      if (other) error('selection.itemIdClash', { id: item.itemId, first: other, second: name });
     }
     for (const kind of MEDIA_KIND_LIST) {
       for (const entry of mediaList(project, kind)) {

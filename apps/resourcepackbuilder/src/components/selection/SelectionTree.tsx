@@ -106,7 +106,7 @@ export function SelectionTree({ project, selection, onChange, itemsOnly }: Selec
                   style={{ paddingLeft: FOLDER_PADDING_PX + ITEM_PADDING_PX + depth * TREE_INDENT_PX }}
                 >
                   <span className={treeRowSlots.label}>{itemLabel(item)}</span>
-                  <span className={treeRowSlots.count}>{item.nexoId}</span>
+                  <span className={treeRowSlots.count}>{item.itemId}</span>
                 </EntryRow>
               );
             })}

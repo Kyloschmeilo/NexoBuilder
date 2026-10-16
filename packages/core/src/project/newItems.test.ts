@@ -25,10 +25,10 @@ describe('newItemReducer', () => {
       { type: 'withoutModelChanged', isWithoutModel: true },
       { type: 'metaChanged', sourceKey: null, patch: { displayName: '<red>Ruby Sword' } },
     );
-    expect(state.plainMeta.nexoId).toBe('ruby_sword');
-    state = newItemReducer(state, { type: 'metaChanged', sourceKey: null, patch: { nexoId: 'gem_blade' } });
+    expect(state.plainMeta.itemId).toBe('ruby_sword');
+    state = newItemReducer(state, { type: 'metaChanged', sourceKey: null, patch: { itemId: 'gem_blade' } });
     state = newItemReducer(state, { type: 'metaChanged', sourceKey: null, patch: { displayName: 'Other' } });
-    expect(state.plainMeta).toMatchObject({ displayName: 'Other', nexoId: 'gem_blade', isIdEdited: true });
+    expect(state.plainMeta).toMatchObject({ displayName: 'Other', itemId: 'gem_blade', isIdEdited: true });
   });
 
   it('keeps entered values when more files are added', () => {
@@ -61,7 +61,7 @@ describe('new item entries', () => {
     const project = createProject('Test');
     const folder = createFolder('F', null);
     insertFolder(project, folder);
-    insertItem(project, createItem({ displayName: 'Ruby', nexoId: 'ruby', folderId: folder.id, model: null }));
+    insertItem(project, createItem({ displayName: 'Ruby', itemId: 'ruby', folderId: folder.id, model: null }));
     let state = run(
       { type: 'readStarted' },
       { type: 'filesRead', files: [png('ruby.png'), png('a.png'), png('b.png')] },
@@ -71,15 +71,15 @@ describe('new item entries', () => {
       },
     );
     const [ruby, a, b] = state.drafts.map(sourceKey);
-    state = newItemReducer(state, { type: 'metaChanged', sourceKey: b, patch: { nexoId: 'a' } });
+    state = newItemReducer(state, { type: 'metaChanged', sourceKey: b, patch: { itemId: 'a' } });
     const entries = newItemEntries(project, state);
     expect(entries.map((e) => e.idError?.kind ?? null)).toEqual(['duplicate', 'repeated', 'repeated']);
     expect(isCreationBlocked(entries)).toBe(true);
-    state = newItemReducer(state, { type: 'metaChanged', sourceKey: ruby, patch: { nexoId: 'ruby_2' } });
-    state = newItemReducer(state, { type: 'metaChanged', sourceKey: a, patch: { nexoId: 'a_1' } });
+    state = newItemReducer(state, { type: 'metaChanged', sourceKey: ruby, patch: { itemId: 'ruby_2' } });
+    state = newItemReducer(state, { type: 'metaChanged', sourceKey: a, patch: { itemId: 'a_1' } });
     const fixed = newItemEntries(project, state);
     expect(isCreationBlocked(fixed)).toBe(false);
-    expect(newItemInputs(fixed, folder.id).map((input) => [input.nexoId, input.folderId])).toEqual([
+    expect(newItemInputs(fixed, folder.id).map((input) => [input.itemId, input.folderId])).toEqual([
       ['ruby_2', folder.id],
       ['a_1', folder.id],
       ['a', folder.id],

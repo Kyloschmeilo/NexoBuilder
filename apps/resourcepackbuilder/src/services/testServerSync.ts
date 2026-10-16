@@ -40,7 +40,7 @@ export interface TestServerSync {
    */
   loadPaperVersions(): Promise<void>;
   /** Gives the own player an item via the server console; resolves with the player name. */
-  give(nexoId: string, amount?: number): Promise<string>;
+  give(itemId: string, amount?: number): Promise<string>;
   dispose(): void;
 }
 
@@ -203,7 +203,7 @@ export function createTestServerSync(api: DesktopTestServerApi): TestServerSync 
       return versionsRequest;
     },
 
-    async give(nexoId, amount = 1) {
+    async give(itemId, amount = 1) {
       const { server } = store.getState();
       if (!server || server.status !== 'running') throw new AppError('errors.testServer.notRunning');
       const player = server.config.playerName;
@@ -212,7 +212,7 @@ export function createTestServerSync(api: DesktopTestServerApi): TestServerSync 
       const requestedAt = Date.now();
       const result = await transfer.run(true);
       if (result?.reloaded) await reloadDone(requestedAt);
-      await api.command(nexoGiveCommand(nexoId, amount, player));
+      await api.command(nexoGiveCommand(itemId, amount, player));
       return player;
     },
 

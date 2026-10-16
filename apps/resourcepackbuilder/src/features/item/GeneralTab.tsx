@@ -23,14 +23,14 @@ export function GeneralTab({ item }: { item: Item }) {
         <div className="grid gap-5 @4xl:grid-cols-[minmax(0,1fr)_minmax(0,20rem)]">
           <div className="grid min-w-0 grid-cols-1 gap-4 @xl:grid-cols-2">
             <ItemIdentityFields
-              value={{ displayName: item.displayName, nexoId: item.nexoId, material }}
-              idError={validateItemId(project, item.nexoId, item.id)}
+              value={{ displayName: item.displayName, itemId: item.itemId, material }}
+              idError={validateItemId(project, item.itemId, item.id)}
               onChange={(patch, field) =>
                 updateItem(
                   item.id,
                   (d) => {
                     if (patch.displayName !== undefined) d.displayName = patch.displayName;
-                    if (patch.nexoId !== undefined) d.nexoId = patch.nexoId;
+                    if (patch.itemId !== undefined) d.itemId = patch.itemId;
                     if (patch.material !== undefined) d.config.material = patch.material;
                   },
                   field,
@@ -48,7 +48,7 @@ export function GeneralTab({ item }: { item: Item }) {
           </div>
           <div className="flex min-w-0 flex-col gap-1.5">
             <span className="text-sm font-medium">{t('general.tooltipPreview')}</span>
-            <ItemTooltip name={item.displayName || item.nexoId} lore={toStringList(item.config.lore)} />
+            <ItemTooltip name={item.displayName || item.itemId} lore={toStringList(item.config.lore)} />
             <span className="text-xs text-muted-foreground">{t('general.tooltipHelp')}</span>
           </div>
         </div>

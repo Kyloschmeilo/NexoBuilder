@@ -116,7 +116,7 @@ export function buildItemConfig(context: BuildContext): BuildResult {
     resolved.Pack = pack;
     const components = section(resolved, 'Components');
     if (project.settings.useItemModel && pack.custom_model_data === undefined && components.item_model === undefined) {
-      resolved.Components = { item_model: `nexo:${item.nexoId}`, ...components };
+      resolved.Components = { item_model: `nexo:${item.itemId}`, ...components };
     }
   }
   if (context.itemModel) {

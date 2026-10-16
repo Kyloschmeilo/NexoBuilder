@@ -29,21 +29,21 @@ function project(name: string, ns: string, ids: { weapons: string[]; furniture: 
   insertFolder(p, chairs);
   for (const id of ids.weapons) {
     const model = createTextureModel('handheld', { layer0: `${id}.png` }, [{ name: `${id}.png`, dataUrl: PNG16 }]);
-    insertItem(p, createItem({ displayName: id, nexoId: id, folderId: weapons.id, model }));
+    insertItem(p, createItem({ displayName: id, itemId: id, folderId: weapons.id, model }));
   }
-  for (const id of ids.furniture) insertItem(p, createItem({ displayName: id, nexoId: id, folderId: chairs.id, model: null }));
+  for (const id of ids.furniture) insertItem(p, createItem({ displayName: id, itemId: id, folderId: chairs.id, model: null }));
   p.glyphs = [createGlyph('g1', 'herz', { name: 'herz.png', dataUrl: PNG16, width: 16, height: 16 })];
   return p;
 }
 
-const itemId = (p: Project, nexoId: string) => Object.values(p.items).find((i) => i.nexoId === nexoId)!.id;
+const itemId = (p: Project, itemId: string) => Object.values(p.items).find((i) => i.itemId === itemId)!.id;
 
 describe('Export selection within a project', () => {
   it('exports only the selected items and omits empty folders', () => {
     const p = project('Mein Pack', 'meinpack', { weapons: ['ruby_sword', 'axe'], furniture: ['chair'] });
     const selection = { excludedItemIds: [itemId(p, 'axe'), itemId(p, 'chair')], excludedGlyphIds: ['g1'] };
     const subset = selectFromProject(p, selection);
-    expect(Object.values(subset.items).map((i) => i.nexoId)).toEqual(['ruby_sword']);
+    expect(Object.values(subset.items).map((i) => i.itemId)).toEqual(['ruby_sword']);
     expect(Object.values(subset.folders).map((f) => f.name)).toEqual(['Waffen']);
     expect(subset.glyphs).toEqual([]);
     expect(countSelected(p, selection)).toEqual({ items: 1, glyphs: 0, sounds: 0, paintings: 0 });

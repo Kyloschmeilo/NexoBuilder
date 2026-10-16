@@ -14,7 +14,7 @@ function setup(): { project: Project; source: Item; target: Item } {
   const folder = createFolder('Waffen', null);
   insertFolder(project, folder);
   const model = createTextureModel('handheld', { layer0: 'a.png' }, [{ name: 'a.png', dataUrl: PNG16 }]);
-  const source = createItem({ displayName: '<red>Rubin', nexoId: 'ruby', folderId: folder.id, material: 'DIAMOND_SWORD', model });
+  const source = createItem({ displayName: '<red>Rubin', itemId: 'ruby', folderId: folder.id, material: 'DIAMOND_SWORD', model });
   source.config.lore = ['<gray>Scharf'];
   source.config.Components = { max_stack_size: 1, food: { nutrition: 4 }, some_new_component: { x: 1 } };
   source.config.Mechanics = { custom_block: { type: 'NOTEBLOCK', custom_variation: 3, model: '@model' } };
@@ -27,7 +27,7 @@ function setup(): { project: Project; source: Item; target: Item } {
   source.variants = { pulling_models: [] };
   insertItem(project, source);
 
-  const target = createItem({ displayName: 'Saphir', nexoId: 'sapphire', folderId: folder.id, model: null });
+  const target = createItem({ displayName: 'Saphir', itemId: 'sapphire', folderId: folder.id, model: null });
   target.config.Enchantments = { sharpness: 1 };
   target.config.Components = { durability: 10 } as never;
   target.config.Pack = { custom_model_data: 2002, model: 'test:item/eigenes' };
@@ -44,7 +44,7 @@ describe('copy properties', () => {
     pasteItemConfig(project, target, clip, { categories: new Set([...ALL].filter((c) => c !== 'recipes')), mode: 'replace' });
 
     expect(target.displayName).toBe('Saphir');
-    expect(target.nexoId).toBe('sapphire');
+    expect(target.itemId).toBe('sapphire');
     expect(target.model).toBeNull();
     expect(target.variants).toBeUndefined();
     expect(target.folderId).toBe(folderBefore);

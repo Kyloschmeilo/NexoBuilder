@@ -10,7 +10,7 @@ describe('item preview', () => {
     const project = createProject('Test', 'pack');
     const folder = createFolder('Weapons', null);
     insertFolder(project, folder);
-    const item = createItem({ displayName: 'Ruby', nexoId: 'ruby', folderId: folder.id, model: null });
+    const item = createItem({ displayName: 'Ruby', itemId: 'ruby', folderId: folder.id, model: null });
     item.rawYaml = 'Mechanics:\n  custom: true';
     insertItem(project, item);
     const plan = planExport(project);

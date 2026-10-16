@@ -120,7 +120,7 @@ describe('Test server: paths the project may write', () => {
     const model = createTextureModel('handheld', { layer0: 'ruby.png' }, [{ name: 'ruby.png', dataUrl: makePngDataUrl(16, 16) }]);
     const folder = createFolder('Weapons', null);
     insertFolder(project, folder);
-    insertItem(project, createItem({ displayName: 'Rubin', nexoId: 'ruby', folderId: folder.id, model }));
+    insertItem(project, createItem({ displayName: 'Rubin', itemId: 'ruby', folderId: folder.id, model }));
     const files = nexoFolderFiles(project, planExport(project, { includeBinaries: true }));
     expect(files.length).toBeGreaterThan(0);
     for (const file of files) expect(syncPathSegments(file.path), file.path).not.toBeNull();

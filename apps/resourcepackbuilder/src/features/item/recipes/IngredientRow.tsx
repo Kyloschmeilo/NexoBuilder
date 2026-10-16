@@ -19,7 +19,7 @@ import { isOneOf } from '../../../lib/isOneOf';
 
 /** The project's items as suggestions for a Nexo ingredient: their item id, shown with their name. */
 function itemChoices(project: Project): LiteralChoice[] {
-  return Object.values(project.items).map((item) => ({ value: item.nexoId, text: itemLabel(item) }));
+  return Object.values(project.items).map((item) => ({ value: item.itemId, text: itemLabel(item) }));
 }
 
 const SOURCES: IngredientSource[] = INGREDIENT_SOURCES.map((source) => source.value);

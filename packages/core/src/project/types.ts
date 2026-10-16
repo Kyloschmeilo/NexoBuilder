@@ -6,6 +6,7 @@
  * resource pack (pack/external_packs/<name>) on export.
  */
 import type { DataUrl, ImportedModel, ModelTexture } from '@resourcepackbuilder/minecraft';
+import type { PackTargetId } from './target';
 import type { ArmorSettings } from './armor';
 import type { Glyph } from './media/glyph';
 import type { Painting } from './media/painting';
@@ -28,8 +29,8 @@ export type ConfigObject = { [key: string]: ConfigValue };
 
 export interface Item {
   id: string;
-  /** Nexo item ID (YAML key), e.g. "ruby_sword" */
-  nexoId: string;
+  /** Item ID (YAML key), e.g. "ruby_sword" */
+  itemId: string;
   /** Display name (MiniMessage) → itemname */
   displayName: string;
   folderId: string;
@@ -73,6 +74,8 @@ export interface Project {
   formatVersion: 1;
   id: string;
   name: string;
+  /** Server plugin the pack is built for */
+  target: PackTargetId;
   namespace: string;
   settings: ProjectSettings;
   folders: Record<string, Folder>;

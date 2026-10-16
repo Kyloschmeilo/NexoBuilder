@@ -36,8 +36,8 @@ function PasteDialogContent({ clip, targetItemIds }: { clip: ItemConfigClipboard
   const [excludedIds, setExcludedIds] = useState<string[]>(() => Object.keys(project.items).filter((id) => !targetItemIds.includes(id)));
 
   // The source item cannot be a target
-  const treeProject = project.items[clip.sourceItemId]
-    ? selectFromProject(project, { excludedItemIds: [clip.sourceItemId], excludedGlyphIds: [] })
+  const treeProject = project.items[clip.sourceId]
+    ? selectFromProject(project, { excludedItemIds: [clip.sourceId], excludedGlyphIds: [] })
     : project;
   const excluded = new Set(excludedIds);
   const targets = Object.keys(treeProject.items).filter((id) => !excluded.has(id));
@@ -55,7 +55,7 @@ function PasteDialogContent({ clip, targetItemIds }: { clip: ItemConfigClipboard
       size="wide"
       footerStart={
         <>
-          {t.rich('source', { ...richTags, name: clipboardLabel(clip), id: clip.sourceNexoId })}
+          {t.rich('source', { ...richTags, name: clipboardLabel(clip), id: clip.sourceItemId })}
           {clip.projectId !== project.id && ` · ${t('otherProject')}`}
         </>
       }

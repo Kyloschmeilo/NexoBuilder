@@ -56,7 +56,7 @@ export function YamlTab({ item }: { item: Item }) {
           }}
         />
         {error && <FieldError className="mt-1.5 text-xs">{t('yaml.error', { error })}</FieldError>}
-        <FieldDescription className="mt-1.5 text-xs">{t('yaml.keyHint', { id: item.nexoId })}</FieldDescription>
+        <FieldDescription className="mt-1.5 text-xs">{t('yaml.keyHint', { id: item.itemId })}</FieldDescription>
       </SectionCard>
 
       <SectionCard title={t('yaml.finalTitle')} description={t('yaml.finalDescription', { file: yamlFile })}>

@@ -45,7 +45,7 @@ export function ItemNode({ itemId, depth, tree }: { itemId: string; depth: numbe
       icon: <ClipboardPaste />,
       label: t('paste.label'),
       description: clip ? t('paste.fromItem', { name: clipboardLabel(clip) }) : t('paste.needsCopy'),
-      disabled: !clip || clip.sourceItemId === itemId,
+      disabled: !clip || clip.sourceId === itemId,
       onSelect: () => actions.pasteProperties([itemId]),
     },
     'separator',

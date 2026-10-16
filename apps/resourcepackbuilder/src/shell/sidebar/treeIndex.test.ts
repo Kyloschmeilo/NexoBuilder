@@ -9,9 +9,9 @@ function sampleProject() {
   insertFolder(project, weapons);
   const swords = createFolder('Swords', weapons.id);
   insertFolder(project, swords);
-  const ruby = createItem({ displayName: 'Ruby sword', nexoId: 'ruby_sword', folderId: swords.id, model: null });
+  const ruby = createItem({ displayName: 'Ruby sword', itemId: 'ruby_sword', folderId: swords.id, model: null });
   insertItem(project, ruby);
-  const bow = createItem({ displayName: 'Bow', nexoId: 'long_bow', folderId: weapons.id, model: null });
+  const bow = createItem({ displayName: 'Bow', itemId: 'long_bow', folderId: weapons.id, model: null });
   insertItem(project, bow);
   return { project, weapons, swords, ruby, bow };
 }

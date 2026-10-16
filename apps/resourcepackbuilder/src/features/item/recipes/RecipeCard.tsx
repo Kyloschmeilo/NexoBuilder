@@ -143,7 +143,7 @@ export function RecipeCard({ item, recipe, recipeKey }: RecipeCardProps) {
               }, `${recipe.id}:amount`)
             }
           />
-          <span className="min-w-0 font-mono break-all text-muted-foreground">× {item.nexoId}</span>
+          <span className="min-w-0 font-mono break-all text-muted-foreground">× {item.itemId}</span>
         </div>
         <IssueList issues={issues.recipe} />
       </div>

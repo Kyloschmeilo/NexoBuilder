@@ -40,7 +40,7 @@ function trimShape(grid: string[]): string[] {
 
 /** The YAML entry of one recipe (also the unit the recipe tests check). */
 export function recipeToYaml(recipe: Recipe, item: Item): Record<string, unknown> {
-  const result: Record<string, unknown> = { nexo_item: item.nexoId };
+  const result: Record<string, unknown> = { nexo_item: item.itemId };
   if (recipe.resultAmount > 1) result.amount = recipe.resultAmount;
   const info = getRecipeTypeInfo(recipe.type);
   const out: Record<string, unknown> = { result };
@@ -77,7 +77,7 @@ function keyedRecipes(item: Item): Array<{ key: string; recipe: Recipe }> {
   return (item.recipes ?? []).map((recipe) => {
     const n = (counter.get(recipe.type) ?? 0) + 1;
     counter.set(recipe.type, n);
-    return { key: `${item.nexoId}_${recipe.type}${n > 1 ? `_${n}` : ''}`, recipe };
+    return { key: `${item.itemId}_${recipe.type}${n > 1 ? `_${n}` : ''}`, recipe };
   });
 }
 

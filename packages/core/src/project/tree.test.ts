@@ -10,9 +10,9 @@ describe('folder tree', () => {
     insertFolder(project, a);
     insertFolder(project, b);
     project.folders[b.id].folderIds.push(a.id);
-    insertItem(project, createItem({ displayName: 'x', nexoId: 'x', folderId: b.id, model: null }));
+    insertItem(project, createItem({ displayName: 'x', itemId: 'x', folderId: b.id, model: null }));
     expect(getDescendantFolderIds(project, a.id)).toEqual([a.id, b.id]);
-    expect(getItemsInTreeOrder(project).map((i) => i.nexoId)).toEqual(['x']);
+    expect(getItemsInTreeOrder(project).map((i) => i.itemId)).toEqual(['x']);
     expect(flattenFolderTree(project).map(({ folder, depth }) => [folder.name, depth])).toEqual([
       ['A', 0],
       ['B', 1],

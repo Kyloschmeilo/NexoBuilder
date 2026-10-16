@@ -109,7 +109,7 @@ function ItemTile({ item }: { item: ProjectItem }) {
       </ItemMedia>
       <ItemContent className="min-w-0 gap-0.5">
         <ItemTitle className="font-semibold">{itemLabel(item)}</ItemTitle>
-        <ItemDescription className="line-clamp-1 font-mono text-xs">{item.nexoId}</ItemDescription>
+        <ItemDescription className="line-clamp-1 font-mono text-xs">{item.itemId}</ItemDescription>
         {issues.some((i) => i.level !== 'info') && (
           <div className="mt-1 flex flex-wrap items-center gap-1">
             <IssueCountBadges issues={issues} />

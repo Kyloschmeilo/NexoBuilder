@@ -62,15 +62,15 @@ export function validateItemIds(items: Item[]): Issue[] {
   for (const item of items) {
     const add = issueReporter(issues, { target: itemTarget(item), context: [itemFrame(item)] });
     const report = (code: IssueCode, args?: MessageArgs) => add('error', code, args);
-    const syntax = itemIdSyntaxError(item.nexoId);
+    const syntax = itemIdSyntaxError(item.itemId);
     if (syntax === 'missing') {
       report('plan.itemIdMissing');
       continue;
     }
-    if (syntax === 'invalid') report('plan.itemIdInvalid', { id: item.nexoId });
-    const other = seen.get(item.nexoId);
-    if (other) report('plan.itemIdDuplicate', { id: item.nexoId, other: itemLabel(other) });
-    else seen.set(item.nexoId, item);
+    if (syntax === 'invalid') report('plan.itemIdInvalid', { id: item.itemId });
+    const other = seen.get(item.itemId);
+    if (other) report('plan.itemIdDuplicate', { id: item.itemId, other: itemLabel(other) });
+    else seen.set(item.itemId, item);
   }
   return issues;
 }

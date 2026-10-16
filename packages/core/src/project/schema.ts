@@ -29,6 +29,8 @@ import {
   recordOf,
   type SchemaChecks,
   schemaKey,
+  slugify,
+  stripFormatting,
   stringList,
   uid,
   withoutUndefined,
@@ -42,6 +44,7 @@ import type { Painting } from './media/painting';
 import { INGREDIENT_LETTERS, RECIPE_TYPES, type Recipe, type RecipeIngredient } from './recipes/model';
 import type { JukeboxSong, Sound, SoundFile } from './media/sound';
 import { defaultSettings, DEFAULT_PACK_NAME } from './factory';
+import { DEFAULT_PACK_TARGET, PACK_TARGETS } from './target';
 import type { ConfigObject, ConfigValue, Folder, Item, Project, ProjectSettings } from './types';
 
 /** Former location of the armor settings inside the item configuration */
@@ -201,7 +204,7 @@ export function itemSchema(now: number) {
   return z
     .object({
       id: id(),
-      nexoId: lenientString(),
+      itemId: lenientString(),
       displayName: lenientString(),
       folderId: lenientString(),
       model: ImportedModelSchema.nullable().catch(null),
@@ -214,6 +217,8 @@ export function itemSchema(now: number) {
       createdAt: lenientNumber(now),
       updatedAt: lenientNumber(now),
     })
+    // A missing item ID is derived from the display name like for new items (repairProject makes it unique)
+    .transform((item) => ({ ...item, itemId: item.itemId || slugify(stripFormatting(item.displayName)) || 'item' }))
     .transform(withoutUndefined);
 }
 
@@ -276,6 +281,7 @@ export function projectSchema(now: number) {
       formatVersion: 1,
       id: lenientString(uid('p_')).parse(raw.id),
       name: raw.name,
+      target: lenientEnum(PACK_TARGETS, DEFAULT_PACK_TARGET).parse(raw.target),
       namespace: lenientString(DEFAULT_PACK_NAME).parse(raw.namespace),
       settings: settingsSchema(raw.name).parse(raw.settings),
       folders,

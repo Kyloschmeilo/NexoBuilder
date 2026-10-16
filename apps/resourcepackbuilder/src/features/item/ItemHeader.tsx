@@ -20,7 +20,7 @@ import { moveItemDialog } from '../moveItem/MoveItemDialog';
 import { useItemActions } from './useItemActions';
 
 /** "Give in test server" – only visible while the local test server is running. */
-function GiveButton({ nexoId }: { nexoId: string }) {
+function GiveButton({ itemId }: { itemId: string }) {
   const t = useTranslations('item');
   const testServer = useServices().testServer;
   const { isBusy, run } = useBusyAction();
@@ -32,8 +32,8 @@ function GiveButton({ nexoId }: { nexoId: string }) {
   const isValidPlayer = PLAYER_NAME_PATTERN.test(player);
   const give = () =>
     void run(
-      () => testServer.give(nexoId),
-      (player) => t('editor.giveSuccess', { id: nexoId, player }),
+      () => testServer.give(itemId),
+      (player) => t('editor.giveSuccess', { id: itemId, player }),
     );
   return (
     <Tip label={isValidPlayer ? t('editor.giveTooltip') : tPack('enterName')}>
@@ -52,7 +52,7 @@ function ItemBadges({ item, issues }: { item: Item; issues: Issue[] }) {
     <>
       <Tip label={t('editor.itemId')}>
         <Badge variant="outline" className="border-primary font-mono text-primary">
-          {item.nexoId}
+          {item.itemId}
         </Badge>
       </Tip>
       <Tip label={t('editor.folder')}>
@@ -71,10 +71,10 @@ function ItemActions({ item }: { item: Item }) {
   const tCommon = useTranslations('common');
   const clip = useClipboardStore((s) => s.clip);
   const actions = useItemActions();
-  const canPaste = !!clip && clip.sourceItemId !== item.id;
+  const canPaste = !!clip && clip.sourceId !== item.id;
   return (
     <>
-      <GiveButton nexoId={item.nexoId} />
+      <GiveButton itemId={item.itemId} />
       <Tip label={t('editor.copyTooltip')}>
         <Button variant="outline" size="sm" onClick={() => actions.copyProperties(item.id)}>
           <ClipboardCopy /> {tCommon('copy')}
@@ -107,7 +107,7 @@ export function ItemHeader({ item, issues }: { item: Item; issues: Issue[] }) {
       title={
         // Minecraft colours are made for a dark background, so the name sits in a dark box in both themes
         <MiniMessageBox className="min-w-0 px-3 py-0.5 align-top font-heading text-2xl leading-8">
-          <MiniMessageLine text={item.displayName || item.nexoId} />
+          <MiniMessageLine text={item.displayName || item.itemId} />
         </MiniMessageBox>
       }
       meta={<ItemBadges item={item} issues={issues} />}

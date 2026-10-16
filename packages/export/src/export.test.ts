@@ -55,7 +55,7 @@ function buildProject(): Project {
 
   const sword = createItem({
     displayName: '<red>Rubin-Schwert',
-    nexoId: 'ruby_sword',
+    itemId: 'ruby_sword',
     folderId: weapons.id,
     material: 'DIAMOND_SWORD',
     model: createTextureModel('handheld', { layer0: 'ruby_sword.png' }, [{ name: 'ruby_sword.png', dataUrl: PNG16 }]),
@@ -71,7 +71,7 @@ function buildProject(): Project {
 
   const table = createItem({
     displayName: 'Eichentisch',
-    nexoId: 'oak_table',
+    itemId: 'oak_table',
     folderId: furniture.id,
     model: convertBBModel(sampleBBModel(), 'table.bbmodel'),
   });
@@ -86,7 +86,7 @@ function buildProject(): Project {
   };
   insertItem(project, table);
 
-  const chair = createItem({ displayName: 'Stuhl', nexoId: 'chair', folderId: chairs.id, model: null });
+  const chair = createItem({ displayName: 'Stuhl', itemId: 'chair', folderId: chairs.id, model: null });
   chair.config.Mechanics = { furniture: {} };
   chair.rawYaml = 'Mechanics:\n  furniture:\n    seat: 0,0.4,0\nexcludeFromInventory: true\n';
   insertItem(project, chair);
@@ -185,7 +185,7 @@ describe('planExport', () => {
   it('reports errors for duplicate IDs, invalid values and conflicts', () => {
     const project = buildProject();
     const folderId = project.rootFolderIds[0];
-    const dup = createItem({ displayName: 'Kopie', nexoId: 'ruby_sword', folderId, model: null });
+    const dup = createItem({ displayName: 'Kopie', itemId: 'ruby_sword', folderId, model: null });
     dup.config.Mechanics = { furniture: {}, custom_block: { type: 'NOTEBLOCK', custom_variation: 5000 } };
     dup.config.Components = { use_cooldown: { duration: 'zwei Sekunden' } };
     dup.rawYaml = 'foo: [';
@@ -204,8 +204,8 @@ describe('planExport', () => {
   it('exports the material in upper case and rejects invalid names', () => {
     const project = buildProject();
     const folderId = project.rootFolderIds[0];
-    const lower = createItem({ displayName: 'Lower', nexoId: 'lower', folderId, material: ' diamond_axe ', model: null });
-    const broken = createItem({ displayName: 'Broken', nexoId: 'broken', folderId, model: null });
+    const lower = createItem({ displayName: 'Lower', itemId: 'lower', folderId, material: ' diamond_axe ', model: null });
+    const broken = createItem({ displayName: 'Broken', itemId: 'broken', folderId, model: null });
     broken.rawYaml = 'material: diamond axe';
     insertItem(project, lower);
     insertItem(project, broken);
@@ -221,7 +221,7 @@ describe('planExport', () => {
     insertFolder(project, folder);
     const ore = createItem({
       displayName: 'Rubinerz',
-      nexoId: 'ruby_ore',
+      itemId: 'ruby_ore',
       folderId: folder.id,
       model: createTextureModel('cube_all', { all: 'ruby_ore.png' }, [{ name: 'ruby_ore.png', dataUrl: PNG16 }]),
     });
@@ -247,14 +247,14 @@ describe('planExport', () => {
     insertFolder(project, folder);
     const helmet = createItem({
       displayName: 'Rubinhelm',
-      nexoId: 'ruby_helmet',
+      itemId: 'ruby_helmet',
       folderId: folder.id,
       material: 'IRON_HELMET',
       model: null,
     });
     helmet.assets = { a1: createTexture('a1', 'layer_1', PNG64x32), a2: createTexture('a2', 'layer_2', PNG64x32) };
     helmet.armor = { set: 'ruby', layer1: '@asset:a1', layer2: '@asset:a2' };
-    const boots = createItem({ displayName: 'Rubinschuhe', nexoId: 'ruby_boots', folderId: folder.id, material: 'PAPER', model: null });
+    const boots = createItem({ displayName: 'Rubinschuhe', itemId: 'ruby_boots', folderId: folder.id, material: 'PAPER', model: null });
     boots.armor = { set: 'ruby' };
     boots.config.Components = { equippable: { slot: 'FEET' } };
     insertItem(project, helmet);
@@ -315,7 +315,7 @@ describe('Variant models', () => {
     const folder = createFolder('Fernkampf', null);
     insertFolder(project, folder);
     const png = (name: string) => createTextureModel('handheld', { layer0: name }, [{ name, dataUrl: PNG16 }]);
-    const bow = createItem({ displayName: 'Langbogen', nexoId: 'longbow', folderId: folder.id, material: 'BOW', model: png('bow.png') });
+    const bow = createItem({ displayName: 'Langbogen', itemId: 'longbow', folderId: folder.id, material: 'BOW', model: png('bow.png') });
     bow.variants = { pulling_models: [png('bow_0.png'), png('bow_1.png'), png('bow_2.png')] };
     insertItem(project, bow);
     const plan = planExport(project);
@@ -340,9 +340,9 @@ describe('Variant models', () => {
     const folder = createFolder('A', null);
     insertFolder(project, folder);
     const model = createTextureModel('generated', { layer0: 'a.png' }, [{ name: 'a.png', dataUrl: PNG16 }]);
-    const shield = createItem({ displayName: 'Schild', nexoId: 'shield', folderId: folder.id, material: 'PAPER', model });
+    const shield = createItem({ displayName: 'Schild', itemId: 'shield', folderId: folder.id, material: 'PAPER', model });
     shield.variants = { blocking_model: [model] };
-    const noModel = createItem({ displayName: 'Ohne', nexoId: 'ohne', folderId: folder.id, model: null });
+    const noModel = createItem({ displayName: 'Ohne', itemId: 'ohne', folderId: folder.id, model: null });
     noModel.variants = { cast_model: [model] };
     insertItem(project, shield);
     insertItem(project, noModel);

@@ -34,7 +34,7 @@ export function goldenProject(options: { externalPackAsZip: boolean }): Project 
 
   const sword = createItem({
     displayName: '<red>Rubin-Schwert',
-    nexoId: 'ruby_sword',
+    itemId: 'ruby_sword',
     folderId: weapons.id,
     material: 'DIAMOND_SWORD',
     model: png('ruby_sword.png'),
@@ -47,11 +47,11 @@ export function goldenProject(options: { externalPackAsZip: boolean }): Project 
   sword.recipes = [recipe];
   insertItem(project, sword);
 
-  const bow = createItem({ displayName: 'Langbogen', nexoId: 'longbow', folderId: weapons.id, material: 'BOW', model: png('bow.png') });
+  const bow = createItem({ displayName: 'Langbogen', itemId: 'longbow', folderId: weapons.id, material: 'BOW', model: png('bow.png') });
   bow.variants = { pulling_models: [png('bow_0.png'), png('bow_1.png'), png('bow_2.png')] };
   insertItem(project, bow);
 
-  const helmet = createItem({ displayName: 'Rubin-Helm', nexoId: 'ruby_helmet', folderId: gear.id, material: 'IRON_HELMET', model: null });
+  const helmet = createItem({ displayName: 'Rubin-Helm', itemId: 'ruby_helmet', folderId: gear.id, material: 'IRON_HELMET', model: null });
   helmet.assets = { tex: createTexture('tex', 'ruby_helmet.png', PNG64x32) };
   helmet.armor = { set: 'rubin', layer1: '@asset:tex', layer2: '@asset:tex' };
   insertItem(project, helmet);
@@ -74,6 +74,6 @@ export function goldenSecondProject(): Project {
   const project = createProject('Zweites Pack', 'zweit', '1.21.11');
   const folder = createFolder('Dinge', null);
   insertFolder(project, folder);
-  insertItem(project, createItem({ displayName: 'Ding', nexoId: 'thing', folderId: folder.id, material: 'PAPER', model: png('thing.png') }));
+  insertItem(project, createItem({ displayName: 'Ding', itemId: 'thing', folderId: folder.id, material: 'PAPER', model: png('thing.png') }));
   return project;
 }

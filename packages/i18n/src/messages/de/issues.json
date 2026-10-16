@@ -42,7 +42,7 @@
     "folderEmpty": "Der Ordner „{folder}“ ist leer und wird nicht exportiert.",
     "itemIdMissing": "Die Item-ID fehlt.",
     "itemIdInvalid": "Die Item-ID „{id}“ darf nur Kleinbuchstaben, Zahlen und _ enthalten.",
-    "itemIdDuplicate": "Die Item-ID „{id}“ wird bereits von „{other}“ verwendet. Nexo-IDs müssen eindeutig sein.",
+    "itemIdDuplicate": "Die Item-ID „{id}“ wird bereits von „{other}“ verwendet. Item-IDs müssen eindeutig sein.",
     "modelNeedsVersion": "Das Modell benötigt mindestens Minecraft {version} (z.B. wegen freier Rotationen), das Projekt ist aber auf {target} eingestellt.",
     "textureRefUndefined": "Textur „{key}“ verweist auf „{value}“, das im Modell nicht definiert ist.",
     "textureRefForeign": "Textur „{key}“ verweist auf „{value}“, das nicht in diesem Pack enthalten ist.",
@@ -80,7 +80,7 @@
   },
   "selection": {
     "packNameClash": "„{first}“ und „{second}“ verwenden denselben Pack-Namen „{pack}“. Bitte in den Einstellungen eines Projekts umbenennen.",
-    "itemIdClash": "Die Item-ID „{id}“ gibt es in „{first}“ und in „{second}“. Nexo-IDs müssen eindeutig sein.",
+    "itemIdClash": "Die Item-ID „{id}“ gibt es in „{first}“ und in „{second}“. Item-IDs müssen eindeutig sein.",
     "glyphIdClash": "Den Glyph „{id}“ gibt es in „{first}“ und in „{second}“. Glyph-IDs müssen eindeutig sein.",
     "soundIdClash": "Den Sound „{id}“ gibt es in „{first}“ und in „{second}“. Sound-IDs müssen eindeutig sein.",
     "paintingIdClash": "Das Gemälde „{id}“ gibt es in „{first}“ und in „{second}“. Gemälde-IDs müssen eindeutig sein.",

@@ -51,7 +51,7 @@ export function planExport(project: Project, options: PlanOptions = {}): ExportP
     itemFiles.set(
       file,
       itemsToYaml(
-        list.map((p) => ({ id: p.item.nexoId, config: p.config })),
+        list.map((p) => ({ id: p.item.itemId, config: p.config })),
         `project "${project.name}"`,
       ),
     );
@@ -122,7 +122,7 @@ function planItem(project: Project, item: Item, writer: PackWriter, issues: Issu
     modelFile: main?.file ?? null,
     modelJson: main?.json ?? null,
     config: built.config,
-    yamlFile: itemYamlFile(project, itemExport.folderSlugs, item.nexoId),
+    yamlFile: itemYamlFile(project, itemExport.folderSlugs, item.itemId),
   };
 }
 

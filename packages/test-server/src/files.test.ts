@@ -21,7 +21,7 @@ describe('Test server: files for plugins/Nexo', () => {
     const folder = createFolder('Waffen', null);
     insertFolder(project, folder);
     const model = createTextureModel('handheld', { layer0: 'ruby.png' }, [{ name: 'ruby.png', dataUrl: makePngDataUrl(16, 16) }]);
-    insertItem(project, createItem({ displayName: 'Rubin', nexoId: 'ruby', folderId: folder.id, model }));
+    insertItem(project, createItem({ displayName: 'Rubin', itemId: 'ruby', folderId: folder.id, model }));
     const plan = planExport(project, { includeBinaries: true });
     const files = nexoFolderFiles(project, plan);
     const paths = files.map((f) => f.path);

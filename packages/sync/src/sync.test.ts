@@ -93,7 +93,7 @@ function sampleProject(): Project {
   const project = createProject('Mittelalter', 'mittelalter');
   const folder = createFolder('Waffen', null);
   insertFolder(project, folder);
-  const item = createItem({ displayName: 'Rubinschwert', nexoId: 'ruby_sword', folderId: folder.id, model: null });
+  const item = createItem({ displayName: 'Rubinschwert', itemId: 'ruby_sword', folderId: folder.id, model: null });
   insertItem(project, item);
   project.glyphs.push(createGlyph('g_herz', 'herz', null, 'image'));
   return project;
@@ -187,7 +187,7 @@ describe('Shared projects', () => {
     const { clock, anna, ben } = await setup();
     clock.t += 10;
     const sub = createFolder('Bögen', firstFolder(anna.project).id);
-    const bow = createItem({ displayName: 'Langbogen', nexoId: 'longbow', folderId: sub.id, model: null });
+    const bow = createItem({ displayName: 'Langbogen', itemId: 'longbow', folderId: sub.id, model: null });
     anna.edit((d) => {
       insertFolder(d, sub);
       insertItem(d, bow);
@@ -309,10 +309,10 @@ describe('Shared projects', () => {
     const { clock, anna, ben } = await setup();
     const folderId = firstFolder(anna.project).id;
     clock.t += 10;
-    const a = createItem({ displayName: 'Axt', nexoId: 'axe', folderId, model: null });
+    const a = createItem({ displayName: 'Axt', itemId: 'axe', folderId, model: null });
     anna.edit((d) => insertItem(d, a));
     clock.t += 10;
-    const b = createItem({ displayName: 'Bogen', nexoId: 'bow', folderId, model: null });
+    const b = createItem({ displayName: 'Bogen', itemId: 'bow', folderId, model: null });
     ben.edit((d) => insertItem(d, b));
     await anna.engine.flush();
     await ben.engine.flush();
@@ -338,7 +338,7 @@ describe('Shared projects', () => {
       d.rootFolderIds = [];
     });
     clock.t += 10;
-    const rescued = createItem({ displayName: 'Neu', nexoId: 'neu', folderId, model: null });
+    const rescued = createItem({ displayName: 'Neu', itemId: 'neu', folderId, model: null });
     ben.edit((d) => insertItem(d, rescued));
     await anna.engine.flush();
     await ben.engine.flush();

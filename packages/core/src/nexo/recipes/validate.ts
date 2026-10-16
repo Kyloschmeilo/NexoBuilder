@@ -21,7 +21,7 @@ function validateIngredient(ingredient: RecipeIngredient | null | undefined, con
   }
   if (ingredient.source === 'minecraft' && !MATERIAL_PATTERN.test(id.toUpperCase())) add('error', 'recipe.materialInvalid', { id });
   if (ingredient.source === 'tag' && !RESOURCE_LOCATION_PATTERN.test(id)) add('error', 'recipe.tagInvalid', { id });
-  if (ingredient.source === 'nexo' && !Object.values(project.items).some((i) => i.nexoId === id)) {
+  if (ingredient.source === 'nexo' && !Object.values(project.items).some((i) => i.itemId === id)) {
     add('info', 'recipe.nexoItemNotInProject', { id });
   }
   if (

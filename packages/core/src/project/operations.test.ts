@@ -22,9 +22,9 @@ function sample() {
   const b = createFolder('B', a.id);
   const c = createFolder('C', null);
   [a, b, c].forEach((folder) => insertFolder(project, folder));
-  const x = createItem({ displayName: 'X', nexoId: 'x', folderId: a.id, model: null });
-  const y = createItem({ displayName: 'Y', nexoId: 'y', folderId: a.id, model: null });
-  const z = createItem({ displayName: 'Z', nexoId: 'z', folderId: b.id, model: null });
+  const x = createItem({ displayName: 'X', itemId: 'x', folderId: a.id, model: null });
+  const y = createItem({ displayName: 'Y', itemId: 'y', folderId: a.id, model: null });
+  const z = createItem({ displayName: 'Z', itemId: 'z', folderId: b.id, model: null });
   [x, y, z].forEach((item) => insertItem(project, item));
   return { project, a: a.id, b: b.id, c: c.id, x: x.id, y: y.id, z: z.id };
 }
@@ -81,10 +81,10 @@ describe('folder operations', () => {
 describe('item operations', () => {
   it('inserts new items with a unique item ID', () => {
     const { project, a } = sample();
-    const item = insertNewItem(project, { displayName: 'X2', nexoId: 'x', folderId: a, model: null }, (draft) => {
+    const item = insertNewItem(project, { displayName: 'X2', itemId: 'x', folderId: a, model: null }, (draft) => {
       draft.config.material = 'PAINTING';
     });
-    expect(item.nexoId).toBe('x_2');
+    expect(item.itemId).toBe('x_2');
     expect(item.config.material).toBe('PAINTING');
     expect(project.folders[a].itemIds.at(-1)).toBe(item.id);
   });
@@ -113,10 +113,10 @@ describe('item operations', () => {
     const copy = duplicateItem(project, x, 'X copy')!;
     expect(project.folders[a].itemIds).toEqual([x, copy.id, y]);
     expect(copy.id).not.toBe(x);
-    expect(copy.nexoId).toBe('x_copy');
+    expect(copy.itemId).toBe('x_copy');
     expect(copy.displayName).toBe('X copy');
     expect(copy.recipes[0].id).not.toBe('r_1');
-    expect(duplicateItem(project, x, 'again')!.nexoId).toBe('x_copy_2');
+    expect(duplicateItem(project, x, 'again')!.itemId).toBe('x_copy_2');
   });
 
   it('duplicates inside an Immer draft', () => {
@@ -125,7 +125,7 @@ describe('item operations', () => {
     const next = produce(project, (draft: Project) => {
       copyId = duplicateItem(draft, x, 'X copy')!.id;
     });
-    expect(next.items[copyId].nexoId).toBe('x_copy');
+    expect(next.items[copyId].itemId).toBe('x_copy');
     expect(project.items[copyId]).toBeUndefined();
   });
 });

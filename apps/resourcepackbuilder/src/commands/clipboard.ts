@@ -21,7 +21,7 @@ export function pasteItemProperties(targetItemIds: string[], options: PasteOptio
   mutate((draft) => {
     for (const id of targetItemIds) {
       const item = draft.items[id];
-      if (!item || item.id === clip.sourceItemId) continue;
+      if (!item || item.id === clip.sourceId) continue;
       pasteItemConfig(draft, item, clip, options);
       item.updatedAt = Date.now();
       count++;

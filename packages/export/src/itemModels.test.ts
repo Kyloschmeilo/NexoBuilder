@@ -13,7 +13,7 @@ function furnitureProject(): Project {
   const project = createProject('Möbel', 'moebel', '1.21.11');
   const folder = createFolder('Sofas', null);
   insertFolder(project, folder);
-  const sofa = createItem({ displayName: 'Sofa', nexoId: 'sofa', folderId: folder.id, model: model('sofa') });
+  const sofa = createItem({ displayName: 'Sofa', itemId: 'sofa', folderId: folder.id, model: model('sofa') });
   sofa.config.Mechanics = {
     furniture: { hitbox: { barriers: ['0,0,0'] }, states: { an: {}, kaputt: { type: 'CUSTOM_MODEL_DATA', value: '5' } } },
   };
@@ -92,7 +92,7 @@ describe('Additional models', () => {
     const project = createProject('Blöcke', 'bl', '1.21.11');
     const folder = createFolder('Pflanzen', null);
     insertFolder(project, folder);
-    const flower = createItem({ displayName: 'Blume', nexoId: 'blume', folderId: folder.id, model: model('blume') });
+    const flower = createItem({ displayName: 'Blume', itemId: 'blume', folderId: folder.id, model: model('blume') });
     flower.config.Mechanics = { custom_block: { type: 'STRINGBLOCK', model: '@model' } };
     flower.variants = { stack_models: [model('s1'), model('s2')] };
     insertItem(project, flower);
@@ -111,7 +111,7 @@ describe('Additional models', () => {
     insertFolder(project, folder);
     const trident = createItem({
       displayName: 'Dreizack',
-      nexoId: 'dreizack',
+      itemId: 'dreizack',
       folderId: folder.id,
       material: 'TRIDENT',
       model: model('d'),

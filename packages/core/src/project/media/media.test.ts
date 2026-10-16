@@ -40,7 +40,7 @@ describe('media items', () => {
     const project = createProject('Test', 'pack');
     const painting = { ...createPainting('p_1', 'sunset', null), title: 'Sunset' };
     const input = paintingItem(project, painting);
-    expect(input).toMatchObject({ displayName: 'Sunset', nexoId: 'sunset', material: 'PAINTING' });
+    expect(input).toMatchObject({ displayName: 'Sunset', itemId: 'sunset', material: 'PAINTING' });
     const folderId = 'f';
     project.folders[folderId] = { id: folderId, name: 'F', parentId: null, folderIds: [], itemIds: [] };
     const item = insertNewItem(project, { ...input, folderId, model: null }, input.configure);
@@ -53,7 +53,7 @@ describe('media items', () => {
     setSoundJukebox(sound, true);
     expect(sound.stream).toBe(true);
     const input = musicDiscItem(project, sound);
-    expect(input.nexoId).toBe('music_theme_disc');
+    expect(input.itemId).toBe('music_theme_disc');
     expect(input.displayName).toBe('music.theme');
     const item = insertNewItem(project, { ...input, folderId: 'none', model: null }, input.configure);
     expect(item.config.Components).toEqual({ max_stack_size: 1, jukebox_playable: { song_key: 'pack:music.theme' } });

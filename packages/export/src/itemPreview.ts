@@ -10,5 +10,5 @@ export function findItemPlan(plan: ExportPlan | null, itemId: string): ItemPlan 
 /** The item's final Nexo YAML as the export writes it; '' when the plan does not contain the item. */
 export function itemYamlPreview(plan: ExportPlan | null, itemId: string): string {
   const entry = findItemPlan(plan, itemId);
-  return entry ? toYaml({ [entry.item.nexoId || 'item']: entry.config }) : '';
+  return entry ? toYaml({ [entry.item.itemId || 'item']: entry.config }) : '';
 }

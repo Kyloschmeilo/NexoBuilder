@@ -52,7 +52,7 @@ export function writeItemModels(itemExport: ItemExport, modelKey: string | null,
   const variants = item.variants ?? {};
   const has = (slot: VariantSlot) => (variants[slot]?.length ?? 0) > 0;
   const atLeast = (version: string) => compareVersions(project.settings.minecraftVersion, version) >= 0;
-  const definitionBase = [...itemExport.folderSlugs, item.nexoId].join('/');
+  const definitionBase = [...itemExport.folderSlugs, item.itemId].join('/');
   const writeDefinition = (path: string, model: ItemModelNode, extra: Record<string, unknown> = {}) => {
     writer.json(itemModelDefinitionFile(ns, path), { model, ...extra });
     return formatResourceLocation(ns, path);

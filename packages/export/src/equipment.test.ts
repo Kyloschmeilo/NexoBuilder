@@ -20,7 +20,7 @@ function project(version = '1.21.11'): { project: Project; add: (id: string, mat
   const folder = createFolder('Teile', null);
   insertFolder(p, folder);
   const add = (id: string, material: string, armor: ArmorSettings) => {
-    const item = createItem({ displayName: id, nexoId: id, folderId: folder.id, material, model: null });
+    const item = createItem({ displayName: id, itemId: id, folderId: folder.id, material, model: null });
     item.assets = { tex: createTexture('tex', `${id}.png`, PNG) };
     item.armor = armor;
     insertItem(p, item);

@@ -78,10 +78,10 @@ function sameSetting(actual: unknown, wanted: unknown): boolean {
 }
 
 /** Nexo 1.29: "nexo give <item> <amount> <player>" (as registered in the plugin – not as in the help text) */
-export function nexoGiveCommand(nexoId: string, amount: number, player: string): string {
-  assertCommandArg(nexoId);
+export function nexoGiveCommand(itemId: string, amount: number, player: string): string {
+  assertCommandArg(itemId);
   assertPlayerName(player);
-  return `nexo give ${nexoId} ${Math.max(1, Math.floor(amount))} ${player}`;
+  return `nexo give ${itemId} ${Math.max(1, Math.floor(amount))} ${player}`;
 }
 
 /** "nexo pack <player>": sends the resource pack to the player again. */

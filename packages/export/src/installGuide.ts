@@ -39,7 +39,7 @@ export function installGuide(multi: MultiExportPlan, rootFiles: Map<string, stri
 }
 
 function singleGuide(project: Project, plan: ExportPlan, rootFiles: Map<string, string>): string {
-  const ids = plan.items.map((p) => `  - ${p.item.nexoId}`).join('\n');
+  const ids = plan.items.map((p) => `  - ${p.item.itemId}`).join('\n');
   return [
     `ResourcepackBuilder – project "${project.name}"`,
     '==========================================',
@@ -89,7 +89,7 @@ function multiGuide(multi: MultiExportPlan, rootFiles: Map<string, string>): str
       title,
       '-'.repeat(title.length),
       `Namespace: ${project.namespace} · Minecraft ${project.settings.minecraftVersion}`,
-      ...(plan.items.length > 0 ? plan.items.map((p) => `  - ${p.item.nexoId}`) : ['  (no items)']),
+      ...(plan.items.length > 0 ? plan.items.map((p) => `  - ${p.item.itemId}`) : ['  (no items)']),
       ...(project.glyphs.length > 0 ? [`  + ${project.glyphs.length} glyph(s)`] : []),
       '',
     );

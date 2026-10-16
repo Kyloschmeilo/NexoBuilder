@@ -17,7 +17,7 @@ describe('unknown config paths', () => {
 
   it('are kept by the export with only empty values dropped', () => {
     const project = createProject('T', 't');
-    const item = createItem({ displayName: 'x', nexoId: 'x', folderId: 'f', model: null });
+    const item = createItem({ displayName: 'x', itemId: 'x', folderId: 'f', model: null });
     item.config.custom_root = { keep: 'yes', empty: '' };
     item.config.Components = { max_stack_size: 1, some_new_component: { x: 1 }, blank: [] };
     const { config } = buildItemConfig({ project, item, modelKey: null });

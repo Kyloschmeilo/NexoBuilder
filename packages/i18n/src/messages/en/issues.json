@@ -42,7 +42,7 @@
     "folderEmpty": "The folder “{folder}” is empty and is not exported.",
     "itemIdMissing": "The item ID is missing.",
     "itemIdInvalid": "The item ID “{id}” may only contain lowercase letters, digits and _.",
-    "itemIdDuplicate": "The item ID “{id}” is already used by “{other}”. Nexo IDs must be unique.",
+    "itemIdDuplicate": "The item ID “{id}” is already used by “{other}”. Item IDs must be unique.",
     "modelNeedsVersion": "The model needs at least Minecraft {version} (e.g. because of free rotations), but the project targets {target}.",
     "textureRefUndefined": "Texture “{key}” refers to “{value}”, which is not defined in the model.",
     "textureRefForeign": "Texture “{key}” refers to “{value}”, which is not part of this pack.",
@@ -80,7 +80,7 @@
   },
   "selection": {
     "packNameClash": "“{first}” and “{second}” use the same pack name “{pack}”. Rename it in the settings of one of the projects.",
-    "itemIdClash": "The item ID “{id}” exists in “{first}” and in “{second}”. Nexo IDs must be unique.",
+    "itemIdClash": "The item ID “{id}” exists in “{first}” and in “{second}”. Item IDs must be unique.",
     "glyphIdClash": "The glyph “{id}” exists in “{first}” and in “{second}”. Glyph IDs must be unique.",
     "soundIdClash": "The sound “{id}” exists in “{first}” and in “{second}”. Sound IDs must be unique.",
     "paintingIdClash": "The painting “{id}” exists in “{first}” and in “{second}”. Painting IDs must be unique.",

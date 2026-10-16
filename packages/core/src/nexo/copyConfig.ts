@@ -51,9 +51,9 @@ const NEVER_COPIED_PROPERTIES = new Set(['Pack.custom_model_data']);
 
 export interface ItemConfigClipboard {
   format: 'resourcepackbuilder-item-config';
-  sourceItemId: string;
+  sourceId: string;
   sourceName: string;
-  sourceNexoId: string;
+  sourceItemId: string;
   projectId: string;
   config: ConfigObject;
   armor?: ArmorSettings;
@@ -65,15 +65,15 @@ export interface ItemConfigClipboard {
 
 /** Plain-text name of the item the clipboard was copied from. */
 export function clipboardLabel(clip: ItemConfigClipboard): string {
-  return stripFormatting(clip.sourceName).trim() || clip.sourceNexoId;
+  return stripFormatting(clip.sourceName).trim() || clip.sourceItemId;
 }
 
 export function copyItemConfig(item: Item, projectId: string): ItemConfigClipboard {
   return {
     format: 'resourcepackbuilder-item-config',
-    sourceItemId: item.id,
+    sourceId: item.id,
     sourceName: item.displayName,
-    sourceNexoId: item.nexoId,
+    sourceItemId: item.itemId,
     projectId,
     config: deepClone(item.config),
     ...(item.armor && { armor: deepClone(item.armor) }),
@@ -142,7 +142,7 @@ export interface PasteOptions {
  * `project` is needed for unique block variations.
  */
 export function pasteItemConfig(project: Project, target: Item, clip: ItemConfigClipboard, options: PasteOptions): void {
-  if (target.id === clip.sourceItemId) return;
+  if (target.id === clip.sourceId) return;
   const { categories, mode } = options;
   const source = clip.config;
   const config = target.config;

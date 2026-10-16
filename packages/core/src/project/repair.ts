@@ -5,7 +5,7 @@
  * the same objects in an Immer draft.
  */
 import { MEDIA_KIND_LIST, mediaList, setMediaList } from './media/kinds';
-import { sameList } from '@resourcepackbuilder/utils';
+import { sameList, slugify, uniqueId } from '@resourcepackbuilder/utils';
 import type { Item, Project } from './types';
 
 /** Folder for items whose folder no longer exists (e.g. deleted by someone else while they were being created). */
@@ -99,6 +99,17 @@ export function repairProject(project: Project): void {
     if (!sameList(folder.folderIds, nextFolders)) folder.folderIds = nextFolders;
     const nextItems = mergeOrder(folder.itemIds, folderItems.get(id) ?? []);
     if (!sameList(folder.itemIds, nextItems)) folder.itemIds = nextItems;
+  }
+
+  // Item IDs are unique: the oldest item keeps a shared ID, the others get a numbered one
+  const takenItemIds = new Set<string>();
+  for (const id of Object.keys(items).sort(byCreatedThenId(items))) {
+    const item = items[id];
+    if (!takenItemIds.has(item.itemId)) takenItemIds.add(item.itemId);
+    else {
+      item.itemId = uniqueId(slugify(item.itemId, 'item'), takenItemIds);
+      takenItemIds.add(item.itemId);
+    }
   }
 
   // Remove duplicate glyphs, sounds, paintings (same internal ID)

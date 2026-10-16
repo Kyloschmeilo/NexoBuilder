@@ -97,9 +97,9 @@ function referencedKeys(): Set<string> {
 
   const clip: ItemConfigClipboard = {
     format: 'resourcepackbuilder-item-config',
-    sourceItemId: 'i',
+    sourceId: 'i',
     sourceName: 'Item',
-    sourceNexoId: 'item',
+    sourceItemId: 'item',
     projectId: 'p',
     config: {},
     rawYaml: 'a: 1',

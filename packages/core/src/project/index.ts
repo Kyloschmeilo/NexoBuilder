@@ -22,6 +22,7 @@ export * from './recipes/operations';
 export * from './repair';
 export * from './schema';
 export * from './summary';
+export * from './target';
 export * from './tree';
 export * from './types';
 export * from './variants';

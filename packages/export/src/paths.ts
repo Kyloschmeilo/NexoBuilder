@@ -35,7 +35,7 @@ function textureDirFor(item: Item): 'item' | 'block' {
 
 /** Model path of an item's main model, e.g. "item/weapons/ruby_sword" */
 export function modelPathFor(project: Project, item: Item): string {
-  return [textureDirFor(item), ...getFolderSlugs(project, item.folderId), item.nexoId].join('/');
+  return [textureDirFor(item), ...getFolderSlugs(project, item.folderId), item.itemId].join('/');
 }
 
 export function modelFile(namespace: string, modelPath: string): string {
@@ -72,10 +72,10 @@ export function soundFile(namespace: string, soundPath: string): string {
   return `assets/${namespace}/sounds/${soundPath}.ogg`;
 }
 
-/** YAML file (relative to plugins/Nexo) for items in the folder `folderSlugs`; `nexoId` names it in "one file per item" mode. */
-export function itemYamlFile(project: Project, folderSlugs: string[], nexoId: string): string {
+/** YAML file (relative to plugins/Nexo) for items in the folder `folderSlugs`; `itemId` names it in "one file per item" mode. */
+export function itemYamlFile(project: Project, folderSlugs: string[], itemId: string): string {
   const dir = ['items', ...(project.settings.itemsInProjectFolder ? [projectFileName(project)] : []), ...folderSlugs];
-  const fileName = project.settings.yamlFileMode === 'item' ? nexoId : (folderSlugs[folderSlugs.length - 1] ?? 'items');
+  const fileName = project.settings.yamlFileMode === 'item' ? itemId : (folderSlugs[folderSlugs.length - 1] ?? 'items');
   return `${dir.join('/')}/${fileName}.yml`;
 }
 

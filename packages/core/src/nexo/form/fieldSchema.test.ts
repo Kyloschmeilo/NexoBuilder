@@ -57,7 +57,7 @@ describe('checkFieldValue', () => {
 describe('pruning by field', () => {
   it('converts numbers and booleans stored as text and leaves out values of the wrong type', () => {
     const project = createProject('T', 't');
-    const item = createItem({ displayName: 'x', nexoId: 'x', folderId: 'f', model: null });
+    const item = createItem({ displayName: 'x', itemId: 'x', folderId: 'f', model: null });
     item.config.Components = { max_stack_size: '16', max_damage: 'lots', fire_resistant: 'true', hide_tooltip: 'maybe' };
     const { config } = buildItemConfig({ project, item, modelKey: null });
     expect(config.Components).toEqual({ max_stack_size: 16, fire_resistant: true });

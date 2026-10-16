@@ -2,6 +2,7 @@
 import { DEFAULT_MC_VERSION, type ImportedModel } from '@resourcepackbuilder/minecraft';
 import { DEFAULT_MATERIAL } from './item';
 import { mapMediaLists } from './media/kinds';
+import { DEFAULT_PACK_TARGET, type PackTargetId } from './target';
 import { slugify, uid } from '@resourcepackbuilder/utils';
 import type { Folder, Item, Project, ProjectSettings } from './types';
 
@@ -26,7 +27,7 @@ export function defaultNamespace(name: string): string {
   return slugify(name, DEFAULT_PACK_NAME);
 }
 
-export function createProject(name: string, namespace?: string, minecraftVersion?: string): Project {
+export function createProject(name: string, namespace?: string, minecraftVersion?: string, target: PackTargetId = DEFAULT_PACK_TARGET): Project {
   const now = Date.now();
   const settings = defaultSettings(name);
   if (minecraftVersion) settings.minecraftVersion = minecraftVersion;
@@ -34,6 +35,7 @@ export function createProject(name: string, namespace?: string, minecraftVersion
     formatVersion: 1,
     id: uid('p_'),
     name,
+    target,
     namespace: namespace ?? defaultNamespace(name),
     settings,
     folders: {},
@@ -51,7 +53,7 @@ export function createFolder(name: string, parentId: string | null): Folder {
 
 export interface NewItemInput {
   displayName: string;
-  nexoId: string;
+  itemId: string;
   folderId: string;
   material?: string;
   model: ImportedModel | null;
@@ -61,7 +63,7 @@ export function createItem(input: NewItemInput): Item {
   const now = Date.now();
   return {
     id: uid('i_'),
-    nexoId: input.nexoId,
+    itemId: input.itemId,
     displayName: input.displayName,
     folderId: input.folderId,
     model: input.model,

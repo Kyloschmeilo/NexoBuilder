@@ -10,7 +10,7 @@ function setup() {
   const project = createProject('Rezept Test', 'rezepte', '26.3');
   const folder = createFolder('Waffen', null);
   insertFolder(project, folder);
-  const item = createItem({ displayName: 'Rubin-Schwert', nexoId: 'ruby_sword', folderId: folder.id, model: null });
+  const item = createItem({ displayName: 'Rubin-Schwert', itemId: 'ruby_sword', folderId: folder.id, model: null });
   insertItem(project, item);
   return { project, item };
 }

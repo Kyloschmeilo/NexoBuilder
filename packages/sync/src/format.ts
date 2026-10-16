@@ -287,7 +287,7 @@ const ProjectMetaSchema = z
   .transform((meta): ProjectMeta => withoutUndefined({ ...meta, settings: settingsSchema(meta.name).parse(meta.settings) }));
 
 /** Item data: the fields every complete item file has, then the project migration. */
-const ItemDataSchema = z.looseObject({ nexoId: z.string(), folderId: z.string(), config: plainObject() }).transform((raw, ctx) => {
+const ItemDataSchema = z.looseObject({ itemId: z.string(), folderId: z.string(), config: plainObject() }).transform((raw, ctx) => {
   const item = parseItem(raw, Date.now());
   if (item) return item;
   ctx.addIssue({ code: 'custom', message: 'no item' });

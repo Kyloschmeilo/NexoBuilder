@@ -23,7 +23,7 @@ export function useItemActions() {
     async remove(item: Item) {
       const confirmed = await confirm({
         title: t('item.deleteTitle'),
-        message: `${t('item.deleteMessage', { name: itemLabel(item), id: item.nexoId })}\n\n${t('folder.undoHint')}`,
+        message: `${t('item.deleteMessage', { name: itemLabel(item), id: item.itemId })}\n\n${t('folder.undoHint')}`,
         confirmLabel: tCommon('delete'),
         destructive: true,
       });
