@@ -5,6 +5,7 @@ import {
   blockBehaviorType,
   CE_BLOCK_BEHAVIOR_FORMS,
   craftEngineBlock,
+  craftEngineFurniture,
 } from '@resourcepackbuilder/core/craftEngine';
 import { type Item } from '@resourcepackbuilder/core/project';
 import { Field, FieldDescription, FieldLabel } from '@resourcepackbuilder/ui/components/field';
@@ -58,17 +59,20 @@ function BehaviorSelect({ item, block }: { item: Item; block: Record<string, unk
 /**
  * CraftEngine: whether the item places a block of its own, its behavior, its states (the vanilla states it borrows,
  * `auto_state`) and the block settings. Shown for CraftEngine projects only (their form has the block settings group).
+ * An item is either a block or furniture, so the toggle is off while the item places furniture.
  */
 export function CraftEngineBlockSection({ item }: { item: Item }) {
   const t = useTranslations('item');
   const block = craftEngineBlock(item.config);
+  const isFurniture = craftEngineFurniture(item.config) !== null;
   return (
     <Section title={t('ceBlock.title')} description={t('ceBlock.description')}>
       <CheckboxField
         checked={block !== null}
+        disabled={isFurniture && block === null}
         onChange={(checked) => setCraftEngineBlock(item.id, checked)}
         label={t('ceBlock.toggle')}
-        description={t('ceBlock.toggleHelp')}
+        description={isFurniture && block === null ? t('ceBlock.toggleBlocked') : t('ceBlock.toggleHelp')}
       />
       {block && (
         <>

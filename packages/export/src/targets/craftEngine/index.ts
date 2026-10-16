@@ -6,7 +6,7 @@ import type { BuiltItem, PackTarget, WrittenItemModels } from '../types';
 import { craftEngineInstallGuide } from './installGuide';
 import { CRAFT_ENGINE_PLUGIN_DIR, CRAFT_ENGINE_RELOAD_COMMAND, craftEngineItemFile, craftEnginePackLocation } from './layout';
 import { planCraftEnginePluginFiles } from './pluginFiles';
-import { CE_ITEM_ID_PATTERN, validateCraftEngineBlock, validateCraftEngineItem } from './validate';
+import { CE_ITEM_ID_PATTERN, validateCraftEngineBlock, validateCraftEngineFurniture, validateCraftEngineItem } from './validate';
 import { writeCraftEngineVariants } from './variants';
 
 export * from './installGuide';
@@ -45,7 +45,7 @@ export const CRAFT_ENGINE_TARGET: PackTarget<CraftEngineWrittenModels> = {
   },
 };
 
-/** Builds the item's CraftEngine config (and the block it places) and checks it. */
+/** Builds the item's CraftEngine config (and the block or furniture it places) and checks it. */
 function buildItem(itemExport: ItemExport, written: CraftEngineWrittenModels): BuiltItem {
   const { project, item } = itemExport;
   const built = buildCraftEngineItem({
@@ -58,8 +58,15 @@ function buildItem(itemExport: ItemExport, written: CraftEngineWrittenModels): B
   if (built.rawYamlError?.kind === 'syntax') itemExport.report('error', 'plan.rawYamlError', { error: built.rawYamlError.message });
   else if (built.rawYamlError) itemExport.report('error', 'plan.rawYamlNotMapping');
   if (built.rawBlockIgnored) itemExport.report('warning', 'ce.rawBlockWithoutBlock');
+  if (built.rawFurnitureIgnored) itemExport.report('warning', 'ce.rawFurnitureWithoutFurniture');
+  if (built.furnitureIgnored) itemExport.report('error', 'ce.furnitureWithBlock');
   validateCraftEngineItem(itemExport, built.config);
+  const key = craftEngineItemKey(project, item);
+  if (built.furniture) {
+    validateCraftEngineFurniture(itemExport, built.furniture, built.config);
+    return { config: built.config, sections: { furniture: { [key]: built.furniture } } };
+  }
   if (!built.block) return { config: built.config };
   validateCraftEngineBlock(itemExport, built.block, built.blockModel);
-  return { config: built.config, sections: { blocks: { [craftEngineItemKey(project, item)]: built.block } } };
+  return { config: built.config, sections: { blocks: { [key]: built.block } } };
 }

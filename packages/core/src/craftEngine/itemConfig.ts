@@ -7,6 +7,9 @@
  * behavior that places it. The additional YAML's `block:` is the block's overlay (the same shape as the config,
  * where `block` holds the block); it is merged before the export fills in what the block leaves out (the models of
  * its states, the arguments of a state template), so what it sets wins too.
+ * A furniture definition in `furniture` works the same way: it is returned as the furniture of the same key, the item
+ * gets the `furniture_item` behavior (with the definition's placement rules), and the additional YAML's `furniture:`
+ * is merged over it. An item is either a block or furniture: with both, the block is built and the furniture left out.
  */
 import type { JavaModelJson } from '@resourcepackbuilder/minecraft';
 import { deepClone, deepMerge, isPlainObject } from '@resourcepackbuilder/utils';
@@ -18,6 +21,7 @@ import { CRAFT_ENGINE_FORM } from './form/schema';
 import { craftEngineBlock, craftEngineBlockModel, craftEngineBlockTextures, type CraftEngineBlockModel } from './block';
 import { blockBehaviorForm, blockBehaviorType } from './blockBehaviors';
 import { blockStates, CE_STATE_TEMPLATES, statesTemplate, templateArguments } from './blockStates';
+import { buildCraftEngineFurniture, craftEngineFurniture } from './furniture';
 
 /** Order of the keys in the YAML (as in the CraftEngine docs); other keys follow in their own order. */
 const TOP_LEVEL_ORDER = ['material', 'client_bound_material', 'data', 'model', 'models', 'settings', 'behavior', 'events'];
@@ -56,6 +60,12 @@ export interface CraftEngineBuildResult {
   rawYamlError: RawYamlError | null;
   /** The additional YAML has a `block:` but the item is no block (it is left out) */
   rawBlockIgnored: boolean;
+  /** The furniture the item places (its entry under `furniture:`), null if the item is no furniture */
+  furniture: Record<string, unknown> | null;
+  /** The item is a block and furniture at once (the furniture is left out) */
+  furnitureIgnored: boolean;
+  /** The additional YAML has a `furniture:` but the item is no furniture (it is left out) */
+  rawFurnitureIgnored: boolean;
 }
 
 /** The key of an item under `items:`, e.g. "ruby:ruby_sword". */
@@ -212,13 +222,26 @@ export function buildCraftEngineItem(context: CraftEngineBuildContext): CraftEng
   const raw = parseRawYaml(item.rawYaml);
   const rawItem = raw.value ? { ...raw.value } : null;
   const rawBlock = rawItem && isPlainObject(rawItem.block) ? rawItem.block : null;
-  if (rawItem) delete rawItem.block;
+  const rawFurniture = rawItem && isPlainObject(rawItem.furniture) ? rawItem.furniture : null;
+  if (rawItem) {
+    delete rawItem.block;
+    delete rawItem.furniture;
+  }
 
   // Whether the item is a block is decided on the item's own config (as isBlockItem does), not on the cleaned one
   const isBlock = craftEngineBlock(item.config) !== null;
   const built = isBlock ? buildBlock(isPlainObject(resolved.block) ? resolved.block : {}, context, rawBlock) : null;
   delete resolved.block;
-  if (built) resolved.behavior = { type: built.form?.itemBehavior ?? 'block_item', block: craftEngineItemKey(project, item) };
+  const itemKey = craftEngineItemKey(project, item);
+  if (built) resolved.behavior = { type: built.form?.itemBehavior ?? 'block_item', block: itemKey };
+
+  const isFurniture = craftEngineFurniture(item.config) !== null;
+  const furnitureSource = isPlainObject(resolved.furniture) ? resolved.furniture : {};
+  const furniture = isFurniture && !isBlock ? buildCraftEngineFurniture(furnitureSource, rawFurniture, itemKey) : null;
+  delete resolved.furniture;
+  if (furniture) {
+    resolved.behavior = { type: 'furniture_item', furniture: itemKey, ...(furniture.rules ? { rules: furniture.rules } : {}) };
+  }
 
   // The managed paths are set below, whatever the config holds there
   delete resolved.material;
@@ -243,5 +266,8 @@ export function buildCraftEngineItem(context: CraftEngineBuildContext): CraftEng
     blockModel: built?.blockModel ?? null,
     rawYamlError: raw.error,
     rawBlockIgnored: rawBlock !== null && !isBlock,
+    furniture: furniture?.furniture ?? null,
+    furnitureIgnored: isFurniture && isBlock,
+    rawFurnitureIgnored: rawFurniture !== null && !isFurniture,
   };
 }

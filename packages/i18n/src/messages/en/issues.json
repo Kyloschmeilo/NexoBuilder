@@ -224,7 +224,18 @@
     "blockBehaviorProperty": "The behavior {behavior} needs the block property “{property}” of the type {type}. Add it to the block’s states.",
     "blockBaseShared": "The blocks {blocks} all borrow the states of {block}, but each state can only show one of them. Choose another vanilla block for all but one.",
     "rawBlockWithoutBlock": "The additional YAML has a block: section, but the item is no block, so the section is left out. Turn on “Place as a block” in the Block section of the model tab.",
-    "blockFenceItemUnknown": "The fence shows the item “{item}”, which the project does not have. Create it with the model of the post or the side, or choose another item in the Block section."
+    "blockFenceItemUnknown": "The fence shows the item “{item}”, which the project does not have. Create it with the model of the post or the side, or choose another item in the Block section.",
+    "furnitureWithBlock": "The item is a block and furniture at once. CraftEngine can place only one of them, so the furniture is left out. Turn off one of them in the model tab.",
+    "rawFurnitureWithoutFurniture": "The additional YAML has a furniture: section, but the item is no furniture, so the section is left out. Turn on “Place as furniture” in the Furniture section of the model tab.",
+    "furnitureNoVariant": "The furniture has no variant. Add one in the Furniture section of the model tab.",
+    "furnitureNoPlaceableVariant": "The item cannot place the furniture: it has no ground, wall or ceiling variant.",
+    "furnitureVariantEmpty": "The variant “{variant}” has no elements, so the furniture is invisible there.",
+    "furnitureElementTypeInvalid": "An element of the variant “{variant}” has the unknown type “{type}”.",
+    "furnitureElementKeyMissing": "An element of the type {type} in the variant “{variant}” needs “{key}”.",
+    "furnitureItemUnknown": "The variant “{variant}” shows the item “{item}”, which the project does not have.",
+    "furnitureValueInvalid": "CraftEngine cannot read “{value}” as {key} in the variant “{variant}”.",
+    "furnitureHitboxTypeInvalid": "A hitbox of the variant “{variant}” has the unknown type “{type}”.",
+    "furnitureRuleInvalid": "The placement rule {key} of the variant “{variant}” has the unknown value “{value}”."
   },
   "issueList": {
     "openItem": "Go to item",

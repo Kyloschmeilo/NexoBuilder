@@ -1,4 +1,7 @@
-/** The files of plugins/CraftEngine: the project's pack.yml and its item configs (with their blocks) grouped by file. */
+/**
+ * The files of plugins/CraftEngine: the project's pack.yml and its item configs (with their blocks and furniture)
+ * grouped by file.
+ */
 import { createIssue, groupBy, type Issue } from '@resourcepackbuilder/utils';
 import { buildPackYml, sectionsToYaml } from '@resourcepackbuilder/core/craftEngine';
 import type { Project } from '@resourcepackbuilder/core/project';
@@ -14,7 +17,8 @@ export function planCraftEnginePluginFiles(project: Project, plans: ItemPlan[], 
   for (const [file, list] of groupBy(plans, (p) => p.yamlFile)) {
     const items = Object.fromEntries(list.map((p) => [p.yamlKey, p.config]));
     const blocks = Object.assign({}, ...list.map((p) => p.sections?.blocks));
-    pluginFiles.set(file, sectionsToYaml({ items, blocks }, `project "${project.name}"`));
+    const furniture = Object.assign({}, ...list.map((p) => p.sections?.furniture));
+    pluginFiles.set(file, sectionsToYaml({ items, blocks, furniture }, `project "${project.name}"`));
   }
   const packName = exportPackName(project);
   if (CRAFT_ENGINE_RESERVED_PACK_NAME.test(packName)) issues.push(createIssue('error', 'ce.reservedPackName', { name: packName }));

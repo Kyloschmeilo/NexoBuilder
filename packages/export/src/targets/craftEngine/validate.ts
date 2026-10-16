@@ -7,17 +7,30 @@ import {
   blockPropertyTypes,
   blockStates,
   CE_BLOCK_MAX_TEXTURES,
+  CE_FURNITURE_ALIGNMENTS,
+  CE_FURNITURE_ANCHORS,
+  CE_FURNITURE_ELEMENT_TYPES,
+  CE_FURNITURE_HITBOX_TYPES,
+  CE_FURNITURE_ROTATIONS,
   CE_MODEL_KEYS,
   CE_PROPERTIES,
   type CraftEngineBlockModel,
+  furnitureElementType,
+  furnitureHitboxType,
+  furnitureVariants,
   missingBehaviorProperties,
+  parseCeRotation,
+  parseCeVector,
+  parseFurnitureSeat,
   parseVariantKey,
   propertyValues,
+  requiredElementKey,
   sharedBaseBlocks,
   stateAutoState,
   statesMap,
   statesTemplate,
   templateArguments,
+  variantList,
 } from '@resourcepackbuilder/core/craftEngine';
 import type { Project } from '@resourcepackbuilder/core/project';
 import { ITEM_ID_PATTERN } from '@resourcepackbuilder/minecraft';
@@ -128,4 +141,79 @@ export function blockProjectIssues(project: Project): Issue[] {
       createIssue('warning', 'ce.blockBaseShared', { block, blocks: blocks.join(', ') }),
     ),
   ];
+}
+
+const ELEMENT_TYPES: readonly string[] = CE_FURNITURE_ELEMENT_TYPES;
+const HITBOX_TYPES: readonly string[] = CE_FURNITURE_HITBOX_TYPES;
+const ANCHORS: readonly string[] = CE_FURNITURE_ANCHORS;
+const RULE_VALUES: Record<string, readonly string[]> = { rotation: CE_FURNITURE_ROTATIONS, alignment: CE_FURNITURE_ALIGNMENTS };
+/** Keys of elements and hitboxes that hold a vector, and those that hold a rotation */
+const VECTOR_KEYS = ['position', 'translation'];
+const ROTATION_KEY = 'rotation';
+
+/** A vector, rotation or seat CraftEngine cannot read. */
+function checkValue(itemExport: ItemExport, variant: string, key: string, value: unknown, valid: boolean): void {
+  if (value !== undefined && !valid) {
+    itemExport.report('error', 'ce.furnitureValueInvalid', { variant, key, value: typeof value === 'string' ? value : JSON.stringify(value) });
+  }
+}
+
+/**
+ * The furniture: at least one variant the item can place (ground, wall, ceiling), elements of known types with what
+ * they show, readable positions, rotations and seats, known hitbox types, and the item's placement rules. Items of
+ * the pack an element shows must exist.
+ */
+export function validateCraftEngineFurniture(
+  itemExport: ItemExport,
+  furniture: Record<string, unknown>,
+  itemConfig: Record<string, unknown>,
+): void {
+  const { report, project } = itemExport;
+  const variants = furnitureVariants(furniture);
+  const names = Object.keys(variants);
+  if (names.length === 0) report('error', 'ce.furnitureNoVariant');
+  else if (!names.some((name) => ANCHORS.includes(name))) report('warning', 'ce.furnitureNoPlaceableVariant');
+  const items = new Set(Object.values(project.items).map((item) => `${project.namespace}:${item.itemId}`));
+
+  for (const [name, variant] of Object.entries(variants)) {
+    const elements = variantList(variant, 'elements');
+    if (elements.length === 0 && variant.blueprint === undefined) report('warning', 'ce.furnitureVariantEmpty', { variant: name });
+    for (const element of elements) {
+      const type = furnitureElementType(element);
+      if (!type || !ELEMENT_TYPES.includes(type)) {
+        report('error', 'ce.furnitureElementTypeInvalid', { variant: name, type: type ?? '' });
+        continue;
+      }
+      const required = requiredElementKey(type);
+      if (required && element[required] === undefined) report('error', 'ce.furnitureElementKeyMissing', { variant: name, type, key: required });
+      const item = element.item;
+      if (typeof item === 'string' && item.startsWith(`${project.namespace}:`) && !items.has(item)) {
+        report('warning', 'ce.furnitureItemUnknown', { variant: name, item });
+      }
+      for (const key of VECTOR_KEYS) checkValue(itemExport, name, key, element[key], parseCeVector(element[key]) !== null);
+      if (type !== 'armor_stand') checkValue(itemExport, name, 'scale', element.scale, parseCeVector(element.scale) !== null);
+      checkValue(itemExport, name, ROTATION_KEY, element[ROTATION_KEY], parseCeRotation(element[ROTATION_KEY]) !== null);
+    }
+    for (const hitbox of variantList(variant, 'hitboxes')) {
+      const type = furnitureHitboxType(hitbox);
+      if (!HITBOX_TYPES.includes(type)) report('error', 'ce.furnitureHitboxTypeInvalid', { variant: name, type });
+      if (type === 'custom' && hitbox.entity_type === undefined) {
+        report('error', 'ce.furnitureElementKeyMissing', { variant: name, type, key: 'entity_type' });
+      }
+      checkValue(itemExport, name, 'position', hitbox.position, parseCeVector(hitbox.position) !== null);
+      const seats = Array.isArray(hitbox.seats) ? hitbox.seats : [];
+      for (const seat of seats) checkValue(itemExport, name, 'seats', seat, parseFurnitureSeat(seat) !== null);
+    }
+  }
+
+  const behavior = isPlainObject(itemConfig.behavior) ? itemConfig.behavior : {};
+  const rules = isPlainObject(behavior.rules) ? behavior.rules : {};
+  for (const [variant, rule] of Object.entries(rules)) {
+    for (const [key, allowed] of Object.entries(RULE_VALUES)) {
+      const value = isPlainObject(rule) ? rule[key] : undefined;
+      if (value !== undefined && !allowed.includes(String(value).toLowerCase())) {
+        report('error', 'ce.furnitureRuleInvalid', { variant, key, value: String(value) });
+      }
+    }
+  }
 }

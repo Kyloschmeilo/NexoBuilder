@@ -9,6 +9,7 @@ export * from './form/schema/blockSettings';
 export * from './form/schema/data';
 export * from './form/schema/general';
 export * from './form/schema/settings';
+export * from './furniture';
 export * from './itemConfig';
 export * from './pack';
 export * from './yaml';

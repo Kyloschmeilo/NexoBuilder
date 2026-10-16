@@ -7,6 +7,7 @@ import { PropertiesPanel } from '../properties/PropertiesPanel';
 import { useProjectForm } from '../properties/useProjectForm';
 import { BlockModelsSection } from './BlockModelsSection';
 import { CraftEngineBlockSection, hasBlockSettings } from './CraftEngineBlockSection';
+import { CraftEngineFurnitureSection } from './CraftEngineFurnitureSection';
 import { FurnitureModelsSection } from './FurnitureModelsSection';
 import { ModelCard } from './ModelCard';
 import { TexturesSection } from './TexturesSection';
@@ -41,7 +42,8 @@ function NoModelCard({ item }: { item: Item }) {
 
 /**
  * The item's model with its textures, extra models (variants, furniture, block) and the appearance properties, if the
- * project's form has that group (Nexo does, CraftEngine does not). CraftEngine items get the Block section instead.
+ * project's form has that group (Nexo does, CraftEngine does not). CraftEngine items get the Block and Furniture
+ * sections instead.
  */
 export function ModelTab({ item }: { item: Item }) {
   const model = item.model;
@@ -61,6 +63,7 @@ export function ModelTab({ item }: { item: Item }) {
         <NoModelCard item={item} />
       )}
       {hasBlockSettings(groups) && <CraftEngineBlockSection item={item} />}
+      {hasBlockSettings(groups) && <CraftEngineFurnitureSection item={item} />}
       {hasAppearance && <PropertiesPanel item={item} group={APPEARANCE_GROUP} />}
     </div>
   );

@@ -24,7 +24,13 @@ import * as operations from '@resourcepackbuilder/core/project';
 import { assetToken, isPlainObject, texturePlaceholder, uid } from '@resourcepackbuilder/utils';
 import { propertyById, type PropertyDef, setPropertyValue } from '@resourcepackbuilder/core/form';
 import { formFor } from '@resourcepackbuilder/core/targets';
-import { applyBlockBehavior, CE_DEFAULT_AUTO_STATE, craftEngineItemKey, newCraftEngineBlock } from '@resourcepackbuilder/core/craftEngine';
+import {
+  applyBlockBehavior,
+  CE_DEFAULT_AUTO_STATE,
+  craftEngineItemKey,
+  newCraftEngineBlock,
+  newCraftEngineFurniture,
+} from '@resourcepackbuilder/core/craftEngine';
 import { getProject, mutate } from '../store/project';
 import { select, setExpanded } from '../store/ui';
 
@@ -201,6 +207,30 @@ export function updateCraftEngineBlock(itemId: string, next: (block: ConfigObjec
       const block = item.config.block;
       if (!isPlainObject(block)) return;
       item.config.block = next(isDraft(block) ? current(block) : block);
+    },
+    historyKey,
+  );
+}
+
+/** Makes the CraftEngine item furniture (a new definition) or removes its furniture. */
+export function setCraftEngineFurniture(itemId: string, isFurniture: boolean): void {
+  updateItem(itemId, (item) => {
+    if (isFurniture) item.config.furniture = newCraftEngineFurniture();
+    else delete item.config.furniture;
+  });
+}
+
+/**
+ * Replaces the item's furniture with what `next` makes of it; equal `historyKey`s in quick succession form one undo
+ * step.
+ */
+export function updateCraftEngineFurniture(itemId: string, next: (furniture: ConfigObject) => ConfigObject, historyKey?: string): void {
+  updateItem(
+    itemId,
+    (item) => {
+      const furniture = item.config.furniture;
+      if (!isPlainObject(furniture)) return;
+      item.config.furniture = next(isDraft(furniture) ? current(furniture) : furniture);
     },
     historyKey,
   );
