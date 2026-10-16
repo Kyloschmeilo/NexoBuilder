@@ -1,7 +1,6 @@
 import { Plus, Trash2 } from 'lucide-react';
 import { useFormatter, useTranslations } from 'next-intl';
-import { soundFilePath } from '@resourcepackbuilder/core/nexo';
-import type { Sound } from '@resourcepackbuilder/core/project';
+import { type Sound, soundFilePath } from '@resourcepackbuilder/core/project';
 import { Button } from '@resourcepackbuilder/ui/components/button';
 import { Item, ItemActions, ItemContent, ItemMedia, ItemTitle } from '@resourcepackbuilder/ui/components/item';
 import { IconButton, Tip, pickFiles } from '@resourcepackbuilder/ui';

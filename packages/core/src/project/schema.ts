@@ -31,9 +31,16 @@ import {
   schemaKey,
   stringList,
   uid,
+  uniqueId,
   withoutUndefined,
 } from '@resourcepackbuilder/utils';
-import { type ImportedModel, JavaModelSchema, type ModelTexture, ModelTextureSchema } from '@resourcepackbuilder/minecraft';
+import {
+  type ImportedModel,
+  itemIdSyntaxError,
+  JavaModelSchema,
+  type ModelTexture,
+  ModelTextureSchema,
+} from '@resourcepackbuilder/minecraft';
 import { toArmorSettings, type ArmorSettings } from './armor';
 import { CHAT_TEXT_HEIGHT, DEFAULT_FONT_ASCENT, type Glyph } from './media/glyph';
 import type { MediaFile } from './media/entry';
@@ -41,8 +48,19 @@ import type { MediaEntryByKind, MediaKind } from './media/kinds';
 import type { Painting } from './media/painting';
 import { INGREDIENT_LETTERS, RECIPE_TYPES, type Recipe, type RecipeIngredient } from './recipes/model';
 import type { JukeboxSong, Sound, SoundFile } from './media/sound';
+import { itemIdFromName } from './ids';
 import { defaultSettings, DEFAULT_PACK_NAME } from './factory';
-import type { ConfigObject, ConfigValue, Folder, Item, Project, ProjectSettings } from './types';
+import { DEFAULT_PACK_TARGET, PACK_TARGETS } from './target';
+import type {
+  ConfigObject,
+  ConfigValue,
+  CraftEngineAttributeData,
+  CraftEngineProjectData,
+  Folder,
+  Item,
+  Project,
+  ProjectSettings,
+} from './types';
 
 /** Former location of the armor settings inside the item configuration */
 const LEGACY_ARMOR_KEY = '$armor';
@@ -198,23 +216,28 @@ function migrateItemInput(raw: unknown, fallbackId: string | undefined): unknown
 
 /** An item; `now` is the fallback for its timestamps. */
 export function itemSchema(now: number) {
-  return z
-    .object({
-      id: id(),
-      nexoId: lenientString(),
-      displayName: lenientString(),
-      folderId: lenientString(),
-      model: ImportedModelSchema.nullable().catch(null),
-      config: ConfigObjectSchema.catch({}),
-      rawYaml: lenientString(),
-      assets: lenientRecord(ModelTextureSchema),
-      recipes: lenientList(RecipeSchema),
-      variants: optional(lenientRecord(lenientList(ImportedModelSchema))),
-      armor: optional(ArmorSchema),
-      createdAt: lenientNumber(now),
-      updatedAt: lenientNumber(now),
-    })
-    .transform(withoutUndefined);
+  return (
+    z
+      .object({
+        id: id(),
+        itemId: lenientString(),
+        displayName: lenientString(),
+        folderId: lenientString(),
+        model: ImportedModelSchema.nullable().catch(null),
+        config: ConfigObjectSchema.catch({}),
+        rawYaml: lenientString(),
+        assets: lenientRecord(ModelTextureSchema),
+        recipes: lenientList(RecipeSchema),
+        variants: optional(lenientRecord(lenientList(ImportedModelSchema))),
+        armor: optional(ArmorSchema),
+        translations: optional(lenientRecord(z.string())),
+        createdAt: lenientNumber(now),
+        updatedAt: lenientNumber(now),
+      })
+      // A missing or invalid item ID is derived from the display name like for new items (projectSchema makes it unique)
+      .transform((item) => ({ ...item, itemId: itemIdSyntaxError(item.itemId) ? itemIdFromName(item.displayName) : item.itemId }))
+      .transform(withoutUndefined)
+  );
 }
 
 /** Projects are migrated with one `now` for all their items – the schema is built once for it. */
@@ -251,19 +274,54 @@ export function settingsSchema(projectName: string) {
       externalPackAsZip: lenientBoolean(defaults.externalPackAsZip),
       itemsInProjectFolder: lenientBoolean(defaults.itemsInProjectFolder),
       yamlFileMode: lenientEnum(['folder', 'item'], 'folder'),
+      ceCategoriesFromFolders: lenientBoolean(defaults.ceCategoriesFromFolders),
     })
     .catch(defaults);
 }
+
+/** The project's attribute system; like the CraftEngine configuration, an empty one is left out. */
+export const CraftEngineAttributeSchema = z
+  .object({
+    definitions: optional(lenientList(ConfigObjectSchema)),
+    operations: optional(lenientList(ConfigObjectSchema)),
+    equipmentSets: optional(lenientList(ConfigObjectSchema)),
+    damageRules: optional(lenientList(ConfigObjectSchema)),
+  })
+  .transform((data) => withoutUndefined(data))
+  .transform((data) => (Object.keys(data).length > 0 ? data : undefined));
+
+/** The project-wide CraftEngine configuration; a bad part is dropped, an empty one leaves the whole out. */
+export const CraftEngineProjectSchema = z
+  .object({
+    lootSources: optional(lenientList(ConfigObjectSchema)),
+    templates: optional(lenientList(ConfigObjectSchema)),
+    globalVariables: optional(lenientRecord(z.string())),
+    attributes: optional(CraftEngineAttributeSchema),
+  })
+  .transform((data) => withoutUndefined(data))
+  .transform((data) => (Object.keys(data).length > 0 ? data : undefined));
 
 /** A whole stored project (before repairProject): only the name is required; `now` is the fallback for timestamps. */
 export function projectSchema(now: number) {
   return z.looseObject({ name: z.string() }).transform((raw) => {
     const items: Record<string, Item> = {};
+    const derivedIds: string[] = [];
     if (isPlainObject(raw.items)) {
       for (const [key, value] of Object.entries(raw.items)) {
         const item = parseItem(value, now, key);
         if (item) items[key] = item;
+        if (item && isPlainObject(value) && value.itemId !== item.itemId) derivedIds.push(key);
       }
+    }
+    // Derived IDs may collide; they get numbered. IDs the user stored stay as they are, duplicates included.
+    const taken = new Set(
+      Object.entries(items)
+        .filter(([key]) => !derivedIds.includes(key))
+        .map(([, item]) => item.itemId),
+    );
+    for (const key of derivedIds.sort((a, b) => items[a].createdAt - items[b].createdAt || (a < b ? -1 : 1))) {
+      items[key].itemId = uniqueId(items[key].itemId, taken);
+      taken.add(items[key].itemId);
     }
     const folders: Record<string, Folder> = {};
     if (isPlainObject(raw.folders)) {
@@ -276,6 +334,7 @@ export function projectSchema(now: number) {
       formatVersion: 1,
       id: lenientString(uid('p_')).parse(raw.id),
       name: raw.name,
+      target: lenientEnum(PACK_TARGETS, DEFAULT_PACK_TARGET).parse(raw.target),
       namespace: lenientString(DEFAULT_PACK_NAME).parse(raw.namespace),
       settings: settingsSchema(raw.name).parse(raw.settings),
       folders,
@@ -287,6 +346,9 @@ export function projectSchema(now: number) {
       createdAt: lenientNumber(now).parse(raw.createdAt),
       updatedAt: lenientNumber(now).parse(raw.updatedAt),
     };
+    // Only set when the project has some, so other projects keep their shape
+    const craftEngine = optional(CraftEngineProjectSchema).parse(raw.craftEngine);
+    if (craftEngine) project.craftEngine = craftEngine;
     return project;
   });
 }
@@ -325,5 +387,9 @@ export type ProjectSchemaChecks = SchemaChecks<
     Covers<Out<typeof FolderSchema>, Folder>,
     Fits<SettingsOut, ProjectSettings>,
     Covers<SettingsOut, ProjectSettings>,
+    Fits<NonNullable<Out<typeof CraftEngineProjectSchema>>, CraftEngineProjectData>,
+    Covers<NonNullable<Out<typeof CraftEngineProjectSchema>>, CraftEngineProjectData>,
+    Fits<NonNullable<Out<typeof CraftEngineAttributeSchema>>, CraftEngineAttributeData>,
+    Covers<NonNullable<Out<typeof CraftEngineAttributeSchema>>, CraftEngineAttributeData>,
   ]
 >;

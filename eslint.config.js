@@ -20,15 +20,33 @@ const DOMAIN_PACKAGES = ['utils', 'minecraft', 'core', 'export', 'sync', 'test-s
 /**
  * Import boundaries: a workspace may only import the @resourcepackbuilder packages its package.json declares.
  * turbo refuses cyclic declarations, so imports between packages can only point one way. Inside core, the project
- * model (project/) must not import the Nexo mapping (nexo/), which builds on it.
+ * model (project/) must not import a target (nexo/, craftEngine/) or the target switch (targets/), which build on it,
+ * the generic form DSL (form/) and the shared YAML helpers (yaml/) must not import a target either, so project/ may use
+ * them, and the targets do not import each other.
  */
 const WORKSPACES = ['packages', 'apps']
   .flatMap((root) => fs.readdirSync(path.join(import.meta.dirname, root)).map((dir) => `${root}/${dir}`))
   .filter((dir) => fs.existsSync(path.join(import.meta.dirname, dir, 'package.json')));
-const PROJECT_IMPORTS_NEXO = {
-  group: ['**/nexo', '**/nexo/**', '@resourcepackbuilder/core/nexo', '@resourcepackbuilder/core/nexo/**'],
-  message: 'The project model must not depend on the Nexo mapping (nexo/ builds on project/).',
+/** Imports of a core entry point (`nexo`, `targets` …) by relative path or package name. */
+const coreImports = (...dirs) =>
+  dirs.flatMap((dir) => [`**/${dir}`, `**/${dir}/**`, `@resourcepackbuilder/core/${dir}`, `@resourcepackbuilder/core/${dir}/**`]);
+const PROJECT_IMPORTS_TARGET = {
+  group: coreImports('nexo', 'craftEngine', 'targets'),
+  message: 'The project model must not depend on a target (nexo/, craftEngine/ and targets/ build on project/).',
 };
+const FORM_IMPORTS_TARGET = {
+  group: coreImports('nexo', 'craftEngine', 'targets'),
+  message: 'The form DSL must not depend on a target (each target builds its FormSchema on form/).',
+};
+const YAML_IMPORTS_TARGET = {
+  group: coreImports('nexo', 'craftEngine', 'targets'),
+  message: 'The shared YAML helpers must not depend on a target (every target writes its YAML with them).',
+};
+/** A target may not import another target or the target switch (only targets/ knows them all). */
+const targetImportsOther = (other) => ({
+  group: coreImports(other, 'targets'),
+  message: 'A target must not depend on another target or on targets/ (only targets/ imports every target).',
+});
 const importBoundaries = WORKSPACES.flatMap((dir) => {
   const pkg = JSON.parse(fs.readFileSync(path.join(import.meta.dirname, dir, 'package.json'), 'utf8'));
   const declared = Object.keys({ ...pkg.dependencies, ...pkg.devDependencies, ...pkg.peerDependencies })
@@ -40,7 +58,13 @@ const importBoundaries = WORKSPACES.flatMap((dir) => {
   };
   const rule = (patterns) => ({ 'no-restricted-imports': ['error', { patterns }] });
   const blocks = [{ files: [`${dir}/**/*.{ts,tsx,mjs,js}`], rules: rule([undeclared]) }];
-  if (dir === 'packages/core') blocks.push({ files: [`${dir}/src/project/**`], rules: rule([undeclared, PROJECT_IMPORTS_NEXO]) });
+  if (dir === 'packages/core') {
+    blocks.push({ files: [`${dir}/src/project/**`], rules: rule([undeclared, PROJECT_IMPORTS_TARGET]) });
+    blocks.push({ files: [`${dir}/src/form/**`], rules: rule([undeclared, FORM_IMPORTS_TARGET]) });
+    blocks.push({ files: [`${dir}/src/yaml/**`], rules: rule([undeclared, YAML_IMPORTS_TARGET]) });
+    blocks.push({ files: [`${dir}/src/nexo/**`], rules: rule([undeclared, targetImportsOther('craftEngine')]) });
+    blocks.push({ files: [`${dir}/src/craftEngine/**`], rules: rule([undeclared, targetImportsOther('nexo')]) });
+  }
   return blocks;
 });
 

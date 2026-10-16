@@ -1,5 +1,5 @@
 import { useId } from 'react';
-import { Upload } from 'lucide-react';
+import { Download, Upload } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 import { Button } from '@resourcepackbuilder/ui/components/button';
 import { Checkbox } from '@resourcepackbuilder/ui/components/checkbox';
@@ -7,7 +7,15 @@ import { Field, FieldContent, FieldDescription, FieldLabel } from '@resourcepack
 import { Input } from '@resourcepackbuilder/ui/components/input';
 import { NativeSelect, NativeSelectOption } from '@resourcepackbuilder/ui/components/native-select';
 import { AutoGrid, SectionCard, StatusBadge, useDraft } from '@resourcepackbuilder/ui';
-import { MAX_PLAYER_NAME_LENGTH, MAX_PORT, MIN_PORT, PLAYER_NAME_INVALID_CHARS, RAM_OPTIONS_GB } from '@resourcepackbuilder/test-server';
+import type { PackTargetId } from '@resourcepackbuilder/core/project';
+import {
+  MAX_PLAYER_NAME_LENGTH,
+  MAX_PORT,
+  MIN_PORT,
+  PLAYER_NAME_INVALID_CHARS,
+  RAM_OPTIONS_GB,
+  serverAdapterFor,
+} from '@resourcepackbuilder/test-server';
 import { FormField, FormHelp } from '../../components/FormField';
 import type { TestServerConfig } from '../../platform/desktopApi';
 import { notify } from '../../shell/notify';
@@ -17,8 +25,8 @@ import { VersionSelect } from './VersionSelect';
 
 const EULA_URL = 'https://aka.ms/MinecraftEULA';
 
-/** Settings of the test server; most of them only apply on the next start. */
-export function ServerSetup({ config, isLocked }: { config: TestServerConfig; isLocked: boolean }) {
+/** Settings of the test server; most of them only apply on the next start. `target` is the open project's. */
+export function ServerSetup({ config, isLocked, target }: { config: TestServerConfig; isLocked: boolean; target: PackTargetId }) {
   const t = useTranslations('media.testServer.setup');
   const setConfig = useSetConfig();
 
@@ -30,7 +38,7 @@ export function ServerSetup({ config, isLocked }: { config: TestServerConfig; is
       contentClassName="flex flex-col gap-4"
     >
       <AutoGrid min="15rem" fit>
-        <NexoJarField config={config} />
+        <PluginJarField config={config} target={target} />
         <VersionSelect paperVersion={config.paperVersion} isLocked={isLocked} />
         <PlayerNameField playerName={config.playerName} />
         <FormField label={t('ram')} description={<FormHelp>{t('ramHelp')}</FormHelp>}>
@@ -64,28 +72,58 @@ export function ServerSetup({ config, isLocked }: { config: TestServerConfig; is
   );
 }
 
-function NexoJarField({ config }: { config: TestServerConfig }) {
+/**
+ * The plugin JAR of the project's target. A plugin on Modrinth (CraftEngine) is downloaded for the chosen Minecraft
+ * version; choosing a JAR stays possible (e.g. a premium build). Nexo's JAR is always chosen.
+ */
+function PluginJarField({ config, target }: { config: TestServerConfig; target: PackTargetId }) {
   const t = useTranslations('media.testServer.setup');
   const testServer = useTestServer();
   const { isBusy, run } = useBusyAction();
+  const adapter = serverAdapterFor(target);
+  const plugin = adapter.pluginName;
+  const canDownload = adapter.jar.kind === 'modrinth';
+  const jar = config.pluginJars[target];
   const chooseJar = () =>
     run(async () => {
-      const jar = await testServer.chooseNexoJar();
-      if (jar) notify('success', t('jarSelected', { version: jar.version }));
+      const chosen = await testServer.choosePluginJar(target);
+      if (chosen) notify('success', t('jarSelected', { plugin, version: chosen.version }));
+    });
+  const downloadJar = () =>
+    run(async () => {
+      const downloaded = await testServer.downloadPlugin(target);
+      notify('success', t('jarSelected', { plugin, version: downloaded.version }));
     });
 
   return (
     <div className="flex min-w-0 flex-col gap-1.5">
-      <span className="text-xs font-medium text-muted-foreground">{t('nexoPlugin')}</span>
+      <span className="text-xs font-medium text-muted-foreground">{t('plugin', { plugin })}</span>
       <div className="flex flex-wrap items-center gap-2">
-        <StatusBadge tone={config.nexoJar ? 'success' : 'warning'}>
-          {config.nexoJar ? `${config.nexoJar.name} ${config.nexoJar.version}` : t('notSelected')}
-        </StatusBadge>
-        <Button variant="outline" size="sm" disabled={isBusy} onClick={() => void chooseJar()}>
-          <Upload /> {t('chooseJar')}
-        </Button>
+        <StatusBadge tone={jar ? 'success' : 'warning'}>{jar ? `${jar.name} ${jar.version}` : t('notSelected')}</StatusBadge>
+        {canDownload ? (
+          <>
+            <Button
+              data-testid="test-server-download-plugin"
+              variant="outline"
+              size="sm"
+              disabled={isBusy || !config.paperVersion}
+              onClick={() => void downloadJar()}
+            >
+              <Download /> {t('downloadJar', { plugin })}
+            </Button>
+            <Button variant="link" size="sm" className="px-0" disabled={isBusy} onClick={() => void chooseJar()}>
+              {t('chooseJarManually')}
+            </Button>
+          </>
+        ) : (
+          <Button variant="outline" size="sm" disabled={isBusy} onClick={() => void chooseJar()}>
+            <Upload /> {t('chooseJar')}
+          </Button>
+        )}
       </div>
-      <FormHelp>{t('jarHelp')}</FormHelp>
+      {/* A disabled button shows no tooltip, so the reason is written out */}
+      {canDownload && !config.paperVersion && <FormHelp>{t('downloadNeedsVersion')}</FormHelp>}
+      <FormHelp>{canDownload ? t('jarDownloadHelp', { plugin }) : t('jarHelp', { plugin, target })}</FormHelp>
     </div>
   );
 }

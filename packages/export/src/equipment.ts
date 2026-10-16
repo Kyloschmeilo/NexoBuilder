@@ -25,7 +25,7 @@ import {
 import type { PackWriter } from './packWriter';
 import { equipmentModelFile, equipmentTextureFile } from './paths';
 
-interface ArmorSet {
+export interface ArmorSet {
   id: string;
   /** Layer type (humanoid, wings, wolf_body …) → texture */
   textures: Map<string, ModelTexture>;
@@ -137,4 +137,9 @@ export function itemArmor(item: Item, project: Project, sets: Map<string, ArmorS
   const set = setId ? sets.get(setId) : undefined;
   if (!set || set.textures.size === 0) return null;
   return { assetId: formatResourceLocation(project.namespace, set.id), slot: set.slot, entities: set.entities, glider: set.glider };
+}
+
+/** The layer types (humanoid, wings, wolf_body …) of every usable set by set ID, in the order of the equipment model. */
+export function armorSetLayers(sets: Map<string, ArmorSet>): Map<string, string[]> {
+  return new Map([...sets.values()].filter((set) => set.textures.size > 0).map((set) => [set.id, [...set.textures.keys()]]));
 }

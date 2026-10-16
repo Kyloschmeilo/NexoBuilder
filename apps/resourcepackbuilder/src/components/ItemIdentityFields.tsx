@@ -16,7 +16,7 @@ const FORMATTING_EXAMPLES = '<bold>, <italic>, <!italic>';
 
 export interface ItemIdentity {
   displayName: string;
-  nexoId: string;
+  itemId: string;
   material: string;
 }
 
@@ -93,8 +93,8 @@ export function ItemIdentityFields({
           id={`${id}-id`}
           className="font-mono"
           aria-invalid={idErrorText ? true : undefined}
-          value={value.nexoId}
-          onChange={(e) => onChange({ nexoId: normalizeTypedId(e.target.value) }, 'nexoId')}
+          value={value.itemId}
+          onChange={(e) => onChange({ itemId: normalizeTypedId(e.target.value) }, 'itemId')}
         />
         {idErrorText && <FieldError className="text-xs">{idErrorText}</FieldError>}
       </Field>

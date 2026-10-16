@@ -1,24 +1,28 @@
 /**
- * Which files the project may write into the test server's plugins/Nexo folder: exactly the places the export puts
- * things (see `nexoFolderFiles` in files.ts). Anything else – settings.yml, other plugins' data, paths with ".." – is refused.
+ * Shared check for the paths a project writes into a test server's plugin folder. Each adapter decides which places
+ * are allowed (exactly where its export puts things); this refuses anything a file system treats specially.
  */
-import { PAINTINGS_FILE, SOUNDS_FILE } from '@resourcepackbuilder/export';
 
-/** Folders under plugins/Nexo the export writes into. */
-const SYNC_DIRS = ['items/', 'recipes/', 'glyphs/', 'pack/external_packs/'];
-/** Single files directly in plugins/Nexo (there is only one of each). */
-const SYNC_FILES = [SOUNDS_FILE, PAINTINGS_FILE];
 /** A path segment: no separators, no "." or "..", nothing a file system treats specially. */
 const SAFE_SEGMENT = /^[A-Za-z0-9_.+-]+$/;
+/** Windows device names, with or without an extension ("nul", "COM1.yml"); they never name a file there. */
+const WINDOWS_DEVICE_NAME = /^(con|prn|aux|nul|com[1-9]|lpt[1-9])(\..*)?$/i;
 
 /**
- * The segments of a project file path relative to plugins/Nexo, or null if the project may not write it.
+ * Whether `segment` is a single harmless path segment. A trailing "." or space is refused too: Windows drops it, so
+ * "internal." would name the folder "internal".
  */
-export function syncPathSegments(relativePath: string): string[] | null {
-  const allowed =
-    SYNC_FILES.includes(relativePath) || SYNC_DIRS.some((dir) => relativePath.startsWith(dir) && relativePath.length > dir.length);
-  if (!allowed) return null;
+export function isSafeSegment(segment: string): boolean {
+  return SAFE_SEGMENT.test(segment) && !/[. ]$/.test(segment) && !WINDOWS_DEVICE_NAME.test(segment);
+}
+
+/** The segments of `relativePath`, or null if one of them is empty or not safe. */
+export function safePathSegments(relativePath: string): string[] | null {
   const segments = relativePath.split('/');
-  if (segments.some((segment) => !SAFE_SEGMENT.test(segment) || segment === '.' || segment === '..')) return null;
-  return segments;
+  return segments.every(isSafeSegment) ? segments : null;
+}
+
+/** Whether `relativePath` is one of `files` or lies (with a file name) under one of `dirs` (each ending in "/"). */
+export function isUnderSyncPaths(relativePath: string, dirs: readonly string[], files: readonly string[]): boolean {
+  return files.includes(relativePath) || dirs.some((dir) => relativePath.startsWith(dir) && relativePath.length > dir.length);
 }

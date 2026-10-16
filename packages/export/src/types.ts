@@ -1,7 +1,7 @@
 /** Types of the export plan. */
 import type { Issue, IssueContext, IssueLevel, MessageArgs } from '@resourcepackbuilder/utils';
 import type { ImportedModel, JavaModelJson } from '@resourcepackbuilder/minecraft';
-import type { Item, Project } from '@resourcepackbuilder/core/project';
+import type { Item, PackTargetId, Project } from '@resourcepackbuilder/core/project';
 import type { PackWriter } from './packWriter';
 
 export type ExportMode = 'full' | 'pack' | 'items';
@@ -13,6 +13,9 @@ export interface PlanOptions {
   includeBinaries?: boolean;
 }
 
+/** Further entries an item adds to its YAML file, by top-level section and key (CraftEngine: its block under `blocks`). */
+export type ItemSections = Record<string, Record<string, Record<string, unknown>>>;
+
 export interface ItemPlan {
   item: Item;
   folderSlugs: string[];
@@ -20,23 +23,31 @@ export interface ItemPlan {
   modelFile: string | null;
   modelJson: JavaModelJson | null;
   config: Record<string, unknown>;
+  sections?: ItemSections;
+  /** The item's key in its YAML file (Nexo: the item ID, CraftEngine: namespace:item ID) */
+  yamlKey: string;
+  /** File of the item's config, relative to the target's plugin folder */
   yamlFile: string;
 }
 
-export interface ExportPlan {
-  items: ItemPlan[];
-  /** Files relative to the root directory of the resource pack */
-  packFiles: Map<string, FileContent>;
-  /** Files relative to the Nexo plugin folder (items/…) */
-  itemFiles: Map<string, string>;
-  /** Recipe files relative to the Nexo plugin folder (recipes/<type>/…) */
-  recipeFiles: Map<string, string>;
-  /** Glyph files relative to the Nexo plugin folder (glyphs/…) */
-  glyphFiles: Map<string, string>;
+/** Nexo's entries for the shared sounds.yml and paintings.yml (merged across the projects of an export). */
+export interface NexoRootEntries {
   /** Entries for plugins/Nexo/sounds.yml */
   soundEntries: Array<Record<string, unknown>>;
   /** Entries for plugins/Nexo/paintings.yml (key = namespace:id) */
   paintingEntries: Record<string, Record<string, unknown>>;
+}
+
+export interface ExportPlan {
+  /** The pack target that built the plan */
+  target: PackTargetId;
+  items: ItemPlan[];
+  /** Files relative to the root directory of the resource pack */
+  packFiles: Map<string, FileContent>;
+  /** Files relative to the target's plugin folder (item YAML, recipes, glyphs …) */
+  pluginFiles: Map<string, FileContent>;
+  /** Nexo only: the entries of the root files */
+  nexo?: NexoRootEntries;
   issues: Issue[];
 }
 

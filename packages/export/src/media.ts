@@ -1,24 +1,25 @@
-/** Glyphs, sounds and paintings: their pack files, plugin files and checks. */
-import { mediaFrame, mediaKey, type MediaKind, type Project } from '@resourcepackbuilder/core/project';
-import { inContext, type Issue } from '@resourcepackbuilder/utils';
+/** The pack side of glyphs, sounds and paintings, shared by every target: their checks, textures and OGG files. */
 import {
-  buildGlyphFile,
-  glyphFilePath,
+  mediaFrame,
+  type MediaKind,
   paintingMcmeta,
-  paintingToYaml,
+  type Project,
   soundFilePath,
-  soundToYaml,
   validateGlyphs,
   validatePaintings,
   validateSounds,
-} from '@resourcepackbuilder/core/nexo';
+} from '@resourcepackbuilder/core/project';
+import { inContext, type Issue } from '@resourcepackbuilder/utils';
 import type { PackWriter } from './packWriter';
 import { glyphTextureFile, paintingTextureFile, soundFile } from './paths';
-import type { ExportPlan } from './types';
 
-type MediaFiles = Pick<ExportPlan, 'glyphFiles' | 'soundEntries' | 'paintingEntries'>;
+export interface MediaPackOptions {
+  /** Whether the target shows animated (GIF) glyphs; without it their GIFs are left out of the pack */
+  gifGlyphs: boolean;
+}
 
-export function writeMedia(writer: PackWriter, project: Project, issues: Issue[]): MediaFiles {
+/** Checks the project's media and writes their files into the pack. */
+export function writeMediaPackFiles(writer: PackWriter, project: Project, issues: Issue[], options: MediaPackOptions): void {
   // Unreadable files are reported like the entry's own checks: targeted and with its context frame
   const reportFor = (kind: MediaKind, id: string, name: string) => (issue: Issue) =>
     issues.push(inContext(issue, [mediaFrame(kind, name)], { kind, id }));
@@ -26,7 +27,7 @@ export function writeMedia(writer: PackWriter, project: Project, issues: Issue[]
 
   const ns = project.namespace;
   for (const glyph of project.glyphs) {
-    if (!glyph.file || glyph.kind === 'reference') continue;
+    if (!glyph.file || glyph.kind === 'reference' || (glyph.kind === 'gif' && !options.gifGlyphs)) continue;
     const path = glyphTextureFile(ns, glyph.glyphId, glyph.kind === 'gif' ? 'gif' : 'png');
     writer.binary(path, glyph.file.dataUrl, { report: reportFor('glyph', glyph.id, glyph.glyphId) });
   }
@@ -42,11 +43,4 @@ export function writeMedia(writer: PackWriter, project: Project, issues: Issue[]
       writer.json(`${path}.mcmeta`, mcmeta);
     }
   }
-
-  const glyphYaml = buildGlyphFile(project);
-  return {
-    glyphFiles: new Map(glyphYaml ? [[glyphFilePath(project), glyphYaml]] : []),
-    soundEntries: project.sounds.map((sound) => soundToYaml(project, sound)),
-    paintingEntries: Object.fromEntries(project.paintings.map((p) => [mediaKey(project, p.paintingId), paintingToYaml(project, p)])),
-  };
 }

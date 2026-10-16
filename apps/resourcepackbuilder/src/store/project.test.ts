@@ -7,7 +7,7 @@ function projectWithItem(): { project: Project; folderId: string; itemId: string
   const project = createProject('Test');
   const folder = createFolder('Swords', null);
   insertFolder(project, folder);
-  const item = createItem({ displayName: 'Ruby', nexoId: 'ruby', folderId: folder.id, model: null });
+  const item = createItem({ displayName: 'Ruby', itemId: 'ruby', folderId: folder.id, model: null });
   insertItem(project, item);
   return { project, folderId: folder.id, itemId: item.id };
 }
@@ -92,7 +92,7 @@ describe('undo and redo', () => {
     // The item is created after the first state, so undoing removes it
     mutate((draft) => {
       const folderId = draft.rootFolderIds[0];
-      insertItem(draft, { ...draft.items[itemId], id: 'i_new', nexoId: 'emerald', folderId });
+      insertItem(draft, { ...draft.items[itemId], id: 'i_new', itemId: 'emerald', folderId });
     });
     select({ kind: 'item', id: 'i_new' });
     undo();

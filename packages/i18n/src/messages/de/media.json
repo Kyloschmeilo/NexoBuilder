@@ -8,7 +8,7 @@
   "sounds": {
     "title": "Sounds",
     "count": "{count, plural, one {# Sound} other {# Sounds}}",
-    "hint": "Eigene Geräusche und Musik. Die ID (z.B. <code>namespace:block.rubin.place</code>) kannst du überall eintragen, wo ein Sound verlangt wird – etwa bei Block-Sounds, Türen oder <code>/playsound</code>. Mit „Jukebox Playable“ wird der Sound zur Musik-CD. Achtung: Die exportierte <code>sounds.yml</code> ersetzt eine vorhandene Datei auf dem Server.",
+    "hint": "Eigene Geräusche und Musik. Die ID (z.B. <code>namespace:block.rubin.place</code>) kannst du überall eintragen, wo ein Sound verlangt wird – etwa bei Block-Sounds, Türen oder <code>/playsound</code>. Mit „Jukebox Playable“ wird der Sound zur Musik-CD.{target, select, nexo { Achtung: Die exportierte <code>sounds.yml</code> ersetzt eine vorhandene Datei auf dem Server.} other { Neue Musik-CDs hören Spieler erst, wenn sie neu beitreten. Spielt ein Item eine neue Musik-CD ab, starte den Server einmal neu.}}",
     "dropTitle": "OGG-Dateien hier ablegen",
     "dropSubtitle": "Jede Datei wird ein eigener Sound. Weitere Varianten (zufällig abgespielt) fügst du im Sound hinzu.",
     "notOgg": "„{name}“ ist keine OGG-Datei. Minecraft spielt nur .ogg ab (z.B. mit Audacity umwandeln).",
@@ -37,7 +37,7 @@
   "paintings": {
     "title": "Paintings",
     "count": "{count, plural, one {# Painting} other {# Paintings}}",
-    "hint": "Eigene Bilder zum Aufhängen (ab Minecraft 1.21.5 erzeugt Nexo das nötige Datapack). Neue Gemälde werden erst nach einem Server-Neustart registriert – im Testserver also „Neu starten“. Die exportierte <code>paintings.yml</code> ersetzt eine vorhandene Datei auf dem Server.",
+    "hint": "Eigene Bilder zum Aufhängen.{target, select, nexo { Ab Minecraft 1.21.5 erzeugt Nexo das nötige Datapack. Neue Gemälde werden erst nach einem Server-Neustart registriert – im Testserver also „Neu starten“. Die exportierte <code>paintings.yml</code> ersetzt eine vorhandene Datei auf dem Server.} other { Neue Gemälde sehen Spieler erst, wenn sie neu beitreten.}}",
     "dropTitle": "Bilder (PNG) hier ablegen",
     "dropSubtitle": "16 Pixel pro Block, z.B. 32×16 für ein Gemälde mit 2×1 Blöcken. Für Animationen die Bilder untereinander anordnen.",
     "notPng": "„{name}“ ist kein PNG.",
@@ -116,9 +116,9 @@
     "desktopOnly": "Der lokale Testserver funktioniert nur im Windows-Programm (ResourcepackBuilder.exe), weil dafür ein Minecraft-Server auf deinem PC gestartet wird.",
     "missingEula": "Bitte zuerst die Minecraft-EULA akzeptieren.",
     "missingVersion": "Bitte eine Minecraft-Version wählen.",
-    "noNexo": "Ohne Nexo-Plugin startet der Server zwar, deine Items werden aber nicht geladen. Wähle unten deine Nexo-JAR aus.",
+    "noPlugin": "Ohne {plugin}-Plugin startet der Server zwar, deine Items werden aber nicht geladen. Wähle unten deine {plugin}-JAR aus.",
     "connect": "Verbinden: Minecraft {version} → Mehrspieler → Direktverbindung → <mono>{address}</mono>",
-    "connectHint": "Das Resourcepack kommt beim Betreten automatisch. Nach jeder Änderung schickt Nexo das neue Pack.",
+    "connectHint": "Das Resourcepack kommt beim Betreten automatisch. Nach jeder Änderung schickt {plugin} das neue Pack.",
     "folder": "Ordner",
     "openFolder": "Serverordner im Explorer öffnen",
     "pack": {
@@ -126,19 +126,19 @@
       "building": "Resourcepack wird erstellt …",
       "ready": "Resourcepack bereit",
       "failed": "Resourcepack fehlgeschlagen",
-      "reload": "Nexo neu laden",
-      "reloadHint": "Nexo neu laden und das Resourcepack neu erstellen",
+      "reload": "{plugin} neu laden",
+      "reloadHint": "{plugin} neu laden und das Resourcepack neu erstellen",
       "resend": "Pack erneut senden",
       "resendHint": "Das Resourcepack erneut an {player} schicken",
       "enterName": "Bitte unten deinen Minecraft-Namen eintragen"
     },
     "sync": {
       "title": "Projekt übertragen",
-      "description": "Items, Recipes, Glyphs, Sounds, Paintings und Resourcepack nach plugins/Nexo – danach „nexo reload all“",
+      "description": "Items, Recipes, Glyphs, Sounds, Paintings und Resourcepack nach {folder} – danach „{command}“",
       "now": "Jetzt übertragen",
       "auto": "Automatisch übertragen, wenn ich etwas ändere",
       "autoHint": "Neue Items, geänderte Modelle und Eigenschaften sind nach wenigen Sekunden im Spiel – das Resourcepack wird neu geschickt.",
-      "last": "Zuletzt übertragen {time}: {written, plural, one {# Datei} other {# Dateien}} geschrieben, {deleted} entfernt{reloaded, select, true {, Nexo neu geladen} other {}}.",
+      "last": "Zuletzt übertragen {time}: {written, plural, one {# Datei} other {# Dateien}} geschrieben, {deleted} entfernt{reloaded, select, true {, {plugin} neu geladen} other {}}.",
       "onStart": "Wird beim Start übertragen.",
       "upToDate": "Alles aktuell (geprüft {time}).",
       "skipped": "{count, plural, one {# Datei} other {# Dateien}} mit ungültigem Namen übersprungen – siehe Konsole.",
@@ -160,11 +160,15 @@
       "title": "Einrichtung",
       "lockedDescription": "Änderungen gelten beim nächsten Start.",
       "description": "Wird beim ersten Start automatisch heruntergeladen (Paper, ggf. Java).",
-      "nexoPlugin": "Nexo-Plugin",
+      "plugin": "{plugin}-Plugin",
       "notSelected": "nicht ausgewählt",
       "chooseJar": "JAR auswählen …",
-      "jarHelp": "Deine Nexo-JAR (z.B. von Polymart). Sie wird nur in den lokalen Testserver kopiert.",
-      "jarSelected": "Nexo {version} wird im Testserver verwendet.",
+      "jarHelp": "Deine {plugin}-JAR{target, select, nexo { (z.B. von Polymart)} other {}}. Sie wird nur in den lokalen Testserver kopiert.",
+      "jarSelected": "{plugin} {version} wird im Testserver verwendet.",
+      "downloadJar": "{plugin} herunterladen",
+      "chooseJarManually": "JAR manuell auswählen …",
+      "downloadNeedsVersion": "Wähle zuerst eine Minecraft-Version.",
+      "jarDownloadHelp": "Lädt {plugin} für die gewählte Minecraft-Version von Modrinth herunter. Du kannst auch selbst eine JAR wählen, zum Beispiel eine Premium-Version. Sie wird nur in den lokalen Testserver kopiert.",
       "version": "Minecraft-Version (Paper)",
       "unavailable": "nicht verfügbar",
       "loadingVersions": "Lade Versionen …",
@@ -183,6 +187,48 @@
       "portHelp": "Standard 25565. Pack-Download über Port {packPort}.",
       "eula": "Ich akzeptiere die <link>Minecraft-EULA</link>",
       "eulaHint": "Ohne Zustimmung darf ein Minecraft-Server nicht gestartet werden."
+    }
+  },
+  "lootSources": {
+    "title": "Loot-Quellen",
+    "count": "{count, plural, one {# Loot-Quelle} other {# Loot-Quellen}}",
+    "hint": "Eine Loot-Quelle hängt eine Loot-Tabelle an ein Vanilla-Loot-Ereignis: einen Block abbauen, einen Mob töten, eine Truhe öffnen, angeln und mehr. Mit overwrite ersetzt sie die Vanilla-Items oder die Erfahrung.",
+    "docs": "Loot-Quellen im CraftEngine-Wiki"
+  },
+  "templates": {
+    "title": "Vorlagen",
+    "count": "{count, plural, one {# Vorlage} other {# Vorlagen}}",
+    "hint": "Eine Vorlage ist ein Stück Konfiguration mit Platzhaltern für Argumente. Blöcke nutzen sie in ihren Einstellungen, Items für das ganze Item, dazu Loot-Tabellen und Events. Die Standardvorlagen von CraftEngine (default:…) gibt es immer.",
+    "docs": "Vorlagen im CraftEngine-Wiki",
+    "defaults": "Standardvorlagen von CraftEngine",
+    "defaultsHint": "Jeder Block, jedes Item und jedes Möbelstück kann sie nutzen. Pflichtargumente sind mit * markiert."
+  },
+  "globalVariables": {
+    "title": "Globale Variablen",
+    "count": "{count, plural, one {# Variable} other {# Variablen}}",
+    "hint": "Eine globale Variable ist ein MiniMessage-Text, den CraftEngine überall einsetzt, wo ein Text '<'global:name> sagt: in Item-Namen, Lore und mehr. Die Vorschauen im Item-Editor zeigen ihn auch.",
+    "docs": "Globale Variablen im CraftEngine-Wiki"
+  },
+  "attributes": {
+    "title": "Attribute",
+    "count": "{count, plural, one {# Eintrag} other {# Einträge}}",
+    "hint": "Das Attributsystem von CraftEngine ist experimentell und läuft nur mit attribute.enable: true in seiner config.yml, die es beim Start liest. Der Testserver schaltet es für ein Projekt mit Attributen ein; starte ihn nach dem ersten Attribut neu.",
+    "docs": "Attribute im CraftEngine-Wiki",
+    "definitions": {
+      "title": "Attribute",
+      "hint": "Eigene Werte wie Stärke oder kritische Trefferchance, jeweils mit Basiswert und Grenzen. Items ändern sie in ihren Einstellungen (Custom Attribute Modifiers)."
+    },
+    "operations": {
+      "title": "Operationen",
+      "hint": "Eigene Arten, einen Modifikator anzuwenden, neben add_value, add_multiplied_base und add_multiplied_total."
+    },
+    "equipmentSets": {
+      "title": "Ausrüstungssets",
+      "hint": "Boni für mehrere getragene Teile eines Sets. Items werden in ihren Einstellungen zu Teilen (Equipment Set Piece)."
+    },
+    "damageRules": {
+      "title": "Schadensregeln",
+      "hint": "Formeln, die den Schaden eines Schadenstyps aus den Attributen von Angreifer und Opfer berechnen."
     }
   }
 }

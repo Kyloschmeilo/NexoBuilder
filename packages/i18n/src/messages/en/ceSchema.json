@@ -1,0 +1,3401 @@
+{
+  "groups": {
+    "general": {
+      "label": "General",
+      "description": "Lore, Custom Name, Unbreakable and more"
+    },
+    "data": {
+      "label": "Data",
+      "description": "Item data components (Food, Equippable, Enchantment …)"
+    },
+    "settings": {
+      "label": "Settings",
+      "description": "CraftEngine item settings (Tags, Fuel Time, Repair …)"
+    },
+    "blockSettings": {
+      "label": "Block Settings",
+      "description": "Properties of the placed block (Hardness, Sounds, Tags, Loot …)"
+    },
+    "blockBehavior": {
+      "label": "Block Behavior",
+      "description": "The options of the block’s behavior (sounds, growth, storage …)"
+    },
+    "events": {
+      "label": "Events",
+      "description": "What the item, its block or its furniture does on a click, a break and more"
+    },
+    "loot": {
+      "label": "Loot",
+      "description": "What the block or the furniture drops when it breaks"
+    }
+  },
+  "properties": {
+    "dataLore": {
+      "label": "Lore",
+      "description": "Text lines below the item name (MiniMessage, e.g. '<'gray>).",
+      "field": {
+        "label": "Lines",
+        "placeholder": "'<'gray>A line"
+      }
+    },
+    "dataCustomName": {
+      "label": "Custom Name",
+      "description": "A name that overrides the display name, like one given in an anvil. Italic unless you turn it off.",
+      "field": {
+        "label": "Name",
+        "placeholder": "'<'!i>'<'gold>Name"
+      }
+    },
+    "dataUnbreakable": {
+      "label": "Unbreakable",
+      "description": "The item does not lose durability.",
+      "field": {
+        "label": "Unbreakable"
+      }
+    },
+    "dataHideTooltip": {
+      "label": "Hide Tooltip",
+      "description": "Hides the tooltip lines of these components.",
+      "field": {
+        "label": "Components",
+        "placeholder": "minecraft:enchantments"
+      }
+    },
+    "dataPdc": {
+      "label": "PDC",
+      "description": "Custom data in the PersistentDataContainer of the item, for other plugins.",
+      "field": {
+        "label": "Data (YAML)"
+      }
+    },
+    "translations": {
+      "label": "Translations",
+      "description": "The item name per Minecraft language. ResourcepackBuilder writes them to the pack's lang files and sets data.item_name to its lang key. The display name is the English (en_us) text unless you set en_us here.",
+      "hint": "Players see the name in their Minecraft language. Languages without a text show the en_us text.",
+      "field": {
+        "label": "Translations",
+        "keyLabel": "Language",
+        "keyPlaceholder": "e.g. de_de",
+        "value": {
+          "label": "Name",
+          "placeholder": "e.g. '<'aqua>Rubinschwert"
+        }
+      }
+    },
+    "template": {
+      "label": "Template",
+      "description": "Builds the whole item from templates of the project (see Templates). The keys set here are merged over those of the templates.",
+      "hint": "CraftEngine fills $'{'__NAMESPACE__'}' and $'{'__ID__'}' with the namespace and id of the item.",
+      "field": {
+        "label": "Templates",
+        "placeholder": "e.g. mypack:armor"
+      }
+    },
+    "arguments": {
+      "label": "Arguments",
+      "description": "The values for the placeholders of the item's templates.",
+      "field": {
+        "label": "Arguments",
+        "keyLabel": "Argument",
+        "keyPlaceholder": "e.g. material",
+        "value": {
+          "label": "Value",
+          "placeholder": "e.g. topaz"
+        }
+      }
+    },
+    "clientBoundMaterial": {
+      "label": "Client Bound Material",
+      "description": "The material players see. The server keeps the real material.",
+      "field": {
+        "label": "Material",
+        "placeholder": "e.g. mushroom_stem"
+      }
+    },
+    "dataInsertLore": {
+      "label": "Insert Lore",
+      "description": "Inserts lines into the lore at a position.",
+      "field": {
+        "label": "Insert Lore",
+        "fields": {
+          "position": {
+            "label": "Position"
+          },
+          "pattern": {
+            "label": "Pattern (regex)",
+            "placeholder": "Text to match"
+          },
+          "lore": {
+            "label": "Lines"
+          }
+        }
+      }
+    },
+    "dataRemoveLore": {
+      "label": "Remove Lore",
+      "description": "Removes the lore lines that match a regular expression.",
+      "field": {
+        "label": "Pattern (regex)",
+        "placeholder": "Text to match"
+      }
+    },
+    "dataTooltipStyle": {
+      "label": "Tooltip Style",
+      "description": "The background texture of the tooltip.",
+      "field": {
+        "label": "Style",
+        "placeholder": "minecraft:topaz"
+      }
+    },
+    "dataDyedColor": {
+      "label": "Dyed Color",
+      "description": "The color of dyeable items such as leather armor, as r,g,b.",
+      "field": {
+        "label": "Color",
+        "placeholder": "255,128,64"
+      }
+    },
+    "dataTrim": {
+      "label": "Trim",
+      "description": "An armor trim with pattern and material.",
+      "field": {
+        "label": "Trim",
+        "fields": {
+          "pattern": {
+            "label": "Pattern"
+          },
+          "material": {
+            "label": "Material"
+          }
+        }
+      }
+    },
+    "dataProfile": {
+      "label": "Profile",
+      "description": "The skin of a player head: a player name, a texture URL or base64.",
+      "field": {
+        "label": "Profile",
+        "placeholder": "Player name, URL or base64"
+      }
+    },
+    "dataFood": {
+      "label": "Food",
+      "description": "Food values when eaten. The item also needs a consumable component to be edible.",
+      "field": {
+        "label": "Food",
+        "fields": {
+          "nutrition": {
+            "label": "Nutrition (hunger points)"
+          },
+          "saturation": {
+            "label": "Saturation"
+          },
+          "canAlwaysEat": {
+            "label": "Edible even when not hungry"
+          }
+        }
+      }
+    },
+    "dataEquippable": {
+      "label": "Equippable",
+      "description": "The item can be worn in an equipment slot.",
+      "field": {
+        "label": "Equippable",
+        "fields": {
+          "slot": {
+            "label": "Slot"
+          },
+          "assetId": {
+            "label": "Equipment asset",
+            "placeholder": "e.g. minecraft:topaz"
+          },
+          "cameraOverlay": {
+            "label": "Camera overlay",
+            "placeholder": "e.g. minecraft:misc/pumpkinblur"
+          },
+          "swappable": {
+            "label": "Swappable by right-click"
+          },
+          "damageOnHurt": {
+            "label": "Takes damage when the wearer is hit"
+          },
+          "dispensable": {
+            "label": "Equippable by dispenser"
+          },
+          "equipOnInteract": {
+            "label": "Can be put on a mob by using it"
+          }
+        }
+      }
+    },
+    "dataUseRemainder": {
+      "label": "Use Remainder",
+      "description": "The item that is left after using this one.",
+      "field": {
+        "label": "Use Remainder",
+        "fields": {
+          "id": {
+            "label": "Item",
+            "placeholder": "minecraft:glass_bottle"
+          },
+          "count": {
+            "label": "Count"
+          }
+        }
+      }
+    },
+    "dataMaxDamage": {
+      "label": "Max Damage",
+      "description": "Maximum durability.",
+      "field": {
+        "label": "Durability"
+      }
+    },
+    "dataAttributeModifiers": {
+      "label": "Attribute Modifiers",
+      "description": "Vanilla attribute modifiers, e.g. more attack damage in the main hand.",
+      "field": {
+        "label": "Modifiers",
+        "itemLabel": "Modifier",
+        "fields": {
+          "type": {
+            "label": "Attribute"
+          },
+          "amount": {
+            "label": "Amount"
+          },
+          "operation": {
+            "label": "Operation"
+          },
+          "slot": {
+            "label": "Slot"
+          },
+          "id": {
+            "label": "Modifier ID",
+            "placeholder": "optional, e.g. namespace:bonus"
+          }
+        }
+      }
+    },
+    "dataEnchantment": {
+      "label": "Enchantment",
+      "description": "Fixed enchantments with their level.",
+      "field": {
+        "label": "Enchantments",
+        "keyLabel": "Enchantment",
+        "value": {
+          "label": "Level"
+        },
+        "keyPlaceholder": "e.g. minecraft:sharpness"
+      }
+    },
+    "dataPaintingVariant": {
+      "label": "Painting Variant",
+      "description": "The painting a painting item places.",
+      "field": {
+        "label": "Painting",
+        "placeholder": "namespace:painting"
+      }
+    },
+    "dataJukeboxPlayable": {
+      "label": "Jukebox Playable",
+      "description": "The song a jukebox plays with this item.",
+      "field": {
+        "label": "Song",
+        "placeholder": "namespace:song"
+      }
+    },
+    "dataExternal": {
+      "label": "External",
+      "description": "Takes the data of an item from another plugin.",
+      "field": {
+        "label": "External",
+        "fields": {
+          "plugin": {
+            "label": "Plugin",
+            "placeholder": "e.g. mmoitems"
+          },
+          "id": {
+            "label": "Item ID",
+            "placeholder": "example_item"
+          }
+        }
+      }
+    },
+    "dataComponents": {
+      "label": "Components",
+      "description": "Raw vanilla data components. CraftEngine does not check them across versions.",
+      "field": {
+        "label": "Components",
+        "keyLabel": "Component",
+        "value": {
+          "label": "Value (YAML)"
+        },
+        "keyPlaceholder": "e.g. minecraft:tool"
+      }
+    },
+    "dataRemoveComponents": {
+      "label": "Remove Components",
+      "description": "Removes these components from the item.",
+      "field": {
+        "label": "Components",
+        "placeholder": "minecraft:attribute_modifiers"
+      }
+    },
+    "clientBoundData": {
+      "label": "Client Bound Data",
+      "description": "Item data that is only sent to players and resolved for each of them, such as conditional names and lore.",
+      "field": {
+        "label": "Data (YAML)",
+        "placeholder": "lore: …"
+      },
+      "hint": "Takes the same keys as data. Use conditional#name entries for data that depends on conditions."
+    },
+    "settingsTags": {
+      "label": "Tags",
+      "description": "Item tags the item belongs to, e.g. for recipes.",
+      "field": {
+        "label": "Tags",
+        "placeholder": "namespace:tag"
+      }
+    },
+    "settingsFuelTime": {
+      "label": "Fuel Time",
+      "description": "How long the item burns as furnace fuel, in ticks.",
+      "field": {
+        "label": "Ticks"
+      }
+    },
+    "settingsFuelRemainder": {
+      "label": "Fuel Remainder",
+      "description": "The item left in the furnace after burning. Only for items that do not stack.",
+      "field": {
+        "label": "Item",
+        "placeholder": "minecraft:bucket"
+      }
+    },
+    "settingsBreakPower": {
+      "label": "Break Power",
+      "description": "Mining level of the tool. Blocks with a required break power need at least this value.",
+      "field": {
+        "label": "Break power"
+      }
+    },
+    "settingsRepairable": {
+      "label": "Repairable",
+      "description": "Whether the item can be repaired in a crafting table, anvil or grindstone.",
+      "field": {
+        "label": "Repairable"
+      }
+    },
+    "settingsAnvilRepairItem": {
+      "label": "Anvil Repair Item",
+      "description": "Set on a repair material: the items it repairs in an anvil.",
+      "field": {
+        "label": "Entries",
+        "itemLabel": "Entry",
+        "fields": {
+          "target": {
+            "label": "Items or tags",
+            "placeholder": "#namespace:tools"
+          },
+          "amount": {
+            "label": "Durability restored"
+          },
+          "percent": {
+            "label": "Share of max durability (0–1)"
+          }
+        }
+      }
+    },
+    "settingsDragRepairItem": {
+      "label": "Drag Repair Item",
+      "description": "Set on a repair material: the items it repairs when dropped onto them in the inventory.",
+      "field": {
+        "label": "Entries",
+        "itemLabel": "Entry",
+        "fields": {
+          "target": {
+            "label": "Items or tags",
+            "placeholder": "#namespace:tools"
+          },
+          "amount": {
+            "label": "Durability restored"
+          },
+          "percent": {
+            "label": "Share of max durability (0–1)"
+          },
+          "sound": {
+            "label": "Sound",
+            "placeholder": "minecraft:item.armor.equip_iron"
+          }
+        }
+      }
+    },
+    "settingsRespectRepairableComponent": {
+      "label": "Respect Repairable Component",
+      "description": "The anvil follows the vanilla repairable component of the item.",
+      "field": {
+        "label": "Respect"
+      }
+    },
+    "settingsRenameable": {
+      "label": "Renameable",
+      "description": "Whether the item can be renamed in an anvil.",
+      "field": {
+        "label": "Renameable"
+      }
+    },
+    "settingsEnchantable": {
+      "label": "Enchantable",
+      "description": "Whether the item can be used in an enchanting table.",
+      "field": {
+        "label": "Enchantable"
+      }
+    },
+    "settingsPreventBreak": {
+      "label": "Prevent Break",
+      "description": "The item keeps its last durability point instead of breaking.",
+      "field": {
+        "label": "Prevent break"
+      }
+    },
+    "settingsCanPlace": {
+      "label": "Can Place",
+      "description": "Whether the vanilla block of the material can be placed.",
+      "field": {
+        "label": "Can place"
+      }
+    },
+    "settingsDyeable": {
+      "label": "Dyeable",
+      "description": "Whether the item can be dyed in a crafting table.",
+      "field": {
+        "label": "Dyeable"
+      }
+    },
+    "settingsDyeColor": {
+      "label": "Dye Color",
+      "description": "The color the item adds in dye recipes, as r,g,b.",
+      "field": {
+        "label": "Color",
+        "placeholder": "255,140,0"
+      }
+    },
+    "settingsFireworkColor": {
+      "label": "Firework Color",
+      "description": "The color the item adds to a firework star fade, as r,g,b.",
+      "field": {
+        "label": "Color",
+        "placeholder": "255,140,0"
+      }
+    },
+    "settingsEquipment": {
+      "label": "Equipment",
+      "description": "Applies a CraftEngine equipment definition when the item is worn.",
+      "field": {
+        "label": "Equipment",
+        "fields": {
+          "assetId": {
+            "label": "Equipment ID",
+            "placeholder": "namespace:equipment"
+          },
+          "slot": {
+            "label": "Slot"
+          },
+          "clientBoundModel": {
+            "label": "Client-bound model"
+          },
+          "cameraOverlay": {
+            "label": "Camera overlay",
+            "placeholder": "e.g. minecraft:misc/pumpkinblur"
+          },
+          "swappable": {
+            "label": "Swappable by right-click"
+          },
+          "damageOnHurt": {
+            "label": "Takes damage when the wearer is hit"
+          },
+          "dispensable": {
+            "label": "Equippable by dispenser"
+          },
+          "equipOnInteract": {
+            "label": "Can be put on a mob by using it"
+          }
+        }
+      }
+    },
+    "armor": {
+      "label": "CustomArmor (Armor, Elytra, Mob Armor, Harness, Saddles)",
+      "description": "Texture shown when worn: player armor, elytra wings, armor for wolf/horse/llama/nautilus, harness for the happy ghast, or saddles. ResourcepackBuilder generates an equipment model in the pack and an entry in equipments.yml from it, and sets settings.equipment (equipment ID and, without an armor material, the slot).",
+      "hint": "All parts of a set get the same set ID; the textures only need to be uploaded on one part. Elytras, animal armor and saddles each need their own set ID. CraftEngine has no allowed animals: animal armor fits any animal with that slot.",
+      "field": {
+        "label": "Armor",
+        "fields": {
+          "set": {
+            "label": "Set ID",
+            "placeholder": "e.g. ruby"
+          },
+          "layer1": {
+            "label": "Player: Layer 1 (helmet, chestplate, boots)",
+            "help": "Corresponds to e.g. diamond_layer_1.png"
+          },
+          "layer2": {
+            "label": "Player: Layer 2 (leggings)",
+            "help": "Corresponds to e.g. diamond_layer_2.png"
+          },
+          "elytra": {
+            "label": "Elytra wings",
+            "help": "Like elytra.png. Without material ELYTRA, ResourcepackBuilder adds the glider component automatically."
+          },
+          "mob": {
+            "label": "Animal armor & harness",
+            "fields": {
+              "wolfArmor": {
+                "label": "Wolf armor",
+                "help": "Like wolf_armor.png"
+              },
+              "horseArmor": {
+                "label": "Horse armor",
+                "help": "Like horse_armor_diamond.png"
+              },
+              "llamaArmor": {
+                "label": "Llama carpet",
+                "help": "Like llama/decor/*.png"
+              },
+              "nautilusArmor": {
+                "label": "Nautilus armor"
+              },
+              "harness": {
+                "label": "Harness (happy ghast)"
+              }
+            }
+          },
+          "saddles": {
+            "label": "Saddles (1.21.5+)",
+            "help": "A saddle can have textures for several animals.",
+            "fields": {
+              "horseSaddle": {
+                "label": "Horse"
+              },
+              "pigSaddle": {
+                "label": "Pig"
+              },
+              "striderSaddle": {
+                "label": "Strider"
+              },
+              "donkeySaddle": {
+                "label": "Donkey"
+              },
+              "muleSaddle": {
+                "label": "Mule"
+              },
+              "camelSaddle": {
+                "label": "Camel"
+              },
+              "skeletonHorseSaddle": {
+                "label": "Skeleton horse"
+              },
+              "zombieHorseSaddle": {
+                "label": "Zombie horse"
+              },
+              "nautilusSaddle": {
+                "label": "Nautilus"
+              },
+              "camelHuskSaddle": {
+                "label": "Camel husk"
+              }
+            }
+          }
+        }
+      }
+    },
+    "settingsConsumeReplacement": {
+      "label": "Consume Replacement",
+      "description": "The item a player gets back after consuming this one.",
+      "field": {
+        "label": "Item",
+        "placeholder": "minecraft:bowl"
+      }
+    },
+    "settingsCraftRemainder": {
+      "label": "Craft Remainder",
+      "description": "The item left in the crafting grid after crafting.",
+      "field": {
+        "label": "Item",
+        "placeholder": "minecraft:bucket"
+      }
+    },
+    "settingsAllowedProjectiles": {
+      "label": "Allowed Projectiles",
+      "description": "Items a bow or crossbow can shoot.",
+      "field": {
+        "label": "Items",
+        "placeholder": "minecraft:arrow"
+      }
+    },
+    "settingsIngredientSubstitute": {
+      "label": "Ingredient Substitute",
+      "description": "Vanilla items this item can stand in for in recipes.",
+      "field": {
+        "label": "Items",
+        "placeholder": "minecraft:paper"
+      }
+    },
+    "settingsCompostProbability": {
+      "label": "Compost Probability",
+      "description": "Chance that the item raises the composter level (0–1).",
+      "field": {
+        "label": "Chance"
+      }
+    },
+    "settingsInvulnerable": {
+      "label": "Invulnerable",
+      "description": "Damage causes a dropped item survives.",
+      "field": {
+        "label": "Damage causes"
+      }
+    },
+    "settingsKeepOnDeathChance": {
+      "label": "Keep On Death Chance",
+      "description": "Chance that a player keeps the item on death (0–1).",
+      "field": {
+        "label": "Chance"
+      }
+    },
+    "settingsDestroyOnDeathChance": {
+      "label": "Destroy On Death Chance",
+      "description": "Chance that the item is destroyed on death (0–1).",
+      "field": {
+        "label": "Chance"
+      }
+    },
+    "settingsGlowColor": {
+      "label": "Glow Color",
+      "description": "The glow color of the dropped item.",
+      "field": {
+        "label": "Color"
+      }
+    },
+    "settingsProjectile": {
+      "label": "Projectile",
+      "description": "A custom projectile entity, e.g. for a trident.",
+      "field": {
+        "label": "Projectile (YAML)"
+      }
+    },
+    "blockSettingsTemplate": {
+      "label": "Template",
+      "description": "Takes the block settings from templates: CraftEngine's default templates (default:settings/…, default:hardness/…, default:sound/…, default:burn_data/…) or the project's own. Later templates win over earlier ones.",
+      "hint": "The settings set here are merged over those of the templates: values replace theirs, lists are added to theirs.",
+      "field": {
+        "label": "Templates",
+        "placeholder": "e.g. default:sound/stone"
+      }
+    },
+    "blockSettingsArguments": {
+      "label": "Arguments",
+      "description": "The values for the placeholders of the settings templates, e.g. break_power for default:settings/ore.",
+      "field": {
+        "label": "Arguments",
+        "keyLabel": "Argument",
+        "keyPlaceholder": "e.g. break_power",
+        "value": {
+          "label": "Value",
+          "placeholder": "e.g. 2"
+        }
+      }
+    },
+    "blockSettingsHardness": {
+      "label": "Hardness",
+      "description": "How long the block takes to break. Stone has 1.5, obsidian 50.",
+      "field": {
+        "label": "Hardness"
+      }
+    },
+    "blockSettingsResistance": {
+      "label": "Resistance",
+      "description": "How well the block withstands explosions.",
+      "field": {
+        "label": "Resistance"
+      }
+    },
+    "blockSettingsTags": {
+      "label": "Tags",
+      "description": "Block tags of the block, e.g. the tool that mines it fast (minecraft:mineable/pickaxe).",
+      "field": {
+        "label": "Tags",
+        "placeholder": "namespace:tag"
+      }
+    },
+    "blockSettingsSounds": {
+      "label": "Sounds",
+      "description": "The sounds of the block: break, step, place, hit while mining and fall.",
+      "field": {
+        "label": "Sounds",
+        "fields": {
+          "break": {
+            "label": "Break",
+            "placeholder": "minecraft:block.stone.break"
+          },
+          "step": {
+            "label": "Step",
+            "placeholder": "minecraft:block.stone.step"
+          },
+          "place": {
+            "label": "Place",
+            "placeholder": "minecraft:block.stone.place"
+          },
+          "hit": {
+            "label": "Hit while mining",
+            "placeholder": "minecraft:block.stone.hit"
+          },
+          "fall": {
+            "label": "Fall",
+            "placeholder": "minecraft:block.stone.fall"
+          }
+        }
+      }
+    },
+    "blockSettingsCorrectTools": {
+      "label": "Correct Tools",
+      "description": "Tools or item tags that get the drops. Setting it turns on Require Correct Tools.",
+      "field": {
+        "label": "Tools",
+        "placeholder": "#minecraft:pickaxes"
+      }
+    },
+    "blockSettingsRequireCorrectTools": {
+      "label": "Require Correct Tools",
+      "description": "The block drops something only when it is mined with a correct tool.",
+      "field": {
+        "label": "Correct tool required"
+      }
+    },
+    "blockSettingsRequiredBreakPower": {
+      "label": "Required Break Power",
+      "description": "The break power a tool needs: wood and gold 1, stone and copper 2, iron 3, diamond 4, netherite 5.",
+      "field": {
+        "label": "Break power"
+      }
+    },
+    "blockSettingsIncorrectToolDigSpeed": {
+      "label": "Incorrect Tool Dig Speed",
+      "description": "Dig speed with a wrong tool, as a share of the normal speed (0 to 1).",
+      "field": {
+        "label": "Speed factor"
+      }
+    },
+    "blockSettingsLuminance": {
+      "label": "Luminance",
+      "description": "The light level the block gives off (0 to 15).",
+      "field": {
+        "label": "Light level"
+      }
+    },
+    "blockSettingsMapColor": {
+      "label": "Map Color",
+      "description": "The color id of the block on maps, e.g. 11 for stone.",
+      "field": {
+        "label": "Color id"
+      }
+    },
+    "blockSettingsPushReaction": {
+      "label": "Push Reaction",
+      "description": "What a piston does with the block.",
+      "field": {
+        "label": "Reaction"
+      }
+    },
+    "blockSettingsInstrument": {
+      "label": "Instrument",
+      "description": "The sound of a note block that stands on the block.",
+      "field": {
+        "label": "Instrument"
+      }
+    },
+    "blockSettingsBurnable": {
+      "label": "Burnable",
+      "description": "Fire from the surroundings can set the block alight.",
+      "field": {
+        "label": "Burnable"
+      }
+    },
+    "blockSettingsBurnChance": {
+      "label": "Burn Chance",
+      "description": "How likely the block catches fire (0 to 100).",
+      "field": {
+        "label": "Chance"
+      }
+    },
+    "blockSettingsFireSpreadChance": {
+      "label": "Fire Spread Chance",
+      "description": "How likely fire on the block spreads to its neighbors (0 to 100).",
+      "field": {
+        "label": "Chance"
+      }
+    },
+    "blockSettingsReplaceable": {
+      "label": "Replaceable",
+      "description": "Placing another block on it replaces it, like grass.",
+      "field": {
+        "label": "Replaceable"
+      }
+    },
+    "blockSettingsIsRedstoneConductor": {
+      "label": "Is Redstone Conductor",
+      "description": "The block conducts redstone power.",
+      "field": {
+        "label": "Conducts redstone"
+      }
+    },
+    "blockSettingsIsSuffocating": {
+      "label": "Is Suffocating",
+      "description": "Entities inside the block take suffocation damage.",
+      "field": {
+        "label": "Suffocates"
+      }
+    },
+    "blockSettingsIsViewBlocking": {
+      "label": "Is View Blocking",
+      "description": "The block blocks the view of mobs. Players still see what the model shows.",
+      "field": {
+        "label": "Blocks the view"
+      }
+    },
+    "blockSettingsIsRandomlyTicking": {
+      "label": "Is Randomly Ticking",
+      "description": "The block gets random ticks, which some block behaviors need (growing, spreading).",
+      "field": {
+        "label": "Random ticks"
+      }
+    },
+    "blockSettingsCanOcclude": {
+      "label": "Can Occlude",
+      "description": "The block stops light from passing and turns grass below it into dirt.",
+      "field": {
+        "label": "Occludes"
+      }
+    },
+    "blockSettingsBlockLight": {
+      "label": "Block Light",
+      "description": "How much the block weakens light that passes through it (0 to 15).",
+      "field": {
+        "label": "Light reduction"
+      }
+    },
+    "blockSettingsPropagateSkylight": {
+      "label": "Propagate Skylight",
+      "description": "Daylight passes through the block.",
+      "field": {
+        "label": "Lets skylight through"
+      }
+    },
+    "blockSettingsFriction": {
+      "label": "Friction",
+      "description": "How slippery the block is for mobs and items. Ice has 0.98. Players are not affected.",
+      "field": {
+        "label": "Friction"
+      }
+    },
+    "blockSettingsSpeedFactor": {
+      "label": "Speed Factor",
+      "description": "Changes how fast mobs walk on the block. Players are not affected.",
+      "field": {
+        "label": "Factor"
+      }
+    },
+    "blockSettingsJumpFactor": {
+      "label": "Jump Factor",
+      "description": "Changes how high mobs jump from the block. Players are not affected.",
+      "field": {
+        "label": "Factor"
+      }
+    },
+    "blockSettingsBounceRestitution": {
+      "label": "Bounce Restitution",
+      "description": "How high mobs bounce after landing on the block. Slime has 1. Players are not affected.",
+      "field": {
+        "label": "Bounce"
+      }
+    },
+    "blockSettingsSupportShape": {
+      "label": "Support Shape",
+      "description": "The vanilla block whose shape the block offers to neighbors, e.g. for torches on its side.",
+      "field": {
+        "label": "Block",
+        "placeholder": "minecraft:stone"
+      }
+    },
+    "blockLoot": {
+      "label": "Loot",
+      "description": "What the block drops when it breaks. default:loot_table/self drops the block itself. Without loot the block drops nothing."
+    },
+    "blockStatesArgumentsSlabBaseBlock": {
+      "label": "Vanilla slab",
+      "description": "The vanilla slab whose unused states the slab borrows (its look is replaced).",
+      "hint": "Each vanilla block can carry only one custom block. CraftEngine’s own default pack uses petrified_oak_slab.",
+      "field": {
+        "label": "Slab"
+      }
+    },
+    "blockStatesArgumentsStairsBaseBlock": {
+      "label": "Vanilla stairs",
+      "description": "The vanilla stairs whose unused states the stairs borrow.",
+      "hint": "Each vanilla block can carry only one custom block. CraftEngine’s own default pack uses cut_copper_stairs.",
+      "field": {
+        "label": "Stairs"
+      }
+    },
+    "blockStatesArgumentsDoorBaseBlock": {
+      "label": "Vanilla door",
+      "description": "The vanilla door whose powered states the door borrows (they look the same as the unpowered ones).",
+      "hint": "Each vanilla block can carry only one custom block. CraftEngine’s own default pack uses oak_door.",
+      "field": {
+        "label": "Door"
+      }
+    },
+    "blockStatesArgumentsTrapdoorBaseBlock": {
+      "label": "Vanilla trapdoor",
+      "description": "The vanilla trapdoor whose powered states the trapdoor borrows.",
+      "hint": "Each vanilla block can carry only one custom block. CraftEngine’s own default pack uses oak_trapdoor.",
+      "field": {
+        "label": "Trapdoor"
+      }
+    },
+    "blockStatesArgumentsFenceGateBaseBlock": {
+      "label": "Vanilla fence gate",
+      "description": "The vanilla fence gate whose powered states the fence gate borrows.",
+      "hint": "Each vanilla block can carry only one custom block. CraftEngine’s own default pack uses oak_fence_gate.",
+      "field": {
+        "label": "Fence gate"
+      }
+    },
+    "blockStatesArgumentsFenceBaseBlock": {
+      "label": "Vanilla fence",
+      "description": "The vanilla fence whose collision the fence uses. Its look comes from the post and side items.",
+      "hint": "Several fences may share one vanilla fence.",
+      "field": {
+        "label": "Fence"
+      }
+    },
+    "blockStatesArgumentsFencePostItem": {
+      "label": "Post item",
+      "description": "The item whose model CraftEngine shows as the fence post.",
+      "hint": "Create two items for the post and the side, each with its model (for example with the parents block/fence_post and block/fence_side).",
+      "field": {
+        "label": "Item ID",
+        "placeholder": "namespace:fence_post"
+      }
+    },
+    "blockStatesArgumentsFenceSideItem": {
+      "label": "Side item",
+      "description": "The item whose model CraftEngine shows for each connected side.",
+      "field": {
+        "label": "Item ID",
+        "placeholder": "namespace:fence_side"
+      }
+    },
+    "blockStatesArgumentsLeavesTintable": {
+      "label": "Biome tint",
+      "description": "The leaves take the biome’s foliage color (the texture should be gray).",
+      "field": {
+        "label": "Tinted"
+      }
+    },
+    "blockStatesArgumentsLeavesMaxDistance": {
+      "label": "Max distance",
+      "description": "How far the leaves may be from a log before they decay (vanilla 7).",
+      "field": {
+        "label": "Distance"
+      }
+    },
+    "blockBehaviorFeature": {
+      "label": "Tree feature",
+      "description": "The configured feature that grows from the sapling, e.g. minecraft:oak.",
+      "field": {
+        "label": "Feature",
+        "placeholder": "minecraft:oak"
+      }
+    },
+    "blockBehaviorStructure": {
+      "label": "Structure",
+      "description": "A structure that grows from the sapling instead of the feature.",
+      "field": {
+        "label": "Structure",
+        "placeholder": "namespace:structure"
+      }
+    },
+    "blockBehaviorGrowSpeed": {
+      "label": "Grow speed",
+      "description": "Growth per random tick: the whole part is added, the fraction is the chance of one more step.",
+      "field": {
+        "label": "Speed"
+      }
+    },
+    "blockBehaviorLightRequirement": {
+      "label": "Light requirement",
+      "description": "The least light level the block needs to grow.",
+      "field": {
+        "label": "Light level"
+      }
+    },
+    "blockBehaviorMaxLightRequirement": {
+      "label": "Max light",
+      "description": "The highest light level the block still grows at.",
+      "field": {
+        "label": "Light level"
+      }
+    },
+    "blockBehaviorIsBoneMealTarget": {
+      "label": "Bone meal",
+      "description": "Bone meal makes the crop grow.",
+      "field": {
+        "label": "Accepts bone meal"
+      }
+    },
+    "blockBehaviorBoneMealAgeBonus": {
+      "label": "Bone meal bonus",
+      "description": "How many stages one bone meal adds.",
+      "field": {
+        "label": "Stages"
+      }
+    },
+    "blockBehaviorBoneMealSuccessChance": {
+      "label": "Bone meal chance",
+      "description": "The chance that bone meal shows its success particles.",
+      "field": {
+        "label": "Chance"
+      }
+    },
+    "blockBehaviorCanOpenWithHand": {
+      "label": "Opens by hand",
+      "description": "A right click opens and closes the block (or switches the light).",
+      "field": {
+        "label": "By hand"
+      }
+    },
+    "blockBehaviorCanOpenByWindCharge": {
+      "label": "Opens by wind charge",
+      "description": "A wind charge opens and closes the block.",
+      "field": {
+        "label": "By wind charge"
+      }
+    },
+    "blockBehaviorSounds": {
+      "label": "Sounds",
+      "description": "The sounds when the block opens and closes.",
+      "field": {
+        "label": "Sounds",
+        "fields": {
+          "open": {
+            "label": "Open",
+            "placeholder": "minecraft:block.wooden_door.open"
+          },
+          "close": {
+            "label": "Close",
+            "placeholder": "minecraft:block.wooden_door.close"
+          }
+        }
+      }
+    },
+    "blockBehaviorConnectableBlockTag": {
+      "label": "Connects to",
+      "description": "The block tag of the fences this fence connects to.",
+      "field": {
+        "label": "Block tag",
+        "placeholder": "minecraft:wooden_fences"
+      }
+    },
+    "blockBehaviorCanLeash": {
+      "label": "Leash",
+      "description": "Leads can be tied to the fence.",
+      "field": {
+        "label": "Leads"
+      }
+    },
+    "blockBehaviorSeats": {
+      "label": "Seats",
+      "description": "Where players sit, as \"x,y,z\" from the block’s center, optionally with a fixed yaw (\"0,0,0 90\").",
+      "hint": "Right-clicking the block seats the player.",
+      "field": {
+        "label": "Seat",
+        "placeholder": "0,0,0"
+      }
+    },
+    "blockBehaviorTitle": {
+      "label": "Title",
+      "description": "The title of the storage window (MiniMessage).",
+      "field": {
+        "label": "Title",
+        "placeholder": "<lang:container.chest>"
+      }
+    },
+    "blockBehaviorRows": {
+      "label": "Rows",
+      "description": "How many rows of slots the storage has (1 to 6).",
+      "field": {
+        "label": "Rows"
+      }
+    },
+    "blockBehaviorHasSignal": {
+      "label": "Comparator signal",
+      "description": "A comparator reads how full the storage is.",
+      "field": {
+        "label": "Signal"
+      }
+    },
+    "blockBehaviorAllowInput": {
+      "label": "Hopper input",
+      "description": "Hoppers can put items in.",
+      "field": {
+        "label": "Input"
+      }
+    },
+    "blockBehaviorAllowOutput": {
+      "label": "Hopper output",
+      "description": "Hoppers can take items out.",
+      "field": {
+        "label": "Output"
+      }
+    },
+    "blockBehaviors": {
+      "label": "More behaviors",
+      "description": "Further behaviors as a YAML list (type plus its keys). The export writes them before the behavior above.",
+      "hint": "Every behavior of the CraftEngine wiki works here, e.g. falling_block or bush_block.",
+      "field": {
+        "label": "Behaviors (YAML)"
+      }
+    },
+    "events": {
+      "label": "Item Events",
+      "description": "Functions the item runs when it is clicked with, eaten, breaks and more."
+    },
+    "blockEvents": {
+      "label": "Block Events",
+      "description": "Functions the placed block runs when it is clicked, broken, stepped on and more."
+    },
+    "furnitureEvents": {
+      "label": "Furniture Events",
+      "description": "Functions the placed furniture runs when it is clicked, placed or broken."
+    },
+    "furnitureLoot": {
+      "label": "Loot",
+      "description": "What the furniture drops when it breaks. default:loot_table/furniture drops the item it was placed with. Without loot it drops nothing."
+    },
+    "settingsAttributeModifiers": {
+      "label": "Custom Attribute Modifiers",
+      "description": "Modifiers of the project's custom attributes (see Attributes) while the item is in a slot. Needs CraftEngine's attribute system.",
+      "field": {
+        "label": "Modifiers",
+        "itemLabel": "Modifier"
+      }
+    },
+    "settingsEquipmentSetPart": {
+      "label": "Equipment Set Piece",
+      "description": "Makes the item a piece of equipment sets (see Attributes) while it is in one of the slots. Needs CraftEngine's attribute system.",
+      "field": {
+        "label": "Entries",
+        "itemLabel": "Entry",
+        "fields": {
+          "slots": {
+            "label": "slots",
+            "help": "The slots in which the item counts as a piece. Slot groups such as armor are not allowed here."
+          },
+          "sets": {
+            "label": "sets",
+            "help": "The equipment sets the item counts for.",
+            "placeholder": "e.g. namespace:guardian"
+          }
+        }
+      }
+    }
+  },
+  "recipes": {
+    "sources": {
+      "nexo": "Project item"
+    }
+  },
+  "events": {
+    "label": "Events",
+    "itemLabel": "Event",
+    "fields": {
+      "on": {
+        "label": "The trigger that runs the event"
+      },
+      "conditions": {
+        "label": "Conditions",
+        "help": "All must hold, or the functions do not run."
+      },
+      "functions": {
+        "label": "Functions",
+        "help": "Run in this order when the event fires."
+      }
+    }
+  },
+  "logic": {
+    "conditions": {
+      "allOf": {
+        "label": "all_of",
+        "help": "True when all terms are true.",
+        "fields": {
+          "terms": {
+            "label": "terms"
+          }
+        }
+      },
+      "anyOf": {
+        "label": "any_of",
+        "help": "True when any term is true.",
+        "fields": {
+          "terms": {
+            "label": "terms"
+          }
+        }
+      },
+      "inverted": {
+        "label": "inverted",
+        "help": "Negates the term.",
+        "fields": {
+          "term": {
+            "label": "term"
+          }
+        }
+      },
+      "hasPlayer": {
+        "label": "has_player",
+        "help": "A player is part of the context."
+      },
+      "hasItem": {
+        "label": "has_item",
+        "help": "There is an item in the hand."
+      },
+      "matchItem": {
+        "label": "match_item",
+        "help": "The item in the hand has one of the ids.",
+        "fields": {
+          "id": {
+            "label": "id"
+          },
+          "regex": {
+            "label": "regex"
+          }
+        }
+      },
+      "equipment": {
+        "label": "equipment",
+        "help": "The item in an equipment slot matches an id or a tag.",
+        "fields": {
+          "slot": {
+            "label": "slot"
+          },
+          "id": {
+            "label": "id"
+          },
+          "tag": {
+            "label": "tag"
+          },
+          "regex": {
+            "label": "regex"
+          }
+        }
+      },
+      "equipmentSet": {
+        "label": "equipment_set",
+        "help": "The entity wears enough pieces of an equipment set.",
+        "fields": {
+          "set": {
+            "label": "set"
+          },
+          "count": {
+            "label": "count",
+            "help": "Exact number of pieces; overrides min and max."
+          },
+          "min": {
+            "label": "min"
+          },
+          "max": {
+            "label": "max"
+          }
+        }
+      },
+      "matchEntity": {
+        "label": "match_entity",
+        "help": "The entity has one of the ids.",
+        "fields": {
+          "id": {
+            "label": "id"
+          },
+          "regex": {
+            "label": "regex"
+          }
+        }
+      },
+      "matchBlock": {
+        "label": "match_block",
+        "help": "The block at a position has one of the ids.",
+        "fields": {
+          "id": {
+            "label": "id"
+          },
+          "regex": {
+            "label": "regex"
+          },
+          "x": {
+            "label": "x"
+          },
+          "y": {
+            "label": "y"
+          },
+          "z": {
+            "label": "z"
+          }
+        }
+      },
+      "matchBlockProperty": {
+        "label": "match_block_property",
+        "help": "The block state has these property values.",
+        "fields": {
+          "properties": {
+            "label": "properties",
+            "keyLabel": "Property",
+            "keyPlaceholder": "age",
+            "value": {
+              "label": "Value"
+            }
+          }
+        }
+      },
+      "matchFurnitureVariant": {
+        "label": "match_furniture_variant",
+        "help": "The furniture shows one of the variants.",
+        "fields": {
+          "variants": {
+            "label": "variants"
+          }
+        }
+      },
+      "tableBonus": {
+        "label": "table_bonus",
+        "help": "A chance per level of an enchantment on the tool.",
+        "fields": {
+          "enchantment": {
+            "label": "enchantment"
+          },
+          "chances": {
+            "label": "chances",
+            "help": "A list of chances from 0 to 1, one per level starting at level 0."
+          }
+        }
+      },
+      "survivesExplosion": {
+        "label": "survives_explosion",
+        "help": "The drop survives the explosion."
+      },
+      "fallingBlock": {
+        "label": "falling_block",
+        "help": "The drop comes from a falling block."
+      },
+      "enchantment": {
+        "label": "enchantment",
+        "help": "The item in the hand has an enchantment level.",
+        "fields": {
+          "predicate": {
+            "label": "predicate",
+            "placeholder": "minecraft:sharpness>=2"
+          }
+        }
+      },
+      "random": {
+        "label": "random",
+        "help": "True with a chance from 0 to 1.",
+        "fields": {
+          "value": {
+            "label": "value"
+          },
+          "id": {
+            "label": "id",
+            "help": "Conditions with the same id share one roll."
+          }
+        }
+      },
+      "distance": {
+        "label": "distance",
+        "help": "The player is within this distance of the position.",
+        "fields": {
+          "min": {
+            "label": "min"
+          },
+          "max": {
+            "label": "max"
+          }
+        }
+      },
+      "permission": {
+        "label": "permission",
+        "help": "The player has the permission.",
+        "fields": {
+          "permission": {
+            "label": "permission"
+          }
+        }
+      },
+      "hasDiscoveredRecipe": {
+        "label": "has_discovered_recipe",
+        "help": "The player has unlocked the recipe.",
+        "fields": {
+          "recipe": {
+            "label": "recipe"
+          }
+        }
+      },
+      "equals": {
+        "label": "equals",
+        "help": "Both texts are equal.",
+        "fields": {
+          "value1": {
+            "label": "value1"
+          },
+          "value2": {
+            "label": "value2"
+          }
+        }
+      },
+      "stringEquals": {
+        "label": "string_equals",
+        "help": "Both texts are equal.",
+        "fields": {
+          "value1": {
+            "label": "value1"
+          },
+          "value2": {
+            "label": "value2"
+          }
+        }
+      },
+      "stringContains": {
+        "label": "string_contains",
+        "help": "value1 contains value2.",
+        "fields": {
+          "value1": {
+            "label": "value1"
+          },
+          "value2": {
+            "label": "value2"
+          }
+        }
+      },
+      "regex": {
+        "label": "regex",
+        "help": "The value matches the regular expression.",
+        "fields": {
+          "value": {
+            "label": "value"
+          },
+          "regex": {
+            "label": "regex"
+          }
+        }
+      },
+      "expression": {
+        "label": "expression",
+        "help": "The expression is true.",
+        "fields": {
+          "expression": {
+            "label": "expression"
+          }
+        }
+      },
+      "isNull": {
+        "label": "is_null",
+        "help": "The context argument is not set.",
+        "fields": {
+          "argument": {
+            "label": "argument"
+          }
+        }
+      },
+      "hand": {
+        "label": "hand",
+        "help": "The interaction uses this hand.",
+        "fields": {
+          "hand": {
+            "label": "hand"
+          }
+        }
+      },
+      "onCooldown": {
+        "label": "on_cooldown",
+        "help": "The player has this cooldown (see set_cooldown).",
+        "fields": {
+          "id": {
+            "label": "id"
+          }
+        }
+      },
+      "onItemCooldown": {
+        "label": "on_item_cooldown",
+        "help": "The item cooldown group is active (1.21.2+).",
+        "fields": {
+          "id": {
+            "label": "id"
+          }
+        }
+      },
+      "inventoryHasItem": {
+        "label": "inventory_has_item",
+        "help": "The inventory holds this many of the item.",
+        "fields": {
+          "id": {
+            "label": "id"
+          },
+          "count": {
+            "label": "count"
+          }
+        }
+      },
+      "isBedrockPlayer": {
+        "label": "is_bedrock_player",
+        "help": "The player plays on Bedrock."
+      },
+      "openWater": {
+        "label": "open_water",
+        "help": "The fishing bobber is in open water."
+      },
+      "biome": {
+        "label": "biome",
+        "help": "The position is in one of the biomes.",
+        "fields": {
+          "biome": {
+            "label": "biome"
+          }
+        }
+      },
+      "world": {
+        "label": "world",
+        "help": "The position is in one of the worlds.",
+        "fields": {
+          "world": {
+            "label": "world"
+          }
+        }
+      },
+      "js": {
+        "label": "js",
+        "help": "A JavaScript function that returns true or false.",
+        "fields": {
+          "script": {
+            "label": "script"
+          },
+          "function": {
+            "label": "function",
+            "placeholder": "main"
+          }
+        }
+      },
+      "worldguardRegion": {
+        "label": "worldguard:region",
+        "help": "The position is in WorldGuard regions (needs WorldGuard).",
+        "fields": {
+          "mode": {
+            "label": "mode",
+            "help": "1: in any of the regions, 2: in all of them."
+          },
+          "regions": {
+            "label": "regions"
+          }
+        }
+      },
+      "hasMoney": {
+        "label": "has_money",
+        "help": "The player has this much money (needs Vault).",
+        "fields": {
+          "amount": {
+            "label": "amount"
+          }
+        }
+      }
+    },
+    "functions": {
+      "command": {
+        "label": "command",
+        "help": "Runs commands.",
+        "fields": {
+          "command": {
+            "label": "command"
+          }
+        }
+      },
+      "message": {
+        "label": "message",
+        "help": "Sends chat messages.",
+        "fields": {
+          "message": {
+            "label": "message"
+          },
+          "overlay": {
+            "label": "overlay"
+          }
+        }
+      },
+      "actionbar": {
+        "label": "actionbar",
+        "help": "Shows a text in the action bar.",
+        "fields": {
+          "actionbar": {
+            "label": "actionbar"
+          }
+        }
+      },
+      "title": {
+        "label": "title",
+        "help": "Shows a title and subtitle.",
+        "fields": {
+          "title": {
+            "label": "title"
+          },
+          "subtitle": {
+            "label": "subtitle"
+          },
+          "fadeIn": {
+            "label": "fade_in"
+          },
+          "stay": {
+            "label": "stay"
+          },
+          "fadeOut": {
+            "label": "fade_out"
+          }
+        }
+      },
+      "toast": {
+        "label": "toast",
+        "help": "Shows an advancement toast.",
+        "fields": {
+          "toast": {
+            "label": "toast"
+          },
+          "item": {
+            "label": "item"
+          },
+          "advancementType": {
+            "label": "advancement_type"
+          }
+        }
+      },
+      "openWindow": {
+        "label": "open_window",
+        "help": "Opens a workstation window.",
+        "fields": {
+          "guiType": {
+            "label": "gui_type"
+          },
+          "title": {
+            "label": "title"
+          }
+        }
+      },
+      "closeInventory": {
+        "label": "close_inventory",
+        "help": "Closes the open inventory."
+      },
+      "merchantTrade": {
+        "label": "merchant_trade",
+        "help": "Opens a trading window with offers.",
+        "fields": {
+          "title": {
+            "label": "title"
+          },
+          "offers": {
+            "label": "offers",
+            "help": "The offers: cost_1, cost_2, result and exp each."
+          }
+        }
+      },
+      "playSound": {
+        "label": "play_sound",
+        "help": "Plays a sound.",
+        "fields": {
+          "sound": {
+            "label": "sound"
+          },
+          "volume": {
+            "label": "volume"
+          },
+          "pitch": {
+            "label": "pitch"
+          },
+          "source": {
+            "label": "source"
+          },
+          "x": {
+            "label": "x"
+          },
+          "y": {
+            "label": "y"
+          },
+          "z": {
+            "label": "z"
+          }
+        }
+      },
+      "particle": {
+        "label": "particle",
+        "help": "Spawns particles. Particle data keys are kept as they are.",
+        "fields": {
+          "particle": {
+            "label": "particle"
+          },
+          "x": {
+            "label": "x"
+          },
+          "y": {
+            "label": "y"
+          },
+          "z": {
+            "label": "z"
+          },
+          "count": {
+            "label": "count"
+          },
+          "offsetX": {
+            "label": "offset_x"
+          },
+          "offsetY": {
+            "label": "offset_y"
+          },
+          "offsetZ": {
+            "label": "offset_z"
+          },
+          "speed": {
+            "label": "speed"
+          }
+        }
+      },
+      "potionEffect": {
+        "label": "potion_effect",
+        "help": "Gives a potion effect.",
+        "fields": {
+          "potionEffect": {
+            "label": "potion_effect"
+          },
+          "duration": {
+            "label": "duration"
+          },
+          "amplifier": {
+            "label": "amplifier"
+          },
+          "ambient": {
+            "label": "ambient"
+          },
+          "particles": {
+            "label": "particles"
+          },
+          "showIcon": {
+            "label": "show_icon"
+          }
+        }
+      },
+      "removePotionEffect": {
+        "label": "remove_potion_effect",
+        "help": "Removes a potion effect (or all).",
+        "fields": {
+          "potionEffect": {
+            "label": "potion_effect"
+          },
+          "all": {
+            "label": "all"
+          }
+        }
+      },
+      "damage": {
+        "label": "damage",
+        "help": "Damages the players.",
+        "fields": {
+          "amount": {
+            "label": "amount"
+          },
+          "damageType": {
+            "label": "damage_type"
+          }
+        }
+      },
+      "heal": {
+        "label": "heal",
+        "help": "Heals the players.",
+        "fields": {
+          "amount": {
+            "label": "amount"
+          }
+        }
+      },
+      "setFood": {
+        "label": "set_food",
+        "help": "Sets the food level.",
+        "fields": {
+          "food": {
+            "label": "food"
+          }
+        }
+      },
+      "setSaturation": {
+        "label": "set_saturation",
+        "help": "Sets the saturation.",
+        "fields": {
+          "saturation": {
+            "label": "saturation"
+          }
+        }
+      },
+      "setExp": {
+        "label": "set_exp",
+        "help": "Sets the experience points.",
+        "fields": {
+          "exp": {
+            "label": "exp"
+          }
+        }
+      },
+      "setLevel": {
+        "label": "set_level",
+        "help": "Sets the experience level.",
+        "fields": {
+          "level": {
+            "label": "level"
+          }
+        }
+      },
+      "levelerExp": {
+        "label": "leveler_exp",
+        "help": "Gives experience in a leveling plugin (e.g. AuraSkills, Jobs).",
+        "fields": {
+          "plugin": {
+            "label": "plugin"
+          },
+          "leveler": {
+            "label": "leveler"
+          },
+          "count": {
+            "label": "count"
+          }
+        }
+      },
+      "teleport": {
+        "label": "teleport",
+        "help": "Teleports the players.",
+        "fields": {
+          "world": {
+            "label": "world"
+          },
+          "x": {
+            "label": "x"
+          },
+          "y": {
+            "label": "y"
+          },
+          "z": {
+            "label": "z"
+          },
+          "pitch": {
+            "label": "pitch"
+          },
+          "yaw": {
+            "label": "yaw"
+          }
+        }
+      },
+      "transfer": {
+        "label": "transfer",
+        "help": "Sends the player to another server.",
+        "fields": {
+          "host": {
+            "label": "host"
+          },
+          "port": {
+            "label": "port"
+          },
+          "server": {
+            "label": "server"
+          }
+        }
+      },
+      "setCooldown": {
+        "label": "set_cooldown",
+        "help": "Starts a cooldown (see on_cooldown).",
+        "fields": {
+          "id": {
+            "label": "id"
+          },
+          "time": {
+            "label": "time"
+          }
+        }
+      },
+      "removeCooldown": {
+        "label": "remove_cooldown",
+        "help": "Removes a cooldown (or all).",
+        "fields": {
+          "id": {
+            "label": "id"
+          },
+          "all": {
+            "label": "all"
+          }
+        }
+      },
+      "setItemCooldown": {
+        "label": "set_item_cooldown",
+        "help": "Starts an item cooldown group (1.21.2+).",
+        "fields": {
+          "id": {
+            "label": "id"
+          },
+          "time": {
+            "label": "time"
+          }
+        }
+      },
+      "discoverRecipe": {
+        "label": "discover_recipe",
+        "help": "Unlocks a recipe.",
+        "fields": {
+          "recipe": {
+            "label": "recipe"
+          }
+        }
+      },
+      "playTotemAnimation": {
+        "label": "play_totem_animation",
+        "help": "Plays the totem animation with an item.",
+        "fields": {
+          "item": {
+            "label": "item"
+          },
+          "sound": {
+            "label": "sound"
+          },
+          "volume": {
+            "label": "volume"
+          },
+          "pitch": {
+            "label": "pitch"
+          },
+          "silent": {
+            "label": "silent"
+          }
+        }
+      },
+      "swingHand": {
+        "label": "swing_hand",
+        "help": "Swings the hand.",
+        "fields": {
+          "hand": {
+            "label": "hand"
+          }
+        }
+      },
+      "setCount": {
+        "label": "set_count",
+        "help": "Sets the count of the item in the hand.",
+        "fields": {
+          "count": {
+            "label": "count"
+          }
+        }
+      },
+      "damageItem": {
+        "label": "damage_item",
+        "help": "Damages the item.",
+        "fields": {
+          "amount": {
+            "label": "amount"
+          },
+          "slot": {
+            "label": "slot"
+          }
+        }
+      },
+      "clearItem": {
+        "label": "clear_item",
+        "help": "Removes items from the inventory.",
+        "fields": {
+          "item": {
+            "label": "item"
+          },
+          "count": {
+            "label": "count"
+          }
+        }
+      },
+      "dropLoot": {
+        "label": "drop_loot",
+        "help": "Drops loot at a position.",
+        "fields": {
+          "toInventory": {
+            "label": "to_inventory"
+          },
+          "x": {
+            "label": "x"
+          },
+          "y": {
+            "label": "y"
+          },
+          "z": {
+            "label": "z"
+          }
+        }
+      },
+      "cancelEvent": {
+        "label": "cancel_event",
+        "help": "Cancels the event."
+      },
+      "run": {
+        "label": "run",
+        "help": "Runs functions, optionally after a delay in ticks.",
+        "fields": {
+          "functions": {
+            "label": "functions"
+          },
+          "delay": {
+            "label": "delay"
+          }
+        }
+      },
+      "ifElse": {
+        "label": "if_else",
+        "help": "Runs the functions of the first rule whose conditions hold.",
+        "fields": {
+          "rules": {
+            "label": "rules",
+            "itemLabel": "Rule",
+            "fields": {
+              "functions": {
+                "label": "functions"
+              }
+            }
+          }
+        }
+      },
+      "alternatives": {
+        "label": "alternatives",
+        "help": "Another name for if_else.",
+        "fields": {
+          "rules": {
+            "label": "rules",
+            "itemLabel": "Rule",
+            "fields": {
+              "functions": {
+                "label": "functions"
+              }
+            }
+          }
+        }
+      },
+      "when": {
+        "label": "when",
+        "help": "Runs the functions of the case that matches a text.",
+        "fields": {
+          "source": {
+            "label": "source",
+            "placeholder": "'<'papi:player_world>"
+          },
+          "cases": {
+            "label": "cases",
+            "itemLabel": "Case",
+            "fields": {
+              "when": {
+                "label": "when"
+              },
+              "functions": {
+                "label": "functions"
+              }
+            }
+          },
+          "fallback": {
+            "label": "fallback"
+          }
+        }
+      },
+      "setVariable": {
+        "label": "set_variable",
+        "help": "Sets a variable of the context.",
+        "fields": {
+          "name": {
+            "label": "name"
+          },
+          "valueType": {
+            "label": "value_type"
+          },
+          "number": {
+            "label": "number"
+          },
+          "text": {
+            "label": "text"
+          }
+        }
+      },
+      "placeBlock": {
+        "label": "place_block",
+        "help": "Places a block.",
+        "fields": {
+          "blockState": {
+            "label": "block_state",
+            "placeholder": "minecraft:stone"
+          },
+          "x": {
+            "label": "x"
+          },
+          "y": {
+            "label": "y"
+          },
+          "z": {
+            "label": "z"
+          },
+          "updateFlags": {
+            "label": "update_flags"
+          }
+        }
+      },
+      "breakBlock": {
+        "label": "break_block",
+        "help": "Breaks a block.",
+        "fields": {
+          "x": {
+            "label": "x"
+          },
+          "y": {
+            "label": "y"
+          },
+          "z": {
+            "label": "z"
+          }
+        }
+      },
+      "updateBlockProperty": {
+        "label": "update_block_property",
+        "help": "Changes properties of the block state.",
+        "fields": {
+          "properties": {
+            "label": "properties",
+            "keyLabel": "Property",
+            "keyPlaceholder": "age",
+            "value": {
+              "label": "Value"
+            }
+          },
+          "x": {
+            "label": "x"
+          },
+          "y": {
+            "label": "y"
+          },
+          "z": {
+            "label": "z"
+          },
+          "updateFlags": {
+            "label": "update_flags"
+          }
+        }
+      },
+      "transformBlock": {
+        "label": "transform_block",
+        "help": "Turns the block into another, keeping matching properties.",
+        "fields": {
+          "block": {
+            "label": "block"
+          },
+          "properties": {
+            "label": "properties",
+            "keyLabel": "Property",
+            "keyPlaceholder": "facing",
+            "value": {
+              "label": "Value"
+            }
+          },
+          "x": {
+            "label": "x"
+          },
+          "y": {
+            "label": "y"
+          },
+          "z": {
+            "label": "z"
+          },
+          "updateFlags": {
+            "label": "update_flags"
+          }
+        }
+      },
+      "cycleBlockProperty": {
+        "label": "cycle_block_property",
+        "help": "Switches a block property to its next value.",
+        "fields": {
+          "property": {
+            "label": "property"
+          },
+          "inverse": {
+            "label": "inverse"
+          },
+          "rules": {
+            "label": "rules",
+            "keyLabel": "From value",
+            "keyPlaceholder": "low",
+            "value": {
+              "label": "Value"
+            }
+          },
+          "x": {
+            "label": "x"
+          },
+          "y": {
+            "label": "y"
+          },
+          "z": {
+            "label": "z"
+          },
+          "updateFlags": {
+            "label": "update_flags"
+          }
+        }
+      },
+      "updateInteractionTick": {
+        "label": "update_interaction_tick",
+        "help": "Updates the tick of the last interaction."
+      },
+      "spawnFurniture": {
+        "label": "spawn_furniture",
+        "help": "Places a furniture.",
+        "fields": {
+          "furnitureId": {
+            "label": "furniture_id"
+          },
+          "variant": {
+            "label": "variant"
+          },
+          "x": {
+            "label": "x"
+          },
+          "y": {
+            "label": "y"
+          },
+          "z": {
+            "label": "z"
+          },
+          "pitch": {
+            "label": "pitch"
+          },
+          "yaw": {
+            "label": "yaw"
+          },
+          "playSound": {
+            "label": "play_sound"
+          }
+        }
+      },
+      "replaceFurniture": {
+        "label": "replace_furniture",
+        "help": "Replaces the furniture with another.",
+        "fields": {
+          "furnitureId": {
+            "label": "furniture_id"
+          },
+          "variant": {
+            "label": "variant"
+          },
+          "x": {
+            "label": "x"
+          },
+          "y": {
+            "label": "y"
+          },
+          "z": {
+            "label": "z"
+          },
+          "pitch": {
+            "label": "pitch"
+          },
+          "yaw": {
+            "label": "yaw"
+          },
+          "dropLoot": {
+            "label": "drop_loot"
+          },
+          "playSound": {
+            "label": "play_sound"
+          }
+        }
+      },
+      "removeFurniture": {
+        "label": "remove_furniture",
+        "help": "Removes the furniture.",
+        "fields": {
+          "dropLoot": {
+            "label": "drop_loot"
+          },
+          "playSound": {
+            "label": "play_sound"
+          }
+        }
+      },
+      "rotateFurniture": {
+        "label": "rotate_furniture",
+        "help": "Rotates the furniture.",
+        "fields": {
+          "degree": {
+            "label": "degree"
+          },
+          "onSuccess": {
+            "label": "on_success"
+          },
+          "onFailure": {
+            "label": "on_failure"
+          }
+        }
+      },
+      "setFurnitureVariant": {
+        "label": "set_furniture_variant",
+        "help": "Switches the furniture to another variant.",
+        "fields": {
+          "variant": {
+            "label": "variant"
+          },
+          "force": {
+            "label": "force"
+          }
+        }
+      },
+      "removeEntity": {
+        "label": "remove_entity",
+        "help": "Removes the entity."
+      },
+      "js": {
+        "label": "js",
+        "help": "Runs a JavaScript function.",
+        "fields": {
+          "script": {
+            "label": "script"
+          },
+          "function": {
+            "label": "function",
+            "placeholder": "main"
+          },
+          "args": {
+            "label": "args"
+          }
+        }
+      },
+      "takeMoney": {
+        "label": "take_money",
+        "help": "Takes money from the player (needs Vault).",
+        "fields": {
+          "amount": {
+            "label": "amount"
+          }
+        }
+      },
+      "giveMoney": {
+        "label": "give_money",
+        "help": "Gives the player money (needs Vault).",
+        "fields": {
+          "amount": {
+            "label": "amount"
+          }
+        }
+      },
+      "mythicMobsSkill": {
+        "label": "mythic_mobs_skill",
+        "help": "Casts a MythicMobs skill (needs MythicMobs).",
+        "fields": {
+          "skill": {
+            "label": "skill"
+          },
+          "power": {
+            "label": "power"
+          },
+          "parameters": {
+            "label": "parameters"
+          },
+          "variables": {
+            "label": "variables"
+          }
+        }
+      },
+      "castMythicSkill": {
+        "label": "cast_mythic_skill",
+        "help": "Another name for mythic_mobs_skill.",
+        "fields": {
+          "skill": {
+            "label": "skill"
+          },
+          "power": {
+            "label": "power"
+          },
+          "parameters": {
+            "label": "parameters"
+          },
+          "variables": {
+            "label": "variables"
+          }
+        }
+      },
+      "spawnMythicMob": {
+        "label": "spawn_mythic_mob",
+        "help": "Spawns a MythicMobs mob (needs MythicMobs).",
+        "fields": {
+          "mob": {
+            "label": "mob"
+          },
+          "level": {
+            "label": "level"
+          },
+          "world": {
+            "label": "world"
+          },
+          "x": {
+            "label": "x"
+          },
+          "y": {
+            "label": "y"
+          },
+          "z": {
+            "label": "z"
+          },
+          "pitch": {
+            "label": "pitch"
+          },
+          "yaw": {
+            "label": "yaw"
+          }
+        }
+      }
+    },
+    "shared": {
+      "add": {
+        "label": "add",
+        "help": "Adds the value to the current one instead of replacing it."
+      },
+      "target": {
+        "label": "target",
+        "help": "The players it acts on: self, all, or a selector object. Unset: the player of the event."
+      },
+      "conditions": {
+        "label": "conditions"
+      },
+      "maxAttempts": {
+        "label": "max_attempts",
+        "help": "How often a value outside min and max is rolled again."
+      },
+      "lootTarget": {
+        "label": "target",
+        "help": "The ids it applies to. Unset: all of this type. Block states are not allowed here."
+      },
+      "overwrite": {
+        "label": "overwrite",
+        "help": "What to remove from the vanilla result: items, experience, all or none (default: add your loot)."
+      },
+      "lootTable": {
+        "label": "loot",
+        "help": "A loot template with its arguments, a loot table of your own, or the id of another loot table.",
+        "choices": {
+          "template": {
+            "label": "Template",
+            "field": {
+              "fields": {
+                "template": {
+                  "label": "template",
+                  "help": "A loot template of CraftEngine or of another pack. default:loot_table/self drops the block itself."
+                },
+                "arguments": {
+                  "label": "arguments",
+                  "help": "The values the template fills in, such as item or count.",
+                  "keyLabel": "Argument",
+                  "keyPlaceholder": "item",
+                  "value": {
+                    "label": "Value"
+                  }
+                }
+              }
+            }
+          },
+          "table": {
+            "label": "Loot table",
+            "field": {
+              "fields": {
+                "pools": {
+                  "label": "pools",
+                  "itemLabel": "pool",
+                  "fields": {
+                    "rolls": {
+                      "label": "rolls"
+                    },
+                    "bonusRolls": {
+                      "label": "bonus_rolls",
+                      "help": "Extra rolls per point of luck."
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "reference": {
+            "label": "Id",
+            "field": {
+              "label": "Loot table id",
+              "placeholder": "minecraft:chests/simple_dungeon"
+            }
+          }
+        }
+      },
+      "lootEntries": {
+        "label": "entries"
+      },
+      "lootFunctions": {
+        "label": "functions",
+        "help": "Change the dropped items, in this order."
+      },
+      "lootSourceId": {
+        "label": "id",
+        "help": "The id of the loot source. Without a namespace it gets the project namespace.",
+        "placeholder": "example:extra_drops"
+      },
+      "weight": {
+        "label": "weight",
+        "help": "How often this entry is picked among the others of its pool (default 1)."
+      },
+      "quality": {
+        "label": "quality",
+        "help": "How much each point of luck adds to the weight."
+      },
+      "vanillaAttribute": {
+        "label": "attribute",
+        "placeholder": "e.g. minecraft:armor"
+      },
+      "fallback": {
+        "label": "fallback",
+        "help": "The value when the entity lacks the vanilla attribute. Default: 0."
+      },
+      "transform": {
+        "label": "transform",
+        "help": "An expression applied to the value read, with value as its variable.",
+        "placeholder": "e.g. value * 0.5"
+      }
+    },
+    "numbers": {
+      "constant": {
+        "label": "constant",
+        "help": "A fixed number.",
+        "fields": {
+          "value": {
+            "label": "value"
+          }
+        }
+      },
+      "fixed": {
+        "label": "fixed",
+        "help": "A fixed number.",
+        "fields": {
+          "value": {
+            "label": "value"
+          }
+        }
+      },
+      "uniform": {
+        "label": "uniform",
+        "help": "A random number between min and max.",
+        "fields": {
+          "min": {
+            "label": "min"
+          },
+          "max": {
+            "label": "max"
+          }
+        }
+      },
+      "expression": {
+        "label": "expression",
+        "help": "The result of an expression.",
+        "fields": {
+          "expression": {
+            "label": "expression",
+            "placeholder": "'<'arg:player.level> * 2"
+          }
+        }
+      },
+      "normal": {
+        "label": "normal",
+        "help": "A normally distributed number.",
+        "fields": {
+          "min": {
+            "label": "min"
+          },
+          "max": {
+            "label": "max"
+          },
+          "mean": {
+            "label": "mean"
+          },
+          "stdDev": {
+            "label": "std_dev"
+          }
+        }
+      },
+      "gaussian": {
+        "label": "gaussian",
+        "help": "A normally distributed number (same as normal).",
+        "fields": {
+          "min": {
+            "label": "min"
+          },
+          "max": {
+            "label": "max"
+          },
+          "mean": {
+            "label": "mean"
+          },
+          "stdDev": {
+            "label": "std_dev"
+          }
+        }
+      },
+      "logNormal": {
+        "label": "log_normal",
+        "help": "A log-normally distributed number.",
+        "fields": {
+          "min": {
+            "label": "min"
+          },
+          "max": {
+            "label": "max"
+          },
+          "mean": {
+            "label": "mean"
+          },
+          "stdDev": {
+            "label": "std_dev"
+          },
+          "location": {
+            "label": "location"
+          },
+          "scale": {
+            "label": "scale"
+          }
+        }
+      },
+      "skewNormal": {
+        "label": "skew_normal",
+        "help": "A skew-normally distributed number.",
+        "fields": {
+          "min": {
+            "label": "min"
+          },
+          "max": {
+            "label": "max"
+          },
+          "mean": {
+            "label": "mean"
+          },
+          "stdDev": {
+            "label": "std_dev"
+          },
+          "skewness": {
+            "label": "skewness"
+          }
+        }
+      },
+      "binomial": {
+        "label": "binomial",
+        "help": "The number of successes in extra tries.",
+        "fields": {
+          "extra": {
+            "label": "extra"
+          },
+          "probability": {
+            "label": "probability"
+          }
+        }
+      },
+      "weighted": {
+        "label": "weighted",
+        "help": "One of the numbers, chosen by weight.",
+        "fields": {
+          "weights": {
+            "label": "weights",
+            "help": "Number to weight.",
+            "keyLabel": "Number",
+            "keyPlaceholder": "1.0",
+            "value": {
+              "label": "Weight"
+            }
+          }
+        }
+      },
+      "triangle": {
+        "label": "triangle",
+        "help": "A triangularly distributed number.",
+        "fields": {
+          "min": {
+            "label": "min"
+          },
+          "max": {
+            "label": "max"
+          },
+          "mode": {
+            "label": "mode"
+          }
+        }
+      },
+      "exponential": {
+        "label": "exponential",
+        "help": "An exponentially distributed number.",
+        "fields": {
+          "min": {
+            "label": "min"
+          },
+          "max": {
+            "label": "max"
+          },
+          "mean": {
+            "label": "mean"
+          },
+          "lambda": {
+            "label": "lambda"
+          }
+        }
+      },
+      "beta": {
+        "label": "beta",
+        "help": "A beta-distributed number between min and max.",
+        "fields": {
+          "min": {
+            "label": "min"
+          },
+          "max": {
+            "label": "max"
+          },
+          "alpha": {
+            "label": "alpha"
+          },
+          "beta": {
+            "label": "beta"
+          }
+        }
+      }
+    },
+    "triggers": {
+      "rightClick": {
+        "label": "right_click",
+        "help": "Right click (also use_on, use, use_item_on)."
+      },
+      "leftClick": {
+        "label": "left_click",
+        "help": "Left click."
+      },
+      "attack": {
+        "label": "attack",
+        "help": "The item hits an entity (also hit)."
+      },
+      "consume": {
+        "label": "consume",
+        "help": "The item is eaten or drunk (also eat, drink)."
+      },
+      "pickUp": {
+        "label": "pick_up",
+        "help": "The item is picked up (also pick)."
+      },
+      "shoot": {
+        "label": "shoot",
+        "help": "The item shoots a projectile."
+      },
+      "itemBreak": {
+        "label": "item_break",
+        "help": "The item breaks when its durability runs out."
+      },
+      "blockBreak": {
+        "label": "block_break",
+        "help": "The block is broken, or the item breaks a block (also dig)."
+      },
+      "place": {
+        "label": "place",
+        "help": "The block or furniture is placed (also build)."
+      },
+      "step": {
+        "label": "step",
+        "help": "A player steps on the block."
+      },
+      "furnitureBreak": {
+        "label": "furniture_break",
+        "help": "The furniture is broken."
+      },
+      "fall": {
+        "label": "fall",
+        "help": "Registered, but nothing fires it yet."
+      }
+    },
+    "lootSources": {
+      "blockBreak": {
+        "label": "block_break",
+        "help": "A block is broken. Target: block ids."
+      },
+      "entityDeath": {
+        "label": "entity_death",
+        "help": "An entity dies. Target: entity ids."
+      },
+      "fishing": {
+        "label": "fishing",
+        "help": "A bobber catches something. No target."
+      },
+      "piglinBarter": {
+        "label": "piglin_barter",
+        "help": "A piglin finishes bartering. No target."
+      },
+      "container": {
+        "label": "container",
+        "help": "A loot container is filled. Target: loot table ids."
+      },
+      "archaeology": {
+        "label": "archaeology",
+        "help": "Suspicious sand or gravel is brushed. Target: loot table ids."
+      },
+      "entityDrop": {
+        "label": "entity_drop",
+        "help": "An entity drops an item (e.g. a chicken lays an egg). Target: entity ids."
+      },
+      "harvest": {
+        "label": "harvest",
+        "help": "A player harvests a block. Target: block ids."
+      },
+      "blockShear": {
+        "label": "block_shear",
+        "help": "A player shears a block. Target: block ids."
+      },
+      "entityShear": {
+        "label": "entity_shear",
+        "help": "A player shears an entity. Target: entity ids."
+      },
+      "vault": {
+        "label": "vault",
+        "help": "A vault gives its reward. Target: loot table ids."
+      },
+      "advancement": {
+        "label": "advancement",
+        "help": "A player completes an advancement; the loot goes into the inventory. Target: advancement ids."
+      }
+    },
+    "lootEntries": {
+      "item": {
+        "label": "item",
+        "help": "Drops an item.",
+        "fields": {
+          "item": {
+            "label": "item"
+          }
+        }
+      },
+      "furnitureItem": {
+        "label": "furniture_item",
+        "help": "Drops the item the furniture was placed with.",
+        "fields": {
+          "item": {
+            "label": "item",
+            "help": "The item it drops when the furniture has no item of its own."
+          }
+        }
+      },
+      "exp": {
+        "label": "exp",
+        "help": "Drops experience.",
+        "fields": {
+          "count": {
+            "label": "count"
+          }
+        }
+      },
+      "empty": {
+        "label": "empty",
+        "help": "Drops nothing. Use it to give the other entries a chance to miss."
+      },
+      "function": {
+        "label": "function",
+        "help": "Runs functions instead of dropping an item.",
+        "fields": {
+          "run": {
+            "label": "run"
+          }
+        }
+      },
+      "lootTable": {
+        "label": "loot_table",
+        "help": "Drops the loot of another loot table.",
+        "fields": {
+          "id": {
+            "label": "id"
+          }
+        }
+      },
+      "alternatives": {
+        "label": "alternatives",
+        "help": "Drops the first child whose conditions hold."
+      },
+      "ifElse": {
+        "label": "if_else",
+        "help": "Drops the first child whose conditions hold (a second name of alternatives)."
+      }
+    },
+    "lootFunctions": {
+      "setCount": {
+        "label": "set_count",
+        "help": "Sets the number of items.",
+        "fields": {
+          "count": {
+            "label": "count"
+          }
+        }
+      },
+      "applyBonus": {
+        "label": "apply_bonus",
+        "help": "Adds items for each level of an enchantment, such as Fortune.",
+        "fields": {
+          "enchantment": {
+            "label": "enchantment"
+          },
+          "formula": {
+            "label": "formula",
+            "help": "How the level turns into extra items.",
+            "fields": {
+              "type": {
+                "label": "type",
+                "help": "ore_drops: like vanilla ores. binomial_with_bonus_count: like vanilla crops."
+              },
+              "extra": {
+                "label": "extra"
+              },
+              "probability": {
+                "label": "probability"
+              }
+            }
+          }
+        }
+      },
+      "explosionDecay": {
+        "label": "explosion_decay",
+        "help": "Lets an explosion destroy some of the items."
+      },
+      "limitCount": {
+        "label": "limit_count",
+        "help": "Keeps the number of items between min and max.",
+        "fields": {
+          "min": {
+            "label": "min"
+          },
+          "max": {
+            "label": "max"
+          }
+        }
+      },
+      "dropExp": {
+        "label": "drop_exp",
+        "help": "Drops experience as well.",
+        "fields": {
+          "count": {
+            "label": "count"
+          }
+        }
+      },
+      "applyData": {
+        "label": "apply_data",
+        "help": "Changes the data of the items.",
+        "fields": {
+          "data": {
+            "label": "data",
+            "help": "Item data as YAML, like the data of an item."
+          }
+        }
+      }
+    },
+    "attributeBases": {
+      "constant": {
+        "label": "constant",
+        "help": "A fixed number.",
+        "fields": {
+          "value": {
+            "label": "value"
+          }
+        }
+      },
+      "vanilla": {
+        "label": "vanilla",
+        "help": "The entity's current value of a vanilla attribute.",
+        "fields": {
+          "updateInterval": {
+            "label": "update_interval"
+          }
+        }
+      },
+      "byEntityType": {
+        "label": "by_entity_type",
+        "help": "The default value of a vanilla attribute for the entity's type."
+      }
+    },
+    "attributeSyncValues": {
+      "expression": {
+        "label": "expression",
+        "help": "The result of an expression over value and base.",
+        "fields": {
+          "expression": {
+            "label": "expression",
+            "placeholder": "e.g. (value - base) * 0.5"
+          }
+        }
+      },
+      "delta": {
+        "label": "delta",
+        "help": "Only the change from the base: value - base."
+      },
+      "ratio": {
+        "label": "ratio",
+        "help": "The value relative to the base: value / base."
+      }
+    },
+    "damageFormulas": {
+      "expression": {
+        "label": "expression",
+        "help": "The result of an expression.",
+        "fields": {
+          "expression": {
+            "label": "expression",
+            "placeholder": "e.g. damage * 1.25"
+          }
+        }
+      },
+      "composition": {
+        "label": "composition",
+        "help": "The sum of several parts, each its own formula.",
+        "fields": {
+          "parts": {
+            "label": "parts",
+            "keyLabel": "Part",
+            "keyPlaceholder": "e.g. physical",
+            "value": {
+              "label": "Formula",
+              "placeholder": "e.g. damage + '<'attacker_attr:namespace:might>"
+            }
+          }
+        }
+      },
+      "js": {
+        "label": "js",
+        "help": "The result of a JavaScript function in the pack.",
+        "fields": {
+          "script": {
+            "label": "script",
+            "placeholder": "e.g. namespace:combat/damage"
+          },
+          "function": {
+            "label": "function",
+            "placeholder": "main"
+          },
+          "args": {
+            "label": "args"
+          }
+        }
+      }
+    },
+    "damageEffects": {
+      "lifeSteal": {
+        "label": "life_steal",
+        "help": "Heals the attacker by a share of the damage plus a fixed amount.",
+        "fields": {
+          "ratio": {
+            "label": "ratio"
+          },
+          "amount": {
+            "label": "amount"
+          },
+          "functions": {
+            "label": "functions"
+          }
+        }
+      },
+      "potionEffect": {
+        "label": "potion_effect",
+        "help": "Gives the victim or the attacker a potion effect.",
+        "fields": {
+          "target": {
+            "label": "target"
+          },
+          "potionEffect": {
+            "label": "potion_effect"
+          },
+          "duration": {
+            "label": "duration"
+          },
+          "amplifier": {
+            "label": "amplifier"
+          },
+          "ambient": {
+            "label": "ambient"
+          },
+          "particles": {
+            "label": "particles"
+          },
+          "showIcon": {
+            "label": "show_icon"
+          },
+          "functions": {
+            "label": "functions"
+          }
+        }
+      },
+      "function": {
+        "label": "function",
+        "help": "Only runs its functions (when its conditions hold).",
+        "fields": {
+          "functions": {
+            "label": "functions"
+          }
+        }
+      }
+    }
+  },
+  "lootSources": {
+    "label": "loot_sources"
+  },
+  "craftEngine": {
+    "fields": {
+      "templates": {
+        "label": "templates",
+        "itemLabel": "Template",
+        "fields": {
+          "id": {
+            "label": "id",
+            "help": "Uses name the template by this id. Without a namespace it gets the project's.",
+            "placeholder": "e.g. ore_settings"
+          },
+          "arguments": {
+            "label": "arguments",
+            "help": "The arguments the template takes. One without a default must be passed by every use.",
+            "itemLabel": "Argument",
+            "fields": {
+              "name": {
+                "label": "name",
+                "placeholder": "e.g. hardness"
+              },
+              "default": {
+                "label": "default",
+                "placeholder": "empty: the argument is required"
+              }
+            }
+          },
+          "body": {
+            "label": "body",
+            "help": "The config the template stands for, as YAML. $'{'name'}' puts in an argument, $'{'name:-value'}' an argument with a default.",
+            "placeholder": "hardness: $'{'hardness'}'"
+          }
+        }
+      },
+      "globalVariables": {
+        "label": "global_variables",
+        "keyLabel": "Name",
+        "keyPlaceholder": "e.g. rare_tag",
+        "value": {
+          "label": "Text",
+          "placeholder": "e.g. '<'gold>[Rare]"
+        }
+      },
+      "attributes": {
+        "label": "attributes",
+        "itemLabel": "Attribute",
+        "fields": {
+          "id": {
+            "label": "id",
+            "help": "Modifiers and formulas name the attribute by this id. Without a namespace it gets the project's.",
+            "placeholder": "e.g. might"
+          },
+          "base": {
+            "label": "base",
+            "help": "The starting value: a number, or read from a vanilla attribute of the entity."
+          },
+          "derived": {
+            "label": "derived",
+            "help": "Makes the attribute a derived one, computed from others, e.g. demo:might * 2. It then needs no base, operations or sync.",
+            "placeholder": "e.g. namespace:might * (1 + namespace:critical_chance)"
+          },
+          "operations": {
+            "label": "operations",
+            "help": "The operations applied to the modifiers, in this order. Unset: add_value, add_multiplied_base, add_multiplied_total."
+          },
+          "constraint": {
+            "label": "constraint",
+            "help": "Limits the final value. Set both min and max: CraftEngine takes a missing min as just above 0.",
+            "fields": {
+              "min": {
+                "label": "min"
+              },
+              "max": {
+                "label": "max"
+              }
+            }
+          },
+          "entities": {
+            "label": "entities",
+            "help": "The entity types (or #tags) that have the attribute. Unset: all.",
+            "placeholder": "e.g. minecraft:player"
+          },
+          "sync": {
+            "label": "sync",
+            "help": "Writes the value into vanilla attributes, e.g. max health.",
+            "itemLabel": "Sync target",
+            "fields": {
+              "target": {
+                "label": "target"
+              },
+              "operation": {
+                "label": "operation"
+              },
+              "value": {
+                "label": "value",
+                "help": "The amount written: an expression over value and base, delta (value - base) or ratio (value / base). Default: value."
+              }
+            }
+          }
+        }
+      },
+      "attributeOperations": {
+        "label": "attribute_operations",
+        "itemLabel": "Operation",
+        "fields": {
+          "id": {
+            "label": "id",
+            "placeholder": "e.g. add_capped"
+          },
+          "expression": {
+            "label": "expression",
+            "help": "Runs once for each modifier with this operation. base is the value at the start of the stage, current the value so far, amount the modifier's amount.",
+            "placeholder": "e.g. MIN(current + amount, base * 2)"
+          }
+        }
+      },
+      "equipmentSets": {
+        "label": "equipment_sets",
+        "itemLabel": "Equipment set",
+        "fields": {
+          "id": {
+            "label": "id",
+            "placeholder": "e.g. guardian"
+          },
+          "pieces": {
+            "label": "pieces",
+            "help": "The bonus tiers by the number of pieces worn. Tiers do not add up: the highest one reached applies, so give it all its bonuses.",
+            "keyLabel": "Pieces",
+            "keyPlaceholder": "e.g. 2",
+            "value": {
+              "fields": {
+                "attribute": {
+                  "label": "attribute",
+                  "itemLabel": "Modifier"
+                },
+                "potionEffects": {
+                  "label": "potion_effects",
+                  "itemLabel": "Potion effect",
+                  "fields": {
+                    "type": {
+                      "label": "type"
+                    },
+                    "amplifier": {
+                      "label": "amplifier"
+                    },
+                    "ambient": {
+                      "label": "ambient"
+                    },
+                    "particles": {
+                      "label": "particles"
+                    },
+                    "showIcon": {
+                      "label": "show_icon"
+                    },
+                    "updateInterval": {
+                      "label": "update_interval"
+                    }
+                  }
+                },
+                "events": {
+                  "label": "events",
+                  "help": "Functions that run once when the tier is reached and when it is left.",
+                  "fields": {
+                    "activate": {
+                      "label": "activate"
+                    },
+                    "deactivate": {
+                      "label": "deactivate"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "damageRules": {
+        "label": "damage_rules",
+        "itemLabel": "Damage rule",
+        "fields": {
+          "damageType": {
+            "label": "damage_type",
+            "help": "The vanilla damage type the rule changes, e.g. minecraft:player_attack."
+          },
+          "target": {
+            "label": "target",
+            "help": "The victims it applies to: entity ids or #tags. Unset: the default rule for every other victim.",
+            "placeholder": "e.g. minecraft:zombie"
+          },
+          "formula": {
+            "label": "formula",
+            "help": "The new damage: an expression such as damage + '<'attacker_attr:namespace:might>, or a composition or script."
+          },
+          "effects": {
+            "label": "effects",
+            "help": "Effects after the damage: life steal, potion effects or functions."
+          }
+        }
+      }
+    }
+  },
+  "attributes": {
+    "modifier": {
+      "type": {
+        "label": "type",
+        "help": "The custom attribute the modifier changes.",
+        "placeholder": "e.g. namespace:might"
+      },
+      "id": {
+        "label": "id",
+        "help": "A unique id for this modifier. CraftEngine finds, replaces and removes it by this id.",
+        "placeholder": "e.g. namespace:item/war_blade/might"
+      },
+      "amount": {
+        "label": "amount",
+        "help": "The value given to the operation: a number, a range like 5~10, an expression or a number provider."
+      },
+      "operation": {
+        "label": "operation",
+        "help": "How the amount is applied: a built-in operation or one of the project."
+      },
+      "scope": {
+        "label": "scope",
+        "help": "entity: adds to the holder's attribute. weapon: only counts in damage formulas for attacks with this item. Default: entity."
+      },
+      "slot": {
+        "label": "slot",
+        "help": "The slot or slot group in which the modifier applies (mainhand, armor, any …)."
+      },
+      "conditions": {
+        "label": "conditions",
+        "help": "The modifier only applies while all conditions hold."
+      },
+      "updateInterval": {
+        "label": "update_interval",
+        "help": "How often a changing amount or the conditions are checked, in ticks. Default: 20."
+      }
+    }
+  }
+}

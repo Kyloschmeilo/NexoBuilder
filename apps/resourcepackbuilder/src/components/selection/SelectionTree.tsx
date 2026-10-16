@@ -3,8 +3,8 @@ import { useState, type ReactNode } from 'react';
 import { useTranslations } from 'next-intl';
 import { Folder as FolderIcon, Frame, Music, Smile, type LucideIcon } from 'lucide-react';
 import { cn } from 'cn';
+import { glyphTagFor } from '@resourcepackbuilder/core/targets';
 import {
-  glyphTag,
   itemIdsInFolder,
   itemLabel,
   MEDIA_KIND_LIST,
@@ -106,7 +106,7 @@ export function SelectionTree({ project, selection, onChange, itemsOnly }: Selec
                   style={{ paddingLeft: FOLDER_PADDING_PX + ITEM_PADDING_PX + depth * TREE_INDENT_PX }}
                 >
                   <span className={treeRowSlots.label}>{itemLabel(item)}</span>
-                  <span className={treeRowSlots.count}>{item.nexoId}</span>
+                  <span className={treeRowSlots.count}>{item.itemId}</span>
                 </EntryRow>
               );
             })}
@@ -126,7 +126,7 @@ export function SelectionTree({ project, selection, onChange, itemsOnly }: Selec
           icon: <Icon className={treeRowSlots.icon} />,
           entries:
             kind === 'glyph'
-              ? project.glyphs.map((glyph) => ({ id: glyph.id, label: glyphTag(glyph) }))
+              ? project.glyphs.map((glyph) => ({ id: glyph.id, label: glyphTagFor(project, glyph) }))
               : mediaList(project, kind).map((entry) => ({ id: entry.id, label: mediaId(kind, entry) })),
         };
       });

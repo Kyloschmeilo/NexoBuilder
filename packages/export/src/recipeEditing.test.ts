@@ -14,12 +14,12 @@ import {
   recipeFrame,
   recipeIngredientFrame,
   recipeInputFrame,
+  recipeIssues,
   removeIngredient,
   withIngredientAmount,
   withIngredientId,
 } from '@resourcepackbuilder/core/project';
 import { issuesFor, type Issue, type IssueCode, type IssueContext } from '@resourcepackbuilder/utils';
-import { recipeIssues } from '@resourcepackbuilder/core/nexo';
 
 const issue = (code: IssueCode, context?: Issue['context']): Issue => ({ level: 'error', code, context });
 const itemFrame: IssueContext = { code: 'context.item', args: { item: 'Ruby' } };
@@ -53,7 +53,7 @@ describe('recipe issues', () => {
     const project = createProject('Test');
     const folder = createFolder('F', null);
     insertFolder(project, folder);
-    const item = createItem({ displayName: 'Ruby', nexoId: 'ruby', folderId: folder.id, model: null });
+    const item = createItem({ displayName: 'Ruby', itemId: 'ruby', folderId: folder.id, model: null });
     item.recipes.push(createRecipe('shaped', 'r_1'));
     insertItem(project, item);
     const plan = planExport(project);

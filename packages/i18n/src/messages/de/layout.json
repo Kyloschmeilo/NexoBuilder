@@ -71,6 +71,22 @@
       "paintings": {
         "label": "Paintings",
         "hint": "Paintings: eigene Gemälde zum Aufhängen"
+      },
+      "lootSources": {
+        "label": "Loot-Quellen",
+        "hint": "Loot-Quellen: zusätzlicher Loot für Vanilla-Blöcke, Mobs, Truhen und Angeln"
+      },
+      "templates": {
+        "label": "Vorlagen",
+        "hint": "Vorlagen: wiederverwendbare Konfiguration mit Argumenten"
+      },
+      "globalVariables": {
+        "label": "Globale Variablen",
+        "hint": "Globale Variablen: Texte für '<'global:name>"
+      },
+      "attributes": {
+        "label": "Attribute",
+        "hint": "Attribute: eigene Werte, Ausrüstungssets und Schadensregeln"
       }
     },
     "testServer": {
@@ -91,7 +107,8 @@
       "label": "Eigenschaften einfügen …",
       "fromItem": "von „{name}“",
       "fromItemIntoFolder": "von „{name}“ in alle Items des Ordners",
-      "needsCopy": "Zuerst bei einem Item kopieren"
+      "needsCopy": "Zuerst bei einem Item kopieren",
+      "unsupported": "Vorerst nur in Nexo-Projekten"
     }
   },
   "folder": {
@@ -118,7 +135,7 @@
     "dropNeedsFolder": "Lege zuerst einen Ordner an – darin werden die Items erstellt."
   },
   "folderView": {
-    "targetHint": "Ziel im Nexo-Ordner",
+    "targetHint": "Ziel im Plugin-Ordner",
     "itemCount": "{count, plural, one {# Item} other {# Items}}",
     "newItem": "Neues Item",
     "newSubfolder": "Unterordner anlegen",
@@ -164,7 +181,13 @@
     "defaultName": "Mein Pack",
     "namespace": "Namespace (Resourcepack)",
     "version": "Minecraft-Version (Server)",
-    "create": "Projekt erstellen"
+    "create": "Projekt erstellen",
+    "target": "Server-Plugin",
+    "targetHint": "Das lässt sich später nicht ändern.",
+    "targets": {
+      "nexo": { "name": "Nexo", "description": "Items, Blöcke und Möbel für das Nexo-Plugin." },
+      "craftengine": { "name": "CraftEngine", "description": "Items, Blöcke und Möbel für das CraftEngine-Plugin." }
+    }
   },
   "projectList": {
     "storageUnavailable": "Projekte können in diesem Browser nicht gespeichert werden. Bitte Projektdateien verwenden.",

@@ -13,14 +13,13 @@ import { createTextureModel } from '@resourcepackbuilder/minecraft';
 import { makePngDataUrl } from '@resourcepackbuilder/test-utils/png';
 import { planExport } from './plan';
 import { countSelected, planMultiExport, selectFromProject, selectNothing } from './selection';
-import { INSTALL_GUIDE_FILE } from './installGuide';
-import { buildMultiExportZip, listMultiExportPaths } from './zip';
+import { buildMultiExportZip, INSTALL_GUIDE_FILE, listMultiExportPaths } from './zip';
 import { singleExport } from '../test-utils/export';
 
 const PNG16 = makePngDataUrl(16, 16);
 
-function project(name: string, ns: string, ids: { weapons: string[]; furniture: string[] }): Project {
-  const p = createProject(name, ns);
+function project(name: string, ns: string, ids: { weapons: string[]; furniture: string[] }, target: Project['target'] = 'nexo'): Project {
+  const p = createProject(name, ns, undefined, target);
   const weapons = createFolder('Waffen', null);
   const furniture = createFolder('Möbel', null);
   const chairs = createFolder('Stühle', furniture.id);
@@ -29,21 +28,21 @@ function project(name: string, ns: string, ids: { weapons: string[]; furniture: 
   insertFolder(p, chairs);
   for (const id of ids.weapons) {
     const model = createTextureModel('handheld', { layer0: `${id}.png` }, [{ name: `${id}.png`, dataUrl: PNG16 }]);
-    insertItem(p, createItem({ displayName: id, nexoId: id, folderId: weapons.id, model }));
+    insertItem(p, createItem({ displayName: id, itemId: id, folderId: weapons.id, model }));
   }
-  for (const id of ids.furniture) insertItem(p, createItem({ displayName: id, nexoId: id, folderId: chairs.id, model: null }));
+  for (const id of ids.furniture) insertItem(p, createItem({ displayName: id, itemId: id, folderId: chairs.id, model: null }));
   p.glyphs = [createGlyph('g1', 'herz', { name: 'herz.png', dataUrl: PNG16, width: 16, height: 16 })];
   return p;
 }
 
-const itemId = (p: Project, nexoId: string) => Object.values(p.items).find((i) => i.nexoId === nexoId)!.id;
+const itemId = (p: Project, itemId: string) => Object.values(p.items).find((i) => i.itemId === itemId)!.id;
 
 describe('Export selection within a project', () => {
   it('exports only the selected items and omits empty folders', () => {
     const p = project('Mein Pack', 'meinpack', { weapons: ['ruby_sword', 'axe'], furniture: ['chair'] });
     const selection = { excludedItemIds: [itemId(p, 'axe'), itemId(p, 'chair')], excludedGlyphIds: ['g1'] };
     const subset = selectFromProject(p, selection);
-    expect(Object.values(subset.items).map((i) => i.nexoId)).toEqual(['ruby_sword']);
+    expect(Object.values(subset.items).map((i) => i.itemId)).toEqual(['ruby_sword']);
     expect(Object.values(subset.folders).map((f) => f.name)).toEqual(['Waffen']);
     expect(subset.glyphs).toEqual([]);
     expect(countSelected(p, selection)).toEqual({ items: 1, glyphs: 0, sounds: 0, paintings: 0 });
@@ -65,7 +64,7 @@ describe('Export selection within a project', () => {
     const p = project('Mein Pack', 'meinpack', { weapons: ['ruby_sword'], furniture: ['chair'] });
     const subset = selectFromProject(p, { excludedItemIds: [itemId(p, 'ruby_sword')], excludedGlyphIds: [] });
     const plan = planExport(subset);
-    expect([...plan.itemFiles.keys()]).toEqual(['items/moebel/stuehle/stuehle.yml']);
+    expect([...plan.pluginFiles.keys()].filter((path) => path.startsWith('items/'))).toEqual(['items/moebel/stuehle/stuehle.yml']);
   });
 
   it('returns the unchanged project without a selection', () => {
@@ -126,6 +125,24 @@ describe('Export of multiple projects', () => {
     expect(
       warnings.some((i) => i.code === 'selection.assetFileClash' && i.args?.path === 'assets/shared/models/item/waffen/ruby_sword.json'),
     ).toBe(true);
+  });
+
+  it('compares item IDs by their YAML key and only within the same target', () => {
+    const clashes = (a: Project, b: Project) =>
+      planMultiExport([{ project: a }, { project: b }]).issues.filter((i) => i.code === 'selection.itemIdClash');
+    // CraftEngine keys carry the namespace, so the same ID in two namespaces is fine
+    const ceA = project('Alpha', 'alpha', { weapons: ['ruby_sword'], furniture: [] }, 'craftengine');
+    const ceB = project('Beta', 'beta', { weapons: ['ruby_sword'], furniture: [] }, 'craftengine');
+    expect(clashes(ceA, ceB)).toEqual([]);
+    // Nexo and CraftEngine never share a registry
+    const nexo = project('Gamma', 'gamma', { weapons: ['ruby_sword'], furniture: [] });
+    expect(clashes(nexo, ceA)).toEqual([]);
+    // The same namespaced key within CraftEngine still clashes
+    const ceC = project('Delta', 'alpha', { weapons: ['ruby_sword'], furniture: [] }, 'craftengine');
+    expect(clashes(ceA, ceC).map((i) => i.args?.id)).toEqual(['alpha:ruby_sword']);
+    // Two Nexo projects with the same ID still clash
+    const nexo2 = project('Epsilon', 'epsilon', { weapons: ['ruby_sword'], furniture: [] });
+    expect(clashes(nexo, nexo2).map((i) => i.args?.id)).toEqual(['ruby_sword']);
   });
 
   it('tags messages with the project', () => {

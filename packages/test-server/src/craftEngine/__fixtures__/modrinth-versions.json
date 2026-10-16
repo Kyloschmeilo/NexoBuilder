@@ -1,0 +1,253 @@
+[
+  {
+    "game_versions": ["26.1", "26.1.1", "26.1.2", "26.2", "26.3"],
+    "loaders": ["bukkit", "spigot"],
+    "environment": "unknown",
+    "id": "kdXqPU2z",
+    "project_id": "tRX6FMfQ",
+    "author_id": "ijQalLVu",
+    "featured": false,
+    "name": "26.9.2",
+    "version_number": "26.9.2",
+    "changelog": "",
+    "changelog_url": null,
+    "date_published": "2026-09-28T02:24:11.981888Z",
+    "downloads": 428,
+    "version_type": "beta",
+    "status": "listed",
+    "requested_status": null,
+    "files": [
+      {
+        "id": "ukDU6lzo",
+        "hashes": {
+          "sha512": "8e847b1775dc2d4422a4579395196b9e37d5a0b0c1f055103c68a4d5c39d646cd69ffa345eb5314efa7d1316c97780cd58151d47ebf3972fd11ed90d02ef9956",
+          "sha1": "2f9662975056a2d9443a1f90680fe309fcfd9355"
+        },
+        "url": "https://cdn.modrinth.com/data/tRX6FMfQ/versions/kdXqPU2z/craft-engine-bukkit-plugin-26.9.2.jar",
+        "filename": "craft-engine-bukkit-plugin-26.9.2.jar",
+        "primary": true,
+        "size": 11162362,
+        "file_type": null
+      }
+    ],
+    "dependencies": []
+  },
+  {
+    "game_versions": [
+      "1.20",
+      "1.20.1",
+      "1.20.2",
+      "1.20.3",
+      "1.20.4",
+      "1.20.5",
+      "1.20.6",
+      "1.21",
+      "1.21.1",
+      "1.21.2",
+      "1.21.3",
+      "1.21.4",
+      "1.21.5",
+      "1.21.6",
+      "1.21.7",
+      "1.21.8",
+      "1.21.9",
+      "1.21.10",
+      "1.21.11",
+      "26.1",
+      "26.1.1",
+      "26.1.2",
+      "26.2",
+      "26.3"
+    ],
+    "loaders": ["folia", "paper", "purpur"],
+    "environment": "unknown",
+    "id": "mwFiNxVO",
+    "project_id": "tRX6FMfQ",
+    "author_id": "ijQalLVu",
+    "featured": false,
+    "name": "26.9.2",
+    "version_number": "26.9.2",
+    "changelog": "",
+    "changelog_url": null,
+    "date_published": "2026-09-28T02:22:50.513940Z",
+    "downloads": 2164,
+    "version_type": "beta",
+    "status": "listed",
+    "requested_status": null,
+    "files": [
+      {
+        "id": "hsif1yl0",
+        "hashes": {
+          "sha512": "55bb3737df295490e0a446ee3daac6b72052e0e47aa7d8cda14455c03b6df08f6fea3be66e02d04007a3042ec153c8b7e195e66a38f75f64f08698340542d04c",
+          "sha1": "7376036e9893d8e96297fe5405739e35467f39bc"
+        },
+        "url": "https://cdn.modrinth.com/data/tRX6FMfQ/versions/mwFiNxVO/craft-engine-paper-plugin-26.9.2.jar",
+        "filename": "craft-engine-paper-plugin-26.9.2.jar",
+        "primary": true,
+        "size": 11169366,
+        "file_type": null
+      }
+    ],
+    "dependencies": []
+  },
+  {
+    "game_versions": [
+      "1.20",
+      "1.20.1",
+      "1.20.2",
+      "1.20.3",
+      "1.20.4",
+      "1.20.5",
+      "1.20.6",
+      "1.21",
+      "1.21.1",
+      "1.21.2",
+      "1.21.3",
+      "1.21.4",
+      "1.21.5",
+      "1.21.6",
+      "1.21.7",
+      "1.21.8",
+      "1.21.9",
+      "1.21.10",
+      "1.21.11",
+      "26.1",
+      "26.1.1",
+      "26.1.2",
+      "26.2"
+    ],
+    "loaders": ["folia", "paper", "purpur"],
+    "environment": "unknown",
+    "id": "EDh6mvv2",
+    "project_id": "tRX6FMfQ",
+    "author_id": "ijQalLVu",
+    "featured": false,
+    "name": "26.9.1",
+    "version_number": "26.9.1",
+    "changelog": "",
+    "changelog_url": null,
+    "date_published": "2026-09-18T02:33:51.439653Z",
+    "downloads": 1333,
+    "version_type": "beta",
+    "status": "listed",
+    "requested_status": null,
+    "files": [
+      {
+        "id": "4h3PZ3Yr",
+        "hashes": {
+          "sha1": "81d834a916b071f6726b6a93fca5e5891373c46a",
+          "sha512": "602aa951b4dbd85c31f654bcfb22a6f2d2fc7756ee05459ce3119616b6aa010a9db130a9a6e0b848ff70581ad2ddb753d90ad021888b56fe4b191a1c6c5da810"
+        },
+        "url": "https://cdn.modrinth.com/data/tRX6FMfQ/versions/EDh6mvv2/craft-engine-paper-plugin-26.9.1.jar",
+        "filename": "craft-engine-paper-plugin-26.9.1.jar",
+        "primary": true,
+        "size": 10981948,
+        "file_type": null
+      }
+    ],
+    "dependencies": []
+  },
+  {
+    "game_versions": [
+      "1.20",
+      "1.20.1",
+      "1.20.2",
+      "1.20.3",
+      "1.20.4",
+      "1.20.5",
+      "1.20.6",
+      "1.21",
+      "1.21.1",
+      "1.21.2",
+      "1.21.3",
+      "1.21.4",
+      "1.21.5",
+      "1.21.6",
+      "1.21.7",
+      "1.21.8",
+      "1.21.9",
+      "1.21.10",
+      "1.21.11"
+    ],
+    "loaders": ["folia", "paper", "purpur"],
+    "environment": "unknown",
+    "id": "XTdODf70",
+    "project_id": "tRX6FMfQ",
+    "author_id": "ijQalLVu",
+    "featured": false,
+    "name": "0.0.67",
+    "version_number": "0.0.67",
+    "changelog": "",
+    "changelog_url": null,
+    "date_published": "2026-01-19T15:33:05.485417Z",
+    "downloads": 3955,
+    "version_type": "alpha",
+    "status": "listed",
+    "requested_status": null,
+    "files": [
+      {
+        "id": "HVBSZKKY",
+        "hashes": {
+          "sha1": "592129bfa622a66a6da6b936ebcbd3a5c5c57ad3",
+          "sha512": "6a50afae8b9d73c22318b3b4da6b7badd84386d865d1efcb308867dc4ff2e33a29a0dbad6cbc0f0ee7a6d01b09f329fddcda38e7632d0976a15733b560a4c676"
+        },
+        "url": "https://cdn.modrinth.com/data/tRX6FMfQ/versions/XTdODf70/craft-engine-paper-plugin-0.0.67.jar",
+        "filename": "craft-engine-paper-plugin-0.0.67.jar",
+        "primary": true,
+        "size": 6917968,
+        "file_type": null
+      }
+    ],
+    "dependencies": []
+  },
+  {
+    "game_versions": [
+      "1.20",
+      "1.20.1",
+      "1.20.2",
+      "1.20.3",
+      "1.20.4",
+      "1.20.5",
+      "1.20.6",
+      "1.21",
+      "1.21.1",
+      "1.21.2",
+      "1.21.3",
+      "1.21.4",
+      "1.21.5",
+      "1.21.6",
+      "1.21.7",
+      "1.21.8"
+    ],
+    "loaders": ["folia", "paper", "purpur"],
+    "environment": "unknown",
+    "id": "EjlJJxrx",
+    "project_id": "tRX6FMfQ",
+    "author_id": "ijQalLVu",
+    "featured": false,
+    "name": "0.0.62",
+    "version_number": "0.0.62",
+    "changelog": "",
+    "changelog_url": null,
+    "date_published": "2025-08-21T13:33:02.943995Z",
+    "downloads": 275,
+    "version_type": "alpha",
+    "status": "listed",
+    "requested_status": null,
+    "files": [
+      {
+        "id": "m1TphrNN",
+        "hashes": {
+          "sha512": "21069d39474601b0e9498db15a4236d281b46f246a0d7279649c88b5ca558afc9e65d9032c74f729dbe5fa198e1a1ac37ce628efd51b288fb0f1b575ab32d162",
+          "sha1": "fdd1870f67db62f5744b72a64a319f1c3e48052a"
+        },
+        "url": "https://cdn.modrinth.com/data/tRX6FMfQ/versions/EjlJJxrx/craft-engine-community-edition-0.0.62.jar",
+        "filename": "craft-engine-community-edition-0.0.62.jar",
+        "primary": true,
+        "size": 4454068,
+        "file_type": null
+      }
+    ],
+    "dependencies": []
+  }
+]

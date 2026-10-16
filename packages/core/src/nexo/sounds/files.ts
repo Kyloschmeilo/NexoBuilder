@@ -1,14 +1,8 @@
-/** Export of sounds: OGG file paths and the sounds.yml entry. */
+/** Export of sounds: the sounds.yml entry (OGG files: see soundFilePath). */
 import { formatResourceLocation } from '@resourcepackbuilder/minecraft';
 import type { Project } from '../../project/types';
 import { mediaKey } from '../../project/media/entry';
-import type { Sound } from '../../project/media/sound';
-
-/** Path of the OGG file relative to assets/<ns>/sounds (without extension) */
-export function soundFilePath(sound: Sound, index: number): string {
-  const base = sound.soundId.split('.').filter(Boolean).join('/') || 'sound';
-  return sound.files.length > 1 ? `${base}_${index + 1}` : base;
-}
+import { soundFilePath, type Sound } from '../../project/media/sound';
 
 /** Entry for sounds.yml */
 export function soundToYaml(project: Project, sound: Sound): Record<string, unknown> {

@@ -8,7 +8,7 @@
   "sounds": {
     "title": "Sounds",
     "count": "{count, plural, one {# sound} other {# sounds}}",
-    "hint": "Your own sounds and music. You can enter the ID (e.g. <code>namespace:block.ruby.place</code>) anywhere a sound is expected – for block sounds, doors or <code>/playsound</code>, for example. “Jukebox Playable” turns the sound into a music disc. Note: the exported <code>sounds.yml</code> replaces an existing file on the server.",
+    "hint": "Your own sounds and music. You can enter the ID (e.g. <code>namespace:block.ruby.place</code>) anywhere a sound is expected – for block sounds, doors or <code>/playsound</code>, for example. “Jukebox Playable” turns the sound into a music disc.{target, select, nexo { Note: the exported <code>sounds.yml</code> replaces an existing file on the server.} other { Players hear new music discs after they rejoin. If an item plays a new music disc, restart the server once.}}",
     "dropTitle": "Drop OGG files here",
     "dropSubtitle": "Each file becomes its own sound. Add more variants (played at random) inside the sound.",
     "notOgg": "“{name}” is not an OGG file. Minecraft only plays .ogg (convert it with Audacity, for example).",
@@ -37,7 +37,7 @@
   "paintings": {
     "title": "Paintings",
     "count": "{count, plural, one {# painting} other {# paintings}}",
-    "hint": "Your own pictures to hang up (from Minecraft 1.21.5 Nexo generates the required datapack). New paintings are only registered after a server restart – in the test server, use “Restart”. The exported <code>paintings.yml</code> replaces an existing file on the server.",
+    "hint": "Your own pictures to hang up.{target, select, nexo { From Minecraft 1.21.5 on, Nexo generates the required datapack. New paintings are only registered after a server restart – in the test server, use “Restart”. The exported <code>paintings.yml</code> replaces an existing file on the server.} other { Players see new paintings after they rejoin.}}",
     "dropTitle": "Drop images (PNG) here",
     "dropSubtitle": "16 pixels per block, e.g. 32×16 for a painting of 2×1 blocks. For animations, stack the frames vertically.",
     "notPng": "“{name}” is not a PNG.",
@@ -116,9 +116,9 @@
     "desktopOnly": "The local test server only works in the Windows app (ResourcepackBuilder.exe), because it starts a Minecraft server on your PC.",
     "missingEula": "Please accept the Minecraft EULA first.",
     "missingVersion": "Please choose a Minecraft version.",
-    "noNexo": "Without the Nexo plugin the server will start, but your items won't be loaded. Choose your Nexo JAR below.",
+    "noPlugin": "Without the {plugin} plugin the server will start, but your items won't be loaded. Choose your {plugin} JAR below.",
     "connect": "Connect: Minecraft {version} → Multiplayer → Direct Connection → <mono>{address}</mono>",
-    "connectHint": "The resource pack is sent automatically when you join. After every change Nexo sends the new pack.",
+    "connectHint": "The resource pack is sent automatically when you join. After every change {plugin} sends the new pack.",
     "folder": "Folder",
     "openFolder": "Open the server folder in Explorer",
     "pack": {
@@ -126,19 +126,19 @@
       "building": "Building resource pack…",
       "ready": "Resource pack ready",
       "failed": "Resource pack failed",
-      "reload": "Reload Nexo",
-      "reloadHint": "Reload Nexo and rebuild the resource pack",
+      "reload": "Reload {plugin}",
+      "reloadHint": "Reload {plugin} and rebuild the resource pack",
       "resend": "Resend pack",
       "resendHint": "Send the resource pack to {player} again",
       "enterName": "Please enter your Minecraft name below"
     },
     "sync": {
       "title": "Transfer project",
-      "description": "Items, recipes, glyphs, sounds, paintings and resource pack to plugins/Nexo – followed by “nexo reload all”",
+      "description": "Items, recipes, glyphs, sounds, paintings and resource pack to {folder} – followed by “{command}”",
       "now": "Transfer now",
       "auto": "Transfer automatically when I change something",
       "autoHint": "New items, changed models and properties are in the game after a few seconds – the resource pack is sent again.",
-      "last": "Last transferred {time}: {written, plural, one {# file} other {# files}} written, {deleted} removed{reloaded, select, true {, Nexo reloaded} other {}}.",
+      "last": "Last transferred {time}: {written, plural, one {# file} other {# files}} written, {deleted} removed{reloaded, select, true {, {plugin} reloaded} other {}}.",
       "onStart": "Transferred on start.",
       "upToDate": "Everything up to date (checked {time}).",
       "skipped": "{count, plural, one {# file} other {# files}} with an invalid name skipped – see console.",
@@ -160,11 +160,15 @@
       "title": "Setup",
       "lockedDescription": "Changes apply on the next start.",
       "description": "Downloaded automatically on the first start (Paper, Java if needed).",
-      "nexoPlugin": "Nexo plugin",
+      "plugin": "{plugin} plugin",
       "notSelected": "not selected",
       "chooseJar": "Choose JAR…",
-      "jarHelp": "Your Nexo JAR (e.g. from Polymart). It is only copied into the local test server.",
-      "jarSelected": "Nexo {version} will be used in the test server.",
+      "jarHelp": "Your {plugin} JAR{target, select, nexo { (e.g. from Polymart)} other {}}. It is only copied into the local test server.",
+      "jarSelected": "{plugin} {version} will be used in the test server.",
+      "downloadJar": "Download {plugin}",
+      "chooseJarManually": "Choose JAR manually…",
+      "downloadNeedsVersion": "Choose a Minecraft version first.",
+      "jarDownloadHelp": "Downloads {plugin} from Modrinth for the chosen Minecraft version. You can also choose a JAR yourself, for example a premium build. It is only copied into the local test server.",
       "version": "Minecraft version (Paper)",
       "unavailable": "not available",
       "loadingVersions": "Loading versions…",
@@ -183,6 +187,48 @@
       "portHelp": "Default 25565. Pack download via port {packPort}.",
       "eula": "I accept the <link>Minecraft EULA</link>",
       "eulaHint": "A Minecraft server may not be started without accepting it."
+    }
+  },
+  "lootSources": {
+    "title": "Loot sources",
+    "count": "{count, plural, one {# loot source} other {# loot sources}}",
+    "hint": "A loot source adds a loot table to a vanilla loot event: breaking a block, killing a mob, opening a chest, fishing and more. With overwrite it replaces the vanilla items or experience.",
+    "docs": "Loot sources in the CraftEngine wiki"
+  },
+  "templates": {
+    "title": "Templates",
+    "count": "{count, plural, one {# template} other {# templates}}",
+    "hint": "A template is a piece of config with placeholders for arguments. Blocks use one in their settings, items for the whole item, loot tables and events too. CraftEngine's default templates (default:…) are always there.",
+    "docs": "Templates in the CraftEngine wiki",
+    "defaults": "CraftEngine's default templates",
+    "defaultsHint": "Every block, item and furniture can use these. Required arguments are marked with *."
+  },
+  "globalVariables": {
+    "title": "Global variables",
+    "count": "{count, plural, one {# variable} other {# variables}}",
+    "hint": "A global variable is a MiniMessage text that CraftEngine puts in wherever a text says '<'global:name>: in item names, lore and more. The previews in the item editor show it too.",
+    "docs": "Global variables in the CraftEngine wiki"
+  },
+  "attributes": {
+    "title": "Attributes",
+    "count": "{count, plural, one {# entry} other {# entries}}",
+    "hint": "CraftEngine's attribute system is experimental and only runs with attribute.enable: true in its config.yml, which it reads on startup. The test server switches it on for a project that uses attributes; restart it after adding the first one.",
+    "docs": "Attributes in the CraftEngine wiki",
+    "definitions": {
+      "title": "Attributes",
+      "hint": "Custom values such as strength or critical chance, each with a base value and limits. Items change them in their settings (Custom Attribute Modifiers)."
+    },
+    "operations": {
+      "title": "Operations",
+      "hint": "Your own ways to apply a modifier, besides add_value, add_multiplied_base and add_multiplied_total."
+    },
+    "equipmentSets": {
+      "title": "Equipment sets",
+      "hint": "Bonuses for wearing several pieces of a set. Items become pieces in their settings (Equipment Set Piece)."
+    },
+    "damageRules": {
+      "title": "Damage rules",
+      "hint": "Formulas that compute the damage of a damage type from the attributes of attacker and victim."
     }
   }
 }

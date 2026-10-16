@@ -1,6 +1,7 @@
 /** Creating, changing, moving and deleting items. */
-import { produce } from 'immer';
+import { current, isDraft, produce } from 'immer';
 import {
+  type ConfigObject,
   type ConfigValue,
   createRecipe,
   furnitureStatePath,
@@ -20,8 +21,16 @@ import {
   withTextureAnimation,
 } from '@resourcepackbuilder/minecraft';
 import * as operations from '@resourcepackbuilder/core/project';
-import { assetToken, texturePlaceholder, uid } from '@resourcepackbuilder/utils';
-import { PROPERTY_BY_ID, type PropertyDef, setPropertyValue } from '@resourcepackbuilder/core/nexo';
+import { assetToken, isPlainObject, texturePlaceholder, uid } from '@resourcepackbuilder/utils';
+import { propertyById, type PropertyDef, setPropertyValue } from '@resourcepackbuilder/core/form';
+import { formFor } from '@resourcepackbuilder/core/targets';
+import {
+  applyBlockBehavior,
+  CE_DEFAULT_AUTO_STATE,
+  craftEngineItemKey,
+  newCraftEngineBlock,
+  newCraftEngineFurniture,
+} from '@resourcepackbuilder/core/craftEngine';
 import { getProject, mutate } from '../store/project';
 import { select, setExpanded } from '../store/ui';
 
@@ -63,14 +72,20 @@ export function setItemProperty(itemId: string, def: PropertyDef, value: ConfigV
   updateItem(itemId, (item) => setPropertyValue(item, def, value), historyKey);
 }
 
+/** A property of the open project's form. */
+function projectProperty(propertyId: string): PropertyDef | undefined {
+  const project = getProject();
+  return project ? propertyById(formFor(project.target), propertyId) : undefined;
+}
+
 export function addProperty(itemId: string, propertyId: string): void {
-  const def = PROPERTY_BY_ID.get(propertyId);
+  const def = projectProperty(propertyId);
   if (def) updateItem(itemId, (item) => setPropertyValue(item, def, def.defaultValue()));
 }
 
 /** Removes a property and the extra textures only it used. */
 export function removeProperty(itemId: string, propertyId: string): void {
-  const def = PROPERTY_BY_ID.get(propertyId);
+  const def = projectProperty(propertyId);
   if (!def) return;
   updateItem(itemId, (item) => {
     setPropertyValue(item, def, undefined);
@@ -169,6 +184,66 @@ export function removeVariant(itemId: string, slot: VariantSlot): void {
 /** Adds an empty state to the item's furniture mechanic (Mechanics.furniture.states.<name>). */
 export function addFurnitureState(itemId: string, name: string): void {
   updateItem(itemId, (item) => setPath(item.config, furnitureStatePath(name), {}));
+}
+
+// --- CraftEngine blocks ------------------------------------------------------------------------------
+
+/** Turns the item into a CraftEngine block (a new block definition) or back into a plain item. */
+export function setCraftEngineBlock(itemId: string, isBlock: boolean): void {
+  updateItem(itemId, (item) => {
+    if (isBlock) item.config.block = newCraftEngineBlock();
+    else delete item.config.block;
+  });
+}
+
+/**
+ * Replaces the item's block with what `next` makes of it (the block editors build it with core's block helpers);
+ * equal `historyKey`s in quick succession form one undo step.
+ */
+export function updateCraftEngineBlock(itemId: string, next: (block: ConfigObject) => ConfigObject, historyKey?: string): void {
+  updateItem(
+    itemId,
+    (item) => {
+      const block = item.config.block;
+      if (!isPlainObject(block)) return;
+      item.config.block = next(isDraft(block) ? current(block) : block);
+    },
+    historyKey,
+  );
+}
+
+/** Makes the CraftEngine item furniture (a new definition) or removes its furniture. */
+export function setCraftEngineFurniture(itemId: string, isFurniture: boolean): void {
+  updateItem(itemId, (item) => {
+    if (isFurniture) item.config.furniture = newCraftEngineFurniture();
+    else delete item.config.furniture;
+  });
+}
+
+/**
+ * Replaces the item's furniture with what `next` makes of it; equal `historyKey`s in quick succession form one undo
+ * step.
+ */
+export function updateCraftEngineFurniture(itemId: string, next: (furniture: ConfigObject) => ConfigObject, historyKey?: string): void {
+  updateItem(
+    itemId,
+    (item) => {
+      const furniture = item.config.furniture;
+      if (!isPlainObject(furniture)) return;
+      item.config.furniture = next(isDraft(furniture) ? current(furniture) : furniture);
+    },
+    historyKey,
+  );
+}
+
+/** Gives the item's block the behavior of a form with the states it needs, or none (`null`). */
+export function setBlockBehavior(itemId: string, type: string | null): void {
+  const project = getProject();
+  const item = project?.items[itemId];
+  if (!project || !item) return;
+  updateCraftEngineBlock(itemId, (block) =>
+    applyBlockBehavior(block, type, craftEngineItemKey(project, item), { auto_state: CE_DEFAULT_AUTO_STATE }),
+  );
 }
 
 // --- Recipes -----------------------------------------------------------------------------------------

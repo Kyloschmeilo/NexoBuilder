@@ -5,7 +5,7 @@
 import { current, isDraft } from 'immer';
 import { deepClone, uid } from '@resourcepackbuilder/utils';
 import { createFolder, createItem, insertFolder, insertItem, type NewItemInput } from './factory';
-import { uniqueNexoId } from './ids';
+import { uniqueItemId } from './ids';
 import { getDescendantFolderIds } from './tree';
 import type { Item, Project } from './types';
 
@@ -81,7 +81,7 @@ export function firstRootFolder(project: Project, name: string): string {
 /** Adds a new item with a unique item ID; `configure` runs before it is inserted. */
 export function insertNewItem(project: Project, input: NewItemInput, configure?: (item: Item) => void): Item {
   const item = createItem(input);
-  item.nexoId = uniqueNexoId(project, item.nexoId);
+  item.itemId = uniqueItemId(project, item.itemId);
   configure?.(item);
   insertItem(project, item);
   return item;
@@ -125,7 +125,7 @@ export function duplicateItem(project: Project, itemId: string, displayName: str
     createdAt: now,
     updatedAt: now,
   };
-  copy.nexoId = uniqueNexoId(project, `${original.nexoId}_copy`);
+  copy.itemId = uniqueItemId(project, `${original.itemId}_copy`);
   project.items[copy.id] = copy;
   const folder = project.folders[copy.folderId];
   if (folder) folder.itemIds.splice(folder.itemIds.indexOf(itemId) + 1, 0, copy.id);

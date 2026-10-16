@@ -1,4 +1,5 @@
 import { createContext, useContext } from 'react';
+import type { Option } from '@resourcepackbuilder/core/form';
 import type { ModelTexture } from '@resourcepackbuilder/minecraft';
 
 /** What the field editors need from the item they edit. */
@@ -9,6 +10,10 @@ export interface FieldContextValue {
   uploadAsset: (file: File) => Promise<string | null>;
   /** The texture behind an "@asset:<id>" token. */
   getAsset: (token: string) => ModelTexture | undefined;
+  /** Suggestions from the open project by name, for fields with `dynamicSuggestions` (e.g. CraftEngine's templates). */
+  dynamicSuggestions?: Record<string, Option[]>;
+  /** The text a MiniMessage preview shows (e.g. with CraftEngine's `<global:name>` filled in). */
+  previewText?: (text: string) => string;
 }
 
 /** Provided around every {@link FieldRenderer} (by the item editor). */

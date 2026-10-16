@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { X } from 'lucide-react';
 import { useTranslations } from 'next-intl';
-import type { ObjectField } from '@resourcepackbuilder/core/nexo';
+import type { ObjectField } from '@resourcepackbuilder/core/form';
 import { isPlainObject } from '@resourcepackbuilder/utils';
 import { AutoGrid, CollapsibleSection, IconButton } from '@resourcepackbuilder/ui';
 import { FieldDescription } from '@resourcepackbuilder/ui/components/field';

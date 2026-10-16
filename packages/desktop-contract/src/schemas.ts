@@ -11,23 +11,33 @@ import {
   MAX_RAM_GB,
   MIN_PORT,
   MIN_RAM_GB,
-  NEXO_JAR_FILE_PATTERN,
   PAPER_VERSION_PATTERN,
   PLAYER_NAME_PATTERN,
+  PLUGIN_JAR_FILE_PATTERNS,
 } from '@resourcepackbuilder/test-server';
+import { PACK_TARGETS } from '@resourcepackbuilder/core/project';
 import { SUPPORTED_LOCALES } from '@resourcepackbuilder/i18n/locale';
 import { z } from 'zod';
-import type { DesktopInvokeArgs, DesktopInvokeChannel, NexoJarInfo, TestServerConfig, TestServerConfigPatch } from './api';
+import type { DesktopInvokeArgs, DesktopInvokeChannel, PluginJarInfo, TestServerConfig, TestServerConfigPatch } from './api';
 
 /* ------------------------------------------------------------------ test-server settings */
 
 const port = z.number().int().min(MIN_PORT).max(MAX_PORT);
 
-export const nexoJarInfoSchema = z.object({
-  file: z.string().regex(NEXO_JAR_FILE_PATTERN),
-  name: z.string().max(200),
-  version: z.string().max(200),
-}) satisfies z.ZodType<NexoJarInfo>;
+const packTarget = z.enum(PACK_TARGETS);
+
+/** A plugin JAR in the store of `target` (its file name ends up in a path, so it must match the target's pattern). */
+const pluginJarInfoSchema = (target: (typeof PACK_TARGETS)[number]) =>
+  z.object({
+    file: z.string().regex(PLUGIN_JAR_FILE_PATTERNS[target]),
+    name: z.string().max(200),
+    version: z.string().max(200),
+  }) satisfies z.ZodType<PluginJarInfo>;
+
+export const pluginJarsSchema = z.object({
+  nexo: pluginJarInfoSchema('nexo').optional(),
+  craftengine: pluginJarInfoSchema('craftengine').optional(),
+}) satisfies z.ZodType<TestServerConfig['pluginJars']>;
 
 /** Complete, valid settings (as saved in testserver.json). */
 export const testServerConfigSchema = z.object({
@@ -38,8 +48,18 @@ export const testServerConfigSchema = z.object({
   playerName: z.union([z.literal(''), z.string().regex(PLAYER_NAME_PATTERN)]),
   eulaAccepted: z.boolean(),
   autoUpdate: z.boolean(),
-  nexoJar: nexoJarInfoSchema.nullable(),
+  pluginJars: pluginJarsSchema,
 }) satisfies z.ZodType<TestServerConfig>;
+
+/**
+ * Settings as read from testserver.json: settings missing in older files are filled from the defaults, and the
+ * `nexoJar` of files written before pack targets existed becomes `pluginJars.nexo`. Then the full check applies.
+ */
+export const savedTestServerConfigSchema = z.preprocess((config) => {
+  const saved: Record<string, unknown> = typeof config === 'object' && config !== null ? { ...config } : {};
+  if (saved.pluginJars === undefined && saved.nexoJar) saved.pluginJars = { nexo: saved.nexoJar };
+  return { ...DEFAULT_TEST_SERVER_CONFIG, ...saved };
+}, testServerConfigSchema);
 
 const clampedInt = (min: number, max: number, fallback: number) => z.unknown().transform((value) => clampInt(value, min, max, fallback));
 
@@ -72,7 +92,12 @@ const folder = z.string().min(1);
 const none = z.tuple([]);
 
 const syncFileSchema = z.object({ path: z.string(), data: z.union([z.string(), z.instanceof(Uint8Array)]) });
-const syncOptionsSchema = z.object({ reload: z.boolean(), settings: z.string().optional() });
+const syncOptionsSchema = z.object({
+  target: packTarget,
+  packName: z.string().max(200),
+  reload: z.boolean(),
+  settings: z.string().optional(),
+});
 
 /** The argument list of every invoke channel. */
 export const invokeSchemas: { [C in DesktopInvokeChannel]: z.ZodType<DesktopInvokeArgs<C>> } = {
@@ -93,13 +118,14 @@ export const invokeSchemas: { [C in DesktopInvokeChannel]: z.ZodType<DesktopInvo
   'testserver:get-state': none,
   'testserver:set-config': z.tuple([testServerConfigPatchSchema]),
   'testserver:versions': none,
-  'testserver:choose-nexo-jar': none,
-  'testserver:start': none,
+  'testserver:choose-plugin-jar': z.tuple([packTarget]),
+  'testserver:download-plugin': z.tuple([packTarget]),
+  'testserver:start': z.tuple([packTarget]),
   'testserver:stop': none,
   'testserver:command': z.tuple([z.string().max(1000)]),
   'testserver:reload': none,
   'testserver:sync': z.tuple([z.array(syncFileSchema), syncOptionsSchema]),
-  'testserver:read-settings': none,
+  'testserver:read-plugin-config': z.tuple([packTarget]),
   'testserver:open-folder': none,
   'testserver:clear-log': none,
 };

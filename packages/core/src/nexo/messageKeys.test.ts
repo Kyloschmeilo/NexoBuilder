@@ -8,11 +8,13 @@ import { describe, expect, it } from 'vitest';
 import { TEXTURE_TEMPLATES } from '@resourcepackbuilder/minecraft';
 import { ARMOR_LAYERS } from '../project/armor';
 import { COPY_CATEGORIES, summarizeClipboard, type ItemConfigClipboard } from './copyConfig';
-import { type Field, type TextField, validateTextFormat } from './form/fields';
+import { type Field, type TextField, validateTextFormat } from '../form/fields';
 import { keySegment } from '@resourcepackbuilder/utils';
+import type { Option } from '../form/options';
 import * as options from './form/options';
 import { INGREDIENT_SOURCES, RECIPE_TYPES } from '../project/recipes/model';
-import { PROPERTIES, PROPERTY_GROUPS } from './form/schema';
+import { NEXO_FORM, PROPERTIES } from './form/schema';
+import { formMessageKeys, optionMessageKeys } from '../form/messageKeys';
 import { FURNITURE_MODEL_SLOTS, STACK_MODELS, stateDef, VARIANTS } from '../project/variants';
 
 type MessageTree = { [key: string]: string | MessageTree };
@@ -38,42 +40,10 @@ function leafKeys(tree: MessageTree, prefix = ''): string[] {
   });
 }
 
-function optionKeys(list: options.Option[] | undefined): string[] {
-  return (list ?? []).flatMap((o) => (o.label ? [o.label] : []));
-}
-
-/** All message keys a field (and its nested fields) references. */
-function fieldKeys(field: Field): string[] {
-  const keys = [field.label, field.help, field.placeholder].filter((k): k is string => !!k);
-  if ('suggestions' in field) keys.push(...optionKeys(field.suggestions));
-  switch (field.type) {
-    case 'select':
-    case 'multiSelect':
-      keys.push(...optionKeys(field.options));
-      break;
-    case 'object':
-      keys.push(...field.fields.flatMap(fieldKeys));
-      break;
-    case 'objectList':
-      keys.push(field.itemLabel, ...field.fields.flatMap(fieldKeys));
-      break;
-    case 'map':
-      keys.push(field.keyLabel, ...optionKeys(field.keyOptions), ...fieldKeys(field.value));
-      if (field.keyPlaceholder) keys.push(field.keyPlaceholder);
-      break;
-  }
-  return keys;
-}
-
 function referencedKeys(): Set<string> {
-  const keys: string[] = [];
-  for (const group of PROPERTY_GROUPS) keys.push(group.label, group.description);
-  for (const property of PROPERTIES) {
-    keys.push(property.label, property.description, ...fieldKeys(property.field));
-    if (property.hint) keys.push(property.hint);
-  }
+  const keys: string[] = formMessageKeys(NEXO_FORM);
   for (const value of Object.values(options)) {
-    if (Array.isArray(value)) keys.push(...optionKeys(value as options.Option[]));
+    if (Array.isArray(value)) keys.push(...optionMessageKeys(value as Option[]));
   }
   for (const layer of ARMOR_LAYERS) keys.push(layer.label);
   for (const def of [...VARIANTS, ...FURNITURE_MODEL_SLOTS, STACK_MODELS, stateDef('on')]) {
@@ -97,10 +67,11 @@ function referencedKeys(): Set<string> {
 
   const clip: ItemConfigClipboard = {
     format: 'resourcepackbuilder-item-config',
-    sourceItemId: 'i',
+    sourceId: 'i',
     sourceName: 'Item',
-    sourceNexoId: 'item',
+    sourceItemId: 'item',
     projectId: 'p',
+    target: 'nexo',
     config: {},
     rawYaml: 'a: 1',
     assets: {},

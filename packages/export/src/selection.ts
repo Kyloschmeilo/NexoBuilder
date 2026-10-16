@@ -18,6 +18,7 @@ import {
   projectFrame,
 } from '@resourcepackbuilder/core/project';
 import { planExport } from './plan';
+import { packTargetFor } from './targets';
 import type { ExportPlan, PlanOptions } from './types';
 
 /** What is deselected gets stored – this way new items are included automatically. */
@@ -171,7 +172,7 @@ function crossProjectIssues(projects: PlannedProject[]): Issue[] {
   };
 
   const packNames = new Map<string, number>();
-  const nexoIds = new Map<string, number>();
+  const itemIds = new Map<string, number>();
   const mediaIds: Record<MediaKind, Map<string, number>> = { glyph: new Map(), sound: new Map(), painting: new Map() };
   const pluginFiles = new Map<string, number>();
   const assetFiles = new Map<string, number>();
@@ -185,9 +186,11 @@ function crossProjectIssues(projects: PlannedProject[]): Issue[] {
     if (otherPack) {
       error('selection.packNameClash', { first: otherPack, second: name, pack });
     }
-    for (const { item } of plan.items) {
-      const other = firstOwner(nexoIds, item.nexoId, index);
-      if (other) error('selection.itemIdClash', { id: item.nexoId, first: other, second: name });
+    // Items clash only on the same key within one target (CraftEngine keys carry the namespace)
+    const targetId = packTargetFor(project).id;
+    for (const { yamlKey } of plan.items) {
+      const other = firstOwner(itemIds, `${targetId}|${yamlKey}`, index);
+      if (other) error('selection.itemIdClash', { id: yamlKey, first: other, second: name });
     }
     for (const kind of MEDIA_KIND_LIST) {
       for (const entry of mediaList(project, kind)) {
@@ -196,15 +199,17 @@ function crossProjectIssues(projects: PlannedProject[]): Issue[] {
         if (other) error(`selection.${kind}IdClash`, { id, first: other, second: name });
       }
     }
-    for (const path of [...plan.itemFiles.keys(), ...plan.recipeFiles.keys(), ...plan.glyphFiles.keys()]) {
-      const other = firstOwner(pluginFiles, path, index);
-      const pair = `${pluginFiles.get(path)}:${index}`;
+    const { pluginDir } = packTargetFor(project).layout;
+    for (const path of plan.pluginFiles.keys()) {
+      const key = `${pluginDir}/${path}`;
+      const other = firstOwner(pluginFiles, key, index);
+      const pair = `${pluginFiles.get(key)}:${index}`;
       if (other && !reportedFilePairs.has(pair)) {
         reportedFilePairs.add(pair);
         error('selection.pluginFileClash', { first: other, second: name, path, slug: projectFileName(project) });
       }
     }
-    // Nexo merges all external packs – identical paths then overwrite each other
+    // The plugins merge the packs of all projects – identical paths then overwrite each other
     for (const path of plan.packFiles.keys()) {
       if (!path.startsWith('assets/')) continue;
       const other = firstOwner(assetFiles, path, index);

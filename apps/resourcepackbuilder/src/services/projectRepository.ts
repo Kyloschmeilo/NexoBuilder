@@ -4,10 +4,17 @@
  */
 import { createStore, del, delMany, get, keys, set, setMany, type UseStore } from 'idb-keyval';
 import { z } from 'zod';
-import { lenientList, lenientNumber, lenientString, plainObject, uid } from '@resourcepackbuilder/utils';
+import { lenientEnum, lenientList, lenientNumber, lenientString, plainObject, uid } from '@resourcepackbuilder/utils';
 import { SyncStateSchema, type SyncState } from '@resourcepackbuilder/sync';
 import { AppError } from '../i18n/errors';
-import { migrateProject, type Project, type ProjectSummary, summarizeProject } from '@resourcepackbuilder/core/project';
+import {
+  DEFAULT_PACK_TARGET,
+  migrateProject,
+  PACK_TARGETS,
+  type Project,
+  type ProjectSummary,
+  summarizeProject,
+} from '@resourcepackbuilder/core/project';
 
 /** Where a shared project lives and under which name this user edits it. */
 export interface ShareConfig {
@@ -54,6 +61,7 @@ const IndexSchema = lenientList(
     id: z.string(),
     name: z.string(),
     namespace: lenientString(),
+    target: lenientEnum(PACK_TARGETS, DEFAULT_PACK_TARGET),
     itemCount: lenientNumber(0),
     updatedAt: lenientNumber(0),
   }),

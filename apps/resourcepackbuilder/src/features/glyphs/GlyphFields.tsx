@@ -8,6 +8,7 @@ import { NumberInput, TextInput } from '../../components/editor';
 import { CheckboxField } from '../../components/CheckboxField';
 import { FormField } from '../../components/FormField';
 import { NexoKey } from '../media/NexoKey';
+import { useOpenProject } from '../../store/project';
 
 const DEFAULT_FONT = 'minecraft:default';
 
@@ -17,6 +18,8 @@ export function GlyphFields({ glyph, glyphs }: { glyph: Glyph; glyphs: Glyph[] }
   const tShared = useTranslations('media.shared');
   const update = (recipe: (draft: Glyph) => void, historyKey?: string) => updateGlyph(glyph.id, recipe, historyKey);
   const multiBitmaps = glyphs.filter((other) => other.id !== glyph.id && isMultiBitmap(other));
+  // Nexo's emoji list (/nexo emojis); CraftEngine makes an emoji of every glyph with placeholders
+  const showIsEmoji = useOpenProject().target === 'nexo';
 
   return (
     <>
@@ -104,12 +107,14 @@ export function GlyphFields({ glyph, glyphs }: { glyph: Glyph; glyphs: Glyph[] }
         </FormField>
       </AutoGrid>
       <div className="flex flex-wrap gap-x-5 gap-y-2">
-        <CheckboxField
-          checked={glyph.isEmoji}
-          onChange={(checked) => update((g) => (g.isEmoji = checked))}
-          label={<NexoKey>Is Emoji</NexoKey>}
-          description={t('isEmojiHint')}
-        />
+        {showIsEmoji && (
+          <CheckboxField
+            checked={glyph.isEmoji}
+            onChange={(checked) => update((g) => (g.isEmoji = checked))}
+            label={<NexoKey>Is Emoji</NexoKey>}
+            description={t('isEmojiHint')}
+          />
+        )}
         <CheckboxField
           checked={glyph.tabcomplete}
           onChange={(checked) => update((g) => (g.tabcomplete = checked))}

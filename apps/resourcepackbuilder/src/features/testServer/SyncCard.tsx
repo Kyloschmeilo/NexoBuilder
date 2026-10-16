@@ -10,7 +10,9 @@ import { useErrorMessage } from '../../i18n/errors';
 import type { TestServerState } from '../../platform/desktopApi';
 import { usePlan } from '../../shell/PlanProvider';
 import { useTestServerStore } from '../../services/testServerStore';
-import { syncSummary, type SyncSummaryPart } from '@resourcepackbuilder/test-server';
+import { DEFAULT_PACK_TARGET } from '@resourcepackbuilder/core/project';
+import { serverAdapterFor, syncSummary, type SyncSummaryPart } from '@resourcepackbuilder/test-server';
+import { useProjectStore } from '../../store/project';
 import { useSetConfig, useTestServer } from './useTestServer';
 
 /** Transfer of the project into the server: manual, automatic, and how the last transfers went. */
@@ -26,13 +28,14 @@ export function SyncCard({ server }: { server: TestServerState }) {
   const syncError = useTestServerStore((s) => s.syncError);
   const isRunning = server.status === 'running';
   const errorCount = plan ? countIssues(plan.issues).error : 0;
-  const summary = useSummaryText(syncSummary({ lastResult, lastCheck, syncError }, isRunning));
+  const adapter = serverAdapterFor(useProjectStore((s) => s.project?.target ?? DEFAULT_PACK_TARGET));
+  const summary = useSummaryText(syncSummary({ lastResult, lastCheck, syncError }, isRunning), adapter.pluginName);
 
   return (
     <SectionCard
       size="sm"
       title={t('title')}
-      description={t('description')}
+      description={t('description', { folder: adapter.pluginDir, command: adapter.reloadCommand })}
       actions={
         <Button variant="outline" size="sm" disabled={!isRunning || isSyncing} onClick={() => void testServer.sync(true)}>
           {isSyncing ? <Spinner /> : <RefreshCw />} {t('now')}
@@ -64,14 +67,14 @@ export function SyncCard({ server }: { server: TestServerState }) {
 }
 
 /** Words the summary parts as one paragraph. */
-function useSummaryText(parts: SyncSummaryPart[]): string {
+function useSummaryText(parts: SyncSummaryPart[], plugin: string): string {
   const t = useTranslations('media.testServer.sync');
   const format = useFormatter();
   const time = (at: number) => format.dateTime(new Date(at), { timeStyle: 'medium' });
   const sentence = (part: SyncSummaryPart) => {
     switch (part.key) {
       case 'last':
-        return t('last', { time: time(part.at), written: part.written, deleted: part.deleted, reloaded: String(part.reloaded) });
+        return t('last', { time: time(part.at), written: part.written, deleted: part.deleted, reloaded: String(part.reloaded), plugin });
       case 'onStart':
         return t('onStart');
       case 'upToDate':

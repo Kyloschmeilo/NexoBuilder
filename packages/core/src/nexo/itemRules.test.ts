@@ -1,8 +1,15 @@
 import { describe, expect, it } from 'vitest';
 import { holdStyleParent } from '@resourcepackbuilder/minecraft';
 import type { ConfigObject } from '../project/types';
-import { activeProperties, availableProperties, emptyPropertyValue, propertyConflict, propertyYamlPath } from './form/properties';
-import { PROPERTY_BY_ID } from './form/schema';
+import {
+  activeProperties,
+  availableProperties,
+  emptyPropertyValue,
+  propertyById,
+  propertyConflict,
+  propertyYamlPath,
+} from '../form/properties';
+import { NEXO_FORM } from './form/schema';
 import {
   furnitureConfig,
   furnitureStateNames,
@@ -18,22 +25,22 @@ const owner = (config: ConfigObject) => ({ config });
 describe('item properties', () => {
   it('splits a group into active and available properties', () => {
     const item = owner({ material: 'PAPER', Mechanics: { furniture: {} } });
-    const furniture = PROPERTY_BY_ID.get('Mechanics.furniture')!;
-    expect(activeProperties(item, 'mechanics')).toContain(furniture);
-    expect(availableProperties(item, 'mechanics')).not.toContain(furniture);
-    expect(activeProperties(item, 'mechanics').length + availableProperties(item, 'mechanics').length).toBe(
-      [...PROPERTY_BY_ID.values()].filter((def) => def.group === 'mechanics').length,
+    const furniture = propertyById(NEXO_FORM, 'Mechanics.furniture')!;
+    expect(activeProperties(NEXO_FORM, item, 'mechanics')).toContain(furniture);
+    expect(availableProperties(NEXO_FORM, item, 'mechanics')).not.toContain(furniture);
+    expect(activeProperties(NEXO_FORM, item, 'mechanics').length + availableProperties(NEXO_FORM, item, 'mechanics').length).toBe(
+      NEXO_FORM.properties.filter((def) => def.group === 'mechanics').length,
     );
   });
 
   it('names the active property a new one conflicts with', () => {
     const item = owner({ Mechanics: { furniture: {} } });
-    expect(propertyConflict(item, PROPERTY_BY_ID.get('Mechanics.custom_block')!)?.id).toBe('Mechanics.furniture');
-    expect(propertyConflict(owner({}), PROPERTY_BY_ID.get('Mechanics.custom_block')!)).toBeUndefined();
+    expect(propertyConflict(NEXO_FORM, item, propertyById(NEXO_FORM, 'Mechanics.custom_block')!)?.id).toBe('Mechanics.furniture');
+    expect(propertyConflict(NEXO_FORM, owner({}), propertyById(NEXO_FORM, 'Mechanics.custom_block')!)).toBeUndefined();
   });
 
   it('knows the YAML path and the cleared value of a property', () => {
-    const furniture = PROPERTY_BY_ID.get('Mechanics.furniture')!;
+    const furniture = propertyById(NEXO_FORM, 'Mechanics.furniture')!;
     expect(propertyYamlPath(furniture)).toBe('Mechanics.furniture');
     expect(emptyPropertyValue(furniture)).toEqual({});
   });

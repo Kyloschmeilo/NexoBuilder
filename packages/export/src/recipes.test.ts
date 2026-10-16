@@ -3,14 +3,22 @@ import { parse } from 'yaml';
 import { planExport } from './plan';
 import { buildMultiExportZip } from './zip';
 import { singleExport } from '../test-utils/export';
-import { createFolder, createItem, createProject, createRecipe, insertFolder, insertItem } from '@resourcepackbuilder/core/project';
-import { buildRecipeFiles, recipeToYaml, validateRecipe } from '@resourcepackbuilder/core/nexo';
+import {
+  createFolder,
+  createItem,
+  createProject,
+  createRecipe,
+  insertFolder,
+  insertItem,
+  validateRecipe,
+} from '@resourcepackbuilder/core/project';
+import { buildRecipeFiles, recipeToYaml } from '@resourcepackbuilder/core/nexo';
 
 function setup() {
   const project = createProject('Rezept Test', 'rezepte', '26.3');
   const folder = createFolder('Waffen', null);
   insertFolder(project, folder);
-  const item = createItem({ displayName: 'Rubin-Schwert', nexoId: 'ruby_sword', folderId: folder.id, model: null });
+  const item = createItem({ displayName: 'Rubin-Schwert', itemId: 'ruby_sword', folderId: folder.id, model: null });
   insertItem(project, item);
   return { project, item };
 }
@@ -101,7 +109,7 @@ describe('recipes', () => {
     expect(shaped.ruby_sword_shaped.shape).toEqual(['AA']);
 
     const plan = planExport(project);
-    expect(plan.recipeFiles.size).toBe(2);
+    expect([...plan.pluginFiles.keys()].filter((p) => p.startsWith('recipes/'))).toHaveLength(2);
     const zip = await buildMultiExportZip(singleExport(project, plan), 'full');
     expect(zip.paths).toContain('recipes/shaped/rezept_test.yml');
     const pack = await buildMultiExportZip(singleExport(project, plan), 'pack');

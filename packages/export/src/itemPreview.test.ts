@@ -1,8 +1,8 @@
 import { describe, expect, it } from 'vitest';
-import { parseRawYaml } from '@resourcepackbuilder/core/nexo';
+import { parseRawYaml } from '@resourcepackbuilder/core/yaml';
 import { createFolder, createItem, createProject, insertFolder, insertItem } from '@resourcepackbuilder/core/project';
 import { findItemPlan, itemYamlPreview } from './itemPreview';
-import { nexoPluginPath } from './paths';
+import { nexoPluginPath } from './targets';
 import { planExport } from './plan';
 
 describe('item preview', () => {
@@ -10,7 +10,7 @@ describe('item preview', () => {
     const project = createProject('Test', 'pack');
     const folder = createFolder('Weapons', null);
     insertFolder(project, folder);
-    const item = createItem({ displayName: 'Ruby', nexoId: 'ruby', folderId: folder.id, model: null });
+    const item = createItem({ displayName: 'Ruby', itemId: 'ruby', folderId: folder.id, model: null });
     item.rawYaml = 'Mechanics:\n  custom: true';
     insertItem(project, item);
     const plan = planExport(project);

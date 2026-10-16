@@ -26,6 +26,7 @@ const CODE_GROUPS = [
   'sound',
   'painting',
   'yaml',
+  'ce',
 ];
 
 /** Literals that look like codes but are not (file names) */

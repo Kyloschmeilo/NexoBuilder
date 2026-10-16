@@ -6,6 +6,7 @@
  * resource pack (pack/external_packs/<name>) on export.
  */
 import type { DataUrl, ImportedModel, ModelTexture } from '@resourcepackbuilder/minecraft';
+import type { PackTargetId } from './target';
 import type { ArmorSettings } from './armor';
 import type { Glyph } from './media/glyph';
 import type { Painting } from './media/painting';
@@ -28,8 +29,8 @@ export type ConfigObject = { [key: string]: ConfigValue };
 
 export interface Item {
   id: string;
-  /** Nexo item ID (YAML key), e.g. "ruby_sword" */
-  nexoId: string;
+  /** Item ID (YAML key), e.g. "ruby_sword" */
+  itemId: string;
   /** Display name (MiniMessage) → itemname */
   displayName: string;
   folderId: string;
@@ -46,6 +47,8 @@ export interface Item {
   variants?: Partial<Record<VariantSlot, ImportedModel[]>>;
   /** Worn textures (equipment model); absent = the item is no armor */
   armor?: ArmorSettings;
+  /** Display name per Minecraft locale ("de_de" → name); only the CraftEngine export writes them (as lang files) */
+  translations?: Record<string, string>;
   createdAt: number;
   updatedAt: number;
 }
@@ -66,6 +69,35 @@ export interface ProjectSettings {
   itemsInProjectFolder: boolean;
   /** One YAML file per folder (folder) or per item (item) */
   yamlFileMode: 'folder' | 'item';
+  /** CraftEngine: write categories.yml with one category per folder (the item browser of /ce) */
+  ceCategoriesFromFolders: boolean;
+}
+
+/** Project-wide CraftEngine configuration, written to the pack's configuration folder */
+export interface CraftEngineProjectData {
+  /** The loot sources (`loot_sources`), each a config with its `id` (core/craftEngine/loot.ts) */
+  lootSources?: ConfigObject[];
+  /** The project's templates (`templates`), each with its `id`, declared `arguments` and `body` (core/craftEngine/templates.ts) */
+  templates?: ConfigObject[];
+  /** The global variables (`global_variables`): name → MiniMessage text, used as `<global:name>` */
+  globalVariables?: Record<string, string>;
+  /** The attribute system (experimental): its definitions, operations, equipment sets and damage rules */
+  attributes?: CraftEngineAttributeData;
+}
+
+/**
+ * The project's part of CraftEngine's attribute system (core/craftEngine/attributes.ts). Each list entry is a config
+ * with its `id`; a damage rule has its `damage_type` instead.
+ */
+export interface CraftEngineAttributeData {
+  /** Custom attributes (`attributes`) */
+  definitions?: ConfigObject[];
+  /** Custom operations (`attribute_operations`) */
+  operations?: ConfigObject[];
+  /** Equipment sets (`equipment_sets`) */
+  equipmentSets?: ConfigObject[];
+  /** Damage rules (`damage_rules`), grouped by their `damage_type` on export */
+  damageRules?: ConfigObject[];
 }
 
 export interface Project {
@@ -73,6 +105,8 @@ export interface Project {
   formatVersion: 1;
   id: string;
   name: string;
+  /** Server plugin the pack is built for */
+  target: PackTargetId;
   namespace: string;
   settings: ProjectSettings;
   folders: Record<string, Folder>;
@@ -84,6 +118,8 @@ export interface Project {
   sounds: Sound[];
   /** Custom paintings (plugins/Nexo/paintings.yml + texture in the pack) */
   paintings: Painting[];
+  /** Project-wide CraftEngine configuration; only CraftEngine projects have it */
+  craftEngine?: CraftEngineProjectData;
   createdAt: number;
   updatedAt: number;
 }

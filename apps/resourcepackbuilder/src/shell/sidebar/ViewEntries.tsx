@@ -1,8 +1,13 @@
-/** The entries below the tree that open project-wide views: glyphs, sounds, paintings and the test server. */
+/**
+ * The entries below the tree that open project-wide views: glyphs, sounds, paintings, a CraftEngine project's loot
+ * sources, templates, global variables and attributes, and the test server.
+ */
 import type { ReactNode } from 'react';
-import { Frame, Music, Server, Smile } from 'lucide-react';
+import { Braces, Dumbbell, Frame, Gem, LayoutTemplate, Music, Server, Smile } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 import { cn } from 'cn';
+import { projectAttributeData } from '@resourcepackbuilder/core/craftEngine';
+import type { Project } from '@resourcepackbuilder/core/project';
 import type { IssueTarget } from '@resourcepackbuilder/utils';
 import { StatusDot, Tip, treeRow, treeRowSlots } from '@resourcepackbuilder/ui';
 import { TEST_SERVER_STATUS_TONE } from '../../features/testServer/status';
@@ -43,7 +48,23 @@ const RESOURCES = [
   { view: 'paintings', target: 'painting', icon: <Frame className="size-4" /> },
 ] as const satisfies ReadonlyArray<{ view: ViewName; target: IssueTarget['kind']; icon: ReactNode }>;
 
-/** Project-wide lists below the tree, each with its size and the worst issue level of its entries. */
+/** A CraftEngine project's own lists and the size of each */
+const CRAFT_ENGINE_VIEWS = [
+  { view: 'lootSources', icon: <Gem className="size-4" />, count: (p: Project) => p.craftEngine?.lootSources?.length ?? 0 },
+  { view: 'templates', icon: <LayoutTemplate className="size-4" />, count: (p: Project) => p.craftEngine?.templates?.length ?? 0 },
+  {
+    view: 'globalVariables',
+    icon: <Braces className="size-4" />,
+    count: (p: Project) => Object.keys(p.craftEngine?.globalVariables ?? {}).length,
+  },
+  {
+    view: 'attributes',
+    icon: <Dumbbell className="size-4" />,
+    count: (p: Project) => Object.values(projectAttributeData(p)).reduce((sum, list) => sum + (list?.length ?? 0), 0),
+  },
+] as const satisfies ReadonlyArray<{ view: ViewName; icon: ReactNode; count: (project: Project) => number }>;
+
+/** Project-wide lists below the tree, each with its size and the worst issue level of its entries (the CraftEngine lists only in CraftEngine projects). */
 export function ResourceEntries() {
   const t = useTranslations('layout.sidebar.resources');
   const project = useOpenProject();
@@ -69,6 +90,17 @@ export function ResourceEntries() {
           />
         );
       })}
+      {project.target === 'craftengine' &&
+        CRAFT_ENGINE_VIEWS.map(({ view, icon, count }) => (
+          <ViewEntry
+            key={view}
+            view={view}
+            icon={icon}
+            label={t(`${view}.label`)}
+            tip={t(`${view}.hint`)}
+            status={<span className={treeRowSlots.count}>{count(project)}</span>}
+          />
+        ))}
     </div>
   );
 }

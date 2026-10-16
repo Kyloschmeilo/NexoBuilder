@@ -1,6 +1,6 @@
 import { CUSTOM_BLOCK_TYPES, CUSTOM_EVENTS, DISPLAY_TRANSFORMS, POTION_EFFECTS } from '../options';
 import { MODEL_TOKEN } from '@resourcepackbuilder/utils';
-import { field, properties, whenType } from './build';
+import { field, properties, whenType } from '../../../form/build';
 import { FURNITURE } from './furniture';
 import {
   blockLockerField,

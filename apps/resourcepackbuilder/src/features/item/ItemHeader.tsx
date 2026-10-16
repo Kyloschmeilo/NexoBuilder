@@ -3,7 +3,7 @@ import { Box, ClipboardCopy, ClipboardPaste, Copy, FolderInput, Gift, Trash2 } f
 import { getFolderPathLabel, type Item, itemMaterial } from '@resourcepackbuilder/core/project';
 import type { Issue } from '@resourcepackbuilder/utils';
 import { PLAYER_NAME_PATTERN } from '@resourcepackbuilder/test-server';
-import { clipboardLabel } from '@resourcepackbuilder/core/nexo';
+import { canCopyItemConfig, canPasteItemConfig, clipboardLabel } from '@resourcepackbuilder/core/nexo';
 import { IconButton, PageHeader, Thumb, Tip } from '@resourcepackbuilder/ui';
 import { Badge } from '@resourcepackbuilder/ui/components/badge';
 import { Button } from '@resourcepackbuilder/ui/components/button';
@@ -20,7 +20,7 @@ import { moveItemDialog } from '../moveItem/MoveItemDialog';
 import { useItemActions } from './useItemActions';
 
 /** "Give in test server" – only visible while the local test server is running. */
-function GiveButton({ nexoId }: { nexoId: string }) {
+function GiveButton({ item }: { item: Item }) {
   const t = useTranslations('item');
   const testServer = useServices().testServer;
   const { isBusy, run } = useBusyAction();
@@ -32,8 +32,8 @@ function GiveButton({ nexoId }: { nexoId: string }) {
   const isValidPlayer = PLAYER_NAME_PATTERN.test(player);
   const give = () =>
     void run(
-      () => testServer.give(nexoId),
-      (player) => t('editor.giveSuccess', { id: nexoId, player }),
+      () => testServer.give(item),
+      (player) => t('editor.giveSuccess', { id: item.itemId, player }),
     );
   return (
     <Tip label={isValidPlayer ? t('editor.giveTooltip') : tPack('enterName')}>
@@ -52,7 +52,7 @@ function ItemBadges({ item, issues }: { item: Item; issues: Issue[] }) {
     <>
       <Tip label={t('editor.itemId')}>
         <Badge variant="outline" className="border-primary font-mono text-primary">
-          {item.nexoId}
+          {item.itemId}
         </Badge>
       </Tip>
       <Tip label={t('editor.folder')}>
@@ -70,17 +70,25 @@ function ItemActions({ item }: { item: Item }) {
   const t = useTranslations('item');
   const tCommon = useTranslations('common');
   const clip = useClipboardStore((s) => s.clip);
+  const { target } = useOpenProject();
   const actions = useItemActions();
-  const canPaste = !!clip && clip.sourceItemId !== item.id;
+  // Copying works on Nexo's property groups; other targets show both buttons disabled with the reason
+  const canCopy = canCopyItemConfig(target);
+  const canPaste = canPasteItemConfig(clip, target) && clip.sourceId !== item.id;
+  const pasteTip = !canCopy
+    ? t('editor.copyUnsupported')
+    : clip
+      ? t('editor.pasteTooltip', { name: clipboardLabel(clip) })
+      : t('editor.pasteDisabled');
   return (
     <>
-      <GiveButton nexoId={item.nexoId} />
-      <Tip label={t('editor.copyTooltip')}>
-        <Button variant="outline" size="sm" onClick={() => actions.copyProperties(item.id)}>
+      <GiveButton item={item} />
+      <Tip label={canCopy ? t('editor.copyTooltip') : t('editor.copyUnsupported')}>
+        <Button variant="outline" size="sm" disabled={!canCopy} onClick={() => actions.copyProperties(item.id)}>
           <ClipboardCopy /> {tCommon('copy')}
         </Button>
       </Tip>
-      <Tip label={clip ? t('editor.pasteTooltip', { name: clipboardLabel(clip) }) : t('editor.pasteDisabled')}>
+      <Tip label={pasteTip}>
         <Button variant="outline" size="sm" disabled={!canPaste} onClick={() => actions.pasteProperties([item.id])}>
           <ClipboardPaste /> {tCommon('paste')}
         </Button>
@@ -107,7 +115,7 @@ export function ItemHeader({ item, issues }: { item: Item; issues: Issue[] }) {
       title={
         // Minecraft colours are made for a dark background, so the name sits in a dark box in both themes
         <MiniMessageBox className="min-w-0 px-3 py-0.5 align-top font-heading text-2xl leading-8">
-          <MiniMessageLine text={item.displayName || item.nexoId} />
+          <MiniMessageLine text={item.displayName || item.itemId} />
         </MiniMessageBox>
       }
       meta={<ItemBadges item={item} issues={issues} />}

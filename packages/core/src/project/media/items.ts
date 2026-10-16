@@ -14,7 +14,7 @@ import { mediaKey } from './entry';
 export interface MediaItemInput {
   displayName: string;
   /** Suggested item ID; made unique when the item is inserted */
-  nexoId: string;
+  itemId: string;
   material: string;
   configure: (item: Item) => void;
 }
@@ -23,7 +23,7 @@ export interface MediaItemInput {
 export function paintingItem(project: Pick<Project, 'namespace'>, painting: Painting): MediaItemInput {
   return {
     displayName: painting.title || painting.paintingId,
-    nexoId: painting.paintingId,
+    itemId: painting.paintingId,
     material: 'PAINTING',
     configure: (item) => {
       item.config.Components = { painting_variant: mediaKey(project, painting.paintingId) };
@@ -35,7 +35,7 @@ export function paintingItem(project: Pick<Project, 'namespace'>, painting: Pain
 export function musicDiscItem(project: Pick<Project, 'namespace'>, sound: Sound): MediaItemInput {
   return {
     displayName: sound.jukebox?.description || sound.soundId,
-    nexoId: `${toIdentifier(sound.soundId, ID_CHARS, 'sound')}_disc`,
+    itemId: `${toIdentifier(sound.soundId, ID_CHARS, 'sound')}_disc`,
     material: DEFAULT_MATERIAL,
     configure: (item) => {
       item.config.Components = { max_stack_size: 1, jukebox_playable: { song_key: mediaKey(project, sound.soundId) } };

@@ -2,10 +2,17 @@ import { describe, expect, it } from 'vitest';
 import { parse } from 'yaml';
 import { planExport } from './plan';
 import { buildMultiExportZip } from './zip';
-import { singleExport } from '../test-utils/export';
-import { createGlyph, createProject, glyphFileFromDataUrl, glyphKindOf, glyphTag, isMultiBitmap } from '@resourcepackbuilder/core/project';
+import { pluginText, singleExport } from '../test-utils/export';
+import {
+  createGlyph,
+  createProject,
+  glyphFileFromDataUrl,
+  glyphKindOf,
+  glyphTag,
+  isMultiBitmap,
+  validateGlyphs,
+} from '@resourcepackbuilder/core/project';
 import { makePngDataUrl } from '@resourcepackbuilder/test-utils/png';
-import { validateGlyphs } from '@resourcepackbuilder/core/nexo';
 
 // Minimal GIF (1×1) with width/height in the header
 const GIF_9x11 =
@@ -38,7 +45,7 @@ describe('glyphs', () => {
 
     const plan = planExport(project);
     expect(plan.issues.filter((i) => i.level === 'error' || i.level === 'warning')).toEqual([]);
-    const yaml = parse(plan.glyphFiles.get('glyphs/emoji_pack.yml')!, { version: '1.1' });
+    const yaml = parse(pluginText(plan, 'glyphs/emoji_pack.yml'), { version: '1.1' });
     expect(yaml).toEqual({
       heart: { texture: 'emojis:glyphs/heart', ascent: 7, height: 8, permission: 'nexo.glyph.heart', placeholders: ['<3'], is_emoji: true },
       shop_menu: { texture: 'emojis:glyphs/shop_menu', ascent: 13, height: 128, font: 'emojis:gui' },

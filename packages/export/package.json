@@ -2,7 +2,7 @@
   "name": "@resourcepackbuilder/export",
   "private": true,
   "version": "0.0.0",
-  "description": "Export planning and the pack writer: Nexo YAML, item models, equipment, media, validation, selection over several projects, the ZIP and the install guide.",
+  "description": "Export planning and the pack writer: the pack targets (Nexo, CraftEngine) with their YAML and layout, item models, equipment, media, validation, selection over several projects, the ZIP and the install guide.",
   "type": "module",
   "sideEffects": false,
   "exports": {

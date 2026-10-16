@@ -2,9 +2,15 @@
 import type { ReactNode } from 'react';
 import { Frame, Link2, Music, Smile } from 'lucide-react';
 import { useTranslations } from 'next-intl';
-import { type ExportPlan, nexoPluginPath, PAINTINGS_FILE, SOUNDS_FILE } from '@resourcepackbuilder/export';
-import { glyphFilePath } from '@resourcepackbuilder/core/nexo';
-import { glyphKindOf, type MediaEntryByKind, type MediaKind, mediaList, type Project } from '@resourcepackbuilder/core/project';
+import { type ExportPlan, packTargetFor } from '@resourcepackbuilder/export';
+import {
+  glyphKindOf,
+  type MediaEntryByKind,
+  type MediaKind,
+  mediaList,
+  type PackTargetId,
+  type Project,
+} from '@resourcepackbuilder/core/project';
 import { Button } from '@resourcepackbuilder/ui/components/button';
 import { Tip } from '@resourcepackbuilder/ui';
 import { addGlyph, addPainting, addSound } from '../../commands/media';
@@ -22,8 +28,6 @@ interface MediaViewInfo<K extends MediaKind> {
   icon: ReactNode;
   /** Message section below `media` */
   section: 'glyphs' | 'sounds' | 'paintings';
-  /** The generated Nexo file (relative to plugins/Nexo) */
-  configFile: (project: Project) => string;
   /** Adds an entry for an uploaded file named `name` */
   add: (name: string, file: MediaFileByKind[K]) => void;
   card: (entry: MediaEntryByKind[K], project: Project, plan: ExportPlan | null) => ReactNode;
@@ -33,25 +37,25 @@ const MEDIA_VIEWS: { [K in MediaKind]: MediaViewInfo<K> } = {
   glyph: {
     icon: <Smile className="size-7" />,
     section: 'glyphs',
-    configFile: glyphFilePath,
     add: (name, file) => addGlyph(name, file, glyphKindOf(file)),
     card: (glyph, project, plan) => <GlyphCard key={glyph.id} glyph={glyph} glyphs={project.glyphs} plan={plan} />,
   },
   sound: {
     icon: <Music className="size-7" />,
     section: 'sounds',
-    configFile: () => SOUNDS_FILE,
     add: (name, file) => addSound(name, [file]),
     card: (sound, _, plan) => <SoundCard key={sound.id} sound={sound} plan={plan} />,
   },
   painting: {
     icon: <Frame className="size-7" />,
     section: 'paintings',
-    configFile: () => PAINTINGS_FILE,
     add: addPainting,
     card: (painting, _, plan) => <PaintingCard key={painting.id} painting={painting} plan={plan} />,
   },
 };
+
+/** The glyph tag the hint shows as an example, by pack target. */
+const GLYPH_TAG_EXAMPLES: Record<PackTargetId, string> = { nexo: '<glyph:id>', craftengine: '<image:namespace:id>' };
 
 /** Adds a glyph that shows a cell of another (multi-bitmap) glyph instead of its own image. */
 function ReferenceGlyphButton() {
@@ -74,16 +78,17 @@ function MediaView<K extends MediaKind>({ kind }: { kind: K }) {
   const { section } = view;
   const files = MEDIA_FILES[kind];
   const entries = mediaList(project, kind);
+  const { layout } = packTargetFor(project);
 
   return (
     <MediaPage
       icon={view.icon}
       title={t(`${section}.title`)}
       count={t(`${section}.count`, { count: entries.length })}
-      configPath={nexoPluginPath(view.configFile(project))}
+      configPath={`${layout.pluginDir}/${layout.mediaFile(project, kind)}`}
       actions={kind === 'glyph' && <ReferenceGlyphButton />}
       // Only the glyph hint uses {tag}
-      hint={t.rich(`${section}.hint`, { ...richTags, tag: '<glyph:id>' })}
+      hint={t.rich(`${section}.hint`, { ...richTags, target: project.target, tag: GLYPH_TAG_EXAMPLES[project.target] })}
       drop={{
         accept: files.accept,
         formats: files.formats,

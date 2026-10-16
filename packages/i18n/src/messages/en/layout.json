@@ -71,6 +71,22 @@
       "paintings": {
         "label": "Paintings",
         "hint": "Paintings: custom paintings to hang up"
+      },
+      "lootSources": {
+        "label": "Loot sources",
+        "hint": "Loot sources: extra loot for vanilla blocks, mobs, chests and fishing"
+      },
+      "templates": {
+        "label": "Templates",
+        "hint": "Templates: reusable config with arguments"
+      },
+      "globalVariables": {
+        "label": "Global variables",
+        "hint": "Global variables: texts for '<'global:name>"
+      },
+      "attributes": {
+        "label": "Attributes",
+        "hint": "Attributes: custom stats, equipment sets and damage rules"
       }
     },
     "testServer": {
@@ -91,7 +107,8 @@
       "label": "Paste properties…",
       "fromItem": "from “{name}”",
       "fromItemIntoFolder": "from “{name}” into all items of the folder",
-      "needsCopy": "Copy from an item first"
+      "needsCopy": "Copy from an item first",
+      "unsupported": "Only in Nexo projects for now"
     }
   },
   "folder": {
@@ -118,7 +135,7 @@
     "dropNeedsFolder": "Create a folder first – the items are created inside it."
   },
   "folderView": {
-    "targetHint": "Target in the Nexo folder",
+    "targetHint": "Target in the plugin folder",
     "itemCount": "{count, plural, one {# item} other {# items}}",
     "newItem": "New item",
     "newSubfolder": "Create subfolder",
@@ -164,7 +181,13 @@
     "defaultName": "My pack",
     "namespace": "Namespace (resource pack)",
     "version": "Minecraft version (server)",
-    "create": "Create project"
+    "create": "Create project",
+    "target": "Server plugin",
+    "targetHint": "You can't change this later.",
+    "targets": {
+      "nexo": { "name": "Nexo", "description": "Items, blocks and furniture for the Nexo plugin." },
+      "craftengine": { "name": "CraftEngine", "description": "Items, blocks and furniture for the CraftEngine plugin." }
+    }
   },
   "projectList": {
     "storageUnavailable": "Projects cannot be saved in this browser. Please use project files.",

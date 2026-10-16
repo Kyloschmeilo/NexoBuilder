@@ -17,9 +17,12 @@ import { useOpenProject } from '../../../store/project';
 import { useSchemaText } from '../../../components/useSchemaText';
 import { isOneOf } from '../../../lib/isOneOf';
 
+/** CraftEngine writes vanilla ids in lower case (diamond), Nexo materials in upper case (DIAMOND). */
+const LOWER_CASE_MATERIALS = CRAFTING_MATERIALS.map((option) => ({ ...option, value: option.value.toLowerCase() }));
+
 /** The project's items as suggestions for a Nexo ingredient: their item id, shown with their name. */
 function itemChoices(project: Project): LiteralChoice[] {
-  return Object.values(project.items).map((item) => ({ value: item.nexoId, text: itemLabel(item) }));
+  return Object.values(project.items).map((item) => ({ value: item.itemId, text: itemLabel(item) }));
 }
 
 const SOURCES: IngredientSource[] = INGREDIENT_SOURCES.map((source) => source.value);
@@ -30,9 +33,10 @@ export function IngredientRow({ value, onChange }: { value: RecipeIngredient; on
   const tSchema = useSchemaText();
   const project = useOpenProject();
   const nexoItems = useMemo(() => itemChoices(project), [project]);
-  const suggestions = value.source === 'minecraft' ? CRAFTING_MATERIALS : value.source === 'nexo' ? nexoItems : ITEM_TAGS;
+  const materials = project.target === 'craftengine' ? LOWER_CASE_MATERIALS : CRAFTING_MATERIALS;
+  const suggestions = value.source === 'minecraft' ? materials : value.source === 'nexo' ? nexoItems : ITEM_TAGS;
   const placeholder = {
-    minecraft: t('recipes.placeholderMinecraft'),
+    minecraft: t('recipes.placeholderMinecraft', { target: project.target }),
     nexo: t('recipes.placeholderNexo'),
     tag: t('recipes.placeholderTag'),
   }[value.source];

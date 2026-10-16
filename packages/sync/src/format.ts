@@ -29,6 +29,8 @@ import {
   withoutUndefined,
 } from '@resourcepackbuilder/utils';
 import {
+  type CraftEngineProjectData,
+  CraftEngineProjectSchema,
   type Folder,
   FolderSchema,
   type Item,
@@ -38,6 +40,8 @@ import {
   type MediaEntryByKind,
   type MediaKind,
   mediaList,
+  PACK_TARGETS,
+  type PackTargetId,
   parseItem,
   type Project,
   type ProjectSettings,
@@ -56,7 +60,11 @@ export interface ProjectMeta {
   id: string;
   name: string;
   namespace: string;
+  /** Missing in files of versions without CraftEngine – the project keeps its own then */
+  target?: PackTargetId;
   settings: ProjectSettings;
+  /** Project-wide CraftEngine data (loot sources, templates …); authoritative only when `target` is set */
+  craftEngine?: CraftEngineProjectData;
   rootFolderIds: string[];
   glyphOrder: string[];
   /** Since 1.4 – older versions know no sounds/paintings */
@@ -163,18 +171,20 @@ export function parseEntityPath(path: string): EntityRef | null {
 }
 
 function projectMeta(project: Project): ProjectMeta {
-  return {
+  return withoutUndefined({
     formatVersion: 1,
     id: project.id,
     name: project.name,
     namespace: project.namespace,
+    target: project.target,
     settings: project.settings,
+    craftEngine: project.craftEngine,
     rootFolderIds: project.rootFolderIds,
     glyphOrder: project.glyphs.map((g) => g.id),
     soundOrder: project.sounds.map((g) => g.id),
     paintingOrder: project.paintings.map((g) => g.id),
     createdAt: project.createdAt,
-  };
+  });
 }
 
 /** Returns the local state of an entry (undefined = does not exist or deleted). */
@@ -215,7 +225,9 @@ export function changedEntityKeys(prev: Project, next: Project): string[] {
   if (
     prev.name !== next.name ||
     prev.namespace !== next.namespace ||
+    prev.target !== next.target ||
     prev.settings !== next.settings ||
+    prev.craftEngine !== next.craftEngine ||
     prev.createdAt !== next.createdAt ||
     !sameList(prev.rootFolderIds, next.rootFolderIds) ||
     MEDIA_KIND_LIST.some((kind) => !sameList<{ id: string }>(mediaList(prev, kind), mediaList(next, kind), (e) => e.id))
@@ -277,7 +289,9 @@ const ProjectMetaSchema = z
     id: z.string(),
     name: z.string(),
     namespace: z.string(),
+    target: optional(z.enum(PACK_TARGETS)),
     settings: plainObject(),
+    craftEngine: optional(CraftEngineProjectSchema),
     rootFolderIds: listOf(z.string()),
     glyphOrder: listOf(z.string()),
     soundOrder: optional(listOf(z.string())),
@@ -287,7 +301,7 @@ const ProjectMetaSchema = z
   .transform((meta): ProjectMeta => withoutUndefined({ ...meta, settings: settingsSchema(meta.name).parse(meta.settings) }));
 
 /** Item data: the fields every complete item file has, then the project migration. */
-const ItemDataSchema = z.looseObject({ nexoId: z.string(), folderId: z.string(), config: plainObject() }).transform((raw, ctx) => {
+const ItemDataSchema = z.looseObject({ itemId: z.string(), folderId: z.string(), config: plainObject() }).transform((raw, ctx) => {
   const item = parseItem(raw, Date.now());
   if (item) return item;
   ctx.addIssue({ code: 'custom', message: 'no item' });

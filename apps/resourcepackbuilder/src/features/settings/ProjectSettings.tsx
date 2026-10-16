@@ -2,7 +2,7 @@
 import { useId } from 'react';
 import { useTranslations } from 'next-intl';
 import { MC_VERSIONS, PACK_NAME_PATTERN } from '@resourcepackbuilder/minecraft';
-import { nexoPluginPath, packLocation } from '@resourcepackbuilder/export';
+import { packTargetFor } from '@resourcepackbuilder/export';
 import { Field, FieldDescription, FieldError, FieldLabel } from '@resourcepackbuilder/ui/components/field';
 import { Input } from '@resourcepackbuilder/ui/components/input';
 import { NativeSelect, NativeSelectOption } from '@resourcepackbuilder/ui/components/native-select';
@@ -16,11 +16,13 @@ import { PackIconField } from './PackIconField';
 export function ProjectSettings() {
   const t = useTranslations('dialogs.settings');
   const id = useId();
+  const tTargets = useTranslations('layout.projectForm.targets');
   const project = useOpenProject();
   const checkNamespace = useNamespaceProblem();
-  const namespaceProblem = checkNamespace(project.namespace);
+  const namespaceProblem = checkNamespace(project.namespace, project.target);
   const { settings } = project;
   const isPackNameValid = PACK_NAME_PATTERN.test(settings.packName);
+  const { layout } = packTargetFor(project);
 
   return (
     <div className="flex flex-col gap-5">
@@ -28,6 +30,11 @@ export function ProjectSettings() {
         <Field>
           <FieldLabel htmlFor={`${id}-name`}>{t('projectName')}</FieldLabel>
           <Input id={`${id}-name`} value={project.name} onChange={(e) => updateProjectSettings((p) => (p.name = e.target.value))} />
+        </Field>
+        <Field>
+          <FieldLabel htmlFor={`${id}-target`}>{t('target')}</FieldLabel>
+          <Input id={`${id}-target`} readOnly disabled value={tTargets(`${project.target}.name`)} />
+          <FieldDescription>{t('targetHelp')}</FieldDescription>
         </Field>
         <Field>
           <FieldLabel htmlFor={`${id}-version`}>{t('minecraftVersion')}</FieldLabel>
@@ -66,7 +73,7 @@ export function ProjectSettings() {
             onChange={(e) => updateProjectSettings((p) => (p.settings.packName = e.target.value))}
           />
           {isPackNameValid ? (
-            <FieldDescription className="font-mono text-xs break-all">{nexoPluginPath(packLocation(project, false))}</FieldDescription>
+            <FieldDescription className="font-mono text-xs break-all">{`${layout.pluginDir}/${layout.packLocation(project, false)}`}</FieldDescription>
           ) : (
             <FieldError>{t('packNameInvalid')}</FieldError>
           )}
@@ -83,12 +90,24 @@ export function ProjectSettings() {
 
       <PackIconField packIcon={settings.packIcon} />
 
-      <CheckboxField
-        checked={settings.useItemModel}
-        onChange={(checked) => updateProjectSettings((p) => (p.settings.useItemModel = checked))}
-        label={t('useItemModel')}
-        description={t.rich('useItemModelHelp', { ...richTags, component: 'Components.item_model: nexo:<item_id>' })}
-      />
+      {/* A Nexo setting: the CraftEngine export does not read it */}
+      {project.target === 'nexo' && (
+        <CheckboxField
+          checked={settings.useItemModel}
+          onChange={(checked) => updateProjectSettings((p) => (p.settings.useItemModel = checked))}
+          label={t('useItemModel')}
+          description={t.rich('useItemModelHelp', { ...richTags, component: 'Components.item_model: nexo:<item_id>' })}
+        />
+      )}
+      {/* A CraftEngine setting: Nexo has no item browser categories */}
+      {project.target === 'craftengine' && (
+        <CheckboxField
+          checked={settings.ceCategoriesFromFolders}
+          onChange={(checked) => updateProjectSettings((p) => (p.settings.ceCategoriesFromFolders = checked))}
+          label={t('ceCategoriesFromFolders')}
+          description={t.rich('ceCategoriesFromFoldersHelp', richTags)}
+        />
+      )}
     </div>
   );
 }

@@ -62,6 +62,28 @@ export function listEntryFrame(index: number): IssueContext {
   return { code: 'context.listEntry', args: { index } };
 }
 
+/** A CraftEngine loot source, named by its id. */
+export function lootSourceFrame(id: string): IssueContext {
+  return { code: 'context.lootSource', args: { id: id || '?' } };
+}
+
+/** A CraftEngine template of the project, named by its id. */
+export function templateFrame(id: string): IssueContext {
+  return { code: 'context.template', args: { id: id || '?' } };
+}
+
+/**
+ * An entry of a CraftEngine project's attribute system (`context.attribute`, `context.attributeOperation`,
+ * `context.equipmentSet`, `context.damageRule`), named by its id (a damage rule by its damage type) or its position.
+ */
+export function attributeEntryFrame(
+  kind: 'attribute' | 'attributeOperation' | 'equipmentSet' | 'damageRule',
+  id: string,
+  index: number,
+): IssueContext {
+  return { code: `context.${kind}`, args: { id: id || `#${index}` } };
+}
+
 export function mapKeyFrame(key: string): IssueContext {
   return { code: 'context.mapKey', args: { key } };
 }

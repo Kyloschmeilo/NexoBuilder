@@ -2,7 +2,9 @@ import { describe, expect, it } from 'vitest';
 import { createGlyph, createProject } from '@resourcepackbuilder/core/project';
 import { makePngDataUrl } from '@resourcepackbuilder/test-utils/png';
 import { PackWriter } from './packWriter';
+import { isSafeRelativePath } from './paths';
 import { planExport } from './plan';
+import { listMultiExportPaths } from './zip';
 
 const PNG = makePngDataUrl(16, 16);
 
@@ -15,6 +17,29 @@ describe('PackWriter', () => {
     expect([...writer.files.keys()]).toEqual(['c.png']);
     expect(writer.issues.map((i) => i.args?.path)).toEqual(['a.png', 'b.png']);
     expect(writer.issues.every((i) => i.code === 'plan.fileUnreadable' && i.level === 'error')).toBe(true);
+  });
+
+  it('refuses paths that could leave the pack', () => {
+    const unsafe = ['../x.json', 'a/../b.json', 'a//b.json', './a.json', '/abs.json', 'C:/x.json', 'a\\b.json', ''];
+    for (const path of unsafe) expect(isSafeRelativePath(path), path).toBe(false);
+    expect(isSafeRelativePath('assets/ns/models/item/a-b.c.json')).toBe(true);
+
+    const writer = new PackWriter(true);
+    writer.text('../evil.json', '{}');
+    expect(writer.binary('a/../../b.png', PNG)).toBe(false);
+    writer.json('ok.json', {});
+    expect([...writer.files.keys()]).toEqual(['ok.json']);
+    expect(writer.issues.map((i) => [i.code, i.args?.path])).toEqual([
+      ['plan.unsafePath', '../evil.json'],
+      ['plan.unsafePath', 'a/../../b.png'],
+    ]);
+  });
+
+  it('refuses to put an unsafe path into an archive', () => {
+    const project = createProject('X', 'x');
+    const plan = planExport(project);
+    plan.pluginFiles.set('../outside.yml', 'a: 1');
+    expect(() => listMultiExportPaths({ projects: [{ project, plan }], issues: [] }, 'full')).toThrow(/Unsafe path/);
   });
 
   it('checks data URLs without decoding them when binaries are left out', () => {

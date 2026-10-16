@@ -34,6 +34,8 @@
     "themeHelp": "„System“ folgt der Einstellung deines Betriebssystems.",
     "projectName": "Projektname",
     "minecraftVersion": "Minecraft-Version des Servers",
+    "target": "Server-Plugin",
+    "targetHelp": "Das lässt sich später nicht ändern.",
     "minecraftVersionHelp": "Bestimmt, welche Komponenten verfügbar sind und welche Modell-Features erlaubt sind.",
     "namespace": "Namespace im Resourcepack",
     "namespaceHelp": "Dateien landen unter assets/{namespace}/…",
@@ -45,7 +47,9 @@
     "upload": "Hochladen",
     "replace": "Ersetzen",
     "useItemModel": "ItemModel-Komponente setzen (empfohlen)",
-    "useItemModelHelp": "Setzt <code>{component}</code>. So bekommt jedes Item ein eigenes ItemModel statt CustomModelData – das vermeidet Konflikte (Minecraft 1.21.4+). Wird bei Items mit fester CustomModelData automatisch weggelassen."
+    "useItemModelHelp": "Setzt <code>{component}</code>. So bekommt jedes Item ein eigenes ItemModel statt CustomModelData – das vermeidet Konflikte (Minecraft 1.21.4+). Wird bei Items mit fester CustomModelData automatisch weggelassen.",
+    "ceCategoriesFromFolders": "Kategorien aus Ordnern",
+    "ceCategoriesFromFoldersHelp": "Schreibt categories.yml mit einer Kategorie pro Ordner, angezeigt im Item-Browser (<code>/ce</code>). Unterordner werden Unterkategorien."
   },
   "newItem": {
     "title": "Neues Item",

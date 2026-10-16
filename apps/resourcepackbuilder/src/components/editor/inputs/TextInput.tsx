@@ -1,8 +1,9 @@
-import { useMemo } from 'react';
+import { type KeyboardEvent, useMemo, useState } from 'react';
 import { cn } from 'cn';
 import { SuggestInput } from '@resourcepackbuilder/ui';
 import { Input } from '@resourcepackbuilder/ui/components/input';
 import { useChoiceText, type Choice } from './choices';
+import { commitsOnKey, pendingDraft, type TextDraft } from './textDraft';
 
 /**
  * Suggestions for an input (`<input list={id}>`) – for list rows whose Enter key adds or commits a row;
@@ -36,27 +37,69 @@ interface TextInputProps {
   mono?: boolean;
   autoFocus?: boolean;
   className?: string;
+  /**
+   * Report the text only when it is final: on picking a suggestion, on Enter or when the input loses focus (a type
+   * that switches the fields below should not change on every keystroke).
+   */
+  commitOnBlur?: boolean;
 }
 
 /** Single-line text input with optional suggestions (a popup that only fills in the text). */
-export function TextInput({ id, value, onChange, placeholder, suggestions, invalid, mono, autoFocus, className }: TextInputProps) {
+export function TextInput({
+  id,
+  value,
+  onChange,
+  placeholder,
+  suggestions,
+  invalid,
+  mono,
+  autoFocus,
+  className,
+  commitOnBlur,
+}: TextInputProps) {
   const choiceText = useChoiceText();
   const items = useMemo(
     () => suggestions?.map((choice) => ({ value: choice.value, label: choiceText(choice) })) ?? [],
     [suggestions, choiceText],
   );
+  // The text typed since the last commit (commitOnBlur only); a change of `value` from outside drops it
+  const [typed, setTyped] = useState<TextDraft | null>(null);
+  const draft = pendingDraft(typed, value);
   const change = (text: string) => onChange(text === '' ? undefined : text);
+  const commit = (text: string) => {
+    setTyped(null);
+    if (text !== (value ?? '')) change(text);
+  };
+  const type = (text: string, picked = false) => {
+    if (!commitOnBlur) change(text);
+    else if (picked) commit(text);
+    else setTyped({ text, base: value });
+  };
+  const finish = commitOnBlur
+    ? {
+        onBlur: () => {
+          if (draft !== null) commit(draft);
+        },
+        onKeyDown: (e: KeyboardEvent<HTMLInputElement>) => {
+          // The suggestion popup marks its highlighted entry with aria-activedescendant on the input
+          const highlighted = e.currentTarget.hasAttribute('aria-activedescendant');
+          if (draft !== null && commitsOnKey(e.key, draft, highlighted)) commit(draft);
+        },
+      }
+    : {};
+  const shown = draft ?? value ?? '';
   if (items.length > 0) {
     return (
       <SuggestInput
         id={id}
         className={cn(mono && 'font-mono', className)}
-        value={value ?? ''}
-        onValueChange={change}
+        value={shown}
+        onValueChange={type}
         suggestions={items}
         placeholder={placeholder}
         invalid={invalid}
         autoFocus={autoFocus}
+        {...finish}
       />
     );
   }
@@ -65,10 +108,11 @@ export function TextInput({ id, value, onChange, placeholder, suggestions, inval
       id={id}
       className={cn(mono && 'font-mono', className)}
       aria-invalid={invalid || undefined}
-      value={value ?? ''}
+      value={shown}
       placeholder={placeholder}
       autoFocus={autoFocus}
-      onChange={(e) => change(e.target.value)}
+      onChange={(e) => type(e.target.value)}
+      {...finish}
       spellCheck={false}
     />
   );

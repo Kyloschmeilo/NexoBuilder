@@ -47,3 +47,9 @@ export function setSoundJukebox(sound: Sound, enabled: boolean): void {
   sound.jukebox = enabled ? (sound.jukebox ?? createJukeboxSong()) : null;
   if (enabled) sound.stream = true;
 }
+
+/** Path of the OGG file relative to assets/<ns>/sounds (without extension) */
+export function soundFilePath(sound: Sound, index: number): string {
+  const base = sound.soundId.split('.').filter(Boolean).join('/') || 'sound';
+  return sound.files.length > 1 ? `${base}_${index + 1}` : base;
+}

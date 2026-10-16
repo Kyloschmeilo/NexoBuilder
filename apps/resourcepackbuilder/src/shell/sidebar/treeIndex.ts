@@ -39,7 +39,7 @@ export function searchItems(project: Project, query: string): Set<string> | null
   if (!needle) return null;
   const hits = new Set<string>();
   for (const item of Object.values(project.items)) {
-    if (itemLabel(item).toLowerCase().includes(needle) || item.nexoId.includes(needle)) hits.add(item.id);
+    if (itemLabel(item).toLowerCase().includes(needle) || item.itemId.includes(needle)) hits.add(item.id);
   }
   return hits;
 }

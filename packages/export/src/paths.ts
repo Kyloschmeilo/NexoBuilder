@@ -10,32 +10,19 @@
  *
  * Textures deliberately live under textures/item or textures/block: only these folders end up
  * automatically in Minecraft's item or block atlas (also from 1.21.11 on with separate atlases).
+ *
+ * The plugin side (item configs, recipes …) belongs to the pack target, e.g. targets/nexo/layout.ts.
  */
 import { PACK_NAME_PATTERN } from '@resourcepackbuilder/minecraft';
-import {
-  DEFAULT_PACK_NAME,
-  getFolderSlugs,
-  isBlockItem,
-  type Item,
-  type Project,
-  projectFileName,
-} from '@resourcepackbuilder/core/project';
+import { DEFAULT_PACK_NAME, getFolderSlugs, isBlockItem, type Item, type Project } from '@resourcepackbuilder/core/project';
 
-/** The Nexo plugin folder on a server; every exported config file is relative to it. */
-export const NEXO_PLUGIN_DIR = 'plugins/Nexo';
-
-/** `relativePath` (e.g. "sounds.yml") inside the Nexo plugin folder, as shown to users. */
-export function nexoPluginPath(relativePath: string): string {
-  return `${NEXO_PLUGIN_DIR}/${relativePath}`;
-}
-
-function textureDirFor(item: Item): 'item' | 'block' {
-  return isBlockItem(item) ? 'block' : 'item';
+function textureDirFor(project: Project, item: Item): 'item' | 'block' {
+  return isBlockItem(item, project.target) ? 'block' : 'item';
 }
 
 /** Model path of an item's main model, e.g. "item/weapons/ruby_sword" */
 export function modelPathFor(project: Project, item: Item): string {
-  return [textureDirFor(item), ...getFolderSlugs(project, item.folderId), item.nexoId].join('/');
+  return [textureDirFor(project, item), ...getFolderSlugs(project, item.folderId), item.itemId].join('/');
 }
 
 export function modelFile(namespace: string, modelPath: string): string {
@@ -72,26 +59,18 @@ export function soundFile(namespace: string, soundPath: string): string {
   return `assets/${namespace}/sounds/${soundPath}.ogg`;
 }
 
-/** YAML file (relative to plugins/Nexo) for items in the folder `folderSlugs`; `nexoId` names it in "one file per item" mode. */
-export function itemYamlFile(project: Project, folderSlugs: string[], nexoId: string): string {
-  const dir = ['items', ...(project.settings.itemsInProjectFolder ? [projectFileName(project)] : []), ...folderSlugs];
-  const fileName = project.settings.yamlFileMode === 'item' ? nexoId : (folderSlugs[folderSlugs.length - 1] ?? 'items');
-  return `${dir.join('/')}/${fileName}.yml`;
+/**
+ * Whether `path` stays inside the folder it is relative to: not absolute, no drive, no backslash, and no empty,
+ * "." or ".." segment. Every path the export writes (pack, plugin files, archive entries) has to pass, so an odd
+ * item ID or folder name can never reach outside the archive or the test server's plugin folder.
+ */
+export function isSafeRelativePath(path: string): boolean {
+  if (!path || path.includes('\\') || path.startsWith('/') || /^[A-Za-z]:/.test(path)) return false;
+  return path.split('/').every((segment) => segment !== '' && segment !== '.' && segment !== '..');
 }
 
-/** YAML file of a folder's items; in "one file per item" mode with `itemPlaceholder` as file name. */
-export function folderYamlFile(project: Project, folderId: string, itemPlaceholder = '<item_id>'): string {
-  return itemYamlFile(project, getFolderSlugs(project, folderId), itemPlaceholder);
-}
-
-/** Name of the pack folder in pack/external_packs; an invalid name (reported by the checks) falls back to a default. */
+/** Name of the exported resource pack (its folder or ZIP); an invalid name (reported by the checks) falls back to a default. */
 export function exportPackName(project: Project): string {
   const name = project.settings.packName;
   return PACK_NAME_PATTERN.test(name) ? name : DEFAULT_PACK_NAME;
-}
-
-/** Location of the resource pack inside plugins/Nexo. */
-export function packLocation(project: Project, asZip = project.settings.externalPackAsZip): string {
-  const name = exportPackName(project);
-  return asZip ? `pack/external_packs/${name}.zip` : `pack/external_packs/${name}/`;
 }

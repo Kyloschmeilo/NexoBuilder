@@ -7,14 +7,15 @@ import type {
   TestServerSnapshot,
   TestServerState,
 } from '@resourcepackbuilder/desktop-contract';
-import { testServerConfigSchema } from '@resourcepackbuilder/desktop-contract/schemas';
+import { savedTestServerConfigSchema, testServerConfigSchema } from '@resourcepackbuilder/desktop-contract/schemas';
+import { DEFAULT_PACK_TARGET } from '@resourcepackbuilder/core/project';
 import { BrowserWindow } from 'electron';
 import fsp from 'node:fs/promises';
 import { z } from 'zod';
 import { readJsonFile } from '../fileHelpers';
 import { t } from '../i18n';
 import { send } from '../ipc';
-import { configFile, rootDir, serverDir } from './paths';
+import { configFile, moveLegacyServerDir, rootDir, serverDir } from './paths';
 
 type InternalState = Omit<TestServerState, 'serverDir' | 'address'>;
 
@@ -22,12 +23,9 @@ type InternalState = Omit<TestServerState, 'serverDir' | 'address'>;
 const SNAPSHOT_LOG_LINES = 1000;
 const LOG_FLUSH_MS = 100;
 
-/** testserver.json. Settings missing in older files are filled from the defaults before the check. */
+/** testserver.json (older settings are brought up to date by `savedTestServerConfigSchema`). */
 const savedFileSchema = z.object({
-  config: z.preprocess(
-    (config) => ({ ...DEFAULT_TEST_SERVER_CONFIG, ...(typeof config === 'object' ? config : {}) }),
-    testServerConfigSchema,
-  ),
+  config: savedTestServerConfigSchema,
   installed: z
     .object({ paperVersion: z.string(), paperBuild: z.number(), javaPath: z.string(), javaVersion: z.number() })
     .nullable()
@@ -39,6 +37,7 @@ export const state: InternalState = {
   message: null,
   progress: null,
   config: { ...DEFAULT_TEST_SERVER_CONFIG },
+  target: null,
   installed: null,
   startedAt: null,
   lastSync: null,
@@ -52,7 +51,7 @@ let flushTimer: NodeJS.Timeout | null = null;
 export function publicState(): TestServerState {
   return {
     ...state,
-    serverDir: serverDir(),
+    serverDir: serverDir(state.target ?? DEFAULT_PACK_TARGET),
     address: state.config.port === DEFAULT_MINECRAFT_PORT ? 'localhost' : `localhost:${state.config.port}`,
   };
 }
@@ -96,9 +95,12 @@ export function clearLog(): void {
 
 let configLoad: Promise<void> | null = null;
 
-/** Loads the saved settings once; concurrent callers share the same load. */
+/** Loads the saved settings once (after moving an older server folder into place); concurrent callers share the load. */
 export function loadConfig(): Promise<void> {
-  configLoad ??= readConfig();
+  configLoad ??= moveLegacyServerDir().then(readConfig, (err: unknown) => {
+    logInfo(t('testServer.legacyMoveFailed', { error: err instanceof Error ? err.message : String(err) }));
+    return readConfig();
+  });
   return configLoad;
 }
 

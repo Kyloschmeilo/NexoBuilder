@@ -7,8 +7,8 @@ describe('validateItemIds', () => {
     const project = createProject('Test');
     const folder = createFolder('A', null);
     insertFolder(project, folder);
-    insertItem(project, createItem({ displayName: 'A', nexoId: '', folderId: folder.id, model: null }));
-    insertItem(project, createItem({ displayName: 'B', nexoId: '', folderId: folder.id, model: null }));
+    insertItem(project, createItem({ displayName: 'A', itemId: '', folderId: folder.id, model: null }));
+    insertItem(project, createItem({ displayName: 'B', itemId: '', folderId: folder.id, model: null }));
     expect(validateItemIds(getItemsInTreeOrder(project)).map((i) => i.code)).toEqual(['plan.itemIdMissing', 'plan.itemIdMissing']);
   });
 });

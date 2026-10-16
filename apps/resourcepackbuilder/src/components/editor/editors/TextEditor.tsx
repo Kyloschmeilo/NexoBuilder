@@ -1,8 +1,9 @@
-import { type TextField, validateTextFormat } from '@resourcepackbuilder/core/nexo';
+import { type TextField, validateTextFormat } from '@resourcepackbuilder/core/form';
 import { Textarea } from '@resourcepackbuilder/ui/components/textarea';
 import { MiniMessageBox } from '../../miniMessage/MiniMessageBox';
 import { MiniMessageLine } from '../../miniMessage/MiniMessageLine';
 import { useSchemaText } from '../../useSchemaText';
+import { useFieldContext } from '../fieldContext';
 import { FieldShell } from '../FieldShell';
 import { ColorInput } from '../inputs/ColorInput';
 import { TextInput } from '../inputs/TextInput';
@@ -16,6 +17,7 @@ function asText(value: unknown): string | undefined {
 
 export function TextEditor({ field, value, onChange, hideLabel }: EditorProps<TextField>) {
   const text = useSchemaText();
+  const { previewText } = useFieldContext();
   const textValue = asText(value);
   const error = text(textValue ? (validateTextFormat(field.format, textValue) ?? undefined) : undefined);
   const placeholder = text(field.placeholder);
@@ -33,7 +35,7 @@ export function TextEditor({ field, value, onChange, hideLabel }: EditorProps<Te
       </div>
       {field.format === 'minimessage' && textValue && (
         <MiniMessageBox className="min-w-0">
-          <MiniMessageLine text={textValue} />
+          <MiniMessageLine text={previewText ? previewText(textValue) : textValue} />
         </MiniMessageBox>
       )}
     </FieldShell>

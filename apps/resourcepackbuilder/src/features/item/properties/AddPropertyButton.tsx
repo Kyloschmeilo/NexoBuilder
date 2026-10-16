@@ -2,13 +2,20 @@ import { useState } from 'react';
 import { useTranslations } from 'next-intl';
 import { Plus } from 'lucide-react';
 import type { Item } from '@resourcepackbuilder/core/project';
-import { availableProperties, propertyConflict, type PropertyGroup, propertyYamlPath } from '@resourcepackbuilder/core/nexo';
+import {
+  availableProperties,
+  type FormSchema,
+  propertyConflict,
+  type PropertyGroup,
+  propertyYamlPath,
+} from '@resourcepackbuilder/core/form';
 import { Button } from '@resourcepackbuilder/ui/components/button';
 import { Command, CommandEmpty, CommandInput, CommandItem, CommandList } from '@resourcepackbuilder/ui/components/command';
 import { Popover, PopoverContent, PopoverTrigger } from '@resourcepackbuilder/ui/components/popover';
 import { addProperty } from '../../../commands/items';
 import { useOpenProject } from '../../../store/project';
 import { useSchemaText } from '../../../components/useSchemaText';
+import { PremiumBadge } from './PremiumBadge';
 import { VersionBadges } from './VersionBadges';
 
 /** Search matches when the label, description or YAML path contains the query (the keywords hold them). */
@@ -17,14 +24,24 @@ function matchesQuery(_value: string, search: string, keywords: string[] = []): 
   return !query || keywords.some((keyword) => keyword.toLowerCase().includes(query)) ? 1 : 0;
 }
 
-/** "Add" with a searchable list of the group's properties the item does not use yet. */
-export function AddPropertyButton({ item, group }: { item: Item; group: PropertyGroup }) {
+/** "Add" with a searchable list of the group's properties (those in `only`, if given) the item does not use yet. */
+export function AddPropertyButton({
+  schema,
+  item,
+  group,
+  only,
+}: {
+  schema: FormSchema;
+  item: Item;
+  group: PropertyGroup;
+  only?: string[];
+}) {
   const t = useTranslations('item');
   const tCommon = useTranslations('common');
   const tSchema = useSchemaText();
   const [isOpen, setIsOpen] = useState(false);
   const version = useOpenProject().settings.minecraftVersion;
-  const available = availableProperties(item, group);
+  const available = availableProperties(schema, item, group).filter((def) => !only || only.includes(def.id));
 
   return (
     <Popover open={isOpen} onOpenChange={setIsOpen}>
@@ -39,7 +56,7 @@ export function AddPropertyButton({ item, group }: { item: Item; group: Property
             {available.map((def) => {
               const label = tSchema(def.label);
               const description = tSchema(def.description);
-              const conflict = propertyConflict(item, def);
+              const conflict = propertyConflict(schema, item, def);
               return (
                 <CommandItem
                   key={def.id}
@@ -54,6 +71,7 @@ export function AddPropertyButton({ item, group }: { item: Item; group: Property
                   <div className="flex min-w-0 flex-1 flex-col gap-0.5">
                     <span className="flex flex-wrap items-center gap-1.5 font-medium">
                       {label}
+                      <PremiumBadge def={def} />
                       <VersionBadges def={def} version={version} showBoth />
                     </span>
                     <span className="text-xs text-muted-foreground">

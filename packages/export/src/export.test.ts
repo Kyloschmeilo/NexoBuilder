@@ -4,9 +4,8 @@ import { parse } from 'yaml';
 import { createFolder, createItem, createProject, insertFolder, insertItem, type Project } from '@resourcepackbuilder/core/project';
 import { convertBBModel, createTexture, createTextureModel } from '@resourcepackbuilder/minecraft';
 import { planExport } from './plan';
-import { INSTALL_GUIDE_FILE } from './installGuide';
-import { buildMultiExportZip } from './zip';
-import { singleExport } from '../test-utils/export';
+import { buildMultiExportZip, INSTALL_GUIDE_FILE } from './zip';
+import { pluginText, singleExport } from '../test-utils/export';
 import { makePngDataUrl } from '@resourcepackbuilder/test-utils/png';
 
 const PNG16 = makePngDataUrl(16, 16);
@@ -55,7 +54,7 @@ function buildProject(): Project {
 
   const sword = createItem({
     displayName: '<red>Rubin-Schwert',
-    nexoId: 'ruby_sword',
+    itemId: 'ruby_sword',
     folderId: weapons.id,
     material: 'DIAMOND_SWORD',
     model: createTextureModel('handheld', { layer0: 'ruby_sword.png' }, [{ name: 'ruby_sword.png', dataUrl: PNG16 }]),
@@ -71,7 +70,7 @@ function buildProject(): Project {
 
   const table = createItem({
     displayName: 'Eichentisch',
-    nexoId: 'oak_table',
+    itemId: 'oak_table',
     folderId: furniture.id,
     model: convertBBModel(sampleBBModel(), 'table.bbmodel'),
   });
@@ -86,7 +85,7 @@ function buildProject(): Project {
   };
   insertItem(project, table);
 
-  const chair = createItem({ displayName: 'Stuhl', nexoId: 'chair', folderId: chairs.id, model: null });
+  const chair = createItem({ displayName: 'Stuhl', itemId: 'chair', folderId: chairs.id, model: null });
   chair.config.Mechanics = { furniture: {} };
   chair.rawYaml = 'Mechanics:\n  furniture:\n    seat: 0,0.4,0\nexcludeFromInventory: true\n';
   insertItem(project, chair);
@@ -108,12 +107,12 @@ const text = (bytes: Uint8Array | undefined) => new TextDecoder().decode(bytes);
 describe('planExport', () => {
   it('creates the item YAMLs per folder with correct values', () => {
     const plan = planExport(buildProject());
-    expect([...plan.itemFiles.keys()].sort()).toEqual([
+    expect([...plan.pluginFiles.keys()].sort()).toEqual([
       'items/moebel/moebel.yml',
       'items/moebel/stuehle/stuehle.yml',
       'items/waffen/waffen.yml',
     ]);
-    const weapons = parse(plan.itemFiles.get('items/waffen/waffen.yml')!, { version: '1.1' });
+    const weapons = parse(pluginText(plan, 'items/waffen/waffen.yml'), { version: '1.1' });
     expect(weapons).toEqual({
       ruby_sword: {
         itemname: '<red>Rubin-Schwert',
@@ -129,20 +128,20 @@ describe('planExport', () => {
       },
     });
     // "yes" must be quoted for SnakeYAML
-    expect(plan.itemFiles.get('items/waffen/waffen.yml')).toContain('- "yes"');
-    expect(plan.itemFiles.get('items/waffen/waffen.yml')).toContain('itemname: "<red>Rubin-Schwert"');
+    expect(plan.pluginFiles.get('items/waffen/waffen.yml')).toContain('- "yes"');
+    expect(plan.pluginFiles.get('items/waffen/waffen.yml')).toContain('itemname: "<red>Rubin-Schwert"');
   });
 
   it('keeps empty mechanics and applies additional YAML', () => {
     const plan = planExport(buildProject());
-    const furniture = parse(plan.itemFiles.get('items/moebel/moebel.yml')!, { version: '1.1' });
+    const furniture = parse(pluginText(plan, 'items/moebel/moebel.yml'), { version: '1.1' });
     expect(furniture.oak_table.Mechanics.furniture).toEqual({
       hitbox: { barriers: ['0,0,0'] },
       rotatable: true,
       preview_placement: true,
       seats: ['0,0.5,0'],
     });
-    const chairs = parse(plan.itemFiles.get('items/moebel/stuehle/stuehle.yml')!, { version: '1.1' });
+    const chairs = parse(pluginText(plan, 'items/moebel/stuehle/stuehle.yml'), { version: '1.1' });
     expect(chairs).toEqual({
       chair: {
         itemname: 'Stuhl',
@@ -185,7 +184,7 @@ describe('planExport', () => {
   it('reports errors for duplicate IDs, invalid values and conflicts', () => {
     const project = buildProject();
     const folderId = project.rootFolderIds[0];
-    const dup = createItem({ displayName: 'Kopie', nexoId: 'ruby_sword', folderId, model: null });
+    const dup = createItem({ displayName: 'Kopie', itemId: 'ruby_sword', folderId, model: null });
     dup.config.Mechanics = { furniture: {}, custom_block: { type: 'NOTEBLOCK', custom_variation: 5000 } };
     dup.config.Components = { use_cooldown: { duration: 'zwei Sekunden' } };
     dup.rawYaml = 'foo: [';
@@ -204,8 +203,8 @@ describe('planExport', () => {
   it('exports the material in upper case and rejects invalid names', () => {
     const project = buildProject();
     const folderId = project.rootFolderIds[0];
-    const lower = createItem({ displayName: 'Lower', nexoId: 'lower', folderId, material: ' diamond_axe ', model: null });
-    const broken = createItem({ displayName: 'Broken', nexoId: 'broken', folderId, model: null });
+    const lower = createItem({ displayName: 'Lower', itemId: 'lower', folderId, material: ' diamond_axe ', model: null });
+    const broken = createItem({ displayName: 'Broken', itemId: 'broken', folderId, model: null });
     broken.rawYaml = 'material: diamond axe';
     insertItem(project, lower);
     insertItem(project, broken);
@@ -221,7 +220,7 @@ describe('planExport', () => {
     insertFolder(project, folder);
     const ore = createItem({
       displayName: 'Rubinerz',
-      nexoId: 'ruby_ore',
+      itemId: 'ruby_ore',
       folderId: folder.id,
       model: createTextureModel('cube_all', { all: 'ruby_ore.png' }, [{ name: 'ruby_ore.png', dataUrl: PNG16 }]),
     });
@@ -229,7 +228,7 @@ describe('planExport', () => {
     insertItem(project, ore);
     const plan = planExport(project);
     expect(plan.packFiles.has('assets/bloecke/textures/block/erze/ruby_ore/ruby_ore.png')).toBe(true);
-    const yaml = parse(plan.itemFiles.get('items/erze/erze.yml')!, { version: '1.1' });
+    const yaml = parse(pluginText(plan, 'items/erze/erze.yml'), { version: '1.1' });
     expect(yaml.ruby_ore.Pack.model).toBe('bloecke:block/erze/ruby_ore');
     expect(yaml.ruby_ore.Mechanics.custom_block).toEqual({
       type: 'NOTEBLOCK',
@@ -247,14 +246,14 @@ describe('planExport', () => {
     insertFolder(project, folder);
     const helmet = createItem({
       displayName: 'Rubinhelm',
-      nexoId: 'ruby_helmet',
+      itemId: 'ruby_helmet',
       folderId: folder.id,
       material: 'IRON_HELMET',
       model: null,
     });
     helmet.assets = { a1: createTexture('a1', 'layer_1', PNG64x32), a2: createTexture('a2', 'layer_2', PNG64x32) };
     helmet.armor = { set: 'ruby', layer1: '@asset:a1', layer2: '@asset:a2' };
-    const boots = createItem({ displayName: 'Rubinschuhe', nexoId: 'ruby_boots', folderId: folder.id, material: 'PAPER', model: null });
+    const boots = createItem({ displayName: 'Rubinschuhe', itemId: 'ruby_boots', folderId: folder.id, material: 'PAPER', model: null });
     boots.armor = { set: 'ruby' };
     boots.config.Components = { equippable: { slot: 'FEET' } };
     insertItem(project, helmet);
@@ -265,7 +264,7 @@ describe('planExport', () => {
     });
     expect(plan.packFiles.has('assets/ruestung/textures/entity/equipment/humanoid/ruby.png')).toBe(true);
     expect(plan.packFiles.has('assets/ruestung/textures/entity/equipment/humanoid_leggings/ruby.png')).toBe(true);
-    const yaml = parse(plan.itemFiles.get('items/ruestung/ruestung.yml')!, { version: '1.1' });
+    const yaml = parse(pluginText(plan, 'items/ruestung/ruestung.yml'), { version: '1.1' });
     expect(yaml.ruby_helmet.Components).toEqual({ equippable: { slot: 'HEAD', asset_id: 'ruestung:ruby' } });
     expect(yaml.ruby_boots.Components).toEqual({ equippable: { slot: 'FEET', asset_id: 'ruestung:ruby' } });
     expect(yaml.ruby_helmet.$armor).toBeUndefined();
@@ -286,7 +285,7 @@ describe('buildMultiExportZip (one project)', () => {
     expect(paths).toContain('pack/external_packs/mein_pack/assets/meinpack/models/item/moebel/oak_table.json');
     expect(paths).toContain(INSTALL_GUIDE_FILE);
     expect(paths).toEqual(result.paths);
-    expect(text(files.get('items/waffen/waffen.yml'))).toBe(plan.itemFiles.get('items/waffen/waffen.yml'));
+    expect(text(files.get('items/waffen/waffen.yml'))).toBe(plan.pluginFiles.get('items/waffen/waffen.yml'));
     const png = files.get('pack/external_packs/mein_pack/assets/meinpack/textures/item/waffen/ruby_sword/ruby_sword.png')!;
     expect([...png.slice(0, 4)]).toEqual([0x89, 0x50, 0x4e, 0x47]);
   });
@@ -315,11 +314,11 @@ describe('Variant models', () => {
     const folder = createFolder('Fernkampf', null);
     insertFolder(project, folder);
     const png = (name: string) => createTextureModel('handheld', { layer0: name }, [{ name, dataUrl: PNG16 }]);
-    const bow = createItem({ displayName: 'Langbogen', nexoId: 'longbow', folderId: folder.id, material: 'BOW', model: png('bow.png') });
+    const bow = createItem({ displayName: 'Langbogen', itemId: 'longbow', folderId: folder.id, material: 'BOW', model: png('bow.png') });
     bow.variants = { pulling_models: [png('bow_0.png'), png('bow_1.png'), png('bow_2.png')] };
     insertItem(project, bow);
     const plan = planExport(project);
-    const yaml = parse(plan.itemFiles.get('items/fernkampf/fernkampf.yml')!, { version: '1.1' });
+    const yaml = parse(pluginText(plan, 'items/fernkampf/fernkampf.yml'), { version: '1.1' });
     expect(yaml.longbow.Pack).toEqual({
       model: 'boegen:item/fernkampf/longbow',
       pulling_models: [
@@ -340,9 +339,9 @@ describe('Variant models', () => {
     const folder = createFolder('A', null);
     insertFolder(project, folder);
     const model = createTextureModel('generated', { layer0: 'a.png' }, [{ name: 'a.png', dataUrl: PNG16 }]);
-    const shield = createItem({ displayName: 'Schild', nexoId: 'shield', folderId: folder.id, material: 'PAPER', model });
+    const shield = createItem({ displayName: 'Schild', itemId: 'shield', folderId: folder.id, material: 'PAPER', model });
     shield.variants = { blocking_model: [model] };
-    const noModel = createItem({ displayName: 'Ohne', nexoId: 'ohne', folderId: folder.id, model: null });
+    const noModel = createItem({ displayName: 'Ohne', itemId: 'ohne', folderId: folder.id, model: null });
     noModel.variants = { cast_model: [model] };
     insertItem(project, shield);
     insertItem(project, noModel);
@@ -359,7 +358,7 @@ describe('Variant models', () => {
     expect(plan.issues.some((i) => i.target?.id === noModel.id && i.level === 'error' && i.code === 'plan.variantNeedsMainModel')).toBe(
       true,
     );
-    const yaml = parse(plan.itemFiles.get('items/a/a.yml')!, { version: '1.1' });
+    const yaml = parse(pluginText(plan, 'items/a/a.yml'), { version: '1.1' });
     expect(yaml.shield.Pack.blocking_model).toBe('test:item/a/shield-blocking');
   });
 });

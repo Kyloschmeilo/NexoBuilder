@@ -4,21 +4,20 @@
  */
 import { DEFAULT_MATERIAL } from './item';
 import type { NewItemInput } from './factory';
-import { validateNewItemIds, type ItemIdError } from './ids';
+import { itemIdFromName, validateNewItemIds, type ItemIdError } from './ids';
 import type { Project } from './types';
-import { slugify, stripFormatting } from '@resourcepackbuilder/utils';
 import { createDrafts, type ImportDraft, type ImportFile, type PngMode, unsupportedFiles } from '@resourcepackbuilder/minecraft';
 
 /** What the user enters for one new item. */
 export interface ItemMeta {
   displayName: string;
-  nexoId: string;
+  itemId: string;
   /** Once the ID was edited by hand, it no longer follows the display name */
   isIdEdited: boolean;
   material: string;
 }
 
-export type MetaPatch = Partial<Pick<ItemMeta, 'displayName' | 'nexoId' | 'material'>>;
+export type MetaPatch = Partial<Pick<ItemMeta, 'displayName' | 'itemId' | 'material'>>;
 
 export interface NewItemState {
   files: ImportFile[];
@@ -50,14 +49,14 @@ export function sourceKey(draft: ImportDraft): string {
 }
 
 function newMeta(displayName: string): ItemMeta {
-  return { displayName, nexoId: displayName && slugify(stripFormatting(displayName)), isIdEdited: false, material: DEFAULT_MATERIAL };
+  return { displayName, itemId: displayName && itemIdFromName(displayName), isIdEdited: false, material: DEFAULT_MATERIAL };
 }
 
 /** Applies entered values; the ID follows the display name until it is edited by hand. */
 function patchMeta(meta: ItemMeta, patch: MetaPatch): ItemMeta {
   const next = { ...meta, ...patch };
-  if (patch.nexoId !== undefined) next.isIdEdited = true;
-  else if (patch.displayName !== undefined && !meta.isIdEdited) next.nexoId = slugify(stripFormatting(patch.displayName));
+  if (patch.itemId !== undefined) next.isIdEdited = true;
+  else if (patch.displayName !== undefined && !meta.isIdEdited) next.itemId = itemIdFromName(patch.displayName);
   return next;
 }
 
@@ -138,7 +137,7 @@ export function newItemEntries(project: Project, state: NewItemState): NewItemEn
       });
   const idErrors = validateNewItemIds(
     project,
-    entries.map((entry) => entry.meta.nexoId),
+    entries.map((entry) => entry.meta.itemId),
   );
   return entries.map((entry, index) => ({ ...entry, idError: idErrors[index] }));
 }
@@ -154,7 +153,7 @@ export function isCreationBlocked(entries: NewItemEntry[]): boolean {
 export function newItemInputs(entries: NewItemEntry[], folderId: string): NewItemInput[] {
   return entries.map(({ draft, meta }) => ({
     displayName: meta.displayName,
-    nexoId: meta.nexoId,
+    itemId: meta.itemId,
     folderId,
     material: meta.material || DEFAULT_MATERIAL,
     model: draft?.model ?? null,

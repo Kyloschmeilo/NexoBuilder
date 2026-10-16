@@ -34,6 +34,8 @@
     "themeHelp": "“System” follows your operating system’s setting.",
     "projectName": "Project name",
     "minecraftVersion": "Server Minecraft version",
+    "target": "Server plugin",
+    "targetHelp": "You can't change this later.",
     "minecraftVersionHelp": "Determines which components are available and which model features are allowed.",
     "namespace": "Resource pack namespace",
     "namespaceHelp": "Files go to assets/{namespace}/…",
@@ -45,7 +47,9 @@
     "upload": "Upload",
     "replace": "Replace",
     "useItemModel": "Set the ItemModel component (recommended)",
-    "useItemModelHelp": "Sets <code>{component}</code>. This gives every item its own ItemModel instead of CustomModelData, which avoids conflicts (Minecraft 1.21.4+). Left out automatically for items with a fixed CustomModelData."
+    "useItemModelHelp": "Sets <code>{component}</code>. This gives every item its own ItemModel instead of CustomModelData, which avoids conflicts (Minecraft 1.21.4+). Left out automatically for items with a fixed CustomModelData.",
+    "ceCategoriesFromFolders": "Categories from folders",
+    "ceCategoriesFromFoldersHelp": "Writes categories.yml with one category per folder, shown in the item browser (<code>/ce</code>). Subfolders become subcategories."
   },
   "newItem": {
     "title": "New item",

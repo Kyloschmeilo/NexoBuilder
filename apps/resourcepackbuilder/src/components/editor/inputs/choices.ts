@@ -1,5 +1,5 @@
 import { useCallback } from 'react';
-import type { Option } from '@resourcepackbuilder/core/nexo';
+import type { Option } from '@resourcepackbuilder/core/form';
 import { useSchemaText } from '../../useSchemaText';
 
 /** A value offered for selection whose text the app already knows (e.g. an item's display name). */

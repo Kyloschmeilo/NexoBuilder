@@ -1,7 +1,7 @@
 import { useTranslations } from 'next-intl';
 import { ExternalLink, Trash2 } from 'lucide-react';
 import { type Item, toConfigValue } from '@resourcepackbuilder/core/project';
-import { emptyPropertyValue, getPropertyValue, type PropertyDef, propertyYamlPath } from '@resourcepackbuilder/core/nexo';
+import { emptyPropertyValue, getPropertyValue, type PropertyDef, propertyYamlPath } from '@resourcepackbuilder/core/form';
 import { versionSupport } from '@resourcepackbuilder/minecraft';
 import { IconButton, SectionCard, Tip } from '@resourcepackbuilder/ui';
 import { Alert, AlertDescription } from '@resourcepackbuilder/ui/components/alert';
@@ -10,6 +10,7 @@ import { removeProperty, setItemProperty } from '../../../commands/items';
 import { FieldRenderer } from '../../../components/editor';
 import { useOpenProject } from '../../../store/project';
 import { useSchemaText } from '../../../components/useSchemaText';
+import { PremiumBadge } from './PremiumBadge';
 import { VersionBadges } from './VersionBadges';
 
 function PropertyHints({ def, version }: { def: PropertyDef; version: string }) {
@@ -41,12 +42,14 @@ function PropertyHints({ def, version }: { def: PropertyDef; version: string }) 
 export function PropertyCard({ item, def }: { item: Item; def: PropertyDef }) {
   const t = useTranslations('item');
   const tSchema = useSchemaText();
-  const version = useOpenProject().settings.minecraftVersion;
+  const project = useOpenProject();
+  const version = project.settings.minecraftVersion;
   return (
     <SectionCard
       title={tSchema(def.label)}
       badges={
         <>
+          <PremiumBadge def={def} />
           <VersionBadges def={def} version={version} />
           <Tip label={t('properties.pathInYaml')}>
             <Badge variant="outline" className="font-mono">
@@ -59,7 +62,11 @@ export function PropertyCard({ item, def }: { item: Item; def: PropertyDef }) {
       actions={
         <>
           {def.docs && (
-            <IconButton label={t('properties.docs')} nativeButton={false} render={<a href={def.docs} target="_blank" rel="noreferrer" />}>
+            <IconButton
+              label={t(`properties.docs.${project.target}`)}
+              nativeButton={false}
+              render={<a href={def.docs} target="_blank" rel="noreferrer" />}
+            >
               <ExternalLink />
             </IconButton>
           )}

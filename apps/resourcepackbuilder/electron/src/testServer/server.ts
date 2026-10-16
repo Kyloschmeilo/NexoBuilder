@@ -1,11 +1,19 @@
 /**
- * The server process: start, stop, console commands, and Nexo's resource pack state read from the console.
+ * The server process: start, stop, console commands, and the plugin's resource pack state read from the console.
  *
  * Nexo builds the pack in the background. A "nexo reload" in the meantime starts a second build in parallel and both
  * fail (e.g. "items.json already exists"), so reloads wait until the current build is done.
  */
-import { NEXO_RELOAD_COMMAND } from '@resourcepackbuilder/export';
-import { consoleCommandText, isNexoReloadCommand, isPlayerName, opCommand, parseServerLogLine } from '@resourcepackbuilder/test-server';
+import { DEFAULT_PACK_TARGET, type PackTargetId } from '@resourcepackbuilder/core/project';
+import {
+  consoleCommandText,
+  isPlayerName,
+  opCommand,
+  parseServerLogLine,
+  type ServerAdapter,
+  serverAdapterFor,
+  tracksPackBuild,
+} from '@resourcepackbuilder/test-server';
 import { DesktopError, type PackStatus, type TestServerState } from '@resourcepackbuilder/desktop-contract';
 import { spawn, type ChildProcess, type ChildProcessWithoutNullStreams } from 'node:child_process';
 import type { Readable } from 'node:stream';
@@ -26,6 +34,16 @@ let stopRequested = false;
 let reloadPending = false;
 let packTimer: NodeJS.Timeout | undefined;
 
+/** The adapter of the plugin the server runs (or ran last). */
+function adapter(): ServerAdapter {
+  return serverAdapterFor(state.target ?? DEFAULT_PACK_TARGET);
+}
+
+/** The pack build can be followed: the server has the plugin, and the plugin reports its builds in the console. */
+const packBuildTracked = (): boolean => tracksPackBuild(state.target, state.config.pluginJars);
+
+const pluginArgs = () => ({ plugin: adapter().pluginName });
+
 /* ------------------------------------------------------------------ resource pack */
 
 function setPack(status: PackStatus, message: string | null = null) {
@@ -33,7 +51,7 @@ function setPack(status: PackStatus, message: string | null = null) {
   packTimer = undefined;
   if (status === 'building') {
     packTimer = setTimeout(() => {
-      logInfo(t('testServer.packTimeout'));
+      logInfo(t('testServer.packTimeout', pluginArgs()));
       setPack('idle');
     }, PACK_BUILD_TIMEOUT_MS);
   }
@@ -44,16 +62,16 @@ function setPack(status: PackStatus, message: string | null = null) {
   }
 }
 
-/** Reloads Nexo, or queues the reload while Nexo is still building the resource pack. Returns whether it was sent. */
+/** Reloads the plugin, or queues the reload while it is still building the resource pack. Returns whether it was sent. */
 export function requestReload(): boolean {
   if (state.status !== 'running' || !serverProcess) return false;
   if (state.pack.status === 'building') {
-    if (!reloadPending) logInfo(t('testServer.reloadQueued'));
+    if (!reloadPending) logInfo(t('testServer.reloadQueued', pluginArgs()));
     reloadPending = true;
     return false;
   }
-  const sent = sendCommand(NEXO_RELOAD_COMMAND);
-  if (sent && state.config.nexoJar) setPack('building', t('testServer.packReloading'));
+  const sent = sendCommand(adapter().reloadCommand);
+  if (sent && packBuildTracked()) setPack('building', t('testServer.packReloading', pluginArgs()));
   return sent;
 }
 
@@ -65,10 +83,10 @@ export function isReloadPending(): boolean {
 
 function handleLine(line: string) {
   pushLog(line);
-  const event = parseServerLogLine(line);
+  const event = parseServerLogLine(adapter(), line);
   switch (event?.type) {
     case 'packBuilding':
-      if (state.pack.status !== 'building') setPack('building', t('testServer.packBuilding'));
+      if (state.pack.status !== 'building') setPack('building', t('testServer.packBuilding', pluginArgs()));
       break;
     case 'packReady':
       setPack('ready', event.url);
@@ -80,6 +98,10 @@ function handleLine(line: string) {
       if (state.status !== 'starting') break;
       setState({ status: 'running', message: null, startedAt: Date.now() });
       if (isPlayerName(state.config.playerName)) sendCommand(opCommand(state.config.playerName));
+      // A plugin that builds no pack on startup serves the one of its last run (if any): build it from the current files
+      if (packBuildTracked() && !adapter().buildsPackOnStart && sendCommand(adapter().reloadCommand)) {
+        setPack('building', t('testServer.packBuilding', pluginArgs()));
+      }
       break;
     case 'portInUse':
       setState({ message: t('testServer.portInUse', { port: state.config.port }) });
@@ -109,11 +131,11 @@ function sendCommand(command: string): boolean {
   return true;
 }
 
-/** A command typed by the user; a manual Nexo reload also rebuilds the pack. */
+/** A command typed by the user; a manual plugin reload also rebuilds the pack. */
 export function runUserCommand(command: string): boolean {
   const sent = sendCommand(command);
-  if (sent && state.config.nexoJar && isNexoReloadCommand(command)) {
-    setPack('building', t('testServer.packReloading'));
+  if (sent && packBuildTracked() && adapter().isReloadCommand(command)) {
+    setPack('building', t('testServer.packReloading', pluginArgs()));
   }
   return sent;
 }
@@ -130,16 +152,18 @@ function processEnded(child: ChildProcess, patch: Partial<TestServerState>) {
   setState({ startedAt: null, progress: null, ...patch });
 }
 
-function launch(paper: PaperInstallation, java: JavaInstallation) {
+function launch(paper: PaperInstallation, java: JavaInstallation, target: PackTargetId) {
   logInfo(t('testServer.startingPaper', { version: paper.version, java: java.version, ram: state.config.ramGb }));
   reloadPending = false;
   setState({ status: 'starting', message: t('testServer.starting') });
-  // Nexo builds the pack on startup; no reload until then
-  if (state.config.nexoJar) setPack('building', t('testServer.packBuildingOnStart'));
+  // The plugin builds the pack on startup; no reload until then. One that doesn't gets a reload at 'started'.
+  if (packBuildTracked() && adapter().buildsPackOnStart) setPack('building', t('testServer.packBuildingOnStart', pluginArgs()));
   else setPack('idle');
 
-  const args = ['-Xms512M', `-Xmx${state.config.ramGb}G`, '-Dfile.encoding=UTF-8', '-jar', paper.jar, '--nogui'];
-  const child = spawn(java.path, args, { cwd: serverDir(), windowsHide: true, stdio: ['pipe', 'pipe', 'pipe'] });
+  // Console output in UTF-8 (Java uses the system code page for stdout otherwise, which garbles e.g. "»" and umlauts)
+  const encoding = ['-Dfile.encoding=UTF-8', '-Dstdout.encoding=UTF-8', '-Dstderr.encoding=UTF-8'];
+  const args = ['-Xms512M', `-Xmx${state.config.ramGb}G`, ...encoding, '-jar', paper.jar, '--nogui'];
+  const child = spawn(java.path, args, { cwd: serverDir(target), windowsHide: true, stdio: ['pipe', 'pipe', 'pipe'] });
   serverProcess = child;
   readLines(child.stdout, handleLine);
   readLines(child.stderr, (line) => pushLog(line, 'err'));
@@ -161,22 +185,22 @@ function launch(paper: PaperInstallation, java: JavaInstallation) {
   });
 }
 
-/** Downloads what is missing, prepares the server folder and starts the server. */
-export async function start(): Promise<TestServerState> {
+/** Downloads what is missing, prepares the target's server folder and starts the server with the target's plugin. */
+export async function start(target: PackTargetId): Promise<TestServerState> {
   await loadConfig();
   if (serverProcess || ['preparing', 'starting', 'running', 'stopping'].includes(state.status)) return publicState();
   if (!state.config.eulaAccepted) throw new DesktopError('eulaRequired');
   const { paperVersion } = state.config;
   if (!paperVersion) throw new DesktopError('versionRequired');
   stopRequested = false;
-  setState({ status: 'preparing', message: t('testServer.preparing'), progress: null });
+  setState({ status: 'preparing', message: t('testServer.preparing'), progress: null, target });
   try {
     const paper = await ensurePaper(paperVersion);
     const java = await ensureJava(paper.javaMin);
     state.installed = { paperVersion: paper.version, paperBuild: paper.build, javaPath: java.path, javaVersion: java.version };
     await saveConfig();
-    await prepareServerFiles();
-    launch(paper, java);
+    await prepareServerFiles(target);
+    launch(paper, java, target);
   } catch (err) {
     const message = describeError(err);
     pushLog(message, 'err');

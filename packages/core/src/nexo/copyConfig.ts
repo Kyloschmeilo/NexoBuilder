@@ -2,25 +2,23 @@
  * Transfer properties of one item to other items – everything except what defines an item:
  * display name, item ID, model (incl. variants), folder and model data
  * such as custom_model_data.
+ *
+ * The categories are Nexo's form groups, and pasting keeps Nexo's custom_block variations unique, so copying is
+ * offered in Nexo projects only. A clipboard remembers its target and only goes into items of the same target.
  */
 import type { ModelTexture } from '@resourcepackbuilder/minecraft';
 import { assetToken, deepClone, isPlainObject, stripFormatting, uid } from '@resourcepackbuilder/utils';
 import { referencedAssetIds } from '../project/assets';
 import type { ConfigObject, ConfigValue, Item, Project } from '../project/types';
+import type { PackTargetId } from '../project/target';
 import type { ArmorSettings } from '../project/armor';
 import { deletePath, getPath, setPath } from '../project/config';
-import { getPropertyValue, isPropertyActive, setPropertyValue } from './form/properties';
+import { getPropertyValue, isPropertyActive, setPropertyValue, unknownConfigPaths } from '../form/properties';
+import type { PropertyDef } from '../form/build';
 import { getRecipeTypeInfo, type Recipe } from '../project/recipes/model';
-import {
-  MANAGED_TOP_LEVEL_KEYS,
-  PROPERTIES,
-  PROPERTY_GROUPS,
-  unknownConfigPaths,
-  type PropertyDef,
-  type PropertyGroup,
-} from './form/schema';
+import { MANAGED_TOP_LEVEL_KEYS, NEXO_FORM, type NexoPropertyGroup, PROPERTIES, PROPERTY_GROUPS } from './form/schema';
 
-export type CopyCategory = 'material' | PropertyGroup | 'other' | 'rawYaml' | 'recipes';
+export type CopyCategory = 'material' | NexoPropertyGroup | 'other' | 'rawYaml' | 'recipes';
 
 interface CopyCategoryInfo {
   id: CopyCategory;
@@ -51,10 +49,12 @@ const NEVER_COPIED_PROPERTIES = new Set(['Pack.custom_model_data']);
 
 export interface ItemConfigClipboard {
   format: 'resourcepackbuilder-item-config';
-  sourceItemId: string;
+  sourceId: string;
   sourceName: string;
-  sourceNexoId: string;
+  sourceItemId: string;
   projectId: string;
+  /** The target of the project the item was copied from; the properties only fit items of the same target. */
+  target: PackTargetId;
   config: ConfigObject;
   armor?: ArmorSettings;
   rawYaml: string;
@@ -65,16 +65,30 @@ export interface ItemConfigClipboard {
 
 /** Plain-text name of the item the clipboard was copied from. */
 export function clipboardLabel(clip: ItemConfigClipboard): string {
-  return stripFormatting(clip.sourceName).trim() || clip.sourceNexoId;
+  return stripFormatting(clip.sourceName).trim() || clip.sourceItemId;
 }
 
-export function copyItemConfig(item: Item, projectId: string): ItemConfigClipboard {
+/**
+ * Whether items of `target` can copy their properties. Only Nexo so far: CraftEngine items have other groups, plus
+ * block and furniture sections, which the categories and the paste do not cover.
+ */
+export function canCopyItemConfig(target: PackTargetId): boolean {
+  return target === 'nexo';
+}
+
+/** Whether the clipboard can be pasted into items of a project with `target` (it was copied from the same target). */
+export function canPasteItemConfig(clip: ItemConfigClipboard | null, target: PackTargetId): clip is ItemConfigClipboard {
+  return clip !== null && clip.target === target && canCopyItemConfig(target);
+}
+
+export function copyItemConfig(item: Item, project: Pick<Project, 'id' | 'target'>): ItemConfigClipboard {
   return {
     format: 'resourcepackbuilder-item-config',
-    sourceItemId: item.id,
+    sourceId: item.id,
     sourceName: item.displayName,
-    sourceNexoId: item.nexoId,
-    projectId,
+    sourceItemId: item.itemId,
+    projectId: project.id,
+    target: project.target,
     config: deepClone(item.config),
     ...(item.armor && { armor: deepClone(item.armor) }),
     rawYaml: item.rawYaml,
@@ -83,7 +97,7 @@ export function copyItemConfig(item: Item, projectId: string): ItemConfigClipboa
   };
 }
 
-const copyableProperties = (group: PropertyGroup): PropertyDef[] =>
+const copyableProperties = (group: NexoPropertyGroup): PropertyDef[] =>
   PROPERTIES.filter((p) => p.group === group && !NEVER_COPIED_PROPERTIES.has(p.id));
 
 /**
@@ -91,7 +105,7 @@ const copyableProperties = (group: PropertyGroup): PropertyDef[] =>
  * first. Unknown keys under Pack (model, textures, parent_model …) belong to the model and stay with the target.
  */
 function otherPaths(config: ConfigObject): string[][] {
-  return unknownConfigPaths(config)
+  return unknownConfigPaths(NEXO_FORM, config)
     .filter((path) => path[0] !== 'Pack' && !MANAGED_TOP_LEVEL_KEYS.includes(path[0]) && !NEVER_COPIED_PROPERTIES.has(path.join('.')))
     .sort((a, b) => a.length - b.length);
 }
@@ -142,7 +156,7 @@ export interface PasteOptions {
  * `project` is needed for unique block variations.
  */
 export function pasteItemConfig(project: Project, target: Item, clip: ItemConfigClipboard, options: PasteOptions): void {
-  if (target.id === clip.sourceItemId) return;
+  if (target.id === clip.sourceId || !canPasteItemConfig(clip, project.target)) return;
   const { categories, mode } = options;
   const source = clip.config;
   const config = target.config;

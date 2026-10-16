@@ -5,14 +5,24 @@ import { NEXO_RELOAD_COMMAND, planExport } from '@resourcepackbuilder/export';
 import { createFolder, createItem, createProject, insertFolder, insertItem } from '@resourcepackbuilder/core/project';
 import { createTextureModel } from '@resourcepackbuilder/minecraft';
 import { makePngDataUrl } from '@resourcepackbuilder/test-utils/png';
-import { consoleCommandText, isNexoReloadCommand, opCommand } from './commands';
-import { cleanPlayerName, DEFAULT_TEST_SERVER_CONFIG, NEXO_JAR_FILE_PATTERN, nexoJarFileName } from './config';
-import { nexoFolderFiles, nexoGiveCommand, nexoPackCommand } from './files';
+import { consoleCommandText, opCommand } from './commands';
+import {
+  CRAFT_ENGINE_JAR_FILE_PATTERN,
+  cleanPlayerName,
+  DEFAULT_TEST_SERVER_CONFIG,
+  NEXO_JAR_FILE_PATTERN,
+  pluginJarFileName,
+} from './config';
+import { pluginFolderFiles } from './files';
 import { guessJavaFor, parseJavaVersion } from './java';
 import { parsePluginDescriptor, readPluginDescriptor } from './pluginJar';
 import { DEFAULT_SERVER_PROPERTIES, parseProperties, patchPaperGlobal, setProperty } from './serverFiles';
 import { parseServerLogLine, stripAnsi } from './serverLog';
-import { syncPathSegments } from './syncPaths';
+import { NEXO_SERVER_ADAPTER } from './nexo/adapter';
+
+const nexo = NEXO_SERVER_ADAPTER;
+const nexoJarFileName = (version: string) => pluginJarFileName('nexo', version);
+const syncPathSegments = (path: string) => nexo.syncPathSegments(path, { packName: 'test_pack' });
 
 describe('Test server: console lines', () => {
   it.each([
@@ -35,12 +45,12 @@ describe('Test server: console lines', () => {
     ['[14:02:20 ERROR]: [Nexo] Upload failed: timeout', { type: 'packFailed', message: 'timeout' }],
     ['[14:02:20 ERROR]: [Nexo] Resourcepack could not be uploaded', { type: 'packFailed', message: null }],
   ])('reads %s', (line, event) => {
-    expect(parseServerLogLine(line)).toEqual(event);
+    expect(parseServerLogLine(nexo, line)).toEqual(event);
   });
 
   it('ignores ordinary lines and pack messages of other plugins', () => {
-    expect(parseServerLogLine('[14:02:11 INFO]: Preparing spawn area: 84%')).toBeNull();
-    expect(parseServerLogLine('[14:02:12 INFO]: [OtherPlugin] Generating resourcepack...')).toBeNull();
+    expect(parseServerLogLine(nexo, '[14:02:11 INFO]: Preparing spawn area: 84%')).toBeNull();
+    expect(parseServerLogLine(nexo, '[14:02:12 INFO]: [OtherPlugin] Generating resourcepack...')).toBeNull();
   });
 
   it('removes colour codes', () => {
@@ -51,28 +61,28 @@ describe('Test server: console lines', () => {
 describe('Test server: commands', () => {
   it('builds commands for valid arguments', () => {
     expect(opCommand('Steve_42')).toBe('op Steve_42');
-    expect(nexoGiveCommand('ruby_sword', 2.7, 'Steve')).toBe('nexo give ruby_sword 2 Steve');
-    expect(nexoPackCommand('Steve')).toBe('nexo pack Steve');
+    expect(nexo.giveCommand('ruby_sword', 2.7, 'Steve')).toBe('nexo give ruby_sword 2 Steve');
+    expect(nexo.resendPackCommand('Steve')).toBe('nexo pack Steve');
   });
 
   it.each(['@a', '', 'Steve op Alex', 'Steve\nstop', 'x'.repeat(17)])('refuses the player name %j', (player) => {
     expect(() => opCommand(player)).toThrow(RangeError);
-    expect(() => nexoPackCommand(player)).toThrow(RangeError);
-    expect(() => nexoGiveCommand('ruby', 1, player)).toThrow(RangeError);
+    expect(() => nexo.resendPackCommand(player)).toThrow(RangeError);
+    expect(() => nexo.giveCommand('ruby', 1, player)).toThrow(RangeError);
   });
 
   it('refuses item ids with spaces or line breaks', () => {
-    expect(() => nexoGiveCommand('ruby 64 @a', 1, 'Steve')).toThrow(RangeError);
-    expect(() => nexoGiveCommand('ruby\nstop', 1, 'Steve')).toThrow(RangeError);
+    expect(() => nexo.giveCommand('ruby 64 @a', 1, 'Steve')).toThrow(RangeError);
+    expect(() => nexo.giveCommand('ruby\nstop', 1, 'Steve')).toThrow(RangeError);
   });
 
   it('recognises a typed Nexo reload', () => {
     expect(consoleCommandText(' /give a\r\nb ')).toBe('give a b');
     expect(consoleCommandText(' / ')).toBe('');
-    expect(isNexoReloadCommand(NEXO_RELOAD_COMMAND)).toBe(true);
-    expect(isNexoReloadCommand(' /n rl items')).toBe(true);
-    expect(isNexoReloadCommand('nexo give ruby 1 Steve')).toBe(false);
-    expect(isNexoReloadCommand('nexorl')).toBe(false);
+    expect(nexo.isReloadCommand(NEXO_RELOAD_COMMAND)).toBe(true);
+    expect(nexo.isReloadCommand(' /n rl items')).toBe(true);
+    expect(nexo.isReloadCommand('nexo give ruby 1 Steve')).toBe(false);
+    expect(nexo.isReloadCommand('nexorl')).toBe(false);
   });
 });
 
@@ -88,6 +98,12 @@ describe('Test server: settings', () => {
     expect(nexoJarFileName('')).toBe('Nexo-unknown.jar');
     for (const version of ['1.0', '../x', 'a b/c\\d', '']) expect(nexoJarFileName(version)).toMatch(NEXO_JAR_FILE_PATTERN);
     expect('../../x').not.toMatch(NEXO_JAR_FILE_PATTERN);
+  });
+
+  it('names the CraftEngine JAR as Modrinth does', () => {
+    expect(pluginJarFileName('craftengine', '26.9.2')).toBe('craft-engine-paper-plugin-26.9.2.jar');
+    for (const version of ['1.0', '../x', '']) expect(pluginJarFileName('craftengine', version)).toMatch(CRAFT_ENGINE_JAR_FILE_PATTERN);
+    expect('Nexo-1.0.jar').not.toMatch(CRAFT_ENGINE_JAR_FILE_PATTERN);
   });
 
   it('has defaults within the limits', () => {
@@ -120,8 +136,8 @@ describe('Test server: paths the project may write', () => {
     const model = createTextureModel('handheld', { layer0: 'ruby.png' }, [{ name: 'ruby.png', dataUrl: makePngDataUrl(16, 16) }]);
     const folder = createFolder('Weapons', null);
     insertFolder(project, folder);
-    insertItem(project, createItem({ displayName: 'Rubin', nexoId: 'ruby', folderId: folder.id, model }));
-    const files = nexoFolderFiles(project, planExport(project, { includeBinaries: true }));
+    insertItem(project, createItem({ displayName: 'Rubin', itemId: 'ruby', folderId: folder.id, model }));
+    const files = pluginFolderFiles(project, planExport(project, { includeBinaries: true }));
     expect(files.length).toBeGreaterThan(0);
     for (const file of files) expect(syncPathSegments(file.path), file.path).not.toBeNull();
   });
@@ -185,7 +201,7 @@ describe('Test server: paper-global.yml', () => {
   ].join('\n');
 
   it('turns off the block updates Nexo needs and keeps everything else', () => {
-    const patched = patchPaperGlobal(paperGlobal);
+    const patched = patchPaperGlobal(paperGlobal, nexo.paperGlobalOverrides);
     expect(patched).not.toBeNull();
     expect(parse(patched!)).toEqual({
       _version: 29,
@@ -202,8 +218,8 @@ describe('Test server: paper-global.yml', () => {
   });
 
   it('reports no change when the settings are already right', () => {
-    expect(patchPaperGlobal(patchPaperGlobal(paperGlobal)!)).toBeNull();
-    expect(patchPaperGlobal('not: [valid')).toBeNull();
+    expect(patchPaperGlobal(patchPaperGlobal(paperGlobal, nexo.paperGlobalOverrides)!, nexo.paperGlobalOverrides)).toBeNull();
+    expect(patchPaperGlobal('not: [valid', nexo.paperGlobalOverrides)).toBeNull();
   });
 });
 

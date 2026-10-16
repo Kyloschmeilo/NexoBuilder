@@ -2,7 +2,7 @@ import { DEFAULT_TEST_SERVER_CONFIG } from '@resourcepackbuilder/test-server';
 import { describe, expect, it } from 'vitest';
 import { DESKTOP_API } from './api';
 import { DesktopError, rehydrateDesktopError, toDesktopErrorPayload } from './errors';
-import { invokeSchemas, testServerConfigPatchSchema, testServerConfigSchema } from './schemas';
+import { invokeSchemas, savedTestServerConfigSchema, testServerConfigPatchSchema, testServerConfigSchema } from './schemas';
 
 describe('the channel definitions', () => {
   const defs = Object.values(DESKTOP_API).flatMap((group) => Object.values(group));
@@ -25,7 +25,8 @@ describe('invoke arguments', () => {
       { path: 'items/a.yml', data: 'a: 1' },
       { path: 'pack/x.png', data: new Uint8Array([1, 2]) },
     ];
-    expect(invokeSchemas['testserver:sync'].safeParse([files, { reload: true }]).success).toBe(true);
+    expect(invokeSchemas['testserver:sync'].safeParse([files, { target: 'nexo', packName: 'p', reload: true }]).success).toBe(true);
+    expect(invokeSchemas['testserver:start'].safeParse(['craftengine']).success).toBe(true);
     expect(invokeSchemas['share:user-name'].safeParse([]).success).toBe(true);
   });
 
@@ -35,7 +36,12 @@ describe('invoke arguments', () => {
     expect(invokeSchemas['share:list'].safeParse(['']).success).toBe(false);
     expect(invokeSchemas['share:user-name'].safeParse(['x']).success).toBe(false);
     expect(invokeSchemas['app:set-locale'].safeParse(['fr']).success).toBe(false);
-    expect(invokeSchemas['testserver:sync'].safeParse([[{ path: 'a', data: 1 }], { reload: true }]).success).toBe(false);
+    expect(
+      invokeSchemas['testserver:sync'].safeParse([[{ path: 'a', data: 1 }], { target: 'nexo', packName: 'p', reload: true }]).success,
+    ).toBe(false);
+    expect(invokeSchemas['testserver:sync'].safeParse([[], { packName: 'p', reload: true }]).success).toBe(false);
+    expect(invokeSchemas['testserver:start'].safeParse(['craftEngine']).success).toBe(false);
+    expect(invokeSchemas['testserver:choose-plugin-jar'].safeParse([]).success).toBe(false);
   });
 });
 
@@ -45,7 +51,8 @@ describe('test-server settings', () => {
   });
 
   it.each([
-    { nexoJar: { file: '../../x', name: 'Nexo', version: '1' } },
+    { pluginJars: { nexo: { file: '../../x', name: 'Nexo', version: '1' } } },
+    { pluginJars: { craftengine: { file: 'Nexo-1.jar', name: 'CraftEngine', version: '1' } } },
     { playerName: '@a' },
     { ramGb: 512 },
     { paperVersion: '1.21 -Xmx99G' },
@@ -61,9 +68,23 @@ describe('test-server settings', () => {
       port: '25570',
       playerName: 'St eve@',
       eulaAccepted: 'yes',
-      nexoJar: { file: '../../x' },
+      pluginJars: { nexo: { file: '../../x' } },
     });
     expect(patch).toEqual({ paperVersion: null, ramGb: 16, port: 25570, playerName: 'Steve', eulaAccepted: false });
+  });
+});
+
+describe('saved test-server settings', () => {
+  it('fill missing settings from the defaults', () => {
+    expect(savedTestServerConfigSchema.parse({ ramGb: 4 })).toEqual({ ...DEFAULT_TEST_SERVER_CONFIG, ramGb: 4 });
+  });
+
+  it('move the Nexo JAR of older files into pluginJars.nexo', () => {
+    const nexoJar = { file: 'Nexo-1.12.0.jar', name: 'Nexo', version: '1.12.0' };
+    const config = savedTestServerConfigSchema.parse({ ...DEFAULT_TEST_SERVER_CONFIG, pluginJars: undefined, nexoJar });
+    expect(config.pluginJars).toEqual({ nexo: nexoJar });
+    expect(config).not.toHaveProperty('nexoJar');
+    expect(savedTestServerConfigSchema.parse({ nexoJar: null }).pluginJars).toEqual({});
   });
 });
 

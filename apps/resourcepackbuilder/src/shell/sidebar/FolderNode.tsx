@@ -2,7 +2,7 @@ import { ClipboardPaste, Folder as FolderIcon, FolderOpen, FolderPlus, Pencil, P
 import { useTranslations } from 'next-intl';
 import { cn } from 'cn';
 import { itemIdsInFolder } from '@resourcepackbuilder/core/project';
-import { clipboardLabel } from '@resourcepackbuilder/core/nexo';
+import { canCopyItemConfig, canPasteItemConfig, clipboardLabel } from '@resourcepackbuilder/core/nexo';
 import {
   FILES_DRAG_TYPE,
   filesFromDataTransfer,
@@ -70,8 +70,12 @@ export function FolderNode({ folderId, depth, tree }: { folderId: string; depth:
     {
       icon: <ClipboardPaste />,
       label: t('paste.label'),
-      description: clip ? t('paste.fromItemIntoFolder', { name: clipboardLabel(clip) }) : t('paste.needsCopy'),
-      disabled: !clip || count === 0,
+      description: !canCopyItemConfig(project.target)
+        ? t('paste.unsupported')
+        : clip
+          ? t('paste.fromItemIntoFolder', { name: clipboardLabel(clip) })
+          : t('paste.needsCopy'),
+      disabled: !canPasteItemConfig(clip, project.target) || count === 0,
       onSelect: () => items.pasteProperties(itemIdsInFolder(project, folderId)),
     },
     'separator',

@@ -20,6 +20,6 @@ export function normalizeTypedMaterial(text: string): string {
 }
 
 /** The display name without formatting, or the item ID if the item has no name (for messages and lists). */
-export function itemLabel(item: Pick<Item, 'displayName' | 'nexoId'>): string {
-  return stripFormatting(item.displayName) || item.nexoId;
+export function itemLabel(item: Pick<Item, 'displayName' | 'itemId'>): string {
+  return stripFormatting(item.displayName) || item.itemId;
 }

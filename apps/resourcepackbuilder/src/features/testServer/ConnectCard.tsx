@@ -3,17 +3,21 @@ import { useTranslations } from 'next-intl';
 import { Button } from '@resourcepackbuilder/ui/components/button';
 import { CopyButton, SectionCard, Tip } from '@resourcepackbuilder/ui';
 import { richTags } from '../../i18n/richTags';
+import { DEFAULT_PACK_TARGET } from '@resourcepackbuilder/core/project';
+import { serverAdapterFor } from '@resourcepackbuilder/test-server';
 import type { TestServerState } from '../../platform/desktopApi';
 import { PackStatus } from './PackStatus';
 import { useTestServer } from './useTestServer';
 
-/** How to join the server, the server folder and – while it runs with Nexo – the resource pack status. */
+/** How to join the server, the server folder and – while it runs with its plugin – the resource pack status. */
 export function ConnectCard({ server }: { server: TestServerState }) {
   const t = useTranslations('media.testServer');
   const tCommon = useTranslations('common');
   const tUi = useTranslations('ui');
   const testServer = useTestServer();
   const { config } = server;
+  const adapter = serverAdapterFor(server.target ?? DEFAULT_PACK_TARGET);
+  const hasPlugin = Boolean(config.pluginJars[adapter.target]);
 
   return (
     <SectionCard
@@ -21,7 +25,7 @@ export function ConnectCard({ server }: { server: TestServerState }) {
       icon={<Plug className="size-5 flex-none text-muted-foreground" />}
       title={t.rich('connect', { ...richTags, version: config.paperVersion ?? '', address: server.address })}
       titleClassName="font-sans tracking-normal normal-case"
-      description={t('connectHint')}
+      description={t('connectHint', { plugin: adapter.pluginName })}
       actions={
         <>
           <CopyButton text={server.address} label={tCommon('copy')} copiedLabel={tUi('copyButton.copied')} />
@@ -34,7 +38,9 @@ export function ConnectCard({ server }: { server: TestServerState }) {
       }
       contentClassName="py-3"
     >
-      {server.status === 'running' && config.nexoJar ? <PackStatus pack={server.pack} player={config.playerName} /> : undefined}
+      {server.status === 'running' && hasPlugin ? (
+        <PackStatus pack={server.pack} player={config.playerName} adapter={adapter} />
+      ) : undefined}
     </SectionCard>
   );
 }

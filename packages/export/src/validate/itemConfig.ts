@@ -2,7 +2,8 @@
 import { getPath, isPlainObject, labelArg, MODEL_TOKEN, schemaKey } from '@resourcepackbuilder/utils';
 import { versionSupport } from '@resourcepackbuilder/minecraft';
 import { type Item, itemLabel, MATERIAL_PATTERN, propertyFrame, slotForMaterial } from '@resourcepackbuilder/core/project';
-import { checkFieldValue, getPropertyValue, PROPERTIES } from '@resourcepackbuilder/core/nexo';
+import { checkFieldValue, getPropertyValue, type PropertyDef } from '@resourcepackbuilder/core/form';
+import { PROPERTIES } from '@resourcepackbuilder/core/nexo';
 import type { ItemExport } from '../types';
 
 /** Highest custom_variation per block type (Nexo limits) */
@@ -19,30 +20,12 @@ export interface ItemConfigChecks {
 
 export function validateItemConfig(itemExport: ItemExport, { config, usedVariations, armorSlot }: ItemConfigChecks): void {
   const { item, report } = itemExport;
-  const targetVersion = itemExport.project.settings.minecraftVersion;
   const material = config.material;
   if (typeof material !== 'string' || !MATERIAL_PATTERN.test(material)) {
     report('error', 'plan.materialInvalid', { material: String(material) });
   }
 
-  for (const def of PROPERTIES) {
-    const value = getPropertyValue(item, def);
-    if (value === undefined) continue;
-    const frame = propertyFrame(def.label);
-    const support = versionSupport(targetVersion, def);
-    if (support === 'tooOld')
-      report('warning', 'plan.propertyNeedsVersion', { version: def.minVersion ?? '', target: targetVersion }, [frame]);
-    if (support === 'removed') report('warning', 'plan.propertyRemoved', { version: def.maxVersion ?? '' }, [frame]);
-    for (const conflict of def.conflicts ?? []) {
-      const other = PROPERTIES.find((p) => p.id === conflict);
-      if (other && getPropertyValue(item, other) !== undefined && def.id < other.id) {
-        report('error', 'plan.propertyConflict', { other: labelArg(schemaKey(other.label)) }, [frame]);
-      }
-    }
-    for (const found of checkFieldValue(value, def.field)) {
-      report('warning', found.code, found.args, [frame, ...found.context]);
-    }
-  }
+  validateProperties(itemExport, PROPERTIES);
 
   const block = getPath(item.config, ['Mechanics', 'custom_block']);
   if (isPlainObject(block)) {
@@ -71,5 +54,29 @@ export function validateItemConfig(itemExport: ItemExport, { config, usedVariati
   if (isPlainObject(components)) {
     const stack = components.max_stack_size;
     if (typeof stack === 'number' && components.max_damage !== undefined && stack > 1) report('error', 'plan.damageableStackable');
+  }
+}
+
+/** Checks the item's properties among `properties` (a target's form): version support, conflicts and field values. */
+export function validateProperties(itemExport: ItemExport, properties: PropertyDef[]): void {
+  const { item, report } = itemExport;
+  const targetVersion = itemExport.project.settings.minecraftVersion;
+  for (const def of properties) {
+    const value = getPropertyValue(item, def);
+    if (value === undefined) continue;
+    const frame = propertyFrame(def.label);
+    const support = versionSupport(targetVersion, def);
+    if (support === 'tooOld')
+      report('warning', 'plan.propertyNeedsVersion', { version: def.minVersion ?? '', target: targetVersion }, [frame]);
+    if (support === 'removed') report('warning', 'plan.propertyRemoved', { version: def.maxVersion ?? '' }, [frame]);
+    for (const conflict of def.conflicts ?? []) {
+      const other = properties.find((p) => p.id === conflict);
+      if (other && getPropertyValue(item, other) !== undefined && def.id < other.id) {
+        report('error', 'plan.propertyConflict', { other: labelArg(schemaKey(other.label)) }, [frame]);
+      }
+    }
+    for (const found of checkFieldValue(value, def.field)) {
+      report('warning', found.code, found.args, [frame, ...found.context]);
+    }
   }
 }

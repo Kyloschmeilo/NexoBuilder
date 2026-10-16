@@ -76,6 +76,12 @@ function applyMeta(draft: Draft<Project>, meta: ProjectMeta, orders: Partial<Rec
   draft.name = meta.name;
   draft.namespace = meta.namespace;
   draft.settings = meta.settings;
+  // Files without a target come from versions that know neither it nor the CraftEngine data: both stay
+  if (meta.target) {
+    draft.target = meta.target;
+    if (meta.craftEngine) draft.craftEngine = meta.craftEngine;
+    else delete draft.craftEngine;
+  }
   draft.rootFolderIds = [...meta.rootFolderIds];
   if (typeof meta.createdAt === 'number') draft.createdAt = meta.createdAt;
   for (const kind of MEDIA_KIND_LIST) {
@@ -97,7 +103,16 @@ function sortByOrder<T extends { id: string }>(list: T[], order: string[] | unde
 export function projectFromEnvelopes(meta: ProjectMeta, envelopes: Envelope[], now: number): Project {
   // The project data goes through the same checks as a stored project; the entries come from the envelopes
   const base = migrateProject(
-    { id: meta.id, name: meta.name, namespace: meta.namespace, settings: meta.settings, createdAt: meta.createdAt, updatedAt: now },
+    {
+      id: meta.id,
+      name: meta.name,
+      target: meta.target,
+      namespace: meta.namespace,
+      settings: meta.settings,
+      craftEngine: meta.craftEngine,
+      createdAt: meta.createdAt,
+      updatedAt: now,
+    },
     now,
   );
   return applyRemoteEntities({ ...base, rootFolderIds: [...meta.rootFolderIds] }, envelopes, now);

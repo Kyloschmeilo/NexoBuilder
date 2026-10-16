@@ -1,0 +1,219 @@
+[11:42:13 INFO]: [CraftEngine] Enabling CraftEngine v26.9.2
+[11:42:14 WARN]: **** SERVER IS RUNNING IN OFFLINE/INSECURE MODE!
+[11:42:14 WARN]: The server will make no attempt to authenticate usernames. Beware.
+[11:42:14 WARN]: While this makes the game possible to play without internet access, it also opens up the ability for hackers to connect with any username they choose.
+[11:42:14 WARN]: To change this, set "online-mode" to "true" in the server.properties file.
+[11:42:14 INFO]: Preparing level "world"
+[11:42:15 INFO]: Loading 0 persistent chunks for level 'minecraft:overworld'...
+[11:42:15 INFO]: Prepared spawn area in 4 ms
+[11:42:15 INFO]: Loading 0 persistent chunks for level 'minecraft:the_nether'...
+[11:42:15 INFO]: Prepared spawn area in 17 ms
+[11:42:15 INFO]: Loading 0 persistent chunks for level 'minecraft:the_end'...
+[11:42:15 INFO]: Prepared spawn area in 11 ms
+[11:42:15 INFO]: Done preparing level "world" (0.641s)
+[11:42:15 INFO]: [spark] Starting background profiler...
+[11:42:15 INFO]: [spark] The async-profiler engine is not supported for your os/arch (windows11/amd64), so the built-in Java engine will be used instead.
+[11:42:15 INFO]: Saving chunks for level 'ServerLevel[world]'/minecraft:overworld
+[11:42:15 INFO]: Saving chunks for level 'ServerLevel[world]'/minecraft:the_nether
+[11:42:15 INFO]: Saving chunks for level 'ServerLevel[world]'/minecraft:the_end
+[11:42:15 INFO]: Running delayed init tasks
+[11:42:15 INFO]: [CraftEngine] Netty HTTP server started on port: 8163
+[11:42:15 INFO]: [CraftEngine] Loaded pack: default_assets. Default namespace: default
+[11:42:15 INFO]: [CraftEngine] Loaded pack: default_feature_populator. Default namespace: default
+[11:42:15 INFO]: [CraftEngine] Loaded pack: default_templates. Default namespace: default
+[11:42:15 INFO]: [CraftEngine] Loaded pack: internal. Default namespace: internal
+[11:42:15 INFO]: [CraftEngine] Loaded pack: kristall_pack. Default namespace: kristall
+[11:42:15 INFO]: [CraftEngine] Loaded pack: legacy_armor. Default namespace: minecraft
+[11:42:15 INFO]: [CraftEngine] Loaded pack: remove_shulker_head. Default namespace: minecraft
+[11:42:15 INFO]: [CraftEngine] Loaded templates in 48,52ms (75)
+[11:42:15 INFO]: [CraftEngine] Loaded config factories in 6,81ms (3)
+[11:42:15 INFO]: [CraftEngine] Loaded translations in 1,28ms (127)
+[11:42:15 INFO]: [CraftEngine] Loaded equipments in 5,67ms (2)
+[11:42:15 INFO]: [CraftEngine] Loaded images in 14,64ms (55)
+[11:42:15 INFO]: [CraftEngine] Loaded emojis in 5,65ms (16)
+[11:42:15 INFO]: [CraftEngine] Loaded loot sources in 60,09ms (1)
+[11:42:15 INFO]: [CraftEngine] Loaded lang in 54,45ms (630)
+[11:42:15 INFO]: [CraftEngine] Loaded items in 84,56ms (112)
+[11:42:15 INFO]: [CraftEngine] Loaded categories in 7,94ms (5)
+[11:42:15 INFO]: [CraftEngine] Loaded furniture in 35,04ms (6)
+[11:42:15 INFO]: [CraftEngine] Loaded block state mappings in 139,07ms (4280)
+[11:42:16 INFO]: [CraftEngine] Loaded blocks in 137,84ms (40)
+[11:42:16 INFO]: [CraftEngine] Loaded configured features in 13,83ms (1)
+[11:42:16 INFO]: [CraftEngine] Loaded recipes in 345,08ms (45)
+[11:42:16 INFO]: Done (17.539s)! For help, type "help"
+[11:42:17 INFO]: [CraftEngine] You're running the latest version
+> ce reload all
+[11:42:24 INFO]: [CraftEngine] Loaded pack: default_assets. Default namespace: default
+[11:42:24 INFO]: [CraftEngine] Loaded pack: default_feature_populator. Default namespace: default
+[11:42:24 INFO]: [CraftEngine] Loaded pack: default_templates. Default namespace: default
+[11:42:24 INFO]: [CraftEngine] Loaded pack: internal. Default namespace: internal
+[11:42:24 INFO]: [CraftEngine] Loaded pack: kristall_pack. Default namespace: kristall
+[11:42:24 INFO]: [CraftEngine] Loaded pack: legacy_armor. Default namespace: minecraft
+[11:42:24 INFO]: [CraftEngine] Loaded pack: remove_shulker_head. Default namespace: minecraft
+[11:42:24 INFO]: [CraftEngine] Loaded templates in 1,68ms (75)
+[11:42:24 INFO]: [CraftEngine] Loaded config factories in 0,11ms (3)
+[11:42:24 INFO]: [CraftEngine] Loaded equipments in 0,24ms (2)
+[11:42:24 INFO]: [CraftEngine] Loaded loot sources in 0,38ms (1)
+[11:42:24 INFO]: [CraftEngine] Loaded translations in 0,58ms (127)
+[11:42:24 INFO]: [CraftEngine] Loaded images in 4,06ms (55)
+[11:42:24 INFO]: [CraftEngine] Loaded emojis in 0,65ms (16)
+[11:42:24 INFO]: [CraftEngine] Loaded lang in 6,85ms (630)
+[11:42:24 INFO]: [CraftEngine] Loaded block state mappings in 14,95ms (4280)
+[11:42:24 INFO]: [CraftEngine] Loaded items in 20,27ms (112)
+[11:42:24 INFO]: [CraftEngine] Loaded categories in 1,65ms (5)
+[11:42:24 INFO]: [CraftEngine] Loaded furniture in 5,23ms (6)
+[11:42:24 INFO]: [CraftEngine] Loaded blocks in 53,50ms (40)
+[11:42:24 INFO]: [CraftEngine] Loaded configured features in 1,41ms (1)
+[11:42:24 INFO]: [CraftEngine] Loaded recipes in 102,89ms (45)
+[11:42:25 INFO]: [38;2;85;85;85m» [1m[38;2;255;85;85mC[38;2;255;255;85mraft[38;2;255;170;0mEngine[0m [38;2;170;170;170m•[0m [38;2;255;255;255mConfigs reloaded [38;2;170;170;170m([38;2;255;170;0m229[38;2;170;170;170m/[38;2;255;85;85m3[38;2;170;170;170m ms)[0m
+[11:42:25 INFO]: [CraftEngine] Generating resource pack...
+[11:42:25 INFO]: [CraftEngine] Generated resource pack in 179ms
+[11:42:25 INFO]: [CraftEngine] Validating resource pack... (Progress: 1/1 | Pack Format: 97.1~97.1 | Overlays: [])
+[11:42:25 INFO]: [CraftEngine] Validated resource pack in 70ms
+[11:42:25 INFO]: [CraftEngine] Compressing resource pack...(This progress might be slow if you have obfuscation enabled)
+[11:42:25 INFO]: [CraftEngine] Compressed resource pack in 63ms
+[11:42:25 INFO]: [CraftEngine] Initiating resource pack upload...
+[11:42:25 INFO]: [CraftEngine] Successfully uploaded resource pack in 22 ms
+[11:42:25 INFO]: [38;2;85;85;85m» [1m[38;2;255;85;85mC[38;2;255;255;85mraft[38;2;255;170;0mEngine[0m [38;2;170;170;170m•[0m [38;2;255;255;255mResource pack generated [38;2;170;170;170m([38;2;255;170;0m341[38;2;170;170;170m ms)[0m
+> ce reload pack
+[11:42:28 INFO]: [CraftEngine] Generating resource pack...
+[11:42:28 INFO]: [CraftEngine] Generated resource pack in 78ms
+[11:42:28 INFO]: [CraftEngine] Validating resource pack... (Progress: 1/1 | Pack Format: 97.1~97.1 | Overlays: [])
+[11:42:28 INFO]: [CraftEngine] Validated resource pack in 30ms
+[11:42:28 INFO]: [CraftEngine] Compressing resource pack...(This progress might be slow if you have obfuscation enabled)
+[11:42:28 INFO]: [CraftEngine] Compressed resource pack in 46ms
+[11:42:28 INFO]: [CraftEngine] Initiating resource pack upload...
+[11:42:28 INFO]: [CraftEngine] Successfully uploaded resource pack in 23 ms
+[11:42:28 INFO]: [38;2;85;85;85m» [1m[38;2;255;85;85mC[38;2;255;255;85mraft[38;2;255;170;0mEngine[0m [38;2;170;170;170m•[0m [38;2;255;255;255mResource pack generated [38;2;170;170;170m([38;2;255;170;0m178[38;2;170;170;170m ms)[0m
+> ce reload
+[11:42:36 INFO]: [CraftEngine] Loaded pack: default_assets. Default namespace: default
+[11:42:36 INFO]: [CraftEngine] Loaded pack: default_feature_populator. Default namespace: default
+[11:42:36 INFO]: [CraftEngine] Loaded pack: default_templates. Default namespace: default
+[11:42:36 INFO]: [CraftEngine] Loaded pack: internal. Default namespace: internal
+[11:42:36 INFO]: [CraftEngine] Loaded pack: kristall_pack. Default namespace: kristall
+[11:42:36 INFO]: [CraftEngine] Loaded pack: legacy_armor. Default namespace: minecraft
+[11:42:36 INFO]: [CraftEngine] Loaded pack: remove_shulker_head. Default namespace: minecraft
+[11:42:36 INFO]: [CraftEngine] Loaded templates in 1,09ms (75)
+[11:42:36 INFO]: [CraftEngine] Loaded config factories in 0,09ms (3)
+[11:42:36 INFO]: [CraftEngine] Loaded equipments in 0,15ms (2)
+[11:42:36 INFO]: [CraftEngine] Loaded loot sources in 0,40ms (1)
+[11:42:36 INFO]: [CraftEngine] Loaded translations in 0,42ms (127)
+[11:42:36 INFO]: [CraftEngine] Loaded images in 10,96ms (55)
+[11:42:36 INFO]: [CraftEngine] Loaded emojis in 0,62ms (16)
+[11:42:36 INFO]: [CraftEngine] Loaded block state mappings in 32,39ms (4280)
+[11:42:36 INFO]: [CraftEngine] Loaded lang in 3,66ms (630)
+[11:42:36 INFO]: [CraftEngine] Loaded items in 40,89ms (112)
+[11:42:36 INFO]: [CraftEngine] Loaded categories in 2,99ms (5)
+[11:42:36 INFO]: [CraftEngine] Loaded furniture in 23,50ms (6)
+[11:42:36 INFO]: [CraftEngine] Loaded blocks in 48,61ms (40)
+[11:42:36 INFO]: [CraftEngine] Loaded configured features in 2,46ms (1)
+[11:42:36 INFO]: [38;2;85;85;85m» [1m[38;2;255;85;85mC[38;2;255;255;85mraft[38;2;255;170;0mEngine[0m [38;2;170;170;170m•[0m [38;2;255;255;255mConfigs reloaded [38;2;170;170;170m([38;2;255;170;0m142[38;2;170;170;170m/[38;2;255;85;85m1[38;2;170;170;170m ms)[0m
+> ce item give Steve kristall:crystal_sword 2
+> ce feature send-pack Steve
+> ce help
+[11:42:41 INFO]: [38;2;255;85;85mInvalid argument. Reason: [38;2;170;170;170mNo player was found[0m
+[11:42:41 INFO]: [38;2;255;85;85mInvalid argument. Reason: [38;2;170;170;170mNo player was found[0m
+[11:42:41 INFO]: System chat: [38;2;255;85;85mIncorrect argument for command
+[38;2;170;170;170mce [4m[38;2;255;85;85mhelp[0m[3m[38;2;255;85;85m<--[HERE][0m
+> ce reload pack
+[11:44:33 INFO]: [CraftEngine] Generating resource pack...
+[11:44:34 INFO]: [CraftEngine] Generated resource pack in 86ms
+[11:44:34 INFO]: [CraftEngine] Validating resource pack... (Progress: 1/1 | Pack Format: 97.1~97.1 | Overlays: [])
+[11:44:34 WARN]: [CraftEngine] Json file 'resource_pack\assets\kristall\models\item\waffen\crystal_sword.json' is malformatted
+[11:44:34 WARN]: [CraftEngine] Item '[kristall:missing_model]' is missing model file 'assets/kristall/models/item/does_not_exist.json'
+[11:44:34 INFO]: [CraftEngine] Validated resource pack in 39ms
+[11:44:34 INFO]: [CraftEngine] Compressing resource pack...(This progress might be slow if you have obfuscation enabled)
+[11:44:34 INFO]: [CraftEngine] Compressed resource pack in 46ms
+[11:44:34 INFO]: [CraftEngine] Initiating resource pack upload...
+[11:44:34 INFO]: [CraftEngine] Successfully uploaded resource pack in 28 ms
+[11:44:34 INFO]: [38;2;85;85;85m» [1m[38;2;255;85;85mC[38;2;255;255;85mraft[38;2;255;170;0mEngine[0m [38;2;170;170;170m•[0m [38;2;255;255;255mResource pack generated [38;2;170;170;170m([38;2;255;170;0m201[38;2;170;170;170m ms)[0m
+> ce reload all
+[11:46:10 INFO]: [CraftEngine] Loaded pack: default_assets. Default namespace: default
+[11:46:10 INFO]: [CraftEngine] Loaded pack: default_feature_populator. Default namespace: default
+[11:46:10 INFO]: [CraftEngine] Loaded pack: default_templates. Default namespace: default
+[11:46:10 INFO]: [CraftEngine] Loaded pack: internal. Default namespace: internal
+[11:46:10 INFO]: [CraftEngine] Loaded pack: kristall_pack. Default namespace: kristall
+[11:46:10 INFO]: [CraftEngine] Loaded pack: legacy_armor. Default namespace: minecraft
+[11:46:10 INFO]: [CraftEngine] Loaded pack: remove_shulker_head. Default namespace: minecraft
+[11:46:10 INFO]: [CraftEngine] Loaded templates in 2,06ms (75)
+[11:46:10 INFO]: [CraftEngine] Loaded config factories in 0,19ms (3)
+[11:46:10 INFO]: [CraftEngine] Loaded equipments in 0,26ms (2)
+[11:46:10 INFO]: [CraftEngine] Loaded loot sources in 0,39ms (1)
+[11:46:10 INFO]: [CraftEngine] Loaded translations in 0,53ms (127)
+[11:46:10 INFO]: [CraftEngine] Loaded images in 4,02ms (55)
+[11:46:10 INFO]: [CraftEngine] Loaded emojis in 0,78ms (16)
+[11:46:10 INFO]: [CraftEngine] Loaded lang in 5,63ms (630)
+[11:46:10 INFO]: [CraftEngine] Loaded block state mappings in 12,93ms (4280)
+[11:46:10 INFO]: [CraftEngine] Loaded items in 18,38ms (112)
+[11:46:10 INFO]: [CraftEngine] Loaded categories in 1,24ms (5)
+[11:46:10 INFO]: [CraftEngine] Loaded furniture in 3,22ms (6)
+[11:46:10 INFO]: [CraftEngine] Loaded blocks in 78,36ms (40)
+[11:46:10 INFO]: [CraftEngine] Loaded configured features in 1,57ms (1)
+[11:46:10 INFO]: [CraftEngine] Loaded recipes in 135,40ms (45)
+[11:46:11 INFO]: [38;2;85;85;85m» [1m[38;2;255;85;85mC[38;2;255;255;85mraft[38;2;255;170;0mEngine[0m [38;2;170;170;170m•[0m [38;2;255;255;255mConfigs reloaded [38;2;170;170;170m([38;2;255;170;0m269[38;2;170;170;170m/[38;2;255;85;85m4[38;2;170;170;170m ms)[0m
+[11:46:11 INFO]: [CraftEngine] Generating resource pack...
+[11:46:11 INFO]: [CraftEngine] Generated resource pack in 195ms
+[11:46:11 INFO]: [CraftEngine] Validating resource pack... (Progress: 1/1 | Pack Format: 97.1~97.1 | Overlays: [])
+[11:46:11 INFO]: [CraftEngine] Validated resource pack in 77ms
+[11:46:11 INFO]: [CraftEngine] Compressing resource pack...(This progress might be slow if you have obfuscation enabled)
+[11:46:11 WARN]: [CraftEngine] Failed to run reload_pack workflows
+java.nio.file.FileSystemException: C:\server\plugins\CraftEngine\generated\resource_pack.zip: Der Prozess kann nicht auf die Datei zugreifen, da sie von einem anderen Prozess verwendet wird
+	at java.base/sun.nio.fs.WindowsException.translateToIOException(WindowsException.java:92) ~[?:?]
+	at java.base/sun.nio.fs.WindowsException.rethrowAsIOException(WindowsException.java:103) ~[?:?]
+	at java.base/sun.nio.fs.WindowsException.rethrowAsIOException(WindowsException.java:108) ~[?:?]
+	at java.base/sun.nio.fs.WindowsFileCopy.move(WindowsFileCopy.java:388) ~[?:?]
+	at java.base/sun.nio.fs.WindowsFileSystemProvider.move(WindowsFileSystemProvider.java:287) ~[?:?]
+	at java.base/java.nio.file.Files.move(Files.java:1319) ~[?:?]
+	at craft-engine-paper-plugin-26.9.2.jar//net.momirealms.craftengine.core.pack.AbstractPackManager.writePack(AbstractPackManager.java:876) ~[?:?]
+	at craft-engine-paper-plugin-26.9.2.jar//net.momirealms.craftengine.core.pack.AbstractPackManager$WorkflowRun.zip(AbstractPackManager.java:1049) ~[?:?]
+	at craft-engine-paper-plugin-26.9.2.jar//net.momirealms.craftengine.core.pack.workflow.impl.ZipPackWorkflow.execute(ZipPackWorkflow.java:25) ~[?:?]
+	at craft-engine-paper-plugin-26.9.2.jar//net.momirealms.craftengine.core.pack.workflow.PackWorkflowSequence.execute(PackWorkflowSequence.java:35) ~[?:?]
+	at craft-engine-paper-plugin-26.9.2.jar//net.momirealms.craftengine.core.pack.AbstractPackManager.executeWorkflow(AbstractPackManager.java:983) ~[?:?]
+	at craft-engine-paper-plugin-26.9.2.jar//net.momirealms.craftengine.core.pack.AbstractPackManager.triggerWorkflows(AbstractPackManager.java:966) ~[?:?]
+	at craft-engine-paper-plugin-26.9.2.jar//net.momirealms.craftengine.bukkit.plugin.command.feature.ReloadCommand.lambda$assembleCommand$7(ReloadCommand.java:95) ~[?:?]
+	at java.base/java.util.concurrent.CompletableFuture$UniAccept.tryFire(CompletableFuture.java:739) ~[?:?]
+	at java.base/java.util.concurrent.CompletableFuture$Completion.exec(CompletableFuture.java:504) ~[?:?]
+	at java.base/java.util.concurrent.ForkJoinTask.doExec(ForkJoinTask.java:511) ~[?:?]
+	at java.base/java.util.concurrent.ForkJoinPool$WorkQueue.topLevelExec(ForkJoinPool.java:1450) ~[?:?]
+	at java.base/java.util.concurrent.ForkJoinPool.runWorker(ForkJoinPool.java:2019) ~[?:?]
+	at java.base/java.util.concurrent.ForkJoinWorkerThread.run(ForkJoinWorkerThread.java:187) ~[?:?]
+[11:46:11 INFO]: [38;2;255;85;85mFailed to generate the resource pack. Please check console logs[0m
+> ce reload all
+> ce reload pack
+[11:46:42 INFO]: command.resource.busy
+[11:46:42 INFO]: [CraftEngine] Loaded pack: default_assets. Default namespace: default
+[11:46:42 INFO]: [CraftEngine] Loaded pack: default_feature_populator. Default namespace: default
+[11:46:42 INFO]: [CraftEngine] Loaded pack: default_templates. Default namespace: default
+[11:46:42 INFO]: [CraftEngine] Loaded pack: internal. Default namespace: internal
+[11:46:42 INFO]: [CraftEngine] Loaded pack: kristall_pack. Default namespace: kristall
+[11:46:42 INFO]: [CraftEngine] Loaded pack: legacy_armor. Default namespace: minecraft
+[11:46:42 INFO]: [CraftEngine] Loaded pack: remove_shulker_head. Default namespace: minecraft
+[11:46:42 INFO]: [CraftEngine] Loaded templates in 1,55ms (75)
+[11:46:42 INFO]: [CraftEngine] Loaded config factories in 0,08ms (3)
+[11:46:42 INFO]: [CraftEngine] Loaded equipments in 0,23ms (2)
+[11:46:42 INFO]: [CraftEngine] Loaded translations in 0,35ms (127)
+[11:46:42 INFO]: [CraftEngine] Loaded loot sources in 0,43ms (1)
+[11:46:42 INFO]: [CraftEngine] Loaded images in 3,26ms (55)
+[11:46:42 INFO]: [CraftEngine] Loaded emojis in 0,51ms (16)
+[11:46:42 INFO]: [CraftEngine] Loaded block state mappings in 20,95ms (4280)
+[11:46:42 INFO]: [CraftEngine] Loaded lang in 18,25ms (630)
+[11:46:42 INFO]: [CraftEngine] Loaded items in 24,78ms (112)
+[11:46:42 INFO]: [CraftEngine] Loaded categories in 1,53ms (5)
+[11:46:42 INFO]: [CraftEngine] Loaded furniture in 2,39ms (6)
+[11:46:42 INFO]: [CraftEngine] Loaded blocks in 19,07ms (40)
+[11:46:42 INFO]: [CraftEngine] Loaded configured features in 1,15ms (1)
+[11:46:42 INFO]: [CraftEngine] Loaded recipes in 66,65ms (45)
+[11:46:42 INFO]: [38;2;85;85;85m» [1m[38;2;255;85;85mC[38;2;255;255;85mraft[38;2;255;170;0mEngine[0m [38;2;170;170;170m•[0m [38;2;255;255;255mConfigs reloaded [38;2;170;170;170m([38;2;255;170;0m155[38;2;170;170;170m/[38;2;255;85;85m2[38;2;170;170;170m ms)[0m
+[11:46:42 INFO]: [CraftEngine] Generating resource pack...
+[11:46:42 INFO]: [CraftEngine] Generated resource pack in 83ms
+[11:46:42 INFO]: [CraftEngine] Validating resource pack... (Progress: 1/1 | Pack Format: 97.1~97.1 | Overlays: [])
+[11:46:42 INFO]: [CraftEngine] Validated resource pack in 25ms
+[11:46:42 INFO]: [CraftEngine] Compressing resource pack...(This progress might be slow if you have obfuscation enabled)
+[11:46:42 INFO]: [CraftEngine] Compressed resource pack in 36ms
+[11:46:42 INFO]: [CraftEngine] Initiating resource pack upload...
+[11:46:42 INFO]: [CraftEngine] Successfully uploaded resource pack in 27 ms
+[11:46:42 INFO]: [38;2;85;85;85m» [1m[38;2;255;85;85mC[38;2;255;255;85mraft[38;2;255;170;0mEngine[0m [38;2;170;170;170m•[0m [38;2;255;255;255mResource pack generated [38;2;170;170;170m([38;2;255;170;0m171[38;2;170;170;170m ms)[0m
+> stop
+[11:42:44 INFO]: System chat: Stopping the server
+[11:42:44 INFO]: Stopping server
+[11:42:44 INFO]: [CraftEngine] Disabling CraftEngine v26.9.2

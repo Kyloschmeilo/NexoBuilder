@@ -1,12 +1,13 @@
 import { useId, useState } from 'react';
 import { useTranslations } from 'next-intl';
-import { type StringListField, validateTextFormat } from '@resourcepackbuilder/core/nexo';
+import { type StringListField, validateTextFormat } from '@resourcepackbuilder/core/form';
 import { FieldError } from '@resourcepackbuilder/ui/components/field';
 import { Input } from '@resourcepackbuilder/ui/components/input';
 import { useRowKeys } from '@resourcepackbuilder/ui';
 import { MiniMessageBox } from '../../miniMessage/MiniMessageBox';
 import { MiniMessageLoreLine } from '../../miniMessage/MiniMessageLine';
 import { useSchemaText } from '../../useSchemaText';
+import { useFieldContext } from '../fieldContext';
 import { FieldShell } from '../FieldShell';
 import { AddButton, ListControls } from '../inputs/ListControls';
 import { Datalist } from '../inputs/TextInput';
@@ -17,6 +18,9 @@ export function StringListEditor({ field, value, onChange, hideLabel }: EditorPr
   const t = useTranslations('editor');
   const text = useSchemaText();
   const listId = useId();
+  const { dynamicSuggestions, previewText } = useFieldContext();
+  const projectSuggestions = field.dynamicSuggestions ? dynamicSuggestions?.[field.dynamicSuggestions] : undefined;
+  const suggestions = [...(field.suggestions ?? []), ...(projectSuggestions ?? [])];
   const list = toStringList(value);
   const rows = useRowKeys(list.length);
   /** The row created by Enter, which takes the focus when it mounts. */
@@ -37,7 +41,7 @@ export function StringListEditor({ field, value, onChange, hideLabel }: EditorPr
                   className="min-w-0 flex-1"
                   aria-invalid={!!error || undefined}
                   value={entry}
-                  list={field.suggestions?.length ? listId : undefined}
+                  list={suggestions.length ? listId : undefined}
                   placeholder={placeholder}
                   spellCheck={false}
                   autoFocus={key === focusKey}
@@ -64,14 +68,14 @@ export function StringListEditor({ field, value, onChange, hideLabel }: EditorPr
               </div>
               {field.format === 'minimessage' && entry && (
                 <MiniMessageBox className="min-w-0">
-                  <MiniMessageLoreLine text={entry} />
+                  <MiniMessageLoreLine text={previewText ? previewText(entry) : entry} />
                 </MiniMessageBox>
               )}
               <FieldError className="text-xs leading-4">{error}</FieldError>
             </div>
           );
         })}
-        <Datalist id={listId} choices={field.suggestions} />
+        <Datalist id={listId} choices={suggestions} />
         <AddButton
           label={t('field.addEntry')}
           onClick={() => {

@@ -1,5 +1,6 @@
 import { useTranslations } from 'next-intl';
-import { parseYaml, toYaml, type YamlField } from '@resourcepackbuilder/core/nexo';
+import type { YamlField } from '@resourcepackbuilder/core/form';
+import { parseYaml, toYaml } from '@resourcepackbuilder/core/yaml';
 import { Textarea } from '@resourcepackbuilder/ui/components/textarea';
 import { useDraft } from '@resourcepackbuilder/ui';
 import { useSchemaText } from '../../useSchemaText';

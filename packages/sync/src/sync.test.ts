@@ -93,7 +93,7 @@ function sampleProject(): Project {
   const project = createProject('Mittelalter', 'mittelalter');
   const folder = createFolder('Waffen', null);
   insertFolder(project, folder);
-  const item = createItem({ displayName: 'Rubinschwert', nexoId: 'ruby_sword', folderId: folder.id, model: null });
+  const item = createItem({ displayName: 'Rubinschwert', itemId: 'ruby_sword', folderId: folder.id, model: null });
   insertItem(project, item);
   project.glyphs.push(createGlyph('g_herz', 'herz', null, 'image'));
   return project;
@@ -187,7 +187,7 @@ describe('Shared projects', () => {
     const { clock, anna, ben } = await setup();
     clock.t += 10;
     const sub = createFolder('Bögen', firstFolder(anna.project).id);
-    const bow = createItem({ displayName: 'Langbogen', nexoId: 'longbow', folderId: sub.id, model: null });
+    const bow = createItem({ displayName: 'Langbogen', itemId: 'longbow', folderId: sub.id, model: null });
     anna.edit((d) => {
       insertFolder(d, sub);
       insertItem(d, bow);
@@ -309,10 +309,10 @@ describe('Shared projects', () => {
     const { clock, anna, ben } = await setup();
     const folderId = firstFolder(anna.project).id;
     clock.t += 10;
-    const a = createItem({ displayName: 'Axt', nexoId: 'axe', folderId, model: null });
+    const a = createItem({ displayName: 'Axt', itemId: 'axe', folderId, model: null });
     anna.edit((d) => insertItem(d, a));
     clock.t += 10;
-    const b = createItem({ displayName: 'Bogen', nexoId: 'bow', folderId, model: null });
+    const b = createItem({ displayName: 'Bogen', itemId: 'bow', folderId, model: null });
     ben.edit((d) => insertItem(d, b));
     await anna.engine.flush();
     await ben.engine.flush();
@@ -338,7 +338,7 @@ describe('Shared projects', () => {
       d.rootFolderIds = [];
     });
     clock.t += 10;
-    const rescued = createItem({ displayName: 'Neu', nexoId: 'neu', folderId, model: null });
+    const rescued = createItem({ displayName: 'Neu', itemId: 'neu', folderId, model: null });
     ben.edit((d) => insertItem(d, rescued));
     await anna.engine.flush();
     await ben.engine.flush();
@@ -486,5 +486,118 @@ describe('Shared projects', () => {
 
   it('names the shared folder readme README.txt', () => {
     expect(README_FILE).toBe('README.txt');
+  });
+});
+
+describe('Shared CraftEngine projects', () => {
+  function craftEngineProject(): Project {
+    const project = createProject('Burg', 'burg', undefined, 'craftengine');
+    const folder = createFolder('Blöcke', null);
+    insertFolder(project, folder);
+    const item = createItem({ displayName: 'Rubinerz', itemId: 'ruby_ore', folderId: folder.id, model: null });
+    item.config = { block: { settings: { hardness: 3 } }, furniture: { settings: { item: 'burg:ruby_ore' } } };
+    item.translations = { de_de: 'Rubinerz', en_us: 'Ruby ore' };
+    insertItem(project, item);
+    project.craftEngine = { lootSources: [{ id: 'burg:ruby_drops', type: 'fixed' }] };
+    return project;
+  }
+
+  it('round-trips the target, the CraftEngine data and item translations', async () => {
+    const folder = new MemoryFolder();
+    const clock = { t: 10_000 };
+    const anna = new Client(craftEngineProject(), folder, 'Anna', clock);
+    await anna.sync();
+    const shared = await readShareFolder(folder.fs());
+    const ben = new Client(shared!.project, folder, 'Ben', clock, shared!.state);
+    expect(ben.project.target).toBe('craftengine');
+    expect(ben.project.craftEngine).toEqual(anna.project.craftEngine);
+    expect(firstItem(ben.project).translations).toEqual({ de_de: 'Rubinerz', en_us: 'Ruby ore' });
+    expect(firstItem(ben.project).config).toEqual(firstItem(anna.project).config);
+    expect(content(ben.project)).toBe(content(anna.project));
+
+    // Changes to the CraftEngine data reach the others, removing all of it included
+    clock.t += 10;
+    anna.edit((d) => {
+      d.craftEngine = { lootSources: [{ id: 'burg:other', type: 'fixed' }] };
+    });
+    expect((await anna.sync()).written).toBe(1);
+    await ben.sync();
+    expect(ben.project.craftEngine).toEqual({ lootSources: [{ id: 'burg:other', type: 'fixed' }] });
+    clock.t += 10;
+    ben.edit((d) => {
+      delete d.craftEngine;
+    });
+    await ben.sync();
+    await anna.sync();
+    expect(anna.project.craftEngine).toBeUndefined();
+    expect(anna.project.target).toBe('craftengine');
+  });
+
+  it("round-trips the attribute system and the items' attribute settings", async () => {
+    const folder = new MemoryFolder();
+    const clock = { t: 10_000 };
+    const project = craftEngineProject();
+    project.craftEngine = {
+      attributes: {
+        definitions: [{ id: 'burg:might', base: 0, constraint: { min: 0, max: 100 } }],
+        operations: [{ id: 'burg:capped', expression: 'MIN(current + amount, 10)' }],
+        equipmentSets: [{ id: 'burg:guardian', pieces: { 2: { attribute: [{ type: 'burg:might', id: 'burg:set', amount: 2 }] } } }],
+        damageRules: [{ damage_type: 'minecraft:player_attack', formula: 'damage + <attacker_attr:burg:might>' }],
+      },
+    };
+    firstItem(project).config.settings = {
+      attribute_modifiers: [{ type: 'burg:might', id: 'burg:ore', amount: 1, operation: 'minecraft:add_value', slot: 'mainhand' }],
+      equipment_set_part: [{ slots: ['head'], sets: ['burg:guardian'] }],
+    };
+    const anna = new Client(project, folder, 'Anna', clock);
+    await anna.sync();
+    const shared = await readShareFolder(folder.fs());
+    const ben = new Client(shared!.project, folder, 'Ben', clock, shared!.state);
+    expect(ben.project.craftEngine).toEqual(anna.project.craftEngine);
+    expect(firstItem(ben.project).config).toEqual(firstItem(anna.project).config);
+
+    // A change to one list reaches the others
+    clock.t += 10;
+    anna.edit((d) => {
+      d.craftEngine!.attributes!.operations = [{ id: 'burg:other', expression: 'current' }];
+    });
+    expect((await anna.sync()).written).toBe(1);
+    await ben.sync();
+    expect(ben.project.craftEngine?.attributes?.operations).toEqual([{ id: 'burg:other', expression: 'current' }]);
+    expect(ben.project.craftEngine?.attributes?.definitions).toEqual(anna.project.craftEngine?.attributes?.definitions);
+  });
+
+  it('keeps the own target and CraftEngine data for project files of versions without them', async () => {
+    const folder = new MemoryFolder();
+    const clock = { t: 10_000 };
+    const anna = new Client(craftEngineProject(), folder, 'Anna', clock);
+    await anna.sync();
+    const envelope = folder.json(PROJECT_FILE);
+    delete envelope.data.target;
+    delete envelope.data.craftEngine;
+    envelope.data.name = 'Burg 2';
+    envelope.rev += 1;
+    folder.put(PROJECT_FILE, JSON.stringify(envelope));
+    await anna.sync();
+    expect(anna.project.name).toBe('Burg 2');
+    expect(anna.project.target).toBe('craftengine');
+    expect(anna.project.craftEngine).toEqual({ lootSources: [{ id: 'burg:ruby_drops', type: 'fixed' }] });
+  });
+
+  it('reads an unknown target or broken CraftEngine data leniently', async () => {
+    const folder = new MemoryFolder();
+    const clock = { t: 10_000 };
+    const anna = new Client(craftEngineProject(), folder, 'Anna', clock);
+    await anna.sync();
+    const envelope = folder.json(PROJECT_FILE);
+    envelope.data.target = 'oraxen';
+    envelope.data.craftEngine = { lootSources: [5, { id: 'burg:kept' }] };
+    folder.put(PROJECT_FILE, JSON.stringify(envelope));
+    const shared = await readShareFolder(folder.fs());
+    expect(shared!.project.target).toBe('nexo');
+    expect(shared!.project.craftEngine).toEqual({ lootSources: [{ id: 'burg:kept' }] });
+    envelope.data.craftEngine = 'x';
+    folder.put(PROJECT_FILE, JSON.stringify(envelope));
+    expect((await readShareFolder(folder.fs()))!.project.craftEngine).toBeUndefined();
   });
 });

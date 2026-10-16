@@ -1,5 +1,5 @@
 /** Project-wide checks: namespace, pack settings, folder names and item IDs. */
-import { isPngDataUrl, itemIdSyntaxError, namespaceError, PACK_NAME_PATTERN } from '@resourcepackbuilder/minecraft';
+import { isPngDataUrl, ITEM_ID_PATTERN, namespaceError, PACK_NAME_PATTERN } from '@resourcepackbuilder/minecraft';
 import { createIssue, issueReporter, type Issue, type IssueCode, type MessageArgs } from '@resourcepackbuilder/utils';
 import { folderSlug, type Item, itemFrame, itemLabel, itemTarget, type Project } from '@resourcepackbuilder/core/project';
 
@@ -12,7 +12,8 @@ const NAMESPACE_ISSUES = {
 export function validateProjectSettings(project: Project): Issue[] {
   const issues: Issue[] = [];
   const nsError = namespaceError(project.namespace);
-  if (nsError) {
+  // Only Nexo uses the namespace "nexo" itself
+  if (nsError && !(nsError === 'nexo' && project.target !== 'nexo')) {
     const { level, code } = NAMESPACE_ISSUES[nsError];
     issues.push(createIssue(level, code, { namespace: project.namespace }));
   }
@@ -55,22 +56,24 @@ export function validateFolders(project: Project): Issue[] {
   return issues;
 }
 
-/** Missing, invalid and duplicate item IDs (an empty ID is only reported as missing). */
-export function validateItemIds(items: Item[]): Issue[] {
+/** The item IDs the app writes itself; a target may accept more (its `ItemIdRule`). */
+const DEFAULT_ITEM_ID_RULE: { pattern: RegExp; invalidCode: IssueCode } = { pattern: ITEM_ID_PATTERN, invalidCode: 'plan.itemIdInvalid' };
+
+/** Missing, invalid (by the target's `rule`) and duplicate item IDs (an empty ID is only reported as missing). */
+export function validateItemIds(items: Item[], rule = DEFAULT_ITEM_ID_RULE): Issue[] {
   const issues: Issue[] = [];
   const seen = new Map<string, Item>();
   for (const item of items) {
     const add = issueReporter(issues, { target: itemTarget(item), context: [itemFrame(item)] });
     const report = (code: IssueCode, args?: MessageArgs) => add('error', code, args);
-    const syntax = itemIdSyntaxError(item.nexoId);
-    if (syntax === 'missing') {
+    if (!item.itemId) {
       report('plan.itemIdMissing');
       continue;
     }
-    if (syntax === 'invalid') report('plan.itemIdInvalid', { id: item.nexoId });
-    const other = seen.get(item.nexoId);
-    if (other) report('plan.itemIdDuplicate', { id: item.nexoId, other: itemLabel(other) });
-    else seen.set(item.nexoId, item);
+    if (!rule.pattern.test(item.itemId)) report(rule.invalidCode, { id: item.itemId });
+    const other = seen.get(item.itemId);
+    if (other) report('plan.itemIdDuplicate', { id: item.itemId, other: itemLabel(other) });
+    else seen.set(item.itemId, item);
   }
   return issues;
 }

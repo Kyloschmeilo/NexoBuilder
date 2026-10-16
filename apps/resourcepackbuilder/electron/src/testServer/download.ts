@@ -11,7 +11,9 @@ import type { z } from 'zod';
 import { t } from '../i18n';
 import { setState } from './state';
 
-const SHA256_HEX = /^[0-9a-f]{64}$/;
+/** The checksums a download can be verified with, and the length of their hex digest. */
+const HASH_HEX_LENGTH = { sha256: 64, sha512: 128 } as const;
+export type HashAlgorithm = keyof typeof HASH_HEX_LENGTH;
 
 const userAgent = () => `ResourcepackBuilder/${app.getVersion()} (https://github.com/SLNE-Development/ResourcepackBuilder)`;
 
@@ -45,19 +47,26 @@ export async function fetchText(url: string): Promise<string> {
 }
 
 /**
- * Downloads `url` to `target` (via a `.part` file), reports progress and verifies the SHA-256 checksum. A download
- * without a published checksum is refused: the files are a server and a Java runtime that get executed.
+ * Downloads `url` to `target` (via a `.part` file), reports progress and verifies the checksum (SHA-256 unless
+ * `algorithm` says otherwise). A download without a published checksum is refused: the files are a server, a Java
+ * runtime and a plugin that get executed.
  */
-export async function download(url: string, target: string, label: string, expectedSha256: string): Promise<void> {
-  const expected = expectedSha256.trim().toLowerCase();
-  if (!SHA256_HEX.test(expected)) throw new Error(t('testServer.checksumMissing', { label }));
+export async function download(
+  url: string,
+  target: string,
+  label: string,
+  expectedHash: string,
+  algorithm: HashAlgorithm = 'sha256',
+): Promise<void> {
+  const expected = expectedHash.trim().toLowerCase();
+  if (!new RegExp(`^[0-9a-f]{${HASH_HEX_LENGTH[algorithm]}}$`).test(expected)) throw new Error(t('testServer.checksumMissing', { label }));
   const response = await net.fetch(url, { headers: { 'User-Agent': userAgent() } });
   if (!response.ok || !response.body) throw new Error(t('testServer.downloadFailed', { status: response.status, label }));
   const total = Number(response.headers.get('content-length')) || 0;
   await fsp.mkdir(path.dirname(target), { recursive: true });
   const partPath = `${target}.part`;
   const file = fs.createWriteStream(partPath);
-  const hash = crypto.createHash('sha256');
+  const hash = crypto.createHash(algorithm);
   let received = 0;
   let lastPercent: number | null | undefined;
   try {

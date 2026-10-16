@@ -9,10 +9,15 @@ import {
   insertFolder,
   insertItem,
 } from '@resourcepackbuilder/core/project';
-import { planExport } from '@resourcepackbuilder/export';
-import { nexoFolderFiles, nexoGiveCommand, nexoPackCommand, patchNexoSettings } from './files';
+import { exportPackName, planExport } from '@resourcepackbuilder/export';
+import { CRAFT_ENGINE_SERVER_ADAPTER } from './craftEngine/adapter';
+import { pluginFolderFiles } from './files';
+import { NEXO_SERVER_ADAPTER } from './nexo/adapter';
 import { createTextureModel } from '@resourcepackbuilder/minecraft';
 import { makePngDataUrl } from '@resourcepackbuilder/test-utils/png';
+
+const nexo = NEXO_SERVER_ADAPTER;
+const patchNexoSettings = nexo.patchConfig;
 
 describe('Test server: files for plugins/Nexo', () => {
   it('places items, recipes and the pack as a folder under pack/external_packs', () => {
@@ -21,9 +26,9 @@ describe('Test server: files for plugins/Nexo', () => {
     const folder = createFolder('Waffen', null);
     insertFolder(project, folder);
     const model = createTextureModel('handheld', { layer0: 'ruby.png' }, [{ name: 'ruby.png', dataUrl: makePngDataUrl(16, 16) }]);
-    insertItem(project, createItem({ displayName: 'Rubin', nexoId: 'ruby', folderId: folder.id, model }));
+    insertItem(project, createItem({ displayName: 'Rubin', itemId: 'ruby', folderId: folder.id, model }));
     const plan = planExport(project, { includeBinaries: true });
-    const files = nexoFolderFiles(project, plan);
+    const files = pluginFolderFiles(project, plan);
     const paths = files.map((f) => f.path);
     expect(paths).toContain('items/waffen/waffen.yml');
     expect(paths).toContain('pack/external_packs/test_pack/pack.mcmeta');
@@ -37,7 +42,7 @@ describe('Test server: files for plugins/Nexo', () => {
     const ogg = 'data:audio/ogg;base64,' + btoa('OggS' + '\0'.repeat(20));
     project.sounds = [createSound('s1', 'block.glocke.ding', [{ name: 'ding.ogg', dataUrl: ogg, size: 24 }])];
     project.paintings = [createPainting('p1', 'sonne', { name: 'sonne.png', dataUrl: makePngDataUrl(32, 16), width: 32, height: 16 })];
-    const paths = nexoFolderFiles(project, planExport(project)).map((f) => f.path);
+    const paths = pluginFolderFiles(project, planExport(project)).map((f) => f.path);
     expect(paths).toContain('sounds.yml');
     expect(paths).toContain('paintings.yml');
     expect(paths).toContain('pack/external_packs/klang/assets/klang/sounds/block/glocke/ding.ogg');
@@ -46,8 +51,24 @@ describe('Test server: files for plugins/Nexo', () => {
   it('uses a safe folder name if the pack name is invalid', () => {
     const project = createProject('X');
     project.settings.packName = 'mein pack!';
-    const files = nexoFolderFiles(project, planExport(project, { includeBinaries: true }));
+    const files = pluginFolderFiles(project, planExport(project, { includeBinaries: true }));
     expect(files.some((f) => f.path.startsWith('pack/external_packs/resourcepackbuilder/'))).toBe(true);
+  });
+});
+
+describe('Test server: files for plugins/CraftEngine', () => {
+  it('writes only paths the CraftEngine adapter accepts', () => {
+    const project = createProject('Kristall', 'kristall', '1.21.11', 'craftengine');
+    const folder = createFolder('Waffen', null);
+    insertFolder(project, folder);
+    const model = createTextureModel('handheld', { layer0: 'gem.png' }, [{ name: 'gem.png', dataUrl: makePngDataUrl(16, 16) }]);
+    insertItem(project, createItem({ displayName: 'Edelstein', itemId: 'gem', folderId: folder.id, model }));
+    const paths = pluginFolderFiles(project, planExport(project)).map((f) => f.path);
+    expect(paths).toContain('resources/kristall/pack.yml');
+    expect(paths).toContain('resources/kristall/configuration/items/waffen/waffen.yml');
+    expect(paths).toContain('resources/kristall/resourcepack/pack.mcmeta');
+    const packName = exportPackName(project);
+    expect(paths.filter((path) => CRAFT_ENGINE_SERVER_ADAPTER.syncPathSegments(path, { packName }) === null)).toEqual([]);
   });
 });
 
@@ -122,11 +143,11 @@ describe('Test server: Nexo settings', () => {
 
 describe('Test server: commands', () => {
   it('gives items in the Nexo 1.29 order: give <item> <amount> <player>', () => {
-    expect(nexoGiveCommand('purpel_block', 1, 'Kyloschmeilo')).toBe('nexo give purpel_block 1 Kyloschmeilo');
-    expect(nexoGiveCommand('ruby', 0, 'Steve')).toBe('nexo give ruby 1 Steve');
+    expect(nexo.giveCommand('purpel_block', 1, 'Kyloschmeilo')).toBe('nexo give purpel_block 1 Kyloschmeilo');
+    expect(nexo.giveCommand('ruby', 0, 'Steve')).toBe('nexo give ruby 1 Steve');
   });
 
   it('resends the pack to a player', () => {
-    expect(nexoPackCommand('Steve')).toBe('nexo pack Steve');
+    expect(nexo.resendPackCommand('Steve')).toBe('nexo pack Steve');
   });
 });

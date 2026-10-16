@@ -1,5 +1,5 @@
 import { ITEM_FLAGS, PERSISTENT_DATA_TYPES } from '../options';
-import { field, properties } from './build';
+import { field, properties } from '../../../form/build';
 
 export const GENERAL_PROPERTIES = properties('general', {
   lore: {

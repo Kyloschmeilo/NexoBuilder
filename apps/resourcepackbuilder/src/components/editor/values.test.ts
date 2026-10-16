@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import type { Field } from '@resourcepackbuilder/core/nexo';
+import type { Field } from '@resourcepackbuilder/core/form';
 import {
   countSetValues,
   hexToNexoColor,
@@ -12,8 +12,10 @@ import {
   renameKey,
   toStringList,
   toggleSelection,
+  typeParts,
   unknownEntries,
   withKey,
+  withEntryType,
   withUnknownEntries,
 } from './values';
 
@@ -109,5 +111,22 @@ describe('Nexo colours', () => {
     expect(nexoColorToHex('999, 0, 0')).toBe('#ff0000');
     expect(nexoColorToHex('red')).toBe('#ffffff');
     expect(hexToNexoColor('#ff8000')).toBe('255, 128, 0');
+  });
+});
+
+describe('typed entries', () => {
+  const command = { type: 'command', label: '', fields: [text({ key: 'command' }), text({ key: 'conditions' })] };
+
+  it('splits the "!" off an invertible type', () => {
+    expect(typeParts('!permission', true)).toEqual({ name: 'permission', inverted: true });
+    expect(typeParts('!permission')).toEqual({ name: '!permission', inverted: false });
+    expect(typeParts(undefined, true)).toEqual({ name: '', inverted: false });
+  });
+
+  it('keeps the keys the new type has, and every key while the type is unknown', () => {
+    const entry = { type: 'message', message: 'hi', conditions: [] };
+    expect(withEntryType(entry, 'command', command)).toEqual({ type: 'command', conditions: [] });
+    expect(withEntryType(entry, 'comm', undefined)).toEqual({ type: 'comm', message: 'hi', conditions: [] });
+    expect(withEntryType(entry, '', undefined)).toEqual({ message: 'hi', conditions: [] });
   });
 });
