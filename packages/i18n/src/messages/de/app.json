@@ -14,6 +14,9 @@
     "copied": "Eigenschaften von „{name}“ kopiert. Zum Einfügen im Menü eines anderen Items „Eigenschaften einfügen“ wählen.",
     "nothingCopied": "Zuerst bei einem Item „Eigenschaften kopieren“ wählen."
   },
+  "storage": {
+    "unavailable": "Dieser Browser bietet keinen Projektspeicher (IndexedDB), Projekte können hier nicht gespeichert werden. Bitte das Projekt als Datei speichern."
+  },
   "autosave": {
     "failed": "Automatisches Speichern im Browser ist nicht möglich. Bitte das Projekt regelmäßig als Datei speichern."
   },
@@ -32,6 +35,9 @@
   "testServer": {
     "notRunning": "Der Testserver läuft nicht.",
     "playerNameMissing": "Bitte im Testserver-Tab deinen Minecraft-Namen eintragen."
+  },
+  "storage": {
+    "unavailable": "Projekte können in diesem Browser nicht gespeichert werden (IndexedDB ist nicht verfügbar)."
   },
   "project": {
     "created": "Projekt „{name}“ wurde angelegt.",

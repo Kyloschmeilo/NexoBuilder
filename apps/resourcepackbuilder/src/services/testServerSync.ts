@@ -9,10 +9,12 @@ import { compareVersions } from '@resourcepackbuilder/core/minecraft/versions';
 import { TEST_SERVER_LOG_LIMIT } from '@resourcepackbuilder/core/testServer/config';
 import { nexoFolderFiles, nexoGiveCommand, patchNexoSettings } from '@resourcepackbuilder/core/testServer/files';
 import { AppError } from '../i18n/errors';
+import { asError } from '../lib/asError';
 import type { DesktopTestServerApi, NexoJarInfo, TestServerConfigPatch, TestServerSyncResult } from '../platform/desktopApi';
 import { useProjectStore } from '../store/project';
-import { useTestServerStore } from '../store/testServer';
+import { useTestServerStore } from './testServerStore';
 import { createSerialTask } from './serialTask';
+import { watchOpenProject } from './watchOpenProject';
 
 const AUTO_SYNC_DELAY_MS = 1200;
 /** Wait after a reload when Nexo's pack build cannot be followed (no Nexo JAR configured). */
@@ -47,8 +49,6 @@ export interface TestServerSync {
 
 export function createTestServerSync(api: DesktopTestServerApi): TestServerSync {
   const store = useTestServerStore;
-  let autoSyncTimer: ReturnType<typeof setTimeout> | undefined;
-  let configSaving: Promise<unknown> = Promise.resolve();
   let configSeq = 0;
   let versionsRequest: Promise<void> | null = null;
 
@@ -67,7 +67,7 @@ export function createTestServerSync(api: DesktopTestServerApi): TestServerSync 
         store.setState({ ...(hasChanged && { lastResult: { ...result, at: Date.now() } }), lastCheck: Date.now(), syncError: null });
         return result;
       } catch (err) {
-        store.setState({ syncError: err });
+        store.setState({ syncError: asError(err) });
         return null;
       } finally {
         store.setState({ isSyncing: false });
@@ -103,33 +103,43 @@ export function createTestServerSync(api: DesktopTestServerApi): TestServerSync 
       if (before === 'starting' && event.state.status === 'running') void transfer.run(true);
     }
   });
-  void api.getState().then(({ log, ...server }) => store.setState({ server, log }));
+  api.getState().then(
+    ({ log, ...server }) => store.setState({ server, log }),
+    (err: unknown) => console.warn('Could not read the test server state', err),
+  );
 
-  const unsubscribe = useProjectStore.subscribe(({ project }, { project: previous }) => {
-    if (!project || project === previous) return;
-    clearTimeout(autoSyncTimer);
-    autoSyncTimer = setTimeout(() => {
+  const watcher = watchOpenProject({
+    onSettled() {
       const { server } = store.getState();
       if (server?.status === 'running' && server.config.autoUpdate) void transfer.run(true);
-    }, AUTO_SYNC_DELAY_MS);
+    },
+    debounceMs: AUTO_SYNC_DELAY_MS,
   });
 
-  const setConfig = (patch: TestServerConfigPatch): Promise<void> => {
-    const { server } = store.getState();
-    if (server) store.setState({ server: { ...server, config: { ...server.config, ...patch } } });
-    const seq = ++configSeq;
-    const run = configSaving.then(async () => {
+  /** Saves settings in order; changes made while one is saved are merged into the next save */
+  const saveConfig = createSerialTask<{ patch: TestServerConfigPatch; seq: number }, void>(
+    async ({ patch, seq }) => {
       try {
         const next = await api.setConfig(patch);
         // Only the answer to the latest change is applied, so intermediate states reset nothing
         if (seq === configSeq) store.setState({ server: next });
       } catch (err) {
-        if (seq === configSeq) void api.getState().then(({ log: _log, ...current }) => store.setState({ server: current }));
+        if (seq === configSeq) {
+          api.getState().then(
+            ({ log: _log, ...current }) => store.setState({ server: current }),
+            (stateErr: unknown) => console.warn('Could not read the test server state', stateErr),
+          );
+        }
         throw err;
       }
-    });
-    configSaving = run.catch(() => undefined);
-    return run;
+    },
+    (queued, next) => ({ patch: { ...queued.patch, ...next.patch }, seq: next.seq }),
+  );
+
+  const setConfig = (patch: TestServerConfigPatch): Promise<void> => {
+    const { server } = store.getState();
+    if (server) store.setState({ server: { ...server, config: { ...server.config, ...patch } } });
+    return saveConfig.run({ patch, seq: ++configSeq });
   };
 
   const fetchPaperVersions = async () => {
@@ -138,7 +148,7 @@ export function createTestServerSync(api: DesktopTestServerApi): TestServerSync 
     try {
       versions = [...(await api.versions())].sort((a, b) => compareVersions(b, a));
     } catch (err) {
-      store.setState({ paperVersionsError: err });
+      store.setState({ paperVersionsError: asError(err) });
       return;
     }
     store.setState({ paperVersions: versions });
@@ -153,7 +163,7 @@ export function createTestServerSync(api: DesktopTestServerApi): TestServerSync 
   };
 
   const start = async () => {
-    await configSaving;
+    await saveConfig.idle();
     // The files are in place before Nexo starts for the first time
     const result = await transfer.run(false);
     const { syncError } = store.getState();
@@ -203,8 +213,7 @@ export function createTestServerSync(api: DesktopTestServerApi): TestServerSync 
 
     dispose() {
       offEvent();
-      unsubscribe();
-      clearTimeout(autoSyncTimer);
+      watcher.dispose();
     },
   };
 }

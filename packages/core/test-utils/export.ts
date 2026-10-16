@@ -1,7 +1,7 @@
 /** Test helpers around the export. */
-import type { MultiExportPlan } from '../export/selection';
-import type { ExportPlan } from '../export/types';
-import type { Project } from '../project/types';
+import type { MultiExportPlan } from '../src/export/selection';
+import type { ExportPlan } from '../src/export/types';
+import type { Project } from '../src/project/types';
 
 /** A planned export of exactly one project, as planMultiExport would return it. */
 export function singleExport(project: Project, plan: ExportPlan): MultiExportPlan {

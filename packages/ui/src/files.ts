@@ -1,5 +1,13 @@
 /** Browser helpers for files: reading, picking, collecting dropped folders and downloading. */
 
+/** The drag payload type browsers use for files (and folders) dragged in from the system. */
+export const FILES_DRAG_TYPE = 'Files';
+
+/** Whether a drag carries files from the system (and not e.g. text or an element of the page). */
+export function carriesFiles(dataTransfer: DataTransfer | null): boolean {
+  return dataTransfer?.types.includes(FILES_DRAG_TYPE) ?? false;
+}
+
 function readWith(read: (reader: FileReader) => void): Promise<string> {
   return new Promise((resolve, reject) => {
     const reader = new FileReader();

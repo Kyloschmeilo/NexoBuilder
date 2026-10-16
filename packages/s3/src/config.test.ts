@@ -23,6 +23,22 @@ describe('validateConfig', () => {
     expect(() => validateConfig(config)).toThrow(expect.objectContaining({ code: 'invalidConfig' }));
   });
 
+  it.each([{}, null, 'config', { ...aws, region: undefined }, { ...aws, accessKeyId: 5 }, { ...aws, endpoint: 42 }])(
+    'rejects malformed input %j without crashing',
+    (config) => {
+      expect(() => validateConfig(config)).toThrow(expect.objectContaining({ code: 'invalidConfig' }));
+    },
+  );
+
+  it('returns the checked configuration with trimmed region and key', () => {
+    expect(validateConfig({ region: ' eu-central-1 ', accessKeyId: ' AKID ', secretAccessKey: 's' })).toEqual({
+      region: 'eu-central-1',
+      forcePathStyle: false,
+      accessKeyId: 'AKID',
+      secretAccessKey: 's',
+    });
+  });
+
   it('does not echo the secret', () => {
     try {
       validateConfig({ ...aws, secretAccessKey: 'TOPSECRET', endpoint: 'http://TOPSECRET.example.com' });
@@ -52,4 +68,11 @@ describe('buildObjectUrl', () => {
   it('prefers the public URL base', () => {
     expect(buildObjectUrl(aws, 'packs', 'a/b#1.zip', 'https://cdn.example.com/files/')).toBe('https://cdn.example.com/files/a/b%231.zip');
   });
+
+  it.each(['cdn.example.com', 'javascript:alert(1)', 'https://cdn.example.com/?x=1', 'https://u:p@cdn.example.com'])(
+    'rejects the public URL base %s',
+    (base) => {
+      expect(() => buildObjectUrl(aws, 'packs', 'a.zip', base)).toThrow(expect.objectContaining({ code: 'invalidConfig' }));
+    },
+  );
 });

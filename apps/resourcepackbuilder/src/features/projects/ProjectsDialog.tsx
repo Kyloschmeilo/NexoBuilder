@@ -2,17 +2,19 @@ import { useState } from 'react';
 import { FolderOpen, FolderSync, Upload } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 import { Button } from '@resourcepackbuilder/ui/components/button';
+import { createDialogHandle } from '@resourcepackbuilder/ui/components/dialog';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@resourcepackbuilder/ui/components/tabs';
-import { DialogFrame } from '../../components/DialogFrame';
-import { closeDialog, type FeatureDialogProps } from '../../store/dialogs';
+import { DialogFrame, FeatureDialog } from '../../components/DialogFrame';
 import { useProjectActions } from './useProjectActions';
 import { NewProjectForm } from './NewProjectForm';
 import { ProjectList } from './ProjectList';
 
-type ProjectsTab = FeatureDialogProps['projects']['tab'];
+type ProjectsTab = 'open' | 'new';
 
-/** Switch to a saved, file or shared project, or create a new one. */
-export function ProjectsDialog({ tab: initialTab }: FeatureDialogProps['projects']) {
+/** Opens the projects dialog on the given tab; works without an open project. */
+export const projectsDialog = createDialogHandle<{ tab: ProjectsTab }>();
+
+function ProjectsFrame({ tab: initialTab }: { tab: ProjectsTab }) {
   const t = useTranslations('layout');
   const actions = useProjectActions();
   const [tab, setTab] = useState<ProjectsTab>(initialTab);
@@ -25,14 +27,14 @@ export function ProjectsDialog({ tab: initialTab }: FeatureDialogProps['projects
         </TabsList>
         <TabsContent value="open" className="flex flex-col gap-3 pt-2">
           <div className="max-h-90 overflow-auto">
-            <ProjectList onOpened={closeDialog} />
+            <ProjectList onOpened={() => projectsDialog.close()} />
           </div>
           <div className="flex flex-wrap gap-2">
             <Button
               variant="outline"
               onClick={async () => {
                 await actions.openFile();
-                closeDialog();
+                projectsDialog.close();
               }}
             >
               <Upload /> {t('welcome.openFile')}
@@ -41,7 +43,7 @@ export function ProjectsDialog({ tab: initialTab }: FeatureDialogProps['projects
               <Button
                 variant="outline"
                 onClick={async () => {
-                  if (await actions.openShared()) closeDialog();
+                  if (await actions.openShared()) projectsDialog.close();
                 }}
               >
                 <FolderSync /> {t('welcome.openShared')}
@@ -50,9 +52,18 @@ export function ProjectsDialog({ tab: initialTab }: FeatureDialogProps['projects
           </div>
         </TabsContent>
         <TabsContent value="new" className="pt-2">
-          <NewProjectForm onDone={closeDialog} />
+          <NewProjectForm onDone={() => projectsDialog.close()} />
         </TabsContent>
       </Tabs>
     </DialogFrame>
+  );
+}
+
+/** Switch to a saved, file or shared project, or create a new one. */
+export function ProjectsDialog() {
+  return (
+    <FeatureDialog handle={projectsDialog} isProjectBound={false}>
+      {({ tab }) => <ProjectsFrame tab={tab} />}
+    </FeatureDialog>
   );
 }

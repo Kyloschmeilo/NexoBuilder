@@ -1,11 +1,13 @@
 /**
  * Starts everything the app runs in the background – once, before the UI renders – and stops it again.
  */
-import { loadStoredLocale } from '../i18n/locale';
-import { desktopApp, desktopShare, desktopTestServer } from '../platform/desktop';
-import { setProject } from '../store/project';
+import { createContext, useContext } from 'react';
+import { useLocaleStore } from '../i18n/locale';
+import { desktopApi } from '../platform/desktop';
+import { closeProjectDialogs } from '../store/dialogs';
+import { setProject, useProjectStore } from '../store/project';
+import { followOpenProject } from '../store/ui';
 import { createAutosave, type Autosave } from './autosave';
-import { startDesktopLocaleSync } from './desktopLocaleSync';
 import { createProjectRepository, type ProjectRepository } from './projectRepository';
 import { createShareSync, type ShareSync } from './shareSync';
 import { createTestServerSync, type TestServerSync } from './testServerSync';
@@ -31,19 +33,30 @@ async function openLastProject(repository: ProjectRepository): Promise<void> {
 }
 
 export async function bootstrap(): Promise<AppServices> {
-  loadStoredLocale();
+  const stopFollowing = followOpenProject();
+  // Dialogs of the open project close when it is closed or another one is opened
+  const stopClosingDialogs = useProjectStore.subscribe(({ project }, { project: previous }) => {
+    if (project?.id !== previous?.id) closeProjectDialogs();
+  });
   const repository = createProjectRepository();
   await openLastProject(repository);
 
-  const shareApi = desktopShare();
-  const testServerApi = desktopTestServer();
-  const appApi = desktopApp();
+  const desktop = desktopApi();
 
-  // The autosave stores the sync state with the project; the share sync asks for a save when that state changes.
-  const autosave: Autosave = createAutosave({ repository, syncStateFor: (projectId) => share?.syncStateFor(projectId) ?? null });
-  const share = shareApi ? createShareSync({ api: shareApi, repository, onSyncStateChanged: (id) => autosave.requestSave(id) }) : null;
-  const testServer = testServerApi ? createTestServerSync(testServerApi) : null;
-  const stopLocaleSync = appApi ? startDesktopLocaleSync(appApi) : () => undefined;
+  // The share sync hands its sync state to the autosave, which stores it with the project
+  const autosave = createAutosave({ repository });
+  const share = desktop ? createShareSync({ api: desktop.share, repository, autosave }) : null;
+  const testServer = desktop ? createTestServerSync(desktop.testServer) : null;
+
+  // Keeps the desktop program's menus, native dialogs and test-server messages in the app's language
+  let stopLocaleSync = () => {};
+  if (desktop) {
+    const applyLocale = () => void desktop.app.setLocale(useLocaleStore.getState().locale).catch(() => undefined);
+    applyLocale();
+    stopLocaleSync = useLocaleStore.subscribe((state, prev) => {
+      if (state.locale !== prev.locale) applyLocale();
+    });
+  }
 
   return {
     repository,
@@ -51,10 +64,21 @@ export async function bootstrap(): Promise<AppServices> {
     share,
     testServer,
     dispose() {
+      stopFollowing();
+      stopClosingDialogs();
       stopLocaleSync();
       testServer?.dispose();
       share?.dispose();
       autosave.dispose();
     },
   };
+}
+
+/** The running services, provided by the shell's root once `bootstrap()` finished. */
+export const ServicesContext = createContext<AppServices | null>(null);
+
+export function useServices(): AppServices {
+  const services = useContext(ServicesContext);
+  if (!services) throw new Error('useServices() must be used below the ServicesContext provider');
+  return services;
 }

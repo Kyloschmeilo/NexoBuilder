@@ -11,12 +11,12 @@ export interface TestServerUiState {
   lastResult: (TestServerSyncResult & { at: number }) | null;
   /** Time of the last transfer (even without changes) */
   lastCheck: number | null;
-  /** Why the last transfer failed; translated by the UI */
-  syncError: unknown;
+  /** Why the last transfer failed; worded by `useErrorMessage` */
+  syncError: Error | null;
   /** Paper versions the server can run, newest first; `null` until loaded */
   paperVersions: string[] | null;
-  /** Why loading the Paper versions failed; translated by the UI */
-  paperVersionsError: unknown;
+  /** Why loading the Paper versions failed; worded by `useErrorMessage` */
+  paperVersionsError: Error | null;
 }
 
 export const useTestServerStore = create<TestServerUiState>(() => ({

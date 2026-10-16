@@ -7,9 +7,9 @@ import { convertBBModel } from '../model/bbmodel';
 import { planExport } from './plan';
 import { INSTALL_GUIDE_FILE } from './installGuide';
 import { buildMultiExportZip } from './zip';
-import { singleExport } from '../test/export';
+import { singleExport } from '../../test-utils/export';
 import { createTexture } from '../model/textures';
-import { makePngDataUrl } from '../test/png';
+import { makePngDataUrl } from '../../test-utils/png';
 import type { Project } from '../project/types';
 
 const PNG16 = makePngDataUrl(16, 16);

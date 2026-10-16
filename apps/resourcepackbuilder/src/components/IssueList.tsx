@@ -1,7 +1,8 @@
 import { useCallback } from 'react';
 import { useTranslations } from 'next-intl';
 import type { IssueKey } from '@resourcepackbuilder/i18n';
-import type { Issue, IssueLevel, IssueTarget, MessageArgs } from '@resourcepackbuilder/core/issues';
+import type { Issue, IssueLevel, IssueTarget } from '@resourcepackbuilder/core/issues';
+import { useRenderMessage } from '../i18n/errors';
 import { TONE_ALERT_VARIANT, TONE_ICONS } from '@resourcepackbuilder/ui';
 import { Alert, AlertAction, AlertDescription } from '@resourcepackbuilder/ui/components/alert';
 import { Button } from '@resourcepackbuilder/ui/components/button';
@@ -24,23 +25,14 @@ const OPEN_LABEL_KEYS: Record<IssueTarget['kind'], IssueKey> = {
  * `frame › frame: message`.
  */
 export function useIssueText(): (issue: Issue) => string {
-  const t = useTranslations('issues');
-  const tSchema = useTranslations('schema');
+  const render = useRenderMessage();
   return useCallback(
     (issue: Issue) => {
-      // Codes and label keys are runtime keys; core's tests keep every one of them in the catalogues.
-      const render = (code: string, args: MessageArgs = {}) => {
-        const values: Record<string, string | number> = {};
-        for (const [name, arg] of Object.entries(args)) {
-          values[name] = typeof arg === 'object' ? tSchema(arg.key as never, (arg.args ?? {}) as never) : arg;
-        }
-        return t(code as never, values as never);
-      };
       const message = render(issue.code, issue.args);
       if (!issue.context?.length) return message;
       return `${issue.context.map((frame) => render(frame.code, frame.args)).join(' › ')}: ${message}`;
     },
-    [t, tSchema],
+    [render],
   );
 }
 

@@ -55,6 +55,10 @@
     "fieldTooSmall": "Der Wert {value} ist kleiner als {min}.",
     "fieldTooLarge": "Der Wert {value} ist größer als {max}.",
     "fieldNotInteger": "Es wird eine ganze Zahl erwartet.",
+    "fieldNotANumber": "„{value}“ ist keine Zahl – der Wert wird nicht exportiert.",
+    "fieldNotABoolean": "„{value}“ ist weder true noch false – der Wert wird nicht exportiert.",
+    "fieldNotAnOption": "„{value}“ ist keiner der möglichen Werte.",
+    "fieldInvalidValue": "Der Wert hat den falschen Typ – er wird nicht exportiert.",
     "blockTypeMissing": "Beim eigenen Block fehlt der Block-Typ.",
     "blockVariationRange": "Die Variation {variation} liegt außerhalb von 1–{max} für {type}.",
     "blockVariationDuplicate": "Die Variation {variation} ({type}) wird bereits von „{other}“ verwendet.",
@@ -130,7 +134,9 @@
     "noProjectOpen": "Es ist kein Projekt geöffnet."
   },
   "file": {
-    "invalidDataUrl": "Ungültige Data-URL."
+    "invalidDataUrl": "Ungültige Data-URL.",
+    "invalidJson": "Die Datei ist kein gültiges JSON: {error}",
+    "unexpectedContent": "Die Datei hat nicht den erwarteten Inhalt."
   },
   "recipe": {
     "resultAmountRange": "Die Ergebnis-Anzahl muss zwischen 1 und 99 liegen.",
@@ -186,6 +192,10 @@
     "noName": "Ungültiges Projekt (Name fehlt)",
     "invalidFile": "Die Datei ist keine gültige ResourcepackBuilder-Projektdatei.",
     "notProjectFile": "Die Datei ist keine ResourcepackBuilder-Projektdatei."
+  },
+  "yaml": {
+    "syntax": "YAML-Fehler in Zeile {line}, Spalte {column}: {detail}",
+    "duplicateKey": "Der Schlüssel in Zeile {line} kommt doppelt vor ({detail})."
   },
   "issueList": {
     "openItem": "Zum Item",

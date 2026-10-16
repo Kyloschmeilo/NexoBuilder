@@ -8,7 +8,7 @@ import { FieldDescription, FieldError } from '@resourcepackbuilder/ui/components
 import { Textarea } from '@resourcepackbuilder/ui/components/textarea';
 import { updateItem } from '../../commands/items';
 import { YamlCode } from '../../components/YamlCode';
-import { usePlan } from '../../store/PlanProvider';
+import { usePlan } from '../../shell/PlanProvider';
 
 const INDENT = '  ';
 const EXAMPLE = 'Mechanics:\n  furniture:\n    placements:\n      wall:\n        properties:\n          translation: 0,0.3,-0.3';

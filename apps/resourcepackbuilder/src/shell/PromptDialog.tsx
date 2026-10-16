@@ -1,6 +1,7 @@
 import { useId, useRef, useState } from 'react';
 import { useTranslations } from 'next-intl';
 import { Button } from '@resourcepackbuilder/ui/components/button';
+import { Dialog } from '@resourcepackbuilder/ui/components/dialog';
 import { Field, FieldError, FieldLabel } from '@resourcepackbuilder/ui/components/field';
 import { Input } from '@resourcepackbuilder/ui/components/input';
 import { DialogFrame } from '../components/DialogFrame';
@@ -20,41 +21,47 @@ export function PromptDialog({ question: { options, resolve } }: { question: Ext
     if (!error) resolve(value.trim());
   };
   return (
-    <DialogFrame
-      title={options.title}
-      size="narrow"
-      initialFocus={inputRef}
-      onClose={cancel}
-      footer={
-        <>
-          <Button variant="outline" onClick={cancel}>
-            {tCommon('cancel')}
-          </Button>
-          <Button disabled={!!error} onClick={submit}>
-            {options.confirmLabel}
-          </Button>
-        </>
-      }
+    <Dialog
+      open
+      onOpenChange={(open) => {
+        if (!open) cancel();
+      }}
     >
-      <form
-        onSubmit={(e) => {
-          e.preventDefault();
-          submit();
-        }}
+      <DialogFrame
+        title={options.title}
+        size="narrow"
+        initialFocus={inputRef}
+        footer={
+          <>
+            <Button variant="outline" onClick={cancel}>
+              {tCommon('cancel')}
+            </Button>
+            <Button disabled={!!error} onClick={submit}>
+              {options.confirmLabel}
+            </Button>
+          </>
+        }
       >
-        <Field data-invalid={isInvalid}>
-          <FieldLabel htmlFor={inputId}>{options.label}</FieldLabel>
-          <Input
-            ref={inputRef}
-            id={inputId}
-            aria-invalid={isInvalid}
-            value={value}
-            onChange={(e) => setValue(e.target.value)}
-            onFocus={(e) => e.target.select()}
-          />
-          {isInvalid && <FieldError>{error}</FieldError>}
-        </Field>
-      </form>
-    </DialogFrame>
+        <form
+          onSubmit={(e) => {
+            e.preventDefault();
+            submit();
+          }}
+        >
+          <Field data-invalid={isInvalid}>
+            <FieldLabel htmlFor={inputId}>{options.label}</FieldLabel>
+            <Input
+              ref={inputRef}
+              id={inputId}
+              aria-invalid={isInvalid}
+              value={value}
+              onChange={(e) => setValue(e.target.value)}
+              onFocus={(e) => e.target.select()}
+            />
+            {isInvalid && <FieldError>{error}</FieldError>}
+          </Field>
+        </form>
+      </DialogFrame>
+    </Dialog>
   );
 }

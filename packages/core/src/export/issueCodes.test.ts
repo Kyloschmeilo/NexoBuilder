@@ -11,7 +11,21 @@ type MessageTree = { [key: string]: string | MessageTree };
 const SRC = new URL('../', import.meta.url);
 
 /** First segments of the keys in `issues` that core uses for issue and error codes */
-const CODE_GROUPS = ['context', 'plan', 'selection', 'model', 'texture', 'sync', 'file', 'project', 'recipe', 'glyph', 'sound', 'painting'];
+const CODE_GROUPS = [
+  'context',
+  'plan',
+  'selection',
+  'model',
+  'texture',
+  'sync',
+  'file',
+  'project',
+  'recipe',
+  'glyph',
+  'sound',
+  'painting',
+  'yaml',
+];
 
 /** Literals that look like codes but are not (file names) */
 const NOT_CODES = new Set(['project.json']);

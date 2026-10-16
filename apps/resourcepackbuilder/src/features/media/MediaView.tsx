@@ -15,7 +15,7 @@ import { addGlyph, addPainting, addSound } from '../../commands/media';
 import { useMediaFileReader } from '../../hooks/useFileReaders';
 import { richTags } from '../../i18n/richTags';
 import { MEDIA_FILES, type MediaFileByKind } from '../../lib/mediaFiles';
-import { usePlan } from '../../store/PlanProvider';
+import { usePlan } from '../../shell/PlanProvider';
 import { useOpenProject } from '../../store/project';
 import { GlyphCard } from '../glyphs/GlyphCard';
 import { PaintingCard } from '../paintings/PaintingCard';

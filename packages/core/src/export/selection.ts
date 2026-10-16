@@ -5,7 +5,7 @@
  * For the selection, a sub-project with the same folders (just without the deselected
  * items) is created – paths and file names thus stay exactly as in the full export.
  */
-import { inContext, issueReporter, type Issue, type MessageArgs } from '../issues';
+import { inContext, issueReporter, type Issue, type IssueCode, type MessageArgs } from '../issues';
 import { MEDIA_KIND_LIST, MEDIA_KINDS, mapMediaLists, mediaGlobalId, mediaList, type MediaKind } from '../nexo/media/kinds';
 import type { Project } from '../project/types';
 import { projectFrame } from '../issueFrames';
@@ -154,7 +154,7 @@ export function planMultiExport(entries: ExportEntry[], options: PlanOptions = {
 function crossProjectIssues(projects: PlannedProject[]): Issue[] {
   const issues: Issue[] = [];
   const report = issueReporter(issues);
-  const error = (code: string, args: MessageArgs) => report('error', code, args);
+  const error = (code: IssueCode, args: MessageArgs) => report('error', code, args);
 
   // Remembers the first project (index) per key and returns its name on overlap
   const firstOwner = <K>(map: Map<K, number>, key: K, owner: number): string | null => {

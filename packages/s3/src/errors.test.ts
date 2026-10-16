@@ -1,5 +1,7 @@
 import { describe, expect, it } from 'vitest';
+import { validateConfig } from './config';
 import { S3Error, toS3Error } from './errors';
+import { joinKey } from './keys';
 
 function serviceError(name: string, status?: number) {
   return Object.assign(new Error('service message with SECRET'), {
@@ -69,5 +71,20 @@ describe('toS3Error', () => {
     expect(toS3Error(original)).toBe(original);
     expect(toS3Error('boom').code).toBe('unknown');
     expect(toS3Error(null).code).toBe('unknown');
+  });
+});
+
+describe('S3Error message keys', () => {
+  it('points at the desktopErrors catalogue', () => {
+    expect(new S3Error('noSuchBucket').messageKey).toBe('s3.noSuchBucket');
+    expect(new S3Error('invalidConfig', { problem: 'regionMissing' }).messageKey).toBe('s3.config.regionMissing');
+  });
+
+  it('carries the problem of invalid configurations', () => {
+    expect(() => validateConfig({ region: '' })).toThrow(expect.objectContaining({ problem: 'regionMissing' }));
+    expect(() => validateConfig({ region: 'r', accessKeyId: 'a', secretAccessKey: 's', endpoint: 'http://x.example.com' })).toThrow(
+      expect.objectContaining({ problem: 'endpointNotHttps' }),
+    );
+    expect(() => joinKey('a', '../b')).toThrow(expect.objectContaining({ problem: 'pathInvalid' }));
   });
 });

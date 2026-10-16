@@ -2,7 +2,7 @@
  * Targets and context frames ("where") of issues; each frame code is a message key in the `issues`
  * namespace. All `context.*` frames are built here so the app can rely on their codes and args.
  */
-import { labelArg, type IssueContext, type IssueTarget } from './issues';
+import { labelArg, schemaKey, type IssueContext, type IssueTarget } from './issues';
 import type { MediaKind } from './nexo/media/kinds';
 import type { VariantDef } from './nexo/variants';
 import { itemLabel } from './project/labels';
@@ -49,12 +49,12 @@ export function recipeInputFrame(key: string): IssueContext {
 
 /** A configuration property; `label` is a message key in the `schema` namespace. */
 export function propertyFrame(label: string): IssueContext {
-  return { code: 'context.property', args: { property: labelArg(label) } };
+  return { code: 'context.property', args: { property: labelArg(schemaKey(label)) } };
 }
 
 /** A field inside a property; `label` is a message key in the `schema` namespace. */
 export function fieldFrame(label: string): IssueContext {
-  return { code: 'context.field', args: { field: labelArg(label) } };
+  return { code: 'context.field', args: { field: labelArg(schemaKey(label)) } };
 }
 
 /** Entry `index` (counted from 1) of a list. */
@@ -68,7 +68,7 @@ export function mapKeyFrame(key: string): IssueContext {
 
 /** A variant slot, or with `suffix` (the end of its path) one model of it. */
 export function variantFrame(def: VariantDef, suffix?: string): IssueContext {
-  const variant = labelArg(def.label, def.params);
+  const variant = labelArg(schemaKey(def.label), def.params);
   return suffix === undefined
     ? { code: 'context.variant', args: { variant } }
     : { code: 'context.variantModel', args: { variant, suffix } };
@@ -76,5 +76,5 @@ export function variantFrame(def: VariantDef, suffix?: string): IssueContext {
 
 /** An armor layer; `label` is a message key in the `schema` namespace. */
 export function armorLayerFrame(label: string): IssueContext {
-  return { code: 'context.armorLayer', args: { layer: labelArg(label) } };
+  return { code: 'context.armorLayer', args: { layer: labelArg(schemaKey(label)) } };
 }

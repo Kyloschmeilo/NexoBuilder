@@ -8,6 +8,7 @@ import { deepClone, deepMerge, isPlainObject, mapData } from '../object';
 import type { ConfigObject, ConfigValue, Item, Project } from '../project/types';
 import { slotForMaterial, type ItemArmor } from './armor';
 import type { Field } from './fields';
+import { BooleanValue, NumberValue } from './fieldSchema';
 import { getPath, setPath } from './configPath';
 import { itemMaterial } from './material';
 import { CONFIG_PROPERTIES, unknownConfigPaths } from './schema';
@@ -185,12 +186,11 @@ function pruneByField(value: unknown, field: Field): unknown {
     case 'text':
       if (typeof value === 'string') return isEmptyString(value) ? undefined : value;
       return pruneGeneric(value);
+    // Numbers and booleans stored as text are converted; anything else is left out (and reported, see fieldSchema)
     case 'number':
-      if (typeof value === 'number') return Number.isFinite(value) ? value : undefined;
-      if (typeof value === 'string') return isEmptyString(value) ? undefined : value;
-      return undefined;
+      return NumberValue.safeParse(value).data;
     case 'boolean':
-      return typeof value === 'boolean' ? value : undefined;
+      return BooleanValue.safeParse(value).data;
     case 'select':
       return typeof value === 'string' && isEmptyString(value) ? undefined : value;
     case 'stringList': {

@@ -4,6 +4,7 @@ import { useTranslations } from 'next-intl';
 import { ClipboardPaste } from 'lucide-react';
 import { selectFromProject } from '@resourcepackbuilder/core/export/selection';
 import {
+  clipboardLabel,
   COPY_CATEGORIES,
   summarizeClipboard,
   type CopyCategory,
@@ -11,12 +12,12 @@ import {
   type PasteOptions,
 } from '@resourcepackbuilder/core/nexo/copyConfig';
 import { Button } from '@resourcepackbuilder/ui/components/button';
+import { createDialogHandle } from '@resourcepackbuilder/ui/components/dialog';
 import { pasteItemProperties } from '../../commands/clipboard';
-import { DialogFrame } from '../../components/DialogFrame';
+import { DialogFrame, FeatureDialog } from '../../components/DialogFrame';
 import { SelectionHeader, SelectionTree } from '../../components/selection/SelectionTree';
 import { richTags } from '../../i18n/richTags';
-import { clipboardLabel, useClipboardStore } from '../../store/clipboard';
-import { closeDialog, type FeatureDialogProps } from '../../store/dialogs';
+import { useClipboardStore } from '../../store/clipboard';
 import { notify } from '../../shell/notify';
 import { useOpenProject } from '../../store/project';
 
@@ -44,7 +45,7 @@ function PasteDialogContent({ clip, targetItemIds }: { clip: ItemConfigClipboard
   const apply = () => {
     const count = pasteItemProperties(targets, { categories: new Set(categories), mode });
     notify('success', t('pasted', { name: clipboardLabel(clip), count }));
-    closeDialog();
+    pasteConfigDialog.close();
   };
 
   return (
@@ -60,7 +61,7 @@ function PasteDialogContent({ clip, targetItemIds }: { clip: ItemConfigClipboard
       }
       footer={
         <>
-          <Button variant="outline" onClick={closeDialog}>
+          <Button variant="outline" onClick={() => pasteConfigDialog.close()}>
             {tCommon('cancel')}
           </Button>
           <Button disabled={targets.length === 0 || categories.size === 0} onClick={apply}>
@@ -91,7 +92,14 @@ function PasteDialogContent({ clip, targetItemIds }: { clip: ItemConfigClipboard
   );
 }
 
-export function PasteConfigDialog({ targetItemIds }: FeatureDialogProps['pasteConfig']) {
+function PasteConfigFrame({ targetItemIds }: { targetItemIds: string[] }) {
   const clip = useClipboardStore((s) => s.clip);
   return clip ? <PasteDialogContent clip={clip} targetItemIds={targetItemIds} /> : null;
+}
+
+/** Opens "Paste properties" with the given items of the open project as targets. */
+export const pasteConfigDialog = createDialogHandle<{ targetItemIds: string[] }>();
+
+export function PasteConfigDialog() {
+  return <FeatureDialog handle={pasteConfigDialog}>{(payload) => <PasteConfigFrame {...payload} />}</FeatureDialog>;
 }

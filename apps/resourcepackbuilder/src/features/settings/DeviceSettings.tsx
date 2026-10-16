@@ -7,15 +7,14 @@ import { Field, FieldDescription, FieldLabel, FieldTitle } from '@resourcepackbu
 import { NativeSelect, NativeSelectOption } from '@resourcepackbuilder/ui/components/native-select';
 import { setLocale, useLocaleStore } from '../../i18n/locale';
 import { isOneOf } from '../../lib/isOneOf';
-import { THEME_CHOICES } from '../../theme/choices';
-import { useTheme } from '../../theme/ThemeProvider';
+import { THEME_CHOICES, useThemeChoice } from '../../theme/useThemeChoice';
 
 export function DeviceSettings() {
   const t = useTranslations('dialogs.settings');
   const tCommon = useTranslations('common');
   const languageId = useId();
   const locale = useLocaleStore((s) => s.locale);
-  const { choice, setTheme } = useTheme();
+  const { choice, setChoice } = useThemeChoice();
   return (
     <div className="grid gap-4 @xl/dialog:grid-cols-2">
       <Field>
@@ -51,7 +50,7 @@ export function DeviceSettings() {
               </>
             ),
           }))}
-          onChange={setTheme}
+          onChange={setChoice}
         />
         <FieldDescription>{t('themeHelp')}</FieldDescription>
       </Field>

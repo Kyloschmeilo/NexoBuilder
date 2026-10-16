@@ -3,7 +3,7 @@ import { createTextureModel } from '../model/textureModel';
 import { createTexture } from '../model/textures';
 import { createFolder, createItem, createProject, insertFolder, insertItem } from '../project/factory';
 import type { Item, Project } from '../project/types';
-import { makePngDataUrl } from '../test/png';
+import { makePngDataUrl } from '../../test-utils/png';
 import { COPY_CATEGORIES, copyItemConfig, pasteItemConfig, summarizeClipboard, type CopyCategory } from './copyConfig';
 import { createRecipe } from './recipes/model';
 

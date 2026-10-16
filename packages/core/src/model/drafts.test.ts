@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { CoreError } from '../issues';
-import { makePngDataUrl } from '../test/png';
+import { makePngDataUrl } from '../../test-utils/png';
 import { createDrafts, runDraft, unsupportedFiles } from './drafts';
 
 const PNG = makePngDataUrl(16, 16);

@@ -7,6 +7,7 @@ import type { ModelTexture } from '../model/types';
 import { deepClone, isPlainObject } from '../object';
 import { referencedAssetIds } from '../project/assets';
 import { uid } from '../id';
+import { stripFormatting } from '../text';
 import type { ConfigObject, ConfigValue, Item, Project } from '../project/types';
 import type { ArmorSettings } from './armor';
 import { deletePath, getPath, setPath } from './configPath';
@@ -56,6 +57,11 @@ export interface ItemConfigClipboard {
   /** Extra textures referenced by the config or armor settings (@asset:…) */
   assets: Record<string, ModelTexture>;
   recipes: Recipe[];
+}
+
+/** Plain-text name of the item the clipboard was copied from. */
+export function clipboardLabel(clip: ItemConfigClipboard): string {
+  return stripFormatting(clip.sourceName).trim() || clip.sourceNexoId;
 }
 
 export function copyItemConfig(item: Item, projectId: string): ItemConfigClipboard {

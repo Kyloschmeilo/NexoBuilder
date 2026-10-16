@@ -19,32 +19,3 @@ export const LOCALE_STORAGE_KEY = 'locale';
 export function isSupportedLocale(value: unknown): value is SupportedLocale {
   return (SUPPORTED_LOCALES as readonly unknown[]).includes(value);
 }
-
-/**
- * Reads the persisted language choice from storage.
- *
- * @param storage the storage to read from, or `undefined` when unavailable
- * @returns the stored locale, or {@link DEFAULT_LOCALE} when nothing valid is stored or reading throws
- */
-export function readStoredLocale(storage: Pick<Storage, 'getItem'> | undefined): SupportedLocale {
-  try {
-    const stored = storage?.getItem(LOCALE_STORAGE_KEY);
-    return isSupportedLocale(stored) ? stored : DEFAULT_LOCALE;
-  } catch {
-    return DEFAULT_LOCALE;
-  }
-}
-
-/**
- * Persists a language choice to storage.
- *
- * @param storage the storage to write to, or `undefined` when unavailable
- * @param locale the locale to persist
- */
-export function writeStoredLocale(storage: Pick<Storage, 'setItem'> | undefined, locale: SupportedLocale): void {
-  try {
-    storage?.setItem(LOCALE_STORAGE_KEY, locale);
-  } catch {
-    // Storage access failed; the choice still applies until the app restarts.
-  }
-}

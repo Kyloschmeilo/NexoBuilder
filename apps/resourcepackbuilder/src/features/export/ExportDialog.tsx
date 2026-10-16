@@ -1,4 +1,4 @@
-import { useDeferredValue, useId, useMemo, useState, type ReactNode } from 'react';
+import { useDeferredValue, useId, useMemo, useState, type Dispatch, type ReactNode, type SetStateAction } from 'react';
 import { useTranslations } from 'next-intl';
 import { Download, FileArchive, FolderTree, Package, ScrollText } from 'lucide-react';
 import { countIssues } from '@resourcepackbuilder/core/issues';
@@ -18,16 +18,16 @@ import { getMcVersion } from '@resourcepackbuilder/core/minecraft/versions';
 import { SectionLabel } from '@resourcepackbuilder/ui';
 import { Alert, AlertDescription } from '@resourcepackbuilder/ui/components/alert';
 import { Button } from '@resourcepackbuilder/ui/components/button';
+import { createDialogHandle } from '@resourcepackbuilder/ui/components/dialog';
 import { Field, FieldContent, FieldDescription, FieldLabel, FieldTitle } from '@resourcepackbuilder/ui/components/field';
 import { RadioGroup, RadioGroupItem } from '@resourcepackbuilder/ui/components/radio-group';
 import { Spinner } from '@resourcepackbuilder/ui/components/spinner';
-import { DialogFrame } from '../../components/DialogFrame';
+import { DialogFrame, FeatureDialog } from '../../components/DialogFrame';
 import { useBusyAction } from '../../hooks/useBusyAction';
 import { isOneOf } from '../../lib/isOneOf';
 import { SelectionHeader } from '../../components/selection/SelectionTree';
 import { richTags } from '../../i18n/richTags';
-import { closeDialog, confirm } from '../../store/dialogs';
-import { setExportSelection, setOtherProjectIncluded, useExportChoicesStore } from '../../store/exportChoices';
+import { confirm } from '../../store/dialogs';
 import { getProject, useOpenProject } from '../../store/project';
 import { ExportChecks } from './ExportChecks';
 import { ExportOptions } from './ExportOptions';
@@ -126,7 +126,23 @@ function ExportContents({ paths }: { paths: string[] }) {
   );
 }
 
-export function ExportDialog() {
+/** Opens the export of the open project (and, optionally, other saved projects). */
+export const exportDialog = createDialogHandle<void>();
+
+/** What the export dialog remembers between openings while the app runs. */
+interface ExportChoices {
+  /** Saved projects (besides the open one) checked for export */
+  otherProjectIds: string[];
+  /** Selection per project id; a project without one is exported completely */
+  selections: Record<string, ExportSelection>;
+}
+
+interface ExportFrameProps {
+  choices: ExportChoices;
+  onChoicesChange: Dispatch<SetStateAction<ExportChoices>>;
+}
+
+function ExportFrame({ choices: { otherProjectIds, selections }, onChoicesChange }: ExportFrameProps) {
   const t = useTranslations('dialogs.export');
   const tSelection = useTranslations('dialogs.selection');
   const tCommon = useTranslations('common');
@@ -137,15 +153,21 @@ export function ExportDialog() {
   const { isBusy: isExporting, run } = useBusyAction();
   // The open project starts checked; the other projects and all selections are remembered from last time
   const [isOpenProjectIncluded, setIsOpenProjectIncluded] = useState(true);
-  const otherProjectIds = useExportChoicesStore((s) => s.otherProjectIds);
-  const selections = useExportChoicesStore((s) => s.selections);
   const [expandedId, setExpandedId] = useState<string | null>(project.id);
+
+  const setOtherProjectIncluded = (projectId: string, isIncluded: boolean) =>
+    onChoicesChange((c) => {
+      const others = c.otherProjectIds.filter((id) => id !== projectId);
+      return { ...c, otherProjectIds: isIncluded ? [...others, projectId] : others };
+    });
+  const setExportSelection = (projectId: string, selection: ExportSelection) =>
+    onChoicesChange((c) => ({ ...c, selections: { ...c.selections, [projectId]: selection } }));
 
   const includedIds = useMemo(
     () => new Set([...(isOpenProjectIncluded ? [project.id] : []), ...otherProjectIds.filter((id) => id !== project.id)]),
     [isOpenProjectIncluded, otherProjectIds, project.id],
   );
-  const { choices, isLoading } = useProjectChoices(deferredProject, includedIds);
+  const { choices, isLoading } = useProjectChoices(deferredProject, includedIds, (id) => setOtherProjectIncluded(id, false));
   const multi = useMemo(
     () => planMultiExport(exportEntries(choices, includedIds, selections, deferredProject), { includeBinaries: false }),
     [choices, includedIds, selections, deferredProject],
@@ -173,7 +195,7 @@ export function ExportDialog() {
       if (!confirmed) return;
     }
     const isDone = await run(() => runExport(exportEntries(choices, includedIds, selections, getProject() ?? project), mode));
-    if (isDone) closeDialog();
+    if (isDone) exportDialog.close();
   };
 
   return (
@@ -184,7 +206,7 @@ export function ExportDialog() {
       footerStart={<ExportSummary multi={multi} />}
       footer={
         <>
-          <Button variant="outline" onClick={closeDialog}>
+          <Button variant="outline" onClick={() => exportDialog.close()}>
             {tCommon('cancel')}
           </Button>
           <Button disabled={isExporting || isLoading || isEmpty} onClick={() => void confirmAndExport()}>
@@ -229,4 +251,10 @@ export function ExportDialog() {
       </div>
     </DialogFrame>
   );
+}
+
+export function ExportDialog() {
+  // The open project starts checked each time; the other projects and all selections are remembered
+  const [choices, setChoices] = useState<ExportChoices>({ otherProjectIds: [], selections: {} });
+  return <FeatureDialog handle={exportDialog}>{() => <ExportFrame choices={choices} onChoicesChange={setChoices} />}</FeatureDialog>;
 }

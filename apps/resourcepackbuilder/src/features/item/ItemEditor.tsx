@@ -6,7 +6,7 @@ import { Badge } from '@resourcepackbuilder/ui/components/badge';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@resourcepackbuilder/ui/components/tabs';
 import { FieldContext } from '../../components/editor';
 import { isOneOf } from '../../lib/isOneOf';
-import { usePlan } from '../../store/PlanProvider';
+import { usePlan } from '../../shell/PlanProvider';
 import { useOpenProject } from '../../store/project';
 import { setEditorTab, useUiStore, type EditorTab } from '../../store/ui';
 import { GeneralTab } from './GeneralTab';

@@ -2,7 +2,7 @@ import { afterEach, describe, expect, it, vi } from 'vitest';
 import { createProject } from '@resourcepackbuilder/core/project/factory';
 import type { DesktopTestServerApi, TestServerConfigPatch, TestServerState } from '../platform/desktopApi';
 import { setProject } from '../store/project';
-import { useTestServerStore } from '../store/testServer';
+import { useTestServerStore } from './testServerStore';
 import { createTestServerSync, type TestServerSync } from './testServerSync';
 
 function serverState(): TestServerState {

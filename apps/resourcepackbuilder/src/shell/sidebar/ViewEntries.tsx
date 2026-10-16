@@ -6,9 +6,9 @@ import { cn } from 'cn';
 import type { IssueTarget } from '@resourcepackbuilder/core/issues';
 import { StatusDot, Tip, treeRow, treeRowSlots } from '@resourcepackbuilder/ui';
 import { TEST_SERVER_STATUS_TONE } from '../../features/testServer/status';
-import { usePlan } from '../../store/PlanProvider';
+import { usePlan } from '../PlanProvider';
 import { useOpenProject } from '../../store/project';
-import { useTestServerStore } from '../../store/testServer';
+import { useTestServerStore } from '../../services/testServerStore';
 import { select, useUiStore, type ViewName } from '../../store/ui';
 import { levelsByTarget, worstLevel } from './treeIndex';
 

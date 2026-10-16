@@ -2,7 +2,7 @@ import { describe, expect, it } from 'vitest';
 import { parse } from 'yaml';
 import { createFolder, createItem, createProject, insertFolder, insertItem } from '../project/factory';
 import { createTexture } from '../model/textures';
-import { makePngDataUrl } from '../test/png';
+import { makePngDataUrl } from '../../test-utils/png';
 import { planExport } from './plan';
 import type { ArmorSettings } from '../nexo/armor';
 import type { Project } from '../project/types';

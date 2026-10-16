@@ -8,8 +8,8 @@ import { Spinner } from '@resourcepackbuilder/ui/components/spinner';
 import { CheckboxField } from '../../components/CheckboxField';
 import { useErrorMessage } from '../../i18n/errors';
 import type { TestServerState } from '../../platform/desktopApi';
-import { usePlan } from '../../store/PlanProvider';
-import { useTestServerStore } from '../../store/testServer';
+import { usePlan } from '../../shell/PlanProvider';
+import { useTestServerStore } from '../../services/testServerStore';
 import { syncSummary, type SyncSummaryPart } from '@resourcepackbuilder/core/testServer/status';
 import { useSetConfig, useTestServer } from './useTestServer';
 

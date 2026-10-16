@@ -1,7 +1,6 @@
 import { afterEach, describe, expect, it } from 'vitest';
-import { createProject } from '@resourcepackbuilder/core/project/factory';
-import { setProject } from './project';
-import { closeDialog, confirm, openDialog, prompt, useDialogStore } from './dialogs';
+import type { DialogHandle } from '@resourcepackbuilder/ui/components/dialog';
+import { closeProjectDialogs, confirm, isAnyDialogOpen, prompt, registerFeatureDialog, useDialogStore } from './dialogs';
 
 const questions = () => useDialogStore.getState().questions;
 
@@ -19,10 +18,25 @@ function answerPrompt(index: number, value: string | null) {
 
 const confirmOptions = { title: 'Delete?', message: 'Really?', confirmLabel: 'Delete' };
 
+let unregister: Array<() => void> = [];
+
 afterEach(() => {
-  useDialogStore.setState({ questions: [], feature: null });
-  setProject(null);
+  useDialogStore.setState({ questions: [] });
+  unregister.forEach((off) => off());
+  unregister = [];
 });
+
+/** A stand-in for a Base UI dialog handle whose root is mounted. */
+function fakeHandle(isProjectBound: boolean) {
+  const handle = {
+    isOpen: false,
+    close() {
+      handle.isOpen = false;
+    },
+  };
+  unregister.push(registerFeatureDialog(handle as unknown as DialogHandle<never>, isProjectBound));
+  return handle;
+}
 
 describe('confirm', () => {
   it('resolves with the answer and closes the question', async () => {
@@ -64,30 +78,20 @@ describe('prompt', () => {
 });
 
 describe('feature dialogs', () => {
-  it('opens one at a time and closes', () => {
-    setProject(createProject('Test', 'test'));
-    openDialog({ id: 'moveItem', props: { itemId: 'i_1' } });
-    openDialog({ id: 'export', props: {} });
-    expect(useDialogStore.getState().feature).toEqual({ id: 'export', props: {} });
-    closeDialog();
-    expect(useDialogStore.getState().feature).toBeNull();
+  it('count as open dialogs while one of them is open', () => {
+    const settings = fakeHandle(true);
+    expect(isAnyDialogOpen()).toBe(false);
+    settings.isOpen = true;
+    expect(isAnyDialogOpen()).toBe(true);
   });
 
-  it('opens a project dialog only while a project is open', () => {
-    openDialog({ id: 'settings', props: {} });
-    expect(useDialogStore.getState().feature).toBeNull();
-    openDialog({ id: 'projects', props: { tab: 'open' } });
-    expect(useDialogStore.getState().feature?.id).toBe('projects');
-  });
-
-  it('closes a project dialog when another project is opened, but keeps the projects dialog', () => {
-    setProject(createProject('A', 'a'));
-    openDialog({ id: 'settings', props: {} });
-    setProject(createProject('B', 'b'));
-    expect(useDialogStore.getState().feature).toBeNull();
-
-    openDialog({ id: 'projects', props: { tab: 'open' } });
-    setProject(null);
-    expect(useDialogStore.getState().feature?.id).toBe('projects');
+  it('closes only the dialogs that belong to the open project', () => {
+    const settings = fakeHandle(true);
+    const projects = fakeHandle(false);
+    settings.isOpen = true;
+    projects.isOpen = true;
+    closeProjectDialogs();
+    expect(settings.isOpen).toBe(false);
+    expect(projects.isOpen).toBe(true);
   });
 });

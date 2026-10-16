@@ -3,7 +3,9 @@ export { CollapsibleSection } from './CollapsibleSection';
 export { CopyButton } from './CopyButton';
 export { DropZone } from './DropZone';
 export {
+  carriesFiles,
   downloadBytes,
+  FILES_DRAG_TYPE,
   fileStem,
   filesFromDataTransfer,
   pickFiles,

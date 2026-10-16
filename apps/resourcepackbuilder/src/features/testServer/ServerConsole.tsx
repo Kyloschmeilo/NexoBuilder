@@ -7,7 +7,7 @@ import { Input } from '@resourcepackbuilder/ui/components/input';
 import { SectionCard, Tip } from '@resourcepackbuilder/ui';
 import { consoleCommandText } from '@resourcepackbuilder/core/testServer/commands';
 import type { TestServerLogLine } from '../../platform/desktopApi';
-import { useTestServerStore } from '../../store/testServer';
+import { useTestServerStore } from '../../services/testServerStore';
 import { useCommandHistory } from './useCommandHistory';
 import { useTestServer } from './useTestServer';
 

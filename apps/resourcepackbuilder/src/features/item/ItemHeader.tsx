@@ -5,6 +5,7 @@ import { itemMaterial } from '@resourcepackbuilder/core/nexo/material';
 import type { Issue } from '@resourcepackbuilder/core/issues';
 import { getFolderPathLabel } from '@resourcepackbuilder/core/project/tree';
 import { PLAYER_NAME_PATTERN } from '@resourcepackbuilder/core/testServer/config';
+import { clipboardLabel } from '@resourcepackbuilder/core/nexo/copyConfig';
 import { IconButton, PageHeader, Thumb, Tip } from '@resourcepackbuilder/ui';
 import { Badge } from '@resourcepackbuilder/ui/components/badge';
 import { Button } from '@resourcepackbuilder/ui/components/button';
@@ -13,11 +14,11 @@ import { IssueCountBadges } from '../../components/IssueCountBadges';
 import { MiniMessageBox } from '../../components/miniMessage/MiniMessageBox';
 import { MiniMessageLine } from '../../components/miniMessage/MiniMessageLine';
 import { useBusyAction } from '../../hooks/useBusyAction';
-import { useServices } from '../../services/servicesContext';
-import { clipboardLabel, useClipboardStore } from '../../store/clipboard';
-import { openDialog } from '../../store/dialogs';
+import { useServices } from '../../services/bootstrap';
+import { useClipboardStore } from '../../store/clipboard';
 import { useOpenProject } from '../../store/project';
-import { useTestServerStore } from '../../store/testServer';
+import { useTestServerStore } from '../../services/testServerStore';
+import { moveItemDialog } from '../moveItem/MoveItemDialog';
 import { useItemActions } from './useItemActions';
 
 /** "Give in test server" – only visible while the local test server is running. */
@@ -89,7 +90,7 @@ function ItemActions({ item }: { item: Item }) {
       <Button variant="outline" size="sm" onClick={() => actions.duplicate(item)}>
         <Copy /> {tCommon('duplicate')}
       </Button>
-      <IconButton label={t('editor.move')} variant="outline" onClick={() => openDialog({ id: 'moveItem', props: { itemId: item.id } })}>
+      <IconButton label={t('editor.move')} variant="outline" onClick={() => moveItemDialog.openWithPayload({ itemId: item.id })}>
         <FolderInput />
       </IconButton>
       <IconButton label={tCommon('delete')} variant="destructive" onClick={() => void actions.remove(item)}>

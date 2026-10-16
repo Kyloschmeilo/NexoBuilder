@@ -5,7 +5,6 @@
 import { create } from 'zustand';
 import { produce } from 'immer';
 import type { Project } from '@resourcepackbuilder/core/project/types';
-import { repairSelection, resetUiFor } from './ui';
 
 interface ProjectState {
   project: Project | null;
@@ -14,6 +13,8 @@ interface ProjectState {
   /** Key of the last change; equal keys in quick succession are merged into one undo step */
   historyKey: string | null;
   historyTime: number;
+  /** Counts `setProject` calls: a new value means another project (or a fresh copy of it) was opened */
+  generation: number;
 }
 
 const HISTORY_LIMIT = 100;
@@ -25,6 +26,7 @@ export const useProjectStore = create<ProjectState>(() => ({
   future: [],
   historyKey: null,
   historyTime: 0,
+  generation: 0,
 }));
 
 /** The open project; only for components rendered below the "project is open" branch of the shell. */
@@ -38,10 +40,9 @@ export function getProject(): Project | null {
   return useProjectStore.getState().project;
 }
 
-/** Replaces the open project (opening, closing, creating) and starts a fresh history and UI state. */
+/** Replaces the open project (opening, closing, creating) and starts a fresh history (the UI state follows). */
 export function setProject(project: Project | null): void {
-  useProjectStore.setState({ project, past: [], future: [], historyKey: null, historyTime: 0 });
-  resetUiFor(project);
+  useProjectStore.setState((s) => ({ project, past: [], future: [], historyKey: null, historyTime: 0, generation: s.generation + 1 }));
 }
 
 /**
@@ -65,7 +66,6 @@ export function mutate(recipe: (draft: Project) => void, historyKey?: string): v
     historyKey: historyKey ?? null,
     historyTime: now,
   });
-  repairSelection(next);
 }
 
 export function undo(): void {
@@ -73,7 +73,6 @@ export function undo(): void {
   const previous = past.at(-1);
   if (!project || !previous) return;
   useProjectStore.setState({ project: previous, past: past.slice(0, -1), future: [project, ...future], historyKey: null });
-  repairSelection(previous);
 }
 
 export function redo(): void {
@@ -81,7 +80,6 @@ export function redo(): void {
   const [next, ...rest] = future;
   if (!project || !next) return;
   useProjectStore.setState({ project: next, past: [...past, project], future: rest, historyKey: null });
-  repairSelection(next);
 }
 
 /**
@@ -93,5 +91,4 @@ export function applyRemote(transform: (project: Project) => Project): void {
   if (!project) return;
   const next = transform(project);
   useProjectStore.setState({ project: next, past: past.map(transform), future: future.map(transform), historyKey: null });
-  repairSelection(next);
 }

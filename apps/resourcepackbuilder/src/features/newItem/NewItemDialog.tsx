@@ -7,13 +7,13 @@ import { ignoredFileNames, sourceKey, type NewItemAction, type NewItemState } fr
 import { AutoGrid, DropZone, SectionCard, SegmentedControl } from '@resourcepackbuilder/ui';
 import { Alert, AlertDescription } from '@resourcepackbuilder/ui/components/alert';
 import { Button } from '@resourcepackbuilder/ui/components/button';
+import { createDialogHandle } from '@resourcepackbuilder/ui/components/dialog';
 import { Field, FieldLabel } from '@resourcepackbuilder/ui/components/field';
 import { Spinner } from '@resourcepackbuilder/ui/components/spinner';
 import { addItems } from '../../commands/items';
-import { DialogFrame } from '../../components/DialogFrame';
+import { DialogFrame, FeatureDialog } from '../../components/DialogFrame';
 import { FolderSelect } from '../../components/FolderSelect';
 import { richTags } from '../../i18n/richTags';
-import { closeDialog, type FeatureDialogProps } from '../../store/dialogs';
 import { notify } from '../../shell/notify';
 import { useOpenProject } from '../../store/project';
 import { setEditorTab } from '../../store/ui';
@@ -42,8 +42,10 @@ function PngModeToggle({ state, dispatch }: { state: NewItemState; dispatch: (ac
   );
 }
 
-/** Creates one or more items from dropped models or textures, or a single item without a model. */
-export function NewItemDialog({ folderId, files: initialFiles }: FeatureDialogProps['newItem']) {
+/** Opens "New item" for a folder of the open project, optionally with dropped files. */
+export const newItemDialog = createDialogHandle<{ folderId: string; files?: File[] }>();
+
+function NewItemFrame({ folderId, files: initialFiles }: { folderId: string; files?: File[] }) {
   const t = useTranslations('dialogs.newItem');
   const tCommon = useTranslations('common');
   const folderFieldId = useId();
@@ -59,7 +61,7 @@ export function NewItemDialog({ folderId, files: initialFiles }: FeatureDialogPr
   const create = () => {
     if (!toCreate) return;
     addItems(toCreate);
-    closeDialog();
+    newItemDialog.close();
     notify('success', t('created', { count: toCreate.length }));
     setEditorTab('general');
   };
@@ -73,7 +75,7 @@ export function NewItemDialog({ folderId, files: initialFiles }: FeatureDialogPr
       footerStart={t.rich('target', { ...richTags, folder: getFolderPathLabel(project, targetFolderId) })}
       footer={
         <>
-          <Button variant="outline" onClick={closeDialog}>
+          <Button variant="outline" onClick={() => newItemDialog.close()}>
             {tCommon('cancel')}
           </Button>
           <Button disabled={!toCreate} onClick={create}>
@@ -164,4 +166,9 @@ export function NewItemDialog({ folderId, files: initialFiles }: FeatureDialogPr
       </div>
     </DialogFrame>
   );
+}
+
+/** Creates one or more items from dropped models or textures, or a single item without a model. */
+export function NewItemDialog() {
+  return <FeatureDialog handle={newItemDialog}>{(payload) => <NewItemFrame {...payload} />}</FeatureDialog>;
 }

@@ -1,7 +1,11 @@
 /** Textures of imported models: matching dropped files, animation data and checks. */
 import { isPngDataUrl, readPngInfoFromDataUrl } from '../binary/png';
+import { z } from 'zod';
 import type { Issue } from '../issues';
+import { jsonOrNull, parseJson } from '../json';
+import { lenientNumber, optional } from '../lenient';
 import { isPlainObject } from '../object';
+import { McmetaSchema } from './schema';
 import { fileBaseName } from '../text';
 import type { ImportFile, ModelTexture, TextureAnimation } from './types';
 
@@ -20,13 +24,20 @@ export function findPngByName(files: ImportFile[], ...candidates: Array<string |
 export function findMcmetaFor(files: ImportFile[], pngName: string): Record<string, unknown> | null {
   const target = normalizeTextureName(pngName);
   const file = files.find((f) => /\.mcmeta$/i.test(f.name) && normalizeTextureName(f.name) === target && f.text);
-  if (!file?.text) return null;
-  try {
-    const parsed = JSON.parse(file.text) as unknown;
-    return parsed && typeof parsed === 'object' && !Array.isArray(parsed) ? (parsed as Record<string, unknown>) : null;
-  } catch {
-    return null;
-  }
+  return file?.text ? jsonOrNull(parseJson(file.text, McmetaSchema)) : null;
+}
+
+/** The animation of a .png.mcmeta; invalid values fall back to Minecraft's defaults. */
+const AnimationSchema = z.object({
+  frametime: lenientNumber(1),
+  interpolate: optional(z.literal(true)),
+  frames: optional(z.array(z.union([z.number(), z.object({ index: z.number(), time: z.number() })]))),
+  width: optional(z.number()),
+  height: optional(z.number()),
+});
+
+function readAnimation(texture: ModelTexture) {
+  return texture.mcmeta ? (AnimationSchema.safeParse(texture.mcmeta.animation).data ?? null) : null;
 }
 
 export function createTexture(id: string, name: string, dataUrl: string, mcmeta: Record<string, unknown> | null = null): ModelTexture {
@@ -42,14 +53,8 @@ export function createTexture(id: string, name: string, dataUrl: string, mcmeta:
 }
 
 export function getAnimation(texture: ModelTexture): TextureAnimation | null {
-  const animation = texture.mcmeta?.animation;
-  if (!animation || typeof animation !== 'object' || Array.isArray(animation)) return null;
-  const a = animation as Record<string, unknown>;
-  return {
-    frametime: typeof a.frametime === 'number' ? a.frametime : 1,
-    interpolate: a.interpolate === true ? true : undefined,
-    frames: Array.isArray(a.frames) ? (a.frames as TextureAnimation['frames']) : undefined,
-  };
+  const animation = readAnimation(texture);
+  return animation && { frametime: animation.frametime, interpolate: animation.interpolate, frames: animation.frames };
 }
 
 /** Ticks per frame of a newly animated texture or painting. */
@@ -76,12 +81,9 @@ export function withTextureAnimation(
 
 /** Size of a single animation frame in pixels (matches the Minecraft logic). */
 export function getFrameSize(texture: ModelTexture): { width: number; height: number; count: number } {
-  const anim = texture.mcmeta?.animation as Record<string, unknown> | undefined;
-  if (!anim || typeof anim !== 'object') {
-    return { width: texture.width, height: texture.height, count: 1 };
-  }
-  let width = typeof anim.width === 'number' ? anim.width : undefined;
-  let height = typeof anim.height === 'number' ? anim.height : undefined;
+  const anim = readAnimation(texture);
+  if (!anim) return { width: texture.width, height: texture.height, count: 1 };
+  let { width, height } = anim;
   if (width === undefined && height === undefined) {
     const size = Math.min(texture.width, texture.height);
     width = size;

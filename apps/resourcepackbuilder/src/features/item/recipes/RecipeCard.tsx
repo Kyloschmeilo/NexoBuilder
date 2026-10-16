@@ -12,7 +12,7 @@ import { Field, FieldDescription, FieldTitle } from '@resourcepackbuilder/ui/com
 import { removeRecipe, updateRecipe } from '../../../commands/items';
 import { NumberInput } from '../../../components/editor';
 import { IssueList } from '../../../components/IssueList';
-import { usePlan } from '../../../store/PlanProvider';
+import { usePlan } from '../../../shell/PlanProvider';
 import { useOpenProject } from '../../../store/project';
 import { useSchemaText } from '../../../components/useSchemaText';
 import { IngredientList } from './IngredientList';

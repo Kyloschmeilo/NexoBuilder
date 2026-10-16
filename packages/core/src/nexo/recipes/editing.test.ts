@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import { planExport } from '../../export/plan';
-import { issuesFor, type Issue } from '../../issues';
+import { recipeFrame, recipeIngredientFrame, recipeInputFrame } from '../../issueFrames';
+import { issuesFor, type Issue, type IssueCode, type IssueContext } from '../../issues';
 import { createFolder, createItem, createProject, insertFolder, insertItem } from '../../project/factory';
 import { recipeIssues } from './issues';
 import { createRecipe, emptyIngredient } from './model';
@@ -13,18 +14,18 @@ import {
   withIngredientId,
 } from './operations';
 
-const issue = (code: string, context?: Issue['context']): Issue => ({ level: 'error', code, context });
-const itemFrame = { code: 'context.item', args: { item: 'Ruby' } };
+const issue = (code: IssueCode, context?: Issue['context']): Issue => ({ level: 'error', code, context });
+const itemFrame: IssueContext = { code: 'context.item', args: { item: 'Ruby' } };
 
 describe('recipe issues', () => {
   it('sorts the issues of one recipe to the recipe, its input and its ingredients without frames', () => {
     const sorted = recipeIssues(
       [
-        issue('recipe.gridEmpty', [itemFrame, { code: 'context.recipe', args: { recipe: 'r' } }]),
-        issue('recipe.ingredientMissing', [itemFrame, { code: 'context.recipeInput', args: { recipe: 'r' } }]),
-        issue('recipe.materialInvalid', [itemFrame, { code: 'context.recipeIngredient', args: { recipe: 'r', letter: 'A' } }]),
-        issue('recipe.gridEmpty', [itemFrame, { code: 'context.recipe', args: { recipe: 'other' } }]),
-        issue('item.somethingElse', [itemFrame]),
+        issue('recipe.gridEmpty', [itemFrame, recipeFrame('r')]),
+        issue('recipe.ingredientMissing', [itemFrame, recipeInputFrame('r')]),
+        issue('recipe.materialInvalid', [itemFrame, recipeIngredientFrame('r', 'A')]),
+        issue('recipe.gridEmpty', [itemFrame, recipeFrame('other')]),
+        issue('recipe.gridEmpty', [itemFrame]),
       ],
       'r',
       ['A'],
@@ -35,7 +36,7 @@ describe('recipe issues', () => {
   });
 
   it('keeps issues of letters without an ingredient row with the recipe, recipe frame included', () => {
-    const frame = { code: 'context.recipeIngredient', args: { recipe: 'r', letter: 'B' } };
+    const frame = recipeIngredientFrame('r', 'B');
     expect(recipeIssues([issue('recipe.ingredientMissing', [itemFrame, frame])], 'r', ['A']).recipe).toEqual([
       issue('recipe.ingredientMissing', [frame]),
     ]);
