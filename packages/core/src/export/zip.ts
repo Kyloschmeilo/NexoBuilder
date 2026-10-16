@@ -18,7 +18,7 @@ export interface ExportResult {
 }
 
 /** A file of the archive; `zip` = a nested archive built from these files. */
-type ArchiveEntry = { content: FileContent } | { zip: Map<string, FileContent> };
+export type ArchiveEntry = { content: FileContent } | { zip: Map<string, FileContent> };
 
 /** Fixed timestamps ensure that the same content yields the same ZIP. */
 const FIXED_DATE = new Date(Date.UTC(2020, 0, 1, 0, 0, 0));
@@ -27,27 +27,46 @@ function single(project: Project, plan: ExportPlan): MultiExportPlan {
   return { projects: [{ project, plan }], issues: plan.issues };
 }
 
+function addAll(entries: Map<string, ArchiveEntry>, files: Map<string, FileContent>, prefix = ''): void {
+  for (const [path, content] of files) entries.set(prefix + path, { content });
+}
+
+/** How the resource pack goes into plugins/Nexo: as the project setting says, always as a folder, or not at all. */
+type PackPlacement = 'setting' | 'folder' | 'none';
+
+/** The files of plugins/Nexo (items, recipes, glyphs, the pack and sounds.yml/paintings.yml), by path. */
+function pluginEntries(multi: MultiExportPlan, pack: PackPlacement): Map<string, ArchiveEntry> {
+  const entries = new Map<string, ArchiveEntry>();
+  for (const { project, plan } of multi.projects) {
+    for (const files of [plan.itemFiles, plan.recipeFiles, plan.glyphFiles]) addAll(entries, files);
+    if (pack === 'setting' && project.settings.externalPackAsZip) entries.set(packLocation(project, true), { zip: plan.packFiles });
+    else if (pack !== 'none') addAll(entries, plan.packFiles, packLocation(project, false));
+  }
+  addAll(entries, buildRootFiles(multi.projects.map((e) => e.plan)));
+  return entries;
+}
+
+/**
+ * Everything the projects put into plugins/Nexo, by path – the archive of a full export and the
+ * test server use the same list. `packAsFolder` ignores the "pack as ZIP" setting.
+ */
+export function nexoFolderEntries(multi: MultiExportPlan, options: { packAsFolder?: boolean } = {}): Map<string, ArchiveEntry> {
+  return pluginEntries(multi, options.packAsFolder ? 'folder' : 'setting');
+}
+
 /** Everything that ends up in the archive, by path. */
 function archiveEntries(multi: MultiExportPlan, mode: ExportMode): Map<string, ArchiveEntry> {
-  const entries = new Map<string, ArchiveEntry>();
-  const addAll = (files: Map<string, FileContent>, prefix = '') => {
-    for (const [path, content] of files) entries.set(prefix + path, { content });
-  };
-  for (const { project, plan } of multi.projects) {
-    if (mode === 'pack') {
-      addAll(plan.packFiles, packPrefix(multi, project));
-      continue;
-    }
-    for (const files of [plan.itemFiles, plan.recipeFiles, plan.glyphFiles]) addAll(files);
-    if (mode === 'full') {
-      if (project.settings.externalPackAsZip) entries.set(packLocation(project), { zip: plan.packFiles });
-      else addAll(plan.packFiles, packLocation(project));
-    }
+  if (mode === 'pack') {
+    const entries = new Map<string, ArchiveEntry>();
+    for (const { project, plan } of multi.projects) addAll(entries, plan.packFiles, packPrefix(multi, project));
+    return entries;
   }
-  if (mode === 'pack') return entries;
-  const rootFiles = buildRootFiles(multi.projects.map((e) => e.plan));
-  addAll(rootFiles);
-  if (mode === 'full' && multi.projects.length > 0) entries.set(INSTALL_GUIDE_FILE, { content: installGuide(multi, rootFiles) });
+  if (mode === 'items') return pluginEntries(multi, 'none');
+  const entries = nexoFolderEntries(multi);
+  if (multi.projects.length > 0) {
+    const rootFiles = buildRootFiles(multi.projects.map((e) => e.plan));
+    entries.set(INSTALL_GUIDE_FILE, { content: installGuide(multi, rootFiles) });
+  }
   return entries;
 }
 
