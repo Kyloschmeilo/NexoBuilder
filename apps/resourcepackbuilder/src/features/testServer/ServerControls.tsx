@@ -4,7 +4,8 @@ import { Button } from '@resourcepackbuilder/ui/components/button';
 import { Tip } from '@resourcepackbuilder/ui';
 import type { TestServerState } from '../../platform/desktopApi';
 import { isTransitioning } from './status';
-import { useBusyAction, useTestServer } from './useTestServer';
+import { useBusyAction } from '../../hooks/useBusyAction';
+import { useTestServer } from './useTestServer';
 
 /** Start – or restart and stop while the server is up or on its way. */
 export function ServerControls({ server }: { server: TestServerState }) {

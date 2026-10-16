@@ -6,7 +6,8 @@ import { PLAYER_NAME_PATTERN } from '@resourcepackbuilder/core/testServer/config
 import { nexoPackCommand } from '@resourcepackbuilder/core/testServer/files';
 import type { TestServerState } from '../../platform/desktopApi';
 import { PACK_STATUS_TONE } from './status';
-import { useBusyAction, useTestServer } from './useTestServer';
+import { useBusyAction } from '../../hooks/useBusyAction';
+import { useTestServer } from './useTestServer';
 
 /** What Nexo is currently doing with the resource pack (read from the server output), with reload and resend. */
 export function PackStatus({ pack, player }: { pack: TestServerState['pack']; player: string }) {

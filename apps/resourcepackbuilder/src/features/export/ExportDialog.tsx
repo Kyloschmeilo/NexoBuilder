@@ -21,6 +21,7 @@ import { Field, FieldContent, FieldDescription, FieldLabel, FieldTitle } from '@
 import { RadioGroup, RadioGroupItem } from '@resourcepackbuilder/ui/components/radio-group';
 import { Spinner } from '@resourcepackbuilder/ui/components/spinner';
 import { DialogFrame } from '../../components/DialogFrame';
+import { useBusyAction } from '../../hooks/useBusyAction';
 import { SelectionHeader } from '../../components/selection/SelectionTree';
 import { richTags } from '../../i18n/richTags';
 import { closeDialog, confirm } from '../../store/dialogs';
@@ -128,7 +129,7 @@ export function ExportDialog() {
   const deferredProject = useDeferredValue(project);
   const runExport = useRunExport();
   const [mode, setMode] = useState<ExportMode>('full');
-  const [isExporting, setIsExporting] = useState(false);
+  const { isBusy: isExporting, run } = useBusyAction();
   // The open project starts checked; the other projects and all selections are remembered from last time
   const [isOpenProjectIncluded, setIsOpenProjectIncluded] = useState(true);
   const otherProjectIds = useExportChoicesStore((s) => s.otherProjectIds);
@@ -166,9 +167,7 @@ export function ExportDialog() {
       });
       if (!confirmed) return;
     }
-    setIsExporting(true);
-    const isDone = await runExport(exportEntries(choices, includedIds, selections, getProject() ?? project), mode);
-    setIsExporting(false);
+    const isDone = await run(() => runExport(exportEntries(choices, includedIds, selections, getProject() ?? project), mode));
     if (isDone) closeDialog();
   };
 

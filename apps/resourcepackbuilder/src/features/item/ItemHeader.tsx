@@ -12,11 +12,10 @@ import { useThumbnail } from '@resourcepackbuilder/preview';
 import { IssueCountBadges } from '../../components/IssueCountBadges';
 import { MiniMessageBox } from '../../components/miniMessage/MiniMessageBox';
 import { MiniMessageLine } from '../../components/miniMessage/MiniMessageLine';
-import { useErrorMessage } from '../../i18n/errors';
+import { useBusyAction } from '../../hooks/useBusyAction';
 import { useServices } from '../../services/servicesContext';
 import { clipboardLabel, useClipboardStore } from '../../store/clipboard';
 import { openDialog } from '../../store/dialogs';
-import { notify } from '../../shell/notify';
 import { useOpenProject } from '../../store/project';
 import { useTestServerStore } from '../../store/testServer';
 import { useItemActions } from './useItemActions';
@@ -24,8 +23,8 @@ import { useItemActions } from './useItemActions';
 /** "Give in test server" – only visible while the local test server is running. */
 function GiveButton({ nexoId }: { nexoId: string }) {
   const t = useTranslations('item');
-  const errorMessage = useErrorMessage();
   const testServer = useServices().testServer;
+  const { isBusy, run } = useBusyAction();
   const tPack = useTranslations('media.testServer.pack');
   const isRunning = useTestServerStore((s) => s.server?.status === 'running');
   const player = useTestServerStore((s) => s.server?.config.playerName ?? '');
@@ -33,13 +32,13 @@ function GiveButton({ nexoId }: { nexoId: string }) {
   // The give command needs a valid player name; core's command builder rejects anything else
   const isValidPlayer = PLAYER_NAME_PATTERN.test(player);
   const give = () =>
-    void testServer.give(nexoId).then(
-      (player) => notify('success', t('editor.giveSuccess', { id: nexoId, player })),
-      (err: unknown) => notify('error', errorMessage(err)),
+    void run(
+      () => testServer.give(nexoId),
+      (player) => t('editor.giveSuccess', { id: nexoId, player }),
     );
   return (
     <Tip label={isValidPlayer ? t('editor.giveTooltip') : tPack('enterName')}>
-      <Button variant="outline" size="sm" disabled={!isValidPlayer} onClick={give}>
+      <Button variant="outline" size="sm" disabled={isBusy || !isValidPlayer} onClick={give}>
         <Gift /> {t('editor.give')}
       </Button>
     </Tip>

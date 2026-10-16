@@ -17,7 +17,8 @@ import {
 import { FormField, FormHelp } from '../../components/FormField';
 import type { TestServerConfig } from '../../platform/desktopApi';
 import { notify } from '../../shell/notify';
-import { useBusyAction, useSetConfig, useTestServer } from './useTestServer';
+import { useBusyAction } from '../../hooks/useBusyAction';
+import { useSetConfig, useTestServer } from './useTestServer';
 import { VersionSelect } from './VersionSelect';
 
 const EULA_URL = 'https://aka.ms/MinecraftEULA';
