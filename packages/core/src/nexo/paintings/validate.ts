@@ -1,6 +1,6 @@
 import type { Issue } from '../../issues';
 import { ITEM_ID_PATTERN } from '../../minecraft/resourceLocation';
-import { compareVersions } from '../../minecraft/versions';
+import { compareVersions, FEATURE_VERSIONS } from '../../minecraft/versions';
 import type { Project } from '../../project/types';
 import { issueReporter } from '../issueReporter';
 import { MAX_PAINTING_BLOCKS, paintingFrameSize } from './model';
@@ -9,7 +9,7 @@ import { MAX_PAINTING_BLOCKS, paintingFrameSize } from './model';
 export function validatePaintings(project: Project): Issue[] {
   const issues: Issue[] = [];
   const paintings = project.paintings ?? [];
-  if (paintings.length > 0 && compareVersions(project.settings.minecraftVersion, '1.21.5') < 0) {
+  if (paintings.length > 0 && compareVersions(project.settings.minecraftVersion, FEATURE_VERSIONS.paintingDatapack) < 0) {
     issues.push({ level: 'warning', code: 'painting.datapackNeedsVersion', target: { kind: 'painting', id: paintings[0].id } });
   }
   const seen = new Set<string>();
