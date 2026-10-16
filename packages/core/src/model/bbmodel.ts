@@ -18,7 +18,7 @@ import { convertDisplay } from './bbmodel/display';
 import { convertElements, hasRotatedGroups } from './bbmodel/elements';
 import { buildTextureMcmeta, readTextureEntries } from './bbmodel/textures';
 import { positiveNumber, type BBModel, type BBTexture } from './bbmodel/types';
-import { texturePlaceholder } from './common';
+import { texturePlaceholder } from '../tokens';
 import { analyseElements } from './javaModel';
 import { createTexture, findMcmetaFor } from './textures';
 import type { ImportedModel, ImportFile, JavaModelJson, ModelTexture } from './types';

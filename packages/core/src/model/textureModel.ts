@@ -5,7 +5,7 @@
 import { isPngDataUrl } from '../binary/png';
 import { CoreError, type Issue } from '../issues';
 import { fileBaseName } from '../text';
-import { texturePlaceholder } from './common';
+import { texturePlaceholder } from '../tokens';
 import { createTexture, findMcmetaFor } from './textures';
 import type { ImportedModel, ImportFile, JavaModelJson, ModelTexture } from './types';
 

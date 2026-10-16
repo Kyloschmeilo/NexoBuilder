@@ -13,7 +13,7 @@ import { deletePath, getPath, setPath } from './configPath';
 import { getPropertyValue, isPropertyActive, setPropertyValue } from './properties';
 import { getRecipeTypeInfo, type Recipe } from './recipes/model';
 import { MANAGED_TOP_LEVEL_KEYS, PROPERTIES, PROPERTY_GROUPS, unknownConfigPaths, type PropertyDef, type PropertyGroup } from './schema';
-import { ASSET_TOKEN_PREFIX } from './tokens';
+import { assetToken } from '../tokens';
 
 export type CopyCategory = 'material' | PropertyGroup | 'other' | 'rawYaml' | 'recipes';
 
@@ -191,7 +191,7 @@ function keepBlockVariationUnique(project: Project, target: Item) {
 /** Takes over referenced extra textures and removes ones no longer used (also those only used in the extra YAML). */
 function syncAssets(target: Item, clip: ItemConfigClipboard) {
   const referenced = referencedAssetIds(target);
-  const isUsed = (id: string) => referenced.has(id) || target.rawYaml.includes(`${ASSET_TOKEN_PREFIX}${id}`);
+  const isUsed = (id: string) => referenced.has(id) || target.rawYaml.includes(assetToken(id));
   target.assets = target.assets ?? {};
   for (const [id, asset] of Object.entries(clip.assets)) {
     if (isUsed(id) && !target.assets[id]) target.assets[id] = deepClone(asset);

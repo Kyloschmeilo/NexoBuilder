@@ -12,7 +12,7 @@ import { isVanillaReference, resourceBaseName, stripMinecraftNamespace } from '.
 import { FEATURE_VERSIONS, maxVersion } from '../minecraft/versions';
 import { deepClone, isPlainObject } from '../object';
 import { fileBaseName } from '../text';
-import { texturePlaceholder } from './common';
+import { texturePlaceholder } from '../tokens';
 import { FACE_NAMES, isOutOfBounds } from './geometry';
 import { createTexture, findMcmetaFor, normalizeTextureName } from './textures';
 import type { ImportedModel, ImportFile, JavaModelElement, JavaModelJson, ModelTexture } from './types';

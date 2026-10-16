@@ -1,7 +1,7 @@
 /** Writes imported models with their textures into the pack. */
 import type { Issue } from '../issues';
 import { formatResourceLocation } from '../minecraft/resourceLocation';
-import { parseTexturePlaceholder } from '../model/common';
+import { parseTexturePlaceholder } from '../tokens';
 import { validateTexture } from '../model/textures';
 import type { ImportedModel, JavaModelJson } from '../model/types';
 import { deepClone } from '../object';

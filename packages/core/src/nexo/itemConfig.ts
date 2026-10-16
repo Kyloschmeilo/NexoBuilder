@@ -11,7 +11,7 @@ import type { Field } from './fields';
 import { getPath, setPath } from './configPath';
 import { itemMaterial } from './material';
 import { CONFIG_PROPERTIES, unknownConfigPaths } from './schema';
-import { MODEL_TOKEN } from './tokens';
+import { MODEL_TOKEN } from '../tokens';
 import { parseYaml } from './yaml';
 
 /** Order of the keys in the YAML (as in the Nexo docs) */

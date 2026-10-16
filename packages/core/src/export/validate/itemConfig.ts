@@ -8,7 +8,7 @@ import type { Field } from '../../nexo/fields';
 import { getPropertyValue } from '../../nexo/properties';
 import { MATERIAL_PATTERN } from '../../nexo/material';
 import { PROPERTIES } from '../../nexo/schema';
-import { MODEL_TOKEN } from '../../nexo/tokens';
+import { MODEL_TOKEN } from '../../tokens';
 import { isPlainObject } from '../../object';
 import { itemLabel } from '../../project/labels';
 import type { Item } from '../../project/types';

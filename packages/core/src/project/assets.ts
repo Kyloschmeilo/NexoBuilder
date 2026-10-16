@@ -1,24 +1,23 @@
 /** Extra textures of an item (`item.assets`), referenced as "@asset:<id>" from config and armor. */
-import { ASSET_TOKEN_PREFIX } from '../nexo/tokens';
 import type { ModelTexture } from '../model/types';
 import { forEachLeaf } from '../object';
+import { parseAssetToken } from '../tokens';
 import type { Item } from './types';
 
-export function assetToken(assetId: string): string {
-  return ASSET_TOKEN_PREFIX + assetId;
-}
+export { assetToken } from '../tokens';
 
 /** The asset a value refers to, if it is an asset token. */
 export function resolveAsset(item: Item, value: unknown): ModelTexture | undefined {
-  if (typeof value !== 'string' || !value.startsWith(ASSET_TOKEN_PREFIX)) return undefined;
-  return item.assets[value.slice(ASSET_TOKEN_PREFIX.length)];
+  const id = parseAssetToken(value);
+  return id === null ? undefined : item.assets[id];
 }
 
 /** IDs of all assets referenced anywhere in the item's configuration or armor settings. */
 export function referencedAssetIds(item: Item): Set<string> {
   const ids = new Set<string>();
   const visit = (value: unknown) => {
-    if (typeof value === 'string' && value.startsWith(ASSET_TOKEN_PREFIX)) ids.add(value.slice(ASSET_TOKEN_PREFIX.length));
+    const id = parseAssetToken(value);
+    if (id !== null) ids.add(id);
   };
   forEachLeaf(item.config, visit);
   forEachLeaf(item.armor, visit);
