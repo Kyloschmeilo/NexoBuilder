@@ -1,19 +1,10 @@
 import { useCallback } from 'react';
-import { CircleAlert, Info, TriangleAlert } from 'lucide-react';
 import { useTranslations } from 'next-intl';
-import { cn } from 'cn';
 import type { IssueKey } from '@resourcepackbuilder/i18n';
 import type { Issue, IssueLevel, IssueTarget, MessageArgs } from '@resourcepackbuilder/core/issues';
-import { Alert, AlertAction } from '@resourcepackbuilder/ui/components/alert';
+import { TONE_ALERT_VARIANT, TONE_ICONS } from '@resourcepackbuilder/ui';
+import { Alert, AlertAction, AlertDescription } from '@resourcepackbuilder/ui/components/alert';
 import { Button } from '@resourcepackbuilder/ui/components/button';
-
-const ICONS: Record<IssueLevel, typeof CircleAlert> = { error: CircleAlert, warning: TriangleAlert, info: Info };
-
-const LEVEL_CLASSES: Record<IssueLevel, string> = {
-  error: 'border-destructive/60 *:[svg]:text-destructive',
-  warning: 'border-warning/60 *:[svg]:text-warning',
-  info: '*:[svg]:text-info',
-};
 
 const LEVEL_ORDER: Record<IssueLevel, number> = { error: 0, warning: 1, info: 2 };
 
@@ -73,17 +64,13 @@ export function IssueList({ issues, onOpen, canOpen = () => true, empty, hideInf
   return (
     <div role="list" className="flex flex-col gap-1.5">
       {visibleIssues.map((issue, i) => {
-        const Icon = ICONS[issue.level];
+        const Icon = TONE_ICONS[issue.level];
         const target = issue.target;
         const jump = onOpen && target && canOpen(issue) ? { label: OPEN_LABEL_KEYS[target.kind], run: () => onOpen(target) } : null;
         return (
-          <Alert
-            key={i}
-            role="listitem"
-            className={cn('items-start rounded-md py-1.5 text-sm', LEVEL_CLASSES[issue.level], jump && 'pr-28')}
-          >
+          <Alert key={i} role="listitem" variant={TONE_ALERT_VARIANT[issue.level]} className={jump ? 'py-1.5 pr-28' : 'py-1.5'}>
             <Icon aria-label={t(`issueList.level.${issue.level}`)} />
-            <div className="col-start-2 text-foreground">{text(issue)}</div>
+            <AlertDescription>{text(issue)}</AlertDescription>
             {jump && (
               <AlertAction className="top-1 flex">
                 <Button variant="link" size="xs" onClick={jump.run}>

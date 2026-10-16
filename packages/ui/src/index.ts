@@ -11,4 +11,4 @@ export { StatusBadge } from './StatusBadge';
 export { StatusDot } from './StatusDot';
 export { Thumb } from './Thumb';
 export { Tip } from './Tip';
-export type { Tone } from './tone';
+export { TONE_ALERT_VARIANT, TONE_BADGE_VARIANT, TONE_ICONS, TONE_TEXT_CLASS, type Tone } from './tone';

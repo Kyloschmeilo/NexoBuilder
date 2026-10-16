@@ -8,6 +8,7 @@ import { IconButton, Thumb, Tip } from '@resourcepackbuilder/ui';
 import { Badge } from '@resourcepackbuilder/ui/components/badge';
 import { Button } from '@resourcepackbuilder/ui/components/button';
 import { useThumbnail } from '@resourcepackbuilder/preview';
+import { IssueCountBadges } from '../../components/IssueCountBadges';
 import { MiniMessageBox } from '../../components/miniMessage/MiniMessageBox';
 import { MiniMessageLine } from '../../components/miniMessage/MiniMessageLine';
 import { useErrorMessage } from '../../i18n/errors';
@@ -44,8 +45,6 @@ function GiveButton({ nexoId }: { nexoId: string }) {
 function ItemBadges({ item, issues }: { item: Item; issues: Issue[] }) {
   const t = useTranslations('item');
   const project = useOpenProject();
-  const errors = issues.filter((i) => i.level === 'error').length;
-  const warnings = issues.filter((i) => i.level === 'warning').length;
   return (
     <div className="flex flex-wrap gap-2">
       <Tip label={t('editor.itemId')}>
@@ -59,9 +58,7 @@ function ItemBadges({ item, issues }: { item: Item; issues: Issue[] }) {
       <Badge variant="outline" className="font-mono">
         {itemMaterial(item)}
       </Badge>
-      {errors > 0 && <Badge variant="destructive">{t('editor.errors', { count: errors })}</Badge>}
-      {warnings > 0 && <Badge variant="warning">{t('editor.warnings', { count: warnings })}</Badge>}
-      {errors === 0 && warnings === 0 && <Badge variant="success">{t('editor.ready')}</Badge>}
+      <IssueCountBadges issues={issues} okLabel={t('editor.ready')} />
     </div>
   );
 }

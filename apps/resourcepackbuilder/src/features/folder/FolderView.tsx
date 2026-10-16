@@ -3,13 +3,14 @@ import { Box, FolderOpen, FolderPlus, Pencil, Plus, Trash2 } from 'lucide-react'
 import { useTranslations } from 'next-intl';
 import type { Item } from '@resourcepackbuilder/core/project/types';
 import { folderYamlFile } from '@resourcepackbuilder/core/export/paths';
-import { countIssues, issuesFor } from '@resourcepackbuilder/core/issues';
+import { issuesFor } from '@resourcepackbuilder/core/issues';
 import { itemLabel } from '@resourcepackbuilder/core/project/labels';
 import { getFolderPathLabel } from '@resourcepackbuilder/core/project/tree';
 import { AutoGrid, DropZone, IconButton, PageHeader, PageShell, SectionLabel, Thumb, Tip } from '@resourcepackbuilder/ui';
 import { Badge } from '@resourcepackbuilder/ui/components/badge';
 import { Button } from '@resourcepackbuilder/ui/components/button';
 import { useThumbnail } from '@resourcepackbuilder/preview';
+import { IssueCountBadges } from '../../components/IssueCountBadges';
 import { openDialog } from '../../store/dialogs';
 import { usePlan } from '../../store/PlanProvider';
 import { useOpenProject } from '../../store/project';
@@ -104,10 +105,9 @@ function FolderSection({ title, children }: { title: string; children: ReactNode
 }
 
 function ItemTile({ item }: { item: Item }) {
-  const t = useTranslations('layout.folderView');
   const plan = usePlan();
   const thumb = useThumbnail(item.model);
-  const counts = countIssues(plan ? issuesFor(plan.issues, { kind: 'item', id: item.id }) : []);
+  const issues = plan ? issuesFor(plan.issues, { kind: 'item', id: item.id }) : [];
   return (
     <button
       type="button"
@@ -118,10 +118,9 @@ function ItemTile({ item }: { item: Item }) {
       <div className="min-w-0 flex-1">
         <div className="truncate font-semibold">{itemLabel(item)}</div>
         <div className="truncate font-mono text-xs text-muted-foreground">{item.nexoId}</div>
-        {(counts.error > 0 || counts.warning > 0) && (
-          <div className="mt-1 flex items-center gap-1">
-            {counts.error > 0 && <Badge variant="destructive">{t('errors', { count: counts.error })}</Badge>}
-            {counts.warning > 0 && <Badge variant="warning">{counts.warning}</Badge>}
+        {issues.some((i) => i.level !== 'info') && (
+          <div className="mt-1 flex flex-wrap items-center gap-1">
+            <IssueCountBadges issues={issues} />
           </div>
         )}
       </div>

@@ -126,8 +126,7 @@
     "dropTitle": "Modelle hier ablegen, um Items zu erstellen",
     "dropSubtitle": "Mehrere .bbmodel-Dateien ergeben mehrere Items",
     "itemsHeading": "Items in diesem Ordner",
-    "subfoldersHeading": "Unterordner",
-    "errors": "{count, plural, one {# Fehler} other {# Fehler}}"
+    "subfoldersHeading": "Unterordner"
   },
   "rightPanel": {
     "title": "YAML-Vorschau",

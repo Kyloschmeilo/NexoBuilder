@@ -1,7 +1,5 @@
 import {
   ChevronDown,
-  CircleAlert,
-  CircleCheck,
   Download,
   FolderOpen,
   FolderSync,
@@ -11,7 +9,6 @@ import {
   Redo2,
   Save,
   Settings,
-  TriangleAlert,
   Undo2,
   Upload,
   Users,
@@ -20,7 +17,7 @@ import {
 import { useTranslations } from 'next-intl';
 import { cn } from 'cn';
 import { countIssues } from '@resourcepackbuilder/core/issues';
-import { IconButton, StatusDot, Tip } from '@resourcepackbuilder/ui';
+import { IconButton, StatusDot, Tip, TONE_ICONS, TONE_TEXT_CLASS } from '@resourcepackbuilder/ui';
 import { Button } from '@resourcepackbuilder/ui/components/button';
 import { Kbd } from '@resourcepackbuilder/ui/components/kbd';
 import {
@@ -83,16 +80,17 @@ function ChecksButton({ onClick }: { onClick: () => void }) {
   const plan = usePlan();
   if (!plan) return null;
   const counts = countIssues(plan.issues);
-  const [icon, label] =
+  const [tone, label] =
     counts.error > 0
-      ? [<CircleAlert key="icon" className="text-destructive" />, t('errors', { count: counts.error })]
+      ? (['error', t('errors', { count: counts.error })] as const)
       : counts.warning > 0
-        ? [<TriangleAlert key="icon" className="text-warning" />, t('warnings', { count: counts.warning })]
-        : [<CircleCheck key="icon" className="text-success" />, t('ok')];
+        ? (['warning', t('warnings', { count: counts.warning })] as const)
+        : (['success', t('ok')] as const);
+  const Icon = TONE_ICONS[tone];
   return (
     <Tip label={t('hint')}>
       <Button variant="ghost" aria-label={label} onClick={onClick}>
-        {icon}
+        <Icon className={TONE_TEXT_CLASS[tone]} />
         <span className="hidden @2xl/top:inline">{label}</span>
       </Button>
     </Tip>

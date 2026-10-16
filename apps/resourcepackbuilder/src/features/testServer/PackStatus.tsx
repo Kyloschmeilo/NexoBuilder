@@ -1,7 +1,6 @@
 import { RefreshCw, Upload } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 import { Button } from '@resourcepackbuilder/ui/components/button';
-import { Spinner } from '@resourcepackbuilder/ui/components/spinner';
 import { StatusBadge, Tip } from '@resourcepackbuilder/ui';
 import { nexoPackCommand } from '@resourcepackbuilder/core/testServer/files';
 import type { TestServerState } from '../../platform/desktopApi';
@@ -17,10 +16,7 @@ export function PackStatus({ pack, player }: { pack: TestServerState['pack']; pl
 
   return (
     <div className="flex flex-wrap items-center gap-2.5">
-      <StatusBadge tone={PACK_STATUS_TONE[pack.status]}>
-        {pack.status === 'building' && <Spinner />}
-        {t(pack.status)}
-      </StatusBadge>
+      <StatusBadge tone={PACK_STATUS_TONE[pack.status]}>{t(pack.status)}</StatusBadge>
       <Tip label={detail}>
         <span className="min-w-0 flex-[1_1_8rem] truncate font-mono text-xs text-muted-foreground">{detail}</span>
       </Tip>

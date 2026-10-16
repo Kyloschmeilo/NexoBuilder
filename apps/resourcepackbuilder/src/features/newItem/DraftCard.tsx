@@ -6,8 +6,8 @@ import type { ImportDraft } from '@resourcepackbuilder/core/model/drafts';
 import { getTextureTemplate } from '@resourcepackbuilder/core/model/textureModel';
 import { IconButton, SectionCard } from '@resourcepackbuilder/ui';
 import { Alert, AlertDescription } from '@resourcepackbuilder/ui/components/alert';
-import { Badge } from '@resourcepackbuilder/ui/components/badge';
 import { ModelPreview } from '@resourcepackbuilder/preview';
+import { IssueCountBadges } from '../../components/IssueCountBadges';
 import { IssueList } from '../../components/IssueList';
 import { useErrorMessage } from '../../i18n/errors';
 import { ItemMetaFields } from './ItemMetaFields';
@@ -44,12 +44,10 @@ function useDraftDescription(draft: ImportDraft): string {
 
 export function DraftCard({ draft, meta, idError, isSingle, onMetaChange, onDraftChange, onRemove }: DraftCardProps) {
   const t = useTranslations('dialogs.newItem');
-  const tIssues = useTranslations('dialogs.issues');
   const errorMessage = useErrorMessage();
   const description = useDraftDescription(draft);
   const pngs = draft.files.filter((file) => isPngDataUrl(file.dataUrl));
   const template = draft.template ? getTextureTemplate(draft.template) : null;
-  const errorCount = draft.model?.issues.filter((i) => i.level === 'error').length ?? 0;
   const Icon = draft.kind === 'png' ? ImageIcon : Box;
   return (
     <SectionCard
@@ -60,7 +58,7 @@ export function DraftCard({ draft, meta, idError, isSingle, onMetaChange, onDraf
       description={description}
       actions={
         <>
-          {errorCount > 0 && <Badge variant="destructive">{tIssues('errors', { count: errorCount })}</Badge>}
+          {draft.model && <IssueCountBadges issues={draft.model.issues} />}
           {!isSingle && (
             <IconButton label={t('dontImport')} variant="ghost-destructive" onClick={onRemove}>
               <Trash2 />
