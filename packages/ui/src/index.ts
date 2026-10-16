@@ -12,4 +12,5 @@ export { StatusBadge } from './StatusBadge';
 export { StatusDot } from './StatusDot';
 export { Thumb } from './Thumb';
 export { Tip } from './Tip';
+export { TREE_INDENT_PX, TreeChevron, treeRow, treeRowSlots } from './tree';
 export { TONE_ALERT_VARIANT, TONE_BADGE_VARIANT, TONE_ICONS, TONE_TEXT_CLASS, type Tone } from './tone';

@@ -13,7 +13,8 @@ import {
   type ExportSelection,
   type ListSelectionKey,
 } from '@resourcepackbuilder/core/export/selection';
-import { COUNT_CLASS, EntryRow, GroupRow, ICON_CLASS, INDENT_PX, LABEL_CLASS } from './SelectionRows';
+import { TREE_INDENT_PX, treeRowSlots } from '@resourcepackbuilder/ui';
+import { EntryRow, GroupRow } from './SelectionRows';
 
 /** Projects with at most this many items start with every folder open; larger ones only show the top level. */
 const OPEN_ALL_UP_TO_ITEMS = 40;
@@ -72,11 +73,11 @@ export function SelectionTree({ project, selection, onChange, itemsOnly }: Selec
           onCheckedChange={(checked) => onChange(setItemsSelected(selection, ids, checked))}
           isOpen={isOpen}
           onToggle={() => toggleOpen(folderId)}
-          style={{ paddingLeft: FOLDER_PADDING_PX + depth * INDENT_PX }}
+          style={{ paddingLeft: FOLDER_PADDING_PX + depth * TREE_INDENT_PX }}
         >
-          <FolderIcon className={ICON_CLASS} />
-          <span className={LABEL_CLASS}>{folder.name}</span>
-          <span className={COUNT_CLASS}>{countLabel(ids, excludedItems)}</span>
+          <FolderIcon className={treeRowSlots.icon} />
+          <span className={treeRowSlots.label}>{folder.name}</span>
+          <span className={treeRowSlots.count}>{countLabel(ids, excludedItems)}</span>
         </GroupRow>
         {isOpen && (
           <>
@@ -90,10 +91,10 @@ export function SelectionTree({ project, selection, onChange, itemsOnly }: Selec
                   key={itemId}
                   isChecked={isChecked}
                   onCheckedChange={() => onChange(setItemsSelected(selection, [itemId], !isChecked))}
-                  style={{ paddingLeft: FOLDER_PADDING_PX + ITEM_PADDING_PX + depth * INDENT_PX }}
+                  style={{ paddingLeft: FOLDER_PADDING_PX + ITEM_PADDING_PX + depth * TREE_INDENT_PX }}
                 >
-                  <span className={LABEL_CLASS}>{itemLabel(item)}</span>
-                  <span className={COUNT_CLASS}>{item.nexoId}</span>
+                  <span className={treeRowSlots.label}>{itemLabel(item)}</span>
+                  <span className={treeRowSlots.count}>{item.nexoId}</span>
                 </EntryRow>
               );
             })}
@@ -109,19 +110,19 @@ export function SelectionTree({ project, selection, onChange, itemsOnly }: Selec
         {
           key: 'excludedGlyphIds',
           label: t('glyphs'),
-          icon: <Smile className={ICON_CLASS} />,
+          icon: <Smile className={treeRowSlots.icon} />,
           entries: project.glyphs.map((g) => ({ id: g.id, label: `<glyph:${g.glyphId}>` })),
         },
         {
           key: 'excludedSoundIds',
           label: t('sounds'),
-          icon: <Music className={ICON_CLASS} />,
+          icon: <Music className={treeRowSlots.icon} />,
           entries: project.sounds.map((s) => ({ id: s.id, label: s.soundId })),
         },
         {
           key: 'excludedPaintingIds',
           label: t('paintings'),
-          icon: <Frame className={ICON_CLASS} />,
+          icon: <Frame className={treeRowSlots.icon} />,
           entries: project.paintings.map((p) => ({ id: p.id, label: p.paintingId })),
         },
       ];
@@ -148,8 +149,8 @@ export function SelectionTree({ project, selection, onChange, itemsOnly }: Selec
                 style={{ paddingLeft: FOLDER_PADDING_PX }}
               >
                 {list.icon}
-                <span className={LABEL_CLASS}>{list.label}</span>
-                <span className={COUNT_CLASS}>{countLabel(ids, excluded)}</span>
+                <span className={treeRowSlots.label}>{list.label}</span>
+                <span className={treeRowSlots.count}>{countLabel(ids, excluded)}</span>
               </GroupRow>
               {isOpen &&
                 list.entries.map((entry) => {
@@ -161,7 +162,7 @@ export function SelectionTree({ project, selection, onChange, itemsOnly }: Selec
                       onCheckedChange={() => onChange(setListSelected(selection, list.key, [entry.id], !isChecked))}
                       style={{ paddingLeft: FOLDER_PADDING_PX + ITEM_PADDING_PX }}
                     >
-                      <span className={cn(LABEL_CLASS, 'font-mono')}>{entry.label}</span>
+                      <span className={cn(treeRowSlots.label, 'font-mono')}>{entry.label}</span>
                     </EntryRow>
                   );
                 })}

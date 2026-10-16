@@ -1,7 +1,7 @@
 import { Box, ClipboardCopy, ClipboardPaste, Copy, FolderInput, Trash2 } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 import { itemLabel } from '@resourcepackbuilder/core/project/labels';
-import { StatusDot, Thumb } from '@resourcepackbuilder/ui';
+import { StatusDot, Thumb, TREE_INDENT_PX, treeRowSlots } from '@resourcepackbuilder/ui';
 import { useThumbnail } from '@resourcepackbuilder/preview';
 import { moveItem } from '../../commands/items';
 import type { MenuEntry } from '../../components/MenuEntries';
@@ -9,7 +9,7 @@ import { useItemActions } from '../../features/item/useItemActions';
 import { clipboardLabel, useClipboardStore } from '../../store/clipboard';
 import { openDialog } from '../../store/dialogs';
 import { select, useUiStore } from '../../store/ui';
-import { INDENT_PX, ITEM_PADDING_PX, ROW_LABEL_CLASS } from './rowStyles';
+import { ITEM_PADDING_PX } from './rowStyles';
 import type { SidebarTree } from './treeIndex';
 import { activateOnKey, TreeRow } from './TreeRow';
 import { DRAG_ITEM, useDropTarget } from './useDropTarget';
@@ -59,7 +59,7 @@ export function ItemNode({ itemId, depth, tree }: { itemId: string; depth: numbe
       drop={drop}
       role="treeitem"
       tabIndex={0}
-      style={{ paddingLeft: ITEM_PADDING_PX + depth * INDENT_PX }}
+      style={{ paddingLeft: ITEM_PADDING_PX + depth * TREE_INDENT_PX }}
       draggable
       onDragStart={(e) => {
         e.dataTransfer.setData(DRAG_ITEM, itemId);
@@ -69,7 +69,7 @@ export function ItemNode({ itemId, depth, tree }: { itemId: string; depth: numbe
       onKeyDown={activateOnKey(show)}
     >
       <Thumb size={20} src={thumb} checkered={false} fallback={<Box className="size-3.75" />} />
-      <span className={ROW_LABEL_CLASS}>{itemLabel(item)}</span>
+      <span className={treeRowSlots.label}>{itemLabel(item)}</span>
       {level && <StatusDot tone={level} label={level === 'error' ? t('status.error') : t('status.warning')} />}
     </TreeRow>
   );

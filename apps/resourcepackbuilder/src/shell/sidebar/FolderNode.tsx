@@ -1,18 +1,8 @@
-import {
-  ChevronDown,
-  ChevronRight,
-  ClipboardPaste,
-  Folder as FolderIcon,
-  FolderOpen,
-  FolderPlus,
-  Pencil,
-  Plus,
-  Trash2,
-} from 'lucide-react';
+import { ClipboardPaste, Folder as FolderIcon, FolderOpen, FolderPlus, Pencil, Plus, Trash2 } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 import { cn } from 'cn';
 import { itemIdsInFolder } from '@resourcepackbuilder/core/project/tree';
-import { filesFromDataTransfer, IconButton } from '@resourcepackbuilder/ui';
+import { filesFromDataTransfer, IconButton, TREE_INDENT_PX, TreeChevron, treeRowSlots } from '@resourcepackbuilder/ui';
 import { Collapsible, CollapsibleContent } from '@resourcepackbuilder/ui/components/collapsible';
 import { moveFolder } from '../../commands/folders';
 import { moveItem } from '../../commands/items';
@@ -23,15 +13,7 @@ import { clipboardLabel, useClipboardStore } from '../../store/clipboard';
 import { openDialog } from '../../store/dialogs';
 import { select, setExpanded, useUiStore } from '../../store/ui';
 import { ItemNode } from './ItemNode';
-import {
-  FOLDER_ICON_PADDING_PX,
-  FOLDER_PADDING_PX,
-  INDENT_PX,
-  ROW_BADGE_CLASS,
-  ROW_BUTTON_CLASS,
-  ROW_ICON_CLASS,
-  ROW_LABEL_CLASS,
-} from './rowStyles';
+import { FOLDER_ICON_PADDING_PX, FOLDER_PADDING_PX } from './rowStyles';
 import type { SidebarTree } from './treeIndex';
 import { activateOnKey, TreeRow } from './TreeRow';
 import { DRAG_FILES, DRAG_FOLDER, DRAG_ITEM, useDropTarget } from './useDropTarget';
@@ -98,7 +80,7 @@ export function FolderNode({ folderId, depth, tree }: { folderId: string; depth:
         role="treeitem"
         tabIndex={0}
         aria-expanded={isOpen}
-        style={{ paddingLeft: FOLDER_PADDING_PX + depth * INDENT_PX }}
+        style={{ paddingLeft: FOLDER_PADDING_PX + depth * TREE_INDENT_PX }}
         draggable
         onDragStart={(e) => {
           e.dataTransfer.setData(DRAG_FOLDER, folderId);
@@ -118,12 +100,10 @@ export function FolderNode({ folderId, depth, tree }: { folderId: string; depth:
           </IconButton>
         }
       >
-        <span className="grid w-4 shrink-0 place-items-center text-muted-foreground">
-          {isOpen ? <ChevronDown className="size-3.5" /> : <ChevronRight className="size-3.5" />}
-        </span>
-        <span className={ROW_ICON_CLASS}>{isOpen ? <FolderOpen className="size-4" /> : <FolderIcon className="size-4" />}</span>
-        <span className={ROW_LABEL_CLASS}>{folder.name}</span>
-        <span className={ROW_BADGE_CLASS}>{count}</span>
+        <TreeChevron isOpen={isOpen} />
+        {isOpen ? <FolderOpen className={treeRowSlots.icon} /> : <FolderIcon className={treeRowSlots.icon} />}
+        <span className={treeRowSlots.label}>{folder.name}</span>
+        <span className={treeRowSlots.count}>{count}</span>
       </TreeRow>
       <CollapsibleContent role="group">
         {folder.folderIds.map((id) => (
@@ -135,8 +115,8 @@ export function FolderNode({ folderId, depth, tree }: { folderId: string; depth:
         {folder.itemIds.length === 0 && folder.folderIds.length === 0 && !search && (
           <button
             type="button"
-            className={cn(ROW_BUTTON_CLASS, 'h-8 w-full text-xs text-muted-foreground hover:bg-sidebar-accent')}
-            style={{ paddingLeft: FOLDER_ICON_PADDING_PX + depth * INDENT_PX }}
+            className={cn(treeRowSlots.button, 'h-8 w-full text-xs text-muted-foreground hover:bg-sidebar-accent')}
+            style={{ paddingLeft: FOLDER_ICON_PADDING_PX + depth * TREE_INDENT_PX }}
             onClick={newItem}
           >
             <Plus className="size-3.5" /> {t('addItem')}
