@@ -1,6 +1,6 @@
 /** Checking a project namespace and showing what is wrong with it (new project form, project settings). */
 import { useTranslations } from 'next-intl';
-import { namespaceError } from '@resourcepackbuilder/core/minecraft/resourceLocation';
+import { namespaceError } from '@resourcepackbuilder/minecraft';
 import { FieldDescription, FieldError } from '@resourcepackbuilder/ui/components/field';
 
 /** What is wrong with a namespace: an error (it cannot be used) or a warning (it can, but better not). */

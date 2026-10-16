@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { holdStyleParent } from '../minecraft/vanillaModels';
+import { holdStyleParent } from '@resourcepackbuilder/minecraft';
 import type { ConfigObject } from '../project/types';
 import { activeProperties, availableProperties, emptyPropertyValue, propertyConflict, propertyYamlPath } from './properties';
 import { PROPERTY_BY_ID } from './schema';

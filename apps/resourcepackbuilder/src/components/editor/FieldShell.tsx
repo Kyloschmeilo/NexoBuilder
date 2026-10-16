@@ -4,7 +4,7 @@ import { useTranslations } from 'next-intl';
 import { cn } from 'cn';
 import type { Field } from '@resourcepackbuilder/core/nexo/fields';
 import { fieldName } from '@resourcepackbuilder/core/nexo/fieldNames';
-import { compareVersions } from '@resourcepackbuilder/core/minecraft/versions';
+import { compareVersions } from '@resourcepackbuilder/minecraft';
 import { Tip } from '@resourcepackbuilder/ui';
 import { Badge } from '@resourcepackbuilder/ui/components/badge';
 import { Field as FieldRoot, FieldDescription, FieldError, FieldTitle } from '@resourcepackbuilder/ui/components/field';

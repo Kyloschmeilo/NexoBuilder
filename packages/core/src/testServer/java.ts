@@ -1,5 +1,5 @@
 /** Which Java a Paper server needs, and which Java an installation is. */
-import { compareVersions } from '../minecraft/versions';
+import { compareVersions } from '@resourcepackbuilder/minecraft';
 
 /** Minimum Java version for a Minecraft version, in case the Paper API does not specify one. */
 export function guessJavaFor(mcVersion: string): number {

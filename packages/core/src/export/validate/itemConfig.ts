@@ -1,6 +1,6 @@
 /** Checks of an item's configuration (properties, field formats, custom block, stack size). */
 import { getPath, isPlainObject, labelArg, MODEL_TOKEN, schemaKey } from '@resourcepackbuilder/utils';
-import { versionSupport } from '../../minecraft/versions';
+import { versionSupport } from '@resourcepackbuilder/minecraft';
 import { slotForMaterial } from '../../nexo/armor';
 import { checkFieldValue } from '../../nexo/fieldSchema';
 import { getPropertyValue } from '../../nexo/properties';

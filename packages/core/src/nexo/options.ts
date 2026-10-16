@@ -3,14 +3,18 @@
  * custom values can also be entered in the fields. Vanilla Minecraft data comes from
  * minecraft/catalog; this module turns it into options and holds the Nexo-specific lists.
  */
-import { ATTRIBUTE_NAMES } from '../minecraft/catalog/attributes';
-import { COMPONENT_NAMES } from '../minecraft/catalog/components';
-import { DAMAGE_TYPE_TAG_NAMES } from '../minecraft/catalog/damageTypes';
-import { POTION_EFFECT_NAMES } from '../minecraft/catalog/effects';
-import { ENCHANTMENT_NAMES } from '../minecraft/catalog/enchantments';
-import { ITEM_FLAG_NAMES } from '../minecraft/catalog/itemFlags';
-import { BASE_MATERIALS, CRAFTING_BLOCKS, ITEM_TAG_NAMES } from '../minecraft/catalog/materials';
-import { SOUND_EVENTS } from '../minecraft/catalog/sounds';
+import {
+  ATTRIBUTE_NAMES,
+  BASE_MATERIALS,
+  COMPONENT_NAMES,
+  CRAFTING_BLOCKS,
+  DAMAGE_TYPE_TAG_NAMES,
+  ENCHANTMENT_NAMES,
+  ITEM_FLAG_NAMES,
+  ITEM_TAG_NAMES,
+  POTION_EFFECT_NAMES,
+  SOUND_EVENTS,
+} from '@resourcepackbuilder/minecraft';
 import { keySegment } from './messageKey';
 
 export interface Option {

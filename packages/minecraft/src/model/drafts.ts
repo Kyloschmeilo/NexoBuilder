@@ -4,7 +4,7 @@
  */
 import { isPngDataUrl } from '../binary/png';
 import { CoreError, fileBaseName, jsonOrNull, prettyNameFromFile, uid } from '@resourcepackbuilder/utils';
-import { resourceBaseName } from '../minecraft/resourceLocation';
+import { resourceBaseName } from '../resourceLocation';
 import { convertBBModel } from './bbmodel';
 import { convertJavaModel, parentBaseName, parseModelJson, pickMainModel } from './javaModel';
 import {

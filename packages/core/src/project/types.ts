@@ -5,8 +5,7 @@
  * Each item optionally has an imported model that is written into the
  * resource pack (pack/external_packs/<name>) on export.
  */
-import type { DataUrl } from '../binary/dataUrl';
-import type { ImportedModel, ModelTexture } from '../model/types';
+import type { DataUrl, ImportedModel, ModelTexture } from '@resourcepackbuilder/minecraft';
 import type { ArmorSettings } from '../nexo/armor';
 import type { Glyph } from '../nexo/glyphs/model';
 import type { Painting } from '../nexo/paintings/model';

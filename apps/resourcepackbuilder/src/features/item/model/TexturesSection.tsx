@@ -1,5 +1,5 @@
 import { useTranslations } from 'next-intl';
-import type { ImportedModel } from '@resourcepackbuilder/core/model/types';
+import type { ImportedModel } from '@resourcepackbuilder/minecraft';
 import { parseTexturePlaceholder } from '@resourcepackbuilder/utils';
 import { AutoGrid } from '@resourcepackbuilder/ui';
 import { Section } from '../../../components/Section';

@@ -1,7 +1,6 @@
 /** Small inventory-style thumbnails, rendered one at a time with a shared renderer and cached per model. */
 import * as THREE from 'three';
-import { resolveTextureRef } from '@resourcepackbuilder/core/model/textureRefs';
-import type { ImportedModel, JavaDisplayTransform } from '@resourcepackbuilder/core/model/types';
+import { type ImportedModel, type JavaDisplayTransform, resolveTextureRef } from '@resourcepackbuilder/minecraft';
 import { buildPreviewModel, type PreviewModel } from './modelGeometry';
 import { createModelObject } from './threeModel';
 

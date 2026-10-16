@@ -1,5 +1,5 @@
 /** The files models are imported from: picker filter, formats shown on drop zones, and reading them for the drafts. */
-import type { ImportFile } from '@resourcepackbuilder/core/model/types';
+import type { ImportFile } from '@resourcepackbuilder/minecraft';
 import { readAsText, readPngAsDataUrl } from '@resourcepackbuilder/ui';
 
 export const MODEL_ACCEPT = '.bbmodel,.json,.png,.mcmeta';

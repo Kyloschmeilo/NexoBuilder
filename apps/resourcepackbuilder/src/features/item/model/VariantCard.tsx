@@ -1,6 +1,6 @@
 import { useFormatter, useTranslations } from 'next-intl';
 import { Trash2 } from 'lucide-react';
-import type { ImportedModel } from '@resourcepackbuilder/core/model/types';
+import type { ImportedModel } from '@resourcepackbuilder/minecraft';
 import type { Item } from '@resourcepackbuilder/core/project/types';
 import { itemMaterial } from '@resourcepackbuilder/core/nexo/material';
 import { variantConfigPath, variantPathSuffix, type VariantDef } from '@resourcepackbuilder/core/nexo/variants';

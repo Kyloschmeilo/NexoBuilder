@@ -1,11 +1,9 @@
 /** One model to import: preview, the values for its item, texture choices for PNGs, and its checks. */
 import { useTranslations } from 'next-intl';
 import { Box, Image as ImageIcon, Trash2, TriangleAlert } from 'lucide-react';
-import { isPngDataUrl } from '@resourcepackbuilder/core/binary/png';
-import type { ImportDraft } from '@resourcepackbuilder/core/model/drafts';
-import type { ItemMeta, MetaPatch } from '@resourcepackbuilder/core/model/newItems';
+import { getTextureTemplate, type ImportDraft, isPngDataUrl } from '@resourcepackbuilder/minecraft';
+import type { ItemMeta, MetaPatch } from '@resourcepackbuilder/core/project/newItems';
 import type { ItemIdError } from '@resourcepackbuilder/core/project/ids';
-import { getTextureTemplate } from '@resourcepackbuilder/core/model/textureModel';
 import { AutoGrid, IconButton, SectionCard } from '@resourcepackbuilder/ui';
 import { Alert, AlertDescription } from '@resourcepackbuilder/ui/components/alert';
 import { ModelPreview } from '@resourcepackbuilder/preview';

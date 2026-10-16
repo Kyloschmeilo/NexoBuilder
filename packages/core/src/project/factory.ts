@@ -1,6 +1,5 @@
 /** Creates new projects, folders and items with sensible defaults. */
-import { DEFAULT_MC_VERSION } from '../minecraft/versions';
-import type { ImportedModel } from '../model/types';
+import { DEFAULT_MC_VERSION, type ImportedModel } from '@resourcepackbuilder/minecraft';
 import { DEFAULT_MATERIAL } from '../nexo/material';
 import { mapMediaLists } from '../nexo/media/kinds';
 import { slugify, uid } from '@resourcepackbuilder/utils';

@@ -1,6 +1,6 @@
 import { useTranslations } from 'next-intl';
 import type { PropertyDef } from '@resourcepackbuilder/core/nexo/schema';
-import { versionSupport } from '@resourcepackbuilder/core/minecraft/versions';
+import { versionSupport } from '@resourcepackbuilder/minecraft';
 import { Badge } from '@resourcepackbuilder/ui/components/badge';
 
 interface VersionBadgesProps {

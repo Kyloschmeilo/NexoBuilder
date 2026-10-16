@@ -3,8 +3,7 @@
  * custom inventory icon, connectable furniture, placement, light and state models of furniture
  * as well as stack stages of blocks. The matching values in the item configuration are returned too.
  */
-import { formatResourceLocation } from '../minecraft/resourceLocation';
-import { compareVersions, FEATURE_VERSIONS } from '../minecraft/versions';
+import { compareVersions, FEATURE_VERSIONS, formatResourceLocation } from '@resourcepackbuilder/minecraft';
 import type { ConfigAddition } from '../nexo/itemConfig';
 import {
   CONNECT_SLOTS,

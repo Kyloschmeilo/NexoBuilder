@@ -10,9 +10,9 @@ import tseslint from 'typescript-eslint';
 
 const APP = 'apps/resourcepackbuilder';
 /** TypeScript that runs in Node rather than the browser. */
-const NODE_SOURCES = [`${APP}/electron/**`, 'packages/s3/**'];
+const NODE_SOURCES = [`${APP}/electron/**`, 'packages/s3/**', 'packages/test-utils/**'];
 /** Framework-free domain packages (no React, no DOM-only code). */
-const DOMAIN_PACKAGES = ['utils', 'core', 'desktop-contract'].map((name) => `packages/${name}/**`);
+const DOMAIN_PACKAGES = ['utils', 'minecraft', 'core', 'desktop-contract'].map((name) => `packages/${name}/**`);
 
 export default defineConfig(
   globalIgnores([

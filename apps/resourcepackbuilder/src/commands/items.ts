@@ -1,12 +1,17 @@
 /** Creating, changing, moving and deleting items. */
 import { produce } from 'immer';
 import type { ConfigValue, Item } from '@resourcepackbuilder/core/project/types';
-import type { ImportedModel, ModelTexture } from '@resourcepackbuilder/core/model/types';
+import {
+  createTexture,
+  type ImportedModel,
+  type ModelTexture,
+  type TextureAnimationSettings,
+  withTextureAnimation,
+} from '@resourcepackbuilder/minecraft';
 import type { NewItemInput } from '@resourcepackbuilder/core/project/factory';
 import * as operations from '@resourcepackbuilder/core/project/operations';
 import { assetToken, texturePlaceholder, uid } from '@resourcepackbuilder/utils';
 import { pruneUnusedAssets } from '@resourcepackbuilder/core/project/assets';
-import { createTexture, withTextureAnimation, type TextureAnimationSettings } from '@resourcepackbuilder/core/model/textures';
 import { setPath } from '@resourcepackbuilder/core/nexo/configPath';
 import { PROPERTY_BY_ID, type PropertyDef } from '@resourcepackbuilder/core/nexo/schema';
 import { setPropertyValue } from '@resourcepackbuilder/core/nexo/properties';

@@ -3,7 +3,7 @@
  * (2D item, tool, cube block, plant …).
  */
 import { isPngDataUrl } from '../binary/png';
-import { MAX_ITEM_LAYERS } from '../minecraft/vanillaModels';
+import { MAX_ITEM_LAYERS } from '../vanillaModels';
 import { CoreError, fileBaseName, type Issue, texturePlaceholder } from '@resourcepackbuilder/utils';
 import { createTexture, findMcmetaFor } from './textures';
 import type { ImportedModel, ImportFile, JavaModelJson, ModelTexture } from './types';

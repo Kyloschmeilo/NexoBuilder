@@ -6,7 +6,7 @@
  * exists in the export); this module only calls them and puts their issues into the item's context.
  */
 import { getPath, groupBy, inContext, type Issue, type IssueContext, issueReporter } from '@resourcepackbuilder/utils';
-import { buildPackMcmeta } from '../minecraft/versions';
+import { buildPackMcmeta } from '@resourcepackbuilder/minecraft';
 import { buildItemConfig } from '../nexo/itemConfig';
 import { itemMaterial } from '../nexo/material';
 import { buildRecipeFiles } from '../nexo/recipes/files';

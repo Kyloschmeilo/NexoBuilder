@@ -1,7 +1,7 @@
 import { useId, useState } from 'react';
 import { FolderPlus } from 'lucide-react';
 import { useTranslations } from 'next-intl';
-import { DEFAULT_MC_VERSION, MC_VERSIONS } from '@resourcepackbuilder/core/minecraft/versions';
+import { DEFAULT_MC_VERSION, MC_VERSIONS } from '@resourcepackbuilder/minecraft';
 import { defaultNamespace } from '@resourcepackbuilder/core/project/factory';
 import { Button } from '@resourcepackbuilder/ui/components/button';
 import { Field, FieldLabel } from '@resourcepackbuilder/ui/components/field';

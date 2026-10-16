@@ -1,8 +1,6 @@
 /** Writes imported models with their textures into the pack. */
 import { deepClone, type Issue, parseTexturePlaceholder, slugify, uniqueId } from '@resourcepackbuilder/utils';
-import { formatResourceLocation } from '../minecraft/resourceLocation';
-import { validateTexture } from '../model/textures';
-import type { ImportedModel, JavaModelJson } from '../model/types';
+import { formatResourceLocation, type ImportedModel, type JavaModelJson, validateTexture } from '@resourcepackbuilder/minecraft';
 import type { Project } from '../project/types';
 import type { PackWriter } from './packWriter';
 import { modelFile, textureFile } from './paths';

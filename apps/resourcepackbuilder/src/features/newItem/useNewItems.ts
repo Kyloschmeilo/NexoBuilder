@@ -6,7 +6,7 @@ import {
   newItemEntries,
   newItemInputs,
   newItemReducer,
-} from '@resourcepackbuilder/core/model/newItems';
+} from '@resourcepackbuilder/core/project/newItems';
 import type { NewItemInput } from '@resourcepackbuilder/core/project/factory';
 import type { Project } from '@resourcepackbuilder/core/project/types';
 import { useErrorMessage } from '../../i18n/errors';

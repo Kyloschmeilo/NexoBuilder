@@ -1,6 +1,6 @@
 import { itemFrame, itemTarget, recipeFrame, recipeIngredientFrame, recipeInputFrame } from '../../issueFrames';
 import { inContext, issueReporter, type Issue, type IssueContext } from '@resourcepackbuilder/utils';
-import { RESOURCE_LOCATION_PATTERN } from '../../minecraft/resourceLocation';
+import { RESOURCE_LOCATION_PATTERN } from '@resourcepackbuilder/minecraft';
 import type { Item, Project } from '../../project/types';
 import { recipeKeys } from './files';
 import { MATERIAL_PATTERN } from '../material';

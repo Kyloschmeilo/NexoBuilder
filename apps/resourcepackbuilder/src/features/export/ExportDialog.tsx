@@ -14,7 +14,7 @@ import {
   type MultiExportPlan,
 } from '@resourcepackbuilder/core/export/selection';
 import { listMultiExportPaths } from '@resourcepackbuilder/core/export/zip';
-import { getMcVersion } from '@resourcepackbuilder/core/minecraft/versions';
+import { getMcVersion } from '@resourcepackbuilder/minecraft';
 import { SectionLabel } from '@resourcepackbuilder/ui';
 import { Alert, AlertDescription } from '@resourcepackbuilder/ui/components/alert';
 import { Button } from '@resourcepackbuilder/ui/components/button';

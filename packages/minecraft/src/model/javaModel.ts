@@ -18,9 +18,9 @@ import {
   texturePlaceholder,
   unwrapJson,
 } from '@resourcepackbuilder/utils';
-import { isVanillaReference, resourceBaseName, stripMinecraftNamespace } from '../minecraft/resourceLocation';
-import { ELEMENTLESS_ITEM_PARENTS } from '../minecraft/vanillaModels';
-import { FEATURE_VERSIONS, maxVersion } from '../minecraft/versions';
+import { isVanillaReference, resourceBaseName, stripMinecraftNamespace } from '../resourceLocation';
+import { ELEMENTLESS_ITEM_PARENTS } from '../vanillaModels';
+import { FEATURE_VERSIONS, maxVersion } from '../versions';
 import { FACE_NAMES, isOutOfBounds } from './geometry';
 import { JavaModelSchema } from './schema';
 import { createTexture, findMcmetaFor, normalizeTextureName } from './textures';

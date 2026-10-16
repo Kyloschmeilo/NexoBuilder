@@ -2,7 +2,7 @@
  * Items that use a painting or a sound: the Nexo item config that hangs the painting (painting_variant)
  * or plays the sound in a jukebox (jukebox_playable).
  */
-import { ID_CHARS } from '../../minecraft/resourceLocation';
+import { ID_CHARS } from '@resourcepackbuilder/minecraft';
 import type { Item, Project } from '../../project/types';
 import { toIdentifier } from '@resourcepackbuilder/utils';
 import { DEFAULT_MATERIAL } from '../material';

@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { CoreError } from '@resourcepackbuilder/utils';
-import { makePngDataUrl } from '../../test-utils/png';
+import { makePngDataUrl } from '@resourcepackbuilder/test-utils/png';
 import { createDrafts, runDraft, unsupportedFiles } from './drafts';
 
 const PNG = makePngDataUrl(16, 16);

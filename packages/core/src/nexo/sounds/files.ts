@@ -1,5 +1,5 @@
 /** Export of sounds: OGG file paths and the sounds.yml entry. */
-import { formatResourceLocation } from '../../minecraft/resourceLocation';
+import { formatResourceLocation } from '@resourcepackbuilder/minecraft';
 import type { Project } from '../../project/types';
 import { mediaKey } from '../media/entry';
 import type { Sound } from './model';

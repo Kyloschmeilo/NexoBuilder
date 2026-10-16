@@ -2,10 +2,9 @@
  * What glyphs, sounds and paintings have in common: a user-facing ID inside the project's
  * namespace, an uploaded file and per-entry checks with the same frame and ID rules.
  */
-import { readPngInfoFromDataUrl } from '../../binary/png';
+import { formatResourceLocation, readPngInfoFromDataUrl } from '@resourcepackbuilder/minecraft';
 import { mediaFrame } from '../../issueFrames';
 import { issueReporter, type Issue, type ReportIssue } from '@resourcepackbuilder/utils';
-import { formatResourceLocation } from '../../minecraft/resourceLocation';
 import type { Project } from '../../project/types';
 import type { MediaKind } from './kinds';
 

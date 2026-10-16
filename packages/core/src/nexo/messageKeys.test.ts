@@ -5,7 +5,7 @@
  */
 import { readFileSync } from 'node:fs';
 import { describe, expect, it } from 'vitest';
-import { TEXTURE_TEMPLATES } from '../model/textureModel';
+import { TEXTURE_TEMPLATES } from '@resourcepackbuilder/minecraft';
 import { ARMOR_LAYERS } from './armor';
 import { COPY_CATEGORIES, summarizeClipboard, type ItemConfigClipboard } from './copyConfig';
 import { validateTextFormat } from './fieldFormat';

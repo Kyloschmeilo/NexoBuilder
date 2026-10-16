@@ -1,6 +1,5 @@
 import { createIssue, type Issue } from '@resourcepackbuilder/utils';
-import { ITEM_ID_PATTERN } from '../../minecraft/resourceLocation';
-import { compareVersions, FEATURE_VERSIONS } from '../../minecraft/versions';
+import { compareVersions, FEATURE_VERSIONS, ITEM_ID_PATTERN } from '@resourcepackbuilder/minecraft';
 import type { Project } from '../../project/types';
 import { validateEntries } from '../media/entry';
 import { MAX_PAINTING_BLOCKS, paintingFrameSize, type Painting } from './model';

@@ -12,7 +12,7 @@
  * The converted model is then checked like every other model (see analyseElements).
  */
 import { type Issue, parseJson, texturePlaceholder, unwrapJson } from '@resourcepackbuilder/utils';
-import { compareVersions, FEATURE_VERSIONS } from '../minecraft/versions';
+import { compareVersions, FEATURE_VERSIONS } from '../versions';
 import { convertDisplay } from './bbmodel/display';
 import { convertElements, hasRotatedGroups } from './bbmodel/elements';
 import { buildTextureMcmeta, readTextureEntries } from './bbmodel/textures';

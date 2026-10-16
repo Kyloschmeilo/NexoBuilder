@@ -2,7 +2,7 @@
  * What core and the preview need to know about vanilla model files: which parents draw 2D items,
  * the elements of the common block parents, and the display contexts of a model.
  */
-import type { FaceName, JavaModelElement } from '../model/types';
+import type { FaceName, JavaModelElement } from './model/types';
 import { stripMinecraftNamespace } from './resourceLocation';
 
 /** Minecraft supports layers layer0 to layer4 for item/generated. */

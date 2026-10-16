@@ -1,5 +1,5 @@
 /** Export of glyphs: the glyph file (textures: see export/paths). */
-import { formatResourceLocation } from '../../minecraft/resourceLocation';
+import { formatResourceLocation } from '@resourcepackbuilder/minecraft';
 import type { Project } from '../../project/types';
 import { projectFileName } from '../projectFiles';
 import { itemsToYaml } from '../yaml';

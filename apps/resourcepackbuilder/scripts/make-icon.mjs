@@ -4,7 +4,7 @@
  */
 import { mkdirSync, writeFileSync } from 'node:fs';
 // The repo's shared PNG encoder (CommonJS, so it also works from plain node)
-import { encodePng } from '../../../packages/core/test-utils/pngEncoder.cjs';
+import { encodePng } from '@resourcepackbuilder/test-utils/pngEncoder.cjs';
 
 const OUTPUT = new URL('../build/icon.png', import.meta.url);
 

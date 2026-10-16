@@ -1,7 +1,6 @@
 /** Collects the files of a resource pack and reports what cannot be written. */
-import { dataUrlToBytes, isDataUrl } from '../binary/dataUrl';
+import { dataUrlToBytes, isDataUrl, type ModelTexture } from '@resourcepackbuilder/minecraft';
 import type { Issue, IssueLevel } from '@resourcepackbuilder/utils';
-import type { ModelTexture } from '../model/types';
 import type { FileContent } from './types';
 
 /** How an unreadable file is reported. */

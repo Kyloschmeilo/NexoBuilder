@@ -14,12 +14,12 @@
     "lint": "eslint ."
   },
   "dependencies": {
-    "@resourcepackbuilder/core": "*",
+    "@resourcepackbuilder/i18n": "*",
+    "@resourcepackbuilder/minecraft": "*",
+    "@resourcepackbuilder/ui": "*",
     "lucide-react": "^1.52.0",
     "next-intl": "^4.14.9",
-    "three": "^0.186.1",
-    "@resourcepackbuilder/i18n": "*",
-    "@resourcepackbuilder/ui": "*"
+    "three": "^0.186.1"
   },
   "devDependencies": {
     "@resourcepackbuilder/config": "*",

@@ -1,5 +1,5 @@
 /** Validation of single text values against their field format (duration, vector, color …). */
-import { RESOURCE_LOCATION_PATTERN } from '../minecraft/resourceLocation';
+import { RESOURCE_LOCATION_PATTERN } from '@resourcepackbuilder/minecraft';
 import { type LabelKey, MODEL_TOKEN } from '@resourcepackbuilder/utils';
 import type { TextField } from './fields';
 

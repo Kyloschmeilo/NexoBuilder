@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { createFolder, createItem, createProject, insertFolder, insertItem } from '../project/factory';
+import { createFolder, createItem, createProject, insertFolder, insertItem } from './factory';
 import {
   initialNewItemState,
   isCreationBlocked,
@@ -10,7 +10,7 @@ import {
   type NewItemAction,
   type NewItemState,
 } from './newItems';
-import type { ImportFile } from './types';
+import type { ImportFile } from '@resourcepackbuilder/minecraft';
 
 const PIXEL = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNkYPhfDwAChwGA60e6kgAAAABJRU5ErkJggg==';
 const png = (name: string): ImportFile => ({ name, dataUrl: PIXEL });

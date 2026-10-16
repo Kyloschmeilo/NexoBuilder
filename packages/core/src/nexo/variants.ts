@@ -3,7 +3,7 @@
  * drawing a bow, loaded crossbow, shield blocking, fishing rod cast, damage, dyed …
  * The keys match the Pack options from the Nexo docs (configuration/items/item-appearance).
  */
-import { normalizeTypedId } from '../minecraft/resourceLocation';
+import { normalizeTypedId } from '@resourcepackbuilder/minecraft';
 import { isPlainObject } from '@resourcepackbuilder/utils';
 import type { ConfigObject } from '../project/types';
 import { getPath } from './configPath';

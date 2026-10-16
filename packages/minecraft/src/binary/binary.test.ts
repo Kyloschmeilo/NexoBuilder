@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { makePngDataUrl } from '../../test-utils/png';
+import { makePngDataUrl } from '@resourcepackbuilder/test-utils/png';
 import { readGifInfoFromDataUrl } from './gif';
 import { isOggDataUrl } from './ogg';
 import { isPngDataUrl, readPngInfoFromDataUrl } from './png';

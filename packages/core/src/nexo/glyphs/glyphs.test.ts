@@ -4,7 +4,7 @@ import { planExport } from '../../export/plan';
 import { buildMultiExportZip } from '../../export/zip';
 import { singleExport } from '../../../test-utils/export';
 import { createProject } from '../../project/factory';
-import { makePngDataUrl } from '../../../test-utils/png';
+import { makePngDataUrl } from '@resourcepackbuilder/test-utils/png';
 import { createGlyph, glyphFileFromDataUrl, glyphKindOf, glyphTag, isMultiBitmap } from './model';
 import { validateGlyphs } from './validate';
 

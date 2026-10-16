@@ -2,7 +2,7 @@
 import { useId } from 'react';
 import { useTranslations } from 'next-intl';
 import { cn } from 'cn';
-import { normalizeTypedId } from '@resourcepackbuilder/core/minecraft/resourceLocation';
+import { normalizeTypedId } from '@resourcepackbuilder/minecraft';
 import { DEFAULT_MATERIAL, normalizeTypedMaterial } from '@resourcepackbuilder/core/nexo/material';
 import { MATERIALS } from '@resourcepackbuilder/core/nexo/options';
 import type { ItemIdError } from '@resourcepackbuilder/core/project/ids';

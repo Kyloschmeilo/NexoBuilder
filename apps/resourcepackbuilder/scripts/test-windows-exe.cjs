@@ -19,7 +19,7 @@ const JSZip = require('jszip');
 const fs = require('node:fs');
 const path = require('node:path');
 // The repo's shared PNG encoder
-const { encodePng } = require('../../../packages/core/test-utils/pngEncoder.cjs');
+const { encodePng } = require('@resourcepackbuilder/test-utils/pngEncoder.cjs');
 
 const exe = process.argv[2];
 const out = path.resolve(process.argv[3] ?? 'exe-test');

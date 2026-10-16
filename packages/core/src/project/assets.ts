@@ -1,5 +1,5 @@
 /** Extra textures of an item (`item.assets`), referenced as "@asset:<id>" from config and armor. */
-import type { ModelTexture } from '../model/types';
+import type { ModelTexture } from '@resourcepackbuilder/minecraft';
 import { forEachLeaf, parseAssetToken } from '@resourcepackbuilder/utils';
 import type { Item } from './types';
 

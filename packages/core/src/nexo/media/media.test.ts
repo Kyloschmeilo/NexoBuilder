@@ -4,7 +4,7 @@ import { insertNewItem } from '../../project/operations';
 import { createGlyph } from '../glyphs/model';
 import { createPainting } from '../paintings/model';
 import { createSound, setSoundJukebox } from '../sounds/model';
-import { makePngDataUrl } from '../../../test-utils/png';
+import { makePngDataUrl } from '@resourcepackbuilder/test-utils/png';
 import { pngMediaFile } from './entry';
 import { musicDiscItem, paintingItem } from './items';
 import { addMediaEntry, deleteMediaEntry, findMediaEntry } from './operations';

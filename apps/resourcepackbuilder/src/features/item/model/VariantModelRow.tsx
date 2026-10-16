@@ -1,6 +1,6 @@
 import { useTranslations } from 'next-intl';
 import { ArrowDown, ArrowUp, Box, RefreshCw, Trash2 } from 'lucide-react';
-import type { ImportedModel } from '@resourcepackbuilder/core/model/types';
+import type { ImportedModel } from '@resourcepackbuilder/minecraft';
 import { IconButton, Thumb } from '@resourcepackbuilder/ui';
 import { Item, ItemActions, ItemContent, ItemDescription, ItemMedia, ItemTitle } from '@resourcepackbuilder/ui/components/item';
 import { useThumbnail } from '@resourcepackbuilder/preview';

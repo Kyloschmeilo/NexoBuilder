@@ -3,7 +3,7 @@
  * display name, item ID, model (incl. variants), folder and model data
  * such as custom_model_data.
  */
-import type { ModelTexture } from '../model/types';
+import type { ModelTexture } from '@resourcepackbuilder/minecraft';
 import { assetToken, deepClone, isPlainObject, stripFormatting, uid } from '@resourcepackbuilder/utils';
 import { referencedAssetIds } from '../project/assets';
 import type { ConfigObject, ConfigValue, Item, Project } from '../project/types';

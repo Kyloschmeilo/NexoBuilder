@@ -3,10 +3,13 @@
  * (assets/<ns>/equipment/<set>.json) with one texture per layer.
  */
 import { createIssue, issueReporter, type Issue } from '@resourcepackbuilder/utils';
-import { compareVersions } from '../minecraft/versions';
-import { formatResourceLocation, NAMESPACE_PATTERN } from '../minecraft/resourceLocation';
-import { validateTexture } from '../model/textures';
-import type { ModelTexture } from '../model/types';
+import {
+  compareVersions,
+  formatResourceLocation,
+  type ModelTexture,
+  NAMESPACE_PATTERN,
+  validateTexture,
+} from '@resourcepackbuilder/minecraft';
 import { ARMOR_LAYERS, armorTexture, type ArmorGroup, type ItemArmor } from '../nexo/armor';
 import { resolveAsset } from '../project/assets';
 import type { Item, Project } from '../project/types';

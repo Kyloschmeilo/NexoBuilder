@@ -1,5 +1,5 @@
 import type { Issue } from '@resourcepackbuilder/utils';
-import { ITEM_ID_PATTERN, RESOURCE_LOCATION_PATTERN } from '../../minecraft/resourceLocation';
+import { ITEM_ID_PATTERN, RESOURCE_LOCATION_PATTERN } from '@resourcepackbuilder/minecraft';
 import type { Project } from '../../project/types';
 import { validateEntries } from '../media/entry';
 import { MAX_GLYPH_CELL } from './model';

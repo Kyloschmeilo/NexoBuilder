@@ -1,10 +1,13 @@
 /** Checks of a model as written into the pack (texture paths already resolved). */
 import type { Issue } from '@resourcepackbuilder/utils';
-import { compareVersions, getMcVersion } from '../../minecraft/versions';
-import { isVanillaReference } from '../../minecraft/resourceLocation';
-import { analyseElements } from '../../model/javaModel';
-import { followTextureRef } from '../../model/textureRefs';
-import type { JavaModelJson } from '../../model/types';
+import {
+  analyseElements,
+  compareVersions,
+  followTextureRef,
+  getMcVersion,
+  isVanillaReference,
+  type JavaModelJson,
+} from '@resourcepackbuilder/minecraft';
 
 /** `ownTextures`: texture references written by this export. */
 export function validateModel(model: JavaModelJson, targetVersion: string, ownTextures: Set<string>): Issue[] {

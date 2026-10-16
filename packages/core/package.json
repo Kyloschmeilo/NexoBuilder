@@ -14,6 +14,7 @@
     "lint": "eslint ."
   },
   "dependencies": {
+    "@resourcepackbuilder/minecraft": "*",
     "@resourcepackbuilder/utils": "*",
     "immer": "^11.1.21",
     "jszip": "^3.10.2",
@@ -22,6 +23,6 @@
   },
   "devDependencies": {
     "@resourcepackbuilder/config": "*",
-    "@resourcepackbuilder/i18n": "*"
+    "@resourcepackbuilder/test-utils": "*"
   }
 }

@@ -33,8 +33,7 @@ import {
   uid,
   withoutUndefined,
 } from '@resourcepackbuilder/utils';
-import { JavaModelSchema, ModelTextureSchema } from '../model/schema';
-import type { ImportedModel, ModelTexture } from '../model/types';
+import { type ImportedModel, JavaModelSchema, type ModelTexture, ModelTextureSchema } from '@resourcepackbuilder/minecraft';
 import { toArmorSettings, type ArmorSettings } from '../nexo/armor';
 import { CHAT_TEXT_HEIGHT, DEFAULT_FONT_ASCENT, type Glyph } from '../nexo/glyphs/model';
 import type { MediaFile } from '../nexo/media/entry';

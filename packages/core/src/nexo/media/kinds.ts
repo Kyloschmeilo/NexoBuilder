@@ -2,7 +2,7 @@
  * The project lists of glyphs, sounds and paintings. Everything that treats them alike (sync,
  * export selection, migration) iterates this registry instead of spelling out each kind.
  */
-import { SOUND_ID_CHARS } from '../../minecraft/resourceLocation';
+import { SOUND_ID_CHARS } from '@resourcepackbuilder/minecraft';
 import type { Project } from '../../project/types';
 import { slugify, toIdentifier } from '@resourcepackbuilder/utils';
 import type { Glyph } from '../glyphs/model';

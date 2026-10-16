@@ -1,9 +1,9 @@
 import { describe, expect, it } from 'vitest';
 import JSZip from 'jszip';
 import { createFolder, createItem, createProject, insertFolder, insertItem } from '../project/factory';
-import { createTextureModel } from '../model/textureModel';
+import { createTextureModel } from '@resourcepackbuilder/minecraft';
 import { createGlyph } from '../nexo/glyphs/model';
-import { makePngDataUrl } from '../../test-utils/png';
+import { makePngDataUrl } from '@resourcepackbuilder/test-utils/png';
 import { planExport } from './plan';
 import { countSelected, planMultiExport, selectFromProject, selectNothing } from './selection';
 import { INSTALL_GUIDE_FILE } from './installGuide';

@@ -1,9 +1,9 @@
 import { useId, useState } from 'react';
 import { useTranslations } from 'next-intl';
 import { Box, FilePlus2, PackagePlus, TriangleAlert } from 'lucide-react';
-import { isPngDataUrl } from '@resourcepackbuilder/core/binary/png';
+import { isPngDataUrl } from '@resourcepackbuilder/minecraft';
 import { getFolderPathLabel } from '@resourcepackbuilder/core/project/tree';
-import { ignoredFileNames, sourceKey, type NewItemAction, type NewItemState } from '@resourcepackbuilder/core/model/newItems';
+import { ignoredFileNames, sourceKey, type NewItemAction, type NewItemState } from '@resourcepackbuilder/core/project/newItems';
 import { AutoGrid, DropZone, SectionCard, SegmentedControl } from '@resourcepackbuilder/ui';
 import { Alert, AlertDescription } from '@resourcepackbuilder/ui/components/alert';
 import { Button } from '@resourcepackbuilder/ui/components/button';

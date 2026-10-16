@@ -3,12 +3,11 @@
  * material entered per draft (or for one item without a model).
  */
 import { DEFAULT_MATERIAL } from '../nexo/material';
-import type { NewItemInput } from '../project/factory';
-import { validateNewItemIds, type ItemIdError } from '../project/ids';
-import type { Project } from '../project/types';
+import type { NewItemInput } from './factory';
+import { validateNewItemIds, type ItemIdError } from './ids';
+import type { Project } from './types';
 import { slugify, stripFormatting } from '@resourcepackbuilder/utils';
-import { createDrafts, unsupportedFiles, type ImportDraft, type PngMode } from './drafts';
-import type { ImportFile } from './types';
+import { createDrafts, type ImportDraft, type ImportFile, type PngMode, unsupportedFiles } from '@resourcepackbuilder/minecraft';
 
 /** What the user enters for one new item. */
 export interface ItemMeta {

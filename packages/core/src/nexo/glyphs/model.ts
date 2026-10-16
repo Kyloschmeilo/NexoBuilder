@@ -3,8 +3,7 @@
  * Export: plugins/Nexo/glyphs/<project>.yml + textures in the external pack
  * (assets/<ns>/textures/glyphs/<id>.png or .gif).
  */
-import { readGifInfoFromDataUrl } from '../../binary/gif';
-import { readPngInfoFromDataUrl } from '../../binary/png';
+import { readGifInfoFromDataUrl, readPngInfoFromDataUrl } from '@resourcepackbuilder/minecraft';
 import type { MediaFile } from '../media/entry';
 
 export type GlyphKind = 'image' | 'gif' | 'reference';

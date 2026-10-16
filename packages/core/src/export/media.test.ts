@@ -8,7 +8,7 @@ import { planMultiExport } from './selection';
 import { buildMultiExportZip } from './zip';
 import { singleExport } from '../../test-utils/export';
 import { nexoFolderFiles } from '../testServer/files';
-import { makePngDataUrl } from '../../test-utils/png';
+import { makePngDataUrl } from '@resourcepackbuilder/test-utils/png';
 import type { Issue } from '@resourcepackbuilder/utils';
 import type { Project } from '../project/types';
 import { createPainting } from '../nexo/paintings/model';

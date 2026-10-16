@@ -11,7 +11,7 @@
  * Textures deliberately live under textures/item or textures/block: only these folders end up
  * automatically in Minecraft's item or block atlas (also from 1.21.11 on with separate atlases).
  */
-import { PACK_NAME_PATTERN } from '../minecraft/resourceLocation';
+import { PACK_NAME_PATTERN } from '@resourcepackbuilder/minecraft';
 import { projectFileName } from '../nexo/projectFiles';
 import { DEFAULT_PACK_NAME } from '../project/factory';
 import { getFolderSlugs, isBlockItem } from '../project/tree';

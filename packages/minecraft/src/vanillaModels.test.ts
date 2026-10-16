@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
-import { getTextureTemplate, TEXTURE_TEMPLATES, templateSlots } from '../model/textureModel';
-import { followTextureRef } from '../model/textureRefs';
+import { getTextureTemplate, TEXTURE_TEMPLATES, templateSlots } from './model/textureModel';
+import { followTextureRef } from './model/textureRefs';
 import { isGeneratedItemParent, MAX_ITEM_LAYERS, vanillaParentElements, vanillaParentTextureKeys } from './vanillaModels';
 
 describe('vanilla models', () => {

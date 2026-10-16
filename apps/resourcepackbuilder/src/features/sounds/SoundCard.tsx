@@ -1,7 +1,7 @@
 import { useTranslations } from 'next-intl';
 import type { ExportPlan } from '@resourcepackbuilder/core/export/types';
 import { issuesFor } from '@resourcepackbuilder/utils';
-import { normalizeTypedId, SOUND_ID_CHARS } from '@resourcepackbuilder/core/minecraft/resourceLocation';
+import { normalizeTypedId, SOUND_ID_CHARS } from '@resourcepackbuilder/minecraft';
 import type { Sound } from '@resourcepackbuilder/core/nexo/sounds/model';
 import { mediaKey } from '@resourcepackbuilder/core/nexo/media/entry';
 import { Badge } from '@resourcepackbuilder/ui/components/badge';
