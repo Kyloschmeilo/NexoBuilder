@@ -77,7 +77,9 @@ export function BlockRendererSection({
 }) {
   const t = useTranslations('item');
   const selectId = useId();
-  const [selected, setSelected] = useState<string | null>(null);
+  // The picked appearance, for the item it was picked on (the editor stays mounted when another item opens)
+  const [picked, setPicked] = useState<{ itemId: string; name: string } | null>(null);
+  const selected = picked?.itemId === item.id ? picked.name : null;
   const [name, look] = looks.find(([n]) => n === selected) ?? looks[0] ?? [];
   if (name === undefined || look === undefined) return null;
   return (
@@ -89,7 +91,13 @@ export function BlockRendererSection({
       {looks.length > 1 && (
         <label htmlFor={selectId} className="flex flex-col gap-1">
           <span className="text-xs text-muted-foreground">{t('ceBlock.renderer.look')}</span>
-          <NativeSelect id={selectId} className="w-full" size="sm" value={name} onChange={(e) => setSelected(e.target.value)}>
+          <NativeSelect
+            id={selectId}
+            className="w-full"
+            size="sm"
+            value={name}
+            onChange={(e) => setPicked({ itemId: item.id, name: e.target.value })}
+          >
             {looks.map(([n, l]) => (
               <NativeSelectOption key={n} value={n}>
                 {rendererElements(l).length > 0 ? `${n} (${rendererElements(l).length})` : n}

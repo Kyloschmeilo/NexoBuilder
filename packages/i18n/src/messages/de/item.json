@@ -264,7 +264,7 @@
       "help": "Display-Entities, die CraftEngine am Block zeigt, über seinem Modell. Damit kann ein Block wie jedes Item-Modell aussehen, auch wo ein Blockmodell nicht reicht.",
       "look": "Aussehen",
       "transparent": "Modell des Blocks ausblenden",
-      "transparentHelp": "Der Block zeigt nur den Entity-Renderer. Blöcke, die ihr Modell ausblenden, können sich einen Vanilla-Zustand teilen: Gib der Zustand-Gruppe eine ID, zum Beispiel sugar_cane mit der ID transparent.",
+      "transparentHelp": "Der Block zeigt nur den Entity-Renderer. Blöcke, die ihr Modell ausblenden, können sich einen Vanilla-Zustand teilen: Gib der Blockzustand-Gruppe eine ID, zum Beispiel sugar_cane mit der ID transparent.",
       "elements": "Elemente",
       "elementsHelp": "Was der Block zeigt. Ein Item-Display ohne Item zeigt das Modell dieses Items. Positionen sind in Blöcken ab der Ecke des Blocks; ohne Position steht ein Element in der Mitte des Blocks (ein Block-Display an der Ecke).",
       "previewHelp": "Der Umriss des Blocks ist gelb. Andere Blöcke und Texte erscheinen als graue Blöcke."

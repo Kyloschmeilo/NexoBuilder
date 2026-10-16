@@ -109,8 +109,10 @@ const asList = (value: unknown): unknown[] => (value === undefined ? [] : Array.
  */
 function withModel(state: Record<string, unknown>, model: () => Record<string, unknown> | null): Record<string, unknown> {
   const result = { ...state };
-  const rendererOnly = result.auto_state === undefined && rendererElements(result).length > 0;
-  if (!rendererOnly && STATE_APPEARANCE_KEYS.every((key) => result[key] === undefined)) {
+  if (result.auto_state === undefined && rendererElements(result).length > 0) {
+    // A model with only a rotation (from an older "face the player") would re-skin the vanilla state: left out
+    if (isPlainObject(result.model) && result.model.path === undefined) delete result.model;
+  } else if (STATE_APPEARANCE_KEYS.every((key) => result[key] === undefined)) {
     const generated = model();
     if (generated) result.model = generated;
   } else if (isPlainObject(result.model) && result.model.path === undefined) {

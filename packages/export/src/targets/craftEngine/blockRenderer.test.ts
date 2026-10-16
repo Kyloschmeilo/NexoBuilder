@@ -9,6 +9,7 @@ import {
   type Item,
   type Project,
 } from '@resourcepackbuilder/core/project';
+import { withFacing } from '@resourcepackbuilder/core/craftEngine';
 import { createTextureModel } from '@resourcepackbuilder/minecraft';
 import { makePngDataUrl } from '@resourcepackbuilder/test-utils/png';
 import { planExport } from '../../plan';
@@ -112,6 +113,39 @@ describe('CraftEngine block entity renderers', () => {
       entity_renderer: [{ type: 'item_display', item: 'moebel:sofa', rotation: 90, tint_source: 'minecraft:dyed_color' }],
     });
     expect(codes(project)).toEqual([]);
+  });
+
+  it('turns a renderer on a fixed vanilla state when the block faces the player, without a model', () => {
+    const project = rendererProject([
+      'sofa',
+      (item) =>
+        (item.config.block = {
+          states: withFacing({
+            properties: {},
+            appearances: { sofa: { state: 'barrier', entity_renderer: [{ type: 'item_display' }] } },
+            variants: {},
+          }),
+        }),
+    ]);
+    const appearances = (blocksOf(project)['moebel:sofa'].states as { appearances: Record<string, unknown> }).appearances;
+    expect(appearances).toEqual({
+      sofa_north: { state: 'barrier', entity_renderer: [{ type: 'item_display', item: 'moebel:sofa' }] },
+      sofa_east: { state: 'barrier', entity_renderer: [{ type: 'item_display', item: 'moebel:sofa', yaw: 90 }] },
+      sofa_south: { state: 'barrier', entity_renderer: [{ type: 'item_display', item: 'moebel:sofa', yaw: 180 }] },
+      sofa_west: { state: 'barrier', entity_renderer: [{ type: 'item_display', item: 'moebel:sofa', yaw: -90 }] },
+    });
+    expect(codes(project)).toEqual([]);
+  });
+
+  it('leaves out a model with only a rotation on a renderer of a fixed vanilla state', () => {
+    const project = rendererProject([
+      'sofa',
+      (item) => (item.config.block = { state: { state: 'barrier', model: { y: 90 }, entity_renderer: [{ type: 'item_display' }] } }),
+    ]);
+    expect(blocksOf(project)['moebel:sofa'].state).toEqual({
+      state: 'barrier',
+      entity_renderer: [{ type: 'item_display', item: 'moebel:sofa' }],
+    });
   });
 
   it('builds a renderer written in the additional YAML', () => {

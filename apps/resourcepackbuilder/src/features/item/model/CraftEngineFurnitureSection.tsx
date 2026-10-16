@@ -1,4 +1,4 @@
-import { useRef, useState } from 'react';
+import { useState } from 'react';
 import { useTranslations } from 'next-intl';
 import { Plus, Trash2 } from 'lucide-react';
 import {
@@ -9,6 +9,7 @@ import {
   craftEngineBlock,
   craftEngineFurniture,
   furnitureVariants,
+  furnitureVariantsKey,
   newFurnitureVariant,
 } from '@resourcepackbuilder/core/craftEngine';
 import type { ConfigObject, ConfigValue, Item } from '@resourcepackbuilder/core/project';
@@ -28,6 +29,9 @@ import { FurnitureVariantEditor } from './FurnitureVariantEditor';
 const ANCHORS: readonly string[] = CE_FURNITURE_ANCHORS;
 const SOUNDS = ['break', 'place', 'hit'] as const;
 const objectAt = (value: unknown): ConfigObject => (isPlainObject(value) ? (value as ConfigObject) : {});
+
+/** The loot each item turned off last (with its arguments), so turning it on again in the session brings it back. */
+const lastLoot = new Map<string, ConfigObject>();
 
 /** The placement rule selects of a variant (stored in the definition's `rules`, written to the item's behavior). */
 function RuleSelect({
@@ -70,13 +74,18 @@ function FurnitureEditor({ item, furniture }: { item: Item; furniture: Record<st
 
   const edit = (next: (furniture: ConfigObject) => ConfigObject, historyKey?: string) =>
     updateCraftEngineFurniture(item.id, next, historyKey);
+  // Variants stay under the key the furniture has them (CraftEngine also reads `variant` and `placement`)
   const setVariant = (value: ConfigObject | undefined, historyKey?: string) =>
-    edit((f) => withKey(f, 'variants', withKey(objectAt(f.variants), name, value)), historyKey);
+    edit((f) => {
+      const key = furnitureVariantsKey(f);
+      return withKey(f, key, withKey(objectAt(f[key]), name, value));
+    }, historyKey);
   const editVariant = (next: (variant: ConfigObject) => ConfigObject, historyKey?: string) =>
     edit(
       (f) => {
-        const all = objectAt(f.variants);
-        return withKey(f, 'variants', withKey(all, name, next(objectAt(all[name]))));
+        const key = furnitureVariantsKey(f);
+        const all = objectAt(f[key]);
+        return withKey(f, key, withKey(all, name, next(objectAt(all[name]))));
       },
       historyKey && `${name}-${historyKey}`,
     );
@@ -98,11 +107,10 @@ function FurnitureEditor({ item, furniture }: { item: Item; furniture: Record<st
     }, historyKey);
   const loot = objectAt(furniture.loot);
   const dropsItem = loot.template === CE_FURNITURE_LOOT_TEMPLATE;
-  // The loot turned off last (with its arguments), so turning it on again in the session brings it back
-  const lastLoot = useRef<ConfigObject | null>(null);
   const setDropsItem = (checked: boolean) => {
-    if (!checked) lastLoot.current = loot;
-    const restored = lastLoot.current?.template === CE_FURNITURE_LOOT_TEMPLATE ? lastLoot.current : null;
+    if (!checked) lastLoot.set(item.id, loot);
+    const remembered = lastLoot.get(item.id);
+    const restored = remembered?.template === CE_FURNITURE_LOOT_TEMPLATE ? remembered : null;
     edit((f) => withKey(f, 'loot', checked ? (restored ?? { template: CE_FURNITURE_LOOT_TEMPLATE }) : undefined));
   };
 

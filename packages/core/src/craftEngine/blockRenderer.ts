@@ -43,6 +43,14 @@ export function withRendererElements(state: Record<string, unknown>, elements: C
   return elements.length > 0 ? { ...rest, [CE_RENDERER_KEY]: elements } : rest;
 }
 
+/**
+ * Whether the renderer is the state's whole look: a renderer on a fixed vanilla `state` without a model of its own
+ * (the jar's sofa draws on a barrier). On an `auto_state` the block keeps a model under the renderer.
+ */
+export function rendererIsLook(state: Record<string, unknown>): boolean {
+  return state.auto_state === undefined && state.model === undefined && state.models === undefined && rendererElements(state).length > 0;
+}
+
 /** Whether the state hides its vanilla model (`transparent: true`). */
 export function isTransparentState(state: Record<string, unknown>): boolean {
   return state.transparent === true;
@@ -78,6 +86,8 @@ const round = (n: number) => Math.round(n * 1e6) / 1e6 + 0;
  * The state's renderer turned around the block's vertical axis by `turn` degrees (a multiple of 90, clockwise seen
  * from above, as a model's `y`): each element's yaw grows by it (as the jar's table lamp turns its item) and its
  * position turns around the block's center. Dropped items (`item`) have no yaw, only their position turns.
+ * Not turned: an element's random `offset` (the same in every direction) and the state's `entity_culling` box
+ * (`aabb`, Premium only), which the user turns themselves when it is not symmetric.
  */
 export function turnRenderer(state: Record<string, unknown>, turn: number): Record<string, unknown> {
   const key = rendererKey(state);

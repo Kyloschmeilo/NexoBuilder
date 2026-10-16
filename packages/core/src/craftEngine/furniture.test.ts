@@ -7,6 +7,7 @@ import {
   furnitureHitboxBox,
   furnitureHitboxType,
   furnitureVariants,
+  furnitureVariantsKey,
   interactionHitboxSize,
   parseCeRotation,
   parseCeVector,
@@ -78,10 +79,12 @@ describe('furniture keys CraftEngine also reads', () => {
     expect(built.furniture.variants).toEqual({ ground: { elements: [{ type: 'item_display', item: 'm:lamp' }] } });
   });
 
-  it('builds variants written under variant or placement', () => {
+  it('builds variants written under variant or placement, and the editor keeps them there', () => {
+    expect(furnitureVariantsKey({})).toBe('variants');
     for (const key of ['variant', 'placement']) {
       const furniture = { [key]: { ground: { elements: [{}], hitboxes: [{ width: 1 }] } } };
       expect(Object.keys(furnitureVariants(furniture))).toEqual(['ground']);
+      expect(furnitureVariantsKey(furniture)).toBe(key);
       expect(buildCraftEngineFurniture(furniture, null, 'm:x').furniture[key]).toEqual({
         ground: { elements: [{ type: 'item_display', item: 'm:x' }], hitboxes: [{ type: 'interaction', width: 1 }] },
       });

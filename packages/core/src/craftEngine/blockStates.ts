@@ -8,7 +8,7 @@
  */
 import { isPlainObject } from '@resourcepackbuilder/utils';
 import type { ConfigObject } from '../project/types';
-import { isTransparentState, turnRenderer } from './blockRenderer';
+import { isTransparentState, rendererIsLook, turnRenderer } from './blockRenderer';
 
 /**
  * The property types (the plugin's Properties registry). The editor offers these; `4-direction` and `6-direction`
@@ -238,8 +238,8 @@ export function withFacing(states: ConfigObject): ConfigObject {
       const y = ((Number(model.y) || 0) + turn) % 360;
       const rotated: Record<string, unknown> = { ...model, y };
       if (y === 0) delete rotated.y;
-      // A transparent look shows no model, only its renderer
-      const turned = isTransparentState(look) ? look : { ...look, model: rotated };
+      // A transparent look, or a renderer on a fixed vanilla state, shows no model of its own: only the renderer turns
+      const turned = isTransparentState(look) || rendererIsLook(look) ? look : { ...look, model: rotated };
       appearances[`${name}_${direction}`] = turnRenderer(turned, turn);
     }
   }

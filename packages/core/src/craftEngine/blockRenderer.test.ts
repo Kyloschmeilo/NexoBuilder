@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { buildRenderer, rendererElementPose, rendererElements, turnRenderer, withRendererElements } from './blockRenderer';
+import { buildRenderer, rendererIsLook, rendererElementPose, rendererElements, turnRenderer, withRendererElements } from './blockRenderer';
 import { withFacing } from './blockStates';
 
 describe('block entity renderers', () => {
@@ -87,5 +87,17 @@ describe('block entity renderers', () => {
         entity_renderer: { item: 'm:sofa', yaw: -90 },
       },
     });
+  });
+
+  it('knows when the renderer is the whole look (a fixed vanilla state without a model)', () => {
+    expect(rendererIsLook({ state: 'barrier', entity_renderer: { item: 'm:a' } })).toBe(true);
+    expect(rendererIsLook({ auto_state: 'solid', entity_renderer: { item: 'm:a' } })).toBe(false);
+    expect(rendererIsLook({ state: 'barrier', model: { path: 'm:block/a' }, entity_renderer: { item: 'm:a' } })).toBe(false);
+    expect(rendererIsLook({ state: 'barrier' })).toBe(false);
+  });
+
+  it('turns the model of a fixed vanilla state without a renderer when the block faces the player', () => {
+    const states = withFacing({ properties: {}, appearances: { plain: { state: 'note_block' } }, variants: {} });
+    expect((states.appearances as Record<string, unknown>).plain_east).toEqual({ state: 'note_block', model: { y: 90 } });
   });
 });

@@ -136,6 +136,11 @@ function variantsKey(furniture: Record<string, unknown>): string | null {
   return VARIANTS_KEYS.find((key) => furniture[key] !== undefined && furniture[key] !== null) ?? null;
 }
 
+/** The key the editor writes the furniture's variants to: the one CraftEngine reads them from, else `variants`. */
+export function furnitureVariantsKey(furniture: Record<string, unknown>): string {
+  return variantsKey(furniture) ?? 'variants';
+}
+
 /** A list of objects of a variant (`elements`, `hitboxes`); other entries are left out. */
 export function variantList(variant: Record<string, unknown>, key: 'elements' | 'hitboxes'): Array<Record<string, unknown>> {
   const list = variant[key];
