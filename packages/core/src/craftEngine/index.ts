@@ -14,6 +14,7 @@ export * from './form/schema/settings';
 export * from './furniture';
 export * from './itemConfig';
 export * from './lang';
+export * from './logic';
 export * from './media';
 export * from './pack';
 export * from './recipes';

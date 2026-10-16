@@ -1,9 +1,19 @@
 /** Pure helpers of the field editors: visibility, value shapes and immutable list/object updates. */
-import type { Field } from '@resourcepackbuilder/core/form';
+import type { Field, TypedType } from '@resourcepackbuilder/core/form';
 import { isPlainObject } from '@resourcepackbuilder/utils';
 
 /** Field types that take the full width of the form grid. */
-const WIDE_TYPES = new Set<Field['type']>(['object', 'objectList', 'map', 'yaml', 'stringList', 'multiSelect', 'texture', 'presence']);
+const WIDE_TYPES = new Set<Field['type']>([
+  'object',
+  'objectList',
+  'map',
+  'yaml',
+  'stringList',
+  'multiSelect',
+  'texture',
+  'presence',
+  'typedList',
+]);
 
 /** Whether a field takes the full width of the form (lists, objects, multiline text…). */
 export function isWideField(field: Field): boolean {
@@ -112,4 +122,20 @@ export function nexoColorToHex(value: string | undefined): string {
 /** "#rrggbb" → Nexo colour "R, G, B". */
 export function hexToNexoColor(hex: string): string {
   return [1, 3, 5].map((i) => parseInt(hex.slice(i, i + 2), 16)).join(', ');
+}
+
+/** The parts of a typed entry's `type`: the type's name and whether a leading "!" inverts it. */
+export function typeParts(type: unknown, invertible?: boolean): { name: string; inverted: boolean } {
+  const text = typeof type === 'string' ? type : '';
+  return invertible && text.startsWith('!') ? { name: text.slice(1), inverted: true } : { name: text, inverted: false };
+}
+
+/**
+ * A typed entry with a new `type` value. Switching to a known type keeps only the keys that type has too; while the
+ * type is unknown (e.g. half typed) every key stays.
+ */
+export function withEntryType(entry: Record<string, unknown>, type: string, known: TypedType | undefined): Record<string, unknown> {
+  const keys = known && new Set(known.fields.map((f) => f.key));
+  const rest = Object.entries(entry).filter(([key]) => key !== 'type' && (!keys || keys.has(key)));
+  return type ? { type, ...Object.fromEntries(rest) } : Object.fromEntries(rest);
 }

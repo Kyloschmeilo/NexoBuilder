@@ -2,7 +2,7 @@
 import { isPlainObject, mapData } from '@resourcepackbuilder/utils';
 import type { ConfigObject, ConfigValue } from '../project/types';
 import { getPath, setPath } from '../project/config';
-import type { Field } from './fields';
+import { type Field, findTypedType } from './fields';
 import { BooleanValue, NumberValue } from './fieldSchema';
 import { unknownConfigPaths } from './properties';
 import type { FormSchema } from './types';
@@ -95,6 +95,16 @@ function pruneByField(value: unknown, field: Field): unknown {
       const list = value.map((v) => pruneByField(v, objectField)).filter((v) => v !== undefined);
       return list.length > 0 ? list : undefined;
     }
+    case 'typedList': {
+      // A single entry without a list stays single
+      if (isPlainObject(value)) return pruneTypedEntry(value, field);
+      if (!Array.isArray(value)) return undefined;
+      const list = value.map((entry) => pruneTypedEntry(entry, field)).filter((v) => v !== undefined);
+      return list.length > 0 ? list : undefined;
+    }
+    case 'numberProvider':
+      if (typeof value === 'string') return isEmptyString(value) ? undefined : (NumberValue.safeParse(value).data ?? value);
+      return isPlainObject(value) ? pruneTypedEntry(value, field) : value;
     case 'map': {
       if (!isPlainObject(value)) return undefined;
       const out: Record<string, unknown> = {};
@@ -108,6 +118,16 @@ function pruneByField(value: unknown, field: Field): unknown {
       return Object.keys(out).length > 0 ? out : undefined;
     }
   }
+}
+
+/**
+ * An entry of a known type is pruned by that type's fields (its `type` is kept); an empty object (an entry whose type
+ * was never chosen) is dropped; any other value stays unchanged.
+ */
+function pruneTypedEntry(entry: unknown, field: Parameters<typeof findTypedType>[0]): unknown {
+  const type = findTypedType(field, entry);
+  if (!type) return entry === null || (isPlainObject(entry) && Object.keys(entry).length === 0) ? undefined : entry;
+  return pruneByField(entry, { type: 'object', key: '', label: '', fields: type.fields });
 }
 
 function trimTrailingEmpty(list: string[]): string[] {

@@ -111,6 +111,7 @@ export function emptyPropertyValue(def: PropertyDef): ConfigValue {
     case 'presence':
       return {};
     case 'objectList':
+    case 'typedList':
     case 'stringList':
     case 'multiSelect':
       return [];

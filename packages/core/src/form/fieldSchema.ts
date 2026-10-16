@@ -7,8 +7,8 @@
  */
 import { z } from 'zod';
 import { fieldFrame, listEntryFrame, mapKeyFrame } from '../project/issueFrames';
-import { labelArg, type IssueContext, type MessageArgs } from '@resourcepackbuilder/utils';
-import { type Field, validateTextFormat } from './fields';
+import { isPlainObject, labelArg, type IssueContext, type MessageArgs } from '@resourcepackbuilder/utils';
+import { type Field, findTypedType, type TypedType, validateTextFormat } from './fields';
 
 const NUMBER_TEXT = /^\s*-?(\d+(\.\d*)?|\.\d+)([eE][-+]?\d+)?\s*$/;
 
@@ -84,6 +84,29 @@ function objectSchema(fields: Field[], emptyValue?: true): z.ZodType {
   return emptyValue ? z.preprocess((value) => (value === true ? {} : value), object) : object;
 }
 
+const TYPE_SCHEMAS = new WeakMap<TypedType, z.ZodType>();
+
+/**
+ * A typed entry (an object with `type`): checked by the fields of its type, built only when an entry needs it, as
+ * catalogs contain themselves. Entries of an unknown type and values of other shapes pass unchanged.
+ */
+function checkTypedEntry(field: { types: () => readonly TypedType[]; invertible?: boolean }, value: unknown, ctx: z.RefinementCtx): void {
+  const type = findTypedType(field, value);
+  if (!type) return;
+  let schema = TYPE_SCHEMAS.get(type);
+  if (!schema) {
+    schema = objectSchema(type.fields);
+    TYPE_SCHEMAS.set(type, schema);
+  }
+  // The issues keep their paths below the entry; the parent prefixes the entry's own position
+  for (const issue of schema.safeParse(value, { reportInput: true }).error?.issues ?? []) ctx.addIssue({ ...issue });
+}
+
+/** A number provider: a number, text (a range or an expression), a boolean or a typed object. */
+function numberProviderSchema(field: Extract<Field, { type: 'numberProvider' }>): z.ZodType {
+  return z.union([z.number(), z.string(), z.boolean(), z.looseObject({})]).superRefine((value, ctx) => checkTypedEntry(field, value, ctx));
+}
+
 function buildSchema(field: Field): z.ZodType {
   switch (field.type) {
     case 'text':
@@ -110,6 +133,13 @@ function buildSchema(field: Field): z.ZodType {
         .transform((map) => Object.fromEntries(Object.entries(map).filter(([key]) => !reserved.has(key))))
         .pipe(z.record(z.string(), value));
     }
+    case 'typedList': {
+      // A single entry may stand without a list (CraftEngine reads both)
+      const list = z.array(z.unknown().superRefine((value, ctx) => checkTypedEntry(field, value, ctx)));
+      return z.preprocess((value) => (isPlainObject(value) ? [value] : value), list);
+    }
+    case 'numberProvider':
+      return numberProviderSchema(field);
     case 'stringList':
     case 'yaml':
     case 'presence':
@@ -131,23 +161,33 @@ export function fieldToSchema(field: Field): z.ZodType {
 }
 
 /** The field a path inside the value of `field` leads to, with the frames naming that place. */
-function locate(field: Field, path: readonly PropertyKey[]): { field: Field; frames: IssueContext[] } {
+function locate(field: Field, path: readonly PropertyKey[], value: unknown): { field: Field; frames: IssueContext[] } {
   const frames: IssueContext[] = [];
+  const at = (data: unknown, key: PropertyKey): unknown =>
+    data !== null && typeof data === 'object' ? (data as Record<PropertyKey, unknown>)[key] : undefined;
   let current = field;
+  let data = value;
   for (let i = 0; i < path.length; i++) {
     const segment = path[i];
     if (current.type === 'map') {
       frames.push(mapKeyFrame(String(segment)));
       current = current.value;
+      data = at(data, segment);
       continue;
     }
     let fields: Field[];
-    if (current.type === 'objectList') {
+    if (current.type === 'objectList' || current.type === 'typedList') {
       frames.push(listEntryFrame(Number(segment) + 1));
-      if (++i >= path.length) break;
-      fields = current.fields;
+      data = current.type === 'typedList' && !Array.isArray(data) ? data : at(data, segment);
+      const entryFields = current.type === 'objectList' ? current.fields : findTypedType(current, data)?.fields;
+      if (!entryFields || ++i >= path.length) break;
+      fields = entryFields;
     } else if (current.type === 'object') {
       fields = current.fields;
+    } else if (current.type === 'numberProvider') {
+      const typeFields = findTypedType(current, data)?.fields;
+      if (!typeFields) break;
+      fields = typeFields;
     } else {
       break; // e.g. an entry of a multi-select list: reported at the field itself
     }
@@ -155,6 +195,7 @@ function locate(field: Field, path: readonly PropertyKey[]): { field: Field; fra
     if (!child) break;
     frames.push(fieldFrame(child.label));
     current = child;
+    data = at(data, path[i]);
   }
   return { field: current, frames };
 }
@@ -178,7 +219,7 @@ function typeIssue(field: Field, input: unknown, context: IssueContext[]): Field
 export function checkFieldValue(value: unknown, field: Field): FieldValueIssue[] {
   const parsed = fieldToSchema(field).safeParse(value, { reportInput: true });
   return (parsed.error?.issues ?? []).map((issue) => {
-    const { field: at, frames } = locate(field, issue.path);
+    const { field: at, frames } = locate(field, issue.path, value);
     if (issue.code !== 'custom') return typeIssue(at, issue.input, frames);
     const { code, args } = issue.params as FieldIssueParams;
     return { code, ...(args && { args }), context: frames };

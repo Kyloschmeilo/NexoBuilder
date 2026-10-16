@@ -7,6 +7,7 @@ import { readFileSync } from 'node:fs';
 import { describe, expect, it } from 'vitest';
 import { checkFieldValue, fieldToSchema } from '../../form/fieldSchema';
 import { formMessageKeys } from '../../form/messageKeys';
+import { CE_LOGIC, logicMessageKeys } from '../logic';
 import { CRAFT_ENGINE_FORM } from './schema';
 
 type MessageTree = { [key: string]: string | MessageTree };
@@ -76,7 +77,8 @@ describe('CraftEngine form', () => {
 });
 
 describe('ceSchema message keys', () => {
-  const keys = new Set(formMessageKeys(CRAFT_ENGINE_FORM));
+  // The logic catalogs (conditions, functions …) keep their texts in the same catalogue
+  const keys = new Set([...formMessageKeys(CRAFT_ENGINE_FORM), ...Object.values(CE_LOGIC).flatMap((types) => logicMessageKeys(types))]);
 
   it('references only keys that are well-formed', () => {
     expect([...keys].filter((k) => !/^[A-Za-z0-9]+(\.[A-Za-z0-9]+)+$/.test(k))).toEqual([]);

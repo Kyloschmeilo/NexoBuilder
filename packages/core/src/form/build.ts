@@ -12,7 +12,7 @@
  * Shared field definitions set an explicit `scope` (e.g. `shared.drop`); explicit keys override single messages.
  */
 import type { ConfigValue } from '../project/types';
-import type { Field, MapField, ObjectField, ObjectListField } from './fields';
+import type { Field, MapField, ObjectField, ObjectListField, TypedType } from './fields';
 import { keySegment } from '@resourcepackbuilder/utils';
 import { labeledOptions, type Option } from './options';
 
@@ -134,6 +134,16 @@ export const field = {
     ...rest,
   }),
   map: (value: FieldSpec, rest: SpecOptions<'map', 'value'> = {}): SpecFor<'map'> => ({ type: 'map', value, ...rest }),
+  typedList: (
+    catalog: string,
+    types: () => readonly TypedType[],
+    rest: SpecOptions<'typedList', 'catalog' | 'types'> = {},
+  ): SpecFor<'typedList'> => ({ type: 'typedList', catalog, types, ...rest }),
+  numberProvider: (
+    catalog: string,
+    types: () => readonly TypedType[],
+    rest: SpecOptions<'numberProvider', 'catalog' | 'types'> = {},
+  ): SpecFor<'numberProvider'> => ({ type: 'numberProvider', catalog, types, ...rest }),
 };
 
 /** Shows a field only while its sibling `type` has one of these values */
@@ -149,7 +159,8 @@ function resolveOptions(options: Option[] | string[], scope: string): Option[] {
   return isValueList(options) ? labeledOptions(`${scope}.options`, options) : options;
 }
 
-function resolveFields(specs: FieldSpecs, scope: string): Field[] {
+/** Resolves child field specs at a message scope (their keys at `<scope>.fields.<camel(key)>`). */
+export function resolveFields(specs: FieldSpecs, scope: string): Field[] {
   return Object.entries(specs).map(([key, spec]) =>
     resolveField(spec, key, `${scope}.fields.${key === '*' ? 'entries' : keySegment(key)}`),
   );
@@ -195,6 +206,11 @@ function resolveField(spec: FieldSpec, key: string, defaultScope: string, isMapV
     case 'multiSelect': {
       const { scope, rest, messages } = split(spec, key, defaultScope, isMapValue);
       return { ...rest, ...messages, options: resolveOptions(rest.options, scope) };
+    }
+    case 'typedList':
+    case 'numberProvider': {
+      const { rest, messages } = split(spec, key, defaultScope, isMapValue);
+      return { ...rest, ...messages };
     }
     default: {
       const { rest, messages } = split(spec, key, defaultScope, isMapValue);

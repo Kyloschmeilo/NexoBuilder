@@ -8,6 +8,7 @@ import type { Field } from '@resourcepackbuilder/core/form';
 import { BooleanEditor } from './editors/BooleanEditor';
 import { MapEditor } from './editors/MapEditor';
 import { MultiSelectEditor } from './editors/MultiSelectEditor';
+import { NumberProviderEditor } from './editors/NumberProviderEditor';
 import { NumberEditor } from './editors/NumberEditor';
 import { ObjectEditor } from './editors/ObjectEditor';
 import { ObjectListEditor } from './editors/ObjectListEditor';
@@ -16,6 +17,7 @@ import { SelectEditor } from './editors/SelectEditor';
 import { StringListEditor } from './editors/StringListEditor';
 import { TextEditor } from './editors/TextEditor';
 import { TextureEditor } from './editors/TextureEditor';
+import { TypedListEditor } from './editors/TypedListEditor';
 import { YamlEditor } from './editors/YamlEditor';
 import type { EditorProps } from './types';
 import { isFieldVisible } from './values';
@@ -35,6 +37,8 @@ const EDITORS: { [T in keyof FieldByType]: ComponentType<EditorProps<FieldByType
   yaml: YamlEditor,
   presence: PresenceEditor,
   texture: TextureEditor,
+  typedList: TypedListEditor,
+  numberProvider: NumberProviderEditor,
 };
 
 function Editor<T extends keyof FieldByType>(props: EditorProps<FieldByType[T]> & { field: { type: T } }) {

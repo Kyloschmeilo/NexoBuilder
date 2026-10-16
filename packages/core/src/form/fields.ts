@@ -115,6 +115,48 @@ export interface TextureField extends BaseField {
   sizeHint?: string;
 }
 
+/**
+ * One type of a {@link TypedListField} (or of a {@link NumberProviderField}'s object form): the value of the entry's
+ * `type` key and the fields an entry of that type has. A target builds these from its catalog (e.g. CraftEngine's
+ * conditions in core/craftEngine/logic).
+ */
+export interface TypedType {
+  type: string;
+  /** Name of the type – message key in the form's namespace */
+  label: string;
+  /** Short description – message key in the form's namespace */
+  help?: string;
+  /** The keys of an entry besides `type` */
+  fields: Field[];
+  /** Only the paid edition of the plugin reads this type */
+  premium?: boolean;
+}
+
+/**
+ * A list of objects switched by their `type` key; each entry shows the fields of its type. Entries of a type the
+ * catalog does not know are kept unchanged (the editor shows them as YAML).
+ */
+export interface TypedListField extends BaseField {
+  type: 'typedList';
+  /** Name of the catalog the types come from (e.g. 'conditions') */
+  catalog: string;
+  /** The catalog's types. A function, as catalogs contain themselves (an `all_of` condition holds conditions) */
+  types: () => readonly TypedType[];
+  /** A leading "!" on `type` inverts the entry (CraftEngine conditions) */
+  invertible?: boolean;
+}
+
+/**
+ * A number, a text the plugin reads as one (`1~3`, an expression), or an object switched by `type` such as
+ * `{ type: uniform, min: 1, max: 3 }` (CraftEngine's number providers). Unknown object types are kept unchanged.
+ */
+export interface NumberProviderField extends BaseField {
+  type: 'numberProvider';
+  /** Name of the catalog the object types come from (e.g. 'numbers') */
+  catalog: string;
+  types: () => readonly TypedType[];
+}
+
 export type Field =
   | TextField
   | NumberField
@@ -127,7 +169,18 @@ export type Field =
   | MapField
   | YamlField
   | PresenceField
-  | TextureField;
+  | TextureField
+  | TypedListField
+  | NumberProviderField;
+
+/** The type an entry's `type` value names (a leading "!" inverts it when `invertible`), if the catalog knows it. */
+export function findTypedType(field: { types: () => readonly TypedType[]; invertible?: boolean }, entry: unknown): TypedType | undefined {
+  if (typeof entry !== 'object' || entry === null || Array.isArray(entry)) return undefined;
+  const value = (entry as Record<string, unknown>).type;
+  if (typeof value !== 'string') return undefined;
+  const type = field.invertible && value.startsWith('!') ? value.slice(1) : value;
+  return field.types().find((t) => t.type === type);
+}
 
 // English display names of YAML keys – shown as field titles as they appear in the Nexo docs (not translated)
 
