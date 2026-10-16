@@ -1,8 +1,9 @@
 /** Glyphs, sounds and paintings: their pack files, plugin files and checks. */
-import { mediaFrame, type MediaTargetKind } from '../issueFrames';
+import { mediaFrame } from '../issueFrames';
 import { inContext, type Issue } from '../issues';
 import { buildGlyphFile, glyphFilePath, glyphTexturePath } from '../nexo/glyphs/files';
 import { validateGlyphs } from '../nexo/glyphs/validate';
+import type { MediaKind } from '../nexo/media/kinds';
 import { paintingMcmeta, paintingTexturePath, paintingToYaml } from '../nexo/paintings/files';
 import { paintingKey } from '../nexo/paintings/model';
 import { validatePaintings } from '../nexo/paintings/validate';
@@ -16,7 +17,7 @@ type MediaFiles = Pick<ExportPlan, 'glyphFiles' | 'soundEntries' | 'paintingEntr
 
 export function writeMedia(writer: PackWriter, project: Project, issues: Issue[]): MediaFiles {
   // Unreadable files are reported like the entry's own checks: targeted and with its context frame
-  const reportFor = (kind: MediaTargetKind, id: string, name: string) => (issue: Issue) =>
+  const reportFor = (kind: MediaKind, id: string, name: string) => (issue: Issue) =>
     issues.push(inContext(issue, [mediaFrame(kind, name)], { kind, id }));
   issues.push(...validateGlyphs(project), ...validateSounds(project), ...validatePaintings(project));
 

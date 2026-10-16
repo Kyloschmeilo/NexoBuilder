@@ -9,6 +9,7 @@
 import { CoreError, type Issue, type IssueLevel, type MessageArgs } from '../issues';
 import type { ImportedModel, JavaModelJson, ModelSource } from '../model/types';
 import { toArmorSettings, type ArmorSettings } from '../nexo/armor';
+import { MEDIA_KINDS, mapMediaLists } from '../nexo/media/kinds';
 import { isPlainObject } from '../object';
 import { defaultSettings } from './factory';
 import { uid } from './ids';
@@ -49,9 +50,7 @@ export function migrateProject(raw: unknown, now = Date.now()): Project {
     folders,
     items,
     rootFolderIds: strings(raw.rootFolderIds),
-    glyphs: list(raw.glyphs),
-    sounds: list(raw.sounds),
-    paintings: list(raw.paintings),
+    ...mapMediaLists((kind) => list(raw[MEDIA_KINDS[kind].list])),
     createdAt: number(raw.createdAt, now),
     updatedAt: number(raw.updatedAt, now),
   };

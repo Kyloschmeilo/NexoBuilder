@@ -2,10 +2,11 @@
  * What glyphs, sounds and paintings have in common: a user-facing ID inside the project's
  * namespace, an uploaded file and per-entry checks with the same frame and ID rules.
  */
-import { mediaFrame, type MediaTargetKind } from '../../issueFrames';
+import { mediaFrame } from '../../issueFrames';
 import { issueReporter, type Issue, type ReportIssue } from '../../issues';
 import { formatResourceLocation } from '../../minecraft/resourceLocation';
 import type { Project } from '../../project/types';
+import type { MediaKind } from './kinds';
 
 /** An uploaded image (glyph or painting) with the size read from its header. */
 export interface MediaFile {
@@ -21,7 +22,7 @@ export function mediaKey(project: Pick<Project, 'namespace'>, id: string): strin
 }
 
 export interface EntryRules<T> {
-  kind: MediaTargetKind;
+  kind: MediaKind;
   /** The user-facing ID (glyphId, soundId, paintingId) */
   idOf: (entry: T) => string;
   /** Allowed characters of that ID */

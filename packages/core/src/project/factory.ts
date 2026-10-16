@@ -2,6 +2,7 @@
 import { DEFAULT_MC_VERSION } from '../minecraft/versions';
 import type { ImportedModel } from '../model/types';
 import { DEFAULT_MATERIAL } from '../nexo/material';
+import { mapMediaLists } from '../nexo/media/kinds';
 import { slugify } from '../text';
 import { uid } from './ids';
 import type { Folder, Item, Project, ProjectSettings } from './types';
@@ -35,9 +36,7 @@ export function createProject(name: string, namespace?: string, minecraftVersion
     folders: {},
     items: {},
     rootFolderIds: [],
-    glyphs: [],
-    sounds: [],
-    paintings: [],
+    ...mapMediaLists(() => []),
     createdAt: now,
     updatedAt: now,
   };

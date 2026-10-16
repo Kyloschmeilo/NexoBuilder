@@ -7,7 +7,7 @@ import { createSound } from '../nexo/sounds/model';
 import { createPainting } from '../nexo/paintings/model';
 import { readShareFolder, SyncEngine, ShareFolderError, type ShareFileInfo, type SyncFs, type SyncState } from './engine';
 import { RECOVERY_FOLDER_ID } from './merge';
-import { PROJECT_FILE, README_FILE } from './format';
+import { entityPath, parseEntityKey, parseEntityPath, PROJECT_FILE, README_FILE } from './format';
 
 /** Shared in-memory folder – like a OneDrive folder that both see */
 class MemoryFolder {
@@ -114,6 +114,23 @@ const content = (p: Project) =>
       ? Object.fromEntries(Object.entries(value).sort(([a], [b]) => (a < b ? -1 : 1)))
       : value,
   );
+
+describe('entity keys and paths', () => {
+  it('round-trips every kind of entry', () => {
+    for (const kind of ['folder', 'item', 'glyph', 'sound', 'painting'] as const) {
+      expect(parseEntityKey(`${kind}:x_1`)).toEqual({ kind, id: 'x_1' });
+      expect(parseEntityPath(entityPath({ kind, id: 'x_1' }))).toEqual({ kind, id: 'x_1' });
+    }
+    expect(parseEntityPath(PROJECT_FILE)).toEqual({ kind: 'project' });
+  });
+
+  it('rejects unknown kinds, including inherited object keys', () => {
+    expect(parseEntityKey('constructor:x')).toBeNull();
+    expect(parseEntityKey('toString:x')).toBeNull();
+    expect(parseEntityPath('constructor/x.json')).toBeNull();
+    expect(parseEntityPath('items/x (1).json')).toBeNull();
+  });
+});
 
 describe('Shared projects', () => {
   it('writes a project as individual files and reads it back completely', async () => {

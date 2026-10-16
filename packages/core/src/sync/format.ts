@@ -16,6 +16,7 @@
  * a small tombstone (deleted: true) so that the deletion reaches everyone.
  */
 import type { Glyph } from '../nexo/glyphs/model';
+import { MEDIA_KIND_LIST, MEDIA_KINDS, mediaList, type MediaEntryByKind, type MediaKind } from '../nexo/media/kinds';
 import type { Painting } from '../nexo/paintings/model';
 import type { Sound } from '../nexo/sounds/model';
 import { isPlainObject } from '../object';
@@ -43,52 +44,30 @@ export interface ProjectMeta {
   createdAt: number;
 }
 
-/** What each kind of entry stores */
-interface EntityDataByKind {
+/** What each kind of entry stores; glyphs, sounds and paintings (see MEDIA_KINDS) each get their own file too. */
+interface EntityDataByKind extends MediaEntryByKind {
   project: ProjectMeta;
   folder: Folder;
   item: Item;
-  glyph: Glyph;
-  sound: Sound;
-  painting: Painting;
 }
 
 export type EntityKind = keyof EntityDataByKind;
-/** Project lists whose entries get their own file (order is stored in project.json) */
-export type ListKind = 'glyph' | 'sound' | 'painting';
-type ListEntry = EntityDataByKind[ListKind];
+type FileKind = Exclude<EntityKind, 'project'>;
 export type EntityData = EntityDataByKind[EntityKind];
 
-/** Order field in project.json of each list */
-export const LIST_ORDER_FIELDS = { glyph: 'glyphOrder', sound: 'soundOrder', painting: 'paintingOrder' } as const satisfies Record<
-  ListKind,
-  keyof ProjectMeta
->;
-export const LIST_KINDS: ListKind[] = ['glyph', 'sound', 'painting'];
-
-function listOf(project: Project, kind: ListKind): ReadonlyArray<ListEntry> {
-  switch (kind) {
-    case 'glyph':
-      return project.glyphs;
-    case 'sound':
-      return project.sounds;
-    case 'painting':
-      return project.paintings;
-  }
-}
-
-const DIRS = { folder: 'folders', item: 'items', glyph: 'glyphs', sound: 'sounds', painting: 'paintings' } as const;
-const KIND_BY_DIR: Record<string, Exclude<EntityKind, 'project'>> = {
-  folders: 'folder',
-  items: 'item',
-  glyphs: 'glyph',
-  sounds: 'sound',
-  paintings: 'painting',
+/** Folder of each kind of file (the media lists use their project field, e.g. glyphs/) */
+const DIRS: Record<FileKind, string> = {
+  folder: 'folders',
+  item: 'items',
+  glyph: MEDIA_KINDS.glyph.list,
+  sound: MEDIA_KINDS.sound.list,
+  painting: MEDIA_KINDS.painting.list,
 };
+const KIND_BY_DIR = new Map(Object.entries(DIRS).map(([kind, dir]) => [dir, kind as FileKind]));
 
 /** Allowed IDs for file names (everything ResourcepackBuilder generates itself). */
 const ENTITY_ID_PATTERN = /^[A-Za-z0-9_-]{1,64}$/;
-const ENTITY_PATH_PATTERN = /^(folders|items|glyphs|sounds|paintings)\/([A-Za-z0-9_-]{1,64})\.json$/;
+const ENTITY_PATH_PATTERN = /^([a-z]+)\/([A-Za-z0-9_-]{1,64})\.json$/;
 
 type EnvelopeOf<K extends EntityKind> = {
   format: typeof SHARE_FORMAT;
@@ -108,15 +87,16 @@ type EnvelopeOf<K extends EntityKind> = {
 export type Envelope = { [K in EntityKind]: EnvelopeOf<K> }[EntityKind];
 
 /** An entry: the project itself (its ID comes from the project) or an entry with its own ID. */
-export type EntityRef = { kind: 'project' } | { kind: Exclude<EntityKind, 'project'>; id: string };
+export type EntityRef = { kind: 'project' } | { kind: FileKind; id: string };
 
 /** Key of an entry in the sync state, e.g. "item:i_abc" or "project". */
 export function entityKey(ref: EntityRef): string {
   return ref.kind === 'project' ? 'project' : `${ref.kind}:${ref.id}`;
 }
 
-function isFileKind(value: string): value is Exclude<EntityKind, 'project'> {
-  return value in DIRS;
+function isFileKind(value: string): value is FileKind {
+  // Own keys only: `in` would also accept inherited ones such as "constructor"
+  return Object.hasOwn(DIRS, value);
 }
 
 export function parseEntityKey(key: string): EntityRef | null {
@@ -134,7 +114,8 @@ export function entityPath(ref: EntityRef): string {
 export function parseEntityPath(path: string): EntityRef | null {
   if (path === PROJECT_FILE) return { kind: 'project' };
   const match = ENTITY_PATH_PATTERN.exec(path);
-  return match ? { kind: KIND_BY_DIR[match[1]], id: match[2] } : null;
+  const kind = match && KIND_BY_DIR.get(match[1]);
+  return match && kind ? { kind, id: match[2] } : null;
 }
 
 function projectMeta(project: Project): ProjectMeta {
@@ -162,19 +143,19 @@ export function localEntity(project: Project, ref: EntityRef): EntityData | unde
     case 'item':
       return project.items[ref.id];
     default:
-      return listOf(project, ref.kind).find((g) => g.id === ref.id);
+      return mediaList(project, ref.kind).find((g) => g.id === ref.id);
   }
 }
 
 /** All entries of a project as keys (only IDs that are usable as file names). */
 export function entityKeys(project: Project): string[] {
   const keys = ['project'];
-  const add = (kind: Exclude<EntityKind, 'project'>, id: string) => {
+  const add = (kind: FileKind, id: string) => {
     if (ENTITY_ID_PATTERN.test(id)) keys.push(entityKey({ kind, id }));
   };
   for (const id of Object.keys(project.folders)) add('folder', id);
   for (const id of Object.keys(project.items)) add('item', id);
-  for (const kind of LIST_KINDS) for (const entry of listOf(project, kind)) add(kind, entry.id);
+  for (const kind of MEDIA_KIND_LIST) for (const entry of mediaList(project, kind)) add(kind, entry.id);
   return keys;
 }
 
@@ -189,7 +170,7 @@ function sameIds(a: ReadonlyArray<{ id: string }> | string[], b: ReadonlyArray<{
  */
 export function changedEntityKeys(prev: Project, next: Project): string[] {
   const keys: string[] = [];
-  const add = (kind: Exclude<EntityKind, 'project'>, id: string) => {
+  const add = (kind: FileKind, id: string) => {
     if (ENTITY_ID_PATTERN.test(id)) keys.push(entityKey({ kind, id }));
   };
   if (
@@ -198,7 +179,7 @@ export function changedEntityKeys(prev: Project, next: Project): string[] {
     prev.settings !== next.settings ||
     prev.createdAt !== next.createdAt ||
     !sameIds(prev.rootFolderIds, next.rootFolderIds) ||
-    LIST_KINDS.some((kind) => !sameIds(listOf(prev, kind), listOf(next, kind)))
+    MEDIA_KIND_LIST.some((kind) => !sameIds(mediaList(prev, kind), mediaList(next, kind)))
   ) {
     keys.push('project');
   }
@@ -212,9 +193,9 @@ export function changedEntityKeys(prev: Project, next: Project): string[] {
       if (prev.items[id] !== next.items[id]) add('item', id);
     }
   }
-  for (const kind of LIST_KINDS) {
-    const a = listOf(prev, kind);
-    const b = listOf(next, kind);
+  for (const kind of MEDIA_KIND_LIST) {
+    const a: MediaEntryByKind[MediaKind][] = mediaList(prev, kind);
+    const b: MediaEntryByKind[MediaKind][] = mediaList(next, kind);
     if (a === b) continue;
     const before = new Map(a.map((g) => [g.id, g]));
     const after = new Map(b.map((g) => [g.id, g]));

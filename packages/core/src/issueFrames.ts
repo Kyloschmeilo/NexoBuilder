@@ -3,12 +3,10 @@
  * namespace. All `context.*` frames are built here so the app can rely on their codes and args.
  */
 import { labelArg, type IssueContext, type IssueTarget } from './issues';
+import type { MediaKind } from './nexo/media/kinds';
 import type { VariantDef } from './nexo/variants';
 import { itemLabel } from './project/labels';
 import type { Item, Project } from './project/types';
-
-/** Project list entries that issues can target (glyphs, sounds, paintings). */
-export type MediaTargetKind = Exclude<IssueTarget['kind'], 'item' | 'folder'>;
 
 export function itemTarget(item: Item): IssueTarget {
   return { kind: 'item', id: item.id };
@@ -23,7 +21,7 @@ export function projectFrame(project: Project): IssueContext {
 }
 
 /** A glyph, sound or painting, named by its user-facing ID (`context.glyph` with `{ glyph }` …). */
-export function mediaFrame(kind: MediaTargetKind, id: string): IssueContext {
+export function mediaFrame(kind: MediaKind, id: string): IssueContext {
   return { code: `context.${kind}`, args: { [kind]: id || '?' } };
 }
 

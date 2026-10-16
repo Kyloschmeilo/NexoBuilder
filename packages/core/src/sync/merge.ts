@@ -7,22 +7,22 @@
  */
 import { produce, type Draft } from 'immer';
 import type { Item, Project } from '../project/types';
-import { LIST_KINDS, LIST_ORDER_FIELDS, type Envelope, type ListKind, type ProjectMeta } from './format';
+import { MEDIA_KIND_LIST, MEDIA_KINDS, mediaList, setMediaList, type MediaEntry, type MediaKind } from '../nexo/media/kinds';
+import type { Envelope, ProjectMeta } from './format';
 
 /** Folder for items whose folder was deleted by someone else while they were being created. */
 export const RECOVERY_FOLDER_ID = 'f_recovered';
 const RECOVERY_FOLDER_NAME = 'Recovered';
 
-type ListUpdate = <T extends { id: string }>(list: T[], kind: ListKind) => T[];
+type ListUpdate = <T extends { id: string }>(list: T[], kind: MediaKind) => T[];
 
 /** Replaces each project list (glyphs, sounds, paintings) by `update(list)` if that returns a new array. */
 function updateLists(draft: Draft<Project>, update: ListUpdate): void {
-  const glyphs = update(draft.glyphs, 'glyph');
-  if (glyphs !== draft.glyphs) draft.glyphs = glyphs;
-  const sounds = update(draft.sounds, 'sound');
-  if (sounds !== draft.sounds) draft.sounds = sounds;
-  const paintings = update(draft.paintings, 'painting');
-  if (paintings !== draft.paintings) draft.paintings = paintings;
+  for (const kind of MEDIA_KIND_LIST) {
+    const list = mediaList(draft as Project, kind);
+    const next = update(list, kind);
+    if (next !== list) setMediaList(draft as Project, kind, next);
+  }
 }
 
 function sameList(a: string[], b: string[]): boolean {
@@ -132,7 +132,7 @@ function upsert<T extends { id: string }>(list: T[], id: string, data: T | undef
  * the same objects (important for undo/redo and change detection).
  */
 export function applyRemoteEntities(project: Project, envelopes: Envelope[], now: number): Project {
-  const orders: Partial<Record<ListKind, string[]>> = {};
+  const orders: Partial<Record<MediaKind, string[]>> = {};
   const overlaid = produce(project, (draft) => {
     for (const env of envelopes) {
       switch (env.kind) {
@@ -147,14 +147,8 @@ export function applyRemoteEntities(project: Project, envelopes: Envelope[], now
           if (env.data && !env.deleted) draft.items[env.id] = env.data;
           else delete draft.items[env.id];
           break;
-        case 'glyph':
-          upsert(draft.glyphs, env.id, env.deleted ? undefined : env.data);
-          break;
-        case 'sound':
-          upsert(draft.sounds, env.id, env.deleted ? undefined : env.data);
-          break;
-        case 'painting':
-          upsert(draft.paintings, env.id, env.deleted ? undefined : env.data);
+        default:
+          upsert<MediaEntry>(mediaList(draft as Project, env.kind), env.id, env.deleted ? undefined : env.data);
           break;
       }
     }
@@ -167,14 +161,14 @@ export function applyRemoteEntities(project: Project, envelopes: Envelope[], now
   });
 }
 
-function applyMeta(draft: Draft<Project>, meta: ProjectMeta, orders: Partial<Record<ListKind, string[]>>): void {
+function applyMeta(draft: Draft<Project>, meta: ProjectMeta, orders: Partial<Record<MediaKind, string[]>>): void {
   draft.name = meta.name;
   draft.namespace = meta.namespace;
   draft.settings = meta.settings;
   draft.rootFolderIds = [...meta.rootFolderIds];
   if (typeof meta.createdAt === 'number') draft.createdAt = meta.createdAt;
-  for (const kind of LIST_KINDS) {
-    const order = meta[LIST_ORDER_FIELDS[kind]];
+  for (const kind of MEDIA_KIND_LIST) {
+    const order = meta[MEDIA_KINDS[kind].orderField];
     if (Array.isArray(order)) orders[kind] = order;
   }
 }

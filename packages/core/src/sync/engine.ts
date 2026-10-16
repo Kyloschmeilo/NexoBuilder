@@ -10,6 +10,7 @@
  * the project through `SyncHost`. This allows testing it with an in-memory file system.
  */
 import { CoreError } from '../issues';
+import { mediaId, mediaList, type MediaEntry, type MediaKind } from '../nexo/media/kinds';
 import { itemLabel } from '../project/labels';
 import type { Project } from '../project/types';
 import {
@@ -123,12 +124,10 @@ function labelOf(env: Envelope, local: Project): string {
       const item = env.data ?? local.items[env.id];
       return item ? itemLabel(item) : '';
     }
-    case 'glyph':
-      return (env.data ?? local.glyphs.find((g) => g.id === env.id))?.glyphId ?? '';
-    case 'sound':
-      return (env.data ?? local.sounds.find((g) => g.id === env.id))?.soundId ?? '';
-    case 'painting':
-      return (env.data ?? local.paintings.find((g) => g.id === env.id))?.paintingId ?? '';
+    default: {
+      const entry: MediaEntry | undefined = env.data ?? mediaList(local, env.kind).find((e) => e.id === env.id);
+      return entry ? mediaId<MediaKind>(env.kind, entry) : '';
+    }
   }
 }
 
