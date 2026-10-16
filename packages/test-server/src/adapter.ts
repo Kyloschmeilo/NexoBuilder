@@ -58,3 +58,11 @@ export const SERVER_ADAPTERS: Record<PackTargetId, ServerAdapter> = {
 export function serverAdapterFor(target: PackTargetId): ServerAdapter {
   return SERVER_ADAPTERS[target];
 }
+
+/**
+ * Whether the pack builds of a server can be followed: it runs the plugin of `target` (a JAR is set in
+ * `pluginJars`), and that plugin reports its builds in the console.
+ */
+export function tracksPackBuild(target: PackTargetId | null, pluginJars: Partial<Record<PackTargetId, unknown>>): boolean {
+  return target !== null && Boolean(pluginJars[target]) && serverAdapterFor(target).reportsPackBuild;
+}

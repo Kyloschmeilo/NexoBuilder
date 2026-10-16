@@ -12,6 +12,7 @@ import {
   parseServerLogLine,
   type ServerAdapter,
   serverAdapterFor,
+  tracksPackBuild,
 } from '@resourcepackbuilder/test-server';
 import { DesktopError, type PackStatus, type TestServerState } from '@resourcepackbuilder/desktop-contract';
 import { spawn, type ChildProcess, type ChildProcessWithoutNullStreams } from 'node:child_process';
@@ -39,10 +40,7 @@ function adapter(): ServerAdapter {
 }
 
 /** The pack build can be followed: the server has the plugin, and the plugin reports its builds in the console. */
-function tracksPackBuild(): boolean {
-  const { target } = state;
-  return target !== null && Boolean(state.config.pluginJars[target]) && serverAdapterFor(target).reportsPackBuild;
-}
+const packBuildTracked = (): boolean => tracksPackBuild(state.target, state.config.pluginJars);
 
 const pluginArgs = () => ({ plugin: adapter().pluginName });
 
@@ -73,7 +71,7 @@ export function requestReload(): boolean {
     return false;
   }
   const sent = sendCommand(adapter().reloadCommand);
-  if (sent && tracksPackBuild()) setPack('building', t('testServer.packReloading', pluginArgs()));
+  if (sent && packBuildTracked()) setPack('building', t('testServer.packReloading', pluginArgs()));
   return sent;
 }
 
@@ -101,7 +99,7 @@ function handleLine(line: string) {
       setState({ status: 'running', message: null, startedAt: Date.now() });
       if (isPlayerName(state.config.playerName)) sendCommand(opCommand(state.config.playerName));
       // A plugin that builds no pack on startup serves the one of its last run (if any): build it from the current files
-      if (tracksPackBuild() && !adapter().buildsPackOnStart && sendCommand(adapter().reloadCommand)) {
+      if (packBuildTracked() && !adapter().buildsPackOnStart && sendCommand(adapter().reloadCommand)) {
         setPack('building', t('testServer.packBuilding', pluginArgs()));
       }
       break;
@@ -136,7 +134,7 @@ function sendCommand(command: string): boolean {
 /** A command typed by the user; a manual plugin reload also rebuilds the pack. */
 export function runUserCommand(command: string): boolean {
   const sent = sendCommand(command);
-  if (sent && tracksPackBuild() && adapter().isReloadCommand(command)) {
+  if (sent && packBuildTracked() && adapter().isReloadCommand(command)) {
     setPack('building', t('testServer.packReloading', pluginArgs()));
   }
   return sent;
@@ -159,7 +157,7 @@ function launch(paper: PaperInstallation, java: JavaInstallation, target: PackTa
   reloadPending = false;
   setState({ status: 'starting', message: t('testServer.starting') });
   // The plugin builds the pack on startup; no reload until then. One that doesn't gets a reload at 'started'.
-  if (tracksPackBuild() && adapter().buildsPackOnStart) setPack('building', t('testServer.packBuildingOnStart', pluginArgs()));
+  if (packBuildTracked() && adapter().buildsPackOnStart) setPack('building', t('testServer.packBuildingOnStart', pluginArgs()));
   else setPack('idle');
 
   // Console output in UTF-8 (Java uses the system code page for stdout otherwise, which garbles e.g. "»" and umlauts)

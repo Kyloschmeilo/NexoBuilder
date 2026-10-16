@@ -83,4 +83,12 @@ describe('pickCraftEngineVersion', () => {
       expect(at(url), url).toBeNull();
     }
   });
+
+  it('skips a file with a malformed URL and still picks a valid version', () => {
+    const paper = versions.find((v) => v.version_number === '26.9.2' && v.loaders.includes('paper')) as ModrinthVersion;
+    const broken = (paper.files as Array<Record<string, unknown>>).map((file) => ({ ...file, url: 'not a url' }));
+    const list = [{ ...paper, version_number: '27.0', date_published: '2027-01-01T00:00:00Z', files: broken }, ...versions];
+    expect(() => pickCraftEngineVersion(list, '26.3')).not.toThrow();
+    expect(pickCraftEngineVersion(list, '26.3')?.version).toBe('26.9.2');
+  });
 });

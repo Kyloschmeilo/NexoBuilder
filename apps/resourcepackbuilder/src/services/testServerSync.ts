@@ -9,7 +9,13 @@ import { craftEngineUsesAttributes } from '@resourcepackbuilder/core/craftEngine
 import { DEFAULT_PACK_TARGET, type Item, type PackTargetId } from '@resourcepackbuilder/core/project';
 import { exportPackName, packTargetFor, planExport } from '@resourcepackbuilder/export';
 import { compareVersions } from '@resourcepackbuilder/minecraft';
-import { isConfigLocked, pluginFolderFiles, serverAdapterFor, TEST_SERVER_LOG_LIMIT } from '@resourcepackbuilder/test-server';
+import {
+  isConfigLocked,
+  pluginFolderFiles,
+  serverAdapterFor,
+  TEST_SERVER_LOG_LIMIT,
+  tracksPackBuild,
+} from '@resourcepackbuilder/test-server';
 import { AppError } from '../i18n/errors';
 import { asError } from '../lib/asError';
 import type {
@@ -37,12 +43,6 @@ export function wrongTargetError(serverTarget: PackTargetId, projectTarget: Pack
     server: serverAdapterFor(serverTarget).pluginName,
     project: serverAdapterFor(projectTarget).pluginName,
   });
-}
-
-/** The server's pack builds can be followed: it runs a plugin JAR, and the plugin reports its builds. */
-function tracksPackBuild(server: TestServerState): boolean {
-  const { target } = server;
-  return target !== null && Boolean(server.config.pluginJars[target]) && serverAdapterFor(target).reportsPackBuild;
 }
 
 export interface TestServerSync {
@@ -122,7 +122,7 @@ export function createTestServerSync(api: DesktopTestServerApi): TestServerSync 
   const reloadDone = (requestedAt: number): Promise<void> => {
     const isSettled = () => {
       const { server } = store.getState();
-      if (!server || server.status !== 'running' || !tracksPackBuild(server)) return true;
+      if (!server || server.status !== 'running' || !tracksPackBuild(server.target, server.config.pluginJars)) return true;
       const { pack } = server;
       return pack.status !== 'building' && pack.at !== null && pack.at >= requestedAt;
     };

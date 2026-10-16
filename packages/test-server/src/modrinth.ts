@@ -26,7 +26,13 @@ const MODRINTH_CDN_HOST = 'cdn.modrinth.com';
 
 /** Whether `url` is a file of CraftEngine on Modrinth's CDN (nothing else gets downloaded, whatever the list says). */
 function isCraftEngineFileUrl(url: string): boolean {
-  const parsed = new URL(url);
+  // zod runs this refine even after the URL check failed, so an unparsable URL must not throw
+  let parsed: URL;
+  try {
+    parsed = new URL(url);
+  } catch {
+    return false;
+  }
   return (
     parsed.protocol === 'https:' &&
     parsed.hostname === MODRINTH_CDN_HOST &&

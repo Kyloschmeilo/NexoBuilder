@@ -55,9 +55,13 @@ async function seedPluginConfig(target: PackTargetId) {
   const adapter = serverAdapterFor(target);
   if (adapter.buildsPackOnStart) return;
   const configPath = path.join(pluginDir(target), ...adapter.configFile.split('/'));
-  if (fs.existsSync(configPath)) return;
   await fsp.mkdir(path.dirname(configPath), { recursive: true });
-  await fsp.writeFile(configPath, adapter.patchConfig(null, { packPort: state.config.packPort }));
+  try {
+    // 'wx' never overwrites a config that is already there
+    await fsp.writeFile(configPath, adapter.patchConfig(null, { packPort: state.config.packPort }), { flag: 'wx' });
+  } catch (error) {
+    if ((error as NodeJS.ErrnoException).code !== 'EEXIST') throw error;
+  }
 }
 
 export async function prepareServerFiles(target: PackTargetId): Promise<void> {
