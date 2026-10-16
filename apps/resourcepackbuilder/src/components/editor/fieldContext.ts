@@ -1,5 +1,5 @@
 import { createContext, useContext } from 'react';
-import type { ModelTexture } from '@resourcepackbuilder/core/model/types';
+import type { ModelTexture } from '@resourcepackbuilder/minecraft';
 
 /** What the field editors need from the item they edit. */
 export interface FieldContextValue {

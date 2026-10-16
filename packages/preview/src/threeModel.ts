@@ -1,6 +1,6 @@
 /** Builds a three.js group from a PreviewModel (for the preview and thumbnails). */
 import * as THREE from 'three';
-import type { JavaDisplayTransform, ModelTexture } from '@resourcepackbuilder/core/model/types';
+import type { JavaDisplayTransform, ModelTexture } from '@resourcepackbuilder/minecraft';
 import type { PreviewModel } from './modelGeometry';
 
 export interface ModelObject {

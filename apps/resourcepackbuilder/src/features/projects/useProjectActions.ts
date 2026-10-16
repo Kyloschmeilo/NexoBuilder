@@ -1,7 +1,7 @@
 /** Project actions offered in several places (top bar, welcome screen, projects dialog), with their notices. */
 import { useTranslations } from 'next-intl';
 import { pickFiles, readAsText } from '@resourcepackbuilder/ui';
-import { PROJECT_FILE_EXTENSION } from '@resourcepackbuilder/core/project/projectFile';
+import { PROJECT_FILE_EXTENSION } from '@resourcepackbuilder/core/project';
 import {
   closeProject,
   createNewProject,

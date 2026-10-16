@@ -1,6 +1,6 @@
 import { useId } from 'react';
 import { useTranslations } from 'next-intl';
-import type { ImportedModel } from '@resourcepackbuilder/core/model/types';
+import type { ImportedModel } from '@resourcepackbuilder/minecraft';
 import { Checkbox } from '@resourcepackbuilder/ui/components/checkbox';
 import { Field, FieldContent, FieldDescription, FieldLabel } from '@resourcepackbuilder/ui/components/field';
 import { CheckboxField } from '../../../components/CheckboxField';

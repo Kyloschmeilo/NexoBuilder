@@ -1,9 +1,7 @@
 import { useFormatter, useTranslations } from 'next-intl';
 import { Trash2 } from 'lucide-react';
-import type { ImportedModel } from '@resourcepackbuilder/core/model/types';
-import type { Item } from '@resourcepackbuilder/core/project/types';
-import { itemMaterial } from '@resourcepackbuilder/core/nexo/material';
-import { variantConfigPath, variantPathSuffix, type VariantDef } from '@resourcepackbuilder/core/nexo/variants';
+import type { ImportedModel } from '@resourcepackbuilder/minecraft';
+import { type Item, itemMaterial, variantConfigPath, type VariantDef, variantPathSuffix } from '@resourcepackbuilder/core/project';
 import { DropZone, IconButton, pickFiles, SectionCard, Tip } from '@resourcepackbuilder/ui';
 import { Alert, AlertDescription } from '@resourcepackbuilder/ui/components/alert';
 import { Badge } from '@resourcepackbuilder/ui/components/badge';

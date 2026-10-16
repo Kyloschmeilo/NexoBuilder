@@ -1,13 +1,23 @@
 /** Glyphs, sounds and paintings, and the items that use sounds and paintings. */
-import type { MediaFile } from '@resourcepackbuilder/core/nexo/media/entry';
-import type { MediaItemInput } from '@resourcepackbuilder/core/nexo/media/items';
-import type { MediaEntryByKind, MediaKind } from '@resourcepackbuilder/core/nexo/media/kinds';
-import { addMediaEntry, deleteMediaEntry, findMediaEntry } from '@resourcepackbuilder/core/nexo/media/operations';
-import { createGlyph, type GlyphKind } from '@resourcepackbuilder/core/nexo/glyphs/model';
-import { createPainting } from '@resourcepackbuilder/core/nexo/paintings/model';
-import { createSound, setSoundJukebox as setJukebox, type JukeboxSong, type SoundFile } from '@resourcepackbuilder/core/nexo/sounds/model';
-import { firstRootFolder, insertNewItem } from '@resourcepackbuilder/core/project/operations';
-import type { Item } from '@resourcepackbuilder/core/project/types';
+import {
+  addMediaEntry,
+  createGlyph,
+  createPainting,
+  createSound,
+  deleteMediaEntry,
+  findMediaEntry,
+  firstRootFolder,
+  type GlyphKind,
+  insertNewItem,
+  type Item,
+  type JukeboxSong,
+  type MediaEntryByKind,
+  type MediaFile,
+  type MediaItemInput,
+  type MediaKind,
+  setSoundJukebox as setJukebox,
+  type SoundFile,
+} from '@resourcepackbuilder/core/project';
 import { mutate } from '../store/project';
 import { showItem } from './items';
 

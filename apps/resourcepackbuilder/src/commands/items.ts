@@ -1,18 +1,27 @@
 /** Creating, changing, moving and deleting items. */
 import { produce } from 'immer';
-import type { ConfigValue, Item } from '@resourcepackbuilder/core/project/types';
-import type { ImportedModel, ModelTexture } from '@resourcepackbuilder/core/model/types';
-import type { NewItemInput } from '@resourcepackbuilder/core/project/factory';
-import * as operations from '@resourcepackbuilder/core/project/operations';
-import { uid } from '@resourcepackbuilder/core/id';
-import { pruneUnusedAssets } from '@resourcepackbuilder/core/project/assets';
-import { createTexture, withTextureAnimation, type TextureAnimationSettings } from '@resourcepackbuilder/core/model/textures';
-import { assetToken, texturePlaceholder } from '@resourcepackbuilder/core/tokens';
-import { setPath } from '@resourcepackbuilder/core/nexo/configPath';
-import { PROPERTY_BY_ID, type PropertyDef } from '@resourcepackbuilder/core/nexo/schema';
-import { setPropertyValue } from '@resourcepackbuilder/core/nexo/properties';
-import { furnitureStatePath, type VariantSlot } from '@resourcepackbuilder/core/nexo/variants';
-import { createRecipe, type Recipe, type RecipeType } from '@resourcepackbuilder/core/nexo/recipes/model';
+import {
+  type ConfigValue,
+  createRecipe,
+  furnitureStatePath,
+  type Item,
+  type NewItemInput,
+  pruneUnusedAssets,
+  type Recipe,
+  type RecipeType,
+  setPath,
+  type VariantSlot,
+} from '@resourcepackbuilder/core/project';
+import {
+  createTexture,
+  type ImportedModel,
+  type ModelTexture,
+  type TextureAnimationSettings,
+  withTextureAnimation,
+} from '@resourcepackbuilder/minecraft';
+import * as operations from '@resourcepackbuilder/core/project';
+import { assetToken, texturePlaceholder, uid } from '@resourcepackbuilder/utils';
+import { PROPERTY_BY_ID, type PropertyDef, setPropertyValue } from '@resourcepackbuilder/core/nexo';
 import { getProject, mutate } from '../store/project';
 import { select, setExpanded } from '../store/ui';
 

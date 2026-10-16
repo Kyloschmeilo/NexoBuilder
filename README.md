@@ -177,7 +177,7 @@ Requirements: Node.js 22+ and npm. Windows is needed for `dist:win` (or Linux wi
 npm install
 npm run dev          # Next.js dev server on http://localhost:3000 (no sharing / test server in the browser)
 npm run app          # build and start the desktop program (Electron)
-npm test             # unit tests (core, i18n, app)
+npm test             # unit tests (every package and the app)
 npm run typecheck    # TypeScript in every package, incl. the Electron sources (checkJs)
 npm run lint         # ESLint in every package
 npm run check:encoding  # fails on tracked text files that are not valid UTF-8
@@ -196,18 +196,35 @@ push a tag `v<version>`). GitHub Actions lints, type-checks and tests, builds an
 
 ### Architecture
 
-A monorepo with npm workspaces:
+A monorepo with npm workspaces. All packages are named `@resourcepackbuilder/<folder>` and export only what their
+`index.ts` barrels list (core has two: `core/project` and `core/nexo`).
 
-| Package                                             | Purpose                                                                                                                                                                                                                                                                                                             |
-| --------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `packages/core` (`@resourcepackbuilder/core`)       | Everything without UI, with the unit tests: model import (`.bbmodel`, Java JSON, PNG), the Nexo property schema and YAML generation, export planning, checks and ZIP, sync of shared projects, test-server files. No DOM, no React.                                                                                 |
-| `packages/i18n` (`@resourcepackbuilder/i18n`)       | English and German message catalogues per namespace (`src/messages/<locale>/<namespace>.json`), supported locales, typed message keys and the parity check that keeps both languages in step. `./desktop` exports the texts of the Electron main process (`desktop` namespace, not in the UI catalogue).            |
-| `packages/ui` (`@resourcepackbuilder/ui`)           | Generic React building blocks: the vendored shadcn/ui components (Base UI flavour) in `src/components`, shared components on top of them, and the CastCrafter theme (`src/styles.css`: Tailwind v4 with light/dark design tokens; fonts Chakra Petch, Hanken Grotesk and Martian Mono bundled via `src/fonts.css`). |
-| `packages/preview` (`@resourcepackbuilder/preview`) | 3D model preview and thumbnails (three.js).                                                                                                                                                                                                                                                                         |
-| `packages/s3` (`@resourcepackbuilder/s3`)           | Typed wrapper over the AWS SDK for S3-compatible storage (AWS, R2, MinIO, B2 …), Node only, bundled into the Electron main process once it imports it. Prepared for the upcoming storage locations feature (`docs/superpowers/specs/2026-10-16-storage-locations-design.md`).                                       |
-| `packages/desktop-contract`                         | The IPC contract between UI and Electron: one channel map (`DESKTOP_API`) from which the preload bridge and all types are derived, zod argument schemas (`./schemas`, main process only) and serialisable `DesktopError`s.                                                                                          |
-| `packages/config` (`@resourcepackbuilder/config`)   | Shared TypeScript configuration: `base.json` (browser/React) and `node.json` (Node/Electron).                                                                                                                                                                                                                       |
-| `apps/resourcepackbuilder`                          | The app: a Next.js (App Router) **static export** shown in an **Electron** window.                                                                                                                                                                                                                                  |
+| Package                     | Purpose                                                                                                                                                                                                                                                                                                             |
+| --------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `packages/utils`            | Helpers without domain knowledge: plain objects and config walking, text and IDs, lenient zod schemas, JSON parsing, issues and `CoreError`, asset tokens.                                                                                                                                                          |
+| `packages/minecraft`        | Minecraft resource-pack knowledge without the project model: versions, resource locations, the vanilla catalog and models, PNG/GIF/OGG sniffing, MiniMessage, and the model import (`.bbmodel`, Java JSON, textures).                                                                                               |
+| `packages/core`             | The project model (`core/project`: items, folders, glyphs, sounds, paintings, recipes, migration, tree repair, operations) and its Nexo mapping (`core/nexo`: item config, the property schema behind the field editor, YAML).                                                                                      |
+| `packages/export`           | Export planning, checks and the pack writer: Nexo YAML, item models, equipment, media, selection over several projects, ZIP and install guide.                                                                                                                                                                      |
+| `packages/sync`             | Sharing projects through a folder: the file format, merging and the sync engine.                                                                                                                                                                                                                                    |
+| `packages/test-server`      | The local test server's rules: config and limits, console commands, log parsing, status, Java/Paper versions and the files synced into `plugins/Nexo`.                                                                                                                                                              |
+| `packages/preview`          | 3D model preview and thumbnails with three.js – no React; the app's `ModelPreview` and `useThumbnail` wrap it.                                                                                                                                                                                                      |
+| `packages/i18n`             | English and German message catalogues per namespace (`src/messages/<locale>/<namespace>.json`), supported locales, typed message keys and the parity check that keeps both languages in step. `./desktop` exports the texts of the Electron main process (`desktop` namespace, not in the UI catalogue).            |
+| `packages/ui`               | Generic React building blocks: the vendored shadcn/ui components (Base UI flavour) in `src/components`, shared components on top of them, and the CastCrafter theme (`src/styles.css`: Tailwind v4 with light/dark design tokens; fonts Chakra Petch, Hanken Grotesk and Martian Mono bundled via `src/fonts.css`). |
+| `packages/desktop-contract` | The IPC contract between UI and Electron: one channel map (`DESKTOP_API`) from which the preload bridge and all types are derived, zod argument schemas (`./schemas`, main process only) and serialisable `DesktopError`s.                                                                                          |
+| `packages/s3`               | Typed wrapper over the AWS SDK for S3-compatible storage (AWS, R2, MinIO, B2 …), Node only, bundled into the Electron main process once it imports it. Prepared for the upcoming storage locations feature (`docs/superpowers/specs/2026-10-16-storage-locations-design.md`).                                       |
+| `packages/test-utils`       | Node-only test helpers (real PNG files), used by package tests and the app's scripts; never shipped.                                                                                                                                                                                                                |
+| `packages/config`           | Shared TypeScript configuration: `base.json` (browser/React) and `node.json` (Node/Electron).                                                                                                                                                                                                                       |
+| `apps/resourcepackbuilder`  | The app: a Next.js (App Router) **static export** shown in an **Electron** window.                                                                                                                                                                                                                                  |
+
+Packages build on each other in one direction: `minecraft` on `utils`, `core` on `minecraft`, `export` and `sync` on
+`core`, `test-server` on `export`, `preview` on `minecraft`, `desktop-contract` on `sync` and `test-server`, and the app
+on all of them. A package may only import the workspace packages
+its `package.json` declares (an ESLint rule; turbo rejects cyclic declarations), and inside core `project/` may not
+import `nexo/`.
+
+The app lists its runtime libraries (Next.js, React, zustand …) as `devDependencies` on purpose: the renderer is a
+static export and the Electron main process is a self-contained bundle, so the installer ships no `node_modules`, and
+electron-builder would otherwise pack every `dependency` into it.
 
 The app (`apps/resourcepackbuilder`):
 
@@ -217,8 +234,7 @@ The app (`apps/resourcepackbuilder`):
   - `app/` – Next.js routes only (layout with the pre-paint theme script, page, global CSS);
   - `shell/` – the frame: providers and boot screen, top bar, sidebar, right panel, main area (a map from the
     selection to its view), dialog host, keyboard shortcuts, window drop;
-  - `store/` – zustand stores: project + undo history, UI state, dialogs (promise-based `confirm`/`prompt` and the
-    feature-dialog registry), notifications, the derived export plan (`usePlan`);
+  - `store/` – zustand stores: project + undo history, UI state, clipboard, promise-based `confirm`/`prompt` dialogs;
   - `commands/` – every change to a project goes through these functions (one user action = one undo step);
   - `services/` – long-running work created once by `bootstrap()`: project repository (IndexedDB), autosave, share
     sync, test-server sync, desktop locale sync;
@@ -231,7 +247,7 @@ The app (`apps/resourcepackbuilder`):
   bridge only exists in the desktop program; in the browser, sharing and the test server are unavailable.
 - `electron/` – the desktop program in TypeScript (`electron/src`, own `tsconfig.json` based on `config/node.json`),
   bundled by esbuild (`electron/build.mjs`, part of `npm run build`) into `electron/dist/main.cjs` and `preload.cjs`
-  together with the workspace packages it imports (core, i18n, desktop-contract):
+  together with the workspace packages it imports (desktop-contract, export, sync, test-server, i18n):
   - `main.ts` serves the export through the `app://bundle` protocol, builds the menus, opens only `https` links
     externally and denies web permissions (except clipboard writes);
   - `preload.ts` builds `window.resourcepackBuilder` from the contract's channel map;
@@ -241,7 +257,7 @@ The app (`apps/resourcepackbuilder`):
     format), no links leading outside;
   - `testServer/` downloads Paper and Java (responses and SHA-256 checksums verified), prepares and runs the server,
     and syncs the project into `plugins/Nexo`; the pure parts (log parsing, commands, file edits) live in
-    `packages/core/src/testServer`;
+    `packages/test-server`;
   - `i18n.ts` translates with `@resourcepackbuilder/i18n/desktop`; `fileHelpers.ts` holds the atomic write, folder and
     JSON-with-backup helpers;
   - `testHooks.ts` – overrides for the automated Windows test, honoured only with `RESOURCEPACKBUILDER_E2E=1`.

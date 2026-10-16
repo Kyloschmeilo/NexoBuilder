@@ -2,13 +2,9 @@
 import type { ReactNode } from 'react';
 import { Frame, Link2, Music, Smile } from 'lucide-react';
 import { useTranslations } from 'next-intl';
-import { nexoPluginPath } from '@resourcepackbuilder/core/export/paths';
-import { PAINTINGS_FILE, SOUNDS_FILE } from '@resourcepackbuilder/core/export/rootFiles';
-import type { ExportPlan } from '@resourcepackbuilder/core/export/types';
-import { glyphFilePath } from '@resourcepackbuilder/core/nexo/glyphs/files';
-import { glyphKindOf } from '@resourcepackbuilder/core/nexo/glyphs/model';
-import { mediaList, type MediaEntryByKind, type MediaKind } from '@resourcepackbuilder/core/nexo/media/kinds';
-import type { Project } from '@resourcepackbuilder/core/project/types';
+import { type ExportPlan, nexoPluginPath, PAINTINGS_FILE, SOUNDS_FILE } from '@resourcepackbuilder/export';
+import { glyphFilePath } from '@resourcepackbuilder/core/nexo';
+import { glyphKindOf, type MediaEntryByKind, type MediaKind, mediaList, type Project } from '@resourcepackbuilder/core/project';
 import { Button } from '@resourcepackbuilder/ui/components/button';
 import { Tip } from '@resourcepackbuilder/ui';
 import { addGlyph, addPainting, addSound } from '../../commands/media';

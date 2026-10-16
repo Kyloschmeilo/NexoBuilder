@@ -4,7 +4,7 @@
  * `schema` message keys and are translated by the editors.
  */
 import type { ComponentType } from 'react';
-import type { Field } from '@resourcepackbuilder/core/nexo/fields';
+import type { Field } from '@resourcepackbuilder/core/nexo';
 import { BooleanEditor } from './editors/BooleanEditor';
 import { MapEditor } from './editors/MapEditor';
 import { MultiSelectEditor } from './editors/MultiSelectEditor';

@@ -1,6 +1,5 @@
 /** State of the test server, its console log and saved settings; every change is broadcast to the UI. */
-import { DEFAULT_MINECRAFT_PORT, DEFAULT_TEST_SERVER_CONFIG, TEST_SERVER_LOG_LIMIT } from '@resourcepackbuilder/core/testServer/config';
-import { stripAnsi } from '@resourcepackbuilder/core/testServer/serverLog';
+import { DEFAULT_MINECRAFT_PORT, DEFAULT_TEST_SERVER_CONFIG, stripAnsi, TEST_SERVER_LOG_LIMIT } from '@resourcepackbuilder/test-server';
 import type {
   TestServerConfigPatch,
   TestServerEvent,

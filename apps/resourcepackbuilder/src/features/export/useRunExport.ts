@@ -1,7 +1,5 @@
 import { useTranslations } from 'next-intl';
-import type { ExportMode } from '@resourcepackbuilder/core/export/types';
-import { planMultiExport, type ExportEntry } from '@resourcepackbuilder/core/export/selection';
-import { buildMultiExportZip } from '@resourcepackbuilder/core/export/zip';
+import { buildMultiExportZip, type ExportEntry, type ExportMode, planMultiExport } from '@resourcepackbuilder/export';
 import { downloadBytes } from '@resourcepackbuilder/ui';
 import { useErrorMessage } from '../../i18n/errors';
 import { notify } from '../../shell/notify';

@@ -6,8 +6,8 @@
  * the project, or – when only the sync state changed (e.g. after disconnecting) – on its own, in order with the
  * project saves.
  */
-import type { SyncState } from '@resourcepackbuilder/core/sync/engine';
-import type { Project } from '@resourcepackbuilder/core/project/types';
+import type { SyncState } from '@resourcepackbuilder/sync';
+import type { Project } from '@resourcepackbuilder/core/project';
 import { useProjectStore } from '../store/project';
 import { useSaveStore } from './autosaveStore';
 import type { ProjectRepository } from './projectRepository';

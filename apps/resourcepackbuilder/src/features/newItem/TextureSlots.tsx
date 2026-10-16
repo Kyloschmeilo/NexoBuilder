@@ -1,16 +1,17 @@
 /** For PNG drafts: which model the textures become, and which texture goes into which slot. */
 import { useId } from 'react';
 import { useTranslations } from 'next-intl';
-import type { ImportFile } from '@resourcepackbuilder/core/model/types';
 import {
-  TEXTURE_TEMPLATES,
   getTextureTemplate,
+  type ImportDraft,
+  type ImportFile,
   isTextureTemplateId,
+  runDraft,
   suggestSlotAssignment,
   templateSlots,
+  TEXTURE_TEMPLATES,
   type TextureTemplate,
-} from '@resourcepackbuilder/core/model/textureModel';
-import { runDraft, type ImportDraft } from '@resourcepackbuilder/core/model/drafts';
+} from '@resourcepackbuilder/minecraft';
 import { Field, FieldDescription, FieldLabel } from '@resourcepackbuilder/ui/components/field';
 import { NativeSelect, NativeSelectOption } from '@resourcepackbuilder/ui/components/native-select';
 import { AutoGrid } from '@resourcepackbuilder/ui';

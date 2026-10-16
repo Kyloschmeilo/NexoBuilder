@@ -6,7 +6,7 @@
  * `<userData>/shared-folders.json`; a project folder is forgotten again when its project stops being shared.
  */
 import { DesktopError, type ShareFileInfo, type ShareFolderInfo, type ShareFolderPurpose } from '@resourcepackbuilder/desktop-contract';
-import { ENTITY_DIRS, isShareFilePath, PROJECT_FILE, readProjectInfo } from '@resourcepackbuilder/core/sync/format';
+import { ENTITY_DIRS, isShareFilePath, PROJECT_FILE, readProjectInfo } from '@resourcepackbuilder/sync';
 import { app, BrowserWindow, dialog, type OpenDialogOptions, type WebContents } from 'electron';
 import fs from 'node:fs';
 import fsp from 'node:fs/promises';

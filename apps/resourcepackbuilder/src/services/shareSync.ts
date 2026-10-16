@@ -5,18 +5,18 @@
  * - Changes by others are detected via file events and additionally by polling (cloud folders do not always report
  *   reliably): every few seconds without a working file watcher, rarely while it works.
  */
-import { deepClone } from '@resourcepackbuilder/core/object';
-import { migrateProject } from '@resourcepackbuilder/core/project/migrate';
-import type { Project } from '@resourcepackbuilder/core/project/types';
-import { README_FILE, README_TEXT } from '@resourcepackbuilder/core/sync/format';
+import { deepClone } from '@resourcepackbuilder/utils';
+import { migrateProject, type Project } from '@resourcepackbuilder/core/project';
 import {
+  README_FILE,
+  README_TEXT,
   readShareFolder,
+  type RemoteChange,
   ShareFolderError,
   SyncEngine,
-  type RemoteChange,
   type SyncFs,
   type SyncState,
-} from '@resourcepackbuilder/core/sync/engine';
+} from '@resourcepackbuilder/sync';
 import { AppError } from '../i18n/errors';
 import { asError } from '../lib/asError';
 import type { DesktopShareApi } from '../platform/desktopApi';

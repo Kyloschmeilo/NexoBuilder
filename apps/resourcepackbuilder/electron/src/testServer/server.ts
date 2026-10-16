@@ -4,14 +4,8 @@
  * Nexo builds the pack in the background. A "nexo reload" in the meantime starts a second build in parallel and both
  * fail (e.g. "items.json already exists"), so reloads wait until the current build is done.
  */
-import {
-  consoleCommandText,
-  isNexoReloadCommand,
-  isPlayerName,
-  NEXO_RELOAD_COMMAND,
-  opCommand,
-} from '@resourcepackbuilder/core/testServer/commands';
-import { parseServerLogLine } from '@resourcepackbuilder/core/testServer/serverLog';
+import { NEXO_RELOAD_COMMAND } from '@resourcepackbuilder/export';
+import { consoleCommandText, isNexoReloadCommand, isPlayerName, opCommand, parseServerLogLine } from '@resourcepackbuilder/test-server';
 import { DesktopError, type PackStatus, type TestServerState } from '@resourcepackbuilder/desktop-contract';
 import { spawn, type ChildProcess, type ChildProcessWithoutNullStreams } from 'node:child_process';
 import type { Readable } from 'node:stream';

@@ -14,11 +14,13 @@
     "lint": "eslint ."
   },
   "dependencies": {
-    "@resourcepackbuilder/core": "*",
     "@resourcepackbuilder/i18n": "*",
+    "@resourcepackbuilder/sync": "*",
+    "@resourcepackbuilder/test-server": "*",
     "zod": "^4.6.7"
   },
   "devDependencies": {
-    "@resourcepackbuilder/config": "*"
+    "@resourcepackbuilder/config": "*",
+    "vitest": "^5.0.3"
   }
 }

@@ -1,7 +1,7 @@
 /** Export of paintings: animation metadata and the paintings.yml entry (texture: see export/paths). */
 import type { Project } from '../../project/types';
-import { mediaKey } from '../media/entry';
-import { paintingFrameSize, type Painting } from './model';
+import { mediaKey } from '../../project/media/entry';
+import { paintingFrameSize, type Painting } from '../../project/media/painting';
 
 export function paintingMcmeta(painting: Painting): Record<string, unknown> | null {
   if (!painting.animated) return null;

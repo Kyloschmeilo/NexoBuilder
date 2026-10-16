@@ -1,7 +1,6 @@
 /** User-facing IDs of project entries. */
-import { uniqueId } from '../id';
-import { itemIdSyntaxError } from '../minecraft/resourceLocation';
-import { slugify } from '../text';
+import { slugify, uniqueId } from '@resourcepackbuilder/utils';
+import { itemIdSyntaxError } from '@resourcepackbuilder/minecraft';
 import type { Item, Project } from './types';
 
 /** Suggests a unique item ID, e.g. "ruby_sword_2" if "ruby_sword" already exists. */

@@ -1,13 +1,12 @@
 import { useTranslations } from 'next-intl';
 import { Box, RefreshCw, Trash2 } from 'lucide-react';
-import type { ImportedModel } from '@resourcepackbuilder/core/model/types';
-import type { Item } from '@resourcepackbuilder/core/project/types';
-import { compareVersions, getMcVersion } from '@resourcepackbuilder/core/minecraft/versions';
-import { issuesFor } from '@resourcepackbuilder/core/issues';
+import { compareVersions, getMcVersion, type ImportedModel } from '@resourcepackbuilder/minecraft';
+import type { Item } from '@resourcepackbuilder/core/project';
+import { issuesFor } from '@resourcepackbuilder/utils';
 import { CollapsibleSection, pickFiles, SectionCard } from '@resourcepackbuilder/ui';
 import { Alert, AlertDescription } from '@resourcepackbuilder/ui/components/alert';
 import { Button } from '@resourcepackbuilder/ui/components/button';
-import { ModelPreview } from '@resourcepackbuilder/preview';
+import { ModelPreview } from '../../../components/ModelPreview';
 import { setItemModel } from '../../../commands/items';
 import { IssueList } from '../../../components/IssueList';
 import { usePlan } from '../../../shell/PlanProvider';

@@ -1,8 +1,13 @@
 import { useId } from 'react';
 import { useTranslations } from 'next-intl';
-import type { ImportedModel } from '@resourcepackbuilder/core/model/types';
-import { formatResourceLocation, MINECRAFT_NAMESPACE } from '@resourcepackbuilder/core/minecraft/resourceLocation';
-import { HOLD_STYLE_PARENTS, holdStyleParent, type HoldStyleParent } from '@resourcepackbuilder/core/minecraft/vanillaModels';
+import {
+  formatResourceLocation,
+  HOLD_STYLE_PARENTS,
+  holdStyleParent,
+  type HoldStyleParent,
+  type ImportedModel,
+  MINECRAFT_NAMESPACE,
+} from '@resourcepackbuilder/minecraft';
 import { Field, FieldLabel } from '@resourcepackbuilder/ui/components/field';
 import { NativeSelect, NativeSelectOption } from '@resourcepackbuilder/ui/components/native-select';
 import { isOneOf } from '../../../lib/isOneOf';

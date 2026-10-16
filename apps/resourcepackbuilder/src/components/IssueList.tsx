@@ -1,7 +1,7 @@
 import { useCallback } from 'react';
 import { useTranslations } from 'next-intl';
 import type { IssueKey } from '@resourcepackbuilder/i18n';
-import type { Issue, IssueLevel, IssueTarget } from '@resourcepackbuilder/core/issues';
+import type { Issue, IssueLevel, IssueTarget } from '@resourcepackbuilder/utils';
 import { useRenderMessage } from '../i18n/errors';
 import { TONE_ALERT_VARIANT, TONE_ICONS } from '@resourcepackbuilder/ui';
 import { Alert, AlertAction, AlertDescription } from '@resourcepackbuilder/ui/components/alert';

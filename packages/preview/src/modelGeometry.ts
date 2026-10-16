@@ -4,11 +4,17 @@
  *
  * Vertex order and UV rotation match Blockbench (js/util/three_custom.js, cube.js).
  */
-import { stripMinecraftNamespace } from '@resourcepackbuilder/core/minecraft/resourceLocation';
-import { isGeneratedItemParent, MAX_ITEM_LAYERS, vanillaParentElements } from '@resourcepackbuilder/core/minecraft/vanillaModels';
-import { resolveTextureRef } from '@resourcepackbuilder/core/model/textureRefs';
-import { getFrameSize } from '@resourcepackbuilder/core/model/textures';
-import type { FaceName, ImportedModel, ModelTexture } from '@resourcepackbuilder/core/model/types';
+import {
+  type FaceName,
+  getFrameSize,
+  type ImportedModel,
+  isGeneratedItemParent,
+  MAX_ITEM_LAYERS,
+  type ModelTexture,
+  resolveTextureRef,
+  stripMinecraftNamespace,
+  vanillaParentElements,
+} from '@resourcepackbuilder/minecraft';
 
 export type Vec3 = [number, number, number];
 

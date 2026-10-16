@@ -1,6 +1,5 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
-import { createFolder, createItem, createProject, insertFolder, insertItem } from '@resourcepackbuilder/core/project/factory';
-import type { Project } from '@resourcepackbuilder/core/project/types';
+import { createFolder, createItem, createProject, insertFolder, insertItem, type Project } from '@resourcepackbuilder/core/project';
 import { applyRemote, mutate, redo, setProject, undo, useProjectStore } from './project';
 import { followOpenProject, select, useUiStore } from './ui';
 

@@ -1,4 +1,4 @@
-import type { BooleanField } from '@resourcepackbuilder/core/nexo/fields';
+import type { BooleanField } from '@resourcepackbuilder/core/nexo';
 import { FieldShell } from '../FieldShell';
 import { TriState } from '../inputs/TriState';
 import type { EditorProps } from '../types';

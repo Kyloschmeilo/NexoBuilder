@@ -1,5 +1,5 @@
 import { afterEach, describe, expect, it, vi } from 'vitest';
-import { createProject } from '@resourcepackbuilder/core/project/factory';
+import { createProject } from '@resourcepackbuilder/core/project';
 import type { DesktopTestServerApi, TestServerConfigPatch, TestServerState } from '../platform/desktopApi';
 import { setProject } from '../store/project';
 import { useTestServerStore } from './testServerStore';

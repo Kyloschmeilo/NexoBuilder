@@ -2,7 +2,7 @@
 import { useMemo, useState } from 'react';
 import { useTranslations } from 'next-intl';
 import { ClipboardPaste } from 'lucide-react';
-import { selectFromProject } from '@resourcepackbuilder/core/export/selection';
+import { selectFromProject } from '@resourcepackbuilder/export';
 import {
   clipboardLabel,
   COPY_CATEGORIES,
@@ -10,7 +10,7 @@ import {
   type CopyCategory,
   type ItemConfigClipboard,
   type PasteOptions,
-} from '@resourcepackbuilder/core/nexo/copyConfig';
+} from '@resourcepackbuilder/core/nexo';
 import { Button } from '@resourcepackbuilder/ui/components/button';
 import { createDialogHandle } from '@resourcepackbuilder/ui/components/dialog';
 import { pasteItemProperties } from '../../commands/clipboard';

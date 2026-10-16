@@ -1,5 +1,4 @@
-import type { Painting } from '@resourcepackbuilder/core/nexo/paintings/model';
-import type { MediaFile } from '@resourcepackbuilder/core/nexo/media/entry';
+import type { MediaFile, Painting } from '@resourcepackbuilder/core/project';
 
 /**
  * The painting as it hangs: the texture stretched to the painting's block ratio; for an animation its first frame.

@@ -7,7 +7,7 @@ import {
   type CopyCategory,
   type PasteOptions,
   type SummaryEntry,
-} from '@resourcepackbuilder/core/nexo/copyConfig';
+} from '@resourcepackbuilder/core/nexo';
 import { SectionLabel, SegmentedControl } from '@resourcepackbuilder/ui';
 import { Alert, AlertDescription } from '@resourcepackbuilder/ui/components/alert';
 import { Checkbox } from '@resourcepackbuilder/ui/components/checkbox';

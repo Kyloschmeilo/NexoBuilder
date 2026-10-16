@@ -1,5 +1,5 @@
 import { useTranslations } from 'next-intl';
-import { countIssues, type Issue } from '@resourcepackbuilder/core/issues';
+import { countIssues, type Issue } from '@resourcepackbuilder/utils';
 import { StatusBadge } from '@resourcepackbuilder/ui';
 
 interface IssueCountBadgesProps {

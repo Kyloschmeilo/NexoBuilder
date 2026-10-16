@@ -1,8 +1,8 @@
-import type { Issue } from '../../issues';
-import { ITEM_ID_PATTERN, RESOURCE_LOCATION_PATTERN } from '../../minecraft/resourceLocation';
+import type { Issue } from '@resourcepackbuilder/utils';
+import { ITEM_ID_PATTERN, RESOURCE_LOCATION_PATTERN } from '@resourcepackbuilder/minecraft';
 import type { Project } from '../../project/types';
-import { validateEntries } from '../media/entry';
-import { MAX_GLYPH_CELL } from './model';
+import { validateEntries } from '../../project/media/entry';
+import { MAX_GLYPH_CELL } from '../../project/media/glyph';
 
 /** Checks all glyphs of the project; each issue targets its glyph and carries a `context.glyph` frame. */
 export function validateGlyphs(project: Project): Issue[] {

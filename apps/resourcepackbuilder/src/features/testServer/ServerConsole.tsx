@@ -5,7 +5,7 @@ import { cn } from 'cn';
 import { Button } from '@resourcepackbuilder/ui/components/button';
 import { Input } from '@resourcepackbuilder/ui/components/input';
 import { SectionCard, Tip } from '@resourcepackbuilder/ui';
-import { consoleCommandText } from '@resourcepackbuilder/core/testServer/commands';
+import { consoleCommandText } from '@resourcepackbuilder/test-server';
 import type { TestServerLogLine } from '../../platform/desktopApi';
 import { useTestServerStore } from '../../services/testServerStore';
 import { useCommandHistory } from './useCommandHistory';

@@ -1,8 +1,8 @@
 /** Export options stored in the open project (pack as ZIP, project folder, YAML file layout). */
 import { useId } from 'react';
 import { useTranslations } from 'next-intl';
-import type { ExportMode } from '@resourcepackbuilder/core/export/types';
-import type { ProjectSettings } from '@resourcepackbuilder/core/project/types';
+import type { ExportMode } from '@resourcepackbuilder/export';
+import type { ProjectSettings } from '@resourcepackbuilder/core/project';
 import { CollapsibleSection } from '@resourcepackbuilder/ui';
 import { Field, FieldLabel } from '@resourcepackbuilder/ui/components/field';
 import { NativeSelect, NativeSelectOption } from '@resourcepackbuilder/ui/components/native-select';

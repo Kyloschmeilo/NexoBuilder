@@ -1,9 +1,8 @@
 /** Settings saved in the open project. */
 import { useId } from 'react';
 import { useTranslations } from 'next-intl';
-import { MC_VERSIONS } from '@resourcepackbuilder/core/minecraft/versions';
-import { PACK_NAME_PATTERN } from '@resourcepackbuilder/core/minecraft/resourceLocation';
-import { nexoPluginPath, packLocation } from '@resourcepackbuilder/core/export/paths';
+import { MC_VERSIONS, PACK_NAME_PATTERN } from '@resourcepackbuilder/minecraft';
+import { nexoPluginPath, packLocation } from '@resourcepackbuilder/export';
 import { Field, FieldDescription, FieldError, FieldLabel } from '@resourcepackbuilder/ui/components/field';
 import { Input } from '@resourcepackbuilder/ui/components/input';
 import { NativeSelect, NativeSelectOption } from '@resourcepackbuilder/ui/components/native-select';

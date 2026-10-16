@@ -5,16 +5,15 @@
  */
 import { readFileSync } from 'node:fs';
 import { describe, expect, it } from 'vitest';
-import { TEXTURE_TEMPLATES } from '../model/textureModel';
-import { ARMOR_LAYERS } from './armor';
+import { TEXTURE_TEMPLATES } from '@resourcepackbuilder/minecraft';
+import { ARMOR_LAYERS } from '../project/armor';
 import { COPY_CATEGORIES, summarizeClipboard, type ItemConfigClipboard } from './copyConfig';
-import { validateTextFormat } from './fieldFormat';
-import type { Field, TextField } from './fields';
-import { keySegment } from './messageKey';
-import * as options from './options';
-import { INGREDIENT_SOURCES, RECIPE_TYPES } from './recipes/model';
-import { PROPERTIES, PROPERTY_GROUPS } from './schema';
-import { FURNITURE_MODEL_SLOTS, STACK_MODELS, stateDef, VARIANTS } from './variants';
+import { type Field, type TextField, validateTextFormat } from './form/fields';
+import { keySegment } from '@resourcepackbuilder/utils';
+import * as options from './form/options';
+import { INGREDIENT_SOURCES, RECIPE_TYPES } from '../project/recipes/model';
+import { PROPERTIES, PROPERTY_GROUPS } from './form/schema';
+import { FURNITURE_MODEL_SLOTS, STACK_MODELS, stateDef, VARIANTS } from '../project/variants';
 
 type MessageTree = { [key: string]: string | MessageTree };
 

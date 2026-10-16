@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import type { Field } from '@resourcepackbuilder/core/nexo/fields';
+import type { Field } from '@resourcepackbuilder/core/nexo';
 import {
   countSetValues,
   hexToNexoColor,

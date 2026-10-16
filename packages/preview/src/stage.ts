@@ -1,6 +1,9 @@
-/** The interactive three.js scene behind {@link ModelPreview}: created once per mount, models are swapped in. */
+/** The interactive three.js scene of the model preview: created once per mount, models are swapped in with showModel. */
+import type { JavaDisplayTransform } from '@resourcepackbuilder/minecraft';
 import * as THREE from 'three';
 import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
+import type { PreviewModel } from './modelGeometry';
+import { createModelObject } from './threeModel';
 
 export interface Stage {
   scene: THREE.Scene;
@@ -106,5 +109,52 @@ export function createStage(container: HTMLElement): Stage {
       renderer.forceContextLoss();
       canvas.remove();
     },
+  };
+}
+
+/** Ground grid and block outline (one block = 16 pixels). */
+function createBlockHelpers(): { object: THREE.Object3D; dispose: () => void } {
+  const group = new THREE.Group();
+  const grid = new THREE.GridHelper(16, 16, 0x54766a, 0x1f302a);
+  grid.position.y = -8;
+  const outlineMaterial = new THREE.LineBasicMaterial({ color: 0x54766a, transparent: true, opacity: 0.6 });
+  const outline = new THREE.LineSegments(new THREE.EdgesGeometry(new THREE.BoxGeometry(16, 16, 16)), outlineMaterial);
+  group.add(grid, outline);
+  return {
+    object: group,
+    dispose: () => {
+      grid.dispose();
+      outline.geometry.dispose();
+      outlineMaterial.dispose();
+    },
+  };
+}
+
+/**
+ * Shows `preview` on the stage (in the display slot `displayTransform`, if given) and frames the camera on it.
+ * Blocks without a display slot get a ground grid and block outline.
+ *
+ * @returns removes the model again and frees its resources
+ */
+export function showModel(stage: Stage, preview: PreviewModel, displayTransform?: JavaDisplayTransform): () => void {
+  if (preview.kind === 'empty') return () => {};
+  const object = createModelObject(preview, displayTransform, stage.render);
+  const helpers = !displayTransform && preview.kind === 'elements' ? createBlockHelpers() : null;
+  stage.scene.add(object.root);
+  if (helpers) stage.scene.add(helpers.object);
+
+  const box = new THREE.Box3().setFromObject(object.root);
+  if (box.isEmpty()) box.set(new THREE.Vector3(-8, -8, -8), new THREE.Vector3(8, 8, 8));
+  const direction = preview.kind === 'generated' && !displayTransform ? new THREE.Vector3(0, 0.12, 1) : new THREE.Vector3(1, 0.75, 1.15);
+  stage.frame(box, direction);
+
+  return () => {
+    stage.scene.remove(object.root);
+    object.dispose();
+    if (helpers) {
+      stage.scene.remove(helpers.object);
+      helpers.dispose();
+    }
+    stage.render();
   };
 }

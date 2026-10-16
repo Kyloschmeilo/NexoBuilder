@@ -4,11 +4,11 @@ import {
   initialNewItemState,
   isCreationBlocked,
   newItemEntries,
+  type NewItemInput,
   newItemInputs,
   newItemReducer,
-} from '@resourcepackbuilder/core/model/newItems';
-import type { NewItemInput } from '@resourcepackbuilder/core/project/factory';
-import type { Project } from '@resourcepackbuilder/core/project/types';
+  type Project,
+} from '@resourcepackbuilder/core/project';
 import { useErrorMessage } from '../../i18n/errors';
 import { notify } from '../../shell/notify';
 import { readImportFiles } from '../../components/modelFiles';

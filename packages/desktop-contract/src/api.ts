@@ -6,10 +6,8 @@
  *
  * No runtime dependencies: the preload script and the renderer import this file too.
  */
-import type { ShareFileInfo } from '@resourcepackbuilder/core/sync/engine';
-import type { NexoJarInfo, TestServerConfig } from '@resourcepackbuilder/core/testServer/config';
-import type { PackStatus, TestServerStatus } from '@resourcepackbuilder/core/testServer/status';
-import type { ServerFile } from '@resourcepackbuilder/core/testServer/files';
+import type { ShareFileInfo } from '@resourcepackbuilder/sync';
+import type { NexoJarInfo, PackStatus, ServerFile, TestServerConfig, TestServerStatus } from '@resourcepackbuilder/test-server';
 import type { SupportedLocale } from '@resourcepackbuilder/i18n/locale';
 
 export type { NexoJarInfo, ShareFileInfo, TestServerConfig };

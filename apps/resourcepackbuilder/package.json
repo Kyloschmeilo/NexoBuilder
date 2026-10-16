@@ -24,9 +24,15 @@
     "@resourcepackbuilder/config": "*",
     "@resourcepackbuilder/core": "*",
     "@resourcepackbuilder/desktop-contract": "*",
+    "@resourcepackbuilder/export": "*",
     "@resourcepackbuilder/i18n": "*",
+    "@resourcepackbuilder/minecraft": "*",
     "@resourcepackbuilder/preview": "*",
+    "@resourcepackbuilder/sync": "*",
+    "@resourcepackbuilder/test-server": "*",
+    "@resourcepackbuilder/test-utils": "*",
     "@resourcepackbuilder/ui": "*",
+    "@resourcepackbuilder/utils": "*",
     "@tailwindcss/postcss": "^4.3.3",
     "cn": "^0.4.0",
     "electron": "44.5.1",
@@ -45,6 +51,7 @@
     "react": "^19.3.0",
     "react-dom": "^19.3.0",
     "tailwindcss": "^4.3.3",
+    "vitest": "^5.0.3",
     "zod": "^4.6.7",
     "zustand": "^5.0.15"
   }

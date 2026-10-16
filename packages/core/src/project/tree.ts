@@ -1,6 +1,5 @@
 /** Helpers around the folder structure of a project (all guarded against folder cycles). */
-import { hasPath } from '../object';
-import { slugify } from '../text';
+import { hasPath, slugify } from '@resourcepackbuilder/utils';
 import type { Folder, Item, Project } from './types';
 
 export function folderSlug(folder: Folder): string {

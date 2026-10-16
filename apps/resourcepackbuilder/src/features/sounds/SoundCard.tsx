@@ -1,9 +1,8 @@
 import { useTranslations } from 'next-intl';
-import type { ExportPlan } from '@resourcepackbuilder/core/export/types';
-import { issuesFor } from '@resourcepackbuilder/core/issues';
-import { normalizeTypedId, SOUND_ID_CHARS } from '@resourcepackbuilder/core/minecraft/resourceLocation';
-import type { Sound } from '@resourcepackbuilder/core/nexo/sounds/model';
-import { mediaKey } from '@resourcepackbuilder/core/nexo/media/entry';
+import type { ExportPlan } from '@resourcepackbuilder/export';
+import { issuesFor } from '@resourcepackbuilder/utils';
+import { normalizeTypedId, SOUND_ID_CHARS } from '@resourcepackbuilder/minecraft';
+import { mediaKey, type Sound } from '@resourcepackbuilder/core/project';
 import { Badge } from '@resourcepackbuilder/ui/components/badge';
 import { Input } from '@resourcepackbuilder/ui/components/input';
 import { AutoGrid } from '@resourcepackbuilder/ui';

@@ -1,0 +1,26 @@
+{
+  "name": "@resourcepackbuilder/sync",
+  "private": true,
+  "version": "0.0.0",
+  "description": "Shared-folder sync: the file format of shared projects, merging and the sync engine.",
+  "type": "module",
+  "sideEffects": false,
+  "exports": {
+    ".": "./src/index.ts"
+  },
+  "scripts": {
+    "typecheck": "tsc -b",
+    "test": "vitest run",
+    "lint": "eslint ."
+  },
+  "dependencies": {
+    "@resourcepackbuilder/core": "*",
+    "@resourcepackbuilder/utils": "*",
+    "immer": "^11.1.21",
+    "zod": "^4.6.7"
+  },
+  "devDependencies": {
+    "@resourcepackbuilder/config": "*",
+    "vitest": "^5.0.3"
+  }
+}

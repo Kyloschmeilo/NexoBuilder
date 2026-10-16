@@ -1,10 +1,17 @@
 /** Export of recipes: one file per recipe type under recipes/<type>/. */
-import { groupBy } from '../../object';
+import { groupBy } from '@resourcepackbuilder/utils';
 import type { Item, Project } from '../../project/types';
-import { englishName } from '../fieldNames';
-import { projectFileName } from '../projectFiles';
+import { englishName } from '../form/fields';
+import { projectFileName } from '../../project/factory';
 import { itemsToYaml } from '../yaml';
-import { getRecipeTypeInfo, INGREDIENT_LETTERS, RECIPE_TYPES, type Recipe, type RecipeIngredient, type RecipeType } from './model';
+import {
+  getRecipeTypeInfo,
+  INGREDIENT_LETTERS,
+  RECIPE_TYPES,
+  type Recipe,
+  type RecipeIngredient,
+  type RecipeType,
+} from '../../project/recipes/model';
 
 function ingredientToYaml(ingredient: RecipeIngredient): Record<string, unknown> {
   const out: Record<string, unknown> = {};

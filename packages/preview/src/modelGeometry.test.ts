@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import type { ImportedModel, JavaModelJson, ModelTexture } from '@resourcepackbuilder/core/model/types';
+import type { ImportedModel, JavaModelJson, ModelTexture } from '@resourcepackbuilder/minecraft';
 import { buildPreviewModel } from './modelGeometry';
 
 const texture: ModelTexture = { id: 't0', name: 'ruby', dataUrl: 'data:image/png;base64,AAAA', width: 16, height: 16, mcmeta: null };

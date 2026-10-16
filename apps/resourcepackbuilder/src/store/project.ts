@@ -4,7 +4,7 @@
  */
 import { create } from 'zustand';
 import { produce } from 'immer';
-import type { Project } from '@resourcepackbuilder/core/project/types';
+import type { Project } from '@resourcepackbuilder/core/project';
 
 interface ProjectState {
   project: Project | null;

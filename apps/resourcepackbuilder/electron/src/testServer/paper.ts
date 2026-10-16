@@ -1,5 +1,5 @@
 /** Paper server: available versions and the server JAR (PaperMC "fill" API). */
-import { guessJavaFor } from '@resourcepackbuilder/core/testServer/java';
+import { guessJavaFor } from '@resourcepackbuilder/test-server';
 import fs from 'node:fs';
 import path from 'node:path';
 import { t } from '../i18n';

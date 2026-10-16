@@ -4,7 +4,7 @@
  * get quoted automatically.
  */
 import { Document, isScalar, parse, visit, YAMLParseError, type Scalar } from 'yaml';
-import type { IssueCode } from '../issues';
+import type { IssueCode } from '@resourcepackbuilder/utils';
 
 const STRINGIFY_OPTIONS = { indent: 2, lineWidth: 0, minContentWidth: 0 } as const;
 

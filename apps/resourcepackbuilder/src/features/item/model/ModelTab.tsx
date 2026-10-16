@@ -1,7 +1,6 @@
 import { useTranslations } from 'next-intl';
 import { Box } from 'lucide-react';
-import type { Item } from '@resourcepackbuilder/core/project/types';
-import { itemMaterial } from '@resourcepackbuilder/core/nexo/material';
+import { type Item, itemMaterial } from '@resourcepackbuilder/core/project';
 import { DropZone, SectionCard } from '@resourcepackbuilder/ui';
 import { setItemModel } from '../../../commands/items';
 import { PropertiesPanel } from '../properties/PropertiesPanel';

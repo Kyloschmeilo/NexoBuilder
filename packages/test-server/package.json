@@ -1,0 +1,29 @@
+{
+  "name": "@resourcepackbuilder/test-server",
+  "private": true,
+  "version": "0.0.0",
+  "description": "The local test server's rules: config and limits, console commands, server log parsing, status, Java and plugin versions, the files synced into plugins/Nexo.",
+  "type": "module",
+  "sideEffects": false,
+  "exports": {
+    ".": "./src/index.ts"
+  },
+  "scripts": {
+    "typecheck": "tsc -b",
+    "test": "vitest run",
+    "lint": "eslint ."
+  },
+  "dependencies": {
+    "@resourcepackbuilder/core": "*",
+    "@resourcepackbuilder/export": "*",
+    "@resourcepackbuilder/minecraft": "*",
+    "@resourcepackbuilder/utils": "*",
+    "jszip": "^3.10.2",
+    "yaml": "^2.9.1"
+  },
+  "devDependencies": {
+    "@resourcepackbuilder/config": "*",
+    "@resourcepackbuilder/test-utils": "*",
+    "vitest": "^5.0.3"
+  }
+}

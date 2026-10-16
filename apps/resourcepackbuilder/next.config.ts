@@ -9,6 +9,11 @@ const nextConfig: NextConfig = {
     '@resourcepackbuilder/core',
     '@resourcepackbuilder/desktop-contract',
     '@resourcepackbuilder/ui',
+    '@resourcepackbuilder/minecraft',
+    '@resourcepackbuilder/export',
+    '@resourcepackbuilder/sync',
+    '@resourcepackbuilder/test-server',
+    '@resourcepackbuilder/utils',
     '@resourcepackbuilder/preview',
   ],
 };

@@ -1,6 +1,6 @@
 import { RefreshCw, TriangleAlert } from 'lucide-react';
 import { useFormatter, useTranslations } from 'next-intl';
-import { countIssues } from '@resourcepackbuilder/core/issues';
+import { countIssues } from '@resourcepackbuilder/utils';
 import { Alert, AlertDescription } from '@resourcepackbuilder/ui/components/alert';
 import { Button } from '@resourcepackbuilder/ui/components/button';
 import { SectionCard } from '@resourcepackbuilder/ui';
@@ -10,7 +10,7 @@ import { useErrorMessage } from '../../i18n/errors';
 import type { TestServerState } from '../../platform/desktopApi';
 import { usePlan } from '../../shell/PlanProvider';
 import { useTestServerStore } from '../../services/testServerStore';
-import { syncSummary, type SyncSummaryPart } from '@resourcepackbuilder/core/testServer/status';
+import { syncSummary, type SyncSummaryPart } from '@resourcepackbuilder/test-server';
 import { useSetConfig, useTestServer } from './useTestServer';
 
 /** Transfer of the project into the server: manual, automatic, and how the last transfers went. */

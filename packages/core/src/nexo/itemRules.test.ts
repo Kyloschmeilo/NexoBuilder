@@ -1,9 +1,17 @@
 import { describe, expect, it } from 'vitest';
-import { holdStyleParent } from '../minecraft/vanillaModels';
+import { holdStyleParent } from '@resourcepackbuilder/minecraft';
 import type { ConfigObject } from '../project/types';
-import { activeProperties, availableProperties, emptyPropertyValue, propertyConflict, propertyYamlPath } from './properties';
-import { PROPERTY_BY_ID } from './schema';
-import { furnitureConfig, furnitureStateNames, isStringBlock, STACK_MODELS, stateNameError, variantConfigPath, VARIANTS } from './variants';
+import { activeProperties, availableProperties, emptyPropertyValue, propertyConflict, propertyYamlPath } from './form/properties';
+import { PROPERTY_BY_ID } from './form/schema';
+import {
+  furnitureConfig,
+  furnitureStateNames,
+  isStringBlock,
+  STACK_MODELS,
+  stateNameError,
+  variantConfigPath,
+  VARIANTS,
+} from '../project/variants';
 
 const owner = (config: ConfigObject) => ({ config });
 

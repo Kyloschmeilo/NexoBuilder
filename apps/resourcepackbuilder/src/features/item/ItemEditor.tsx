@@ -1,6 +1,6 @@
 import { useTranslations } from 'next-intl';
-import type { Item } from '@resourcepackbuilder/core/project/types';
-import { issuesFor } from '@resourcepackbuilder/core/issues';
+import type { Item } from '@resourcepackbuilder/core/project';
+import { issuesFor } from '@resourcepackbuilder/utils';
 import { PageShell } from '@resourcepackbuilder/ui';
 import { Badge } from '@resourcepackbuilder/ui/components/badge';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@resourcepackbuilder/ui/components/tabs';
@@ -12,7 +12,7 @@ import { setEditorTab, useUiStore, type EditorTab } from '../../store/ui';
 import { GeneralTab } from './GeneralTab';
 import { ItemHeader } from './ItemHeader';
 import { ModelTab } from './model/ModelTab';
-import { activeProperties } from '@resourcepackbuilder/core/nexo/properties';
+import { activeProperties } from '@resourcepackbuilder/core/nexo';
 import { PropertiesPanel } from './properties/PropertiesPanel';
 import { RecipesTab } from './recipes/RecipesTab';
 import { useItemFieldContext } from './useItemFieldContext';

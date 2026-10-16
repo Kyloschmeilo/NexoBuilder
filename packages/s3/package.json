@@ -17,7 +17,8 @@
     "@resourcepackbuilder/config": "*",
     "@resourcepackbuilder/i18n": "*",
     "@smithy/util-stream": "^4.8.2",
-    "aws-sdk-client-mock": "^4.1.0"
+    "aws-sdk-client-mock": "^4.1.0",
+    "vitest": "^5.0.3"
   },
   "dependencies": {
     "@aws-sdk/client-s3": "^3.1152.0",

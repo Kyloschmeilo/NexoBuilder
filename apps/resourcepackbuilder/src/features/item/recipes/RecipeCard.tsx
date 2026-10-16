@@ -1,11 +1,15 @@
 import { useTranslations } from 'next-intl';
 import { Trash2 } from 'lucide-react';
-import type { Item } from '@resourcepackbuilder/core/project/types';
-import { issuesFor } from '@resourcepackbuilder/core/issues';
-import { emptyIngredient, getRecipeTypeInfo, MAX_RESULT_AMOUNT, type Recipe } from '@resourcepackbuilder/core/nexo/recipes/model';
-import { recipeIssues } from '@resourcepackbuilder/core/nexo/recipes/issues';
-import { TICKS_PER_SECOND } from '@resourcepackbuilder/core/nexo/recipes/operations';
-import { recipeFilePath } from '@resourcepackbuilder/core/nexo/recipes/files';
+import {
+  emptyIngredient,
+  getRecipeTypeInfo,
+  type Item,
+  MAX_RESULT_AMOUNT,
+  type Recipe,
+  TICKS_PER_SECOND,
+} from '@resourcepackbuilder/core/project';
+import { issuesFor } from '@resourcepackbuilder/utils';
+import { recipeFilePath, recipeIssues } from '@resourcepackbuilder/core/nexo';
 import { IconButton, SectionCard, Tip } from '@resourcepackbuilder/ui';
 import { Badge } from '@resourcepackbuilder/ui/components/badge';
 import { Field, FieldDescription, FieldTitle } from '@resourcepackbuilder/ui/components/field';

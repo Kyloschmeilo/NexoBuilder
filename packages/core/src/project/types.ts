@@ -5,14 +5,13 @@
  * Each item optionally has an imported model that is written into the
  * resource pack (pack/external_packs/<name>) on export.
  */
-import type { DataUrl } from '../binary/dataUrl';
-import type { ImportedModel, ModelTexture } from '../model/types';
-import type { ArmorSettings } from '../nexo/armor';
-import type { Glyph } from '../nexo/glyphs/model';
-import type { Painting } from '../nexo/paintings/model';
-import type { Recipe } from '../nexo/recipes/model';
-import type { Sound } from '../nexo/sounds/model';
-import type { VariantSlot } from '../nexo/variants';
+import type { DataUrl, ImportedModel, ModelTexture } from '@resourcepackbuilder/minecraft';
+import type { ArmorSettings } from './armor';
+import type { Glyph } from './media/glyph';
+import type { Painting } from './media/painting';
+import type { Recipe } from './recipes/model';
+import type { Sound } from './media/sound';
+import type { VariantSlot } from './variants';
 
 export interface Folder {
   id: string;

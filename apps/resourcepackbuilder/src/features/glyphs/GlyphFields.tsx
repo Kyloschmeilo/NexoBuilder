@@ -1,6 +1,6 @@
 import { useTranslations } from 'next-intl';
-import { CHAT_TEXT_HEIGHT, isMultiBitmap, type Glyph } from '@resourcepackbuilder/core/nexo/glyphs/model';
-import { normalizeTypedId } from '@resourcepackbuilder/core/minecraft/resourceLocation';
+import { CHAT_TEXT_HEIGHT, isMultiBitmap, type Glyph } from '@resourcepackbuilder/core/project';
+import { normalizeTypedId } from '@resourcepackbuilder/minecraft';
 import { Input } from '@resourcepackbuilder/ui/components/input';
 import { AutoGrid } from '@resourcepackbuilder/ui';
 import { updateGlyph } from '../../commands/media';

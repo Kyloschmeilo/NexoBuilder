@@ -1,18 +1,18 @@
 import type { ReactNode } from 'react';
 import { useTranslations } from 'next-intl';
 import { Plus } from 'lucide-react';
-import type { Item } from '@resourcepackbuilder/core/project/types';
 import {
   CONNECT_SLOTS,
+  FURNITURE_MODEL_SLOTS,
   furnitureConfig,
   furnitureStateNames,
-  FURNITURE_MODEL_SLOTS,
+  type Item,
   PLACEMENT_SLOTS,
   stateDef,
   stateNameError,
   type StateNameError,
   type VariantSlot,
-} from '@resourcepackbuilder/core/nexo/variants';
+} from '@resourcepackbuilder/core/project';
 import { Button } from '@resourcepackbuilder/ui/components/button';
 import { Card, CardContent } from '@resourcepackbuilder/ui/components/card';
 import { AutoGrid } from '@resourcepackbuilder/ui';

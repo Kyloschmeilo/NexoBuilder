@@ -1,9 +1,9 @@
 import { Box, ClipboardCopy, ClipboardPaste, Copy, FolderInput, Trash2 } from 'lucide-react';
 import { useTranslations } from 'next-intl';
-import { itemLabel } from '@resourcepackbuilder/core/project/labels';
-import { clipboardLabel } from '@resourcepackbuilder/core/nexo/copyConfig';
+import { itemLabel } from '@resourcepackbuilder/core/project';
+import { clipboardLabel } from '@resourcepackbuilder/core/nexo';
 import { type MenuEntry, StatusDot, Thumb, TREE_INDENT_PX, treeRowSlots } from '@resourcepackbuilder/ui';
-import { useThumbnail } from '@resourcepackbuilder/preview';
+import { useThumbnail } from '../../components/useThumbnail';
 import { moveItem } from '../../commands/items';
 import { useItemActions } from '../../features/item/useItemActions';
 import { useClipboardStore } from '../../store/clipboard';

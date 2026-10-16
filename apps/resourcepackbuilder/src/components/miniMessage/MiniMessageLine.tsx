@@ -1,6 +1,6 @@
 /** Preview of MiniMessage text (colours, gradients, decorations) as Nexo uses them for item names and lore. */
 import type { CSSProperties, ReactNode } from 'react';
-import { gradientColorAt, parseMiniMessage, type MiniMessageStyle } from '@resourcepackbuilder/core/miniMessage';
+import { gradientColorAt, parseMiniMessage, type MiniMessageStyle } from '@resourcepackbuilder/minecraft';
 
 /** Minecraft's default colour of item names (white). */
 const NAME_COLOR = '#FFFFFF';

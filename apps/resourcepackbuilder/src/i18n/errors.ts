@@ -1,6 +1,6 @@
 import { useCallback } from 'react';
 import { useTranslations } from 'next-intl';
-import { CoreError, type IssueCode, type MessageArgs } from '@resourcepackbuilder/core/issues';
+import { CoreError, type IssueCode, type MessageArgs } from '@resourcepackbuilder/utils';
 import { DesktopError } from '@resourcepackbuilder/desktop-contract/errors';
 import type { MessageKey } from '@resourcepackbuilder/i18n';
 

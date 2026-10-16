@@ -4,10 +4,9 @@
  * While the server runs with automatic updates, every project change is written to plugins/Nexo shortly afterwards
  * and Nexo is reloaded ("nexo reload all"); players get the new resource pack automatically.
  */
-import { planExport } from '@resourcepackbuilder/core/export/plan';
-import { compareVersions } from '@resourcepackbuilder/core/minecraft/versions';
-import { TEST_SERVER_LOG_LIMIT } from '@resourcepackbuilder/core/testServer/config';
-import { nexoFolderFiles, nexoGiveCommand, patchNexoSettings } from '@resourcepackbuilder/core/testServer/files';
+import { planExport } from '@resourcepackbuilder/export';
+import { compareVersions } from '@resourcepackbuilder/minecraft';
+import { nexoFolderFiles, nexoGiveCommand, patchNexoSettings, TEST_SERVER_LOG_LIMIT } from '@resourcepackbuilder/test-server';
 import { AppError } from '../i18n/errors';
 import { asError } from '../lib/asError';
 import type { DesktopTestServerApi, NexoJarInfo, TestServerConfigPatch, TestServerSyncResult } from '../platform/desktopApi';

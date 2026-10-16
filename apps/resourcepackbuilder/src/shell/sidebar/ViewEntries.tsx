@@ -3,7 +3,7 @@ import type { ReactNode } from 'react';
 import { Frame, Music, Server, Smile } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 import { cn } from 'cn';
-import type { IssueTarget } from '@resourcepackbuilder/core/issues';
+import type { IssueTarget } from '@resourcepackbuilder/utils';
 import { StatusDot, Tip, treeRow, treeRowSlots } from '@resourcepackbuilder/ui';
 import { TEST_SERVER_STATUS_TONE } from '../../features/testServer/status';
 import { usePlan } from '../PlanProvider';

@@ -1,7 +1,6 @@
 /** Turning dropped or picked files into models for an existing item, with notices for what could not be used. */
 import { useTranslations } from 'next-intl';
-import { createDrafts } from '@resourcepackbuilder/core/model/drafts';
-import type { ImportedModel } from '@resourcepackbuilder/core/model/types';
+import { createDrafts, type ImportedModel } from '@resourcepackbuilder/minecraft';
 import { useErrorMessage } from '../../../i18n/errors';
 import { notify } from '../../../shell/notify';
 import { readImportFiles } from '../../../components/modelFiles';

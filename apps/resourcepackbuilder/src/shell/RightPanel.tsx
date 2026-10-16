@@ -1,10 +1,9 @@
 import { useMemo } from 'react';
 import { Code } from 'lucide-react';
 import { useTranslations } from 'next-intl';
-import { findItemPlan, itemYamlPreview } from '@resourcepackbuilder/core/export/itemPreview';
-import type { ExportPlan } from '@resourcepackbuilder/core/export/types';
-import { issuesFor, type Issue } from '@resourcepackbuilder/core/issues';
-import type { Project } from '@resourcepackbuilder/core/project/types';
+import { type ExportPlan, findItemPlan, itemYamlPreview } from '@resourcepackbuilder/export';
+import { issuesFor, type Issue } from '@resourcepackbuilder/utils';
+import type { Project } from '@resourcepackbuilder/core/project';
 import { Tip } from '@resourcepackbuilder/ui';
 import { ScrollArea } from '@resourcepackbuilder/ui/components/scroll-area';
 import { IssueList } from '../components/IssueList';

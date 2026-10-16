@@ -1,9 +1,14 @@
 /** Actions on glyphs, sounds and paintings that ask or report: deleting, and creating items for them. */
 import { useTranslations } from 'next-intl';
-import { musicDiscItem, paintingItem } from '@resourcepackbuilder/core/nexo/media/items';
-import { mediaId, type MediaEntryByKind, type MediaKind } from '@resourcepackbuilder/core/nexo/media/kinds';
-import type { Painting } from '@resourcepackbuilder/core/nexo/paintings/model';
-import type { Sound } from '@resourcepackbuilder/core/nexo/sounds/model';
+import {
+  type MediaEntryByKind,
+  mediaId,
+  type MediaKind,
+  musicDiscItem,
+  type Painting,
+  paintingItem,
+  type Sound,
+} from '@resourcepackbuilder/core/project';
 import { addMediaItem, MEDIA_COMMANDS } from '../../commands/media';
 import { notify } from '../../shell/notify';
 import { confirm } from '../../store/dialogs';

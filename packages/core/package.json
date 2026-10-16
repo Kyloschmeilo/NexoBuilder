@@ -2,10 +2,12 @@
   "name": "@resourcepackbuilder/core",
   "private": true,
   "version": "0.0.0",
-  "description": "Model import, Nexo configuration, export planning and sync – no UI.",
+  "description": "The project model (items, folders, media, recipes, migration, operations) and its Nexo mapping (item config, form schema, YAML) – no UI.",
   "type": "module",
+  "sideEffects": false,
   "exports": {
-    "./*": "./src/*.ts"
+    "./project": "./src/project/index.ts",
+    "./nexo": "./src/nexo/index.ts"
   },
   "scripts": {
     "typecheck": "tsc -b",
@@ -14,13 +16,15 @@
     "lint": "eslint ."
   },
   "dependencies": {
+    "@resourcepackbuilder/minecraft": "*",
+    "@resourcepackbuilder/utils": "*",
     "immer": "^11.1.21",
-    "jszip": "^3.10.2",
     "yaml": "^2.9.1",
     "zod": "^4.6.7"
   },
   "devDependencies": {
     "@resourcepackbuilder/config": "*",
-    "@resourcepackbuilder/i18n": "*"
+    "@resourcepackbuilder/test-utils": "*",
+    "vitest": "^5.0.3"
   }
 }

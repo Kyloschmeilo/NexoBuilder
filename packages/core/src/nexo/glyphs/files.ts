@@ -1,9 +1,9 @@
 /** Export of glyphs: the glyph file (textures: see export/paths). */
-import { formatResourceLocation } from '../../minecraft/resourceLocation';
+import { formatResourceLocation } from '@resourcepackbuilder/minecraft';
 import type { Project } from '../../project/types';
-import { projectFileName } from '../projectFiles';
+import { projectFileName } from '../../project/factory';
 import { itemsToYaml } from '../yaml';
-import type { Glyph } from './model';
+import type { Glyph } from '../../project/media/glyph';
 
 function glyphToYaml(project: Project, glyph: Glyph): Record<string, unknown> {
   const out: Record<string, unknown> = {};

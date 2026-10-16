@@ -1,6 +1,5 @@
 import { useEffect, useEffectEvent, useMemo, useState } from 'react';
-import type { Project } from '@resourcepackbuilder/core/project/types';
-import { summarizeProject, type ProjectSummary } from '@resourcepackbuilder/core/project/summary';
+import { type Project, type ProjectSummary, summarizeProject } from '@resourcepackbuilder/core/project';
 import { useServices } from '../../services/bootstrap';
 
 /** A project the export dialog offers. */

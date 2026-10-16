@@ -1,7 +1,6 @@
 /** Folder actions that ask the user first (sidebar, folder view, empty main area). */
 import { useTranslations } from 'next-intl';
-import type { Folder } from '@resourcepackbuilder/core/project/types';
-import { getDescendantFolderIds, itemIdsInFolder } from '@resourcepackbuilder/core/project/tree';
+import { type Folder, getDescendantFolderIds, itemIdsInFolder } from '@resourcepackbuilder/core/project';
 import { addFolder, deleteFolder, renameFolder } from '../../commands/folders';
 import { confirm, prompt } from '../../store/dialogs';
 import { getProject } from '../../store/project';

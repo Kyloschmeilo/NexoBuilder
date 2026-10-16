@@ -5,7 +5,7 @@ import { Thumb } from '@resourcepackbuilder/ui';
 import { Button } from '@resourcepackbuilder/ui/components/button';
 import { Item, ItemContent, ItemDescription, ItemMedia, ItemTitle } from '@resourcepackbuilder/ui/components/item';
 import { assignTextureReference } from '../../../commands/items';
-import { isVanillaReference } from '@resourcepackbuilder/core/minecraft/resourceLocation';
+import { isVanillaReference } from '@resourcepackbuilder/minecraft';
 import { usePngPicker } from '../../../hooks/useFileReaders';
 
 interface TextureReferenceCardProps {

@@ -1,7 +1,6 @@
 /** What the sidebar derives from the project and its plan once per change, instead of once per row. */
-import type { Issue, IssueTarget } from '@resourcepackbuilder/core/issues';
-import { itemLabel } from '@resourcepackbuilder/core/project/labels';
-import type { Project } from '@resourcepackbuilder/core/project/types';
+import type { Issue, IssueTarget } from '@resourcepackbuilder/utils';
+import { itemLabel, type Project } from '@resourcepackbuilder/core/project';
 
 /** Issue levels the sidebar marks; hints (`info`) are not shown there. */
 export type MarkedLevel = 'error' | 'warning';

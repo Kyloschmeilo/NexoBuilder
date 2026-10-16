@@ -1,4 +1,4 @@
-import type { SelectField } from '@resourcepackbuilder/core/nexo/fields';
+import type { SelectField } from '@resourcepackbuilder/core/nexo';
 import { useSchemaText } from '../../useSchemaText';
 import { FieldShell } from '../FieldShell';
 import { SelectInput } from '../inputs/SelectInput';
