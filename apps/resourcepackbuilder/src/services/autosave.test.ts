@@ -11,6 +11,7 @@ let autosave: Autosave | null = null;
 beforeEach(() => {
   vi.useFakeTimers();
   setProject(null);
+  useSaveStore.setState({ status: 'idle', isFailing: false });
 });
 
 afterEach(() => {
@@ -74,7 +75,9 @@ describe('autosave', () => {
     const { repository, control } = memoryRepository();
     autosave = createAutosave({ repository, delayMs: 10 });
     const failed = vi.fn();
-    autosave.events.subscribe(failed);
+    const unsubscribe = useSaveStore.subscribe((state, previous) => {
+      if (state.isFailing && !previous.isFailing) failed();
+    });
     setProject(createProject('A'));
     control.failing = true;
     rename('1');
@@ -91,16 +94,27 @@ describe('autosave', () => {
     rename('4');
     await vi.advanceTimersByTimeAsync(10);
     expect(failed).toHaveBeenCalledTimes(2);
+    unsubscribe();
   });
 
   it('stores the sync state together with the project', async () => {
     const { repository } = memoryRepository();
     const save = vi.spyOn(repository, 'save');
     const state = { clock: 3, versions: {}, files: {} };
-    autosave = createAutosave({ repository, delayMs: 10, syncStateFor: () => state });
+    autosave = createAutosave({ repository, delayMs: 10 });
+    autosave.attachSyncState(() => state);
     setProject(createProject('A'));
     rename('A1');
     await vi.advanceTimersByTimeAsync(10);
     expect(save).toHaveBeenCalledWith(expect.objectContaining({ name: 'A1' }), state);
+  });
+
+  it('stores a sync state on its own when only the sync state changed', async () => {
+    const { repository, syncStates } = memoryRepository();
+    const state = { clock: 5, versions: {}, files: {} };
+    autosave = createAutosave({ repository, delayMs: 10 });
+    autosave.saveSyncState('p_1', state);
+    await autosave.flush();
+    expect(syncStates.get('p_1')).toBe(state);
   });
 });

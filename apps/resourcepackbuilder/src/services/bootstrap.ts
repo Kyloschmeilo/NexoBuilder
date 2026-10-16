@@ -43,9 +43,9 @@ export async function bootstrap(): Promise<AppServices> {
 
   const desktop = desktopApi();
 
-  // The autosave stores the sync state with the project; the share sync asks for a save when that state changes.
-  const autosave: Autosave = createAutosave({ repository, syncStateFor: (projectId) => share?.syncStateFor(projectId) ?? null });
-  const share = desktop ? createShareSync({ api: desktop.share, repository, onSyncStateChanged: (id) => autosave.requestSave(id) }) : null;
+  // The share sync hands its sync state to the autosave, which stores it with the project
+  const autosave = createAutosave({ repository });
+  const share = desktop ? createShareSync({ api: desktop.share, repository, autosave }) : null;
   const testServer = desktop ? createTestServerSync(desktop.testServer) : null;
 
   // Keeps the desktop program's menus, native dialogs and test-server messages in the app's language

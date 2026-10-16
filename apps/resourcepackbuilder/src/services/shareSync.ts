@@ -2,8 +2,8 @@
  * Shared projects: connects the open project to its shared folder and keeps both up to date.
  *
  * - Own changes are batched briefly and then written to the folder.
- * - Changes by others are detected via file events and additionally every few seconds (cloud folders do not always
- *   report reliably).
+ * - Changes by others are detected via file events and additionally by polling (cloud folders do not always report
+ *   reliably): every few seconds without a working file watcher, rarely while it works.
  */
 import { deepClone } from '@resourcepackbuilder/core/object';
 import { migrateProject } from '@resourcepackbuilder/core/project/migrate';
@@ -21,11 +21,15 @@ import { AppError } from '../i18n/errors';
 import type { DesktopShareApi } from '../platform/desktopApi';
 import { applyRemote, useProjectStore } from '../store/project';
 import { DISCONNECTED, useShareStore, type ShareState } from '../store/share';
+import type { Autosave } from './autosave';
 import { createEvents, type Events } from './events';
 import type { ProjectRepository } from './projectRepository';
 import { createSerialTask, type SerialTask } from './serialTask';
+import { watchOpenProject } from './watchOpenProject';
 
 const POLL_MS = 2500;
+/** Polling while the file watcher works: only a fallback for changes it misses */
+const WATCHED_POLL_MS = 30_000;
 const FLUSH_DELAY_MS = 400;
 
 /** A shared project read from a folder chosen by the user. */
@@ -49,8 +53,6 @@ export interface ShareSync {
   openFolder(): void;
   /** The system user name, as suggestion for the name shown to the others ('' if unknown). */
   defaultUserName(): Promise<string>;
-  /** The sync state to store together with the project (only while it is connected). */
-  syncStateFor(projectId: string): SyncState | null;
   readonly events: Events<RemoteChange[]>;
   dispose(): void;
 }
@@ -66,14 +68,17 @@ interface Session {
 interface ShareSyncOptions {
   api: DesktopShareApi;
   repository: ProjectRepository;
-  /** The sync state changed and should be stored with the project. */
-  onSyncStateChanged: (projectId: string) => void;
+  /** Stores the sync state (together with the project while it is connected). */
+  autosave: Pick<Autosave, 'requestSave' | 'saveSyncState' | 'attachSyncState'>;
 }
 
-export function createShareSync({ api, repository, onSyncStateChanged }: ShareSyncOptions): ShareSync {
+export function createShareSync({ api, repository, autosave }: ShareSyncOptions): ShareSync {
   const events = createEvents<RemoteChange[]>();
   let session: Session | null = null;
   let isDisposed = false;
+  /** An own change waits to be written to the folder */
+  let isLocalChangePending = false;
+  const detachSyncState = autosave.attachSyncState((projectId) => (session?.projectId === projectId ? session.engine.state : null));
 
   const setStatus = (patch: Partial<ShareState>) => useShareStore.setState(patch);
 
@@ -90,7 +95,7 @@ export function createShareSync({ api, repository, onSyncStateChanged }: ShareSy
       const result = await s.engine.sync();
       if (s.isStopped) return;
       setStatus({ status: 'synced', error: null, lastSync: Date.now() });
-      if (result.applied.length || result.written) onSyncStateChanged(s.projectId);
+      if (result.applied.length || result.written) autosave.requestSave(s.projectId);
     } catch (err) {
       if (s.isStopped) return;
       if (err instanceof ShareFolderError) {
@@ -135,15 +140,7 @@ export function createShareSync({ api, repository, onSyncStateChanged }: ShareSy
     const control = { engine, projectId, isStopped: false };
     const sync = createSerialTask(() => syncOnce(control));
     const offChange = api.onChange(() => void sync.run());
-    const pollTimer = window.setInterval(() => void sync.run(), POLL_MS);
-    let flushTimer: number | undefined;
-    const unsubscribe = useProjectStore.subscribe(({ project }, { project: previous }) => {
-      if (!project || project === previous || project.id !== projectId) return;
-      if (engine.noteLocalChange(project)) {
-        window.clearTimeout(flushTimer);
-        flushTimer = window.setTimeout(() => void sync.run(), FLUSH_DELAY_MS);
-      }
-    });
+    const poll: { timer?: number } = {};
     session = {
       engine,
       projectId,
@@ -151,15 +148,15 @@ export function createShareSync({ api, repository, onSyncStateChanged }: ShareSy
       sync,
       stop: () => {
         control.isStopped = true;
-        window.clearInterval(pollTimer);
-        window.clearTimeout(flushTimer);
-        unsubscribe();
+        window.clearInterval(poll.timer);
         offChange();
         engine.stop();
         void api.unwatch(config.folder).catch(() => undefined);
       },
     };
-    await api.watch(config.folder).catch(() => false);
+    const isWatching = await api.watch(config.folder).catch(() => false);
+    if (control.isStopped) return;
+    poll.timer = window.setInterval(() => void sync.run(), isWatching ? WATCHED_POLL_MS : POLL_MS);
     await sync.run();
   };
 
@@ -169,11 +166,12 @@ export function createShareSync({ api, repository, onSyncStateChanged }: ShareSy
     session = null;
     try {
       await s.engine.flush();
-    } catch {
-      // caught up on the next connect
+      // Only a state that matches what is in the folder is stored
+      autosave.saveSyncState(s.projectId, s.engine.state);
+    } catch (err) {
+      console.warn('Could not write the last changes to the shared folder; they are written on the next connect', err);
     }
     s.stop();
-    await repository.saveSyncState(s.projectId, s.engine.state).catch(() => undefined);
     setStatus(DISCONNECTED);
   };
 
@@ -184,14 +182,22 @@ export function createShareSync({ api, repository, onSyncStateChanged }: ShareSy
     if (projectId && !isDisposed) await connectTo(projectId);
   });
 
-  const unsubscribe = useProjectStore.subscribe(({ project }, { project: previous }) => {
-    const id = project?.id ?? null;
-    if (id !== (previous?.id ?? null)) void switchTo.run(id);
+  const watcher = watchOpenProject({
+    onSwitch: (project) => void switchTo.run(project?.id ?? null),
+    onChange(project) {
+      if (session?.projectId === project.id && session.engine.noteLocalChange(project)) isLocalChangePending = true;
+    },
+    onSettled() {
+      if (!isLocalChangePending) return;
+      isLocalChangePending = false;
+      void session?.sync.run();
+    },
+    debounceMs: FLUSH_DELAY_MS,
+    onUnload() {
+      session?.engine.flush().catch((err: unknown) => console.warn('Could not write the last changes to the shared folder', err));
+    },
   });
   void switchTo.run(useProjectStore.getState().project?.id ?? null);
-
-  const handleUnload = () => void session?.engine.flush();
-  window.addEventListener('beforeunload', handleUnload);
 
   return {
     async share(projectFolderName, userName) {
@@ -268,17 +274,12 @@ export function createShareSync({ api, repository, onSyncStateChanged }: ShareSy
       return api.userName().catch(() => '');
     },
 
-    syncStateFor(projectId) {
-      return session?.projectId === projectId ? session.engine.state : null;
-    },
-
     events,
 
     dispose() {
       isDisposed = true;
-      unsubscribe();
-      window.removeEventListener('beforeunload', handleUnload);
-      void disconnect();
+      watcher.dispose();
+      void disconnect().finally(detachSyncState);
     },
   };
 }

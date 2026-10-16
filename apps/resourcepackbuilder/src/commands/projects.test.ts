@@ -25,14 +25,14 @@ function fakeServices(repository: ProjectRepository, picked: SharedFolderProject
     setUserName: async () => undefined,
     syncNow: () => undefined,
     openFolder: () => undefined,
-    syncStateFor: () => null,
     events: createEvents(),
     dispose: () => undefined,
   };
   const autosave: Autosave = {
     flush: async () => undefined,
     requestSave: () => undefined,
-    events: createEvents(),
+    saveSyncState: () => undefined,
+    attachSyncState: () => () => undefined,
     dispose: () => undefined,
   };
   const services: AppServices = { repository, autosave, share, testServer: null, dispose: () => undefined };

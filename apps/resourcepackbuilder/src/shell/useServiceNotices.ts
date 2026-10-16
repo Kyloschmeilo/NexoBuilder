@@ -2,6 +2,7 @@ import { useEffect, useRef } from 'react';
 import { useTranslations } from 'next-intl';
 import type { RemoteChange } from '@resourcepackbuilder/core/sync/engine';
 import { useServices } from '../services/bootstrap';
+import { useSaveStore } from '../store/save';
 import { notify } from './notify';
 
 /** Repeated changes to the same entries by the same person are announced at most this often. */
@@ -9,11 +10,18 @@ const ANNOUNCE_QUIET_MS = 15_000;
 
 /** Turns what the background services report into notices for the user. */
 export function useServiceNotices(): void {
-  const { autosave, share } = useServices();
+  const { share } = useServices();
   const t = useTranslations('app');
   const lastAnnounced = useRef(new Map<string, number>());
 
-  useEffect(() => autosave.events.subscribe(() => notify('warning', t('autosave.failed'))), [autosave, t]);
+  // Once per series of failed saves
+  useEffect(
+    () =>
+      useSaveStore.subscribe((state, previous) => {
+        if (state.isFailing && !previous.isFailing) notify('warning', t('autosave.failed'));
+      }),
+    [t],
+  );
 
   useEffect(() => {
     if (!share) return;
