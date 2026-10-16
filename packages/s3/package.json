@@ -2,14 +2,12 @@
   "name": "@resourcepackbuilder/s3",
   "private": true,
   "version": "0.0.0",
-  "description": "Typed S3 client for storage locations and export destinations (Node only), bundled as a single CommonJS file for the Electron main process.",
+  "description": "Typed S3 client for storage locations and export destinations (Node only); bundled into the Electron main process once it imports it.",
   "type": "module",
   "exports": {
-    ".": "./src/index.ts",
-    "./bundle": "./dist/s3.cjs"
+    ".": "./src/index.ts"
   },
   "scripts": {
-    "build": "esbuild src/index.ts --bundle --platform=node --format=cjs --target=node24 --outfile=dist/s3.cjs --log-level=warning",
     "typecheck": "tsc -b",
     "test": "vitest run",
     "test:watch": "vitest",
@@ -18,8 +16,7 @@
   "devDependencies": {
     "@resourcepackbuilder/config": "*",
     "@smithy/util-stream": "^4.8.2",
-    "aws-sdk-client-mock": "^4.1.0",
-    "esbuild": "^0.28.2"
+    "aws-sdk-client-mock": "^4.1.0"
   },
   "dependencies": {
     "@aws-sdk/client-s3": "^3.1152.0",

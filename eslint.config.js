@@ -1,4 +1,5 @@
 // ESLint flat config for the whole monorepo (run per package via `npm run lint`).
+// Generated output is listed in .gitignore; keep these ignores in step with it and with .prettierignore.
 import js from '@eslint/js';
 import nextPlugin from '@next/eslint-plugin-next';
 import { defineConfig, globalIgnores } from 'eslint/config';
@@ -8,6 +9,8 @@ import path from 'node:path';
 import tseslint from 'typescript-eslint';
 
 const APP = 'apps/resourcepackbuilder';
+/** TypeScript that runs in Node rather than the browser. */
+const NODE_SOURCES = [`${APP}/electron/**`, 'packages/s3/**'];
 
 export default defineConfig(
   globalIgnores([
@@ -19,6 +22,7 @@ export default defineConfig(
     '**/dist/',
     '**/coverage/',
     '**/next-env.d.ts',
+    '**/.playwright-mcp/',
     'exe-test/',
     // Vendored shadcn components, hooks and helpers, kept as generated
     'packages/ui/src/components/',
@@ -37,7 +41,7 @@ export default defineConfig(
   // React code (app and the React packages)
   {
     files: ['**/*.{ts,tsx}'],
-    ignores: ['packages/core/**', `${APP}/electron/**`],
+    ignores: ['packages/core/**', 'packages/desktop-contract/**', ...NODE_SOURCES],
     extends: [reactHooks.configs.flat.recommended],
     languageOptions: { globals: globals.browser },
   },
@@ -52,7 +56,12 @@ export default defineConfig(
     },
   },
 
-  // Node: Electron main process, build scripts and config files
+  // Node: Electron main process and preload script, the S3 package (bundled into the main process)
+  {
+    files: NODE_SOURCES,
+    languageOptions: { globals: globals.node },
+  },
+  // CommonJS scripts
   {
     files: ['**/*.cjs'],
     languageOptions: { sourceType: 'commonjs', globals: globals.node },

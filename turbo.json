@@ -3,7 +3,7 @@
   "tasks": {
     "typecheck": {
       "dependsOn": ["^typecheck"],
-      "outputs": ["node_modules/.tmp/**"]
+      "outputs": ["node_modules/.tmp/**", ".next/types/**"]
     },
     "lint": {
       "outputs": []
@@ -13,8 +13,8 @@
       "outputs": []
     },
     "build": {
-      "dependsOn": ["^typecheck"],
-      "outputs": [".next/**", "!.next/cache/**", "out/**"]
+      "dependsOn": ["^build"],
+      "outputs": [".next/**", "!.next/cache/**", "out/**", "electron/dist/**"]
     },
     "dist:win": {
       "dependsOn": ["build"],

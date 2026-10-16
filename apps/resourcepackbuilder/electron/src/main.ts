@@ -1,47 +1,54 @@
-// @ts-check
 /**
  * ResourcepackBuilder as a desktop program (Electron).
  * Loads the static Next.js export (out/) via the custom app:// protocol in its own window.
  * Projects are saved automatically, just like in the browser (IndexedDB in the app data folder).
+ *
+ * Bundled with esbuild into electron/dist/main.cjs (see electron/build.mjs).
  */
-const { app, BrowserWindow, Menu, dialog, net, protocol, session, shell } = require('electron');
-const path = require('node:path');
-const { pathToFileURL } = require('node:url');
-const { onLocaleChange, setLocale, t } = require('./i18n.cjs');
-const { APP_ORIGIN, handle } = require('./ipc.cjs');
-const { registerShareHandlers } = require('./share.cjs');
-const { testHooks } = require('./testHooks.cjs');
-const { isTestServerRunning, registerTestServerHandlers, stopTestServer } = require('./testServer/index.cjs');
+import { APP_HOST, APP_ORIGIN, APP_SCHEME } from '@resourcepackbuilder/desktop-contract';
+import { app, BrowserWindow, dialog, Menu, nativeTheme, net, protocol, session, shell, type MenuItemConstructorOptions } from 'electron';
+import path from 'node:path';
+import { pathToFileURL } from 'node:url';
+import { setLocale, t } from './i18n';
+import { handle } from './ipc';
+import { registerShareHandlers } from './share';
+import { testHooks } from './testHooks';
+import { isTestServerRunning, registerTestServerHandlers, stopTestServer } from './testServer';
 
 const APP_NAME = 'ResourcepackBuilder';
-const OUT_DIR = path.join(__dirname, '..', 'out');
-const ICON = path.join(__dirname, '..', 'build', 'icon.png');
+/** The bundle lives in electron/dist/, next to the app's out/ and build/ folders. */
+const APP_DIR = path.join(__dirname, '..', '..');
+const OUT_DIR = path.join(APP_DIR, 'out');
+const ICON = path.join(APP_DIR, 'build', 'icon.png');
+/** `--background` of packages/ui/src/styles.css (light and dark), shown until the UI has painted. */
+const BACKGROUND = { light: '#f4f7f5', dark: '#0a1110' };
 /** Web permissions the UI needs: copy buttons write to the clipboard. Everything else is denied. */
 const ALLOWED_PERMISSIONS = new Set(['clipboard-sanitized-write']);
 
-/** @type {BrowserWindow | null} */
-let mainWindow = null;
+let mainWindow: BrowserWindow | null = null;
 
 // Next.js loads its assets from absolute paths (/_next/...), which file:// cannot serve.
-protocol.registerSchemesAsPrivileged([{ scheme: 'app', privileges: { standard: true, secure: true, supportFetchAPI: true } }]);
+protocol.registerSchemesAsPrivileged([{ scheme: APP_SCHEME, privileges: { standard: true, secure: true, supportFetchAPI: true } }]);
 
 function registerAppProtocol() {
-  protocol.handle('app', (request) => {
+  protocol.handle(APP_SCHEME, (request) => {
     const { host, pathname } = new URL(request.url);
     const relative = decodeURIComponent(pathname).replace(/\/+$/, '') || '/index';
     const file = path.normalize(path.join(OUT_DIR, relative));
     // Never serve anything outside the export folder
-    if (host !== 'bundle' || !file.startsWith(OUT_DIR + path.sep)) {
+    if (host !== APP_HOST || !file.startsWith(OUT_DIR + path.sep)) {
       return new Response('Not found', { status: 404 });
     }
     return net.fetch(pathToFileURL(path.extname(file) ? file : `${file}.html`).toString());
   });
 }
 
-/** Opens https links (e.g. to the Nexo docs) in the default browser; anything else is ignored. @param {string} url */
-function openExternal(url) {
+/** Opens https links (e.g. to the Nexo docs) in the default browser; anything else is ignored. */
+function openExternal(url: string) {
   if (/^https:\/\//i.test(url)) void shell.openExternal(url);
 }
+
+const backgroundColor = () => (nativeTheme.shouldUseDarkColors ? BACKGROUND.dark : BACKGROUND.light);
 
 function createWindow() {
   const window = new BrowserWindow({
@@ -51,7 +58,7 @@ function createWindow() {
     minHeight: 640,
     title: APP_NAME,
     icon: ICON,
-    backgroundColor: '#0a1110',
+    backgroundColor: backgroundColor(),
     show: false,
     autoHideMenuBar: false,
     webPreferences: {
@@ -84,8 +91,7 @@ function createWindow() {
 }
 
 function buildMenu() {
-  /** @type {Electron.MenuItemConstructorOptions[]} */
-  const template = [
+  const template: MenuItemConstructorOptions[] = [
     {
       label: t('menu.file'),
       submenu: [{ role: 'quit', label: t('menu.quit') }],
@@ -157,11 +163,13 @@ function run() {
     denyPermissions();
     buildMenu();
     // The UI reports its language on startup and on every change; menus are rebuilt in that language
-    onLocaleChange(() => buildMenu());
-    handle('app:set-locale', (_event, locale) => setLocale(locale));
+    handle('app:set-locale', (_event, locale) => {
+      if (setLocale(locale)) buildMenu();
+    });
     registerShareHandlers();
     registerTestServerHandlers();
     handleDownloads();
+    nativeTheme.on('updated', () => mainWindow?.setBackgroundColor(backgroundColor()));
 
     createWindow();
     app.on('activate', () => {

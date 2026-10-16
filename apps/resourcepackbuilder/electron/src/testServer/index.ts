@@ -1,4 +1,3 @@
-// @ts-check
 /**
  * Local test server (Paper + Nexo).
  *
@@ -10,26 +9,27 @@
  * Everything lives in <userData>/testserver. The user brings their own Nexo JAR; it is only copied into this folder,
  * never redistributed.
  */
-const { BrowserWindow } = require('electron');
-const fsp = require('node:fs/promises');
-const { openPath } = require('../fileHelpers.cjs');
-const { handle } = require('../ipc.cjs');
-const { chooseNexoJar } = require('./nexoJar.cjs');
-const { paperVersions } = require('./paper.cjs');
-const { serverDir } = require('./paths.cjs');
-const { isRunning, requestReload, runUserCommand, start, stop } = require('./server.cjs');
-const { clearLog, loadConfig, publicState, snapshot, updateConfig } = require('./state.cjs');
-const { readNexoSettings, syncFiles } = require('./sync.cjs');
+import type { DesktopInvokeChannel } from '@resourcepackbuilder/desktop-contract';
+import { BrowserWindow } from 'electron';
+import fsp from 'node:fs/promises';
+import { openPath } from '../fileHelpers';
+import { handle, type Handler } from '../ipc';
+import { chooseNexoJar } from './nexoJar';
+import { paperVersions } from './paper';
+import { serverDir } from './paths';
+import { isRunning, requestReload, runUserCommand, start, stop } from './server';
+import { clearLog, loadConfig, publicState, snapshot, updateConfig } from './state';
+import { readNexoSettings, syncFiles } from './sync';
 
 /** Like `handle`, but waits until the saved settings are loaded. */
-/** @type {typeof handle} */
-const handleLoaded = (channel, fn) =>
+function handleLoaded<C extends DesktopInvokeChannel>(channel: C, fn: Handler<C>) {
   handle(channel, async (event, ...args) => {
     await loadConfig();
     return fn(event, ...args);
   });
+}
 
-function registerTestServerHandlers() {
+export function registerTestServerHandlers(): void {
   handleLoaded('testserver:get-state', () => snapshot());
   handleLoaded('testserver:set-config', (_event, patch) => updateConfig(patch));
   handleLoaded('testserver:versions', () => paperVersions());
@@ -53,4 +53,4 @@ function registerTestServerHandlers() {
   });
 }
 
-module.exports = { registerTestServerHandlers, stopTestServer: stop, isTestServerRunning: isRunning };
+export { isRunning as isTestServerRunning, stop as stopTestServer };
