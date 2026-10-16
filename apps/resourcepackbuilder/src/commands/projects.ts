@@ -1,5 +1,5 @@
 /** Creating, opening, closing, deleting and exchanging whole projects. */
-import { createProject, parseProjectFile, type Project, PROJECT_FILE_EXTENSION, serializeProject } from '@resourcepackbuilder/core/project';
+import { createProject, type PackTargetId, parseProjectFile, type Project, PROJECT_FILE_EXTENSION, serializeProject } from '@resourcepackbuilder/core/project';
 import { slugify, uid } from '@resourcepackbuilder/utils';
 import { downloadBytes } from '@resourcepackbuilder/ui';
 import type { AppServices } from '../services/bootstrap';
@@ -11,8 +11,14 @@ async function switchProject({ autosave }: AppServices, project: Project | null)
   setProject(project);
 }
 
-export async function createNewProject(services: AppServices, name: string, namespace: string, minecraftVersion: string): Promise<Project> {
-  const project = createProject(name, namespace || undefined, minecraftVersion);
+export async function createNewProject(
+  services: AppServices,
+  name: string,
+  namespace: string,
+  minecraftVersion: string,
+  target: PackTargetId,
+): Promise<Project> {
+  const project = createProject(name, namespace || undefined, minecraftVersion, target);
   await switchProject(services, project);
   return project;
 }

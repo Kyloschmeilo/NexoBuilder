@@ -34,6 +34,8 @@
     "themeHelp": "“System” follows your operating system’s setting.",
     "projectName": "Project name",
     "minecraftVersion": "Server Minecraft version",
+    "target": "Server plugin",
+    "targetHelp": "You can't change this later.",
     "minecraftVersionHelp": "Determines which components are available and which model features are allowed.",
     "namespace": "Resource pack namespace",
     "namespaceHelp": "Files go to assets/{namespace}/…",

@@ -164,7 +164,13 @@
     "defaultName": "Mein Pack",
     "namespace": "Namespace (Resourcepack)",
     "version": "Minecraft-Version (Server)",
-    "create": "Projekt erstellen"
+    "create": "Projekt erstellen",
+    "target": "Server-Plugin",
+    "targetHint": "Das lässt sich später nicht ändern.",
+    "targets": {
+      "nexo": { "name": "Nexo", "description": "Items, Blöcke und Möbel für das Nexo-Plugin." },
+      "craftengine": { "name": "CraftEngine", "description": "Items, Blöcke und Möbel für das CraftEngine-Plugin." }
+    }
   },
   "projectList": {
     "storageUnavailable": "Projekte können in diesem Browser nicht gespeichert werden. Bitte Projektdateien verwenden.",

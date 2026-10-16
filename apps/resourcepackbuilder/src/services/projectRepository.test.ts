@@ -29,12 +29,22 @@ describe('projectRepository reads', () => {
     stored.set('client-id', { id: 'c_1' });
     stored.set('project:p_1', 'no project');
 
-    expect(await repository.list()).toEqual([{ id: 'p_1', name: 'A', namespace: '', itemCount: 0, updatedAt: 2 }]);
+    expect(await repository.list()).toEqual([{ id: 'p_1', name: 'A', namespace: '', target: 'nexo', itemCount: 0, updatedAt: 2 }]);
     expect(await repository.lastProjectId()).toBeNull();
     expect(await repository.loadShareConfig('p_1')).toBeNull();
     expect(await repository.loadSyncState('p_1')).toBeNull();
     expect(await repository.load('p_1')).toBeNull();
     expect(await repository.clientId()).toMatch(/^c_/);
+  });
+
+  it('lists the target of a stored project and falls back to nexo for an unknown one', async () => {
+    const repository = createProjectRepository();
+    stored.set('index', [
+      { id: 'p_1', name: 'A', target: 'craftengine' },
+      { id: 'p_2', name: 'B', target: 'other' },
+    ]);
+
+    expect((await repository.list()).map((p) => p.target)).toEqual(['craftengine', 'nexo']);
   });
 
   it('cleans up a partly damaged sync state', async () => {

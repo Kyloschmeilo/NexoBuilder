@@ -1,7 +1,7 @@
 /** Project actions offered in several places (top bar, welcome screen, projects dialog), with their notices. */
 import { useTranslations } from 'next-intl';
 import { pickFiles, readAsText } from '@resourcepackbuilder/ui';
-import { PROJECT_FILE_EXTENSION } from '@resourcepackbuilder/core/project';
+import { type PackTargetId, PROJECT_FILE_EXTENSION } from '@resourcepackbuilder/core/project';
 import {
   closeProject,
   createNewProject,
@@ -28,8 +28,8 @@ export function useProjectActions() {
   return {
     isShareAvailable: services.share !== null,
 
-    async create(name: string, namespace: string, minecraftVersion: string) {
-      const project = await createNewProject(services, name.trim() || t('defaults.newProjectName'), namespace.trim(), minecraftVersion);
+    async create(name: string, namespace: string, minecraftVersion: string, target: PackTargetId) {
+      const project = await createNewProject(services, name.trim() || t('defaults.newProjectName'), namespace.trim(), minecraftVersion, target);
       notify('success', t('project.created', { name: project.name }));
     },
 

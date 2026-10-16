@@ -16,6 +16,7 @@ import { PackIconField } from './PackIconField';
 export function ProjectSettings() {
   const t = useTranslations('dialogs.settings');
   const id = useId();
+  const tTargets = useTranslations('layout.projectForm.targets');
   const project = useOpenProject();
   const checkNamespace = useNamespaceProblem();
   const namespaceProblem = checkNamespace(project.namespace);
@@ -28,6 +29,11 @@ export function ProjectSettings() {
         <Field>
           <FieldLabel htmlFor={`${id}-name`}>{t('projectName')}</FieldLabel>
           <Input id={`${id}-name`} value={project.name} onChange={(e) => updateProjectSettings((p) => (p.name = e.target.value))} />
+        </Field>
+        <Field>
+          <FieldLabel htmlFor={`${id}-target`}>{t('target')}</FieldLabel>
+          <Input id={`${id}-target`} readOnly disabled value={tTargets(`${project.target}.name`)} />
+          <FieldDescription>{t('targetHelp')}</FieldDescription>
         </Field>
         <Field>
           <FieldLabel htmlFor={`${id}-version`}>{t('minecraftVersion')}</FieldLabel>

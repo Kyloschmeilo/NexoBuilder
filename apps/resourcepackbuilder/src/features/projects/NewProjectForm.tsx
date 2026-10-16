@@ -2,12 +2,14 @@ import { useId, useState } from 'react';
 import { FolderPlus } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 import { DEFAULT_MC_VERSION, MC_VERSIONS } from '@resourcepackbuilder/minecraft';
-import { defaultNamespace } from '@resourcepackbuilder/core/project';
+import { DEFAULT_PACK_TARGET, defaultNamespace, PACK_TARGETS } from '@resourcepackbuilder/core/project';
 import { Button } from '@resourcepackbuilder/ui/components/button';
-import { Field, FieldLabel } from '@resourcepackbuilder/ui/components/field';
+import { Field, FieldContent, FieldDescription, FieldLabel, FieldLegend, FieldSet, FieldTitle } from '@resourcepackbuilder/ui/components/field';
 import { Input } from '@resourcepackbuilder/ui/components/input';
 import { NativeSelect, NativeSelectOption } from '@resourcepackbuilder/ui/components/native-select';
+import { RadioGroup, RadioGroupItem } from '@resourcepackbuilder/ui/components/radio-group';
 import { AutoGrid } from '@resourcepackbuilder/ui';
+import { isOneOf } from '../../lib/isOneOf';
 import { NamespaceProblemText, useNamespaceProblem } from '../../components/NamespaceProblem';
 import { useProjectActions } from './useProjectActions';
 
@@ -15,11 +17,14 @@ import { useProjectActions } from './useProjectActions';
 export function NewProjectForm({ onDone }: { onDone?: () => void }) {
   const t = useTranslations('layout.projectForm');
   const id = useId();
+  const targetId = `${id}-target`;
   const actions = useProjectActions();
   const checkNamespace = useNamespaceProblem();
   const [name, setName] = useState('');
   const [editedNamespace, setEditedNamespace] = useState<string | null>(null);
   const [version, setVersion] = useState(DEFAULT_MC_VERSION);
+  const [target, setTarget] = useState(DEFAULT_PACK_TARGET);
+  const tTargets = useTranslations('layout.projectForm.targets');
   const defaultName = t('defaultName');
   const namespace = editedNamespace ?? defaultNamespace(name || defaultName);
   const problem = checkNamespace(namespace);
@@ -27,7 +32,7 @@ export function NewProjectForm({ onDone }: { onDone?: () => void }) {
 
   const submit = async () => {
     if (isInvalid) return;
-    await actions.create(name || defaultName, namespace, version);
+    await actions.create(name || defaultName, namespace, version, target);
     onDone?.();
   };
 
@@ -73,6 +78,29 @@ export function NewProjectForm({ onDone }: { onDone?: () => void }) {
           </NativeSelect>
         </Field>
       </AutoGrid>
+      <FieldSet>
+        <FieldLegend variant="label">{t('target')}</FieldLegend>
+        <RadioGroup
+          value={target}
+          onValueChange={(value) => {
+            if (isOneOf(PACK_TARGETS, value)) setTarget(value);
+          }}
+          className="grid gap-2 sm:grid-cols-2"
+        >
+          {PACK_TARGETS.map((id) => (
+            <FieldLabel key={id} htmlFor={`${targetId}-${id}`}>
+              <Field orientation="horizontal">
+                <FieldContent>
+                  <FieldTitle>{tTargets(`${id}.name`)}</FieldTitle>
+                  <FieldDescription className="text-xs">{tTargets(`${id}.description`)}</FieldDescription>
+                </FieldContent>
+                <RadioGroupItem id={`${targetId}-${id}`} value={id} data-testid={`new-project-target-${id}`} />
+              </Field>
+            </FieldLabel>
+          ))}
+        </RadioGroup>
+        <FieldDescription>{t('targetHint')}</FieldDescription>
+      </FieldSet>
       <Button type="submit" size="lg" disabled={isInvalid}>
         <FolderPlus /> {t('create')}
       </Button>

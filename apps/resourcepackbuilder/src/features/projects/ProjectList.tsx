@@ -24,6 +24,7 @@ interface ProjectRowProps {
 function ProjectRow({ project, isOpen, isShared, onOpen, onDelete }: ProjectRowProps) {
   const t = useTranslations('layout.projectList');
   const format = useFormatter();
+  const tTargets = useTranslations('layout.projectForm.targets');
   return (
     <Item
       variant="outline"
@@ -38,6 +39,9 @@ function ProjectRow({ project, isOpen, isShared, onOpen, onDelete }: ProjectRowP
           <button type="button" className="cursor-pointer text-left outline-none after:absolute after:inset-0" onClick={onOpen}>
             {project.name}
           </button>
+          <Badge variant="outline" data-testid="project-target">
+            {tTargets(`${project.target}.name`)}
+          </Badge>
           {isOpen && <Badge>{t('current')}</Badge>}
           {isShared && <Badge variant="success">{t('shared')}</Badge>}
         </ItemTitle>
