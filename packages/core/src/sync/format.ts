@@ -23,7 +23,7 @@ import { isPlainObject } from '../object';
 import { migrateItem } from '../project/migrate';
 import type { Folder, Item, Project, ProjectSettings } from '../project/types';
 
-const SHARE_FORMAT = 'resourcepackbuilder-share';
+export const SHARE_FORMAT = 'resourcepackbuilder-share';
 const SHARE_VERSION = 1;
 export const PROJECT_FILE = 'project.json';
 /** Informational file for people browsing the folder (never read) */
@@ -68,6 +68,29 @@ const KIND_BY_DIR = new Map(Object.entries(DIRS).map(([kind, dir]) => [dir, kind
 /** Allowed IDs for file names (everything ResourcepackBuilder generates itself). */
 const ENTITY_ID_PATTERN = /^[A-Za-z0-9_-]{1,64}$/;
 const ENTITY_PATH_PATTERN = /^([a-z]+)\/([A-Za-z0-9_-]{1,64})\.json$/;
+
+/** Folders holding one file per entry (`items/<id>.json` …). */
+export const ENTITY_DIRS: readonly string[] = Object.values(DIRS);
+
+/** Whether `path` (relative, forward slashes) is a file a shared project folder may contain. */
+export function isShareFilePath(path: string): boolean {
+  return path === PROJECT_FILE || path === README_FILE || ENTITY_PATH_PATTERN.test(path);
+}
+
+/**
+ * Id and name of the shared project in the text of a `project.json`, or null when it is none. Lenient on purpose
+ * (only format and id are required): it identifies a folder, the sync engine checks the full envelope.
+ */
+export function readProjectInfo(text: string): { id: string; name: string } | null {
+  let raw: unknown;
+  try {
+    raw = JSON.parse(text);
+  } catch {
+    return null;
+  }
+  if (!isPlainObject(raw) || raw.format !== SHARE_FORMAT || !isPlainObject(raw.data) || typeof raw.data.id !== 'string') return null;
+  return { id: raw.data.id, name: String(raw.data.name ?? '') };
+}
 
 type EnvelopeOf<K extends EntityKind> = {
   format: typeof SHARE_FORMAT;

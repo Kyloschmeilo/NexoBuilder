@@ -1,6 +1,7 @@
 import { useCallback } from 'react';
 import { useTranslations } from 'next-intl';
 import { CoreError } from '@resourcepackbuilder/core/issues';
+import { DesktopError } from '@resourcepackbuilder/desktop-contract/errors';
 import type { MessageKey } from '@resourcepackbuilder/i18n';
 
 /** Codes of the app's own errors: messages in the `state` namespace. */
@@ -19,12 +20,14 @@ export class AppError extends Error {
 
 /**
  * Returns the function that words a caught error in the current language: {@link CoreError}s from the `issues`
- * namespace, {@link AppError}s from `state`, anything else by its own message.
+ * namespace, {@link AppError}s from `state`, {@link DesktopError}s (reported by the desktop program) from
+ * `desktopErrors`, anything else by its own message.
  */
 export function useErrorMessage(): (err: unknown) => string {
   const tIssues = useTranslations('issues');
   const tSchema = useTranslations('schema');
   const tApp = useTranslations('app');
+  const tDesktop = useTranslations('desktopErrors');
   return useCallback(
     (err: unknown) => {
       if (err instanceof CoreError) {
@@ -36,8 +39,9 @@ export function useErrorMessage(): (err: unknown) => string {
         return tIssues(err.code as never, values as never);
       }
       if (err instanceof AppError) return tApp(err.code, err.args as never);
+      if (err instanceof DesktopError) return tDesktop(err.code, err.args as never);
       return err instanceof Error ? err.message : String(err);
     },
-    [tIssues, tSchema, tApp],
+    [tIssues, tSchema, tApp, tDesktop],
   );
 }

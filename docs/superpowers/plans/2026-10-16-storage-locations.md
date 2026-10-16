@@ -13,7 +13,8 @@ landed, so file names are final. Branch `ammo-rework`; each workstream commits i
 2. API per spec (client factory with endpoint/region/forcePathStyle/credentials, list (paginated), get text/bytes,
    put (contentType, publicRead), uploadLarge (multipart above 8 MB), head, delete(s), testConnection, objectUrl),
    `S3Error` with stable codes + mapping from SDK errors (incl. `AccessControlListNotSupported` → `aclNotSupported`).
-3. Tests with client mock; `build` script → `dist/s3.cjs` self-contained bundle; README section.
+3. Tests with client mock; README section. (No own bundle: the Electron main process is TypeScript bundled by
+   esbuild and imports `@resourcepackbuilder/s3` directly.)
 
 ### S2 – core (owns `packages/core/src/storage/**` (new) and `exportFileMap` in `packages/core/src/export/**`)
 
@@ -23,16 +24,16 @@ landed, so file names are final. Branch `ammo-rework`; each workstream commits i
    zip contents).
 3. Issue/error codes for storage in `issues.json` (en + de).
 
-### S3 – Electron + contract (owns `apps/resourcepackbuilder/electron/**`, `src/platform/desktopApi.ts`, `electron-builder.yml`, app `package.json` scripts, `packages/i18n/src/messages/*/desktop.json`)
+### S3 – Electron + contract (owns `apps/resourcepackbuilder/electron/**`, `packages/desktop-contract`, `electron-builder.yml`, app `package.json` scripts, `packages/i18n/src/messages/*/desktop.json`)
 
 1. Contract additions from the spec (types written first so S4 can start against them).
-2. `storage/connections.cjs` (safeStorage, JSON store, no plaintext fallback), `storage/folderBackend.cjs` (from
-   `share.cjs`), `storage/s3Backend.cjs` (SyncFs + inspect over the S1 bundle — until S1 lands, code against its
-   documented API), `exportTargets.cjs`, IPC registration with the sender guard, `storage:changed` event, polling
+2. `storage/connections.ts` (safeStorage, JSON store, no plaintext fallback), `storage/folderBackend.ts` (from
+   `share.ts`), `storage/s3Backend.ts` (SyncFs + inspect over the S1 bundle — until S1 lands, code against its
+   documented API), `exportTargets.ts`, IPC registration with the sender guard, `storage:changed` event, polling
    for S3 refs in main or renderer (decide: renderer-driven polling keeps main stateless — preferred).
-3. Ship the S1 bundle: build step copies `packages/s3/dist/s3.cjs` into `electron/generated/` (gitignored) and
-   electron-builder includes it; turbo `build`/`dist:win` depend on `@resourcepackbuilder/s3#build`.
-4. Tests for path/key confinement and the connections store (fake safeStorage); checkJs green.
+3. Ship S1: add `@resourcepackbuilder/s3` to the app's dependencies and import it from `electron/src`; the main-process
+   bundle (`electron/build.mjs`) includes it, so there is no copy step.
+4. Tests for path/key confinement and the connections store (fake safeStorage); `tsc -p electron` green.
 
 ## Phase B – app (S4, after A; owns `apps/resourcepackbuilder/src/**`, `packages/i18n/src/messages/*/storage.json` + registration)
 

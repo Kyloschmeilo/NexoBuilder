@@ -1,0 +1,24 @@
+{
+  "name": "@resourcepackbuilder/desktop-contract",
+  "private": true,
+  "version": "0.0.0",
+  "description": "The IPC contract between the UI and the Electron main process: channel definitions, types, argument schemas (zod) and serialisable errors.",
+  "type": "module",
+  "exports": {
+    ".": "./src/index.ts",
+    "./*": "./src/*.ts"
+  },
+  "scripts": {
+    "typecheck": "tsc -b",
+    "test": "vitest run",
+    "lint": "eslint ."
+  },
+  "dependencies": {
+    "@resourcepackbuilder/core": "*",
+    "@resourcepackbuilder/i18n": "*",
+    "zod": "^4.6.7"
+  },
+  "devDependencies": {
+    "@resourcepackbuilder/config": "*"
+  }
+}
