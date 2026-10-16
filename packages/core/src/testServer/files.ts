@@ -7,6 +7,7 @@ import { packLocation } from '../export/paths';
 import { buildRootFiles } from '../export/rootFiles';
 import type { ExportPlan, FileContent } from '../export/types';
 import type { Project } from '../project/types';
+import { assertCommandArg, assertPlayerName } from './commands';
 
 export interface ServerFile {
   /** Path relative to plugins/Nexo */
@@ -84,10 +85,13 @@ function sameSetting(actual: unknown, wanted: unknown): boolean {
 
 /** Nexo 1.29: "nexo give <item> <amount> <player>" (as registered in the plugin – not as in the help text) */
 export function nexoGiveCommand(nexoId: string, amount: number, player: string): string {
+  assertCommandArg(nexoId);
+  assertPlayerName(player);
   return `nexo give ${nexoId} ${Math.max(1, Math.floor(amount))} ${player}`;
 }
 
 /** "nexo pack <player>": sends the resource pack to the player again. */
 export function nexoPackCommand(player: string): string {
+  assertPlayerName(player);
   return `nexo pack ${player}`;
 }

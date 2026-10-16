@@ -239,8 +239,11 @@ export function createShareSync({ api, repository, onSyncStateChanged }: ShareSy
 
     async stop() {
       const projectId = useProjectStore.getState().project?.id;
+      const folder = session?.folder;
       await disconnect();
       if (projectId) await repository.removeShare(projectId);
+      // The desktop program no longer needs access to the folder
+      if (folder) await api.forget(folder).catch(() => undefined);
     },
 
     async setUserName(userName) {

@@ -1,0 +1,4 @@
+{
+  "extends": "@resourcepackbuilder/config/node.json",
+  "include": ["src"]
+}

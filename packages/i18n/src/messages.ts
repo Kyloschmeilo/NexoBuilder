@@ -11,7 +11,7 @@ import en_dialogs from './messages/en/dialogs.json' with { type: 'json' };
 import en_item from './messages/en/item.json' with { type: 'json' };
 import en_media from './messages/en/media.json' with { type: 'json' };
 import en_app from './messages/en/app.json' with { type: 'json' };
-import en_desktop from './messages/en/desktop.json' with { type: 'json' };
+import en_desktopErrors from './messages/en/desktopErrors.json' with { type: 'json' };
 import de_common from './messages/de/common.json' with { type: 'json' };
 import de_schema from './messages/de/schema.json' with { type: 'json' };
 import de_issues from './messages/de/issues.json' with { type: 'json' };
@@ -23,9 +23,12 @@ import de_dialogs from './messages/de/dialogs.json' with { type: 'json' };
 import de_item from './messages/de/item.json' with { type: 'json' };
 import de_media from './messages/de/media.json' with { type: 'json' };
 import de_app from './messages/de/app.json' with { type: 'json' };
-import de_desktop from './messages/de/desktop.json' with { type: 'json' };
+import de_desktopErrors from './messages/de/desktopErrors.json' with { type: 'json' };
 
-/** The English catalogue, one top-level key per namespace. English is the source every other locale must match. */
+/**
+ * The English catalogue, one top-level key per namespace. English is the source every other locale must match.
+ * The desktop program's own texts (menus, dialogs, test-server messages) are not part of it: see `./desktop`.
+ */
 const en = {
   common: en_common,
   schema: en_schema,
@@ -38,7 +41,7 @@ const en = {
   item: en_item,
   media: en_media,
   app: en_app,
-  desktop: en_desktop,
+  desktopErrors: en_desktopErrors,
 };
 
 /** The typed shape of the message catalogue, derived from the English source. */
@@ -68,7 +71,7 @@ const de = {
   item: de_item,
   media: de_media,
   app: de_app,
-  desktop: de_desktop,
+  desktopErrors: de_desktopErrors,
 } satisfies Messages;
 
 /** The message catalogue of every supported locale. */

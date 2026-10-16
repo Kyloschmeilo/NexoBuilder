@@ -23,18 +23,14 @@
     "chooseJoinFolder": "Choose the folder with the shared project",
     "chooseShareFolder": "Choose a folder to share in (e.g. in OneDrive)",
     "open": "Open",
-    "shareHere": "Share here",
-    "invalidFolder": "Invalid folder",
-    "folderNotAllowed": "This folder was not chosen for sharing",
-    "invalidFile": "Invalid file: {file}",
-    "invalidContent": "Invalid content"
+    "shareHere": "Share here"
   },
   "testServer": {
-    "requestFailed": "Request failed ({status}): {url}",
     "downloadFailed": "Download failed ({status}): {label}",
     "downloading": "Downloading {label} …",
     "downloadingPercent": "Downloading {label} … {percent} %",
     "checksumMismatch": "{label}: checksum mismatch – the download is corrupt. Please try again.",
+    "checksumMissing": "{label}: no checksum was published for this download, so it cannot be verified. Please try again later.",
     "searchingPaper": "Looking for Paper {version} …",
     "noPaperBuild": "There is no Paper build for Minecraft {version}.",
     "noPaperDownload": "Paper {version}: no download found.",
@@ -49,8 +45,6 @@
     "chooseNexoJar": "Choose the Nexo plugin (JAR)",
     "choose": "Choose",
     "pluginFilter": "Minecraft plugin",
-    "notAPlugin": "This is not a valid plugin file (paper-plugin.yml is missing).",
-    "notNexo": "This is not Nexo but “{name}”.",
     "nexoSelected": "Nexo {version} selected.",
     "paperSettingsPatched": "Adjusted Paper settings for Nexo (note block, tripwire and chorus updates off).",
     "nexoJarMissing": "The Nexo JAR is missing. Please choose it again.",
@@ -61,8 +55,6 @@
     "packBuildingOnStart": "Nexo is building the resource pack on startup …",
     "unknownError": "Unknown error",
     "portInUse": "Port {port} is in use – is another Minecraft server already running?",
-    "eulaRequired": "Please accept the Minecraft EULA first.",
-    "versionRequired": "Please choose a Minecraft version.",
     "preparing": "Preparing the test server …",
     "startingPaper": "Starting Paper {version} with Java {java} ({ram} GB RAM) …",
     "starting": "Server is starting …",
@@ -72,10 +64,10 @@
     "crashed": "The server stopped unexpectedly (code {code}). See the console for details.",
     "stopping": "Stopping the server (saving the world) …",
     "notResponding": "Server is not responding – killing it.",
-    "invalidPath": "Invalid path: {path}",
-    "invalidFiles": "Invalid files",
     "skippedFile": "Skipped (invalid file name): {path}",
     "synced": "Project transferred: {written} written, {deleted} removed.",
-    "syncedSettings": "Project transferred: {written} written, {deleted} removed, settings adjusted."
+    "syncedSettings": "Project transferred: {written} written, {deleted} removed, settings adjusted.",
+    "settingsReset": "The saved test server settings were damaged and have been reset (kept as {file}).",
+    "manifestReset": "The list of transferred files was damaged (kept as {file}); files from earlier transfers may remain in plugins/Nexo."
   }
 }
