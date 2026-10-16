@@ -6,6 +6,7 @@
  *   textures/{item|block}/<folder…>/<item_id>/<texture>.png   (+ .png.mcmeta)
  *   items/<folder…>/<item_id>.json                            (item model definitions)
  *   equipment/<set>.json + textures/entity/equipment/<layer>/<set>.png
+ *   textures/glyphs/<glyph_id>.{png|gif}, textures/painting/<painting_id>.png, sounds/<sound path>.ogg
  *
  * Textures deliberately live under textures/item or textures/block: only these folders end up
  * automatically in Minecraft's item or block atlas (also from 1.21.11 on with separate atlases).
@@ -43,6 +44,20 @@ export function equipmentModelFile(namespace: string, setId: string): string {
 
 export function equipmentTextureFile(namespace: string, equipment: string, setId: string): string {
   return `assets/${namespace}/textures/entity/equipment/${equipment}/${setId}.png`;
+}
+
+/** Texture of a glyph; animated glyphs keep their GIF. */
+export function glyphTextureFile(namespace: string, glyphId: string, format: 'png' | 'gif'): string {
+  return `assets/${namespace}/textures/glyphs/${glyphId}.${format}`;
+}
+
+export function paintingTextureFile(namespace: string, paintingId: string): string {
+  return textureFile(namespace, `painting/${paintingId}`);
+}
+
+/** An OGG file; `soundPath` is relative to assets/<ns>/sounds without extension (see soundFilePath). */
+export function soundFile(namespace: string, soundPath: string): string {
+  return `assets/${namespace}/sounds/${soundPath}.ogg`;
 }
 
 /** YAML file (relative to plugins/Nexo) for items in the folder `folderSlugs`; `nexoId` names it in "one file per item" mode. */

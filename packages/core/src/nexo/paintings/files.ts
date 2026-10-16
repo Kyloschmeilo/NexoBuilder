@@ -1,10 +1,6 @@
-/** Export of paintings: texture path, animation metadata and the paintings.yml entry. */
+/** Export of paintings: animation metadata and the paintings.yml entry (texture: see export/paths). */
 import type { Project } from '../../project/types';
 import { paintingFrameSize, paintingKey, type Painting } from './model';
-
-export function paintingTexturePath(project: Project, painting: Painting): string {
-  return `assets/${project.namespace}/textures/painting/${painting.paintingId}.png`;
-}
 
 export function paintingMcmeta(painting: Painting): Record<string, unknown> | null {
   if (!painting.animated) return null;
