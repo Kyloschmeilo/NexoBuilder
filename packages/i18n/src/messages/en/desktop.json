@@ -36,6 +36,8 @@
     "noPaperDownload": "Paper {version}: no download found.",
     "experimentalBuild": "Note: Paper {version} only has an experimental build (#{build}).",
     "downloadingPaper": "Downloading Paper {version} (build {build}) …",
+    "searchingCraftEngine": "Looking for CraftEngine for Minecraft {version} …",
+    "downloadingCraftEngine": "Downloading CraftEngine {version} for Minecraft {paperVersion} …",
     "javaRequired": "Java {version} is required. Please install it yourself.",
     "searchingJava": "Looking for Java {version} …",
     "javaNotFound": "Java {version} was not found – downloading Eclipse Temurin {version} …",

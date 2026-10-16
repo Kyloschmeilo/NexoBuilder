@@ -23,7 +23,21 @@ import { isReloadPending, isRunning, requestReload } from './server';
 import { logInfo, pushLog, setState, state } from './state';
 
 /** Path relative to the plugin folder → SHA-1 of what was written. */
-const manifestSchema = z.record(z.string(), z.string());
+const manifestFilesSchema = z.record(z.string(), z.string());
+
+/**
+ * What the last sync wrote, and for which pack: CraftEngine's paths contain the pack name, so after a rename the old
+ * files are only recognised (and removed) with the old name. Older manifests are a bare file list without a name.
+ */
+interface Manifest {
+  packName: string | null;
+  files: Record<string, string>;
+}
+
+const manifestSchema = z.union([
+  z.object({ packName: z.string(), files: manifestFilesSchema }),
+  manifestFilesSchema.transform((files) => ({ packName: null, files })),
+]);
 
 /** The absolute destination of a project file, or null if the path is not one the project may write. */
 function syncDestination(target: PackTargetId, packName: string, relativePath: string): string | null {
@@ -49,13 +63,13 @@ async function pruneEmptyDirs(target: PackTargetId, dir: string) {
  * What the last sync wrote. Missing on the first sync; a damaged manifest is kept as .bak and reported in the console,
  * because files of earlier syncs can then no longer be cleaned up.
  */
-async function readManifest(target: PackTargetId): Promise<Record<string, string>> {
+async function readManifest(target: PackTargetId): Promise<Manifest> {
   const manifest = await readJsonFile(
     manifestFile(target),
     (data) => manifestSchema.safeParse(data).data ?? null,
     (backup) => pushLog(t('testServer.manifestReset', { file: backup, folder: serverAdapterFor(target).pluginDir }), 'err'),
   );
-  return manifest ?? {};
+  return manifest ?? { packName: null, files: {} };
 }
 
 /** The plugin's config file (e.g. plugins/Nexo/settings.yml). */
@@ -83,6 +97,8 @@ export async function syncFiles(
     });
   }
   const manifest = await readManifest(target);
+  // Paths the last sync wrote are checked against the pack name they were written for (see Manifest)
+  const writtenPackName = manifest.packName ?? packName;
   const next: Record<string, string> = {};
   let written = 0;
   let deleted = 0;
@@ -97,14 +113,14 @@ export async function syncFiles(
     const data = typeof file.data === 'string' ? Buffer.from(file.data, 'utf8') : Buffer.from(file.data);
     const hash = crypto.createHash('sha1').update(data).digest('hex');
     next[file.path] = hash;
-    if (manifest[file.path] !== hash || !fs.existsSync(destination)) {
+    if (manifest.files[file.path] !== hash || !fs.existsSync(destination)) {
       await writeFileAtomic(destination, data);
       written++;
     }
   }
-  for (const relativePath of Object.keys(manifest)) {
+  for (const relativePath of Object.keys(manifest.files)) {
     if (relativePath in next) continue;
-    const destination = syncDestination(target, packName, relativePath);
+    const destination = syncDestination(target, writtenPackName, relativePath);
     if (!destination) continue; // invalid entry
     await fsp.rm(destination, { force: true });
     await pruneEmptyDirs(target, path.dirname(destination));
@@ -112,7 +128,7 @@ export async function syncFiles(
   }
   const settingsChanged = await writeSettings(target, settings);
   await fsp.mkdir(path.dirname(manifestFile(target)), { recursive: true });
-  await fsp.writeFile(manifestFile(target), JSON.stringify(next));
+  await fsp.writeFile(manifestFile(target), JSON.stringify({ packName, files: next } satisfies Manifest));
 
   const changed = written > 0 || deleted > 0 || settingsChanged;
   const reloaded = changed && reload && state.status === 'running' && (requestReload() || isReloadPending());

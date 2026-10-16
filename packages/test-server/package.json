@@ -19,7 +19,8 @@
     "@resourcepackbuilder/minecraft": "*",
     "@resourcepackbuilder/utils": "*",
     "jszip": "^3.10.2",
-    "yaml": "^2.9.1"
+    "yaml": "^2.9.1",
+    "zod": "^4.6.7"
   },
   "devDependencies": {
     "@resourcepackbuilder/config": "*",

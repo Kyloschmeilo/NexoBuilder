@@ -1,17 +1,27 @@
 /**
- * The test server's CraftEngine plugin. A skeleton until T9, which patches config.yml, reads the log lines from a real
- * run and downloads the JAR from Modrinth.
+ * The test server's CraftEngine plugin: plugins/CraftEngine, config.yml, the CraftEngine commands (as in its
+ * commands.yml) and its pack build log lines. The JAR comes from Modrinth (see modrinth.ts).
  */
 import type { ServerAdapter } from '../adapter';
 import { assertCommandArg, assertPlayerName } from '../commands';
 import { isSafeSegment, isUnderSyncPaths, safePathSegments } from '../syncPaths';
+import { patchCraftEngineConfig } from './config';
+import { parseCraftEngineLogLine } from './log';
 
 /** What the export writes into resources/<pack>/ of plugins/CraftEngine. */
 const SYNC_FILES = ['pack.yml'];
 const SYNC_DIRS = ['configuration/', 'resourcepack/'];
 
+/** CraftEngine's own packs in resources/ ("default_assets", "internal" …); the app never writes or deletes them. */
+const RESERVED_PACK_NAME = /^(default_.*|default|internal)$/i;
+
 /** A CraftEngine reload typed by the user ("ce reload …", "craftengine reload …"). */
 const RELOAD_COMMAND_PATTERN = /^\/?(ce|craftengine)\s+reload\b/i;
+
+/** Whether the project's pack may live in resources/<packName>/ (a safe name that is not one of CraftEngine's packs). */
+export function isCraftEnginePackName(packName: string): boolean {
+  return isSafeSegment(packName) && !RESERVED_PACK_NAME.test(packName);
+}
 
 export const CRAFT_ENGINE_SERVER_ADAPTER: ServerAdapter = {
   target: 'craftengine',
@@ -19,28 +29,34 @@ export const CRAFT_ENGINE_SERVER_ADAPTER: ServerAdapter = {
   pluginDir: 'plugins/CraftEngine',
   jar: { kind: 'modrinth', project: 'craftengine', loader: 'paper', descriptorName: 'CraftEngine' },
   configFile: 'config.yml',
-  // T9 sets the self-host values
-  patchConfig: (current) => current ?? '',
+  patchConfig: patchCraftEngineConfig,
   paperGlobalOverrides: [],
   cachesToClear: [],
   /** resources/<packName>/pack.yml, …/configuration/… and …/resourcepack/…; anything else is refused. */
   syncPathSegments(relativePath, { packName }) {
-    if (!isSafeSegment(packName)) return null;
+    if (!isCraftEnginePackName(packName)) return null;
     const prefix = `resources/${packName}/`;
     if (!relativePath.startsWith(prefix)) return null;
     return isUnderSyncPaths(relativePath.slice(prefix.length), SYNC_DIRS, SYNC_FILES) ? safePathSegments(relativePath) : null;
   },
+  /** Reloads the configs and runs the reload_pack workflows (generate, zip, upload, send). */
   reloadCommand: 'ce reload all',
   isReloadCommand(command) {
     return RELOAD_COMMAND_PATTERN.test(command.trim());
   },
-  /** "ce item give <player> <id> <amount>" */
+  /** "ce item give <player> <id> [amount]" (amount 1–9999) */
   giveCommand(yamlKey, amount, player) {
     assertCommandArg(yamlKey);
     assertPlayerName(player);
-    return `ce item give ${player} ${yamlKey} ${Math.max(1, Math.floor(amount))}`;
+    return `ce item give ${player} ${yamlKey} ${Math.min(9999, Math.max(1, Math.floor(amount)))}`;
   },
-  resendPackCommand: () => null,
+  /** "ce feature send-pack <player>": sends the resource pack to the player again. */
+  resendPackCommand(player) {
+    assertPlayerName(player);
+    return `ce feature send-pack ${player}`;
+  },
+  // CraftEngine builds no pack on startup (only its reload_pack workflow does), and the log patterns are not yet
+  // checked against a real run: a missed "ready" line would hold every reload back.
   reportsPackBuild: false,
-  parsePluginLogLine: () => null,
+  parsePluginLogLine: parseCraftEngineLogLine,
 };

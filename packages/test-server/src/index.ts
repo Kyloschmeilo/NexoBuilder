@@ -4,6 +4,7 @@ export * from './commands';
 export * from './config';
 export * from './files';
 export * from './java';
+export * from './modrinth';
 export * from './pluginJar';
 export * from './serverFiles';
 export * from './serverLog';

@@ -53,6 +53,8 @@ export interface TestServerSync {
    */
   setConfig(patch: TestServerConfigPatch): Promise<void>;
   choosePluginJar(target: PackTargetId): Promise<PluginJarInfo | null>;
+  /** Downloads the target's plugin JAR (CraftEngine from Modrinth) for the chosen Paper version. */
+  downloadPlugin(target: PackTargetId): Promise<PluginJarInfo>;
   start(): Promise<void>;
   stop(): Promise<void>;
   restart(): Promise<void>;
@@ -223,6 +225,11 @@ export function createTestServerSync(api: DesktopTestServerApi): TestServerSync 
 
     setConfig,
     choosePluginJar: (target) => api.choosePluginJar(target),
+    async downloadPlugin(target) {
+      // The download is for the Paper version; a version change still in flight must be saved first
+      await saveConfig.idle();
+      return api.downloadPlugin(target);
+    },
     start,
     stop,
     async restart() {

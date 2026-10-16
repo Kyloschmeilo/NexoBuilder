@@ -1,5 +1,5 @@
 import { useId } from 'react';
-import { Upload } from 'lucide-react';
+import { Download, Upload } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 import { Button } from '@resourcepackbuilder/ui/components/button';
 import { Checkbox } from '@resourcepackbuilder/ui/components/checkbox';
@@ -72,17 +72,27 @@ export function ServerSetup({ config, isLocked, target }: { config: TestServerCo
   );
 }
 
-/** The plugin JAR of the project's target. */
+/**
+ * The plugin JAR of the project's target. A plugin on Modrinth (CraftEngine) is downloaded for the chosen Minecraft
+ * version; choosing a JAR stays possible (e.g. a premium build). Nexo's JAR is always chosen.
+ */
 function PluginJarField({ config, target }: { config: TestServerConfig; target: PackTargetId }) {
   const t = useTranslations('media.testServer.setup');
   const testServer = useTestServer();
   const { isBusy, run } = useBusyAction();
-  const plugin = serverAdapterFor(target).pluginName;
+  const adapter = serverAdapterFor(target);
+  const plugin = adapter.pluginName;
+  const canDownload = adapter.jar.kind === 'modrinth';
   const jar = config.pluginJars[target];
   const chooseJar = () =>
     run(async () => {
       const chosen = await testServer.choosePluginJar(target);
       if (chosen) notify('success', t('jarSelected', { plugin, version: chosen.version }));
+    });
+  const downloadJar = () =>
+    run(async () => {
+      const downloaded = await testServer.downloadPlugin(target);
+      notify('success', t('jarSelected', { plugin, version: downloaded.version }));
     });
 
   return (
@@ -90,11 +100,29 @@ function PluginJarField({ config, target }: { config: TestServerConfig; target: 
       <span className="text-xs font-medium text-muted-foreground">{t('plugin', { plugin })}</span>
       <div className="flex flex-wrap items-center gap-2">
         <StatusBadge tone={jar ? 'success' : 'warning'}>{jar ? `${jar.name} ${jar.version}` : t('notSelected')}</StatusBadge>
-        <Button variant="outline" size="sm" disabled={isBusy} onClick={() => void chooseJar()}>
-          <Upload /> {t('chooseJar')}
-        </Button>
+        {canDownload ? (
+          <>
+            <Button
+              data-testid="test-server-download-plugin"
+              variant="outline"
+              size="sm"
+              disabled={isBusy || !config.paperVersion}
+              title={config.paperVersion ? undefined : t('downloadNeedsVersion')}
+              onClick={() => void downloadJar()}
+            >
+              <Download /> {t('downloadJar', { plugin })}
+            </Button>
+            <Button variant="link" size="sm" className="px-0" disabled={isBusy} onClick={() => void chooseJar()}>
+              {t('chooseJarManually')}
+            </Button>
+          </>
+        ) : (
+          <Button variant="outline" size="sm" disabled={isBusy} onClick={() => void chooseJar()}>
+            <Upload /> {t('chooseJar')}
+          </Button>
+        )}
       </div>
-      <FormHelp>{t('jarHelp', { plugin, target })}</FormHelp>
+      <FormHelp>{canDownload ? t('jarDownloadHelp', { plugin }) : t('jarHelp', { plugin, target })}</FormHelp>
     </div>
   );
 }
