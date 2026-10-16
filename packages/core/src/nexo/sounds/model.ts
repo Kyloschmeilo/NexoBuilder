@@ -4,6 +4,7 @@
  * that an item can play via the jukebox_playable component.
  */
 import type { Project } from '../../project/types';
+import { mediaKey } from '../media/entry';
 
 export interface SoundFile {
   name: string;
@@ -41,5 +42,5 @@ export function createSound(id: string, soundId: string, files: SoundFile[]): So
 
 /** Full ID as used in item configs (e.g. block sounds) */
 export function soundKey(project: Project, sound: Sound): string {
-  return `${project.namespace}:${sound.soundId}`;
+  return mediaKey(project, sound.soundId);
 }

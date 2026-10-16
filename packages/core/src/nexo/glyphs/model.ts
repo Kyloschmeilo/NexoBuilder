@@ -5,15 +5,11 @@
  */
 import { readGifInfoFromDataUrl } from '../../binary/gif';
 import { readPngInfoFromDataUrl } from '../../binary/png';
+import type { MediaFile } from '../media/entry';
 
 export type GlyphKind = 'image' | 'gif' | 'reference';
 
-export interface GlyphFile {
-  name: string;
-  dataUrl: string;
-  width: number;
-  height: number;
-}
+export type GlyphFile = MediaFile;
 
 export interface Glyph {
   id: string;

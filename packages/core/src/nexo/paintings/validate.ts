@@ -1,26 +1,19 @@
-import { mediaFrame } from '../../issueFrames';
-import { issueReporter, type Issue } from '../../issues';
+import { createIssue, type Issue } from '../../issues';
 import { ITEM_ID_PATTERN } from '../../minecraft/resourceLocation';
 import { compareVersions, FEATURE_VERSIONS } from '../../minecraft/versions';
 import type { Project } from '../../project/types';
-import { MAX_PAINTING_BLOCKS, paintingFrameSize } from './model';
+import { validateEntries } from '../media/entry';
+import { MAX_PAINTING_BLOCKS, paintingFrameSize, type Painting } from './model';
 
 /** Checks all paintings of the project; each issue targets its painting and carries a `context.painting` frame. */
 export function validatePaintings(project: Project): Issue[] {
   const issues: Issue[] = [];
   const paintings = project.paintings ?? [];
   if (paintings.length > 0 && compareVersions(project.settings.minecraftVersion, FEATURE_VERSIONS.paintingDatapack) < 0) {
-    issues.push({ level: 'warning', code: 'painting.datapackNeedsVersion', target: { kind: 'painting', id: paintings[0].id } });
+    issues.push(createIssue('warning', 'painting.datapackNeedsVersion', undefined, { target: { kind: 'painting', id: paintings[0].id } }));
   }
-  const seen = new Set<string>();
-  for (const painting of paintings) {
-    const add = issueReporter(issues, {
-      target: { kind: 'painting', id: painting.id },
-      context: [mediaFrame('painting', painting.paintingId)],
-    });
-    if (!ITEM_ID_PATTERN.test(painting.paintingId)) add('error', 'painting.idInvalid');
-    if (seen.has(painting.paintingId)) add('error', 'painting.idDuplicate');
-    seen.add(painting.paintingId);
+  const rules = { kind: 'painting', idOf: (p: Painting) => p.paintingId, pattern: ITEM_ID_PATTERN } as const;
+  const checked = validateEntries(paintings, rules, (painting, add) => {
     for (const [code, value] of [
       ['painting.widthRange', painting.width],
       ['painting.heightRange', painting.height],
@@ -29,7 +22,7 @@ export function validatePaintings(project: Project): Issue[] {
     }
     if (!painting.file) {
       add('error', 'painting.imageMissing');
-      continue;
+      return;
     }
     const frame = paintingFrameSize(painting);
     if (painting.animated) {
@@ -47,6 +40,6 @@ export function validatePaintings(project: Project): Issue[] {
         });
       }
     }
-  }
-  return issues;
+  });
+  return [...issues, ...checked];
 }
