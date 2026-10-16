@@ -80,23 +80,20 @@ export function setProperty(text: string, key: string, value: string): string {
 
 /* ------------------------------------------------------------------ paper-global.yml */
 
-/** Recommended by Nexo; otherwise custom blocks based on note blocks, tripwire and chorus plants break. */
-const NEXO_BLOCK_UPDATE_SETTINGS = ['disable-noteblock-updates', 'disable-tripwire-updates', 'disable-chorus-plant-updates'];
-const BLOCK_UPDATES_SECTION = 'block-updates';
-
 /**
- * Turns off the block updates Nexo needs disabled in paper-global.yml. Returns the new text, or null when nothing had to
- * change (Paper writes the settings as `false` on its first start; values the user set otherwise are respected, and
- * comments and formatting are kept).
+ * Sets the values a plugin needs in paper-global.yml (`overrides`: path → value). Returns the new text, or null when
+ * nothing had to change. Only settings Paper has already written are changed (it writes them on its first start);
+ * comments and formatting are kept.
  */
-export function patchPaperGlobal(text: string): string | null {
+export function patchPaperGlobal(text: string, overrides: ReadonlyArray<[string[], unknown]>): string | null {
+  if (overrides.length === 0) return null;
   const doc = parseDocument(text);
   if (doc.errors.length > 0 || !isMap(doc.contents)) return null;
   let changed = false;
-  for (const key of NEXO_BLOCK_UPDATE_SETTINGS) {
-    const node = doc.getIn([BLOCK_UPDATES_SECTION, key], true);
-    if (isScalar(node) && node.value === false) {
-      node.value = true;
+  for (const [path, value] of overrides) {
+    const node = doc.getIn(path, true);
+    if (isScalar(node) && node.value !== value) {
+      node.value = value;
       changed = true;
     }
   }

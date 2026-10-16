@@ -13,7 +13,11 @@ import { ConnectCard } from './ConnectCard';
 import { ServerConsole } from './ServerConsole';
 import { ServerControls } from './ServerControls';
 import { ServerSetup } from './ServerSetup';
-import { isConfigLocked, isTransitioning } from '@resourcepackbuilder/test-server';
+import { isConfigLocked, isTransitioning, serverAdapterFor } from '@resourcepackbuilder/test-server';
+import { DEFAULT_PACK_TARGET } from '@resourcepackbuilder/core/project';
+import { useErrorMessage } from '../../i18n/errors';
+import { useProjectStore } from '../../store/project';
+import { serverRunsOtherTarget, wrongTargetError } from '../../services/testServerSync';
 import { TEST_SERVER_STATUS_TONE } from './status';
 import { SyncCard } from './SyncCard';
 
@@ -51,8 +55,10 @@ export function TestServerView() {
 function TestServerPage({ server }: { server: TestServerState }) {
   const t = useTranslations('media.testServer');
   const format = useFormatter();
+  const errorMessage = useErrorMessage();
   const isWorking = isTransitioning(server.status);
   const { config, installed } = server;
+  const target = useProjectStore((s) => s.project?.target ?? DEFAULT_PACK_TARGET);
 
   return (
     <PageShell>
@@ -89,17 +95,23 @@ function TestServerPage({ server }: { server: TestServerState }) {
           </AlertDescription>
         </Alert>
       )}
-      {!config.nexoJar && (
+      {server.target && serverRunsOtherTarget(server, target) && (
         <Alert variant="warning">
           <TriangleAlert />
-          <AlertDescription>{t('noNexo')}</AlertDescription>
+          <AlertDescription>{errorMessage(wrongTargetError(server.target, target))}</AlertDescription>
+        </Alert>
+      )}
+      {!config.pluginJars[target] && (
+        <Alert variant="warning">
+          <TriangleAlert />
+          <AlertDescription>{t('noPlugin', { plugin: serverAdapterFor(target).pluginName })}</AlertDescription>
         </Alert>
       )}
 
       <ConnectCard server={server} />
       <SyncCard server={server} />
       <ServerConsole />
-      <ServerSetup config={config} isLocked={isConfigLocked(server.status)} />
+      <ServerSetup config={config} isLocked={isConfigLocked(server.status)} target={target} />
     </PageShell>
   );
 }

@@ -20,7 +20,7 @@ import { moveItemDialog } from '../moveItem/MoveItemDialog';
 import { useItemActions } from './useItemActions';
 
 /** "Give in test server" – only visible while the local test server is running. */
-function GiveButton({ itemId }: { itemId: string }) {
+function GiveButton({ item }: { item: Item }) {
   const t = useTranslations('item');
   const testServer = useServices().testServer;
   const { isBusy, run } = useBusyAction();
@@ -32,8 +32,8 @@ function GiveButton({ itemId }: { itemId: string }) {
   const isValidPlayer = PLAYER_NAME_PATTERN.test(player);
   const give = () =>
     void run(
-      () => testServer.give(itemId),
-      (player) => t('editor.giveSuccess', { id: itemId, player }),
+      () => testServer.give(item),
+      (player) => t('editor.giveSuccess', { id: item.itemId, player }),
     );
   return (
     <Tip label={isValidPlayer ? t('editor.giveTooltip') : tPack('enterName')}>
@@ -74,7 +74,7 @@ function ItemActions({ item }: { item: Item }) {
   const canPaste = !!clip && clip.sourceId !== item.id;
   return (
     <>
-      <GiveButton itemId={item.itemId} />
+      <GiveButton item={item} />
       <Tip label={t('editor.copyTooltip')}>
         <Button variant="outline" size="sm" onClick={() => actions.copyProperties(item.id)}>
           <ClipboardCopy /> {tCommon('copy')}

@@ -26,7 +26,11 @@ async function hashEntries(data: Uint8Array): Promise<Record<string, string>> {
     const bytes = await entry.async('uint8array');
     if (path.endsWith('.zip')) {
       const inner = await hashEntries(bytes);
-      result[path] = sha256(Object.entries(inner).map(([p, h]) => `${p}:${h}`).join('\n'));
+      result[path] = sha256(
+        Object.entries(inner)
+          .map(([p, h]) => `${p}:${h}`)
+          .join('\n'),
+      );
       for (const [p, h] of Object.entries(inner)) result[`${path}!/${p}`] = h;
     } else {
       result[path] = sha256(bytes);

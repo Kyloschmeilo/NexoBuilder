@@ -199,7 +199,7 @@ const dialog = (win) => win.getByRole('dialog');
       await win.screenshot({ path: path.join(out, 'resourcepackbuilder-windows-testserver.png') });
     });
     await step('Test server: project is in plugins/Nexo', async () => {
-      const nexo = path.join(testServerDir, 'server', 'plugins', 'Nexo');
+      const nexo = path.join(testServerDir, 'nexo', 'server', 'plugins', 'Nexo');
       const yml = path.join(nexo, 'items', 'weapons', 'weapons.yml');
       if (!fs.existsSync(yml) || !/fire_sword/.test(fs.readFileSync(yml, 'utf8'))) throw new Error('Item file missing');
       if (!/SELFHOST/.test(fs.readFileSync(path.join(nexo, 'settings.yml'), 'utf8'))) throw new Error('settings.yml missing');

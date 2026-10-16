@@ -1,6 +1,7 @@
 import { afterEach, describe, expect, it, vi } from 'vitest';
-import { createProject } from '@resourcepackbuilder/core/project';
-import type { DesktopTestServerApi, TestServerConfigPatch, TestServerState } from '../platform/desktopApi';
+import { createItem, createProject, type PackTargetId } from '@resourcepackbuilder/core/project';
+import { AppError } from '../i18n/errors';
+import type { DesktopTestServerApi, PluginJarInfo, TestServerConfigPatch, TestServerState } from '../platform/desktopApi';
 import { setProject } from '../store/project';
 import { useTestServerStore } from './testServerStore';
 import { createTestServerSync, type TestServerSync } from './testServerSync';
@@ -18,8 +19,9 @@ function serverState(): TestServerState {
       playerName: '',
       eulaAccepted: false,
       autoUpdate: true,
-      nexoJar: null,
+      pluginJars: {},
     },
+    target: null,
     installed: null,
     startedAt: null,
     lastSync: null,
@@ -38,13 +40,14 @@ function fakeApi(versions: () => Promise<string[]>): DesktopTestServerApi {
       return Promise.resolve(state);
     },
     versions: vi.fn(versions),
-    chooseNexoJar: () => Promise.resolve(null),
+    choosePluginJar: () => Promise.resolve(null),
+    downloadPlugin: () => Promise.reject(new Error('not used')),
     start: () => Promise.resolve(state),
     stop: () => Promise.resolve(state),
     command: () => Promise.resolve(true),
     reload: () => Promise.resolve(true),
     sync: () => Promise.reject(new Error('not used')),
-    readSettings: () => Promise.resolve(null),
+    readPluginConfig: () => Promise.resolve(null),
     openFolder: () => Promise.resolve(),
     clearLog: () => Promise.resolve(true),
     onEvent: () => () => undefined,
@@ -53,8 +56,8 @@ function fakeApi(versions: () => Promise<string[]>): DesktopTestServerApi {
 
 let service: TestServerSync | null = null;
 
-async function startService(api: DesktopTestServerApi, projectVersion: string): Promise<TestServerSync> {
-  const project = createProject('Test');
+async function startService(api: DesktopTestServerApi, projectVersion: string, target?: PackTargetId): Promise<TestServerSync> {
+  const project = createProject('Test', undefined, undefined, target);
   project.settings.minecraftVersion = projectVersion;
   setProject(project);
   service = createTestServerSync(api);
@@ -106,14 +109,15 @@ describe('loadPaperVersions', () => {
   });
 });
 
-describe('give', () => {
-  const running = (nexoJar: TestServerState['config']['nexoJar']): TestServerState => ({
-    ...serverState(),
-    status: 'running',
-    config: { ...serverState().config, playerName: 'Steve', nexoJar },
-  });
+const running = (nexoJar: PluginJarInfo | null, target: PackTargetId = 'nexo'): TestServerState => ({
+  ...serverState(),
+  status: 'running',
+  target,
+  config: { ...serverState().config, playerName: 'Steve', pluginJars: nexoJar ? { nexo: nexoJar } : {} },
+});
 
-  async function startGiving(nexoJar: TestServerState['config']['nexoJar']) {
+describe('give', () => {
+  async function startGiving(nexoJar: PluginJarInfo | null) {
     const command = vi.fn(() => Promise.resolve(true));
     const api: DesktopTestServerApi = {
       ...fakeApi(() => Promise.resolve([])),
@@ -122,7 +126,10 @@ describe('give', () => {
     };
     const sync = await startService(api, '1.21.4');
     useTestServerStore.setState({ server: running(nexoJar) });
-    return { api: { command }, given: sync.give('fire_sword') };
+    return {
+      api: { command },
+      given: sync.give(createItem({ displayName: 'Fire sword', itemId: 'fire_sword', folderId: 'f', model: null })),
+    };
   }
 
   it('waits until the pack build started by the reload has finished', async () => {
@@ -135,12 +142,51 @@ describe('give', () => {
     expect(api.command).not.toHaveBeenCalled();
     useTestServerStore.setState({ server: { ...server(), pack: { status: 'ready', message: null, at: Date.now() } } });
     await expect(given).resolves.toBe('Steve');
-    expect(api.command).toHaveBeenCalledWith(expect.stringContaining('fire_sword'));
+    expect(api.command).toHaveBeenCalledWith('nexo give fire_sword 1 Steve');
   });
 
   it('gives right away when there is no Nexo pack to wait for', async () => {
     const { api, given } = await startGiving(null);
     await expect(given).resolves.toBe('Steve');
     expect(api.command).toHaveBeenCalledTimes(1);
+  });
+});
+
+describe('a server that runs another target', () => {
+  async function startMismatched() {
+    const sync = vi.fn(() => Promise.reject(new Error('must not sync')));
+    const command = vi.fn(() => Promise.resolve(true));
+    const reload = vi.fn(() => Promise.resolve(true));
+    const api: DesktopTestServerApi = { ...fakeApi(() => Promise.resolve([])), sync, command, reload };
+    const service = await startService(api, '1.21.4', 'craftengine');
+    useTestServerStore.setState({ server: running({ file: 'Nexo-1.0.jar', name: 'Nexo', version: '1.0' }, 'nexo') });
+    return { service, api: { sync, command, reload } };
+  }
+
+  it('is not synced, and the transfer reports the wrong target', async () => {
+    const { service, api } = await startMismatched();
+    await expect(service.sync(true)).resolves.toBeNull();
+    expect(api.sync).not.toHaveBeenCalled();
+    expect(state().syncError).toBeInstanceOf(AppError);
+    expect(state().syncError).toMatchObject({ code: 'errors.testServer.wrongTarget', args: { server: 'Nexo', project: 'CraftEngine' } });
+  });
+
+  it('refuses give and reload', async () => {
+    const { service, api } = await startMismatched();
+    await expect(service.give(createItem({ displayName: 'Ruby', itemId: 'ruby', folderId: 'f', model: null }))).rejects.toMatchObject({
+      code: 'errors.testServer.wrongTarget',
+    });
+    await expect(service.reload()).rejects.toMatchObject({ code: 'errors.testServer.wrongTarget' });
+    expect(api.command).not.toHaveBeenCalled();
+    expect(api.reload).not.toHaveBeenCalled();
+  });
+
+  it("is synced into the project target's folder once stopped (the next start switches the plugin)", async () => {
+    const sync = vi.fn(() => Promise.resolve({ written: 1, deleted: 0, skipped: 0, settingsChanged: false, reloaded: false, total: 1 }));
+    const api: DesktopTestServerApi = { ...fakeApi(() => Promise.resolve([])), sync };
+    const service = await startService(api, '1.21.4', 'craftengine');
+    useTestServerStore.setState({ server: { ...serverState(), target: 'nexo' } });
+    await service.sync(false);
+    expect(sync).toHaveBeenCalledWith(expect.any(Array), expect.objectContaining({ target: 'craftengine', reload: false }));
   });
 });

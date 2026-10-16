@@ -2,7 +2,7 @@
   "name": "@resourcepackbuilder/test-server",
   "private": true,
   "version": "0.0.0",
-  "description": "The local test server's rules: config and limits, console commands, server log parsing, status, Java and plugin versions, the files synced into plugins/Nexo.",
+  "description": "The local test server's rules: config and limits, console commands, server log parsing, status, Java and plugin versions, the files synced into the plugin folder; one ServerAdapter per pack target (Nexo, CraftEngine).",
   "type": "module",
   "sideEffects": false,
   "exports": {

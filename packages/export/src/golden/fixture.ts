@@ -74,6 +74,9 @@ export function goldenSecondProject(): Project {
   const project = createProject('Zweites Pack', 'zweit', '1.21.11');
   const folder = createFolder('Dinge', null);
   insertFolder(project, folder);
-  insertItem(project, createItem({ displayName: 'Ding', itemId: 'thing', folderId: folder.id, material: 'PAPER', model: png('thing.png') }));
+  insertItem(
+    project,
+    createItem({ displayName: 'Ding', itemId: 'thing', folderId: folder.id, material: 'PAPER', model: png('thing.png') }),
+  );
   return project;
 }

@@ -4,9 +4,6 @@
  */
 import { PLAYER_NAME_PATTERN } from './config';
 
-/** A Nexo reload typed by the user ("nexo reload …", "/n rl" …). */
-const RELOAD_COMMAND_PATTERN = /^\/?(nexo|n)\s+(reload|rl)\b/i;
-
 /** A single command argument such as an item id: no whitespace, selectors or control characters. */
 const COMMAND_ARG_PATTERN = /^[A-Za-z0-9_.:/-]{1,128}$/;
 
@@ -36,9 +33,4 @@ export function consoleCommandText(command: string): string {
     .replace(/[\r\n]+/g, ' ')
     .trim()
     .replace(/^\//, '');
-}
-
-/** Whether a command typed by the user reloads Nexo (and so rebuilds the resource pack). */
-export function isNexoReloadCommand(command: string): boolean {
-  return RELOAD_COMMAND_PATTERN.test(command.trim());
 }

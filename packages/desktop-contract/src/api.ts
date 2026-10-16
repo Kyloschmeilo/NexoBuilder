@@ -7,10 +7,11 @@
  * No runtime dependencies: the preload script and the renderer import this file too.
  */
 import type { ShareFileInfo } from '@resourcepackbuilder/sync';
-import type { NexoJarInfo, PackStatus, ServerFile, TestServerConfig, TestServerStatus } from '@resourcepackbuilder/test-server';
+import type { PackStatus, PluginJarInfo, ServerFile, TestServerConfig, TestServerStatus } from '@resourcepackbuilder/test-server';
+import type { PackTargetId } from '@resourcepackbuilder/core/project';
 import type { SupportedLocale } from '@resourcepackbuilder/i18n/locale';
 
-export type { NexoJarInfo, ShareFileInfo, TestServerConfig };
+export type { PackTargetId, PluginJarInfo, ShareFileInfo, TestServerConfig };
 
 /* ------------------------------------------------------------------ shared folders */
 
@@ -29,8 +30,8 @@ export interface ShareFolderInfo {
 
 export type { PackStatus, TestServerStatus };
 
-/** The settings the UI may change directly (the Nexo JAR is chosen through `chooseNexoJar`). */
-export type TestServerConfigPatch = Partial<Omit<TestServerConfig, 'nexoJar'>>;
+/** The settings the UI may change directly (plugin JARs are chosen through `choosePluginJar`). */
+export type TestServerConfigPatch = Partial<Omit<TestServerConfig, 'pluginJars'>>;
 
 export interface TestServerInstallation {
   paperVersion: string;
@@ -45,12 +46,14 @@ export interface TestServerState {
   message: string | null;
   progress: number | null;
   config: TestServerConfig;
+  /** The pack target whose plugin the server runs (the last one started; null before the first start). */
+  target: PackTargetId | null;
   installed: TestServerInstallation | null;
   startedAt: number | null;
   lastSync: number | null;
   /**
-   * State of the Nexo resource pack (read from the server output). `message` is translated by the main process
-   * while building; for `ready` it is the pack URL, for `failed` Nexo's own error text.
+   * State of the plugin's resource pack (read from the server output). `message` is translated by the main process
+   * while building; for `ready` it is the pack URL, for `failed` the plugin's own error text.
    */
   pack: { status: PackStatus; message: string | null; at: number | null };
   serverDir: string;
@@ -68,12 +71,16 @@ export type TestServerSnapshot = TestServerState & { log: TestServerLogLine[] };
 
 export type TestServerEvent = { type: 'state'; state: TestServerState } | { type: 'log'; lines: TestServerLogLine[] };
 
-/** A project file for plugins/Nexo (path relative to it, with forward slashes). */
+/** A project file for the target's plugin folder (path relative to it, with forward slashes). */
 export type TestServerSyncFile = ServerFile;
 
 export interface TestServerSyncOptions {
+  /** The open project's target: the files go into the server folder of this target. */
+  target: PackTargetId;
+  /** The project's pack name (some plugins keep the pack in a folder of that name). */
+  packName: string;
   reload: boolean;
-  /** Full content of `plugins/Nexo/settings.yml`; left untouched when omitted. */
+  /** Full content of the plugin's config file (`ServerAdapter.configFile`); left untouched when omitted. */
   settings?: string;
 }
 
@@ -138,14 +145,18 @@ export const DESKTOP_API = {
     getState: invoke<[], TestServerSnapshot>()('testserver:get-state'),
     setConfig: invoke<[patch: TestServerConfigPatch], TestServerState>()('testserver:set-config'),
     versions: invoke<[], string[]>()('testserver:versions'),
-    chooseNexoJar: invoke<[], NexoJarInfo | null>()('testserver:choose-nexo-jar'),
-    start: invoke<[], TestServerState>()('testserver:start'),
+    choosePluginJar: invoke<[target: PackTargetId], PluginJarInfo | null>()('testserver:choose-plugin-jar'),
+    /** Downloads the target's plugin JAR (Modrinth); fails with `pluginDownloadUnsupported` where there is none. */
+    downloadPlugin: invoke<[target: PackTargetId], PluginJarInfo>()('testserver:download-plugin'),
+    /** Starts a server for the target's plugin in its own server folder. */
+    start: invoke<[target: PackTargetId], TestServerState>()('testserver:start'),
     stop: invoke<[], TestServerState>()('testserver:stop'),
     command: invoke<[command: string], boolean>()('testserver:command'),
-    /** "nexo reload all" – waits automatically while Nexo is still building the pack. */
+    /** The running plugin's reload ("nexo reload all") – waits automatically while it is still building the pack. */
     reload: invoke<[], boolean>()('testserver:reload'),
     sync: invoke<[files: TestServerSyncFile[], options: TestServerSyncOptions], TestServerSyncResult>()('testserver:sync'),
-    readSettings: invoke<[], string | null>()('testserver:read-settings'),
+    /** The target's plugin config file (`ServerAdapter.configFile`), null when it does not exist yet. */
+    readPluginConfig: invoke<[target: PackTargetId], string | null>()('testserver:read-plugin-config'),
     openFolder: invoke<[], void>()('testserver:open-folder'),
     clearLog: invoke<[], boolean>()('testserver:clear-log'),
     onEvent: event<TestServerEvent>()('testserver:event'),

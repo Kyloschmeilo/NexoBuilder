@@ -44,7 +44,8 @@
     },
     "testServer": {
       "notRunning": "Der Testserver läuft nicht.",
-      "playerNameMissing": "Bitte im Testserver-Tab deinen Minecraft-Namen eintragen."
+      "playerNameMissing": "Bitte im Testserver-Tab deinen Minecraft-Namen eintragen.",
+      "wrongTarget": "Der Testserver läuft mit {server}, dieses Projekt ist aber für {project}. Stoppe den Server und starte ihn aus diesem Projekt neu."
     }
   }
 }

@@ -2,19 +2,21 @@ import { RefreshCw, Upload } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 import { Button } from '@resourcepackbuilder/ui/components/button';
 import { StatusBadge, Tip } from '@resourcepackbuilder/ui';
-import { nexoPackCommand, PLAYER_NAME_PATTERN } from '@resourcepackbuilder/test-server';
+import { PLAYER_NAME_PATTERN, type ServerAdapter } from '@resourcepackbuilder/test-server';
 import type { TestServerState } from '../../platform/desktopApi';
 import { PACK_STATUS_TONE } from './status';
 import { useBusyAction } from '../../hooks/useBusyAction';
 import { useTestServer } from './useTestServer';
 
-/** What Nexo is currently doing with the resource pack (read from the server output), with reload and resend. */
-export function PackStatus({ pack, player }: { pack: TestServerState['pack']; player: string }) {
+/** What the plugin is currently doing with the resource pack (read from the server output), with reload and resend. */
+export function PackStatus({ pack, player, adapter }: { pack: TestServerState['pack']; player: string; adapter: ServerAdapter }) {
   const t = useTranslations('media.testServer.pack');
   const testServer = useTestServer();
   const { isBusy, run } = useBusyAction();
   const isValidPlayer = PLAYER_NAME_PATTERN.test(player);
   const detail = pack.status === 'failed' || pack.status === 'ready' ? pack.message : null;
+  const plugin = adapter.pluginName;
+  const resendCommand = isValidPlayer ? adapter.resendPackCommand(player) : null;
 
   return (
     <div className="flex flex-wrap items-center gap-2.5">
@@ -23,17 +25,17 @@ export function PackStatus({ pack, player }: { pack: TestServerState['pack']; pl
         <span className="min-w-0 flex-[1_1_8rem] truncate font-mono text-xs text-muted-foreground">{detail}</span>
       </Tip>
       <div className="flex flex-wrap gap-2">
-        <Tip label={t('reloadHint')}>
+        <Tip label={t('reloadHint', { plugin })}>
           <Button variant="outline" size="sm" disabled={isBusy || pack.status === 'building'} onClick={() => void run(testServer.reload)}>
-            <RefreshCw /> {t('reload')}
+            <RefreshCw /> {t('reload', { plugin })}
           </Button>
         </Tip>
         <Tip label={isValidPlayer ? t('resendHint', { player }) : t('enterName')}>
           <Button
             variant="outline"
             size="sm"
-            disabled={isBusy || pack.status !== 'ready' || !isValidPlayer}
-            onClick={() => void run(() => testServer.command(nexoPackCommand(player)))}
+            disabled={isBusy || pack.status !== 'ready' || resendCommand === null}
+            onClick={() => void run(() => testServer.command(resendCommand ?? ''))}
           >
             <Upload /> {t('resend')}
           </Button>

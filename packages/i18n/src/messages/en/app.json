@@ -44,7 +44,8 @@
     },
     "testServer": {
       "notRunning": "The test server is not running.",
-      "playerNameMissing": "Please enter your Minecraft name in the Test server tab."
+      "playerNameMissing": "Please enter your Minecraft name in the Test server tab.",
+      "wrongTarget": "The test server runs {server}, but this project is for {project}. Stop the server and start it again from this project."
     }
   }
 }

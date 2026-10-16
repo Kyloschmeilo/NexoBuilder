@@ -1,22 +1,49 @@
 /**
  * The local test server (desktop program only): mirrors its state for the UI and transfers the project.
  *
- * While the server runs with automatic updates, every project change is written to plugins/Nexo shortly afterwards
- * and Nexo is reloaded ("nexo reload all"); players get the new resource pack automatically.
+ * While the server runs with automatic updates, every project change is written to the plugin folder of the project's
+ * target (e.g. plugins/Nexo) shortly afterwards and the plugin is reloaded ("nexo reload all"); players get the new
+ * resource pack automatically. A server that runs another target's plugin is never written to.
  */
-import { planExport } from '@resourcepackbuilder/export';
+import { DEFAULT_PACK_TARGET, type Item, type PackTargetId } from '@resourcepackbuilder/core/project';
+import { exportPackName, packTargetFor, planExport } from '@resourcepackbuilder/export';
 import { compareVersions } from '@resourcepackbuilder/minecraft';
-import { nexoFolderFiles, nexoGiveCommand, patchNexoSettings, TEST_SERVER_LOG_LIMIT } from '@resourcepackbuilder/test-server';
+import { isConfigLocked, pluginFolderFiles, serverAdapterFor, TEST_SERVER_LOG_LIMIT } from '@resourcepackbuilder/test-server';
 import { AppError } from '../i18n/errors';
 import { asError } from '../lib/asError';
-import type { DesktopTestServerApi, NexoJarInfo, TestServerConfigPatch, TestServerSyncResult } from '../platform/desktopApi';
+import type {
+  DesktopTestServerApi,
+  PluginJarInfo,
+  TestServerConfigPatch,
+  TestServerState,
+  TestServerSyncResult,
+} from '../platform/desktopApi';
 import { useProjectStore } from '../store/project';
 import { useTestServerStore } from './testServerStore';
 import { createSerialTask } from './serialTask';
 import { watchOpenProject } from './watchOpenProject';
 
 const AUTO_SYNC_DELAY_MS = 1200;
-/** Wait after a reload when Nexo's pack build cannot be followed (no Nexo JAR configured). */
+
+/** The server is up (or on its way) with the plugin of another target than `target`. */
+export function serverRunsOtherTarget(server: TestServerState | null, target: PackTargetId): boolean {
+  return server !== null && isConfigLocked(server.status) && server.target !== null && server.target !== target;
+}
+
+/** The error for an action on a server that runs the plugin of another target than the project's. */
+export function wrongTargetError(serverTarget: PackTargetId, projectTarget: PackTargetId): AppError {
+  return new AppError('errors.testServer.wrongTarget', {
+    server: serverAdapterFor(serverTarget).pluginName,
+    project: serverAdapterFor(projectTarget).pluginName,
+  });
+}
+
+/** The server's pack builds can be followed: it runs a plugin JAR, and the plugin reports its builds. */
+function tracksPackBuild(server: TestServerState): boolean {
+  const { target } = server;
+  return target !== null && Boolean(server.config.pluginJars[target]) && serverAdapterFor(target).reportsPackBuild;
+}
+
 export interface TestServerSync {
   /** Writes the open project into the server; resolves with a transfer that started after the call. */
   sync(reload: boolean): Promise<TestServerSyncResult | null>;
@@ -25,12 +52,12 @@ export interface TestServerSync {
    * Starting waits until everything is saved – otherwise the server would e.g. not see the EULA acceptance yet.
    */
   setConfig(patch: TestServerConfigPatch): Promise<void>;
-  chooseNexoJar(): Promise<NexoJarInfo | null>;
+  choosePluginJar(target: PackTargetId): Promise<PluginJarInfo | null>;
   start(): Promise<void>;
   stop(): Promise<void>;
   restart(): Promise<void>;
   command(command: string): Promise<boolean>;
-  /** "nexo reload all" – waits if Nexo is still building the resource pack. */
+  /** The plugin's reload ("nexo reload all") – waits if it is still building the resource pack. */
   reload(): Promise<boolean>;
   clearLog(): Promise<void>;
   openFolder(): void;
@@ -39,8 +66,8 @@ export interface TestServerSync {
    * version becomes the default – or the newest one when Paper does not support it (yet).
    */
   loadPaperVersions(): Promise<void>;
-  /** Gives the own player an item via the server console; resolves with the player name. */
-  give(itemId: string, amount?: number): Promise<string>;
+  /** Gives the own player an item of the open project via the server console; resolves with the player name. */
+  give(item: Item, amount?: number): Promise<string>;
   dispose(): void;
 }
 
@@ -54,12 +81,19 @@ export function createTestServerSync(api: DesktopTestServerApi): TestServerSync 
       const project = useProjectStore.getState().project;
       const { server } = store.getState();
       if (!project || !server) return null;
+      if (server.target && serverRunsOtherTarget(server, project.target)) {
+        store.setState({ syncError: wrongTargetError(server.target, project.target) });
+        return null;
+      }
       store.setState({ isSyncing: true });
       try {
+        const { target } = project;
         const plan = planExport(project, { includeBinaries: true });
-        const files = nexoFolderFiles(project, plan);
-        const settings = patchNexoSettings(await api.readSettings(), { packPort: server.config.packPort });
-        const result = await api.sync(files, { reload, settings });
+        const files = pluginFolderFiles(project, plan);
+        const config = serverAdapterFor(target).patchConfig(await api.readPluginConfig(target), { packPort: server.config.packPort });
+        // An empty config means the adapter has nothing to set: the plugin writes its own file
+        const options = { target, packName: exportPackName(project), reload, ...(config && { settings: config }) };
+        const result = await api.sync(files, options);
         const hasChanged = result.written > 0 || result.deleted > 0 || result.settingsChanged;
         store.setState({ ...(hasChanged && { lastResult: { ...result, at: Date.now() } }), lastCheck: Date.now(), syncError: null });
         return result;
@@ -73,16 +107,15 @@ export function createTestServerSync(api: DesktopTestServerApi): TestServerSync 
     (queued, next) => queued || next,
   );
 
-  /** Resolves when the pack build started by a reload is over (or the server stopped). */
   /**
-   * Resolves once Nexo has finished the pack build that a reload requested at `requestedAt` started. The desktop
+   * Resolves once the plugin has finished the pack build that a reload requested at `requestedAt` started. The desktop
    * program marks the pack as building when it sends the reload and times a stuck build out, so this always settles.
-   * Without a Nexo JAR there is no pack to wait for.
+   * Without a plugin JAR (or a plugin that does not report its builds) there is no pack to wait for.
    */
   const reloadDone = (requestedAt: number): Promise<void> => {
     const isSettled = () => {
       const { server } = store.getState();
-      if (!server || server.status !== 'running' || !server.config.nexoJar) return true;
+      if (!server || server.status !== 'running' || !tracksPackBuild(server)) return true;
       const { pack } = server;
       return pack.status !== 'building' && pack.at !== null && pack.at >= requestedAt;
     };
@@ -168,18 +201,28 @@ export function createTestServerSync(api: DesktopTestServerApi): TestServerSync 
 
   const start = async () => {
     await saveConfig.idle();
-    // The files are in place before Nexo starts for the first time
+    // The files are in place before the plugin starts for the first time
     const result = await transfer.run(false);
     const { syncError } = store.getState();
     if (!result && syncError) throw syncError;
-    store.setState({ server: await api.start() });
+    const target = useProjectStore.getState().project?.target ?? DEFAULT_PACK_TARGET;
+    store.setState({ server: await api.start(target) });
+  };
+
+  /** Throws when the server runs the plugin of another target than the open project's. */
+  const assertSameTarget = () => {
+    const project = useProjectStore.getState().project;
+    const { server } = store.getState();
+    if (project && server?.target && serverRunsOtherTarget(server, project.target)) {
+      throw wrongTargetError(server.target, project.target);
+    }
   };
 
   return {
     sync: (reload) => transfer.run(reload),
 
     setConfig,
-    chooseNexoJar: () => api.chooseNexoJar(),
+    choosePluginJar: (target) => api.choosePluginJar(target),
     start,
     stop,
     async restart() {
@@ -187,7 +230,10 @@ export function createTestServerSync(api: DesktopTestServerApi): TestServerSync 
       await start();
     },
     command: (command) => api.command(command),
-    reload: () => api.reload(),
+    async reload() {
+      assertSameTarget();
+      return api.reload();
+    },
     async clearLog() {
       await api.clearLog();
       store.setState({ log: [] });
@@ -203,16 +249,19 @@ export function createTestServerSync(api: DesktopTestServerApi): TestServerSync 
       return versionsRequest;
     },
 
-    async give(itemId, amount = 1) {
+    async give(item, amount = 1) {
       const { server } = store.getState();
-      if (!server || server.status !== 'running') throw new AppError('errors.testServer.notRunning');
+      const project = useProjectStore.getState().project;
+      if (!server || !project || server.status !== 'running') throw new AppError('errors.testServer.notRunning');
+      assertSameTarget();
       const player = server.config.playerName;
       if (!player) throw new AppError('errors.testServer.playerNameMissing');
       // Transfer the latest files first so the item is sure to exist
       const requestedAt = Date.now();
       const result = await transfer.run(true);
       if (result?.reloaded) await reloadDone(requestedAt);
-      await api.command(nexoGiveCommand(itemId, amount, player));
+      const yamlKey = packTargetFor(project).yamlKey(project, item);
+      await api.command(serverAdapterFor(project.target).giveCommand(yamlKey, amount, player));
       return player;
     },
 
