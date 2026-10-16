@@ -2,6 +2,7 @@
 import { create } from 'zustand';
 import type { IssueTarget } from '@resourcepackbuilder/core/issues';
 import type { Project } from '@resourcepackbuilder/core/project/types';
+import { useProjectStore } from './project';
 
 /** Project-wide pages that are not tied to a single folder or item. */
 export type ViewName = 'glyphs' | 'sounds' | 'paintings' | 'testServer';
@@ -54,18 +55,22 @@ export function setEditorTab(editorTab: EditorTab): void {
   useUiStore.setState({ editorTab });
 }
 
-/** Fresh UI state for a newly opened project: nothing selected, every folder expanded. */
-export function resetUiFor(project: Project | null): void {
-  useUiStore.setState({
-    selection: null,
-    expanded: project ? Object.fromEntries(Object.keys(project.folders).map((id) => [id, true])) : {},
+/**
+ * Keeps the UI state in line with the open project: a newly opened project starts with nothing selected and every
+ * folder expanded; a selection whose entry is gone (deleted, undone, removed by others) is dropped. Returns the
+ * function that stops following.
+ */
+export function followOpenProject(): () => void {
+  return useProjectStore.subscribe(({ project, generation }, previous) => {
+    if (generation !== previous.generation) {
+      useUiStore.setState({
+        selection: null,
+        expanded: project ? Object.fromEntries(Object.keys(project.folders).map((id) => [id, true])) : {},
+      });
+    } else if (project && project !== previous.project && !selectionExists(project, useUiStore.getState().selection)) {
+      useUiStore.setState({ selection: null });
+    }
   });
-}
-
-/** Drops the selection when its entry no longer exists in `project` (after undo, redo or remote changes). */
-export function repairSelection(project: Project): void {
-  const { selection } = useUiStore.getState();
-  if (!selectionExists(project, selection)) useUiStore.setState({ selection: null });
 }
 
 /** Shows the entry an issue belongs to. */

@@ -5,6 +5,7 @@ import { createContext, useContext } from 'react';
 import { useLocaleStore } from '../i18n/locale';
 import { desktopApi } from '../platform/desktop';
 import { setProject } from '../store/project';
+import { followOpenProject } from '../store/ui';
 import { createAutosave, type Autosave } from './autosave';
 import { createProjectRepository, type ProjectRepository } from './projectRepository';
 import { createShareSync, type ShareSync } from './shareSync';
@@ -31,6 +32,7 @@ async function openLastProject(repository: ProjectRepository): Promise<void> {
 }
 
 export async function bootstrap(): Promise<AppServices> {
+  const stopFollowing = followOpenProject();
   const repository = createProjectRepository();
   await openLastProject(repository);
 
@@ -57,6 +59,7 @@ export async function bootstrap(): Promise<AppServices> {
     share,
     testServer,
     dispose() {
+      stopFollowing();
       stopLocaleSync();
       testServer?.dispose();
       share?.dispose();
