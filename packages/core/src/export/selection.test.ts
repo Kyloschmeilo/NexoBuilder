@@ -3,12 +3,12 @@ import JSZip from 'jszip';
 import { createFolder, createItem, createProject, insertFolder, insertItem } from '../project/factory';
 import { createTextureModel } from '../model/textureModel';
 import { createGlyph } from '../nexo/glyphs/model';
-import { makePngDataUrl } from '../test/png';
+import { makePngDataUrl } from '../../test-utils/png';
 import { planExport } from './plan';
 import { countSelected, planMultiExport, selectFromProject, selectNothing } from './selection';
 import { INSTALL_GUIDE_FILE } from './installGuide';
 import { buildMultiExportZip, listMultiExportPaths } from './zip';
-import { singleExport } from '../test/export';
+import { singleExport } from '../../test-utils/export';
 import type { Project } from '../project/types';
 
 const PNG16 = makePngDataUrl(16, 16);

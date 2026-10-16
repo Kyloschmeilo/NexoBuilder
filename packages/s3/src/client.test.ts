@@ -17,6 +17,9 @@ import { mockClient } from 'aws-sdk-client-mock';
 import { Readable } from 'node:stream';
 import { afterEach, beforeEach, describe, expect, it } from 'vitest';
 import { createS3Client, MULTIPART_THRESHOLD, type S3Storage } from './client';
+import { joinKey } from './keys';
+
+const key = (path: string) => joinKey('', path);
 
 const s3 = mockClient(S3Client);
 let storage: S3Storage;
@@ -44,7 +47,7 @@ describe('createS3Client', () => {
   });
 
   it('rejects invalid bucket names before sending', async () => {
-    await expect(storage.getObjectText('Bad_Bucket', 'a')).rejects.toMatchObject({ code: 'invalidConfig' });
+    await expect(storage.getObjectText('Bad_Bucket', key('a'))).rejects.toMatchObject({ code: 'invalidConfig' });
     expect(s3.calls()).toHaveLength(0);
   });
 });
@@ -88,20 +91,20 @@ describe('getObjectText / getObjectBytes', () => {
     s3.on(GetObjectCommand, { Key: 'a.json' }).resolves({ Body: streamOf('{"ä":1}') });
     s3.on(GetObjectCommand, { Key: 'a.png' }).resolves({ Body: streamOf(new Uint8Array([1, 2, 3])) });
 
-    expect(await storage.getObjectText('packs', 'a.json')).toBe('{"ä":1}');
-    expect(Array.from((await storage.getObjectBytes('packs', 'a.png')) ?? [])).toEqual([1, 2, 3]);
+    expect(await storage.getObjectText('packs', key('a.json'))).toBe('{"ä":1}');
+    expect(Array.from((await storage.getObjectBytes('packs', key('a.png'))) ?? [])).toEqual([1, 2, 3]);
   });
 
   it('returns null for missing objects', async () => {
     s3.on(GetObjectCommand).rejects(serviceError('NoSuchKey', 404));
-    expect(await storage.getObjectText('packs', 'missing')).toBeNull();
-    expect(await storage.getObjectBytes('packs', 'missing')).toBeNull();
+    expect(await storage.getObjectText('packs', key('missing'))).toBeNull();
+    expect(await storage.getObjectBytes('packs', key('missing'))).toBeNull();
   });
 
   it('still fails for a missing bucket or denied access', async () => {
     s3.on(GetObjectCommand).rejectsOnce(serviceError('NoSuchBucket', 404)).rejectsOnce(serviceError('AccessDenied', 403));
-    await expect(storage.getObjectText('packs', 'a')).rejects.toMatchObject({ code: 'noSuchBucket' });
-    await expect(storage.getObjectBytes('packs', 'a')).rejects.toMatchObject({ code: 'accessDenied' });
+    await expect(storage.getObjectText('packs', key('a'))).rejects.toMatchObject({ code: 'noSuchBucket' });
+    await expect(storage.getObjectBytes('packs', key('a'))).rejects.toMatchObject({ code: 'accessDenied' });
   });
 });
 
@@ -109,7 +112,7 @@ describe('putObject', () => {
   it('uploads with the derived content type and returns the unquoted etag', async () => {
     s3.on(PutObjectCommand).resolves({ ETag: '"abc"' });
 
-    const result = await storage.putObject('packs', 'p/pack.mcmeta', '{"pack":{}}');
+    const result = await storage.putObject('packs', key('p/pack.mcmeta'), '{"pack":{}}');
 
     expect(result).toEqual({ key: 'p/pack.mcmeta', etag: 'abc', size: 11 });
     const input = s3.commandCalls(PutObjectCommand)[0]?.args[0].input;
@@ -119,25 +122,25 @@ describe('putObject', () => {
 
   it('sets public-read and an explicit content type', async () => {
     s3.on(PutObjectCommand).resolves({ ETag: '"abc"' });
-    await storage.putObject('packs', 'a.bin', new Uint8Array(4), { contentType: 'application/zip', publicRead: true });
+    await storage.putObject('packs', key('a.bin'), new Uint8Array(4), { contentType: 'application/zip', publicRead: true });
     expect(s3.commandCalls(PutObjectCommand)[0]?.args[0].input).toMatchObject({ ACL: 'public-read', ContentType: 'application/zip' });
   });
 
   it('maps buckets without ACL support', async () => {
     s3.on(PutObjectCommand).rejects(serviceError('AccessControlListNotSupported', 400));
-    await expect(storage.putObject('packs', 'a.zip', 'x', { publicRead: true })).rejects.toMatchObject({ code: 'aclNotSupported' });
+    await expect(storage.putObject('packs', key('a.zip'), 'x', { publicRead: true })).rejects.toMatchObject({ code: 'aclNotSupported' });
   });
 
   it('maps invalid credentials', async () => {
     s3.on(PutObjectCommand).rejects(serviceError('SignatureDoesNotMatch', 403));
-    await expect(storage.putObject('packs', 'a.zip', 'x')).rejects.toMatchObject({ code: 'invalidCredentials' });
+    await expect(storage.putObject('packs', key('a.zip'), 'x')).rejects.toMatchObject({ code: 'invalidCredentials' });
   });
 });
 
 describe('upload', () => {
   it('uses a single PutObject up to the threshold', async () => {
     s3.on(PutObjectCommand).resolves({ ETag: '"small"' });
-    const result = await storage.upload('packs', 'a.zip', new Uint8Array(MULTIPART_THRESHOLD));
+    const result = await storage.upload('packs', key('a.zip'), new Uint8Array(MULTIPART_THRESHOLD));
     expect(result.etag).toBe('small');
     expect(s3.commandCalls(PutObjectCommand)).toHaveLength(1);
     expect(s3.commandCalls(CreateMultipartUploadCommand)).toHaveLength(0);
@@ -148,7 +151,7 @@ describe('upload', () => {
     s3.on(UploadPartCommand).resolves({ ETag: '"part"' });
     s3.on(CompleteMultipartUploadCommand).resolves({ ETag: '"multi"' });
 
-    const result = await storage.upload('packs', 'a.zip', new Uint8Array(MULTIPART_THRESHOLD + 1), { publicRead: true });
+    const result = await storage.upload('packs', key('a.zip'), new Uint8Array(MULTIPART_THRESHOLD + 1), { publicRead: true });
 
     expect(result).toEqual({ key: 'a.zip', etag: 'multi', size: MULTIPART_THRESHOLD + 1 });
     expect(s3.commandCalls(PutObjectCommand)).toHaveLength(0);
@@ -164,7 +167,7 @@ describe('upload', () => {
   it('maps multipart failures', async () => {
     s3.on(CreateMultipartUploadCommand).rejects(serviceError('AccessControlListNotSupported', 400));
     await expect(
-      storage.uploadLarge('packs', 'a.zip', new Uint8Array(MULTIPART_THRESHOLD + 1), { publicRead: true }),
+      storage.uploadLarge('packs', key('a.zip'), new Uint8Array(MULTIPART_THRESHOLD + 1), { publicRead: true }),
     ).rejects.toMatchObject({
       code: 'aclNotSupported',
     });
@@ -175,25 +178,25 @@ describe('headObject', () => {
   it('returns metadata', async () => {
     const date = new Date('2026-01-01T00:00:00Z');
     s3.on(HeadObjectCommand).resolves({ ContentLength: 42, LastModified: date, ETag: '"e"' });
-    expect(await storage.headObject('packs', 'a.zip')).toEqual({ key: 'a.zip', size: 42, lastModified: date.getTime(), etag: 'e' });
+    expect(await storage.headObject('packs', key('a.zip'))).toEqual({ key: 'a.zip', size: 42, lastModified: date.getTime(), etag: 'e' });
   });
 
   it('returns null for a bodyless 404', async () => {
     s3.on(HeadObjectCommand).rejects(serviceError('NotFound', 404));
-    expect(await storage.headObject('packs', 'a.zip')).toBeNull();
+    expect(await storage.headObject('packs', key('a.zip'))).toBeNull();
   });
 });
 
 describe('deleteObject / deleteObjects', () => {
   it('deletes one object', async () => {
     s3.on(DeleteObjectCommand).resolves({});
-    await storage.deleteObject('packs', 'a.zip');
+    await storage.deleteObject('packs', key('a.zip'));
     expect(s3.commandCalls(DeleteObjectCommand)[0]?.args[0].input).toEqual({ Bucket: 'packs', Key: 'a.zip' });
   });
 
   it('deletes in batches of 1000', async () => {
     s3.on(DeleteObjectsCommand).resolves({});
-    const keys = Array.from({ length: 2001 }, (_, index) => `k${index}`);
+    const keys = Array.from({ length: 2001 }, (_, index) => key(`k${index}`));
 
     await storage.deleteObjects('packs', keys);
 
@@ -208,7 +211,7 @@ describe('deleteObject / deleteObjects', () => {
 
   it('fails with the first per-key error', async () => {
     s3.on(DeleteObjectsCommand).resolves({ Errors: [{ Key: 'a', Code: 'AccessDenied' }] });
-    await expect(storage.deleteObjects('packs', ['a'])).rejects.toMatchObject({ code: 'accessDenied' });
+    await expect(storage.deleteObjects('packs', [key('a')])).rejects.toMatchObject({ code: 'accessDenied' });
   });
 });
 
@@ -260,7 +263,7 @@ describe('testConnection', () => {
 
 describe('objectUrl', () => {
   it('builds virtual-hosted URLs and validates the bucket', () => {
-    expect(storage.objectUrl('packs', 'a.zip')).toBe('https://packs.s3.eu-central-1.amazonaws.com/a.zip');
-    expect(() => storage.objectUrl('Bad_Bucket', 'a.zip')).toThrow(expect.objectContaining({ code: 'invalidConfig' }));
+    expect(storage.objectUrl('packs', key('a.zip'))).toBe('https://packs.s3.eu-central-1.amazonaws.com/a.zip');
+    expect(() => storage.objectUrl('Bad_Bucket', key('a.zip'))).toThrow(expect.objectContaining({ code: 'invalidConfig' }));
   });
 });

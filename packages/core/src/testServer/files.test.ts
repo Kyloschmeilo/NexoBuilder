@@ -4,7 +4,7 @@ import { createFolder, createItem, createProject, insertFolder, insertItem } fro
 import { planExport } from '../export/plan';
 import { nexoFolderFiles, nexoGiveCommand, nexoPackCommand, patchNexoSettings } from './files';
 import { createTextureModel } from '../model/textureModel';
-import { makePngDataUrl } from '../test/png';
+import { makePngDataUrl } from '../../test-utils/png';
 
 describe('Test server: files for plugins/Nexo', () => {
   it('places items, recipes and the pack as a folder under pack/external_packs', () => {

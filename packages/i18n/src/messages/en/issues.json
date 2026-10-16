@@ -55,6 +55,10 @@
     "fieldTooSmall": "The value {value} is less than {min}.",
     "fieldTooLarge": "The value {value} is greater than {max}.",
     "fieldNotInteger": "A whole number is expected.",
+    "fieldNotANumber": "“{value}” is not a number – it is left out of the export.",
+    "fieldNotABoolean": "“{value}” is neither true nor false – it is left out of the export.",
+    "fieldNotAnOption": "“{value}” is not one of the possible values.",
+    "fieldInvalidValue": "The value has the wrong type – it is left out of the export.",
     "blockTypeMissing": "The custom block has no block type.",
     "blockVariationRange": "The variation {variation} is outside 1–{max} for {type}.",
     "blockVariationDuplicate": "The variation {variation} ({type}) is already used by “{other}”.",
@@ -130,7 +134,9 @@
     "noProjectOpen": "No project is open."
   },
   "file": {
-    "invalidDataUrl": "Invalid data URL."
+    "invalidDataUrl": "Invalid data URL.",
+    "invalidJson": "The file is not valid JSON: {error}",
+    "unexpectedContent": "The file does not have the expected content."
   },
   "recipe": {
     "resultAmountRange": "The result amount must be between 1 and 99.",
@@ -186,6 +192,10 @@
     "noName": "Invalid project (name missing)",
     "invalidFile": "The file is not a valid ResourcepackBuilder project file.",
     "notProjectFile": "The file is not a ResourcepackBuilder project file."
+  },
+  "yaml": {
+    "syntax": "YAML error in line {line}, column {column}: {detail}",
+    "duplicateKey": "The key in line {line} appears twice ({detail})."
   },
   "issueList": {
     "openItem": "Go to item",

@@ -1,6 +1,6 @@
 /** Project-wide checks: namespace, pack settings, folder names and item IDs. */
 import { isPngDataUrl } from '../../binary/png';
-import { createIssue, issueReporter, type Issue, type MessageArgs } from '../../issues';
+import { createIssue, issueReporter, type Issue, type IssueCode, type MessageArgs } from '../../issues';
 import { itemFrame, itemTarget } from '../../issueFrames';
 import { itemIdSyntaxError, namespaceError, PACK_NAME_PATTERN } from '../../minecraft/resourceLocation';
 import { itemLabel } from '../../project/labels';
@@ -65,7 +65,7 @@ export function validateItemIds(items: Item[]): Issue[] {
   const seen = new Map<string, Item>();
   for (const item of items) {
     const add = issueReporter(issues, { target: itemTarget(item), context: [itemFrame(item)] });
-    const report = (code: string, args?: MessageArgs) => add('error', code, args);
+    const report = (code: IssueCode, args?: MessageArgs) => add('error', code, args);
     const syntax = itemIdSyntaxError(item.nexoId);
     if (syntax === 'missing') {
       report('plan.itemIdMissing');

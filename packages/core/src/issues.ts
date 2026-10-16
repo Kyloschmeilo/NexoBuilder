@@ -1,13 +1,34 @@
 /**
  * Check results and errors of core. Their user-facing text lives in the `issues` message namespace
  * (`code` is the key), so the app can show them in the current language.
+ *
+ * Codes and label keys are typed by the catalogue (a type-only dependency on @resourcepackbuilder/i18n), so the app
+ * renders them without casts. Keys built at runtime (from registries such as MEDIA_KINDS or keySegment) go through
+ * {@link issueCode}/{@link schemaKey}; core's message-key tests check that every one of them exists.
  */
+import type { IssueKey, SchemaKey } from '@resourcepackbuilder/i18n';
 
 export type IssueLevel = 'error' | 'warning' | 'info';
 
+/** A message key in the `issues` namespace: the code of an issue, error or context frame. */
+export type IssueCode = IssueKey;
+
+/** A message key in the `schema` namespace: labels, help texts and options of core's Nexo data. */
+export type LabelKey = SchemaKey;
+
+/** A code built at runtime (e.g. `${kind}.idInvalid`); the catalogue tests make sure it exists. */
+export function issueCode(code: string): IssueCode {
+  return code as IssueCode;
+}
+
+/** A label key built at runtime (e.g. from keySegment); the message-key tests make sure it exists. */
+export function schemaKey(key: string): LabelKey {
+  return key as LabelKey;
+}
+
 /** A translated label argument: a message key in the `schema` namespace with its own args. */
 export interface LabelArg {
-  key: string;
+  key: LabelKey;
   args?: Record<string, string | number>;
 }
 
@@ -21,14 +42,14 @@ export interface IssueTarget {
 
 /** One "where" frame rendered as a prefix (e.g. in item X › variant Y), code is a key in `issues`. */
 export interface IssueContext {
-  code: string;
+  code: IssueCode;
   args?: MessageArgs;
 }
 
 export interface Issue {
   level: IssueLevel;
   /** Message key inside the `issues` namespace, e.g. `plan.duplicateFile` */
-  code: string;
+  code: IssueCode;
   args?: MessageArgs;
   /** The entry the issue belongs to (lets the UI jump there) */
   target?: IssueTarget;
@@ -41,7 +62,7 @@ export interface Issue {
 /** An error whose user-facing text is the message `code` in the `issues` namespace. */
 export class CoreError extends Error {
   constructor(
-    readonly code: string,
+    readonly code: IssueCode,
     readonly args: MessageArgs = {},
   ) {
     super(code);
@@ -49,7 +70,7 @@ export class CoreError extends Error {
   }
 }
 
-export function labelArg(key: string, args?: Record<string, string | number>): LabelArg {
+export function labelArg(key: LabelKey, args?: Record<string, string | number>): LabelArg {
   return args ? { key, args } : { key };
 }
 
@@ -60,10 +81,10 @@ export interface IssueWhere {
 }
 
 /** Reports an issue; `context` frames are appended after the reporter's own ones. */
-export type ReportIssue = (level: IssueLevel, code: string, args?: MessageArgs, context?: IssueContext[]) => void;
+export type ReportIssue = (level: IssueLevel, code: IssueCode, args?: MessageArgs, context?: IssueContext[]) => void;
 
 /** Builds an issue (args and context are left out when empty). */
-export function createIssue(level: IssueLevel, code: string, args?: MessageArgs, where: IssueWhere = {}): Issue {
+export function createIssue(level: IssueLevel, code: IssueCode, args?: MessageArgs, where: IssueWhere = {}): Issue {
   return {
     level,
     code,

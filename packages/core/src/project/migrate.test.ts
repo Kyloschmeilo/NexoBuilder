@@ -80,6 +80,48 @@ describe('migrateProject', () => {
     expect(project.glyphs.map((g) => g.glyphId)).toEqual(['a']);
   });
 
+  it('drops invalid list entries and falls back to defaults for invalid fields', () => {
+    const project = migrateProject(
+      {
+        name: 'Kaputt',
+        settings: { packName: 7, yamlFileMode: 'nope', useItemModel: false },
+        folders: { f_1: { name: 'A', parentId: 'f_missing', folderIds: ['f_gone', 3], itemIds: null } },
+        glyphs: [null, { id: 'g_1', glyphId: 'smile', placeholders: 'x', ascent: 'high' }, { id: 'g_2' }],
+        sounds: [{ id: 's_1', soundId: 'a', files: [null, { name: 'a.ogg', dataUrl: 'data:', size: 'big' }], jukebox: 'yes' }],
+        paintings: 'none',
+        items: {
+          i_1: {
+            nexoId: 'x',
+            folderId: 'f_1',
+            config: { material: 'PAPER', bad: undefined, list: [1, undefined, 'a'] },
+            model: { source: 'other', json: { elements: [null, { from: [0, 0, 0], to: [1, 1, 1], faces: { up: null } }] }, textures: [7] },
+            recipes: [
+              { id: 'r_1', type: 'magic' },
+              { id: 'r_2', type: 'shaped', grid: ['A'] },
+            ],
+            assets: { a: { id: 'a', dataUrl: 5 }, b: 'nope' },
+          },
+          i_2: 'no item',
+        },
+      },
+      1,
+    );
+    expect(project.settings).toMatchObject({ packName: 'kaputt', yamlFileMode: 'folder', useItemModel: false });
+    expect(project.folders.f_1).toEqual({ id: 'f_1', name: 'A', parentId: null, folderIds: [], itemIds: ['i_1'] });
+    expect(project.glyphs).toHaveLength(1);
+    expect(project.glyphs[0]).toMatchObject({ glyphId: 'smile', placeholders: [], ascent: 7, kind: 'image' });
+    expect(project.sounds[0].files).toEqual([{ name: 'a.ogg', dataUrl: 'data:', size: 0 }]);
+    expect(project.sounds[0].jukebox).toBeNull();
+    expect(project.paintings).toEqual([]);
+    expect(Object.keys(project.items)).toEqual(['i_1']);
+    const item = project.items.i_1;
+    expect(item.config).toEqual({ material: 'PAPER', list: [1, 'a'] });
+    expect(item.model).toMatchObject({ source: 'json', textures: [], json: { elements: [{ from: [0, 0, 0], to: [1, 1, 1], faces: {} }] } });
+    expect(item.recipes.map((r) => r.id)).toEqual(['r_2']);
+    expect(item.recipes[0].grid).toEqual(['A', '', '', '', '', '', '', '', '']);
+    expect(item.assets).toEqual({ a: { id: 'a', name: '', dataUrl: '', width: 0, height: 0, mcmeta: null } });
+  });
+
   it('refuses data that is no project', () => {
     expect(() => migrateProject('nope')).toThrow(CoreError);
     expect(() => migrateProject({ items: {} })).toThrow('project.noName');

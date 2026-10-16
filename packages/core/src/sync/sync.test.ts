@@ -436,6 +436,48 @@ describe('Shared projects', () => {
     expect(ben.project.items[item.id].config.$armor).toBeUndefined();
   });
 
+  it('skips envelopes with invalid data from other installations and cleans up lenient fields', async () => {
+    const { folder, anna, ben } = await setup();
+    const glyph = anna.project.glyphs[0];
+    const glyphPath = `glyphs/${glyph.id}.json`;
+    const glyphEnvelope = folder.json(glyphPath);
+    // A broken glyph (no glyphId) is ignored …
+    folder.put(glyphPath, JSON.stringify({ ...glyphEnvelope, rev: glyphEnvelope.rev + 1, data: { id: glyph.id, glyphId: 5 } }));
+    // … as are folder envelopes whose data belongs to another id, and kinds that do not match the path
+    const folderId = firstFolder(anna.project).id;
+    const folderEnvelope = folder.json(`folders/${folderId}.json`);
+    folder.put(
+      `folders/${folderId}.json`,
+      JSON.stringify({ ...folderEnvelope, rev: folderEnvelope.rev + 1, data: { ...folderEnvelope.data, id: 'other' } }),
+    );
+    expect((await ben.sync()).applied).toEqual([]);
+    // A glyph with bad optional fields gets defaults instead of crashing the checks
+    folder.put(
+      glyphPath,
+      JSON.stringify({
+        ...glyphEnvelope,
+        rev: glyphEnvelope.rev + 2,
+        data: { id: glyph.id, glyphId: 'herz', placeholders: null, rows: 'x' },
+      }),
+    );
+    await ben.sync();
+    expect(ben.project.glyphs[0]).toMatchObject({ glyphId: 'herz', placeholders: [], rows: 1 });
+  });
+
+  it('starts from a damaged stored sync state without crashing', () => {
+    const folder = new MemoryFolder();
+    const clock = { t: 10_000 };
+    const damaged = {
+      clock: 'x',
+      versions: { project: null, 'item:a': { rev: 1, by: 'x', hash: 'h' } },
+      files: [],
+    } as unknown as SyncState;
+    const anna = new Client(sampleProject(), folder, 'Anna', clock, damaged);
+    expect(anna.engine.state.clock).toBe(0);
+    expect(Object.keys(anna.engine.state.versions)).toEqual(['item:a']);
+    expect(anna.engine.state.files).toEqual({});
+  });
+
   it('names the shared folder readme README.txt', () => {
     expect(README_FILE).toBe('README.txt');
   });

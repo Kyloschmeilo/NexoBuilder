@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { convertBBModel } from './bbmodel';
-import { makePngDataUrl } from '../test/png';
+import { makePngDataUrl } from '../../test-utils/png';
 
 const PNG_32 = makePngDataUrl(32, 32);
 
@@ -237,5 +237,21 @@ describe('convertBBModel', () => {
   it('throws an understandable error for invalid files', () => {
     expect(() => convertBBModel('{broken', 'x.bbmodel')).toThrow('model.invalidBbmodel');
     expect(() => convertBBModel('{"foo":1}', 'x.bbmodel')).toThrow('model.noBlockbenchModel');
+    expect(() => convertBBModel('[]', 'x.bbmodel')).toThrow('model.noBlockbenchModel');
+  });
+
+  it('drops broken elements, faces and textures instead of crashing', () => {
+    const broken = cube({ uuid: 'c2', faces: { north: null, up: 'x' } });
+    const json = JSON.stringify({
+      ...JSON.parse(bbmodel({ elements: [null, 7, cube({ uuid: 'c1' }), broken] })),
+      meta: { model_format: { evil: true } },
+      textures: [null, ...JSON.parse(bbmodel()).textures],
+      resolution: 'big',
+    });
+    const result = convertBBModel(json, 'x.bbmodel');
+    expect(result.json.elements).toHaveLength(1);
+    // The broken texture keeps its slot, so the face references (by index) still match
+    expect(result.textures).toHaveLength(1);
+    expect(result.issues.some((i) => i.code === 'model.nonJavaFormat')).toBe(false);
   });
 });

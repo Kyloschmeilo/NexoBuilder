@@ -44,10 +44,10 @@ describe('search', () => {
 describe('levels', () => {
   it('keeps the worst level per target and ignores hints', () => {
     const issues: Issue[] = [
-      { level: 'warning', code: 'a', target: { kind: 'item', id: 'i1' } },
-      { level: 'error', code: 'b', target: { kind: 'item', id: 'i1' } },
-      { level: 'info', code: 'c', target: { kind: 'item', id: 'i2' } },
-      { level: 'warning', code: 'd', target: { kind: 'glyph', id: 'g1' } },
+      { level: 'warning', code: 'plan.missingModel', target: { kind: 'item', id: 'i1' } },
+      { level: 'error', code: 'plan.duplicateFile', target: { kind: 'item', id: 'i1' } },
+      { level: 'info', code: 'model.parentsMerged', target: { kind: 'item', id: 'i2' } },
+      { level: 'warning', code: 'glyph.idInvalid', target: { kind: 'glyph', id: 'g1' } },
     ];
     const levels = levelsByTarget(issues, 'item');
     expect([...levels]).toEqual([['i1', 'error']]);

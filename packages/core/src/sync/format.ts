@@ -15,12 +15,12 @@
  * Each file is an "envelope" with a version number (rev) and sender. Deleted entries remain as
  * a small tombstone (deleted: true) so that the deletion reaches everyone.
  */
-import type { Glyph } from '../nexo/glyphs/model';
+import { z } from 'zod';
+import { jsonOrNull, parseJson } from '../json';
+import { type Fits, type SchemaChecks, lenientString, listOf, optional, plainObject, withoutUndefined } from '../lenient';
 import { MEDIA_KIND_LIST, MEDIA_KINDS, mediaList, type MediaEntryByKind, type MediaKind } from '../nexo/media/kinds';
-import type { Painting } from '../nexo/paintings/model';
-import type { Sound } from '../nexo/sounds/model';
-import { isPlainObject, sameList } from '../object';
-import { migrateItem } from '../project/migrate';
+import { sameList } from '../object';
+import { FolderSchema, MEDIA_SCHEMAS, parseItem, settingsSchema } from '../project/schema';
 import type { Folder, Item, Project, ProjectSettings } from '../project/types';
 
 export const SHARE_FORMAT = 'resourcepackbuilder-share';
@@ -41,7 +41,8 @@ export interface ProjectMeta {
   /** Since 1.4 – older versions know no sounds/paintings */
   soundOrder?: string[];
   paintingOrder?: string[];
-  createdAt: number;
+  /** Missing in damaged files – the project keeps its own then */
+  createdAt?: number;
 }
 
 /** What each kind of entry stores; glyphs, sounds and paintings (see MEDIA_KINDS) each get their own file too. */
@@ -82,15 +83,14 @@ export function isShareFilePath(path: string): boolean {
  * (only format and id are required): it identifies a folder, the sync engine checks the full envelope.
  */
 export function readProjectInfo(text: string): { id: string; name: string } | null {
-  let raw: unknown;
-  try {
-    raw = JSON.parse(text);
-  } catch {
-    return null;
-  }
-  if (!isPlainObject(raw) || raw.format !== SHARE_FORMAT || !isPlainObject(raw.data) || typeof raw.data.id !== 'string') return null;
-  return { id: raw.data.id, name: String(raw.data.name ?? '') };
+  const info = jsonOrNull(parseJson(text, ProjectInfoSchema));
+  return info && info.data;
 }
+
+const ProjectInfoSchema = z.object({
+  format: z.literal(SHARE_FORMAT),
+  data: z.object({ id: z.string(), name: lenientString() }),
+});
 
 type EnvelopeOf<K extends EntityKind> = {
   format: typeof SHARE_FORMAT;
@@ -247,79 +247,75 @@ export function createEnvelope(
   return envelope;
 }
 
-type EnvelopeHead = Omit<OutgoingEnvelope, 'kind' | 'data' | 'deleted'>;
+/* ------------------------------------------------------------ Reading envelopes (written by other installations: untrusted) */
 
-/** Reads an envelope and checks whether it matches the expected path. Incomplete files yield null. */
+/** Project data of a project.json; the settings go through the same lenient schema as stored projects. */
+const ProjectMetaSchema = z
+  .object({
+    formatVersion: z.literal(1).catch(1),
+    id: z.string(),
+    name: z.string(),
+    namespace: z.string(),
+    settings: plainObject(),
+    rootFolderIds: listOf(z.string()),
+    glyphOrder: listOf(z.string()),
+    soundOrder: optional(listOf(z.string())),
+    paintingOrder: optional(listOf(z.string())),
+    createdAt: optional(z.number()),
+  })
+  .transform((meta): ProjectMeta => withoutUndefined({ ...meta, settings: settingsSchema(meta.name).parse(meta.settings) }));
+
+/** Item data: the fields every complete item file has, then the project migration. */
+const ItemDataSchema = z.looseObject({ nexoId: z.string(), folderId: z.string(), config: plainObject() }).transform((raw, ctx) => {
+  const item = parseItem(raw, Date.now());
+  if (item) return item;
+  ctx.addIssue({ code: 'custom', message: 'no item' });
+  return z.NEVER;
+});
+
+/** An envelope of `kind`: a tombstone (`deleted`) or the entry's data, whose id must be the envelope's. */
+function envelopeSchema<K extends EntityKind>(kind: K, data: z.ZodType<EntityDataByKind[K], unknown>) {
+  return z
+    .object({
+      format: z.literal(SHARE_FORMAT),
+      version: z.number(),
+      kind: z.literal(kind),
+      id: z.string(),
+      rev: z.number(),
+      by: z.string(),
+      byName: lenientString(),
+      deleted: z.unknown().optional(),
+      data: z.unknown().optional(),
+    })
+    .transform(({ deleted, data: raw, ...head }, ctx): EnvelopeOf<K> => {
+      if (deleted) return { ...head, deleted: true };
+      const parsed = data.safeParse(raw);
+      if (parsed.success && parsed.data.id === head.id) return { ...head, data: parsed.data };
+      ctx.addIssue({ code: 'custom', message: 'invalid data', path: ['data'] });
+      return z.NEVER;
+    });
+}
+
+/** Every envelope, told apart by `kind`; the media kinds use their schemas from MEDIA_SCHEMAS. */
+const EnvelopeSchema = z.discriminatedUnion('kind', [
+  envelopeSchema('project', ProjectMetaSchema),
+  envelopeSchema('folder', FolderSchema),
+  envelopeSchema('item', ItemDataSchema),
+  envelopeSchema('glyph', MEDIA_SCHEMAS.glyph),
+  envelopeSchema('sound', MEDIA_SCHEMAS.sound),
+  envelopeSchema('painting', MEDIA_SCHEMAS.painting),
+]);
+
+/** Reads an envelope and checks whether it matches the expected path. Incomplete or invalid files yield null. */
 export function parseEnvelope(text: string, expected: EntityRef): Envelope | null {
-  let raw: unknown;
-  try {
-    raw = JSON.parse(text);
-  } catch {
-    return null;
-  }
-  if (!isPlainObject(raw) || raw.format !== SHARE_FORMAT || typeof raw.version !== 'number') return null;
-  if (raw.kind !== expected.kind || typeof raw.id !== 'string') return null;
-  if (expected.kind !== 'project' && raw.id !== expected.id) return null;
-  if (typeof raw.rev !== 'number' || !Number.isFinite(raw.rev) || typeof raw.by !== 'string') return null;
-  const head: EnvelopeHead = {
-    format: SHARE_FORMAT,
-    version: raw.version,
-    id: raw.id,
-    rev: raw.rev,
-    by: raw.by,
-    byName: typeof raw.byName === 'string' ? raw.byName : '',
-  };
-  if (raw.deleted) return { ...head, kind: expected.kind, deleted: true };
-  return withData(head, expected.kind, raw.data);
+  const env = jsonOrNull(parseJson(text, EnvelopeSchema));
+  if (!env || env.kind !== expected.kind) return null;
+  return expected.kind === 'project' || env.id === expected.id ? env : null;
 }
 
-/** Checks the data of an envelope (items go through the project migration). */
-function withData(head: EnvelopeHead, kind: EntityKind, data: unknown): Envelope | null {
-  if (!isPlainObject(data) || data.id !== head.id) return null;
-  switch (kind) {
-    case 'project':
-      return isProjectMeta(data) ? { ...head, kind, data } : null;
-    case 'folder':
-      return isFolder(data) ? { ...head, kind, data } : null;
-    case 'item': {
-      const item =
-        typeof data.nexoId === 'string' && typeof data.folderId === 'string' && isPlainObject(data.config) ? migrateItem(data) : null;
-      return item ? { ...head, kind, data: item } : null;
-    }
-    case 'glyph':
-      return hasStringField<Glyph>(data, 'glyphId') ? { ...head, kind, data } : null;
-    case 'sound':
-      return hasStringField<Sound>(data, 'soundId') && Array.isArray(data.files) ? { ...head, kind, data } : null;
-    case 'painting':
-      return hasStringField<Painting>(data, 'paintingId') ? { ...head, kind, data } : null;
-  }
-}
-
-function isProjectMeta(data: unknown): data is ProjectMeta {
-  return (
-    isPlainObject(data) &&
-    typeof data.name === 'string' &&
-    typeof data.namespace === 'string' &&
-    isPlainObject(data.settings) &&
-    Array.isArray(data.rootFolderIds) &&
-    Array.isArray(data.glyphOrder)
-  );
-}
-
-function isFolder(data: unknown): data is Folder {
-  return (
-    isPlainObject(data) &&
-    typeof data.name === 'string' &&
-    (data.parentId === null || typeof data.parentId === 'string') &&
-    Array.isArray(data.folderIds) &&
-    Array.isArray(data.itemIds)
-  );
-}
-
-/** Minimal check of list entries: the field that names them is a string. */
-function hasStringField<T>(data: unknown, field: keyof T & string): data is T {
-  return isPlainObject(data) && typeof data[field] === 'string';
-}
+export type FormatSchemaChecks = SchemaChecks<
+  [Fits<z.output<typeof EnvelopeSchema>, Envelope>, Fits<z.output<typeof FolderSchema>, Folder>]
+>;
 
 /** Fast, stable string hash (cyrb53) – to detect unchanged files. */
 export function hashString(text: string): string {

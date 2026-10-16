@@ -11,13 +11,14 @@
  *
  * The converted model is then checked like every other model (see analyseElements).
  */
-import { CoreError, type Issue } from '../issues';
+import type { Issue } from '../issues';
 import { compareVersions, FEATURE_VERSIONS } from '../minecraft/versions';
-import { isPlainObject } from '../object';
+import { parseJson, unwrapJson } from '../json';
 import { convertDisplay } from './bbmodel/display';
 import { convertElements, hasRotatedGroups } from './bbmodel/elements';
 import { buildTextureMcmeta, readTextureEntries } from './bbmodel/textures';
-import { positiveNumber, type BBModel, type BBTexture } from './bbmodel/types';
+import { positiveNumber, type BBTexture } from './bbmodel/types';
+import { BBModelSchema } from './schema';
 import { texturePlaceholder } from '../tokens';
 import { analyseElements } from './javaModel';
 import { createTexture, findMcmetaFor } from './textures';
@@ -52,7 +53,9 @@ const FORMAT_LABELS: Record<string, string> = {
 };
 
 export function convertBBModel(text: string, fileName: string, extraFiles: ImportFile[] = []): ImportedModel {
-  const model = parseBBModel(text, fileName);
+  const model = unwrapJson(
+    parseJson(text, BBModelSchema, { syntax: 'model.invalidBbmodel', shape: 'model.noBlockbenchModel', args: { file: fileName } }),
+  );
   const issues: Issue[] = [];
   const format = model.meta?.model_format ?? 'java_block';
   const isJava = format === 'java_block';
@@ -63,8 +66,8 @@ export function convertBBModel(text: string, fileName: string, extraFiles: Impor
   const uv = { width: positiveNumber(model.resolution?.width, 16), height: positiveNumber(model.resolution?.height, 16) };
   const perTextureUv = PER_TEXTURE_UV_FORMATS.has(format);
 
-  const entries = readTextureEntries(Array.isArray(model.textures) ? model.textures : [], extraFiles, issues);
-  const converted = convertElements(Array.isArray(model.elements) ? model.elements : [], model.outliner, {
+  const entries = readTextureEntries(model.textures, extraFiles, issues);
+  const converted = convertElements(model.elements, model.outliner, {
     textures: entries,
     uv,
     perTextureUv,
@@ -116,7 +119,7 @@ export function convertBBModel(text: string, fileName: string, extraFiles: Impor
   if (elements.length > 0) json.elements = elements;
   const display = convertDisplay(model.display);
   if (display) json.display = display;
-  if (isPlainObject(model.unhandled_root_fields)) {
+  if (model.unhandled_root_fields) {
     for (const [key, value] of Object.entries(model.unhandled_root_fields)) {
       if (json[key] === undefined && key !== 'groups' && key !== 'overrides') json[key] = value;
     }
@@ -129,21 +132,6 @@ export function convertBBModel(text: string, fileName: string, extraFiles: Impor
     issues.push({ level: 'info', code: 'model.requiresVersion', args: { version: analysis.requiresVersion } });
   }
   return { source: 'bbmodel', fileName, json, textures, issues, requiresVersion: analysis.requiresVersion };
-}
-
-function parseBBModel(text: string, fileName: string): BBModel {
-  let raw: unknown;
-  try {
-    raw = JSON.parse(text);
-  } catch (err) {
-    throw new CoreError('model.invalidBbmodel', { file: fileName, error: err instanceof Error ? err.message : String(err) });
-  }
-  if (!isBBModel(raw)) throw new CoreError('model.noBlockbenchModel', { file: fileName });
-  return raw;
-}
-
-function isBBModel(value: unknown): value is BBModel {
-  return isPlainObject(value) && (Array.isArray(value.elements) || Array.isArray(value.textures));
 }
 
 /** UV grid of a texture: its own in formats with per-texture UV sizes, otherwise the project's. */

@@ -12,7 +12,7 @@ import {
 import { Upload } from '@aws-sdk/lib-storage';
 import { buildObjectUrl, validateConfig, type S3ClientConfig } from './config';
 import { S3Error, toS3Error, type ErrorTarget } from './errors';
-import { assertBucketName, contentTypeFor } from './keys';
+import { assertBucketName, contentTypeFor, listedKey, type ObjectKey } from './keys';
 
 /** Bodies larger than this are uploaded as multipart uploads by {@link S3Storage.upload}. */
 export const MULTIPART_THRESHOLD = 8 * 1024 * 1024;
@@ -22,7 +22,7 @@ const DELETE_BATCH_SIZE = 1000;
 const CONNECTION_TIMEOUT_MS = 10_000;
 
 export interface S3ObjectInfo {
-  key: string;
+  key: ObjectKey;
   size: number;
   /** Milliseconds since the epoch. */
   lastModified: number;
@@ -38,7 +38,7 @@ export interface PutOptions {
 }
 
 export interface PutResult {
-  key: string;
+  key: ObjectKey;
   etag: string;
   size: number;
 }
@@ -49,21 +49,21 @@ export interface S3Storage {
   /** All objects under `prefix` (pagination handled), keys are full object keys. */
   listObjects(bucket: string, prefix: string): Promise<S3ObjectInfo[]>;
   /** UTF-8 content of an object, `null` when it does not exist. */
-  getObjectText(bucket: string, key: string): Promise<string | null>;
+  getObjectText(bucket: string, key: ObjectKey): Promise<string | null>;
   /** Raw content of an object, `null` when it does not exist. */
-  getObjectBytes(bucket: string, key: string): Promise<Uint8Array | null>;
+  getObjectBytes(bucket: string, key: ObjectKey): Promise<Uint8Array | null>;
   /** Single-request upload. The service does not return a modification time; use {@link headObject} when needed. */
-  putObject(bucket: string, key: string, body: Body, options?: PutOptions): Promise<PutResult>;
+  putObject(bucket: string, key: ObjectKey, body: Body, options?: PutOptions): Promise<PutResult>;
   /** Multipart upload in 8 MB parts. */
-  uploadLarge(bucket: string, key: string, body: Body, options?: PutOptions): Promise<PutResult>;
+  uploadLarge(bucket: string, key: ObjectKey, body: Body, options?: PutOptions): Promise<PutResult>;
   /** {@link putObject} up to {@link MULTIPART_THRESHOLD}, {@link uploadLarge} above. */
-  upload(bucket: string, key: string, body: Body, options?: PutOptions): Promise<PutResult>;
+  upload(bucket: string, key: ObjectKey, body: Body, options?: PutOptions): Promise<PutResult>;
   /** Object metadata, `null` when it does not exist. */
-  headObject(bucket: string, key: string): Promise<S3ObjectInfo | null>;
+  headObject(bucket: string, key: ObjectKey): Promise<S3ObjectInfo | null>;
   /** Deleting a missing object succeeds. */
-  deleteObject(bucket: string, key: string): Promise<void>;
+  deleteObject(bucket: string, key: ObjectKey): Promise<void>;
   /** Deletes in batches of 1000; fails with the first per-key error the service reports. */
-  deleteObjects(bucket: string, keys: readonly string[]): Promise<void>;
+  deleteObjects(bucket: string, keys: readonly ObjectKey[]): Promise<void>;
   /**
    * Checks credentials and reachability. Without a bucket this lists the buckets, which needs account-wide
    * permission (`s3:ListAllMyBuckets`): R2 tokens scoped to single buckets and restricted MinIO users get
@@ -72,7 +72,7 @@ export interface S3Storage {
    */
   testConnection(bucket?: string): Promise<void>;
   /** See {@link buildObjectUrl}. */
-  objectUrl(bucket: string, key: string, publicUrlBase?: string): string;
+  objectUrl(bucket: string, key: ObjectKey, publicUrlBase?: string): string;
   /** Closes the underlying sockets. */
   destroy(): void;
 }
@@ -106,8 +106,8 @@ async function orNullWhenMissing<T>(request: () => Promise<T>): Promise<T | null
 }
 
 /** Creates a client for one S3 account. Throws an `invalidConfig` {@link S3Error} for an unusable configuration. */
-export function createS3Client(config: S3ClientConfig): S3Storage {
-  validateConfig(config);
+export function createS3Client(input: S3ClientConfig): S3Storage {
+  const config = validateConfig(input);
   const client = new S3Client({
     endpoint: config.endpoint,
     region: config.region,
@@ -119,7 +119,7 @@ export function createS3Client(config: S3ClientConfig): S3Storage {
     requestHandler: { connectionTimeout: CONNECTION_TIMEOUT_MS },
   });
 
-  function putInput(bucket: string, key: string, body: Uint8Array, options: PutOptions) {
+  function putInput(bucket: string, key: ObjectKey, body: Uint8Array, options: PutOptions) {
     assertBucketName(bucket);
     return {
       Bucket: bucket,
@@ -142,7 +142,7 @@ export function createS3Client(config: S3ClientConfig): S3Storage {
         for (const object of page.Contents ?? []) {
           if (!object.Key) continue;
           objects.push({
-            key: object.Key,
+            key: listedKey(object.Key),
             size: object.Size ?? 0,
             lastModified: object.LastModified?.getTime() ?? 0,
             etag: unquote(object.ETag),

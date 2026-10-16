@@ -18,7 +18,8 @@ const { _electron: electron } = require('playwright-core');
 const JSZip = require('jszip');
 const fs = require('node:fs');
 const path = require('node:path');
-const zlib = require('node:zlib');
+// The repo's shared PNG encoder
+const { encodePng } = require('../../../packages/core/test-utils/pngEncoder.cjs');
 
 const exe = process.argv[2];
 const out = path.resolve(process.argv[3] ?? 'exe-test');
@@ -32,48 +33,7 @@ fs.mkdirSync(downloads, { recursive: true });
 
 /** 16x16 PNG (red/yellow checkerboard) as a test texture */
 function makePng() {
-  const crcTable = Array.from({ length: 256 }, (_, n) => {
-    let c = n;
-    for (let k = 0; k < 8; k++) c = c & 1 ? 0xedb88320 ^ (c >>> 1) : c >>> 1;
-    return c >>> 0;
-  });
-  const crc = (buf) => {
-    let c = 0xffffffff;
-    for (const b of buf) c = crcTable[(c ^ b) & 0xff] ^ (c >>> 8);
-    return (c ^ 0xffffffff) >>> 0;
-  };
-  const chunk = (type, data) => {
-    const len = Buffer.alloc(4);
-    len.writeUInt32BE(data.length);
-    const body = Buffer.concat([Buffer.from(type), data]);
-    const sum = Buffer.alloc(4);
-    sum.writeUInt32BE(crc(body));
-    return Buffer.concat([len, body, sum]);
-  };
-  const size = 16;
-  const raw = Buffer.alloc((size * 4 + 1) * size);
-  for (let y = 0; y < size; y++) {
-    raw[y * (size * 4 + 1)] = 0;
-    for (let x = 0; x < size; x++) {
-      const o = y * (size * 4 + 1) + 1 + x * 4;
-      const yellow = (x + y) % 2 === 0;
-      raw[o] = 230;
-      raw[o + 1] = yellow ? 200 : 40;
-      raw[o + 2] = 40;
-      raw[o + 3] = 255;
-    }
-  }
-  const ihdr = Buffer.alloc(13);
-  ihdr.writeUInt32BE(size, 0);
-  ihdr.writeUInt32BE(size, 4);
-  ihdr[8] = 8;
-  ihdr[9] = 6;
-  return Buffer.concat([
-    Buffer.from([0x89, 0x50, 0x4e, 0x47, 0x0d, 0x0a, 0x1a, 0x0a]),
-    chunk('IHDR', ihdr),
-    chunk('IDAT', zlib.deflateSync(raw)),
-    chunk('IEND', Buffer.alloc(0)),
-  ]);
+  return encodePng(16, 16, (x, y) => [230, (x + y) % 2 === 0 ? 200 : 40, 40, 255]);
 }
 
 const errors = [];

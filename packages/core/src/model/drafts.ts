@@ -5,7 +5,7 @@
 import { isPngDataUrl } from '../binary/png';
 import { CoreError } from '../issues';
 import { resourceBaseName } from '../minecraft/resourceLocation';
-import { isPlainObject } from '../object';
+import { jsonOrNull } from '../json';
 import { uid } from '../id';
 import { fileBaseName, prettyNameFromFile } from '../text';
 import { convertBBModel } from './bbmodel';
@@ -153,12 +153,9 @@ function commonPrefix(values: string[]): string {
   return prefix.replace(/[_\- ]+$/, '');
 }
 
+/** The model JSON of a dropped file, null when it is none (the conversion reports why). */
 function parseJson(file: ImportFile): JavaModelJson | null {
-  try {
-    return parseModelJson(file.text ?? '');
-  } catch {
-    return null;
-  }
+  return jsonOrNull(parseModelJson(file.text ?? '', file.name))?.json ?? null;
 }
 
 /** Base name of the file's parent reference ("minecraft:item/foo" → "foo"). */
@@ -200,9 +197,8 @@ function textureReferenceNames(group: ImportFile[]): Set<string> {
   const names = new Set<string>();
   for (const file of group) {
     const textures = parseJson(file)?.textures;
-    if (!isPlainObject(textures)) continue;
-    for (const value of Object.values(textures)) {
-      if (typeof value === 'string' && !value.startsWith('#')) names.add(normalizeTextureName(resourceBaseName(value)));
+    for (const value of Object.values(textures ?? {})) {
+      if (!value.startsWith('#')) names.add(normalizeTextureName(resourceBaseName(value)));
     }
   }
   return names;

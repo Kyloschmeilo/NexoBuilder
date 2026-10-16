@@ -2,7 +2,7 @@ import { describe, expect, it } from 'vitest';
 import { parse } from 'yaml';
 import { planExport } from '../../export/plan';
 import { buildMultiExportZip } from '../../export/zip';
-import { singleExport } from '../../test/export';
+import { singleExport } from '../../../test-utils/export';
 import { createFolder, createItem, createProject, insertFolder, insertItem } from '../../project/factory';
 import { buildRecipeFiles, recipeToYaml } from './files';
 import { createRecipe } from './model';

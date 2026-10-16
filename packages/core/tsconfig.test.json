@@ -2,7 +2,8 @@
   "extends": "@resourcepackbuilder/config/base.json",
   "compilerOptions": {
     "tsBuildInfoFile": "./node_modules/.tmp/tsconfig.test.tsbuildinfo",
-    "types": ["node"]
+    "types": ["node"],
+    "resolveJsonModule": true
   },
-  "include": ["src/**/*.test.ts", "src/test"]
+  "include": ["src/**/*.test.ts", "test-utils"]
 }

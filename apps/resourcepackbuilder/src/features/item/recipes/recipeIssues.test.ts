@@ -1,8 +1,8 @@
 import { describe, expect, it } from 'vitest';
-import type { Issue } from '@resourcepackbuilder/core/issues';
+import type { Issue, IssueCode } from '@resourcepackbuilder/core/issues';
 import { sortRecipeIssues } from './recipeIssues';
 
-const issue = (code: string, frame?: Issue['context']): Issue => ({ level: 'error', code, context: frame });
+const issue = (code: IssueCode, frame?: Issue['context']): Issue => ({ level: 'error', code, context: frame });
 
 describe('sortRecipeIssues', () => {
   it('sorts issues to the recipe, its input and its ingredients without their context frame', () => {

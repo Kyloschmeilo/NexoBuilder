@@ -3,7 +3,8 @@
  * Usage: npm run icon (or node scripts/make-icon.mjs from anywhere)
  */
 import { mkdirSync, writeFileSync } from 'node:fs';
-import { deflateSync } from 'node:zlib';
+// The repo's shared PNG encoder (CommonJS, so it also works from plain node)
+import { encodePng } from '../../../packages/core/test-utils/pngEncoder.cjs';
 
 const OUTPUT = new URL('../build/icon.png', import.meta.url);
 
@@ -54,62 +55,26 @@ function inRoundedRect(x, y) {
 
 const ACCENT = [0x1f, 0xbf, 0x7a];
 const ON_ACCENT = [0x04, 0x13, 0x0c];
-const raw = Buffer.alloc(SIZE * (SIZE * 4 + 1));
-for (let y = 0; y < SIZE; y++) {
-  raw[y * (SIZE * 4 + 1)] = 0;
-  for (let x = 0; x < SIZE; x++) {
-    let bg = 0;
-    let fg = 0;
-    for (let sy = 0; sy < SS; sy++) {
-      for (let sx = 0; sx < SS; sx++) {
-        const px = x + (sx + 0.5) / SS;
-        const py = y + (sy + 0.5) / SS;
-        if (inRoundedRect(px, py)) {
-          bg++;
-          if (inPolygon(px, py, R) && !inPolygon(px, py, R_HOLE)) fg++;
-        }
+/** Colour of one pixel: the accent rounded square with the "R", supersampled for smooth edges. */
+function pixel(x, y) {
+  let bg = 0;
+  let fg = 0;
+  for (let sy = 0; sy < SS; sy++) {
+    for (let sx = 0; sx < SS; sx++) {
+      const px = x + (sx + 0.5) / SS;
+      const py = y + (sy + 0.5) / SS;
+      if (inRoundedRect(px, py)) {
+        bg++;
+        if (inPolygon(px, py, R) && !inPolygon(px, py, R_HOLE)) fg++;
       }
     }
-    const samples = SS * SS;
-    const f = bg ? fg / bg : 0;
-    const color = ACCENT.map((c, i) => Math.round(c * (1 - f) + ON_ACCENT[i] * f));
-    const o = y * (SIZE * 4 + 1) + 1 + x * 4;
-    raw[o] = color[0];
-    raw[o + 1] = color[1];
-    raw[o + 2] = color[2];
-    raw[o + 3] = Math.round((bg / samples) * 255);
   }
+  const f = bg ? fg / bg : 0;
+  const color = ACCENT.map((c, i) => Math.round(c * (1 - f) + ON_ACCENT[i] * f));
+  return [...color, Math.round((bg / (SS * SS)) * 255)];
 }
 
-const CRC = new Uint32Array(256).map((_, n) => {
-  let c = n;
-  for (let k = 0; k < 8; k++) c = c & 1 ? 0xedb88320 ^ (c >>> 1) : c >>> 1;
-  return c >>> 0;
-});
-const crc32 = (b) => {
-  let c = 0xffffffff;
-  for (const x of b) c = CRC[(c ^ x) & 0xff] ^ (c >>> 8);
-  return (c ^ 0xffffffff) >>> 0;
-};
-function chunk(type, data) {
-  const out = Buffer.alloc(12 + data.length);
-  out.writeUInt32BE(data.length, 0);
-  out.write(type, 4, 'ascii');
-  data.copy(out, 8);
-  out.writeUInt32BE(crc32(out.subarray(4, 8 + data.length)), 8 + data.length);
-  return out;
-}
-const ihdr = Buffer.alloc(13);
-ihdr.writeUInt32BE(SIZE, 0);
-ihdr.writeUInt32BE(SIZE, 4);
-ihdr[8] = 8;
-ihdr[9] = 6;
-const png = Buffer.concat([
-  Buffer.from([0x89, 0x50, 0x4e, 0x47, 0x0d, 0x0a, 0x1a, 0x0a]),
-  chunk('IHDR', ihdr),
-  chunk('IDAT', deflateSync(raw, { level: 9 })),
-  chunk('IEND', Buffer.alloc(0)),
-]);
+const png = encodePng(SIZE, SIZE, pixel, { level: 9 });
 mkdirSync(new URL('.', OUTPUT), { recursive: true });
 writeFileSync(OUTPUT, png);
 console.log('build/icon.png written', png.length, 'bytes');

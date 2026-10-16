@@ -3,12 +3,14 @@
  * sync state of shared projects. It owns every storage key; nothing else touches the database.
  */
 import { createStore, del, delMany, get, keys, set, setMany, type UseStore } from 'idb-keyval';
-import type { SyncState } from '@resourcepackbuilder/core/sync/engine';
+import { z } from 'zod';
+import { lenientList, lenientNumber, lenientString, plainObject } from '@resourcepackbuilder/core/lenient';
+import { SyncStateSchema, type SyncState } from '@resourcepackbuilder/core/sync/engine';
+import { AppError } from '../i18n/errors';
 import { uid } from '@resourcepackbuilder/core/project/ids';
 import { migrateProject } from '@resourcepackbuilder/core/project/migrate';
 import { summarizeProject, type ProjectSummary } from '@resourcepackbuilder/core/project/summary';
 import type { Project } from '@resourcepackbuilder/core/project/types';
-import { AppError } from '../i18n/errors';
 
 /** Where a shared project lives and under which name this user edits it. */
 export interface ShareConfig {
@@ -49,6 +51,18 @@ const shareKey = (id: string) => `share:${id}`;
 const syncKey = (id: string) => `sync:${id}`;
 const SHARE_PREFIX = 'share:';
 
+/** The project index; broken entries are dropped (the project itself stays stored and is listed again on its next save). */
+const IndexSchema = lenientList(
+  z.object({
+    id: z.string(),
+    name: z.string(),
+    namespace: lenientString(),
+    itemCount: lenientNumber(0),
+    updatedAt: lenientNumber(0),
+  }),
+) satisfies z.ZodType<ProjectSummary[], unknown>;
+const ShareConfigSchema = z.object({ folder: z.string(), userName: z.string() }) satisfies z.ZodType<ShareConfig, unknown>;
+
 /** The repository backed by IndexedDB; without IndexedDB every read is empty and every write fails. */
 export function createProjectRepository(): ProjectRepository {
   const db: UseStore | null = typeof indexedDB === 'undefined' ? null : createStore('resourcepackbuilder', 'projects');
@@ -57,8 +71,10 @@ export function createProjectRepository(): ProjectRepository {
     if (!db) throw new AppError('storage.unavailable');
     return db;
   };
-  const read = async <T>(key: string): Promise<T | null> => (db ? (((await get(key, db)) as T | undefined) ?? null) : null);
-  const readIndex = async () => (await read<ProjectSummary[]>(INDEX_KEY)) ?? [];
+  /** Stored data is untrusted (any earlier version, or damaged): a value that does not match `schema` reads as null. */
+  const read = async <S extends z.ZodType>(key: string, schema: S): Promise<z.output<S> | null> =>
+    db ? (schema.safeParse(await get(key, db)).data ?? null) : null;
+  const readIndex = async () => (await read(INDEX_KEY, IndexSchema)) ?? [];
 
   return {
     available: db !== null,
@@ -68,7 +84,7 @@ export function createProjectRepository(): ProjectRepository {
     },
 
     async load(id) {
-      const raw = await read<unknown>(projectKey(id));
+      const raw = await read(projectKey(id), plainObject());
       return raw ? migrateProject(raw) : null;
     },
 
@@ -87,13 +103,13 @@ export function createProjectRepository(): ProjectRepository {
     async remove(id) {
       if (!db) return;
       const index = (await readIndex()).filter((p) => p.id !== id);
-      const last = await read<string>(LAST_KEY);
+      const last = await read(LAST_KEY, z.string());
       await delMany([projectKey(id), shareKey(id), syncKey(id), ...(last === id ? [LAST_KEY] : [])], db);
       await set(INDEX_KEY, index, db);
     },
 
     async lastProjectId() {
-      return read<string>(LAST_KEY);
+      return read(LAST_KEY, z.string());
     },
 
     async clearLastProjectId() {
@@ -101,7 +117,7 @@ export function createProjectRepository(): ProjectRepository {
     },
 
     async loadShareConfig(projectId) {
-      return read<ShareConfig>(shareKey(projectId));
+      return read(shareKey(projectId), ShareConfigSchema);
     },
 
     async saveShareConfig(projectId, config) {
@@ -121,7 +137,7 @@ export function createProjectRepository(): ProjectRepository {
     },
 
     async loadSyncState(projectId) {
-      return read<SyncState>(syncKey(projectId));
+      return read(syncKey(projectId), SyncStateSchema);
     },
 
     async saveSyncState(projectId, state) {
@@ -130,7 +146,7 @@ export function createProjectRepository(): ProjectRepository {
 
     async clientId() {
       if (!db) return uid('c_');
-      const existing = await read<string>(CLIENT_ID_KEY);
+      const existing = await read(CLIENT_ID_KEY, z.string());
       if (existing) return existing;
       const id = uid('c_');
       await set(CLIENT_ID_KEY, id, db);
