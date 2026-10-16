@@ -36,7 +36,12 @@ function editorTabs(schema: FormSchema, t: ItemTranslator): Array<{ id: EditorTa
 /** Number shown on a tab: how many entries it has. */
 function tabCounts(schema: FormSchema, item: Item): Partial<Record<EditorTab, number>> {
   return {
-    ...Object.fromEntries(schema.tabs.map((tab) => [tab.id, activeProperties(schema, item, tab.group).length])),
+    ...Object.fromEntries(
+      schema.tabs.map((tab) => {
+        const only = tab.only?.(item.config);
+        return [tab.id, activeProperties(schema, item, tab.group).filter((def) => !only || only.includes(def.id)).length];
+      }),
+    ),
     recipes: item.recipes.length,
   };
 }
@@ -92,7 +97,7 @@ function ItemEditorContent({ item }: { item: Item }) {
           </TabsContent>
           {schema.tabs.map((tab) => (
             <TabsContent key={tab.id} value={tab.id}>
-              <PropertiesPanel item={item} group={tab.group} />
+              <PropertiesPanel item={item} group={tab.group} only={tab.only?.(item.config)} />
             </TabsContent>
           ))}
           <TabsContent value="recipes">

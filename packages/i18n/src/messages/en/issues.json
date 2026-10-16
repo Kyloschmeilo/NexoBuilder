@@ -244,7 +244,17 @@
     "blockRendererItemUnknown": "The entity renderer of “{look}” shows the item “{item}”, which the project does not have.",
     "blockRendererValueInvalid": "CraftEngine cannot read “{value}” as {key} in the entity renderer of “{look}”.",
     "blockTransparentInvisible": "“{look}” hides the block’s model but has no entity renderer, so the block is invisible there. Add an element to its entity renderer.",
-    "rawBlockNotMapping": "The additional YAML’s block: holds no key-value pairs, so it is left out. Write the block’s keys below it (e.g. behavior:)."
+    "rawBlockNotMapping": "The additional YAML’s block: holds no key-value pairs, so it is left out. Write the block’s keys below it (e.g. behavior:).",
+    "eventsInvalid": "The events must be a list (or trigger: functions pairs).",
+    "eventInvalid": "An event must consist of key-value pairs (on, conditions, functions).",
+    "eventTriggerMissing": "The event has no trigger (on).",
+    "eventTriggerUnknown": "CraftEngine does not know the trigger “{trigger}”.",
+    "eventTriggerNotForItem": "Items never fire the trigger “{trigger}”, so the event never runs. Items fire: {triggers}.",
+    "eventTriggerNotForBlock": "Blocks never fire the trigger “{trigger}”, so the event never runs. Blocks fire: {triggers}.",
+    "eventTriggerNotForFurniture": "Furniture never fires the trigger “{trigger}”, so the event never runs. Furniture fires: {triggers}.",
+    "eventNoFunctions": "The event has no functions, so it does nothing.",
+    "eventFunctionUnknown": "The function type “{type}” is unknown. CraftEngine skips the event unless an add-on registers it.",
+    "eventConditionUnknown": "The condition type “{type}” is unknown. CraftEngine skips the event unless an add-on registers it."
   },
   "issueList": {
     "openItem": "Go to item",

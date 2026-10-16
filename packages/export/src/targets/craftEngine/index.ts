@@ -20,7 +20,13 @@ import {
   craftEnginePackLocation,
 } from './layout';
 import { planCraftEnginePluginFiles } from './pluginFiles';
-import { CE_ITEM_ID_PATTERN, validateCraftEngineBlock, validateCraftEngineFurniture, validateCraftEngineItem } from './validate';
+import {
+  CE_ITEM_ID_PATTERN,
+  validateCraftEngineBlock,
+  validateCraftEngineEvents,
+  validateCraftEngineFurniture,
+  validateCraftEngineItem,
+} from './validate';
 import { writeCraftEngineVariants } from './variants';
 
 export * from './installGuide';
@@ -84,9 +90,11 @@ function buildItem(itemExport: ItemExport, written: CraftEngineWrittenModels, sh
   const sections: ItemSections = {};
   if (built.furniture) {
     validateCraftEngineFurniture(itemExport, built.furniture, built.config);
+    validateCraftEngineEvents(itemExport, 'furniture', built.furniture);
     sections.furniture = { [key]: built.furniture };
   } else if (built.block) {
     validateCraftEngineBlock(itemExport, built.block, built.blockModel);
+    validateCraftEngineEvents(itemExport, 'block', built.block);
     sections.blocks = { [key]: built.block };
   }
   const { recipes, unsupported } = craftEngineRecipes(project, item);

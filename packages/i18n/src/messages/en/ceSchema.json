@@ -19,6 +19,10 @@
     "blockBehavior": {
       "label": "Block Behavior",
       "description": "The options of the block’s behavior (sounds, growth, storage …)"
+    },
+    "events": {
+      "label": "Events",
+      "description": "What the item, its block or its furniture does on a click, a break and more"
     }
   },
   "properties": {
@@ -1117,11 +1121,40 @@
       "field": {
         "label": "Behaviors (YAML)"
       }
+    },
+    "events": {
+      "label": "Item Events",
+      "description": "Functions the item runs when it is clicked with, eaten, breaks and more."
+    },
+    "blockEvents": {
+      "label": "Block Events",
+      "description": "Functions the placed block runs when it is clicked, broken, stepped on and more."
+    },
+    "furnitureEvents": {
+      "label": "Furniture Events",
+      "description": "Functions the placed furniture runs when it is clicked, placed or broken."
     }
   },
   "recipes": {
     "sources": {
       "nexo": "Project item"
+    }
+  },
+  "events": {
+    "label": "Events",
+    "itemLabel": "Event",
+    "fields": {
+      "on": {
+        "label": "The trigger that runs the event"
+      },
+      "conditions": {
+        "label": "Conditions",
+        "help": "All must hold, or the functions do not run."
+      },
+      "functions": {
+        "label": "Functions",
+        "help": "Run in this order when the event fires."
+      }
     }
   },
   "logic": {

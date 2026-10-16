@@ -36,10 +36,10 @@ function leafKeys(tree: MessageTree, prefix = ''): string[] {
 const configPaths = CRAFT_ENGINE_FORM.properties.flatMap((p) => (p.storage === 'config' ? [p.path.join('.')] : []));
 
 describe('CraftEngine form', () => {
-  it('uses the ceSchema namespace and shows data and settings as tabs', () => {
+  it('uses the ceSchema namespace and shows data, settings and events as tabs', () => {
     expect(CRAFT_ENGINE_FORM.target).toBe('craftengine');
     expect(CRAFT_ENGINE_FORM.messages).toBe('ceSchema');
-    expect(CRAFT_ENGINE_FORM.tabs.map((tab) => tab.id)).toEqual(['data', 'settings']);
+    expect(CRAFT_ENGINE_FORM.tabs.map((tab) => tab.id)).toEqual(['data', 'settings', 'events']);
   });
 
   it('stores every property in the config at its own path, except the armor and the translations on the item', () => {

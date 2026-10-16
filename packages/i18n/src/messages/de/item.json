@@ -8,6 +8,7 @@
       "attributes": "Attributes",
       "components": "Components",
       "mechanics": "Mechanics",
+      "events": "Events",
       "recipes": "Recipes",
       "yaml": "YAML"
     },
@@ -34,7 +35,8 @@
       "data": "Data",
       "settings": "Settings",
       "blockSettings": "Block Settings",
-      "blockBehavior": "Verhalten"
+      "blockBehavior": "Verhalten",
+      "events": "Events"
     },
     "empty": {
       "general": "Noch nichts hinzugefügt (z.B. Lore).",
@@ -45,7 +47,8 @@
       "data": "Noch keine Item-Daten (z.B. Food, Equippable).",
       "settings": "Noch keine Settings (z.B. Tags, Fuel Time).",
       "blockSettings": "Noch keine Block-Einstellungen (z. B. Hardness, Sounds, Loot).",
-      "blockBehavior": "Noch keine Optionen des Verhaltens (z. B. Sounds, weitere Verhalten)."
+      "blockBehavior": "Noch keine Optionen des Verhaltens (z. B. Sounds, weitere Verhalten).",
+      "events": "Noch keine Events (z. B. ein Befehl bei Rechtsklick)."
     },
     "fromVersion": "ab {version}",
     "untilVersion": "bis {version}",

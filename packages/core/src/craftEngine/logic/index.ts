@@ -11,7 +11,7 @@ export { CE_CONDITIONS } from './conditions';
 export { CE_FUNCTIONS } from './functions';
 export { CE_LOOT_SOURCES } from './lootSources';
 export { CE_NUMBERS } from './numbers';
-export { CE_TRIGGERS, triggersFor } from './triggers';
+export { CE_TRIGGERS, resolveTrigger, triggersFor } from './triggers';
 
 /** Every catalog by name */
 export const CE_LOGIC: Record<LogicCatalogName, readonly LogicType[]> = {

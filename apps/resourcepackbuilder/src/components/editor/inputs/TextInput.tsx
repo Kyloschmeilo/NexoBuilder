@@ -1,4 +1,4 @@
-import { useMemo } from 'react';
+import { type KeyboardEvent, useMemo, useState } from 'react';
 import { cn } from 'cn';
 import { SuggestInput } from '@resourcepackbuilder/ui';
 import { Input } from '@resourcepackbuilder/ui/components/input';
@@ -36,27 +36,66 @@ interface TextInputProps {
   mono?: boolean;
   autoFocus?: boolean;
   className?: string;
+  /**
+   * Report the text only when it is final: on picking a suggestion, on Enter or when the input loses focus (a type
+   * that switches the fields below should not change on every keystroke).
+   */
+  commitOnBlur?: boolean;
 }
 
 /** Single-line text input with optional suggestions (a popup that only fills in the text). */
-export function TextInput({ id, value, onChange, placeholder, suggestions, invalid, mono, autoFocus, className }: TextInputProps) {
+export function TextInput({
+  id,
+  value,
+  onChange,
+  placeholder,
+  suggestions,
+  invalid,
+  mono,
+  autoFocus,
+  className,
+  commitOnBlur,
+}: TextInputProps) {
   const choiceText = useChoiceText();
   const items = useMemo(
     () => suggestions?.map((choice) => ({ value: choice.value, label: choiceText(choice) })) ?? [],
     [suggestions, choiceText],
   );
+  // The text typed since the last commit (commitOnBlur only)
+  const [draft, setDraft] = useState<string | null>(null);
   const change = (text: string) => onChange(text === '' ? undefined : text);
+  const commit = (text: string) => {
+    setDraft(null);
+    if (text !== (value ?? '')) change(text);
+  };
+  const type = (text: string, picked = false) => {
+    if (!commitOnBlur) change(text);
+    else if (picked) commit(text);
+    else setDraft(text);
+  };
+  const finish = commitOnBlur
+    ? {
+        onBlur: () => {
+          if (draft !== null) commit(draft);
+        },
+        onKeyDown: (e: KeyboardEvent<HTMLInputElement>) => {
+          if (e.key === 'Enter' && draft !== null) commit(draft);
+        },
+      }
+    : {};
+  const shown = draft ?? value ?? '';
   if (items.length > 0) {
     return (
       <SuggestInput
         id={id}
         className={cn(mono && 'font-mono', className)}
-        value={value ?? ''}
-        onValueChange={change}
+        value={shown}
+        onValueChange={type}
         suggestions={items}
         placeholder={placeholder}
         invalid={invalid}
         autoFocus={autoFocus}
+        {...finish}
       />
     );
   }
@@ -65,10 +104,11 @@ export function TextInput({ id, value, onChange, placeholder, suggestions, inval
       id={id}
       className={cn(mono && 'font-mono', className)}
       aria-invalid={invalid || undefined}
-      value={value ?? ''}
+      value={shown}
       placeholder={placeholder}
       autoFocus={autoFocus}
-      onChange={(e) => change(e.target.value)}
+      onChange={(e) => type(e.target.value)}
+      {...finish}
       spellCheck={false}
     />
   );

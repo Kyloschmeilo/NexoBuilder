@@ -29,7 +29,10 @@ interface TypedSource {
 
 const ENTRY_YAML: YamlField = { type: 'yaml', key: '', label: '' };
 
-/** The searchable type input of an entry, with a Premium badge and (for conditions) the "!" toggle. */
+/**
+ * The searchable type input of an entry, with a Premium badge and (for conditions) the "!" toggle. The type is set
+ * when it is picked or typed out (blur, Enter), so the entry's fields do not switch on every keystroke.
+ */
 export function TypeInput({
   source,
   entry,
@@ -68,6 +71,7 @@ export function TypeInput({
         onChange={(next) => setType(next?.trim() ?? '', inverted)}
         suggestions={suggestions}
         placeholder={t('typed.typePlaceholder')}
+        commitOnBlur
       />
       {source.invertible && (
         <Tip label={t('typed.invertHint')}>

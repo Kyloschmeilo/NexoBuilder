@@ -121,13 +121,15 @@ function pruneByField(value: unknown, field: Field): unknown {
 }
 
 /**
- * An entry of a known type is pruned by that type's fields (its `type` is kept); an empty object (an entry whose type
- * was never chosen) is dropped; any other value stays unchanged.
+ * An entry of a known type is pruned by that type's fields (its `type` is kept, first); an empty object (an entry
+ * whose type was never chosen) is dropped; any other value stays unchanged.
  */
 function pruneTypedEntry(entry: unknown, field: Parameters<typeof findTypedType>[0]): unknown {
   const type = findTypedType(field, entry);
   if (!type) return entry === null || (isPlainObject(entry) && Object.keys(entry).length === 0) ? undefined : entry;
-  return pruneByField(entry, { type: 'object', key: '', label: '', fields: type.fields });
+  const pruned = pruneByField(entry, { type: 'object', key: '', label: '', fields: type.fields });
+  // `type` leads the entry, as in the plugins' docs
+  return isPlainObject(pruned) ? { type: (entry as Record<string, unknown>).type, ...pruned } : pruned;
 }
 
 function trimTrailingEmpty(list: string[]): string[] {

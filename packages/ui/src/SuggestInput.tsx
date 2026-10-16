@@ -3,6 +3,7 @@
  * shadcn combobox parts. The value is always the typed text; picking a suggestion only fills it in.
  */
 import { Autocomplete } from '@base-ui/react';
+import type { KeyboardEvent } from 'react';
 import { cn } from 'cn';
 import { ComboboxContent, ComboboxInput, ComboboxList } from './components/combobox';
 
@@ -18,22 +19,36 @@ export interface Suggestion {
 interface SuggestInputProps {
   id?: string;
   value: string;
-  onValueChange: (value: string) => void;
+  /** `picked`: the value comes from a suggestion the user chose (not from typing) */
+  onValueChange: (value: string, picked: boolean) => void;
   suggestions: readonly Suggestion[];
   placeholder?: string;
   /** Class of the input group (border, width, font) */
   className?: string;
   invalid?: boolean;
   autoFocus?: boolean;
+  onBlur?: () => void;
+  onKeyDown?: (event: KeyboardEvent<HTMLInputElement>) => void;
 }
 
-export function SuggestInput({ id, value, onValueChange, suggestions, placeholder, className, invalid, autoFocus }: SuggestInputProps) {
+export function SuggestInput({
+  id,
+  value,
+  onValueChange,
+  suggestions,
+  placeholder,
+  className,
+  invalid,
+  autoFocus,
+  onBlur,
+  onKeyDown,
+}: SuggestInputProps) {
   return (
     <Autocomplete.Root
       items={suggestions}
       itemToStringValue={(suggestion: Suggestion) => suggestion.value}
       value={value}
-      onValueChange={onValueChange}
+      onValueChange={(next, details) => onValueChange(next, details.reason === 'item-press')}
       limit={SUGGESTION_LIMIT}
       openOnInputClick
     >
@@ -45,6 +60,8 @@ export function SuggestInput({ id, value, onValueChange, suggestions, placeholde
         aria-invalid={invalid || undefined}
         autoFocus={autoFocus}
         spellCheck={false}
+        onBlur={onBlur}
+        onKeyDown={onKeyDown}
       />
       <ComboboxContent>
         <ComboboxList>

@@ -12,6 +12,7 @@ export const CE_DOCS = {
   loot: `${WIKI}/reference/loot_table`,
   equipment: `${WIKI}/configuration/equipment`,
   lang: `${WIKI}/configuration/translations`,
+  events: `${WIKI}/reference/events`,
 };
 
 /** Links every property of a group to its wiki page. */

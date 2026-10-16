@@ -7,6 +7,10 @@ import {
   blockPropertyTypes,
   blockStates,
   CE_BLOCK_MAX_TEXTURES,
+  CE_CONDITIONS,
+  CE_EVENT_PROPERTIES,
+  CE_EVENT_PROPERTY_IDS,
+  CE_FUNCTIONS,
   CE_FURNITURE_ALIGNMENTS,
   CE_FURNITURE_ANCHORS,
   CE_FURNITURE_ELEMENT_TYPES,
@@ -15,10 +19,13 @@ import {
   CE_MODEL_KEYS,
   CE_PROPERTIES,
   type CraftEngineBlockModel,
+  definitionEvents,
   furnitureElementType,
   furnitureHitboxType,
   furnitureVariants,
   isTransparentState,
+  type LogicObjectKind,
+  type LogicType,
   missingBehaviorProperties,
   parseCeRotation,
   parseCeVector,
@@ -27,14 +34,17 @@ import {
   propertyValues,
   rendererElements,
   requiredElementKey,
+  resolveTrigger,
   sharedBaseBlocks,
   stateAutoState,
   statesMap,
   statesTemplate,
   templateArguments,
+  triggersFor,
   variantList,
 } from '@resourcepackbuilder/core/craftEngine';
-import type { Project } from '@resourcepackbuilder/core/project';
+import { checkFieldValue } from '@resourcepackbuilder/core/form';
+import { listEntryFrame, propertyFrame, type Project } from '@resourcepackbuilder/core/project';
 import { ITEM_ID_PATTERN } from '@resourcepackbuilder/minecraft';
 import type { ItemExport } from '../../types';
 import { validateProperties } from '../../validate/itemConfig';
@@ -54,8 +64,81 @@ export function validateCraftEngineItem(itemExport: ItemExport, config: Record<s
   if (typeof material !== 'string' || !CE_MATERIAL_PATTERN.test(material)) {
     report('error', 'ce.materialInvalid', { material: String(material) });
   }
-  validateProperties(itemExport, CE_PROPERTIES);
+  // The events are checked as they are written (validateCraftEngineEvents), with those of the additional YAML
+  validateProperties(
+    itemExport,
+    CE_PROPERTIES.filter((def) => !CE_EVENT_PROPERTIES.includes(def)),
+  );
   if (!CE_MODEL_KEYS.some((key) => config[key] !== undefined)) report('warning', 'ce.missingModel');
+  validateCraftEngineEvents(itemExport, 'item', config);
+}
+
+/** The issue CraftEngine's objects report for a trigger they never fire, by object kind. */
+const WRONG_TRIGGER_CODES: Record<LogicObjectKind, string> = {
+  item: 'ce.eventTriggerNotForItem',
+  block: 'ce.eventTriggerNotForBlock',
+  furniture: 'ce.eventTriggerNotForFurniture',
+};
+
+/** Whether a catalog knows the type of an entry (with or without the `craftengine` namespace, a "!" inverting it). */
+function knownType(types: readonly LogicType[], entry: Record<string, unknown>): boolean {
+  if (typeof entry.type !== 'string' || isTemplated(entry.type)) return true;
+  const type = entry.type.replace(/^!/, '').replace(/^craftengine:/, '');
+  return types.some((t) => t.type === type);
+}
+
+/** A value CraftEngine's templates fill in (a `${argument}`) is only known once the template is applied. */
+const isTemplated = (text: string) => text.includes('${');
+
+const asList = (value: unknown): unknown[] => (value === undefined ? [] : Array.isArray(value) ? value : [value]);
+
+/**
+ * The events of an item, block or furniture as the export writes them (the list form): each names a trigger
+ * CraftEngine knows and the object fires, and has functions; its functions and conditions are of known types, and
+ * the values of their fields are checked through the logic catalog.
+ */
+export function validateCraftEngineEvents(itemExport: ItemExport, kind: LogicObjectKind, definition: Record<string, unknown>): void {
+  const { report } = itemExport;
+  const events = definitionEvents(definition);
+  if (events === undefined || events === null) return;
+  const def = CE_EVENT_PROPERTIES.find((p) => p.id === CE_EVENT_PROPERTY_IDS[kind]);
+  if (!def) return;
+  const frame = propertyFrame(def.label);
+  if (!Array.isArray(events)) {
+    report('error', 'ce.eventsInvalid', undefined, [frame]);
+    return;
+  }
+  const fired = triggersFor(kind)
+    .map((t) => t.type)
+    .join(', ');
+  events.forEach((event, i) => {
+    const where = [frame, listEntryFrame(i + 1)];
+    if (!isPlainObject(event)) {
+      report('error', 'ce.eventInvalid', undefined, where);
+      return;
+    }
+    // A template (like the jar's default:rotatable_furniture_4) brings its own keys
+    if (event.template !== undefined) return;
+    const triggers = asList(event.on);
+    if (triggers.length === 0) report('error', 'ce.eventTriggerMissing', undefined, where);
+    for (const trigger of triggers.map(String).filter((name) => !isTemplated(name))) {
+      const known = resolveTrigger(trigger, kind);
+      if (!known) report('error', 'ce.eventTriggerUnknown', { trigger }, where);
+      else if (!known.objectKinds?.includes(kind)) report('warning', WRONG_TRIGGER_CODES[kind], { trigger, triggers: fired }, where);
+    }
+    // An event with a `type` is a single function itself
+    const functions = event.type !== undefined ? [event] : asList(event.functions);
+    if (functions.length === 0) report('warning', 'ce.eventNoFunctions', undefined, where);
+    for (const fn of functions.filter(isPlainObject).filter((f) => f.template === undefined)) {
+      if (!knownType(CE_FUNCTIONS, fn)) report('warning', 'ce.eventFunctionUnknown', { type: String(fn.type) }, where);
+    }
+    for (const condition of asList(event.conditions)
+      .filter(isPlainObject)
+      .filter((c) => c.template === undefined)) {
+      if (!knownType(CE_CONDITIONS, condition)) report('warning', 'ce.eventConditionUnknown', { type: String(condition.type) }, where);
+    }
+  });
+  for (const found of checkFieldValue(events, def.field)) report('warning', found.code, found.args, [frame, ...found.context]);
 }
 
 /**

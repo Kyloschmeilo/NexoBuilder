@@ -244,7 +244,17 @@
     "blockRendererItemUnknown": "Der Entity-Renderer von „{look}“ zeigt das Item „{item}“, das es im Projekt nicht gibt.",
     "blockRendererValueInvalid": "CraftEngine kann „{value}“ im Entity-Renderer von „{look}“ nicht als {key} lesen.",
     "blockTransparentInvisible": "„{look}“ blendet das Modell des Blocks aus, hat aber keinen Entity-Renderer, daher ist der Block dort unsichtbar. Füge seinem Entity-Renderer ein Element hinzu.",
-    "rawBlockNotMapping": "Der Abschnitt block: im zusätzlichen YAML enthält keine Schlüssel-Wert-Paare, daher fehlt er. Schreibe die Schlüssel des Blocks darunter (z. B. behavior:)."
+    "rawBlockNotMapping": "Der Abschnitt block: im zusätzlichen YAML enthält keine Schlüssel-Wert-Paare, daher fehlt er. Schreibe die Schlüssel des Blocks darunter (z. B. behavior:).",
+    "eventsInvalid": "Die Events müssen eine Liste sein (oder Paare aus Auslöser: Funktionen).",
+    "eventInvalid": "Ein Event muss aus Schlüssel-Wert-Paaren bestehen (on, conditions, functions).",
+    "eventTriggerMissing": "Das Event hat keinen Auslöser (on).",
+    "eventTriggerUnknown": "CraftEngine kennt den Auslöser „{trigger}“ nicht.",
+    "eventTriggerNotForItem": "Items lösen „{trigger}“ nie aus, das Event läuft also nie. Items lösen aus: {triggers}.",
+    "eventTriggerNotForBlock": "Blöcke lösen „{trigger}“ nie aus, das Event läuft also nie. Blöcke lösen aus: {triggers}.",
+    "eventTriggerNotForFurniture": "Möbel lösen „{trigger}“ nie aus, das Event läuft also nie. Möbel lösen aus: {triggers}.",
+    "eventNoFunctions": "Das Event hat keine Funktionen und tut daher nichts.",
+    "eventFunctionUnknown": "Der Funktionstyp „{type}“ ist unbekannt. CraftEngine überspringt das Event, wenn kein Add-on ihn registriert.",
+    "eventConditionUnknown": "Der Bedingungstyp „{type}“ ist unbekannt. CraftEngine überspringt das Event, wenn kein Add-on ihn registriert."
   },
   "issueList": {
     "openItem": "Zum Item",

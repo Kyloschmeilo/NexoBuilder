@@ -1,4 +1,5 @@
 import type { PackTargetId } from '../project/target';
+import type { ConfigObject } from '../project/types';
 import type { PropertyDef, PropertyGroup } from './build';
 
 /**
@@ -18,6 +19,9 @@ export interface FormSchema {
    * (Nexo's `itemname`, CraftEngine's `data.item_name`)
    */
   managedPaths: string[];
-  /** The editor tabs that show one property group each, in order (the app adds its fixed tabs around them) */
-  tabs: Array<{ id: string; group: PropertyGroup }>;
+  /**
+   * The editor tabs that show one property group each, in order (the app adds its fixed tabs around them). `only`
+   * limits a tab to the property ids an item's config can use (CraftEngine's block events only on a block).
+   */
+  tabs: Array<{ id: string; group: PropertyGroup; only?: (config: ConfigObject) => string[] }>;
 }

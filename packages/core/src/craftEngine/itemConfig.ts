@@ -12,6 +12,8 @@
  * is merged over it. An item is either a block or furniture: with both, the block is built and the furniture left out.
  * An item of an armor set gets `settings.equipment` (the set's equipment, see export/equipment); what the config sets
  * there wins, as Nexo's `Components.equippable` does.
+ * The events of the item, its block and its furniture are written in the list form (events.ts), whatever form the
+ * config or the additional YAML holds them in.
  */
 import type { JavaModelJson } from '@resourcepackbuilder/minecraft';
 import { deepClone, deepMerge, isPlainObject } from '@resourcepackbuilder/utils';
@@ -32,6 +34,7 @@ import {
 import { blockBehaviorForm, blockBehaviorType } from './blockBehaviors';
 import { blockStates, CE_STATE_TEMPLATES, statesTemplate, templateArguments } from './blockStates';
 import { buildRenderer, rendererElements } from './blockRenderer';
+import { withEventList } from './events';
 import { buildCraftEngineFurniture, craftEngineFurniture } from './furniture';
 import { craftEngineItemName } from './lang';
 
@@ -242,7 +245,7 @@ function buildBlock(source: Record<string, unknown>, context: CraftEngineBuildCo
     merged.behaviors = [...asList(merged.behaviors), ...asList(merged.behavior)];
     delete merged.behavior;
   }
-  return { block: ordered(merged, BLOCK_ORDER), blockModel: blockModel as CraftEngineBlockModel | null, form };
+  return { block: ordered(withEventList(merged), BLOCK_ORDER), blockModel: blockModel as CraftEngineBlockModel | null, form };
 }
 
 /**
@@ -261,9 +264,16 @@ function addArmor(resolved: Record<string, unknown>, data: Record<string, unknow
   }
 }
 
+/** The config with the events of the item, its block and its furniture in the list form (pruning keeps only lists). */
+function withEventLists<T extends Record<string, unknown>>(config: T): T {
+  const result: Record<string, unknown> = withEventList(config);
+  for (const key of ['block', 'furniture']) if (isPlainObject(result[key])) result[key] = withEventList(result[key]);
+  return result as T;
+}
+
 export function buildCraftEngineItem(context: CraftEngineBuildContext): CraftEngineBuildResult {
   const { project, item, modelKey, models } = context;
-  const resolved: Record<string, unknown> = cleanConfig(CRAFT_ENGINE_FORM, deepClone(item.config));
+  const resolved: Record<string, unknown> = cleanConfig(CRAFT_ENGINE_FORM, withEventLists(deepClone(item.config)));
 
   const raw = parseRawYaml(item.rawYaml);
   const rawItem = raw.value ? { ...raw.value } : null;
@@ -310,13 +320,13 @@ export function buildCraftEngineItem(context: CraftEngineBuildContext): CraftEng
   const config = { material: itemMaterial(item).toLowerCase(), ...ordered(resolved, TOP_LEVEL_ORDER) };
 
   return {
-    config: rawItem ? deepMerge(config, rawItem) : config,
+    config: withEventList(rawItem ? deepMerge(config, rawItem) : config),
     block: built?.block ?? null,
     blockModel: built?.blockModel ?? null,
     rawYamlError: raw.error,
     rawBlockIgnored: rawBlock !== null && !isBlock,
     rawBlockInvalid: rawBlockYaml.invalid,
-    furniture: furniture?.furniture ?? null,
+    furniture: furniture ? withEventList(furniture.furniture) : null,
     furnitureIgnored: isFurniture && isBlock,
     rawFurnitureIgnored: rawFurniture !== null && !isFurniture,
   };
