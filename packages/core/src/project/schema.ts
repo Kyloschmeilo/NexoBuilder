@@ -309,7 +309,8 @@ export function projectSchema(now: number) {
     if (isPlainObject(raw.items)) {
       for (const [key, value] of Object.entries(raw.items)) {
         const item = parseItem(value, now, key);
-        if (item) items[key] = item;
+        // Like folders, an item is addressed by its map key, so a differing stored id is replaced by it
+        if (item) items[key] = { ...item, id: key };
         if (item && isPlainObject(value) && value.itemId !== item.itemId) derivedIds.push(key);
       }
     }
