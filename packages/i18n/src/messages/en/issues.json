@@ -218,7 +218,7 @@
     "recipeKindUnsupported": "CraftEngine has no recipe type for “{type}” recipes, so this recipe is not exported.",
     "materialInvalid": "The material “{material}” is invalid for CraftEngine (e.g. diamond_sword or minecraft:diamond_sword).",
     "variantExtraModels": "CraftEngine uses only the first {used, plural, one {model} other {# models}} of this variant. The other {count} {count, plural, one {is} other {are}} not exported.",
-    "reservedPackName": "The pack name “{name}” belongs to one of CraftEngine's own packs (default, default_…, internal). Choose another pack name in the project settings.",
+    "reservedPackName": "The pack name “{name}” belongs to one of CraftEngine's own packs (default, default_…, internal, legacy_armor, remove_shulker_head, customcrops). Choose another pack name in the project settings.",
     "blockStateMissing": "The block has no state. Choose a block state group in the Block section of the model tab.",
     "blockAutoStateInvalid": "CraftEngine has no block state group “{group}”. Choose one in the Block section of the model tab.",
     "blockMissingModel": "The block has no model, so CraftEngine cannot load it. Import a model or textures on the model tab.",
