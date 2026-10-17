@@ -1,12 +1,14 @@
 /**
  * Where the CraftEngine export puts things inside plugins/CraftEngine (one pack per project):
  *   resources/<pack>/pack.yml
- *   resources/<pack>/configuration/items/<folder…>/<folder|item_id>.yml
+ *   resources/<pack>/configuration/items/<folder…>/<folder|item_id>.yml (items with their blocks, furniture, recipes)
  *   resources/<pack>/configuration/{images,sounds,paintings}.yml (glyphs with their emoji, sounds with their jukebox songs)
  *   resources/<pack>/configuration/{equipments,categories}.yml (the armor sets, a category per folder)
  *   resources/<pack>/configuration/lang/<locale>.yml (the items' display name translations)
+ *   resources/<pack>/configuration/{loot_sources,templates,global_variables}.yml (the project-wide configuration)
+ *   resources/<pack>/configuration/attributes.yml (the attribute system)
  *   resources/<pack>/resourcepack/ (the resource pack: pack.mcmeta, pack.png, assets/…)
- * The test server's CraftEngine adapter accepts exactly these paths.
+ * The test server's CraftEngine adapter accepts these paths: pack.yml, configuration/… and resourcepack/….
  */
 import type { MediaKind, Project } from '@resourcepackbuilder/core/project';
 import { exportPackName } from '../../paths';
