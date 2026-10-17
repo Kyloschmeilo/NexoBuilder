@@ -38,6 +38,7 @@ import {
   type CraftEngineBlockModel,
   definitionEvents,
   furnitureElementType,
+  CE_FURNITURE_EXTERNAL_MODEL_KEYS,
   furnitureHitboxType,
   furnitureVariants,
   isTransparentState,
@@ -70,8 +71,9 @@ import {
 } from '@resourcepackbuilder/core/craftEngine';
 import { checkFieldValue } from '@resourcepackbuilder/core/form';
 import { listEntryFrame, lootSourceFrame, propertyFrame, type Project, templateFrame } from '@resourcepackbuilder/core/project';
-import { ITEM_ID_PATTERN } from '@resourcepackbuilder/minecraft';
+import { ITEM_ID_PATTERN, RESOURCE_LOCATION_PATTERN } from '@resourcepackbuilder/minecraft';
 import type { ItemExport } from '../../types';
+import { asList, isTemplated } from './values';
 import { validateProperties } from '../../validate/itemConfig';
 
 /**
@@ -80,13 +82,11 @@ import { validateProperties } from '../../validate/itemConfig';
  */
 export const CE_ITEM_ID_PATTERN = ITEM_ID_PATTERN;
 
-/** A material as CraftEngine reads it: an item ID, optionally with a namespace ("diamond", "minecraft:diamond"). */
-const CE_MATERIAL_PATTERN = /^([a-z0-9_.-]+:)?[a-z0-9_./-]+$/;
-
 export function validateCraftEngineItem(itemExport: ItemExport, config: Record<string, unknown>): void {
   const { report } = itemExport;
   const material = config.material;
-  if (typeof material !== 'string' || !CE_MATERIAL_PATTERN.test(material)) {
+  // A material as CraftEngine reads it: an item ID, optionally with a namespace ("diamond", "minecraft:diamond")
+  if (typeof material !== 'string' || !RESOURCE_LOCATION_PATTERN.test(material)) {
     report('error', 'ce.materialInvalid', { material: String(material) });
   }
   // The events are checked as they are written (validateCraftEngineEvents), with those of the additional YAML
@@ -111,11 +111,6 @@ function knownType(types: readonly LogicType[], entry: Record<string, unknown>):
   const type = entry.type.replace(/^!/, '').replace(/^craftengine:/, '');
   return types.some((t) => t.type === type);
 }
-
-/** A value CraftEngine's templates fill in (a `${argument}`) is only known once the template is applied. */
-const isTemplated = (text: string) => text.includes('${');
-
-const asList = (value: unknown): unknown[] => (value === undefined ? [] : Array.isArray(value) ? value : [value]);
 
 /**
  * The events of an item, block or furniture as the export writes them (the list form): each names a trigger
@@ -474,7 +469,8 @@ export function validateCraftEngineFurniture(
 
   for (const [name, variant] of Object.entries(variants)) {
     const elements = variantList(variant, 'elements');
-    if (elements.length === 0 && variant.blueprint === undefined) report('warning', 'ce.furnitureVariantEmpty', { variant: name });
+    const externalModel = CE_FURNITURE_EXTERNAL_MODEL_KEYS.some((key) => variant[key] !== undefined);
+    if (elements.length === 0 && !externalModel) report('warning', 'ce.furnitureVariantEmpty', { variant: name });
     const where = { variant: name };
     for (const element of elements) validateDisplayElement(itemExport, element, FURNITURE_ELEMENT_CODES, where);
     for (const hitbox of variantList(variant, 'hitboxes')) {

@@ -13,21 +13,97 @@ export interface MessageParityError {
  * Extracts the names of every ICU argument referenced by a message string,
  * such as `{name}` in `"Hello {name}!"` or `count` in `"{count, plural, ...}"`.
  *
- * An argument is a brace followed by a name and then `,` or `}`. The opening
- * brace of a plural or select branch (`one {...}`, `=0 {...}`, `other {...}`)
- * is skipped, so the text inside a branch is never taken for an argument.
+ * The message is parsed: the branches of a plural or select argument
+ * (`one {...}`, `=0 {...}`, `other {...}`) are read as nested messages, so
+ * their selectors are never taken for arguments while text elsewhere that
+ * merely looks like a selector (`"the other {count}"`) still is. Text quoted
+ * with apostrophes (`'{'`) holds no arguments.
  *
  * @param message the ICU message string
  * @returns the argument names referenced, without duplicates
  */
 function icuArgumentNames(message: string): Set<string> {
   const names = new Set<string>();
-  const argument = /(?<!(?:=\d+|zero|one|two|few|many|other)\s*)\{\s*([a-zA-Z0-9_]+)\s*[,}]/g;
-  for (const match of message.matchAll(argument)) {
-    const name = match[1];
-    if (name !== undefined) {
-      names.add(name);
+  let i = 0;
+
+  /** Skips whitespace. */
+  const skipSpace = (): void => {
+    while (i < message.length && /\s/.test(message[i] ?? '')) i++;
+  };
+
+  /** Reads characters up to (not including) one of `stops`. */
+  const readUntil = (stops: string): string => {
+    const begin = i;
+    while (i < message.length && !stops.includes(message[i] ?? '')) i++;
+    return message.slice(begin, i);
+  };
+
+  /** Skips a quoted section starting at an apostrophe; returns whether one was skipped. */
+  const skipQuote = (): boolean => {
+    const next = message[i + 1];
+    if (next === "'") {
+      i += 2;
+      return true;
     }
+    if (next !== '{' && next !== '}' && next !== '#' && next !== '|') return false;
+    const close = message.indexOf("'", i + 1);
+    i = close === -1 ? message.length : close + 1;
+    return true;
+  };
+
+  /** Reads message text up to the `}` that closes it (or the end), collecting its arguments. */
+  const readMessage = (): void => {
+    while (i < message.length) {
+      const char = message[i];
+      if (char === "'" && skipQuote()) continue;
+      if (char === '}') return;
+      if (char === '{') readArgument();
+      else i++;
+    }
+  };
+
+  /** Reads an argument starting at its `{`, including the branches of a plural or select. */
+  const readArgument = (): void => {
+    i++;
+    skipSpace();
+    const name = readUntil(',}').trim();
+    if (/^[a-zA-Z0-9_]+$/.test(name)) names.add(name);
+    if (message[i] === '}') {
+      i++;
+      return;
+    }
+    i++;
+    const type = readUntil(',}').trim();
+    if (type !== 'plural' && type !== 'select' && type !== 'selectordinal') {
+      // number, date, time: the style may hold braces of its own
+      let depth = 1;
+      while (i < message.length && depth > 0) {
+        const char = message[i++];
+        if (char === '{') depth++;
+        else if (char === '}') depth--;
+      }
+      return;
+    }
+    if (message[i] === ',') i++;
+    while (i < message.length) {
+      skipSpace();
+      if (message[i] === '}') {
+        i++;
+        return;
+      }
+      // A selector (`one`, `=0`, after an optional `offset:1`) and its branch
+      readUntil('{}');
+      if (message[i] !== '{') continue;
+      i++;
+      readMessage();
+      i++;
+    }
+  };
+
+  while (i < message.length) {
+    readMessage();
+    // A `}` without its `{` is plain text
+    i++;
   }
   return names;
 }

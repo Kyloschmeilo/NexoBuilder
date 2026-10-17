@@ -7,8 +7,8 @@
  * offered in Nexo projects only. A clipboard remembers its target and only goes into items of the same target.
  */
 import type { ModelTexture } from '@resourcepackbuilder/minecraft';
-import { assetToken, deepClone, isPlainObject, stripFormatting, uid } from '@resourcepackbuilder/utils';
-import { referencedAssetIds } from '../project/assets';
+import { deepClone, isPlainObject, stripFormatting, uid } from '@resourcepackbuilder/utils';
+import { isAssetUsed, referencedAssetIds } from '../project/assets';
 import type { ConfigObject, ConfigValue, Item, Project } from '../project/types';
 import type { PackTargetId } from '../project/target';
 import type { ArmorSettings } from '../project/armor';
@@ -215,7 +215,7 @@ function keepBlockVariationUnique(project: Project, target: Item) {
 /** Takes over referenced extra textures and removes ones no longer used (also those only used in the extra YAML). */
 function syncAssets(target: Item, clip: ItemConfigClipboard) {
   const referenced = referencedAssetIds(target);
-  const isUsed = (id: string) => referenced.has(id) || target.rawYaml.includes(assetToken(id));
+  const isUsed = (id: string) => isAssetUsed(target, id, referenced);
   target.assets = target.assets ?? {};
   for (const [id, asset] of Object.entries(clip.assets)) {
     if (isUsed(id) && !target.assets[id]) target.assets[id] = deepClone(asset);

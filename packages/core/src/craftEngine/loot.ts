@@ -33,9 +33,6 @@ export const CE_LOOT_SOURCE_LIST: TypedListField = {
   types: () => CE_LOOT_SOURCES,
 };
 
-/** A new loot source: drops extra loot when a block breaks */
-export const newLootSource = (): ConfigObject => ({ type: 'block_break', id: '' });
-
 /** The id a loot source is written under: as written, in the project's namespace when it names none. */
 export function lootSourceKey(project: Pick<Project, 'namespace'>, id: string): string {
   const trimmed = id.trim();

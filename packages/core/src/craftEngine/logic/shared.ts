@@ -5,6 +5,7 @@
 import { isPlainObject } from '@resourcepackbuilder/utils';
 import { field, type FieldSpecs } from '../../form/build';
 import { plainOptions } from '../../form/options';
+import { CE_DEFAULT_TEMPLATES } from '../defaultTemplates';
 import { CE_CONDITIONS } from './conditions';
 import { CE_FUNCTIONS } from './functions';
 import { CE_LOOT_ENTRIES, CE_LOOT_FUNCTIONS } from './loot';
@@ -42,18 +43,7 @@ function newPool() {
 
 /** The templates of CraftEngine's default pack that build a loot table (default_templates/…/loot_tables.yml) */
 export function lootTemplates(): string[] {
-  return [
-    'default:loot_table/self',
-    'default:loot_table/furniture',
-    'default:loot_table/basic',
-    'default:loot_table/door',
-    'default:loot_table/silk_touch',
-    'default:loot_table/slab',
-    'default:loot_table/seed_crop',
-    'default:loot_table/crop',
-    'default:loot_table/ore',
-    'default:loot_table/leaves',
-  ];
+  return CE_DEFAULT_TEMPLATES.filter((template) => template.file === 'loot_tables').map((template) => template.id);
 }
 
 /**

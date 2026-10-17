@@ -31,6 +31,11 @@ interface ParsedJson {
   json: JavaModelJson;
 }
 
+/** A dropped file that holds a PNG. */
+type PngFile = ImportFile & { dataUrl: string };
+
+const isPngFile = (file: ImportFile): file is PngFile => isPngDataUrl(file.dataUrl);
+
 export function convertJavaModel(files: ImportFile[]): ImportedModel {
   const jsonFiles = files.filter((f) => /\.json$/i.test(f.name) && typeof f.text === 'string');
   if (jsonFiles.length === 0) throw new CoreError('model.noJsonFile');
@@ -55,7 +60,7 @@ export function convertJavaModel(files: ImportFile[]): ImportedModel {
   }
   delete merged.groups;
 
-  const pngFiles = files.filter((f) => isPngDataUrl(f.dataUrl));
+  const pngFiles = files.filter(isPngFile);
   const nonPngImages = files.filter((f) => /\.(jpe?g|gif|webp|bmp|tga)$/i.test(f.name));
   for (const f of nonPngImages) {
     issues.push({ level: 'error', code: 'model.fileNotPng', args: { file: f.name } });
@@ -67,9 +72,9 @@ export function convertJavaModel(files: ImportFile[]): ImportedModel {
   const byReference = new Map<string, string>(); // reference → texture ID
   const unresolved = new Map<string, string[]>(); // reference → texture keys
 
-  const addTexture = (png: ImportFile, ref: string): string => {
+  const addTexture = (png: PngFile, ref: string): string => {
     const id = `t${textures.length}`;
-    textures.push(createTexture(id, fileBaseName(png.name), png.dataUrl!, findMcmetaFor(files, png.name)));
+    textures.push(createTexture(id, fileBaseName(png.name), png.dataUrl, findMcmetaFor(files, png.name)));
     usedPngs.add(png);
     byReference.set(ref, id);
     return id;
@@ -221,7 +226,7 @@ function withoutKeys<T>(source: Record<string, T>, existing: Record<string, T> |
 }
 
 /** Matches a texture reference ("ns:item/foo") to a dropped PNG. */
-function matchPng(pngs: ImportFile[], ref: string, used: Set<ImportFile>): ImportFile | undefined {
+function matchPng(pngs: PngFile[], ref: string, used: Set<ImportFile>): PngFile | undefined {
   const base = normalizeTextureName(resourceBaseName(ref));
   const available = pngs.filter((p) => !used.has(p));
   return available.find((p) => normalizeTextureName(p.name) === base);

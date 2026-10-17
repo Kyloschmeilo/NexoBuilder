@@ -9,6 +9,22 @@ function model(json: JavaModelJson): ImportedModel {
 }
 
 describe('buildPreviewModel', () => {
+  it('maps faces to the first frame of an animated texture, also when frames are narrower than the texture', () => {
+    // Four 16×16 frames as a 2×2 grid in a 32×32 texture
+    const animated: ModelTexture = { ...texture, width: 32, height: 32, mcmeta: { animation: { width: 16, height: 16 } } };
+    const json: JavaModelJson = {
+      textures: { all: '$tex:t0' },
+      elements: [{ from: [0, 0, 0], to: [16, 16, 16], faces: { north: { uv: [0, 0, 16, 16], texture: '#all' } } }],
+    };
+    const preview = buildPreviewModel({ ...model(json), textures: [animated] });
+    expect(preview.elements[0].faces[0].uvs).toEqual([
+      [0, 1],
+      [0.5, 1],
+      [0, 0.5],
+      [0.5, 0.5],
+    ]);
+  });
+
   it('draws generated items as one plane per layer', () => {
     const preview = buildPreviewModel(model({ parent: 'minecraft:item/handheld', textures: { layer0: '$tex:t0', layer1: 'item/stick' } }));
     expect(preview.kind).toBe('generated');

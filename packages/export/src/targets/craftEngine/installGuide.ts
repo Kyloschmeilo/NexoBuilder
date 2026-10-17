@@ -38,7 +38,7 @@ export function craftEngineInstallGuide(
     '',
     '2. Run in game or in the console:',
     `      /${CRAFT_ENGINE_RELOAD_COMMAND}`,
-    '   (reloads the items and rebuilds the resource pack; restarting the server works too)',
+    '   (reloads the items and builds the resource pack; a server restart loads the items but does not build the pack)',
     // Paintings and jukebox songs are registry entries, which a client only receives when it joins. An item that plays
     // a new song fails the reload that adds the song; at the next startup CraftEngine registers the song first.
     ...(projects.some(({ project }) => project.paintings.length > 0 || project.sounds.some((s) => s.jukebox))

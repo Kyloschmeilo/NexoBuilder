@@ -1,4 +1,5 @@
 /** CraftEngine's configuration files: top-level sections (`items:`, `blocks:` …) holding entries by their key. */
+import type { Item, Project } from '../project/types';
 import { toYaml, yamlHeader } from '../yaml';
 
 /** The sections of one configuration file; each maps an entry's key (namespace:id) to its config. */
@@ -58,4 +59,17 @@ export function sectionsToYaml(sections: CraftEngineSections, description?: stri
   }).join('\n\n');
   const text = body ? body + '\n' : '';
   return description ? yamlHeader(description) + text : text;
+}
+
+/** The key of an item under `items:`, e.g. "ruby:ruby_sword". */
+export function craftEngineItemKey(project: Pick<Project, 'namespace'>, item: Pick<Item, 'itemId'>): string {
+  return `${project.namespace}:${item.itemId}`;
+}
+
+/** Copies the keys of `source` in the given order first, the others after them. */
+export function ordered(source: Record<string, unknown>, order: string[]): Record<string, unknown> {
+  const result: Record<string, unknown> = {};
+  for (const key of order) if (source[key] !== undefined) result[key] = source[key];
+  for (const [key, value] of Object.entries(source)) if (result[key] === undefined) result[key] = value;
+  return result;
 }

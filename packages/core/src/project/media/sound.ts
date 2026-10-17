@@ -53,3 +53,25 @@ export function soundFilePath(sound: Sound, index: number): string {
   const base = sound.soundId.split('.').filter(Boolean).join('/') || 'sound';
   return sound.files.length > 1 ? `${base}_${index + 1}` : base;
 }
+
+const DURATION_UNITS: Record<string, number> = { t: 0.05, s: 1, m: 60, h: 3600, d: 86400 };
+/** Longer texts are no song length anyone types */
+const MAX_DURATION_LENGTH = 64;
+
+/**
+ * Seconds of a song duration like "2m 30s", "2m30s", "150s", "150" (seconds) or "3000t"; null when it cannot be read.
+ * The sound validation and the export both read durations with it.
+ */
+export function durationSeconds(text: string): number | null {
+  const input = text.trim();
+  if (!input || input.length > MAX_DURATION_LENGTH) return null;
+  // One part per step (sticky, so every step must start where the last ended): linear, no backtracking
+  const part = /(\d+(?:\.\d+)?)\s*([tsmhd]?)\s*/y;
+  let seconds = 0;
+  while (part.lastIndex < input.length) {
+    const match = part.exec(input);
+    if (!match) return null;
+    seconds += Number(match[1]) * DURATION_UNITS[match[2] || 's'];
+  }
+  return Math.round(seconds * 1000) / 1000;
+}

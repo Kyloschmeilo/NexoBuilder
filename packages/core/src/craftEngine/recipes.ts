@@ -7,7 +7,7 @@
 import { keyedRecipes, trimShape } from '../project/recipes/export';
 import { INGREDIENT_LETTERS, type Recipe, type RecipeIngredient, type RecipeType } from '../project/recipes/model';
 import type { Item, Project } from '../project/types';
-import { craftEngineItemKey } from './itemConfig';
+import { craftEngineItemKey } from './yaml';
 
 /** CraftEngine's recipe type of each recipe type of the model. */
 const CE_RECIPE_TYPES: Record<RecipeType, string> = {
@@ -49,7 +49,7 @@ export function craftEngineRecipe(
     const used = new Set(recipe.grid.filter(Boolean));
     out.pattern = trimShape(recipe.grid);
     out.ingredients = Object.fromEntries(
-      INGREDIENT_LETTERS.filter((letter) => used.has(letter) && recipe.ingredients[letter]).map((letter) => [
+      INGREDIENT_LETTERS.filter((letter) => used.has(letter) && recipe.ingredients[letter]?.id.trim()).map((letter) => [
         letter,
         ingredient(recipe.ingredients[letter]),
       ]),

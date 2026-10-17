@@ -71,6 +71,7 @@ function pruneByField(value: unknown, field: Field): unknown {
     case 'texture':
       return typeof value === 'string' && value ? value : undefined;
     case 'object': {
+      if (value === true && field.emptyValue === true) return true;
       if (!isPlainObject(value)) return undefined;
       const out: Record<string, unknown> = {};
       const known = new Set(field.fields.map((f) => f.key));

@@ -117,6 +117,12 @@ describe('migrateProject', () => {
     expect(project.glyphs.map((g) => g.glyphId)).toEqual(['a']);
   });
 
+  it('sets the id of a stored item to its map key', () => {
+    const project = migrateProject({ name: 'Ids', items: { i_key: { id: 'i_other', itemId: 'x', createdAt: 1 } } });
+    expect(Object.keys(project.items)).toEqual(['i_key']);
+    expect(project.items.i_key.id).toBe('i_key');
+  });
+
   it('drops invalid list entries and falls back to defaults for invalid fields', () => {
     const project = migrateProject(
       {
