@@ -182,10 +182,13 @@
     "version": "Minecraft-Version (Server)",
     "create": "Projekt erstellen",
     "target": "Server-Plugin",
-    "targetHint": "Das lässt sich später nicht ändern.",
+    "targetHint": "Wähle das zuerst – es lässt sich später nicht mehr ändern, weil das ganze Projekt für dieses Plugin gebaut wird.",
     "targets": {
-      "nexo": { "name": "Nexo", "description": "Items, Blöcke und Möbel für das Nexo-Plugin." },
-      "craftengine": { "name": "CraftEngine", "description": "Items, Blöcke und Möbel für das CraftEngine-Plugin." }
+      "nexo": { "name": "Nexo", "description": "Items, Blöcke und Möbel für Nexo. Der Testserver braucht deine gekaufte Nexo-JAR." },
+      "craftengine": {
+        "name": "CraftEngine",
+        "description": "Items, Blöcke und Möbel für CraftEngine, dazu Loot-Quellen, Vorlagen, globale Variablen und Attribute. Kostenlos – der Testserver lädt es von Modrinth herunter."
+      }
     }
   },
   "projectList": {

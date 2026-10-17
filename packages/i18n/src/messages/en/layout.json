@@ -182,10 +182,13 @@
     "version": "Minecraft version (server)",
     "create": "Create project",
     "target": "Server plugin",
-    "targetHint": "You can't change this later.",
+    "targetHint": "Choose this first – it can’t be changed later, because the whole project is built for this plugin.",
     "targets": {
-      "nexo": { "name": "Nexo", "description": "Items, blocks and furniture for the Nexo plugin." },
-      "craftengine": { "name": "CraftEngine", "description": "Items, blocks and furniture for the CraftEngine plugin." }
+      "nexo": { "name": "Nexo", "description": "Items, blocks and furniture for Nexo. The test server needs your purchased Nexo JAR." },
+      "craftengine": {
+        "name": "CraftEngine",
+        "description": "Items, blocks and furniture for CraftEngine, plus loot sources, templates, global variables and attributes. Free – the test server downloads it from Modrinth."
+      }
     }
   },
   "projectList": {
