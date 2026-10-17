@@ -71,7 +71,7 @@ import {
 } from '@resourcepackbuilder/core/craftEngine';
 import { checkFieldValue } from '@resourcepackbuilder/core/form';
 import { listEntryFrame, lootSourceFrame, propertyFrame, type Project, templateFrame } from '@resourcepackbuilder/core/project';
-import { ITEM_ID_PATTERN } from '@resourcepackbuilder/minecraft';
+import { ITEM_ID_PATTERN, RESOURCE_LOCATION_PATTERN } from '@resourcepackbuilder/minecraft';
 import type { ItemExport } from '../../types';
 import { asList, isTemplated } from './values';
 import { validateProperties } from '../../validate/itemConfig';
@@ -82,13 +82,11 @@ import { validateProperties } from '../../validate/itemConfig';
  */
 export const CE_ITEM_ID_PATTERN = ITEM_ID_PATTERN;
 
-/** A material as CraftEngine reads it: an item ID, optionally with a namespace ("diamond", "minecraft:diamond"). */
-const CE_MATERIAL_PATTERN = /^([a-z0-9_.-]+:)?[a-z0-9_./-]+$/;
-
 export function validateCraftEngineItem(itemExport: ItemExport, config: Record<string, unknown>): void {
   const { report } = itemExport;
   const material = config.material;
-  if (typeof material !== 'string' || !CE_MATERIAL_PATTERN.test(material)) {
+  // A material as CraftEngine reads it: an item ID, optionally with a namespace ("diamond", "minecraft:diamond")
+  if (typeof material !== 'string' || !RESOURCE_LOCATION_PATTERN.test(material)) {
     report('error', 'ce.materialInvalid', { material: String(material) });
   }
   // The events are checked as they are written (validateCraftEngineEvents), with those of the additional YAML
