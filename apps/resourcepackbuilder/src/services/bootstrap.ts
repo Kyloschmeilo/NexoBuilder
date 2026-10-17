@@ -8,6 +8,7 @@ import { closeProjectDialogs } from '../store/dialogs';
 import { setProject, useProjectStore } from '../store/project';
 import { followOpenProject } from '../store/ui';
 import { createAutosave, type Autosave } from './autosave';
+import { answerFlushRequests } from './flushOnRequest';
 import { createProjectRepository, type ProjectRepository } from './projectRepository';
 import { createShareSync, type ShareSync } from './shareSync';
 import { createTestServerSync, type TestServerSync } from './testServerSync';
@@ -48,9 +49,15 @@ export async function bootstrap(): Promise<AppServices> {
   const share = desktop ? createShareSync({ api: desktop.share, repository, autosave }) : null;
   const testServer = desktop ? createTestServerSync(desktop.testServer) : null;
 
-  // Keeps the desktop program's menus, native dialogs and test-server messages in the app's language
+  // Keeps the desktop program's menus, native dialogs and test-server messages in the app's language; before the
+  // window closes, what is pending is written (the shared folder first: it hands its sync state to the autosave)
   let stopLocaleSync = () => {};
+  let stopAnsweringFlush = () => {};
   if (desktop) {
+    stopAnsweringFlush = answerFlushRequests(desktop.app, async () => {
+      await share?.flush().catch((err: unknown) => console.warn('Could not write the last changes to the shared folder', err));
+      await autosave.flush();
+    });
     const applyLocale = () => void desktop.app.setLocale(useLocaleStore.getState().locale).catch(() => undefined);
     applyLocale();
     stopLocaleSync = useLocaleStore.subscribe((state, prev) => {
@@ -67,6 +74,7 @@ export async function bootstrap(): Promise<AppServices> {
       stopFollowing();
       stopClosingDialogs();
       stopLocaleSync();
+      stopAnsweringFlush();
       testServer?.dispose();
       share?.dispose();
       autosave.dispose();

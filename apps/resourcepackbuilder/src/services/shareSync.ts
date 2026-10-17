@@ -51,6 +51,8 @@ export interface ShareSync {
   stop(): Promise<void>;
   setUserName(userName: string): Promise<void>;
   syncNow(): void;
+  /** Writes own changes that are not in the folder yet now (e.g. before the window closes). */
+  flush(): Promise<void>;
   openFolder(): void;
   /** The system user name, as suggestion for the name shown to the others ('' if unknown). */
   defaultUserName(): Promise<string>;
@@ -266,6 +268,14 @@ export function createShareSync({ api, repository, autosave }: ShareSyncOptions)
 
     syncNow() {
       void session?.sync.run();
+    },
+
+    async flush() {
+      const s = session;
+      if (!s) return;
+      await s.engine.flush();
+      // The state now matches the folder; it is stored together with the project
+      autosave.saveSyncState(s.projectId, s.engine.state);
     },
 
     openFolder() {

@@ -112,6 +112,7 @@ const syncOptionsSchema = z.object({
 /** The argument list of every invoke channel. */
 export const invokeSchemas: { [C in DesktopInvokeChannel]: z.ZodType<DesktopInvokeArgs<C>> } = {
   'app:set-locale': z.tuple([z.enum(SUPPORTED_LOCALES)]),
+  'app:flushed': z.tuple([z.number().int().min(1)]),
 
   'share:choose-folder': z.tuple([z.enum(['share', 'join'])]),
   'share:inspect': z.tuple([folder]),

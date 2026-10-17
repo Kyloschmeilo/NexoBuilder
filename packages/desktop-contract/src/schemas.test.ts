@@ -34,6 +34,7 @@ describe('invoke arguments', () => {
     expect(invokeSchemas['testserver:sync'].safeParse([files, { target: 'nexo', packName: 'p', reload: true }]).success).toBe(true);
     expect(invokeSchemas['testserver:start'].safeParse(['craftengine']).success).toBe(true);
     expect(invokeSchemas['share:user-name'].safeParse([]).success).toBe(true);
+    expect(invokeSchemas['app:flushed'].safeParse([3]).success).toBe(true);
   });
 
   it('refuse wrong types, missing and extra arguments', () => {
@@ -42,6 +43,8 @@ describe('invoke arguments', () => {
     expect(invokeSchemas['share:list'].safeParse(['']).success).toBe(false);
     expect(invokeSchemas['share:user-name'].safeParse(['x']).success).toBe(false);
     expect(invokeSchemas['app:set-locale'].safeParse(['fr']).success).toBe(false);
+    expect(invokeSchemas['app:flushed'].safeParse(['3']).success).toBe(false);
+    expect(invokeSchemas['app:flushed'].safeParse([0.5]).success).toBe(false);
     expect(
       invokeSchemas['testserver:sync'].safeParse([[{ path: 'a', data: 1 }], { target: 'nexo', packName: 'p', reload: true }]).success,
     ).toBe(false);

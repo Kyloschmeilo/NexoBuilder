@@ -23,6 +23,7 @@ function fakeServices(repository: ProjectRepository, picked: SharedFolderProject
     stop: async () => undefined,
     setUserName: async () => undefined,
     syncNow: () => undefined,
+    flush: async () => undefined,
     openFolder: () => undefined,
     events: createEvents(),
     dispose: () => undefined,

@@ -10,6 +10,7 @@ import { APP_HOST, APP_ORIGIN, APP_SCHEME } from '@resourcepackbuilder/desktop-c
 import { app, BrowserWindow, dialog, Menu, nativeTheme, net, protocol, session, shell, type MenuItemConstructorOptions } from 'electron';
 import path from 'node:path';
 import { pathToFileURL } from 'node:url';
+import { flushBeforeClose, noteQuit, registerFlushHandler } from './flushOnClose';
 import { setLocale, t } from './i18n';
 import { handle } from './ipc';
 import { registerShareHandlers } from './share';
@@ -71,6 +72,7 @@ function createWindow() {
     },
   });
   mainWindow = window;
+  flushBeforeClose(window);
 
   window.once('ready-to-show', () => window.show());
   // No new app windows
@@ -172,6 +174,7 @@ function run() {
     handle('app:set-locale', (_event, locale) => {
       if (setLocale(locale)) buildMenu();
     });
+    registerFlushHandler();
     registerShareHandlers();
     registerTestServerHandlers();
     handleDownloads();
@@ -186,7 +189,10 @@ function run() {
   // A running test server is stopped cleanly before quitting (saves the world)
   let quitting = false;
   app.on('before-quit', (event) => {
-    if (quitting || !isTestServerRunning()) return;
+    if (quitting || !isTestServerRunning()) {
+      noteQuit();
+      return;
+    }
     event.preventDefault();
     quitting = true;
     const hadWindow = BrowserWindow.getAllWindows().length > 0;
