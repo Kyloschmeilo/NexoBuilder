@@ -45,6 +45,20 @@ describe('Worn textures', () => {
     expect(item.Components.glider).toBe(true);
   });
 
+  it('reads the material of the additional YAML for the slot and the glider', () => {
+    const { project: p, add } = project();
+    add('fluegel', 'PAPER', { set: 'feuer_elytra', elytra: '@asset:tex' });
+    add('helm', 'PAPER', { set: 'eisen', layer1: '@asset:tex' });
+    const items = Object.values(p.items);
+    items[0].rawYaml = 'material: elytra';
+    items[1].rawYaml = 'material: IRON_HELMET';
+    const yaml = yamlOf(p);
+    expect(yaml.fluegel.material).toBe('elytra');
+    expect(yaml.fluegel.Components.equippable.slot).toBe('CHEST');
+    expect(yaml.fluegel.Components.glider).toBeUndefined();
+    expect(yaml.helm.Components.equippable.slot).toBe('HEAD');
+  });
+
   it('sets slot BODY and the allowed animals for animal armor', () => {
     const { project: p, add } = project();
     add('teppich', 'PAPER', { set: 'bunt', mob: { llama_armor: '@asset:tex' } });

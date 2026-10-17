@@ -8,7 +8,7 @@ import { deepClone, deepMerge, isPlainObject, mapData, MODEL_TOKEN } from '@reso
 import type { ConfigObject, ConfigValue, Item, Project } from '../project/types';
 import { slotForMaterial, type ItemArmor } from '../project/armor';
 import { getPath, setPath } from '../project/config';
-import { itemMaterial } from '../project/item';
+import { effectiveMaterial, itemMaterial } from '../project/item';
 import { cleanConfig } from '../form/prune';
 import { parseRawYaml, type RawYamlError } from '../yaml';
 import { NEXO_FORM } from './form/schema';
@@ -99,16 +99,18 @@ export function buildItemConfig(context: BuildContext): BuildResult {
   }
   const armor = context.armor;
   if (armor) {
+    // The additional YAML is written over the result, so its material is the one Nexo gets
+    const finalMaterial = effectiveMaterial(item).toUpperCase();
     const components = section(resolved, 'Components');
     const equippable = section(components, 'equippable');
-    const slot = equippable.slot ?? slotForMaterial(material) ?? armor.slot ?? 'HEAD';
+    const slot = equippable.slot ?? slotForMaterial(finalMaterial) ?? armor.slot ?? 'HEAD';
     const entities = armor.entities;
     const withEntities =
       (slot === 'BODY' || slot === 'SADDLE') && entities.length > 0 && equippable.allowed_entity_types === undefined
         ? { allowed_entity_types: entities }
         : {};
     // Elytra wings without material ELYTRA need the glider component, otherwise you cannot fly
-    const needsGlider = armor.glider && material !== 'ELYTRA' && components.glider === undefined;
+    const needsGlider = armor.glider && finalMaterial !== 'ELYTRA' && components.glider === undefined;
     resolved.Components = {
       ...components,
       equippable: {

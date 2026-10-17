@@ -18,7 +18,7 @@
 import type { JavaModelJson } from '@resourcepackbuilder/minecraft';
 import { deepClone, deepMerge, isPlainObject } from '@resourcepackbuilder/utils';
 import type { Item, Project } from '../project/types';
-import { itemMaterial } from '../project/item';
+import { itemMaterial, rawYamlMaterial } from '../project/item';
 import { slotForMaterial, type ItemArmor } from '../project/armor';
 import { cleanConfig } from '../form/prune';
 import { parseRawYaml, type RawYamlError } from '../yaml';
@@ -97,8 +97,7 @@ export function craftEngineItemKey(project: Pick<Project, 'namespace'>, item: Pi
  * material in lower case (e.g. "diamond_sword").
  */
 export function craftEngineMaterial(item: Item): string {
-  const raw = parseRawYaml(item.rawYaml).value?.material;
-  return typeof raw === 'string' ? raw : itemMaterial(item).toLowerCase();
+  return rawYamlMaterial(item) ?? itemMaterial(item).toLowerCase();
 }
 
 /** Copies the keys of `source` in the given order first, the others after them. */
