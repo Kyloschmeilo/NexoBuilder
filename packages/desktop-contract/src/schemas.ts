@@ -86,6 +86,16 @@ export const testServerConfigPatchSchema = z.object({
     .optional(),
 }) satisfies z.ZodType<TestServerConfigPatch>;
 
+/** Settings that only take effect when the server starts; they cannot be changed while it is up (or on its way). */
+export const START_ONLY_CONFIG_KEYS = ['paperVersion', 'ramGb', 'port', 'packPort'] as const satisfies ReadonlyArray<
+  keyof TestServerConfig
+>;
+
+/** The start-only settings a (checked) patch would change in `config`. */
+export function startOnlyChanges(config: TestServerConfig, patch: TestServerConfigPatch): string[] {
+  return START_ONLY_CONFIG_KEYS.filter((key) => patch[key] !== undefined && patch[key] !== config[key]);
+}
+
 /* ------------------------------------------------------------------ invoke arguments */
 
 const folder = z.string().min(1);

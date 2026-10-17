@@ -13,6 +13,7 @@
   "portInUse": "Port {port} wird bereits von einem anderen Programm verwendet (ein anderer Minecraft-Server?). Wähle in den Testserver-Einstellungen einen anderen Minecraft-Port.",
   "packPortInUse": "Der Resourcepack-Port {port} wird bereits von einem anderen Programm verwendet. Wähle in den Testserver-Einstellungen einen anderen Pack-Port.",
   "serverRunning": "Stoppe zuerst den Testserver.",
+  "configLocked": "Stoppe den Testserver, um Minecraft-Version, RAM oder Ports zu ändern.",
   "requestFailed": "Anfrage fehlgeschlagen ({status}): {url}",
   "requestFailedWithMessage": "{message} ({status})",
   "downloadFailed": "Download fehlgeschlagen ({status}): {label}",

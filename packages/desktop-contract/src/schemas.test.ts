@@ -2,7 +2,13 @@ import { DEFAULT_TEST_SERVER_CONFIG } from '@resourcepackbuilder/test-server';
 import { describe, expect, it } from 'vitest';
 import { DESKTOP_API } from './api';
 import { DesktopError, rehydrateDesktopError, toDesktopErrorPayload } from './errors';
-import { invokeSchemas, savedTestServerConfigSchema, testServerConfigPatchSchema, testServerConfigSchema } from './schemas';
+import {
+  invokeSchemas,
+  savedTestServerConfigSchema,
+  startOnlyChanges,
+  testServerConfigPatchSchema,
+  testServerConfigSchema,
+} from './schemas';
 
 describe('the channel definitions', () => {
   const defs = Object.values(DESKTOP_API).flatMap((group) => Object.values(group));
@@ -71,6 +77,23 @@ describe('test-server settings', () => {
       pluginJars: { nexo: { file: '../../x' } },
     });
     expect(patch).toEqual({ paperVersion: null, ramGb: 16, port: 25570, playerName: 'Steve', eulaAccepted: false });
+  });
+});
+
+describe('start-only settings', () => {
+  it('lists the start-only settings a patch changes', () => {
+    const config = { ...DEFAULT_TEST_SERVER_CONFIG, paperVersion: '1.21.4' };
+    expect(startOnlyChanges(config, { paperVersion: '1.21.5', ramGb: config.ramGb, port: config.port + 1 })).toEqual([
+      'paperVersion',
+      'port',
+    ]);
+    expect(startOnlyChanges(config, { packPort: config.packPort + 1 })).toEqual(['packPort']);
+  });
+
+  it('ignore the other settings and unchanged values', () => {
+    const config = DEFAULT_TEST_SERVER_CONFIG;
+    expect(startOnlyChanges(config, { playerName: 'Steve', autoUpdate: false, eulaAccepted: true })).toEqual([]);
+    expect(startOnlyChanges(config, { ...config })).toEqual([]);
   });
 });
 

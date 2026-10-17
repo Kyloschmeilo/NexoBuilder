@@ -1,13 +1,20 @@
 /** State of the test server, its console log and saved settings; every change is broadcast to the UI. */
-import { DEFAULT_MINECRAFT_PORT, DEFAULT_TEST_SERVER_CONFIG, stripAnsi, TEST_SERVER_LOG_LIMIT } from '@resourcepackbuilder/test-server';
-import type {
-  TestServerConfigPatch,
-  TestServerEvent,
-  TestServerLogLine,
-  TestServerSnapshot,
-  TestServerState,
+import {
+  DEFAULT_MINECRAFT_PORT,
+  DEFAULT_TEST_SERVER_CONFIG,
+  isConfigLocked,
+  stripAnsi,
+  TEST_SERVER_LOG_LIMIT,
+} from '@resourcepackbuilder/test-server';
+import {
+  DesktopError,
+  type TestServerConfigPatch,
+  type TestServerEvent,
+  type TestServerLogLine,
+  type TestServerSnapshot,
+  type TestServerState,
 } from '@resourcepackbuilder/desktop-contract';
-import { savedTestServerConfigSchema, testServerConfigSchema } from '@resourcepackbuilder/desktop-contract/schemas';
+import { savedTestServerConfigSchema, startOnlyChanges, testServerConfigSchema } from '@resourcepackbuilder/desktop-contract/schemas';
 import { DEFAULT_PACK_TARGET } from '@resourcepackbuilder/core/project';
 import { BrowserWindow } from 'electron';
 import { z } from 'zod';
@@ -130,8 +137,12 @@ export function saveConfig(): Promise<void> {
   return write;
 }
 
-/** Applies a settings change from the UI (already checked and corrected by the channel's schema). */
+/**
+ * Applies a settings change from the UI (already checked and corrected by the channel's schema). Settings that only
+ * apply on start are refused while the server is up or on its way.
+ */
 export async function updateConfig(patch: TestServerConfigPatch): Promise<TestServerState> {
+  if (isConfigLocked(state.status) && startOnlyChanges(state.config, patch).length > 0) throw new DesktopError('configLocked');
   const defined = Object.fromEntries(Object.entries(patch).filter(([, value]) => value !== undefined));
   state.config = testServerConfigSchema.parse({ ...state.config, ...defined });
   await saveConfig();
