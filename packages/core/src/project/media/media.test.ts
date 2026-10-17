@@ -8,6 +8,7 @@ import { makePngDataUrl } from '@resourcepackbuilder/test-utils/png';
 import { pngMediaFile } from './entry';
 import { musicDiscItem, paintingItem } from './items';
 import { addMediaEntry, deleteMediaEntry, findMediaEntry } from './operations';
+import { validateSounds } from './validateSounds';
 
 describe('media operations', () => {
   it('adds entries with unique IDs derived from the name', () => {
@@ -71,6 +72,22 @@ describe('media items', () => {
     const discTarget = insertNewItem(project, { ...disc, folderId: 'none', model: null }, disc.configure);
     expect(discTarget.config.data).toEqual({ jukebox_playable: 'pack:music.theme', components: { 'minecraft:max_stack_size': 1 } });
     expect(discTarget.config.Components).toBeUndefined();
+  });
+});
+
+describe('sound validation', () => {
+  it('accepts every song duration the export can read, also without spaces', () => {
+    const project = createProject('Test', 'pack');
+    const sound = createSound('s_1', 'music.theme', [{ name: 'a.ogg', dataUrl: 'data:audio/ogg;base64,T2dnUw==', size: 4 }]);
+    setSoundJukebox(sound, true);
+    project.sounds = [sound];
+    const codes = () => validateSounds(project).map((issue) => issue.code);
+    for (const duration of ['2m30s', '2m 30s', '150', '3000t']) {
+      sound.jukebox!.duration = duration;
+      expect(codes()).not.toContain('sound.jukeboxDurationMissing');
+    }
+    sound.jukebox!.duration = 'soon';
+    expect(codes()).toContain('sound.jukeboxDurationMissing');
   });
 });
 
