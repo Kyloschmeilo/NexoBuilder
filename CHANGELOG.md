@@ -2,6 +2,24 @@
 
 ## Unreleased
 
+### Fixed
+
+- **Test server:** a start that failed (for example because port 25565 was taken) left a half-created world, and every
+  later start failed with "Overworld settings missing". Such a world is now set aside and created anew, ports are
+  checked before Paper starts, and a server that gives up is shown as an error with its reason instead of "Stopped".
+- **Test server (CraftEngine):** CraftEngine's built-in packs were never created because the project's pack was written
+  first, so `default:loot_table/furniture` and every other `default:*` template were reported as invalid. They are now
+  copied from the plugin JAR when missing.
+- **Project settings:** changing the name, namespace, pack options or icon failed with an internal error.
+- Switching items or projects no longer carries editor state or the test server's transfer summary over.
+
+### Improved
+
+- **Test server page:** setup comes first until the server can start, the reason a start is blocked is written out,
+  ports are saved when you leave the field (no error per keystroke), the resource pack port can be changed, and
+  **Reset world** deletes the test world. The console's example commands use the project's plugin and items.
+- **Give in test server** is always visible in the desktop app and says why it is disabled.
+
 ### New: CraftEngine
 
 - Every project now targets **Nexo** or **CraftEngine**. You choose when you create the project, and it cannot change
