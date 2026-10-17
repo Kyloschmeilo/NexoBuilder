@@ -29,23 +29,22 @@ function javaVersionOf(javaPath: string): Promise<number | null> {
   });
 }
 
-/** Finds `bin/java(.exe)` in `dir` or a few levels below it. */
-async function findJavaIn(dir: string, depth = 0): Promise<string | null> {
-  if (depth > SEARCH_DEPTH) return null;
+/** Every `bin/java(.exe)` in `dir` or a few levels below it. */
+async function findJavasIn(dir: string, depth = 0): Promise<string[]> {
+  if (depth > SEARCH_DEPTH) return [];
   let entries;
   try {
     entries = await fsp.readdir(dir, { withFileTypes: true });
   } catch {
-    return null;
+    return [];
   }
   const bin = path.join(dir, 'bin', JAVA_EXECUTABLE);
-  if (fs.existsSync(bin)) return bin;
+  if (fs.existsSync(bin)) return [bin];
+  const found: string[] = [];
   for (const entry of entries) {
-    if (!entry.isDirectory()) continue;
-    const found = await findJavaIn(path.join(dir, entry.name), depth + 1);
-    if (found) return found;
+    if (entry.isDirectory()) found.push(...(await findJavasIn(path.join(dir, entry.name), depth + 1)));
   }
-  return null;
+  return found;
 }
 
 function extract(archive: string, target: string): Promise<void> {
@@ -91,9 +90,9 @@ async function temurinPackage(minVersion: number, osName: string, arch: string) 
 
 /** A Java of at least `minVersion`; downloads Eclipse Temurin if none is installed. */
 export async function ensureJava(minVersion: number): Promise<JavaInstallation> {
-  const candidates: string[] = [];
-  const bundled = await findJavaIn(javaDir());
-  if (bundled) candidates.push(bundled);
+  // The download for this version first, then any other downloaded Java (e.g. a newer one)
+  const downloaded = [...(await findJavasIn(path.join(javaDir(), String(minVersion)))), ...(await findJavasIn(javaDir()))];
+  const candidates = [...new Set(downloaded)];
   if (!testHooks.ignoreSystemJava) {
     if (process.env.JAVA_HOME) candidates.push(path.join(process.env.JAVA_HOME, 'bin', JAVA_EXECUTABLE));
     candidates.push('java');
@@ -118,7 +117,7 @@ export async function ensureJava(minVersion: number): Promise<JavaInstallation> 
   await fsp.mkdir(target, { recursive: true });
   await extract(archive, target);
   await fsp.rm(archive, { force: true });
-  const javaPath = await findJavaIn(target);
+  const [javaPath] = await findJavasIn(target);
   const version = javaPath ? await javaVersionOf(javaPath) : null;
   if (!javaPath || !version) throw new Error(t('testServer.javaBroken'));
   return { path: javaPath, version };
