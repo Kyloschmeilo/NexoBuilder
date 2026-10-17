@@ -27,6 +27,11 @@ export interface ServerAdapter {
   patchConfig(current: string | null, options: { packPort: number; attributes?: boolean }): string;
   /** Values the plugin needs in Paper's config/paper-global.yml. */
   paperGlobalOverrides: Array<[string[], unknown]>;
+  /**
+   * Folder (in the JAR and relative to pluginDir) holding packs the plugin copies out of its JAR only on a first start
+   * that finds no such folder; packs missing from it are restored from the JAR before every start. Null: none.
+   */
+  bundledFolder: string | null;
   /** Caches (relative to pluginDir) removed before every start, because aborted runs can leave them corrupt. */
   cachesToClear: string[];
   /** Segments of a path (relative to pluginDir) the project may write; null = refused */

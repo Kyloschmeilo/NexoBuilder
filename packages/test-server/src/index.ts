@@ -1,5 +1,6 @@
 /** Public API of @resourcepackbuilder/test-server: test-server config, commands, log parsing, status and synced files. */
 export * from './adapter';
+export * from './bundledPacks';
 export * from './commands';
 export * from './config';
 export * from './files';

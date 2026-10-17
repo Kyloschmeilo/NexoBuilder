@@ -75,6 +75,7 @@
     "worldUnreadable": "The server could not load its world. Use “Reset world” and start again.",
     "crashReport": "The server crashed and wrote a crash report (see the console).",
     "incompleteWorld": "The world of an earlier start that failed was incomplete; it was moved to {folder} and is created anew.",
-    "worldReset": "The world was deleted; a new one is created on the next start."
+    "worldReset": "The world was deleted; a new one is created on the next start.",
+    "bundledPacksRestored": "Added {plugin}'s built-in packs that were missing on the server: {packs}"
   }
 }

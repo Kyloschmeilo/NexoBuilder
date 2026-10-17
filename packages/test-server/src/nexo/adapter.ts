@@ -25,6 +25,7 @@ export const NEXO_SERVER_ADAPTER: ServerAdapter = {
   configFile: 'settings.yml',
   patchConfig: patchNexoSettings,
   paperGlobalOverrides: NEXO_BLOCK_UPDATE_SETTINGS.map((key) => [['block-updates', key], true]),
+  bundledFolder: null,
   // Cache of the obfuscated pack
   cachesToClear: ['pack/.deobfCachedPacks', '.deobfCachedPacks'],
   /**
