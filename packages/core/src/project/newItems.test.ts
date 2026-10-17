@@ -31,6 +31,15 @@ describe('newItemReducer', () => {
     expect(state.plainMeta).toMatchObject({ displayName: 'Other', itemId: 'gem_blade', isIdEdited: true });
   });
 
+  it('suggests an empty ID when the display name is cleared', () => {
+    const state = run(
+      { type: 'withoutModelChanged', isWithoutModel: true },
+      { type: 'metaChanged', sourceKey: null, patch: { displayName: 'Ruby' } },
+      { type: 'metaChanged', sourceKey: null, patch: { displayName: '' } },
+    );
+    expect(state.plainMeta.itemId).toBe('');
+  });
+
   it('keeps entered values when more files are added', () => {
     let state = run({ type: 'readStarted' }, { type: 'filesRead', files: [png('ruby.png')] });
     const [draft] = state.drafts;
