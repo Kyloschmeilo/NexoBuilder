@@ -49,7 +49,7 @@ export function craftEngineRecipe(
     const used = new Set(recipe.grid.filter(Boolean));
     out.pattern = trimShape(recipe.grid);
     out.ingredients = Object.fromEntries(
-      INGREDIENT_LETTERS.filter((letter) => used.has(letter) && recipe.ingredients[letter]).map((letter) => [
+      INGREDIENT_LETTERS.filter((letter) => used.has(letter) && recipe.ingredients[letter]?.id.trim()).map((letter) => [
         letter,
         ingredient(recipe.ingredients[letter]),
       ]),

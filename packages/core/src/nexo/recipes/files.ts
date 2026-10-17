@@ -37,7 +37,7 @@ export function recipeToYaml(recipe: Recipe, item: Item): Record<string, unknown
     const ingredients: Record<string, unknown> = {};
     for (const letter of INGREDIENT_LETTERS) {
       const ingredient = recipe.ingredients[letter];
-      if (ingredient && used.has(letter)) ingredients[letter] = ingredientToYaml(ingredient);
+      if (ingredient?.id.trim() && used.has(letter)) ingredients[letter] = ingredientToYaml(ingredient);
     }
     out.ingredients = ingredients;
   } else if (info.kind === 'shapeless') {

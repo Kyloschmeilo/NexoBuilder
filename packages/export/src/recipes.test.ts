@@ -52,6 +52,14 @@ describe('recipes', () => {
     });
   });
 
+  it('leaves shaped ingredients with a blank id out, like shapeless ones', () => {
+    const { item } = setup();
+    const recipe = createRecipe('shaped', 'r1');
+    recipe.grid = ['A', 'B', '', '', '', '', '', '', ''];
+    recipe.ingredients = { A: { source: 'minecraft', id: 'diamond' }, B: { source: 'minecraft', id: ' ' } };
+    expect(recipeToYaml(recipe, item).ingredients).toEqual({ A: { minecraft_type: 'DIAMOND' } });
+  });
+
   it('writes shapeless and furnace recipes', () => {
     const { item } = setup();
     const shapeless = createRecipe('shapeless', 'r2');
