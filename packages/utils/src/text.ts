@@ -2,11 +2,15 @@
 
 const UMLAUTS: Record<string, string> = { ä: 'ae', ö: 'oe', ü: 'ue', ß: 'ss', Ä: 'ae', Ö: 'oe', Ü: 'ue' };
 
-/** Removes MiniMessage tags and legacy formatting codes (&a, §c) from a text. */
+/**
+ * Removes MiniMessage tags and legacy formatting codes (&a, §c) from a text. `§` codes go everywhere; a run of `&`
+ * codes only where no letter or digit comes right before it, so `&` inside words ("Fish&Chips") stays.
+ */
 export function stripFormatting(text: string): string {
   return text
     .replace(/<[^<>]*>/g, '')
-    .replace(/[&§][0-9a-fk-orx]/gi, '')
+    .replace(/§[0-9a-fk-orx]/gi, '')
+    .replace(/(?<![\p{L}\p{N}])(?:&[0-9a-fk-orx])+/giu, '')
     .trim();
 }
 
