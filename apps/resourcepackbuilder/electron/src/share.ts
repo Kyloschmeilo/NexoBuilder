@@ -58,14 +58,14 @@ function loadRoots(): string[] {
   return savedRoots;
 }
 
+let rootsWrite: Promise<void> = Promise.resolve();
+
+/** Keeps `list` as the allowed folders and writes it atomically; writes run one after another, the latest list wins. */
 function saveRoots(list: string[]) {
   savedRoots = list;
-  try {
-    fs.mkdirSync(path.dirname(rootsFile()), { recursive: true });
-    fs.writeFileSync(rootsFile(), JSON.stringify(list, null, 1));
-  } catch (err) {
-    console.error('Could not save allowed folders', err);
-  }
+  rootsWrite = rootsWrite
+    .then(() => writeFileAtomic(rootsFile(), JSON.stringify(savedRoots, null, 1)))
+    .catch((err: unknown) => console.error('Could not save allowed folders', err));
 }
 
 function allRoots(): string[] {

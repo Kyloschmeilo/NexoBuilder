@@ -10,12 +10,11 @@ import type {
 import { savedTestServerConfigSchema, testServerConfigSchema } from '@resourcepackbuilder/desktop-contract/schemas';
 import { DEFAULT_PACK_TARGET } from '@resourcepackbuilder/core/project';
 import { BrowserWindow } from 'electron';
-import fsp from 'node:fs/promises';
 import { z } from 'zod';
-import { readJsonFile } from '../fileHelpers';
+import { readJsonFile, writeFileAtomic } from '../fileHelpers';
 import { t } from '../i18n';
 import { send } from '../ipc';
-import { configFile, moveLegacyServerDir, rootDir, serverDir } from './paths';
+import { configFile, moveLegacyServerDir, serverDir } from './paths';
 
 type InternalState = Omit<TestServerState, 'serverDir' | 'address'>;
 
@@ -120,9 +119,15 @@ async function readConfig() {
   state.installed = saved.installed;
 }
 
-export async function saveConfig(): Promise<void> {
-  await fsp.mkdir(rootDir(), { recursive: true });
-  await fsp.writeFile(configFile(), JSON.stringify({ config: state.config, installed: state.installed }, null, 1));
+let configWrite: Promise<void> = Promise.resolve();
+
+/** Writes testserver.json atomically; writes run one after another, each with the state current when it starts. */
+export function saveConfig(): Promise<void> {
+  const write = configWrite.then(() =>
+    writeFileAtomic(configFile(), JSON.stringify({ config: state.config, installed: state.installed }, null, 1)),
+  );
+  configWrite = write.catch(() => undefined);
+  return write;
 }
 
 /** Applies a settings change from the UI (already checked and corrected by the channel's schema). */
