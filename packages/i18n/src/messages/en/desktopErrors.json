@@ -12,6 +12,7 @@
   "wrongTarget": "The test server runs {server}, but this project is for {project}. Stop the server and start it again from this project.",
   "portInUse": "Port {port} is already in use by another program (another Minecraft server?). Choose a different Minecraft port in the test server settings.",
   "packPortInUse": "The resource pack port {port} is already in use by another program. Choose a different pack port in the test server settings.",
+  "portsEqual": "The Minecraft port and the resource pack port are both {port}. Choose two different ports in the test server settings.",
   "serverRunning": "Stop the test server first.",
   "requestFailed": "Request failed ({status}): {url}",
   "requestFailedWithMessage": "{message} ({status})",

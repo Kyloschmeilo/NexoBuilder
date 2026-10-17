@@ -63,8 +63,9 @@ function isPortFree(port: number): Promise<boolean> {
   });
 }
 
-/** Throws unless the Minecraft port and the port the plugin serves the pack on are both free. */
+/** Throws unless the Minecraft port and the port the plugin serves the pack on differ and are both free. */
 export async function assertPortsFree(ports: { port: number; packPort: number }): Promise<void> {
+  if (ports.port === ports.packPort) throw new DesktopError('portsEqual', { port: ports.port });
   if (!(await isPortFree(ports.port))) throw new DesktopError('portInUse', { port: ports.port });
   if (!(await isPortFree(ports.packPort))) throw new DesktopError('packPortInUse', { port: ports.packPort });
 }
