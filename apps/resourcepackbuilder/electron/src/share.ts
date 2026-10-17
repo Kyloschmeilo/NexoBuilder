@@ -6,7 +6,7 @@
  * `<userData>/shared-folders.json`; a project folder is forgotten again when its project stops being shared.
  */
 import { DesktopError, type ShareFileInfo, type ShareFolderInfo, type ShareFolderPurpose } from '@resourcepackbuilder/desktop-contract';
-import { ENTITY_DIRS, isShareFilePath, PROJECT_FILE, readProjectInfo } from '@resourcepackbuilder/sync';
+import { ENTITY_DIRS, isShareFilePath, PROJECT_FILE, readProjectInfo, shareFolderName } from '@resourcepackbuilder/sync';
 import { app, BrowserWindow, dialog, type OpenDialogOptions, type WebContents } from 'electron';
 import fs from 'node:fs';
 import fsp from 'node:fs/promises';
@@ -168,18 +168,23 @@ async function inspect(folder: string): Promise<ShareFolderInfo> {
   return { exists: true, empty: visible.length === 0, project, children };
 }
 
+/** Whether `dir` is missing or an empty folder (a file or a folder with content is taken). */
+async function isFreeFolder(dir: string): Promise<boolean> {
+  try {
+    const stat = await fsp.stat(dir);
+    return stat.isDirectory() && (await fsp.readdir(dir)).length === 0;
+  } catch (err) {
+    if (errorCode(err) === 'ENOENT') return true;
+    throw err;
+  }
+}
+
 /** Creates (or reuses an empty) subfolder named after the project. */
 async function createSubfolder(parent: string, name: string): Promise<string> {
   const base = await checkFolder(parent);
-  const clean =
-    name
-      // eslint-disable-next-line no-control-regex -- control characters are invalid in file names
-      .replace(/[<>:"/\\|?*\x00-\x1f]/g, '_')
-      .replace(/[. ]+$/g, '')
-      .trim()
-      .slice(0, 80) || DEFAULT_SUBFOLDER;
+  const clean = shareFolderName(name) || DEFAULT_SUBFOLDER;
   let candidate = path.join(base, clean);
-  for (let n = 2; fs.existsSync(candidate) && (await fsp.readdir(candidate)).length > 0; n++) {
+  for (let n = 2; !(await isFreeFolder(candidate)); n++) {
     candidate = path.join(base, `${clean} (${n})`);
   }
   await fsp.mkdir(candidate, { recursive: true });
