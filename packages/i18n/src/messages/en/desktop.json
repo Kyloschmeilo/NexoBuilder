@@ -11,6 +11,7 @@
     "fullscreen": "Full screen",
     "help": "Help",
     "nexoDocs": "Nexo documentation",
+    "craftEngineDocs": "CraftEngine documentation",
     "about": "About {app}"
   },
   "about": {
