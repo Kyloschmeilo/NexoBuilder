@@ -59,6 +59,7 @@
     "stopping": "Stopping the server (saving the world) …",
     "cancellingStart": "Cancelling the start …",
     "startCancelled": "The start was cancelled.",
+    "orphanStopped": "A test server left running by an earlier session (process {pid}) was stopped.",
     "notResponding": "Server is not responding – killing it.",
     "skippedFile": "Skipped (invalid file name): {path}",
     "synced": "Project transferred: {written} written, {deleted} removed.",

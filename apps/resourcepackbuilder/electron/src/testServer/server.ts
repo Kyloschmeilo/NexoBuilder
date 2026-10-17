@@ -19,6 +19,7 @@ import { spawn, type ChildProcess, type ChildProcessWithoutNullStreams } from 'n
 import type { Readable } from 'node:stream';
 import { describeError, t } from '../i18n';
 import { ensureJava, type JavaInstallation } from './java';
+import { removePidFile, stopOrphanedServers, writePidFile } from './orphan';
 import { ensurePaper, type PaperInstallation } from './paper';
 import { serverDir } from './paths';
 import { prepareServerFiles } from './serverFiles';
@@ -177,6 +178,7 @@ function launch(paper: PaperInstallation, java: JavaInstallation, target: PackTa
   const args = ['-Xms512M', `-Xmx${state.config.ramGb}G`, ...encoding, '-jar', paper.jar, '--nogui'];
   const child = spawn(java.path, args, { cwd: serverDir(target), windowsHide: true, stdio: ['pipe', 'pipe', 'pipe'] });
   serverProcess = child;
+  if (child.pid) void writePidFile(target, child.pid, paper.jar);
   readLines(child.stdout, handleLine);
   readLines(child.stderr, (line) => pushLog(line, 'err'));
   child.stdin.on('error', () => undefined);
@@ -186,6 +188,7 @@ function launch(paper: PaperInstallation, java: JavaInstallation, target: PackTa
     processEnded(child, { status: 'error', message });
   });
   child.on('exit', (code) => {
+    void removePidFile(target);
     logInfo(code !== null ? t('testServer.exitedCode', { code }) : t('testServer.exited'));
     const expected = stopRequested || (code === 0 && failure === null);
     processEnded(
@@ -221,6 +224,7 @@ async function prepareAndLaunch(paperVersion: string, target: PackTargetId, sign
     state.installed = { paperVersion: paper.version, paperBuild: paper.build, javaPath: java.path, javaVersion: java.version };
     await saveConfig();
     await prepareServerFiles(target);
+    await stopOrphanedServers();
     await setAsideIncompleteWorld(target);
     await assertPortsFree(state.config);
     signal.throwIfAborted();

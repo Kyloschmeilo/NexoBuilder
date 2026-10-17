@@ -59,6 +59,7 @@
     "stopping": "Server wird gestoppt (Welt wird gespeichert) …",
     "cancellingStart": "Start wird abgebrochen …",
     "startCancelled": "Der Start wurde abgebrochen.",
+    "orphanStopped": "Ein Testserver, der aus einer früheren Sitzung noch lief (Prozess {pid}), wurde beendet.",
     "notResponding": "Server reagiert nicht – wird beendet.",
     "skippedFile": "Übersprungen (ungültiger Dateiname): {path}",
     "synced": "Projekt übertragen: {written} geschrieben, {deleted} entfernt.",
