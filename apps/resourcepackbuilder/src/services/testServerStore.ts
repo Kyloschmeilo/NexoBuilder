@@ -2,10 +2,23 @@
 import { create } from 'zustand';
 import type { TestServerLogLine, TestServerState, TestServerSyncResult } from '../platform/desktopApi';
 
+/** A line of the server output, numbered in the order the renderer received it. */
+export interface NumberedLogLine extends TestServerLogLine {
+  /** Unique for the app's run; stays with the line while older lines are dropped (a stable React key) */
+  id: number;
+}
+
+let nextLogLineId = 0;
+
+/** Numbers `lines` after every line numbered before. */
+export function numberLogLines(lines: readonly TestServerLogLine[]): NumberedLogLine[] {
+  return lines.map((line) => ({ ...line, id: nextLogLineId++ }));
+}
+
 export interface TestServerUiState {
   /** `null` until the desktop program reported its state (or outside the desktop program) */
   server: TestServerState | null;
-  log: TestServerLogLine[];
+  log: NumberedLogLine[];
   isSyncing: boolean;
   /** Last transfer in which something changed */
   lastResult: (TestServerSyncResult & { at: number }) | null;
