@@ -152,9 +152,14 @@ function denyPermissions() {
 }
 
 function run() {
-  // A second launch brings the existing window to the front
+  // A second launch brings the existing window to the front – or opens a new one, e.g. while the window was closed
+  // and the test server is still shutting down
   app.on('second-instance', () => {
-    if (!mainWindow) return;
+    if (!app.isReady()) return;
+    if (!mainWindow) {
+      createWindow();
+      return;
+    }
     if (mainWindow.isMinimized()) mainWindow.restore();
     mainWindow.focus();
   });
@@ -184,7 +189,12 @@ function run() {
     if (quitting || !isTestServerRunning()) return;
     event.preventDefault();
     quitting = true;
-    void stopTestServer().finally(() => app.quit());
+    const hadWindow = BrowserWindow.getAllWindows().length > 0;
+    void stopTestServer().finally(() => {
+      // The program was launched again while the server stopped after its last window had closed: keep running
+      if (!hadWindow && BrowserWindow.getAllWindows().length > 0) quitting = false;
+      else app.quit();
+    });
   });
 
   app.on('window-all-closed', () => {
