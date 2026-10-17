@@ -223,8 +223,9 @@ async function prepareAndLaunch(paperVersion: string, target: PackTargetId, sign
     const java = await ensureJava(paper.javaMin, signal);
     state.installed = { paperVersion: paper.version, paperBuild: paper.build, javaPath: java.path, javaVersion: java.version };
     await saveConfig();
-    await prepareServerFiles(target);
+    // First: a server left running holds the plugin JAR and the world open (Windows refuses to replace them)
     await stopOrphanedServers();
+    await prepareServerFiles(target);
     await setAsideIncompleteWorld(target);
     await assertPortsFree(state.config);
     signal.throwIfAborted();
@@ -275,4 +276,9 @@ export async function stop(): Promise<void> {
 
 export function isRunning(): boolean {
   return serverProcess !== null;
+}
+
+/** Whether the server runs or a start is still preparing (downloads, Java extraction): quitting must stop it first. */
+export function isActive(): boolean {
+  return serverProcess !== null || preparation !== null;
 }

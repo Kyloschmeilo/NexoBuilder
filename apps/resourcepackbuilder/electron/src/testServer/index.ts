@@ -20,9 +20,10 @@ import { isConfigLocked } from '@resourcepackbuilder/test-server';
 import { paperVersions } from './paper';
 import { serverDir } from './paths';
 import { choosePluginJar, downloadPlugin } from './pluginJar';
-import { isRunning, requestReload, runUserCommand, start, stop } from './server';
+import { isActive, isRunning, requestReload, runUserCommand, start, stop } from './server';
 import { clearLog, loadConfig, publicState, snapshot, state, updateConfig } from './state';
 import { readPluginConfig, syncFiles } from './sync';
+import { stopOrphanedServers } from './orphan';
 import { deleteWorld } from './world';
 
 /** Like `handle`, but waits until the saved settings are loaded. */
@@ -56,6 +57,8 @@ export function registerTestServerHandlers(): void {
   });
   handleLoaded('testserver:reset-world', async (_event, target) => {
     if (isRunning() || isConfigLocked(state.status)) throw new DesktopError('serverRunning');
+    // A server left running by a crash holds the world open
+    await stopOrphanedServers();
     await deleteWorld(target);
   });
   handleLoaded('testserver:clear-log', () => {
@@ -64,4 +67,4 @@ export function registerTestServerHandlers(): void {
   });
 }
 
-export { isRunning as isTestServerRunning, stop as stopTestServer };
+export { isActive as isTestServerActive, stop as stopTestServer };

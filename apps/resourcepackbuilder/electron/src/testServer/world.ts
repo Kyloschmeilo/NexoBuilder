@@ -10,6 +10,7 @@ import fs from 'node:fs';
 import fsp from 'node:fs/promises';
 import net from 'node:net';
 import path from 'node:path';
+import { errorCode } from '../fileHelpers';
 import { t } from '../i18n';
 import { serverDir } from './paths';
 import { logInfo } from './state';
@@ -24,10 +25,17 @@ async function worldDirs(target: PackTargetId): Promise<string[]> {
   return worldFolders(properties).map((folder) => path.join(serverDir(target), folder));
 }
 
-/** Whether `dir` holds a region file (`*.mca`): Paper saves the spawn chunks on every start that gets that far. */
+/**
+ * Whether `dir` holds a region file (`*.mca`): Paper saves the spawn chunks on every start that gets that far. A folder
+ * that cannot be read (other than a missing one) throws, so a real world is never taken for an incomplete one.
+ */
 async function hasRegionFile(dir: string): Promise<boolean> {
-  const entries = await fsp.readdir(dir, { recursive: true }).catch(() => []);
-  return entries.some((entry) => entry.endsWith('.mca'));
+  try {
+    return (await fsp.readdir(dir, { recursive: true })).some((entry) => entry.endsWith('.mca'));
+  } catch (err) {
+    if (errorCode(err) === 'ENOENT') return false;
+    throw err;
+  }
 }
 
 /**

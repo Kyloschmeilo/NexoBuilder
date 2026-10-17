@@ -89,7 +89,9 @@ export async function stopOrphanedServers(): Promise<void> {
     const pidFile = parsePidFile(text);
     if (pidFile && isAlive(pidFile.pid)) {
       const info = await processInfo(pidFile.pid);
-      if (info && isServerProcess(info, pidFile)) {
+      // Unknown (the query failed): keep the file, so the next start checks again
+      if (!info) continue;
+      if (isServerProcess(info, pidFile)) {
         logInfo(t('testServer.orphanStopped', { pid: pidFile.pid }));
         try {
           await kill(pidFile.pid);

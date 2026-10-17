@@ -55,11 +55,10 @@ export function flushBeforeClose(window: BrowserWindow): void {
     state = 'flushing';
     void requestFlush(window.webContents).then(() => {
       state = 'flushed';
-      if (window.isDestroyed()) return;
       if (isQuitPending) {
         isQuitPending = false;
         app.quit();
-      } else {
+      } else if (!window.isDestroyed()) {
         window.close();
       }
     });

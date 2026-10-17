@@ -15,7 +15,7 @@ import { setLocale, t } from './i18n';
 import { handle } from './ipc';
 import { registerShareHandlers } from './share';
 import { testHooks } from './testHooks';
-import { isTestServerRunning, registerTestServerHandlers, stopTestServer } from './testServer';
+import { isTestServerActive, registerTestServerHandlers, stopTestServer } from './testServer';
 
 const APP_NAME = 'ResourcepackBuilder';
 /** The bundle lives in electron/dist/, next to the app's out/ and build/ folders. */
@@ -190,7 +190,7 @@ function run() {
   // A running test server is stopped cleanly before quitting (saves the world)
   let quitting = false;
   app.on('before-quit', (event) => {
-    if (quitting || !isTestServerRunning()) {
+    if (quitting || !isTestServerActive()) {
       noteQuit();
       return;
     }
