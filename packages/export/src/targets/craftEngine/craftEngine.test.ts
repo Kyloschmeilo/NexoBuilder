@@ -365,6 +365,8 @@ describe('CraftEngine layout', () => {
     expect(fileName).toBe('kristall_pack_craftengine.zip');
     expect(guide).toContain('into the folder  plugins/CraftEngine/  of your server');
     expect(guide).toContain('/ce reload all');
+    expect(guide).toContain('does not build the pack');
+    expect(guide).not.toContain('restarting the server works too');
     expect(guide).toContain('/ce item give Steve kristall:crystal_sword 1');
   });
 });
