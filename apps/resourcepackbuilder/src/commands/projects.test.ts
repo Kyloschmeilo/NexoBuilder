@@ -32,6 +32,7 @@ function fakeServices(repository: ProjectRepository, picked: SharedFolderProject
     flush: async () => undefined,
     requestSave: () => undefined,
     saveSyncState: () => undefined,
+    discard: () => undefined,
     attachSyncState: () => () => undefined,
     dispose: () => undefined,
   };

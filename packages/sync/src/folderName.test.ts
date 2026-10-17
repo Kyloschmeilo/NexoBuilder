@@ -21,8 +21,20 @@ describe('shareFolderName', () => {
     expect(shareFolderName('x'.repeat(200))).toHaveLength(MAX_SHARE_FOLDER_NAME_LENGTH);
   });
 
-  it.each(['CON', 'con', 'Prn', 'AUX', 'nul', 'COM1', 'lpt9', 'com¹', 'con.txt', 'NUL.tar.gz'])('changes the reserved name %s', (name) => {
-    expect(shareFolderName(name)).toBe(`${name}_`);
+  it.each([
+    ['CON', 'CON_'],
+    ['con', 'con_'],
+    ['Prn', 'Prn_'],
+    ['AUX', 'AUX_'],
+    ['nul', 'nul_'],
+    ['COM1', 'COM1_'],
+    ['lpt9', 'lpt9_'],
+    ['com¹', 'com¹_'],
+    // Windows reserves the stem with any extension, so the mark goes before it
+    ['con.txt', 'con_.txt'],
+    ['NUL.tar.gz', 'NUL_.tar.gz'],
+  ])('changes the reserved name %s', (name, expected) => {
+    expect(shareFolderName(name)).toBe(expected);
   });
 
   it.each(['CONsole', 'com10', 'auxiliary', 'lpt', 'my con'])('keeps %s', (name) => {

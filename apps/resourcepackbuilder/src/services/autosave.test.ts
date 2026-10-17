@@ -122,6 +122,22 @@ describe('autosave', () => {
     expect(save).toHaveBeenCalledTimes(3);
   });
 
+  it('does not write a discarded project back when its retry comes', async () => {
+    const { repository, control, saved } = memoryRepository();
+    vi.spyOn(console, 'error').mockImplementation(() => undefined);
+    autosave = createAutosave({ repository, delayMs: 10 });
+    const project = createProject('A');
+    setProject(project);
+    control.failing = true;
+    rename('A1');
+    await vi.advanceTimersByTimeAsync(10);
+    control.failing = false;
+    autosave.discard(project.id);
+    setProject(null);
+    await vi.advanceTimersByTimeAsync(60_000);
+    expect(saved).toEqual([]);
+  });
+
   it('retries with the newest change, not the one that failed', async () => {
     const { repository, control, saved } = memoryRepository();
     vi.spyOn(console, 'error').mockImplementation(() => undefined);

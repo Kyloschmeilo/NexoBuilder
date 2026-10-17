@@ -49,6 +49,7 @@ export async function deleteStoredProject(services: AppServices, id: string): Pr
     await switchProject(services, null);
     await services.share?.connect(); // waits until the shared folder is disconnected
   }
+  services.autosave.discard(id);
   await services.repository.remove(id);
 }
 

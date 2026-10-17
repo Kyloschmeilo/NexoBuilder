@@ -22,6 +22,8 @@ export interface Autosave {
   requestSave(projectId: string): void;
   /** Stores the sync state of a project whose content is saved already. */
   saveSyncState(projectId: string, state: SyncState): void;
+  /** Drops what is pending for a project that is being deleted, so no retry writes it back. */
+  discard(projectId: string): void;
   /** Supplies the sync state stored together with each project (shared projects only); returns the detach function. */
   attachSyncState(syncStateFor: (projectId: string) => SyncState | null): () => void;
   dispose(): void;
@@ -99,6 +101,10 @@ export function createAutosave({ repository, delayMs = 600 }: AutosaveOptions): 
     saveSyncState(projectId, state) {
       pendingStates.set(projectId, state);
       void flush();
+    },
+    discard(projectId) {
+      pending.delete(projectId);
+      pendingStates.delete(projectId);
     },
     attachSyncState(source) {
       syncStateFor = source;

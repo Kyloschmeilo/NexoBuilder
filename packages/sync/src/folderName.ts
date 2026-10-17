@@ -9,7 +9,8 @@ const WINDOWS_RESERVED_NAME = /^(con|prn|aux|nul|com[0-9¹²³]|lpt[0-9¹²³])(
 /**
  * A folder name for `projectName` that every common file system accepts: invalid and control characters become `_`,
  * it is shortened to {@link MAX_SHARE_FOLDER_NAME_LENGTH} characters, has no leading or trailing spaces and no trailing
- * dots (Windows drops them), and a reserved Windows device name gets a `_` appended. Empty when nothing usable is left.
+ * dots (Windows drops them), and a reserved Windows device name gets a `_` after its stem (`con.txt` → `con_.txt`).
+ * Empty when nothing usable is left.
  */
 export function shareFolderName(projectName: string): string {
   const name = projectName
@@ -18,5 +19,5 @@ export function shareFolderName(projectName: string): string {
     .trim()
     .slice(0, MAX_SHARE_FOLDER_NAME_LENGTH)
     .replace(/[. ]+$/, '');
-  return WINDOWS_RESERVED_NAME.test(name) ? `${name}_` : name;
+  return name.replace(WINDOWS_RESERVED_NAME, (_match, stem: string, extension: string | undefined) => `${stem}_${extension ?? ''}`);
 }
