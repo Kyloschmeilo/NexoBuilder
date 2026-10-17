@@ -15,6 +15,7 @@ export {
   readPngAsDataUrl,
 } from './files';
 export { IconButton } from './IconButton';
+export { type UiLabels, UiLabelsProvider, useUiLabels } from './labels';
 export { MenuEntries, type MenuEntry } from './MenuEntries';
 export { PageHeader, PageShell } from './PageHeader';
 export { SectionCard } from './SectionCard';
