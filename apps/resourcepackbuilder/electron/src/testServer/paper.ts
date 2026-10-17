@@ -1,4 +1,5 @@
 /** Paper server: available versions and the server JAR (PaperMC "fill" API). */
+import { DesktopError } from '@resourcepackbuilder/desktop-contract';
 import { guessJavaFor } from '@resourcepackbuilder/test-server';
 import fs from 'node:fs';
 import path from 'node:path';
@@ -44,10 +45,10 @@ export async function ensurePaper(version: string): Promise<PaperInstallation> {
 
   setState({ message: t('testServer.searchingPaper', { version }) });
   const entries = await fetchJson(`${PAPER_API}/versions/${encodeURIComponent(version)}/builds`, paperBuildsSchema);
-  if (entries.length === 0) throw new Error(t('testServer.noPaperBuild', { version }));
+  if (entries.length === 0) throw new DesktopError('noPaperBuild', { version });
   // Builds without a verifiable server download (e.g. a different layout) are skipped
   const picked = pickBuild(entries.flatMap((entry) => paperBuildSchema.safeParse(entry).data ?? []));
-  if (!picked) throw new Error(t('testServer.noPaperDownload', { version }));
+  if (!picked) throw new DesktopError('noPaperDownload', { version });
   const build = picked.build.id;
   const serverDownload = picked.build.downloads['server:default'];
   if (!picked.stable) logInfo(t('testServer.experimentalBuild', { version, build }));

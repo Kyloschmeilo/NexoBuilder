@@ -1,4 +1,5 @@
 /** Java runtime for the server: the bundled one, the system one, or a downloaded Eclipse Temurin JRE. */
+import { DesktopError } from '@resourcepackbuilder/desktop-contract';
 import { parseJavaVersion } from '@resourcepackbuilder/test-server';
 import { execFile } from 'node:child_process';
 import fs from 'node:fs';
@@ -52,7 +53,7 @@ function extract(archive: string, target: string): Promise<void> {
   const tar = process.platform === 'win32' ? path.join(process.env.SystemRoot || 'C:\\Windows', 'System32', 'tar.exe') : 'tar';
   return new Promise((resolve, reject) =>
     execFile(tar, ['-xf', archive, '-C', target], { windowsHide: true, timeout: 5 * 60_000 }, (err, _out, stderr) =>
-      err ? reject(new Error(t('testServer.javaExtractFailed', { error: stderr || err.message }))) : resolve(),
+      err ? reject(new DesktopError('javaExtractFailed', { error: stderr || err.message })) : resolve(),
     ),
   );
 }
@@ -104,7 +105,7 @@ export async function ensureJava(minVersion: number): Promise<JavaInstallation> 
 
   const osName = OS_NAMES[process.platform];
   const arch = ARCHS[process.arch];
-  if (!osName || !arch) throw new Error(t('testServer.javaRequired', { version: minVersion }));
+  if (!osName || !arch) throw new DesktopError('javaRequired', { version: minVersion });
   setState({ message: t('testServer.searchingJava', { version: minVersion }) });
   const jrePackage = await temurinPackage(minVersion, osName, arch);
   const archive = path.join(downloadsDir(), jrePackage.name);
@@ -119,6 +120,6 @@ export async function ensureJava(minVersion: number): Promise<JavaInstallation> 
   await fsp.rm(archive, { force: true });
   const [javaPath] = await findJavasIn(target);
   const version = javaPath ? await javaVersionOf(javaPath) : null;
-  if (!javaPath || !version) throw new Error(t('testServer.javaBroken'));
+  if (!javaPath || !version) throw new DesktopError('javaBroken');
   return { path: javaPath, version };
 }

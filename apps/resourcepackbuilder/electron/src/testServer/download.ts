@@ -59,9 +59,9 @@ export async function download(
   algorithm: HashAlgorithm = 'sha256',
 ): Promise<void> {
   const expected = expectedHash.trim().toLowerCase();
-  if (!new RegExp(`^[0-9a-f]{${HASH_HEX_LENGTH[algorithm]}}$`).test(expected)) throw new Error(t('testServer.checksumMissing', { label }));
+  if (!new RegExp(`^[0-9a-f]{${HASH_HEX_LENGTH[algorithm]}}$`).test(expected)) throw new DesktopError('checksumMissing', { label });
   const response = await net.fetch(url, { headers: { 'User-Agent': userAgent() } });
-  if (!response.ok || !response.body) throw new Error(t('testServer.downloadFailed', { status: response.status, label }));
+  if (!response.ok || !response.body) throw new DesktopError('downloadFailed', { status: response.status, label });
   const total = Number(response.headers.get('content-length')) || 0;
   await fsp.mkdir(path.dirname(target), { recursive: true });
   const partPath = `${target}.part`;
@@ -95,7 +95,7 @@ export async function download(
   }
   if (hash.digest('hex') !== expected) {
     await fsp.rm(partPath, { force: true });
-    throw new Error(t('testServer.checksumMismatch', { label }));
+    throw new DesktopError('checksumMismatch', { label });
   }
   await fsp.rename(partPath, target);
   setState({ progress: null });
