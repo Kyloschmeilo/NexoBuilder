@@ -57,7 +57,9 @@ export function showItem(folderId: string, itemId: string): void {
 export function updateItem(itemId: string, recipe: (item: Item) => void, historyKey?: string): void {
   const item = getProject()?.items[itemId];
   if (!item) return;
-  const next = produce(item, recipe);
+  const next = produce(item, (draft) => {
+    recipe(draft);
+  });
   if (next === item) return;
   mutate(
     (draft) => {
