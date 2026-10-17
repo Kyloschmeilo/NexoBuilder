@@ -40,8 +40,7 @@ export function NewProjectForm({ onDone }: { onDone?: () => void }) {
 
   const submit = async () => {
     if (isInvalid) return;
-    await actions.create(name || defaultName, namespace, version, target);
-    onDone?.();
+    if (await actions.create(name || defaultName, namespace, version, target)) onDone?.();
   };
 
   return (
