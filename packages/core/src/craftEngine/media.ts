@@ -47,7 +47,8 @@ export function craftEngineGlyphs(project: Project): CraftEngineGlyphs {
 
 /** The tag that shows the glyph in text; for a multi-bitmap its first cell. */
 export function craftEngineImageTag(project: Pick<Project, 'namespace'>, glyph: Glyph): string {
-  return `<image:${mediaKey(project, glyph.glyphId)}>`;
+  const key = mediaKey(project, glyph.glyphId);
+  return isMultiBitmap(glyph) ? `<image:${key}:0:0>` : `<image:${key}>`;
 }
 
 /** An image from the glyph's PNG (assets/<ns>/textures/glyphs/<id>.png); a multi-bitmap as a grid of characters. */
