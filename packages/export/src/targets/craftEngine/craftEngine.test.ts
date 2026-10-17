@@ -247,12 +247,18 @@ describe('CraftEngine checks', () => {
 
   it('reports invalid materials and reserved pack names', () => {
     expect(codes(oneItemProject((item) => (item.rawYaml = 'material: Not Valid')))).toContain('ce.materialInvalid');
-    for (const name of ['internal', 'default', 'default_assets']) {
+    const builtInPacks = ['customcrops', 'default_assets', 'default_feature_populator', 'default_templates', 'internal', 'legacy_armor'];
+    for (const name of [...builtInPacks, 'remove_shulker_head', 'default', 'Default_Extra']) {
       const project = oneItemProject(() => {});
       project.settings.packName = name;
       expect(planExport(project).issues.find((i) => i.code === 'ce.reservedPackName')?.level).toBe('error');
     }
     expect(codes(oneItemProject(() => {}))).not.toContain('ce.reservedPackName');
+    for (const name of ['defaults', 'my_internal', 'legacy']) {
+      const project = oneItemProject(() => {});
+      project.settings.packName = name;
+      expect(codes(project)).not.toContain('ce.reservedPackName');
+    }
   });
 
   it("shows a folder's config file in the target's plugin folder", () => {

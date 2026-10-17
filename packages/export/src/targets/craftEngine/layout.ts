@@ -19,8 +19,11 @@ export const CRAFT_ENGINE_PLUGIN_DIR = 'plugins/CraftEngine';
 /** Reloads CraftEngine's configuration and rebuilds the resource pack. */
 export const CRAFT_ENGINE_RELOAD_COMMAND = 'ce reload all';
 
-/** CraftEngine's own packs in resources/ ("default", "default_assets", "internal" …); a project may not use their names. */
-export const CRAFT_ENGINE_RESERVED_PACK_NAME = /^(default_.*|default|internal)$/i;
+/**
+ * The packs CraftEngine brings in resources/ (default_assets, default_templates, internal, legacy_armor,
+ * remove_shulker_head, customcrops …, and any `default` or `default_*`); a project may not use their names.
+ */
+export const CRAFT_ENGINE_RESERVED_PACK_NAME = /^(default|default_.*|internal|customcrops|legacy_armor|remove_shulker_head)$/i;
 
 /** The project's pack folder relative to plugins/CraftEngine, e.g. "resources/golden". */
 export function craftEnginePackDir(project: Project): string {
