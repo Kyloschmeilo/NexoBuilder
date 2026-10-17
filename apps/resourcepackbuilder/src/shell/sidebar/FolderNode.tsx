@@ -58,8 +58,12 @@ export function FolderNode({ folderId, depth, tree }: { folderId: string; depth:
   const isOpen = search !== null || isExpanded;
   const count = tree.itemCounts.get(folderId) ?? 0;
   const newItem = () => newItemDialog.openWithPayload({ folderId });
+  // The row selects (and opens a closed folder); only the chevron and the arrow keys close it again
   const activate = () => {
     select({ kind: 'folder', id: folderId });
+    if (!search && !isExpanded) setExpanded(folderId, true);
+  };
+  const toggle = () => {
     if (!search) setExpanded(folderId, !isExpanded);
   };
 
@@ -105,6 +109,9 @@ export function FolderNode({ folderId, depth, tree }: { folderId: string; depth:
           if (e.target === e.currentTarget && e.key === 'F2') {
             e.preventDefault();
             void folders.rename(folder);
+          } else if (e.target === e.currentTarget && (e.key === 'ArrowRight' || e.key === 'ArrowLeft')) {
+            e.preventDefault();
+            if (!search) setExpanded(folderId, e.key === 'ArrowRight');
           } else activateOnKey(activate)(e);
         }}
         actions={
@@ -113,7 +120,7 @@ export function FolderNode({ folderId, depth, tree }: { folderId: string; depth:
           </IconButton>
         }
       >
-        <TreeChevron isOpen={isOpen} />
+        <TreeChevron isOpen={isOpen} onToggle={toggle} />
         {isOpen ? <FolderOpen className={treeRowSlots.icon} /> : <FolderIcon className={treeRowSlots.icon} />}
         <span className={treeRowSlots.label}>{folder.name}</span>
         <span className={treeRowSlots.count}>{count}</span>
