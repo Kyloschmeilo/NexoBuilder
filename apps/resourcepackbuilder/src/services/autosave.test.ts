@@ -19,6 +19,7 @@ afterEach(() => {
   autosave = null;
   setProject(null);
   vi.useRealTimers();
+  vi.restoreAllMocks();
 });
 
 const rename = (name: string) =>
@@ -95,6 +96,44 @@ describe('autosave', () => {
     await vi.advanceTimersByTimeAsync(10);
     expect(failed).toHaveBeenCalledTimes(2);
     unsubscribe();
+  });
+
+  it('keeps a change whose save failed and retries it with a growing delay', async () => {
+    const { repository, control, saved } = memoryRepository();
+    vi.spyOn(console, 'error').mockImplementation(() => undefined);
+    const save = vi.spyOn(repository, 'save');
+    autosave = createAutosave({ repository, delayMs: 10 });
+    setProject(createProject('A'));
+    control.failing = true;
+    rename('A1');
+    await vi.advanceTimersByTimeAsync(10);
+    expect(save).toHaveBeenCalledTimes(1);
+    await vi.advanceTimersByTimeAsync(1000);
+    expect(save).toHaveBeenCalledTimes(2);
+    // The second retry waits twice as long
+    await vi.advanceTimersByTimeAsync(1999);
+    expect(save).toHaveBeenCalledTimes(2);
+    control.failing = false;
+    await vi.advanceTimersByTimeAsync(1);
+    expect(saved.map((p) => p.name)).toEqual(['A1']);
+    expect(useSaveStore.getState()).toMatchObject({ status: 'saved', isFailing: false });
+    // Nothing left to retry
+    await vi.advanceTimersByTimeAsync(60_000);
+    expect(save).toHaveBeenCalledTimes(3);
+  });
+
+  it('retries with the newest change, not the one that failed', async () => {
+    const { repository, control, saved } = memoryRepository();
+    vi.spyOn(console, 'error').mockImplementation(() => undefined);
+    autosave = createAutosave({ repository, delayMs: 10 });
+    setProject(createProject('A'));
+    control.failing = true;
+    rename('A1');
+    await vi.advanceTimersByTimeAsync(10);
+    control.failing = false;
+    rename('A2');
+    await vi.advanceTimersByTimeAsync(2000);
+    expect(saved.map((p) => p.name)).toEqual(['A2']);
   });
 
   it('stores the sync state together with the project', async () => {

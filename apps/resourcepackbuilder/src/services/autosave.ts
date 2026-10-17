@@ -1,6 +1,7 @@
 /**
  * Saves the open project automatically shortly after every change. Pending saves are kept per project, so a change
- * made right before switching projects is saved for the project it belongs to; a switch saves it immediately.
+ * made right before switching projects is saved for the project it belongs to; a switch saves it immediately. A save
+ * that fails stays pending and is retried after a growing delay.
  *
  * It is the one place that writes projects and sync states: a shared project's sync state is stored together with
  * the project, or – when only the sync state changed (e.g. after disconnecting) – on its own, in order with the
@@ -31,15 +32,23 @@ interface AutosaveOptions {
   delayMs?: number;
 }
 
+/** A failed save is retried after this delay, doubled for every further failure up to {@link RETRY_MAX_MS}. */
+const RETRY_MIN_MS = 1000;
+const RETRY_MAX_MS = 30_000;
+
 export function createAutosave({ repository, delayMs = 600 }: AutosaveOptions): Autosave {
   const pending = new Map<string, Project>();
   const pendingStates = new Map<string, SyncState>();
   let syncStateFor: (projectId: string) => SyncState | null = () => null;
+  let failures = 0;
+  let retryTimer: ReturnType<typeof setTimeout> | undefined;
 
   const save = createSerialTask(async () => {
+    clearTimeout(retryTimer);
     for (const id of new Set([...pending.keys(), ...pendingStates.keys()])) {
       const project = pending.get(id);
-      const state = syncStateFor(id) ?? pendingStates.get(id);
+      const queuedState = pendingStates.get(id);
+      const state = syncStateFor(id) ?? queuedState;
       pending.delete(id);
       pendingStates.delete(id);
       try {
@@ -47,10 +56,16 @@ export function createAutosave({ repository, delayMs = 600 }: AutosaveOptions): 
         else if (state) await repository.saveSyncState(id, state);
       } catch (err) {
         console.error('Autosave failed', err);
+        // Kept for the retry – unless a newer change arrived in the meantime
+        if (project && !pending.has(id)) pending.set(id, project);
+        if (queuedState && !pendingStates.has(id)) pendingStates.set(id, queuedState);
         useSaveStore.setState({ status: 'error', isFailing: true });
+        retryTimer = setTimeout(() => void flush(), Math.min(RETRY_MIN_MS * 2 ** failures, RETRY_MAX_MS));
+        failures++;
         return;
       }
     }
+    failures = 0;
     useSaveStore.setState({ status: 'saved', isFailing: false });
   });
 
@@ -93,7 +108,7 @@ export function createAutosave({ repository, delayMs = 600 }: AutosaveOptions): 
     },
     dispose() {
       watcher.dispose();
-      void flush();
+      void flush().finally(() => clearTimeout(retryTimer));
     },
   };
 }
