@@ -43,6 +43,7 @@
     "namespaceInvalid": "Der Namespace „{namespace}“ darf nur Kleinbuchstaben, Zahlen sowie _ . - enthalten.",
     "namespaceMinecraft": "Der Namespace „minecraft“ würde Vanilla-Dateien überschreiben. Bitte einen eigenen Namespace wählen.",
     "namespaceNexo": "Der Namespace „nexo“ wird auch von Nexo selbst verwendet. Ein eigener Namespace vermeidet Konflikte.",
+    "namespaceCraftEngine": "Der Namespace „{namespace}“ wird auch von den eigenen Packs von CraftEngine verwendet; deren Items, Templates und Dateien können dann mit denen des Projekts kollidieren. Ein eigener Namespace vermeidet Konflikte.",
     "packNameInvalid": "Der Pack-Name „{name}“ darf nur Buchstaben, Zahlen sowie _ . - enthalten.",
     "folderSlugClash": "Die Ordner „{first}“ und „{second}“ ergeben denselben Ordnernamen „{slug}“. Bitte einen umbenennen.",
     "folderEmpty": "Der Ordner „{folder}“ ist leer und wird nicht exportiert.",

@@ -43,6 +43,7 @@
     "namespaceInvalid": "The namespace “{namespace}” may only contain lowercase letters, digits and _ . -",
     "namespaceMinecraft": "The namespace “minecraft” would overwrite vanilla files. Choose a namespace of your own.",
     "namespaceNexo": "The namespace “nexo” is also used by Nexo itself. A namespace of your own avoids conflicts.",
+    "namespaceCraftEngine": "The namespace “{namespace}” is also used by CraftEngine's own packs, whose items, templates and files can then clash with the project's. A namespace of your own avoids conflicts.",
     "packNameInvalid": "The pack name “{name}” may only contain letters, digits and _ . -",
     "folderSlugClash": "The folders “{first}” and “{second}” result in the same folder name “{slug}”. Rename one of them.",
     "folderEmpty": "The folder “{folder}” is empty and is not exported.",

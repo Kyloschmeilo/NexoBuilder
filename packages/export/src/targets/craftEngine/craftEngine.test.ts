@@ -279,6 +279,16 @@ describe('CraftEngine checks', () => {
     expect(planExport({ ...project, target: 'nexo' }).issues.map((i) => i.code)).toContain('plan.namespaceNexo');
   });
 
+  it("warns about the namespaces of CraftEngine's own packs, in CraftEngine projects only", () => {
+    for (const namespace of ['default', 'internal']) {
+      const project = oneItemProject(() => {});
+      project.namespace = namespace;
+      expect(codes(project)).toContain('plan.namespaceCraftEngine');
+      expect(planExport({ ...project, target: 'nexo' }).issues.map((i) => i.code)).not.toContain('plan.namespaceCraftEngine');
+    }
+    expect(codes(oneItemProject(() => {}))).not.toContain('plan.namespaceCraftEngine');
+  });
+
   it('writes the glyph as an image and leaves out media files without entries', () => {
     const plan = planExport(goldenCraftEngineProject());
     expect([...plan.pluginFiles.keys()].filter((path) => path.includes('/configuration/') && !path.includes('/items/'))).toEqual([

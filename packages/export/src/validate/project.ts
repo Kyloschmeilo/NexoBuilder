@@ -9,6 +9,9 @@ const NAMESPACE_ISSUES = {
   nexo: { level: 'warning', code: 'plan.namespaceNexo' },
 } as const;
 
+/** The namespaces of CraftEngine's own packs (default_assets, default_templates … use `default`, internal `internal`). */
+const CRAFT_ENGINE_NAMESPACES = ['default', 'internal'];
+
 export function validateProjectSettings(project: Project): Issue[] {
   const issues: Issue[] = [];
   const nsError = namespaceError(project.namespace);
@@ -16,6 +19,9 @@ export function validateProjectSettings(project: Project): Issue[] {
   if (nsError && !(nsError === 'nexo' && project.target !== 'nexo')) {
     const { level, code } = NAMESPACE_ISSUES[nsError];
     issues.push(createIssue(level, code, { namespace: project.namespace }));
+  }
+  if (project.target === 'craftengine' && CRAFT_ENGINE_NAMESPACES.includes(project.namespace)) {
+    issues.push(createIssue('warning', 'plan.namespaceCraftEngine', { namespace: project.namespace }));
   }
   if (!PACK_NAME_PATTERN.test(project.settings.packName)) {
     issues.push(createIssue('error', 'plan.packNameInvalid', { name: project.settings.packName }));
