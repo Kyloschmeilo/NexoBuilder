@@ -6,6 +6,7 @@ import { cn } from "cn"
 import { Button } from "./button"
 import { XIcon } from "lucide-react"
 
+import { useUiLabels } from "../labels"
 import { TONE_ICONS, TONE_TEXT_CLASS, type Tone } from "../tone"
 
 const toast = ToastPrimitive.createToastManager()
@@ -115,10 +116,11 @@ function ToastClose({
   render = <Button variant="ghost" size="icon-sm" />,
   ...props
 }: ToastPrimitive.Close.Props) {
+  const labels = useUiLabels()
   return (
     <ToastPrimitive.Close
       data-slot="toast-close"
-      aria-label="Close toast"
+      aria-label={labels.closeToast}
       render={render}
       className={cn(
         "relative shrink-0 text-muted-foreground after:absolute after:-inset-2 after:content-[''] hover:text-foreground",

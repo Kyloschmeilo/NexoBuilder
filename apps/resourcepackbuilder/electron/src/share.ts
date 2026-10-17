@@ -6,7 +6,7 @@
  * `<userData>/shared-folders.json`; a project folder is forgotten again when its project stops being shared.
  */
 import { DesktopError, type ShareFileInfo, type ShareFolderInfo, type ShareFolderPurpose } from '@resourcepackbuilder/desktop-contract';
-import { ENTITY_DIRS, isShareFilePath, PROJECT_FILE, readProjectInfo } from '@resourcepackbuilder/sync';
+import { ENTITY_DIRS, isShareFilePath, PROJECT_FILE, readProjectInfo, shareFolderName } from '@resourcepackbuilder/sync';
 import { app, BrowserWindow, dialog, type OpenDialogOptions, type WebContents } from 'electron';
 import fs from 'node:fs';
 import fsp from 'node:fs/promises';
@@ -58,14 +58,14 @@ function loadRoots(): string[] {
   return savedRoots;
 }
 
+let rootsWrite: Promise<void> = Promise.resolve();
+
+/** Keeps `list` as the allowed folders and writes it atomically; writes run one after another, the latest list wins. */
 function saveRoots(list: string[]) {
   savedRoots = list;
-  try {
-    fs.mkdirSync(path.dirname(rootsFile()), { recursive: true });
-    fs.writeFileSync(rootsFile(), JSON.stringify(list, null, 1));
-  } catch (err) {
-    console.error('Could not save allowed folders', err);
-  }
+  rootsWrite = rootsWrite
+    .then(() => writeFileAtomic(rootsFile(), JSON.stringify(savedRoots, null, 1)))
+    .catch((err: unknown) => console.error('Could not save allowed folders', err));
 }
 
 function allRoots(): string[] {
@@ -168,18 +168,23 @@ async function inspect(folder: string): Promise<ShareFolderInfo> {
   return { exists: true, empty: visible.length === 0, project, children };
 }
 
+/** Whether `dir` is missing or an empty folder (a file or a folder with content is taken). */
+async function isFreeFolder(dir: string): Promise<boolean> {
+  try {
+    const stat = await fsp.stat(dir);
+    return stat.isDirectory() && (await fsp.readdir(dir)).length === 0;
+  } catch (err) {
+    if (errorCode(err) === 'ENOENT') return true;
+    throw err;
+  }
+}
+
 /** Creates (or reuses an empty) subfolder named after the project. */
 async function createSubfolder(parent: string, name: string): Promise<string> {
   const base = await checkFolder(parent);
-  const clean =
-    name
-      // eslint-disable-next-line no-control-regex -- control characters are invalid in file names
-      .replace(/[<>:"/\\|?*\x00-\x1f]/g, '_')
-      .replace(/[. ]+$/g, '')
-      .trim()
-      .slice(0, 80) || DEFAULT_SUBFOLDER;
+  const clean = shareFolderName(name) || DEFAULT_SUBFOLDER;
   let candidate = path.join(base, clean);
-  for (let n = 2; fs.existsSync(candidate) && (await fsp.readdir(candidate)).length > 0; n++) {
+  for (let n = 2; !(await isFreeFolder(candidate)); n++) {
     candidate = path.join(base, `${clean} (${n})`);
   }
   await fsp.mkdir(candidate, { recursive: true });
@@ -238,22 +243,35 @@ async function write(folder: string, relativePath: string, content: string): Pro
 
 interface WatchEntry {
   sender: WebContents;
+  /** Ends the watch when `sender` is gone (a closed window never unwatches by itself). */
+  onSenderDestroyed: () => void;
   timer: NodeJS.Timeout | undefined;
   watcher: fs.FSWatcher;
 }
 
 const watchers = new Map<string, WatchEntry>();
+/** Counts the unwatch requests per folder, so a watch that was still being set up when one arrived is dropped. */
+const unwatchCounts = new Map<string, number>();
+
+function setSender(entry: WatchEntry, sender: WebContents) {
+  if (entry.sender === sender) return;
+  entry.sender.off('destroyed', entry.onSenderDestroyed);
+  entry.sender = sender;
+  sender.once('destroyed', entry.onSenderDestroyed);
+}
 
 /**
- * Watches a shared folder and tells `sender` about changes. Returns false if the folder cannot be watched;
- * the UI then polls by itself.
+ * Watches a shared folder and tells `sender` about changes. Returns false if the folder cannot be watched (or the
+ * watch was cancelled by an unwatch while it was being set up); the UI then polls by itself.
  */
 async function watch(sender: WebContents, folder: string): Promise<boolean> {
+  const unwatchCount = unwatchCounts.get(path.resolve(folder)) ?? 0;
   const dir = await checkFolder(folder);
   await rememberProjectFolder(dir);
+  if ((unwatchCounts.get(dir) ?? 0) !== unwatchCount || sender.isDestroyed()) return false;
   const existing = watchers.get(dir);
   if (existing) {
-    existing.sender = sender;
+    setSender(existing, sender);
     return true;
   }
   try {
@@ -262,8 +280,9 @@ async function watch(sender: WebContents, folder: string): Promise<boolean> {
       clearTimeout(entry.timer);
       entry.timer = setTimeout(() => send(entry.sender, 'share:changed', dir), WATCH_DEBOUNCE_MS);
     });
-    const entry: WatchEntry = { sender, timer: undefined, watcher };
-    watcher.on('error', () => unwatch(dir));
+    const entry: WatchEntry = { sender, onSenderDestroyed: () => closeWatch(dir, entry), timer: undefined, watcher };
+    sender.once('destroyed', entry.onSenderDestroyed);
+    watcher.on('error', () => closeWatch(dir, entry));
     watchers.set(dir, entry);
     return true;
   } catch {
@@ -271,13 +290,20 @@ async function watch(sender: WebContents, folder: string): Promise<boolean> {
   }
 }
 
-function unwatch(folder: string) {
-  const dir = path.resolve(folder);
-  const entry = watchers.get(dir);
-  if (!entry) return;
+/** Ends the watch `entry` of `dir` (if it is still the current one). */
+function closeWatch(dir: string, entry: WatchEntry) {
+  if (watchers.get(dir) !== entry) return;
   clearTimeout(entry.timer);
   entry.watcher.close();
+  entry.sender.off('destroyed', entry.onSenderDestroyed);
   watchers.delete(dir);
+}
+
+function unwatch(folder: string) {
+  const dir = path.resolve(folder);
+  unwatchCounts.set(dir, (unwatchCounts.get(dir) ?? 0) + 1);
+  const entry = watchers.get(dir);
+  if (entry) closeWatch(dir, entry);
 }
 
 /* ------------------------------------------------------------------ IPC */

@@ -23,7 +23,13 @@ export function errorCode(err: unknown): string | undefined {
 export async function writeFileAtomic(target: string, data: string | Uint8Array): Promise<void> {
   await fsp.mkdir(path.dirname(target), { recursive: true });
   const tempPath = path.join(path.dirname(target), `.${path.basename(target)}.${crypto.randomBytes(4).toString('hex')}${TEMP_SUFFIX}`);
-  await fsp.writeFile(tempPath, data);
+  try {
+    await fsp.writeFile(tempPath, data);
+  } catch (err) {
+    // A partly written temporary file (disk full ...) would stay behind otherwise
+    await fsp.rm(tempPath, { force: true }).catch(() => undefined);
+    throw err;
+  }
   for (let attempt = 1; ; attempt++) {
     try {
       await fsp.rename(tempPath, target);

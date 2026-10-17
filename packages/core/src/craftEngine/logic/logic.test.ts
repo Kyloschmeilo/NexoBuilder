@@ -8,7 +8,9 @@ import type { Field, TypedListField } from '../../form/fields';
 import { checkFieldValue, fieldToSchema } from '../../form/fieldSchema';
 import { cleanConfig } from '../../form/prune';
 import type { FormSchema } from '../../form/types';
+import { CE_FURNITURE_LOOT_TEMPLATE } from '../furniture';
 import { CE_LOGIC, type LogicType, logicMessageKeys, triggersFor } from './index';
+import { lootTemplates } from './shared';
 
 type MessageTree = { [key: string]: string | MessageTree };
 
@@ -188,5 +190,14 @@ describe('typedList', () => {
         ],
       },
     ]);
+  });
+});
+
+describe('lootTemplates', () => {
+  it("lists the loot table templates of CraftEngine's default pack", () => {
+    const templates = lootTemplates();
+    expect(templates).toContain(CE_FURNITURE_LOOT_TEMPLATE);
+    expect(templates).toContain('default:loot_table/leaves');
+    expect(templates.every((id) => id.startsWith('default:loot_table/'))).toBe(true);
   });
 });

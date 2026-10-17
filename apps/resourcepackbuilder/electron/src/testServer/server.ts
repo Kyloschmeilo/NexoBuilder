@@ -19,10 +19,12 @@ import { spawn, type ChildProcess, type ChildProcessWithoutNullStreams } from 'n
 import type { Readable } from 'node:stream';
 import { describeError, t } from '../i18n';
 import { ensureJava, type JavaInstallation } from './java';
+import { removePidFile, stopOrphanedServers, writePidFile } from './orphan';
 import { ensurePaper, type PaperInstallation } from './paper';
 import { serverDir } from './paths';
 import { prepareServerFiles } from './serverFiles';
 import { loadConfig, logInfo, publicState, pushLog, saveConfig, setState, state } from './state';
+import { assertPortsFree, setAsideIncompleteWorld } from './world';
 
 const STOP_TIMEOUT_MS = 45_000;
 const PACK_BUILD_TIMEOUT_MS = 3 * 60_000;
@@ -32,7 +34,11 @@ const QUEUED_RELOAD_DELAY_MS = 1000;
 let serverProcess: ChildProcessWithoutNullStreams | null = null;
 let stopRequested = false;
 let reloadPending = false;
+/** Why the running server is shutting down on its own (Paper still exits with code 0 then); null while all is well. */
+let failure: string | null = null;
 let packTimer: NodeJS.Timeout | undefined;
+/** The preparation of a start in progress (downloads ...); `stop()` aborts it and waits for it to end. */
+let preparation: { abort: AbortController; done: Promise<unknown> } | null = null;
 
 /** The adapter of the plugin the server runs (or ran last). */
 function adapter(): ServerAdapter {
@@ -104,7 +110,13 @@ function handleLine(line: string) {
       }
       break;
     case 'portInUse':
-      setState({ message: t('testServer.portInUse', { port: state.config.port }) });
+      failure = t('testServer.portInUse', { port: state.config.port });
+      setState({ message: failure });
+      break;
+    case 'fatal':
+      // A port message that came first explains more than the crash report it causes
+      failure ??= t(event.reason === 'world' ? 'testServer.worldUnreadable' : 'testServer.crashReport');
+      setState({ message: failure });
       break;
   }
 }
@@ -155,6 +167,7 @@ function processEnded(child: ChildProcess, patch: Partial<TestServerState>) {
 function launch(paper: PaperInstallation, java: JavaInstallation, target: PackTargetId) {
   logInfo(t('testServer.startingPaper', { version: paper.version, java: java.version, ram: state.config.ramGb }));
   reloadPending = false;
+  failure = null;
   setState({ status: 'starting', message: t('testServer.starting') });
   // The plugin builds the pack on startup; no reload until then. One that doesn't gets a reload at 'started'.
   if (packBuildTracked() && adapter().buildsPackOnStart) setPack('building', t('testServer.packBuildingOnStart', pluginArgs()));
@@ -165,6 +178,7 @@ function launch(paper: PaperInstallation, java: JavaInstallation, target: PackTa
   const args = ['-Xms512M', `-Xmx${state.config.ramGb}G`, ...encoding, '-jar', paper.jar, '--nogui'];
   const child = spawn(java.path, args, { cwd: serverDir(target), windowsHide: true, stdio: ['pipe', 'pipe', 'pipe'] });
   serverProcess = child;
+  if (child.pid) void writePidFile(target, child.pid, paper.jar);
   readLines(child.stdout, handleLine);
   readLines(child.stderr, (line) => pushLog(line, 'err'));
   child.stdin.on('error', () => undefined);
@@ -174,13 +188,14 @@ function launch(paper: PaperInstallation, java: JavaInstallation, target: PackTa
     processEnded(child, { status: 'error', message });
   });
   child.on('exit', (code) => {
+    void removePidFile(target);
     logInfo(code !== null ? t('testServer.exitedCode', { code }) : t('testServer.exited'));
-    const expected = stopRequested || code === 0;
+    const expected = stopRequested || (code === 0 && failure === null);
     processEnded(
       child,
       expected
         ? { status: 'stopped', message: null }
-        : { status: 'error', message: state.message || t('testServer.crashed', { code: String(code) }) },
+        : { status: 'error', message: failure ?? t('testServer.crashed', { code: String(code) }) },
     );
   });
 }
@@ -194,23 +209,50 @@ export async function start(target: PackTargetId): Promise<TestServerState> {
   if (!paperVersion) throw new DesktopError('versionRequired');
   stopRequested = false;
   setState({ status: 'preparing', message: t('testServer.preparing'), progress: null, target });
+  const abort = new AbortController();
+  const done = prepareAndLaunch(paperVersion, target, abort.signal);
+  preparation = { abort, done };
+  await done;
+  preparation = null;
+  return publicState();
+}
+
+async function prepareAndLaunch(paperVersion: string, target: PackTargetId, signal: AbortSignal): Promise<void> {
   try {
-    const paper = await ensurePaper(paperVersion);
-    const java = await ensureJava(paper.javaMin);
+    const paper = await ensurePaper(paperVersion, signal);
+    const java = await ensureJava(paper.javaMin, signal);
     state.installed = { paperVersion: paper.version, paperBuild: paper.build, javaPath: java.path, javaVersion: java.version };
     await saveConfig();
+    // First: a server left running holds the plugin JAR and the world open (Windows refuses to replace them)
+    await stopOrphanedServers();
     await prepareServerFiles(target);
+    await setAsideIncompleteWorld(target);
+    await assertPortsFree(state.config);
+    signal.throwIfAborted();
     launch(paper, java, target);
   } catch (err) {
+    if (signal.aborted) {
+      logInfo(t('testServer.startCancelled'));
+      setState({ status: 'stopped', message: null, progress: null });
+      return;
+    }
     const message = describeError(err);
     pushLog(message, 'err');
     setState({ status: 'error', message, progress: null });
   }
-  return publicState();
 }
 
-/** Stops the server with "stop" (saves the world); kills it if it does not exit in time. */
+/**
+ * Stops the server with "stop" (saves the world); kills it if it does not exit in time. A start that is still preparing
+ * is cancelled.
+ */
 export async function stop(): Promise<void> {
+  if (preparation) {
+    // Cancels the downloads; the start ends as 'stopped' before anything is launched
+    setState({ status: 'stopping', message: t('testServer.cancellingStart') });
+    preparation.abort.abort();
+    await preparation.done;
+  }
   const child = serverProcess;
   if (!child) {
     if (state.status !== 'stopped') setState({ status: 'stopped', message: null });
@@ -234,4 +276,9 @@ export async function stop(): Promise<void> {
 
 export function isRunning(): boolean {
   return serverProcess !== null;
+}
+
+/** Whether the server runs or a start is still preparing (downloads, Java extraction): quitting must stop it first. */
+export function isActive(): boolean {
+  return serverProcess !== null || preparation !== null;
 }

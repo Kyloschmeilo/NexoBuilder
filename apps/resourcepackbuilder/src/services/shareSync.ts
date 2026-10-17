@@ -17,6 +17,7 @@ import {
   type SyncFs,
   type SyncState,
 } from '@resourcepackbuilder/sync';
+import { DesktopError } from '@resourcepackbuilder/desktop-contract/errors';
 import { AppError } from '../i18n/errors';
 import { asError } from '../lib/asError';
 import type { DesktopShareApi } from '../platform/desktopApi';
@@ -32,6 +33,13 @@ const POLL_MS = 2500;
 /** Polling while the file watcher works: only a fallback for changes it misses */
 const WATCHED_POLL_MS = 30_000;
 const FLUSH_DELAY_MS = 400;
+
+/** Desktop errors that retrying cannot fix: the folder is no longer accessible or a path was refused. */
+const FATAL_DESKTOP_ERRORS = new Set(['folderNotAllowed', 'invalidFile']);
+
+/** A sync error that ends the session (anything else counts as "offline" and is retried). */
+const isFatal = (err: unknown): boolean =>
+  err instanceof ShareFolderError || (err instanceof DesktopError && FATAL_DESKTOP_ERRORS.has(err.code));
 
 /** A shared project read from a folder chosen by the user. */
 export interface SharedFolderProject {
@@ -51,6 +59,8 @@ export interface ShareSync {
   stop(): Promise<void>;
   setUserName(userName: string): Promise<void>;
   syncNow(): void;
+  /** Writes own changes that are not in the folder yet now (e.g. before the window closes). */
+  flush(): Promise<void>;
   openFolder(): void;
   /** The system user name, as suggestion for the name shown to the others ('' if unknown). */
   defaultUserName(): Promise<string>;
@@ -99,7 +109,7 @@ export function createShareSync({ api, repository, autosave }: ShareSyncOptions)
       if (result.applied.length || result.written) autosave.requestSave(s.projectId);
     } catch (err) {
       if (s.isStopped) return;
-      if (err instanceof ShareFolderError) {
+      if (isFatal(err)) {
         setStatus({ status: 'error', error: asError(err) });
         stopSession();
       } else {
@@ -176,12 +186,22 @@ export function createShareSync({ api, repository, autosave }: ShareSyncOptions)
     setStatus(DISCONNECTED);
   };
 
+  /** Runs session changes one at a time, so a connect in progress cannot recreate a session that was just ended. */
+  let sessionChange: Promise<unknown> = Promise.resolve();
+  const exclusive = <T>(change: () => Promise<T>): Promise<T> => {
+    const run = sessionChange.then(change, change);
+    sessionChange = run.catch(() => undefined);
+    return run;
+  };
+
   /** Connects the given project (or nothing); calls are serialized and the latest wins. */
-  const switchTo = createSerialTask<string | null, void>(async (projectId) => {
-    if (session?.projectId === projectId) return;
-    await disconnect();
-    if (projectId && !isDisposed) await connectTo(projectId);
-  });
+  const switchTo = createSerialTask<string | null, void>((projectId) =>
+    exclusive(async () => {
+      if (session?.projectId === projectId) return;
+      await disconnect();
+      if (projectId && !isDisposed) await connectTo(projectId);
+    }),
+  );
 
   const watcher = watchOpenProject({
     onSwitch: (project) => void switchTo.run(project?.id ?? null),
@@ -216,9 +236,11 @@ export function createShareSync({ api, repository, autosave }: ShareSyncOptions)
         else if (!info.empty) folder = await api.createSubfolder(chosen, projectFolderName);
       }
       await api.write(folder, README_FILE, README_TEXT);
-      await repository.saveShareConfig(project.id, { folder, userName });
-      await disconnect();
-      await switchTo.run(project.id);
+      await exclusive(async () => {
+        await repository.saveShareConfig(project.id, { folder, userName });
+        await disconnect();
+        if (!isDisposed) await connectTo(project.id);
+      });
       return folder;
     },
 
@@ -247,12 +269,14 @@ export function createShareSync({ api, repository, autosave }: ShareSyncOptions)
     },
 
     async stop() {
-      const projectId = useProjectStore.getState().project?.id;
-      const folder = session?.folder;
-      await disconnect();
-      if (projectId) await repository.removeShare(projectId);
-      // The desktop program no longer needs access to the folder
-      if (folder) await api.forget(folder).catch(() => undefined);
+      await exclusive(async () => {
+        const projectId = useProjectStore.getState().project?.id;
+        const folder = session?.folder;
+        await disconnect();
+        if (projectId) await repository.removeShare(projectId);
+        // The desktop program no longer needs access to the folder
+        if (folder) await api.forget(folder).catch(() => undefined);
+      });
     },
 
     async setUserName(userName) {
@@ -266,6 +290,14 @@ export function createShareSync({ api, repository, autosave }: ShareSyncOptions)
 
     syncNow() {
       void session?.sync.run();
+    },
+
+    async flush() {
+      const s = session;
+      if (!s) return;
+      await s.engine.flush();
+      // The state now matches the folder; it is stored together with the project
+      autosave.saveSyncState(s.projectId, s.engine.state);
     },
 
     openFolder() {

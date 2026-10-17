@@ -5,7 +5,7 @@
  */
 import { APPEARANCE_PROPERTIES } from './schema/appearance';
 import { ATTRIBUTE_PROPERTIES } from './schema/attributes';
-import type { ConfigPropertyDef, PropertyDef } from '../../form/build';
+import type { PropertyDef } from '../../form/build';
 import type { FormSchema } from '../../form/types';
 import { COMPONENT_PROPERTIES } from './schema/components';
 import { GENERAL_PROPERTIES } from './schema/general';
@@ -25,9 +25,6 @@ export const PROPERTIES: PropertyDef[] = [
   ...COMPONENT_PROPERTIES,
   ...MECHANIC_PROPERTIES,
 ];
-
-/** The properties stored in the item config, i.e. everything except the armor settings */
-export const CONFIG_PROPERTIES = PROPERTIES.filter((p): p is ConfigPropertyDef => p.storage === 'config');
 
 /** Paths that ResourcepackBuilder sets automatically and that do not count as properties. */
 export const MANAGED_TOP_LEVEL_KEYS = ['itemname', 'material'];

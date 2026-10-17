@@ -4,7 +4,7 @@
  * nest (a default may hold placeholders); `\{` and `\}` are literal braces inside one, `\$` a literal dollar outside.
  *
  * This file imports nothing, so scripts/generate-ce-templates.mjs can run it with Node to list the arguments of the
- * jar's default templates (templateCatalog.ts).
+ * jar's default templates (defaultTemplates.ts).
  */
 
 /** One placeholder in a text: where it is, the argument's name (without `^`) and its default text, if any. */

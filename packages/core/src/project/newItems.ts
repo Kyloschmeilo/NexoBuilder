@@ -48,15 +48,20 @@ export function sourceKey(draft: ImportDraft): string {
   return `${draft.kind}:${draft.files[0]?.name ?? draft.key}`;
 }
 
+/** The ID a display name suggests; empty for an empty name. */
+function idForName(displayName: string): string {
+  return displayName && itemIdFromName(displayName);
+}
+
 function newMeta(displayName: string): ItemMeta {
-  return { displayName, itemId: displayName && itemIdFromName(displayName), isIdEdited: false, material: DEFAULT_MATERIAL };
+  return { displayName, itemId: idForName(displayName), isIdEdited: false, material: DEFAULT_MATERIAL };
 }
 
 /** Applies entered values; the ID follows the display name until it is edited by hand. */
 function patchMeta(meta: ItemMeta, patch: MetaPatch): ItemMeta {
   const next = { ...meta, ...patch };
   if (patch.itemId !== undefined) next.isIdEdited = true;
-  else if (patch.displayName !== undefined && !meta.isIdEdited) next.itemId = itemIdFromName(patch.displayName);
+  else if (patch.displayName !== undefined && !meta.isIdEdited) next.itemId = idForName(patch.displayName);
   return next;
 }
 

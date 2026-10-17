@@ -11,10 +11,11 @@
     "fullscreen": "Vollbild",
     "help": "Hilfe",
     "nexoDocs": "Nexo-Dokumentation",
+    "craftEngineDocs": "CraftEngine-Dokumentation",
     "about": "Über {app}"
   },
   "about": {
-    "detail": "Erstellt fertige Nexo-Items mit Resourcepack aus Blockbench-Modellen, Java-Modellen und Texturen.\n\nProjekte werden automatisch gespeichert in:\n{path}"
+    "detail": "Erstellt fertige Items für Nexo und CraftEngine mit Resourcepack aus Blockbench-Modellen, Java-Modellen und Texturen.\n\nProjekte werden automatisch gespeichert in:\n{path}"
   },
   "dialog": {
     "saveAs": "Speichern unter"
@@ -26,24 +27,16 @@
     "shareHere": "Hier teilen"
   },
   "testServer": {
-    "downloadFailed": "Download fehlgeschlagen ({status}): {label}",
     "downloading": "{label} wird heruntergeladen …",
     "downloadingPercent": "{label} wird heruntergeladen … {percent} %",
-    "checksumMismatch": "{label}: Prüfsumme stimmt nicht – Download beschädigt. Bitte erneut versuchen.",
-    "checksumMissing": "{label}: Für diesen Download wurde keine Prüfsumme veröffentlicht, er kann daher nicht geprüft werden. Bitte später erneut versuchen.",
     "searchingPaper": "Suche Paper {version} …",
-    "noPaperBuild": "Für Minecraft {version} gibt es keinen Paper-Build.",
-    "noPaperDownload": "Paper {version}: kein Download gefunden.",
     "experimentalBuild": "Hinweis: Für Paper {version} gibt es nur einen experimentellen Build (#{build}).",
     "downloadingPaper": "Lade Paper {version} (Build {build}) herunter …",
     "searchingCraftEngine": "Suche CraftEngine für Minecraft {version} …",
     "downloadingCraftEngine": "Lade CraftEngine {version} für Minecraft {paperVersion} herunter …",
-    "javaRequired": "Java {version} wird benötigt. Bitte selbst installieren.",
     "searchingJava": "Suche Java {version} …",
     "javaNotFound": "Java {version} wurde nicht gefunden – lade Eclipse Temurin {version} herunter …",
     "extractingJava": "Java {version} wird entpackt …",
-    "javaExtractFailed": "Java konnte nicht entpackt werden: {error}",
-    "javaBroken": "Das heruntergeladene Java funktioniert nicht.",
     "choosePluginJar": "{plugin}-Plugin (JAR) auswählen",
     "choose": "Auswählen",
     "pluginFilter": "Minecraft-Plugin",
@@ -56,7 +49,7 @@
     "packBuilding": "{plugin} erstellt das Resourcepack …",
     "packBuildingOnStart": "{plugin} erstellt beim Start das Resourcepack …",
     "unknownError": "Unbekannter Fehler",
-    "portInUse": "Port {port} ist belegt – läuft schon ein anderer Minecraft-Server?",
+    "portInUse": "Port {port} wird bereits von einem anderen Programm verwendet – wähle in den Testserver-Einstellungen einen anderen Minecraft-Port.",
     "preparing": "Bereite den Testserver vor …",
     "startingPaper": "Starte Paper {version} mit Java {java} ({ram} GB RAM) …",
     "starting": "Server startet …",
@@ -65,12 +58,20 @@
     "exitedCode": "Server beendet (Code {code}).",
     "crashed": "Der Server wurde unerwartet beendet (Code {code}). Details in der Konsole.",
     "stopping": "Server wird gestoppt (Welt wird gespeichert) …",
+    "cancellingStart": "Start wird abgebrochen …",
+    "startCancelled": "Der Start wurde abgebrochen.",
+    "orphanStopped": "Ein Testserver, der aus einer früheren Sitzung noch lief (Prozess {pid}), wurde beendet.",
     "notResponding": "Server reagiert nicht – wird beendet.",
     "skippedFile": "Übersprungen (ungültiger Dateiname): {path}",
     "synced": "Projekt übertragen: {written} geschrieben, {deleted} entfernt.",
     "syncedSettings": "Projekt übertragen: {written} geschrieben, {deleted} entfernt, Einstellungen angepasst.",
     "legacyMoveFailed": "Der Serverordner einer älteren Version konnte nicht verschoben werden: {error}",
     "settingsReset": "Die gespeicherten Testserver-Einstellungen waren beschädigt und wurden zurückgesetzt (gesichert als {file}).",
-    "manifestReset": "Die Liste der übertragenen Dateien war beschädigt (gesichert als {file}); Dateien früherer Übertragungen können in {folder} verbleiben."
+    "manifestReset": "Die Liste der übertragenen Dateien war beschädigt (gesichert als {file}); Dateien früherer Übertragungen können in {folder} verbleiben.",
+    "worldUnreadable": "Der Server konnte seine Welt nicht laden. Nutze „Welt zurücksetzen“ und starte erneut.",
+    "crashReport": "Der Server ist abgestürzt und hat einen Absturzbericht geschrieben (siehe Konsole).",
+    "incompleteWorld": "Die Welt eines früheren, fehlgeschlagenen Starts war unvollständig; sie wurde nach {folder} verschoben und wird neu erstellt.",
+    "worldReset": "Die Welt wurde gelöscht; beim nächsten Start wird eine neue erstellt.",
+    "bundledPacksRestored": "Fehlende eingebaute Packs von {plugin} auf dem Server ergänzt: {packs}"
   }
 }

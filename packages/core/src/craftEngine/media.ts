@@ -8,7 +8,7 @@ import type { Project } from '../project/types';
 import { mediaKey } from '../project/media/entry';
 import { type Glyph, isMultiBitmap } from '../project/media/glyph';
 import type { Painting } from '../project/media/painting';
-import { soundFilePath, type Sound } from '../project/media/sound';
+import { durationSeconds, soundFilePath, type Sound } from '../project/media/sound';
 
 type Entries = Record<string, Record<string, unknown>>;
 
@@ -47,7 +47,8 @@ export function craftEngineGlyphs(project: Project): CraftEngineGlyphs {
 
 /** The tag that shows the glyph in text; for a multi-bitmap its first cell. */
 export function craftEngineImageTag(project: Pick<Project, 'namespace'>, glyph: Glyph): string {
-  return `<image:${mediaKey(project, glyph.glyphId)}>`;
+  const key = mediaKey(project, glyph.glyphId);
+  return isMultiBitmap(glyph) ? `<image:${key}:0:0>` : `<image:${key}>`;
 }
 
 /** An image from the glyph's PNG (assets/<ns>/textures/glyphs/<id>.png); a multi-bitmap as a grid of characters. */
@@ -104,25 +105,6 @@ export function craftEngineJukeboxSong(project: Project, sound: Sound): Record<s
   if (sound.jukebox.comparatorOutput !== null) out.comparator_output = sound.jukebox.comparatorOutput;
   if (sound.jukebox.range !== null) out.range = sound.jukebox.range;
   return out;
-}
-
-const DURATION_UNITS: Record<string, number> = { t: 0.05, s: 1, m: 60, h: 3600, d: 86400 };
-/** Longer texts are no song length anyone types */
-const MAX_DURATION_LENGTH = 64;
-
-/** Seconds of a duration like "2m 30s", "150s", "150" (seconds) or "3000t"; null when it cannot be read. */
-export function durationSeconds(text: string): number | null {
-  const input = text.trim();
-  if (!input || input.length > MAX_DURATION_LENGTH) return null;
-  // One part per step (sticky, so every step must start where the last ended): linear, no backtracking
-  const part = /(\d+(?:\.\d+)?)\s*([tsmhd]?)\s*/y;
-  let seconds = 0;
-  while (part.lastIndex < input.length) {
-    const match = part.exec(input);
-    if (!match) return null;
-    seconds += Number(match[1]) * DURATION_UNITS[match[2] || 's'];
-  }
-  return Math.round(seconds * 1000) / 1000;
 }
 
 /**

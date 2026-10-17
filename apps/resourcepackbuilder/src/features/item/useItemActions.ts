@@ -51,7 +51,6 @@ export function useItemActions() {
       const { clip } = useClipboardStore.getState();
       const target = getProject()?.target;
       if (target && canPasteItemConfig(clip, target)) pasteConfigDialog.openWithPayload({ targetItemIds });
-      else if (clip) notify('info', tApp('clipboard.unsupported'));
       else notify('info', tApp('clipboard.nothingCopied'));
     },
   };

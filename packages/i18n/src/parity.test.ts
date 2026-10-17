@@ -33,4 +33,16 @@ describe('messageParityErrors', () => {
     const german = { locked: '{count, plural, other {Gesperrt}}' };
     expect(messageParityErrors(english, german)).toEqual([{ path: 'locked', reason: 'argument_mismatch' }]);
   });
+
+  it('reads arguments after words that are plural selectors elsewhere', () => {
+    const english = { moved: 'Moved the other {count} items to {folder}' };
+    const german = { moved: 'Die anderen Einträge wurden nach {folder} verschoben' };
+    expect(messageParityErrors(english, german)).toEqual([{ path: 'moved', reason: 'argument_mismatch' }]);
+  });
+
+  it('takes no branch text of a select or a quoted brace for an argument', () => {
+    const english = { kind: "{kind, select, item {an item} other {other}} '{'raw'}' {name}" };
+    const german = { kind: "{kind, select, item {ein Item} other {anderes}} '{'roh'}' {name}" };
+    expect(messageParityErrors(english, german)).toEqual([]);
+  });
 });

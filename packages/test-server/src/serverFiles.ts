@@ -3,6 +3,7 @@
  * text out – the desktop program reads and writes the files.
  */
 import { isMap, isScalar, parseDocument } from 'yaml';
+import { isSafeSegment } from './syncPaths';
 
 export const EULA_TEXT = '# The Minecraft EULA (https://aka.ms/MinecraftEULA) was accepted in ResourcepackBuilder.\neula=true\n';
 
@@ -76,6 +77,20 @@ export function setProperty(text: string, key: string, value: string): string {
   }
   while (lines.length > 0 && lines[lines.length - 1].trim() === '') lines.pop();
   return [...lines, entry, ''].join(newline);
+}
+
+/** Minecraft's world folder when server.properties names none. */
+const DEFAULT_LEVEL_NAME = 'world';
+
+/**
+ * The folders of the server's world, relative to the server folder: `level-name` from server.properties ("world" when
+ * it is unset or no single safe folder name), plus the separate nether and end folders that Paper used before
+ * Minecraft 26 (since then every dimension lies inside the world folder).
+ */
+export function worldFolders(properties: string | null): string[] {
+  const levelName = properties === null ? undefined : parseProperties(properties).get('level-name')?.trim();
+  const level = levelName && isSafeSegment(levelName) ? levelName : DEFAULT_LEVEL_NAME;
+  return [level, `${level}_nether`, `${level}_the_end`];
 }
 
 /* ------------------------------------------------------------------ paper-global.yml */

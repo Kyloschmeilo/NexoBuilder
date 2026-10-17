@@ -1,4 +1,5 @@
 import { cva } from 'class-variance-authority';
+import { cn } from 'cn';
 import { ChevronDown, ChevronRight } from 'lucide-react';
 
 /** Indentation per tree level, in pixels (applied as runtime padding of the rows). */
@@ -38,11 +39,24 @@ export const treeRowSlots = {
   count: 'px-1 font-mono text-xs whitespace-nowrap text-muted-foreground',
 } as const;
 
-/** The open/closed chevron in front of a tree row that has children. */
-export function TreeChevron({ isOpen }: { isOpen: boolean }) {
+/**
+ * The open/closed chevron in front of a tree row that has children. With `onToggle`, clicking it toggles the row
+ * without the click (or a double click) reaching the row; keyboard users toggle through the row itself.
+ */
+export function TreeChevron({ isOpen, onToggle }: { isOpen: boolean; onToggle?: () => void }) {
   const Icon = isOpen ? ChevronDown : ChevronRight;
   return (
-    <span className="grid w-4 shrink-0 place-items-center text-muted-foreground">
+    <span
+      className={cn('grid w-4 shrink-0 place-items-center text-muted-foreground', onToggle && 'self-stretch hover:text-foreground')}
+      onClick={
+        onToggle &&
+        ((e) => {
+          e.stopPropagation();
+          onToggle();
+        })
+      }
+      onDoubleClick={onToggle && ((e) => e.stopPropagation())}
+    >
       <Icon className="size-3.5" />
     </span>
   );

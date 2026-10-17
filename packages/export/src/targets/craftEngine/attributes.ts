@@ -18,13 +18,9 @@ import {
 import { checkFieldValue } from '@resourcepackbuilder/core/form';
 import { attributeEntryFrame, listEntryFrame, mapKeyFrame, type Project, propertyFrame } from '@resourcepackbuilder/core/project';
 import type { ItemExport } from '../../types';
+import { asList, isTemplated } from './values';
 
 type AttributeKeys = ReturnType<typeof projectAttributeKeys>;
-
-/** A value CraftEngine's templates fill in (a `${argument}`) is only known once the template is applied. */
-const isTemplated = (text: string) => text.includes('${');
-
-const asList = (value: unknown): unknown[] => (value === undefined || value === null ? [] : Array.isArray(value) ? value : [value]);
 
 const text = (value: unknown): string => (typeof value === 'string' ? value.trim() : '');
 

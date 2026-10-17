@@ -8,6 +8,7 @@ import { isPlainObject } from '@resourcepackbuilder/utils';
 import type { ConfigObject, ConfigValue, Item, Project } from '../project/types';
 import { effectiveCraftEngineBlock } from './block';
 import { blockStates, CE_STATE_TEMPLATES, statesTemplate, templateArguments } from './blockStates';
+import { craftEngineItemKey } from './yaml';
 
 /** Behavior types the plugin checks a property's Java type for: both direction types are one type there. */
 const PROPERTY_CLASS: Record<string, string> = { horizontal_direction: 'direction' };
@@ -342,7 +343,7 @@ export function sharedBaseBlocks(project: Pick<Project, 'items' | 'namespace'>):
     const template = states && statesTemplate(states);
     const argument = template && CE_STATE_TEMPLATES[template]?.baseArgument;
     if (!states || !argument) continue;
-    const itemKey = `${project.namespace}:${item.itemId}`;
+    const itemKey = craftEngineItemKey(project, item);
     const preset = blockBehaviorForm(blockBehaviorType(block))?.preset(itemKey).states;
     const base = templateArguments(states)[argument] ?? (isPlainObject(preset) ? templateArguments(preset)[argument] : undefined);
     if (typeof base !== 'string') continue;

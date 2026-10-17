@@ -120,11 +120,13 @@ Good to know:
 
 ### Local test server
 
-The **Test server** area at the bottom left runs a Minecraft server (Paper) with Nexo on your PC – and everything you
-change in ResourcepackBuilder is in the game within seconds.
+The **Test server** area at the bottom left runs a Minecraft server (Paper) with the open project's plugin (Nexo or
+CraftEngine) on your PC – and everything you change in ResourcepackBuilder is in the game within seconds. Until
+everything a start needs is set, the page shows **Before the first start** at the top.
 
-1. Open **Test server** → **Choose JAR…** → pick your Nexo JAR (the purchased file, e.g. from Polymart). It is only
-   copied into the local test server and never uploaded anywhere.
+1. Open **Test server** and set up the plugin: for Nexo, **Choose JAR…** and pick your Nexo JAR (the purchased file,
+   e.g. from Polymart); for CraftEngine, **Download CraftEngine** (from Modrinth, checksum-checked) or choose a JAR
+   yourself. The JAR is only copied into the local test server and never uploaded anywhere.
 2. Choose the Minecraft version (default: the project's version), enter your **Minecraft name** and accept the
    **Minecraft EULA**.
 3. **Start server**. The first time, ResourcepackBuilder downloads Paper and – if needed – Java (a few minutes).
@@ -133,17 +135,24 @@ change in ResourcepackBuilder is in the game within seconds.
 
 Then:
 
-- Every change (new item, other model, properties, recipes, glyphs …) is transferred to `plugins/Nexo` automatically
-  and loaded with `nexo reload all`; Nexo sends the new pack to all players.
+- Every change (new item, other model, properties, recipes, glyphs …) is transferred automatically – to `plugins/Nexo`
+  (loaded with `nexo reload all`) or `plugins/CraftEngine/resources/<pack>` (loaded with `ce reload all`) – and the
+  plugin sends the new pack to all players.
 - In the item editor, **Give in test server** puts the item straight into your inventory.
 - The **console** shows the server output; you can enter commands there (without `/`).
 - Your name gets OP on start. The world is flat, in creative mode and peaceful.
 - Closing ResourcepackBuilder stops the server cleanly (the world is saved).
+- Before every start, the Minecraft port and the resource pack port (both in the setup) are checked; if another
+  program uses one, the start stops with a message instead of a crash.
+- A world left incomplete by a failed start is moved to `world.incomplete` and created anew. **Reset world** (in the
+  setup, while the server is stopped) deletes the world on purpose.
 
-ResourcepackBuilder configures Nexo in the test server so the resource pack comes from your own PC
-(`Pack.server.type: SELFHOST`, address `127.0.0.1`, port 8082, no obfuscation). It only reloads once Nexo has finished
-the previous pack; the pack state (building / ready / error) is shown in the test-server area, which also offers
-**Resend pack**. The server lives in the app data folder under `testserver/server` (button **Folder**).
+ResourcepackBuilder configures the plugin so the resource pack comes from your own PC (address `127.0.0.1`, port 8082
+by default): Nexo with `Pack.server.type: SELFHOST` and no obfuscation, CraftEngine with its self-host and English log
+messages. CraftEngine's built-in packs (`default_templates`, `internal` …) are copied from its JAR when they are
+missing, so `default:*` templates work. The app only reloads once the plugin has finished the previous pack; the pack
+state (building / ready / error) is shown in the test-server area, which also offers **Resend pack**. Each plugin's
+server lives in the app data folder under `testserver/<target>/server` (button **Folder**).
 
 ### Installing exported items on your server
 

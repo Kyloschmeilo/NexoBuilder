@@ -13,7 +13,7 @@ import {
   RECOVERY_FOLDER_ID,
 } from '@resourcepackbuilder/core/project';
 import { readShareFolder, SyncEngine, ShareFolderError, type ShareFileInfo, type SyncFs, type SyncState } from './engine';
-import { entityPath, isShareFilePath, parseEntityKey, parseEntityPath, PROJECT_FILE, README_FILE } from './format';
+import { entityPath, isShareFilePath, MAX_REV_AHEAD_MS, parseEntityKey, parseEntityPath, PROJECT_FILE, README_FILE } from './format';
 
 /** Shared in-memory folder – like a OneDrive folder that both see */
 class MemoryFolder {
@@ -442,6 +442,44 @@ describe('Shared projects', () => {
     expect(ben.project.items[item.id].config.$armor).toBeUndefined();
   });
 
+  it.each([-1, 1.5, Number.MAX_SAFE_INTEGER + 2, 1e300])('ignores an envelope with the invalid rev %s', async (rev) => {
+    const { folder, anna, ben } = await setup();
+    const item = firstItem(anna.project);
+    const path = `items/${item.id}.json`;
+    folder.put(path, JSON.stringify({ ...folder.json(path), rev, data: { ...folder.json(path).data, displayName: 'Gift' } }));
+    expect((await ben.sync()).applied).toEqual([]);
+    expect(ben.project.items[item.id].displayName).toBe('Rubinschwert');
+    expect(ben.engine.state.clock).toBeLessThan(1e6);
+  });
+
+  it('ignores a rev too far ahead of the clock and keeps syncing normally', async () => {
+    const { folder, clock, anna, ben } = await setup();
+    const item = firstItem(anna.project);
+    const path = `items/${item.id}.json`;
+    const envelope = folder.json(path);
+    const base = Math.max(clock.t, ben.engine.state.clock);
+    const tooFar = base + MAX_REV_AHEAD_MS + 1;
+    folder.put(path, JSON.stringify({ ...envelope, rev: tooFar, data: { ...envelope.data, displayName: 'Gift' } }));
+    expect((await ben.sync()).applied).toEqual([]);
+    expect(ben.engine.state.clock).toBeLessThan(tooFar);
+    // Opening the folder ignores it as well
+    const shared = await readShareFolder(folder.fs(), base);
+    expect(shared!.state.clock).toBeLessThan(tooFar);
+    expect(shared!.project.items[item.id]).toBeUndefined();
+
+    // A rev within the bound is accepted (another installation's clock may run ahead)
+    const ahead = base + MAX_REV_AHEAD_MS;
+    folder.put(path, JSON.stringify({ ...envelope, rev: ahead, data: { ...envelope.data, displayName: 'Vorne' } }));
+    expect((await ben.sync()).applied.map((c) => c.label)).toEqual(['Vorne']);
+    expect(ben.engine.state.clock).toBe(ahead);
+  });
+
+  it('resets a stored clock that lies too far ahead', async () => {
+    const { ben, clock } = await setup();
+    ben.connect({ ...ben.engine.state, clock: clock.t + MAX_REV_AHEAD_MS + 1 });
+    expect(ben.engine.state.clock).toBe(clock.t);
+  });
+
   it('skips envelopes with invalid data from other installations and cleans up lenient fields', async () => {
     const { folder, anna, ben } = await setup();
     const glyph = anna.project.glyphs[0];
@@ -482,6 +520,13 @@ describe('Shared projects', () => {
     expect(anna.engine.state.clock).toBe(0);
     expect(Object.keys(anna.engine.state.versions)).toEqual(['item:a']);
     expect(anna.engine.state.files).toEqual({});
+  });
+
+  it('drops a stored clock or version rev that is not a safe integer', () => {
+    const stored = { clock: 1e300, versions: { 'item:a': { rev: -5, by: 'x', byName: '', hash: 'h' } }, files: {} };
+    const anna = new Client(sampleProject(), new MemoryFolder(), 'Anna', { t: 10_000 }, stored);
+    expect(anna.engine.state.clock).toBe(0);
+    expect(anna.engine.state.versions['item:a']).toBeUndefined();
   });
 
   it('names the shared folder readme README.txt', () => {

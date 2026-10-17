@@ -4,7 +4,8 @@ import { Button } from '@resourcepackbuilder/ui/components/button';
 import { CopyButton, SectionCard, Tip } from '@resourcepackbuilder/ui';
 import { richTags } from '../../i18n/richTags';
 import { DEFAULT_PACK_TARGET } from '@resourcepackbuilder/core/project';
-import { serverAdapterFor } from '@resourcepackbuilder/test-server';
+import { isConfigLocked, serverAdapterFor } from '@resourcepackbuilder/test-server';
+import { useProjectStore } from '../../store/project';
 import type { TestServerState } from '../../platform/desktopApi';
 import { PackStatus } from './PackStatus';
 import { useTestServer } from './useTestServer';
@@ -16,14 +17,17 @@ export function ConnectCard({ server }: { server: TestServerState }) {
   const tUi = useTranslations('ui');
   const testServer = useTestServer();
   const { config } = server;
-  const adapter = serverAdapterFor(server.target ?? DEFAULT_PACK_TARGET);
+  const projectTarget = useProjectStore((s) => s.project?.target ?? DEFAULT_PACK_TARGET);
+  // A server that is up runs its own plugin; otherwise the next start uses the open project's
+  const adapter = serverAdapterFor(server.target && isConfigLocked(server.status) ? server.target : projectTarget);
   const hasPlugin = Boolean(config.pluginJars[adapter.target]);
+  const isRunning = server.status === 'running';
 
   return (
     <SectionCard
       size="sm"
       icon={<Plug className="size-5 flex-none text-muted-foreground" />}
-      title={t.rich('connect', { ...richTags, version: config.paperVersion ?? '', address: server.address })}
+      title={t.rich(isRunning ? 'connect' : 'connectLater', { ...richTags, version: config.paperVersion ?? '–', address: server.address })}
       titleClassName="font-sans tracking-normal normal-case"
       description={t('connectHint', { plugin: adapter.pluginName })}
       actions={
@@ -38,9 +42,7 @@ export function ConnectCard({ server }: { server: TestServerState }) {
       }
       contentClassName="py-3"
     >
-      {server.status === 'running' && hasPlugin ? (
-        <PackStatus pack={server.pack} player={config.playerName} adapter={adapter} />
-      ) : undefined}
+      {isRunning && hasPlugin ? <PackStatus pack={server.pack} player={config.playerName} adapter={adapter} /> : undefined}
     </SectionCard>
   );
 }

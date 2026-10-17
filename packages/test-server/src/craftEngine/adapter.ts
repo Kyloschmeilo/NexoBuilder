@@ -32,6 +32,8 @@ export const CRAFT_ENGINE_SERVER_ADAPTER: ServerAdapter = {
   configFile: 'config.yml',
   patchConfig: patchCraftEngineConfig,
   paperGlobalOverrides: [],
+  // default_templates, internal …: the project's pack lands in resources/ before CraftEngine's first start
+  bundledFolder: 'resources',
   cachesToClear: [],
   /** resources/<packName>/pack.yml, …/configuration/… and …/resourcepack/…; anything else is refused. */
   syncPathSegments(relativePath, { packName }) {

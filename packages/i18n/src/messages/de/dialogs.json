@@ -87,8 +87,8 @@
     "title": "Exportieren",
     "modes": {
       "full": {
-        "title": "Für den Nexo-Ordner",
-        "description": "items/ + pack/external_packs/ – einfach in plugins/Nexo entpacken."
+        "title": "{target, select, nexo {Für den Nexo-Ordner} craftengine {Für den CraftEngine-Ordner} other {Für die Plugin-Ordner}}",
+        "description": "{target, select, nexo {items/ + pack/external_packs/ – einfach in plugins/Nexo entpacken.} craftengine {Ein Pack pro Projekt unter resources/ – einfach in plugins/CraftEngine entpacken.} other {plugins/Nexo/ + plugins/CraftEngine/ – einfach in den Server-Ordner entpacken.}}"
       },
       "pack": {
         "title": "Nur Resourcepack",
@@ -103,7 +103,7 @@
     "failed": "Export fehlgeschlagen: {error}",
     "confirmErrors": {
       "title": "Trotz Fehlern exportieren?",
-      "message": "Es gibt noch {count} Fehler. Betroffene Items oder Modelle funktionieren in Nexo/Minecraft wahrscheinlich nicht richtig.",
+      "message": "Es gibt noch {count} Fehler. Betroffene Items oder Modelle funktionieren in {target, select, nexo {Nexo/Minecraft} craftengine {CraftEngine/Minecraft} other {Minecraft}} wahrscheinlich nicht richtig.",
       "confirm": "Trotzdem exportieren"
     },
     "summary": {
@@ -130,7 +130,7 @@
     "yamlPerItem": "Eine Datei pro Item (z.B. items/waffen/ruby_sword.yml)",
     "check": "Prüfung",
     "noIssues": "Keine Fehler oder Warnungen.",
-    "install": "Installation: ZIP in <code>plugins/Nexo/</code> entpacken, dann <code>/nexo reload all</code> ausführen. Eine Anleitung liegt als INSTALL.txt bei."
+    "install": "Installation: {target, select, nexo {ZIP in <code>{pluginDir}/</code> entpacken, dann <code>/{reload}</code> ausführen.} craftengine {ZIP in <code>{pluginDir}/</code> entpacken – jedes Projekt wird ein Pack unter <code>resources/</code> – dann <code>/{reload}</code> ausführen.} other {ZIP in den Server-Ordner entpacken – es enthält <code>plugins/Nexo/</code> und <code>plugins/CraftEngine/</code> – dann <code>/nexo reload all</code> und <code>/ce reload all</code> ausführen.}} Eine Anleitung liegt als INSTALL.txt bei."
   },
   "exportSelection": {
     "folder": "Ordner {name}",

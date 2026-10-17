@@ -34,4 +34,8 @@ describe('CraftEngine export golden snapshot', () => {
     }
     expect(actual).toEqual(JSON.parse(readFileSync(GOLDEN_FILE, 'utf8')));
   });
+
+  it('is deterministic', async () => {
+    expect(await buildGolden()).toEqual(await buildGolden());
+  });
 });

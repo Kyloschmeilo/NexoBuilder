@@ -6,6 +6,7 @@ import {
   furnitureElementType,
   furnitureHitboxBox,
   furnitureHitboxType,
+  furnitureHitboxWithType,
   furnitureVariants,
   furnitureVariantsKey,
   interactionHitboxSize,
@@ -66,6 +67,45 @@ describe('buildCraftEngineFurniture', () => {
       variants: {
         ground: { elements: [{ type: 'item_display', item: 'm:chair', position: '0,0.5,0' }], hitboxes: [{ type: 'interaction' }] },
       },
+    });
+  });
+});
+
+describe('furniture hitbox keys', () => {
+  it('writes width and height for interaction hitboxes only', () => {
+    const built = buildCraftEngineFurniture(
+      {
+        variants: {
+          ground: {
+            hitboxes: [
+              { type: 'interaction', width: 2, height: 1, invisible: true },
+              { type: 'happy_ghast', width: 1, height: 1, scale: 0.5, hard_collision: true },
+              { type: 'shulker', width: 1, height: 1, peek: 20, interactive: true },
+              { type: 'custom', width: 1, entity_type: 'slime' },
+              { type: 'slime', width: 1 },
+            ],
+          },
+        },
+      },
+      null,
+      'm:chair',
+    );
+    const variants = built.furniture.variants as Record<string, { hitboxes: unknown[] }>;
+    expect(variants.ground.hitboxes).toEqual([
+      { type: 'interaction', width: 2, height: 1, invisible: true },
+      { type: 'happy_ghast', scale: 0.5, hard_collision: true },
+      { type: 'shulker', peek: 20, interactive: true },
+      { type: 'custom', entity_type: 'slime' },
+      { type: 'slime', width: 1 },
+    ]);
+  });
+
+  it('drops the keys of the old type when a hitbox changes its type', () => {
+    const interaction = { type: 'interaction', position: '0,0,0', width: 1, height: 1, seats: ['0,0,0'] };
+    expect(furnitureHitboxWithType(interaction, 'shulker')).toEqual({ type: 'shulker', position: '0,0,0', seats: ['0,0,0'] });
+    expect(furnitureHitboxWithType({ type: 'shulker', peek: 5, interactive: true }, 'interaction')).toEqual({
+      type: 'interaction',
+      interactive: true,
     });
   });
 });

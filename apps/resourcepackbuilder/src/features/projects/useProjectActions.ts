@@ -28,15 +28,22 @@ export function useProjectActions() {
   return {
     isShareAvailable: services.share !== null,
 
-    async create(name: string, namespace: string, minecraftVersion: string, target: PackTargetId) {
-      const project = await createNewProject(
-        services,
-        name.trim() || t('defaults.newProjectName'),
-        namespace.trim(),
-        minecraftVersion,
-        target,
-      );
-      notify('success', t('project.created', { name: project.name }));
+    /** Creates and opens a new project; resolves with whether it was created. */
+    async create(name: string, namespace: string, minecraftVersion: string, target: PackTargetId): Promise<boolean> {
+      try {
+        const project = await createNewProject(
+          services,
+          name.trim() || t('defaults.newProjectName'),
+          namespace.trim(),
+          minecraftVersion,
+          target,
+        );
+        notify('success', t('project.created', { name: project.name }));
+        return true;
+      } catch (err) {
+        report(err);
+        return false;
+      }
     },
 
     async open(id: string) {
@@ -76,9 +83,10 @@ export function useProjectActions() {
       notify('success', t('project.fileSaved'));
     },
 
-    async openFile() {
+    /** Asks for a project file and opens it; resolves with whether a project was opened. */
+    async openFile(): Promise<boolean> {
       const [file] = await pickFiles(`${PROJECT_FILE_EXTENSION},.json`, false);
-      if (!file) return;
+      if (!file) return false;
       try {
         const project = await openProjectFile(services, await readAsText(file), {
           confirmReplace: (fromFile) =>
@@ -91,8 +99,10 @@ export function useProjectActions() {
           copyName: (name) => t('defaults.importedName', { name }),
         });
         if (project) notify('success', t('project.opened', { name: project.name }));
+        return project !== null;
       } catch (err) {
         report(err);
+        return false;
       }
     },
 

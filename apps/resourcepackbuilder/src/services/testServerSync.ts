@@ -26,7 +26,7 @@ import type {
   TestServerSyncResult,
 } from '../platform/desktopApi';
 import { useProjectStore } from '../store/project';
-import { useTestServerStore } from './testServerStore';
+import { numberLogLines, useTestServerStore } from './testServerStore';
 import { createSerialTask } from './serialTask';
 import { watchOpenProject } from './watchOpenProject';
 
@@ -64,6 +64,8 @@ export interface TestServerSync {
   reload(): Promise<boolean>;
   clearLog(): Promise<void>;
   openFolder(): void;
+  /** Deletes the world of the open project's target server (only while it is stopped). */
+  resetWorld(): Promise<void>;
   /**
    * Loads the Paper versions into the store (once; again after a failure). Without a chosen version the project's
    * version becomes the default – or the newest one when Paper does not support it (yet).
@@ -138,7 +140,7 @@ export function createTestServerSync(api: DesktopTestServerApi): TestServerSync 
 
   const offEvent = api.onEvent((event) => {
     if (event.type === 'log') {
-      const log = [...store.getState().log, ...event.lines];
+      const log = [...store.getState().log, ...numberLogLines(event.lines)];
       store.setState({ log: log.length > TEST_SERVER_LOG_LIMIT ? log.slice(-TEST_SERVER_LOG_LIMIT) : log });
     } else {
       const before = store.getState().server?.status;
@@ -148,11 +150,15 @@ export function createTestServerSync(api: DesktopTestServerApi): TestServerSync 
     }
   });
   api.getState().then(
-    ({ log, ...server }) => store.setState({ server, log }),
+    ({ log, ...server }) => store.setState({ server, log: numberLogLines(log) }),
     (err: unknown) => console.warn('Could not read the test server state', err),
   );
 
   const watcher = watchOpenProject({
+    // The transfer history belongs to the project it was made for
+    onSwitch() {
+      store.setState({ lastResult: null, lastCheck: null, syncError: null });
+    },
     onSettled() {
       const { server } = store.getState();
       if (server?.status === 'running' && server.config.autoUpdate) void transfer.run(true);
@@ -249,6 +255,9 @@ export function createTestServerSync(api: DesktopTestServerApi): TestServerSync 
     async clearLog() {
       await api.clearLog();
       store.setState({ log: [] });
+    },
+    async resetWorld() {
+      await api.resetWorld(useProjectStore.getState().project?.target ?? DEFAULT_PACK_TARGET);
     },
     openFolder() {
       void api.openFolder();

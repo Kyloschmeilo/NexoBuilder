@@ -247,12 +247,18 @@ describe('CraftEngine checks', () => {
 
   it('reports invalid materials and reserved pack names', () => {
     expect(codes(oneItemProject((item) => (item.rawYaml = 'material: Not Valid')))).toContain('ce.materialInvalid');
-    for (const name of ['internal', 'default', 'default_assets']) {
+    const builtInPacks = ['customcrops', 'default_assets', 'default_feature_populator', 'default_templates', 'internal', 'legacy_armor'];
+    for (const name of [...builtInPacks, 'remove_shulker_head', 'default', 'Default_Extra']) {
       const project = oneItemProject(() => {});
       project.settings.packName = name;
       expect(planExport(project).issues.find((i) => i.code === 'ce.reservedPackName')?.level).toBe('error');
     }
     expect(codes(oneItemProject(() => {}))).not.toContain('ce.reservedPackName');
+    for (const name of ['defaults', 'my_internal', 'legacy']) {
+      const project = oneItemProject(() => {});
+      project.settings.packName = name;
+      expect(codes(project)).not.toContain('ce.reservedPackName');
+    }
   });
 
   it("shows a folder's config file in the target's plugin folder", () => {
@@ -271,6 +277,16 @@ describe('CraftEngine checks', () => {
     project.namespace = 'nexo';
     expect(codes(project)).not.toContain('plan.namespaceNexo');
     expect(planExport({ ...project, target: 'nexo' }).issues.map((i) => i.code)).toContain('plan.namespaceNexo');
+  });
+
+  it("warns about the namespaces of CraftEngine's own packs, in CraftEngine projects only", () => {
+    for (const namespace of ['default', 'internal']) {
+      const project = oneItemProject(() => {});
+      project.namespace = namespace;
+      expect(codes(project)).toContain('plan.namespaceCraftEngine');
+      expect(planExport({ ...project, target: 'nexo' }).issues.map((i) => i.code)).not.toContain('plan.namespaceCraftEngine');
+    }
+    expect(codes(oneItemProject(() => {}))).not.toContain('plan.namespaceCraftEngine');
   });
 
   it('writes the glyph as an image and leaves out media files without entries', () => {
@@ -359,6 +375,8 @@ describe('CraftEngine layout', () => {
     expect(fileName).toBe('kristall_pack_craftengine.zip');
     expect(guide).toContain('into the folder  plugins/CraftEngine/  of your server');
     expect(guide).toContain('/ce reload all');
+    expect(guide).toContain('does not build the pack');
+    expect(guide).not.toContain('restarting the server works too');
     expect(guide).toContain('/ce item give Steve kristall:crystal_sword 1');
   });
 });

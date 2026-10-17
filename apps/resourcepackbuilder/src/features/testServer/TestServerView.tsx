@@ -13,7 +13,7 @@ import { ConnectCard } from './ConnectCard';
 import { ServerConsole } from './ServerConsole';
 import { ServerControls } from './ServerControls';
 import { ServerSetup } from './ServerSetup';
-import { isConfigLocked, isTransitioning, serverAdapterFor } from '@resourcepackbuilder/test-server';
+import { isConfigLocked, isTransitioning } from '@resourcepackbuilder/test-server';
 import { DEFAULT_PACK_TARGET } from '@resourcepackbuilder/core/project';
 import { useErrorMessage } from '../../i18n/errors';
 import { useProjectStore } from '../../store/project';
@@ -59,6 +59,10 @@ function TestServerPage({ server }: { server: TestServerState }) {
   const isWorking = isTransitioning(server.status);
   const { config, installed } = server;
   const target = useProjectStore((s) => s.project?.target ?? DEFAULT_PACK_TARGET);
+  const hasPlugin = Boolean(config.pluginJars[target]);
+  // Until everything a start needs is set, the setup comes first
+  const isReady = config.eulaAccepted && config.paperVersion !== null && hasPlugin;
+  const setup = <ServerSetup config={config} isLocked={isConfigLocked(server.status)} isReady={isReady} target={target} />;
 
   return (
     <PageShell>
@@ -101,17 +105,12 @@ function TestServerPage({ server }: { server: TestServerState }) {
           <AlertDescription>{errorMessage(wrongTargetError(server.target, target))}</AlertDescription>
         </Alert>
       )}
-      {!config.pluginJars[target] && (
-        <Alert variant="warning">
-          <TriangleAlert />
-          <AlertDescription>{t('noPlugin', { plugin: serverAdapterFor(target).pluginName })}</AlertDescription>
-        </Alert>
-      )}
 
+      {!isReady && setup}
       <ConnectCard server={server} />
       <SyncCard server={server} />
       <ServerConsole />
-      <ServerSetup config={config} isLocked={isConfigLocked(server.status)} target={target} />
+      {isReady && setup}
     </PageShell>
   );
 }

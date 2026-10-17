@@ -14,11 +14,15 @@ const cache = new WeakMap<ImportedModel, string | null>();
 const pending = new WeakMap<ImportedModel, Promise<string | null>>();
 /** Renders run one after another on the shared renderer. */
 let queue: Promise<unknown> = Promise.resolve();
-/** `null` once WebGL turned out to be unavailable. */
-let sharedRenderer: THREE.WebGLRenderer | null | undefined;
+let sharedRenderer: THREE.WebGLRenderer | undefined;
+/** When creating a renderer last failed; another try waits `RENDERER_RETRY_MS` (WebGL may be busy only for a while). */
+let rendererFailedAt: number | null = null;
+const RENDERER_RETRY_MS = 10_000;
 
+/** The shared renderer; null while WebGL is unavailable. */
 function getRenderer(): THREE.WebGLRenderer | null {
-  if (sharedRenderer !== undefined) return sharedRenderer;
+  if (sharedRenderer) return sharedRenderer;
+  if (rendererFailedAt !== null && Date.now() - rendererFailedAt < RENDERER_RETRY_MS) return null;
   try {
     const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true, preserveDrawingBuffer: true });
     renderer.setSize(SIZE, SIZE, false);
@@ -34,15 +38,17 @@ function getRenderer(): THREE.WebGLRenderer | null {
       { once: true },
     );
     sharedRenderer = renderer;
+    rendererFailedAt = null;
   } catch {
-    sharedRenderer = null;
+    rendererFailedAt = Date.now();
   }
-  return sharedRenderer;
+  return sharedRenderer ?? null;
 }
 
-async function renderElements(model: ImportedModel, preview: PreviewModel): Promise<string | null> {
+/** The rendered thumbnail; undefined when there is no renderer to draw it with (nothing is known about the model then). */
+async function renderElements(model: ImportedModel, preview: PreviewModel): Promise<string | undefined> {
   const renderer = getRenderer();
-  if (!renderer) return null;
+  if (!renderer) return undefined;
   const display = model.json.display?.gui ?? DEFAULT_GUI;
   const object = createModelObject(preview, display);
   try {
@@ -71,7 +77,7 @@ export function renderThumbnail(model: ImportedModel): Promise<string | null> {
   if (existing) return existing;
 
   const preview = buildPreviewModel(model);
-  let result: Promise<string | null>;
+  let result: Promise<string | null | undefined>;
   if (preview.kind === 'generated') {
     const layer0 = model.json.textures?.layer0;
     result = Promise.resolve(layer0 ? (resolveTextureRef(model, layer0).texture?.dataUrl ?? null) : null);
@@ -83,6 +89,8 @@ export function renderThumbnail(model: ImportedModel): Promise<string | null> {
   }
   const settled = result.then(
     (url) => {
+      // Without a renderer there is no thumbnail yet, but the model may well have something to show
+      if (url === undefined) return null;
       cache.set(model, url);
       return url;
     },

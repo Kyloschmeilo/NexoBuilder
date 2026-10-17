@@ -4,6 +4,7 @@ import {
   DEFAULT_SERVER_PROPERTIES,
   EULA_TEXT,
   INSTALLED_PLUGIN_JAR_PATTERNS,
+  missingBundledFiles,
   patchPaperGlobal,
   serverAdapterFor,
   setProperty,
@@ -46,6 +47,27 @@ async function installPlugin(target: PackTargetId) {
   await fsp.copyFile(source, path.join(pluginsDir(target), wanted));
 }
 
+/** Restores the packs the plugin ships in its JAR that are missing on the server (see `ServerAdapter.bundledFolder`). */
+async function restoreBundledPacks(target: PackTargetId) {
+  const adapter = serverAdapterFor(target);
+  const jarFile = state.config.pluginJars[target]?.file;
+  if (!adapter.bundledFolder || !jarFile) return;
+  const folder = path.join(pluginDir(target), ...adapter.bundledFolder.split('/'));
+  const existing = fs.existsSync(folder) ? (await fsp.readdir(folder, { withFileTypes: true })).filter((e) => e.isDirectory()) : [];
+  const files = await missingBundledFiles(
+    await fsp.readFile(path.join(pluginStore(target), jarFile)),
+    adapter.bundledFolder,
+    new Set(existing.map((entry) => entry.name)),
+  );
+  for (const file of files) {
+    const destination = path.join(folder, ...file.path.split('/'));
+    await fsp.mkdir(path.dirname(destination), { recursive: true });
+    await fsp.writeFile(destination, file.data);
+  }
+  const packs = [...new Set(files.map((file) => file.path.split('/')[0]))];
+  if (packs.length > 0) logInfo(t('testServer.bundledPacksRestored', { plugin: adapter.pluginName, packs: packs.join(', ') }));
+}
+
 /**
  * A plugin that builds no pack on startup gets the app's reload right after "Done", before the renderer patches the
  * plugin config (which the plugin only creates on its first start). So a missing config is written here already;
@@ -73,5 +95,6 @@ export async function prepareServerFiles(target: PackTargetId): Promise<void> {
     await fsp.rm(path.join(pluginDir(target), ...cache.split('/')), { recursive: true, force: true });
   }
   await installPlugin(target);
+  await restoreBundledPacks(target);
   await seedPluginConfig(target);
 }

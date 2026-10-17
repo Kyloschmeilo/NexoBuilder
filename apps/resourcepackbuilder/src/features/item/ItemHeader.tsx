@@ -16,28 +16,40 @@ import { useServices } from '../../services/bootstrap';
 import { useClipboardStore } from '../../store/clipboard';
 import { useOpenProject } from '../../store/project';
 import { useTestServerStore } from '../../services/testServerStore';
+import { serverRunsOtherTarget, wrongTargetError } from '../../services/testServerSync';
+import { useErrorMessage } from '../../i18n/errors';
 import { moveItemDialog } from '../moveItem/MoveItemDialog';
 import { useItemActions } from './useItemActions';
 
-/** "Give in test server" – only visible while the local test server is running. */
+/**
+ * "Give in test server" (desktop program only). Shown all the time so it can be found; while it cannot give the item
+ * (server stopped, running another plugin, no player name) it is disabled and its tooltip says why.
+ */
 function GiveButton({ item }: { item: Item }) {
   const t = useTranslations('item');
   const testServer = useServices().testServer;
+  const errorMessage = useErrorMessage();
   const { isBusy, run } = useBusyAction();
-  const tPack = useTranslations('media.testServer.pack');
-  const isRunning = useTestServerStore((s) => s.server?.status === 'running');
-  const player = useTestServerStore((s) => s.server?.config.playerName ?? '');
-  if (!testServer || !isRunning) return null;
+  const server = useTestServerStore((s) => s.server);
+  const target = useOpenProject().target;
+  if (!testServer) return null;
   // The give command needs a valid player name; core's command builder rejects anything else
-  const isValidPlayer = PLAYER_NAME_PATTERN.test(player);
+  const blocker =
+    server?.status !== 'running'
+      ? t('editor.giveNeedsServer')
+      : serverRunsOtherTarget(server, target) && server.target
+        ? errorMessage(wrongTargetError(server.target, target))
+        : !PLAYER_NAME_PATTERN.test(server.config.playerName)
+          ? t('editor.giveNeedsName')
+          : null;
   const give = () =>
     void run(
       () => testServer.give(item),
       (player) => t('editor.giveSuccess', { id: item.itemId, player }),
     );
   return (
-    <Tip label={isValidPlayer ? t('editor.giveTooltip') : tPack('enterName')}>
-      <Button variant="outline" size="sm" disabled={isBusy || !isValidPlayer} onClick={give}>
+    <Tip label={blocker ?? t('editor.giveTooltip')}>
+      <Button variant="outline" size="sm" disabled={isBusy || blocker !== null} onClick={give}>
         <Gift /> {t('editor.give')}
       </Button>
     </Tip>
@@ -72,27 +84,27 @@ function ItemActions({ item }: { item: Item }) {
   const clip = useClipboardStore((s) => s.clip);
   const { target } = useOpenProject();
   const actions = useItemActions();
-  // Copying works on Nexo's property groups; other targets show both buttons disabled with the reason
+  // Copying works on Nexo's property groups; other targets do not offer it
   const canCopy = canCopyItemConfig(target);
   const canPaste = canPasteItemConfig(clip, target) && clip.sourceId !== item.id;
-  const pasteTip = !canCopy
-    ? t('editor.copyUnsupported')
-    : clip
-      ? t('editor.pasteTooltip', { name: clipboardLabel(clip) })
-      : t('editor.pasteDisabled');
+  const pasteTip = clip ? t('editor.pasteTooltip', { name: clipboardLabel(clip) }) : t('editor.pasteDisabled');
   return (
     <>
       <GiveButton item={item} />
-      <Tip label={canCopy ? t('editor.copyTooltip') : t('editor.copyUnsupported')}>
-        <Button variant="outline" size="sm" disabled={!canCopy} onClick={() => actions.copyProperties(item.id)}>
-          <ClipboardCopy /> {tCommon('copy')}
-        </Button>
-      </Tip>
-      <Tip label={pasteTip}>
-        <Button variant="outline" size="sm" disabled={!canPaste} onClick={() => actions.pasteProperties([item.id])}>
-          <ClipboardPaste /> {tCommon('paste')}
-        </Button>
-      </Tip>
+      {canCopy && (
+        <>
+          <Tip label={t('editor.copyTooltip')}>
+            <Button variant="outline" size="sm" onClick={() => actions.copyProperties(item.id)}>
+              <ClipboardCopy /> {tCommon('copy')}
+            </Button>
+          </Tip>
+          <Tip label={pasteTip}>
+            <Button variant="outline" size="sm" disabled={!canPaste} onClick={() => actions.pasteProperties([item.id])}>
+              <ClipboardPaste /> {tCommon('paste')}
+            </Button>
+          </Tip>
+        </>
+      )}
       <Button variant="outline" size="sm" onClick={() => actions.duplicate(item)}>
         <Copy /> {tCommon('duplicate')}
       </Button>

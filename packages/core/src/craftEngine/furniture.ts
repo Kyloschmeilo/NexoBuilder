@@ -9,6 +9,7 @@
  */
 import { deepClone, deepMerge, isPlainObject } from '@resourcepackbuilder/utils';
 import type { ConfigObject } from '../project/types';
+import { ordered } from './yaml';
 
 /** The variants the `furniture_item` behavior places: on top of a block, on its side, below it. */
 export const CE_FURNITURE_ANCHORS = ['ground', 'wall', 'ceiling'] as const;
@@ -27,6 +28,17 @@ export const CE_FURNITURE_ELEMENT_TYPES = [
 
 /** Hitbox types (BukkitFurnitureHitboxTypes); `interaction` is the default. */
 export const CE_FURNITURE_HITBOX_TYPES = ['interaction', 'shulker', 'happy_ghast', 'custom'] as const;
+
+/**
+ * The keys only some hitbox types read (their factories in BukkitFurnitureHitboxTypes); every type also reads
+ * position, scale, seats, blocks_building, can_be_hit_by_projectile and can_use_item_on.
+ */
+const HITBOX_TYPE_KEYS: Record<string, readonly string[]> = {
+  interaction: ['width', 'height', 'interactive', 'invisible'],
+  shulker: ['peek', 'direction', 'interaction_entity', 'interactive', 'invisible'],
+  happy_ghast: ['hard_collision'],
+  custom: ['entity_type', 'resource'],
+};
 
 /** Values of a placement rule (RotationRule, AlignmentRule), as CraftEngine reads them in lower case. */
 export const CE_FURNITURE_ROTATIONS = ['any', 'four', 'eight', 'sixteen', 'north', 'east', 'west', 'south'] as const;
@@ -66,11 +78,14 @@ const REQUIRED_ELEMENT_KEY: Record<string, string> = {
   model_engine: 'model',
 };
 
+/** The keys a variant names its external model (BetterModel, ModelEngine) under, any one of them (`blueprint|…`). */
+export const CE_FURNITURE_EXTERNAL_MODEL_KEYS = ['blueprint', 'better_model', 'model_engine'] as const;
+
 /** Order of the keys of a furniture, of a variant, of an element and of a hitbox (as in the jar's examples). */
 const FURNITURE_ORDER = ['settings', 'variants', 'variant', 'placement', 'behavior', 'behaviors', 'events', 'loot'];
 /** The keys CraftEngine reads a furniture's variants from, in the order it tries them (`variant(s)|placement`) */
 const VARIANTS_KEYS = ['variant', 'variants', 'placement'];
-const VARIANT_ORDER = ['loot_spawn_offset', 'blueprint', 'elements', 'hitboxes'];
+const VARIANT_ORDER = ['loot_spawn_offset', ...CE_FURNITURE_EXTERNAL_MODEL_KEYS, 'elements', 'hitboxes'];
 const ELEMENT_ORDER = [
   'type',
   'item',
@@ -172,6 +187,17 @@ export function furnitureHitboxType(hitbox: Record<string, unknown>): string {
   return typeof hitbox.type === 'string' ? ceType(hitbox.type) : 'interaction';
 }
 
+/**
+ * The hitbox as a hitbox of `type`: the keys only other types read (an interaction's `width` and `height` on a
+ * shulker, say) are left out, since CraftEngine ignores them. A type CraftEngine does not know keeps every key.
+ */
+export function furnitureHitboxWithType<T extends Record<string, unknown>>(hitbox: T, type: string): T {
+  const own = HITBOX_TYPE_KEYS[type];
+  if (!own) return { ...hitbox, type };
+  const foreign = new Set(Object.values(HITBOX_TYPE_KEYS).flatMap((keys) => keys.filter((key) => !own.includes(key))));
+  return { ...(Object.fromEntries(Object.entries(hitbox).filter(([key]) => !foreign.has(key))) as T), type };
+}
+
 const toNumber = (value: unknown): number | null => {
   const n = typeof value === 'number' ? value : typeof value === 'string' && value.trim() !== '' ? Number(value) : NaN;
   return Number.isFinite(n) ? n : null;
@@ -271,14 +297,6 @@ export function formatFurnitureSeat(seat: FurnitureSeat): string {
   return seat.yaw === null ? position : `${position} ${seat.yaw}`;
 }
 
-/** Copies the keys of `source` in the given order first, the others after them. */
-function ordered(source: Record<string, unknown>, order: string[]): Record<string, unknown> {
-  const result: Record<string, unknown> = {};
-  for (const key of order) if (source[key] !== undefined) result[key] = source[key];
-  for (const [key, value] of Object.entries(source)) if (result[key] === undefined) result[key] = value;
-  return result;
-}
-
 /**
  * An element (of a furniture or a block's entity renderer) with its type written out, and the furniture's or block's
  * own item when it shows an item but names none.
@@ -300,7 +318,8 @@ export interface BuiltFurniture {
 /**
  * The furniture as the export writes it: the additional YAML's `furniture:` merged over the definition (it wins), the
  * rules taken out for the item behavior, the furniture's item and loot argument filled in with the item's key, and the
- * types of elements and hitboxes written out (CraftEngine's docs advise it).
+ * types of elements and hitboxes written out (CraftEngine's docs advise it). Hitboxes lose the keys only other hitbox
+ * types read.
  */
 export function buildCraftEngineFurniture(
   source: Record<string, unknown>,
@@ -326,7 +345,7 @@ export function buildCraftEngineFurniture(
         }
         if (Array.isArray(variant.hitboxes)) {
           variant.hitboxes = variant.hitboxes.map((h) =>
-            isPlainObject(h) ? ordered({ ...h, type: furnitureHitboxType(h) }, HITBOX_ORDER) : h,
+            isPlainObject(h) ? ordered(furnitureHitboxWithType(h, furnitureHitboxType(h)), HITBOX_ORDER) : h,
           );
         }
         return [name, ordered(variant, VARIANT_ORDER)];

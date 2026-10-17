@@ -52,7 +52,10 @@ export function setProject(project: Project | null): void {
 export function mutate(recipe: (draft: Project) => void, historyKey?: string): void {
   const { project, past, historyKey: lastKey, historyTime } = useProjectStore.getState();
   if (!project) return;
-  const edited = produce(project, recipe);
+  // A recipe like `(p) => (p.name = value)` returns the assigned value, which immer would refuse next to the change
+  const edited = produce(project, (draft) => {
+    recipe(draft);
+  });
   if (edited === project) return;
   const now = Date.now();
   const next = produce(edited, (draft) => {

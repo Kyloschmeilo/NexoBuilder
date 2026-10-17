@@ -1,10 +1,10 @@
 import { describe, expect, it } from 'vitest';
-import { durationSeconds } from '@resourcepackbuilder/core/craftEngine';
 import {
   createGlyph,
   createPainting,
   createProject,
   createSound,
+  durationSeconds,
   glyphFileFromDataUrl,
   type Project,
 } from '@resourcepackbuilder/core/project';

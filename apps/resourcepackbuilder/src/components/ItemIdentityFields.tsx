@@ -3,10 +3,17 @@ import { useId } from 'react';
 import { useTranslations } from 'next-intl';
 import { cn } from 'cn';
 import { normalizeTypedId } from '@resourcepackbuilder/minecraft';
-import { DEFAULT_MATERIAL, type ItemIdError, itemLabel, normalizeTypedMaterial } from '@resourcepackbuilder/core/project';
+import {
+  DEFAULT_MATERIAL,
+  DEFAULT_PACK_TARGET,
+  type ItemIdError,
+  itemLabel,
+  normalizeTypedMaterial,
+} from '@resourcepackbuilder/core/project';
 import { MATERIALS } from '@resourcepackbuilder/core/nexo';
 import { Field, FieldDescription, FieldError, FieldLabel } from '@resourcepackbuilder/ui/components/field';
 import { Input } from '@resourcepackbuilder/ui/components/input';
+import { useProjectStore } from '../store/project';
 import { TextInput } from './editor';
 
 /** Example tags shown in the display-name help (MiniMessage syntax, not translated). */
@@ -68,6 +75,7 @@ export function ItemIdentityFields({
 }: ItemIdentityFieldsProps) {
   const t = useTranslations('item');
   const idErrorText = useItemIdErrorText()(idError);
+  const target = useProjectStore((s) => s.project?.target ?? DEFAULT_PACK_TARGET);
   const id = useId();
   return (
     <>
@@ -88,7 +96,7 @@ export function ItemIdentityFields({
         )}
       </Field>
       <Field className={fieldClassName} data-invalid={idErrorText ? true : undefined}>
-        <FieldLabel htmlFor={`${id}-id`}>{t('general.itemId')}</FieldLabel>
+        <FieldLabel htmlFor={`${id}-id`}>{t('general.itemId', { target })}</FieldLabel>
         <Input
           id={`${id}-id`}
           className="font-mono"

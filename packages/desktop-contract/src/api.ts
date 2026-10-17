@@ -124,6 +124,13 @@ export const DESKTOP_API = {
   app: {
     /** Tells the main process the UI language (menus, native dialogs, test-server messages). */
     setLocale: invoke<[locale: SupportedLocale], void>()('app:set-locale'),
+    /**
+     * The window is about to close (payload: a request id): the UI writes what is still pending (autosave, shared
+     * folder) and then answers with `flushed`. The main process waits only briefly for the answer.
+     */
+    onFlushRequest: event<number>()('app:flush-request'),
+    /** Answers a flush request: everything pending is written (or failed). */
+    flushed: invoke<[requestId: number], void>()('app:flushed'),
   },
   share: {
     chooseFolder: invoke<[purpose: ShareFolderPurpose], string | null>()('share:choose-folder'),
@@ -158,6 +165,8 @@ export const DESKTOP_API = {
     /** The target's plugin config file (`ServerAdapter.configFile`), null when it does not exist yet. */
     readPluginConfig: invoke<[target: PackTargetId], string | null>()('testserver:read-plugin-config'),
     openFolder: invoke<[], void>()('testserver:open-folder'),
+    /** Deletes the world of the target's server (only while no server runs); a new one is created on the next start. */
+    resetWorld: invoke<[target: PackTargetId], void>()('testserver:reset-world'),
     clearLog: invoke<[], boolean>()('testserver:clear-log'),
     onEvent: event<TestServerEvent>()('testserver:event'),
   },

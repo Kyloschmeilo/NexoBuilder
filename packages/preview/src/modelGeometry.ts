@@ -187,14 +187,16 @@ export function buildPreviewModel(model: ImportedModel): PreviewModel {
 }
 
 function computeUvs(uv: number[], rotation: number, texture: ModelTexture | null): PreviewFace['uvs'] {
-  // Animated textures: show only the first frame
-  let frameFactor = 1;
-  if (texture?.mcmeta?.animation && texture.height > 0) {
+  // Animated textures: show only the first frame (the top left one, also when frames are narrower than the texture)
+  let frameWidth = 1;
+  let frameHeight = 1;
+  if (texture?.mcmeta?.animation && texture.width > 0 && texture.height > 0) {
     const frame = getFrameSize(texture);
-    if (frame.height > 0) frameFactor = frame.height / texture.height;
+    if (frame.width > 0) frameWidth = frame.width / texture.width;
+    if (frame.height > 0) frameHeight = frame.height / texture.height;
   }
-  const u = (v: number) => v / 16;
-  const v = (val: number) => 1 - (val / 16) * frameFactor;
+  const u = (val: number) => (val / 16) * frameWidth;
+  const v = (val: number) => 1 - (val / 16) * frameHeight;
   const arr: Array<[number, number]> = [
     [u(uv[0]), v(uv[1])],
     [u(uv[2]), v(uv[1])],

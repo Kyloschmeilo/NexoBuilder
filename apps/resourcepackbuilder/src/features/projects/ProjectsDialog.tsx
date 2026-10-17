@@ -33,8 +33,7 @@ function ProjectsFrame({ tab: initialTab }: { tab: ProjectsTab }) {
             <Button
               variant="outline"
               onClick={async () => {
-                await actions.openFile();
-                projectsDialog.close();
+                if (await actions.openFile()) projectsDialog.close();
               }}
             >
               <Upload /> {t('welcome.openFile')}

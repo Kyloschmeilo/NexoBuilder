@@ -51,6 +51,13 @@ describe('CraftEngine recipes', () => {
     );
   });
 
+  it('leaves shaped ingredients with a blank id out, like shapeless ones', () => {
+    const recipe = createRecipe('shaped', 'r');
+    recipe.grid = ['A', 'B', '', '', '', '', '', '', ''];
+    recipe.ingredients = { A: { source: 'minecraft', id: 'DIAMOND' }, B: { source: 'minecraft', id: '  ' } };
+    expect(craftEngineRecipe(project, sword([]), recipe)?.ingredients).toEqual({ A: 'minecraft:diamond' });
+  });
+
   it('keeps inner gaps of a shaped pattern as spaces', () => {
     const recipe = createRecipe('shaped', 'r');
     recipe.grid = ['A', '', 'A', 'A', 'A', 'A', '', '', ''];

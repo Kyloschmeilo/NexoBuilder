@@ -104,8 +104,7 @@ export async function syncFiles(
     deleted++;
   }
   const settingsChanged = await writeSettings(target, settings);
-  await fsp.mkdir(path.dirname(manifestFile(target)), { recursive: true });
-  await fsp.writeFile(manifestFile(target), JSON.stringify({ packName, files: next } satisfies SyncManifest));
+  await writeFileAtomic(manifestFile(target), JSON.stringify({ packName, files: next } satisfies SyncManifest));
 
   const changed = written > 0 || deleted > 0 || settingsChanged;
   const reloaded = changed && reload && state.status === 'running' && (requestReload() || isReloadPending());

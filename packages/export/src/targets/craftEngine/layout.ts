@@ -1,12 +1,14 @@
 /**
  * Where the CraftEngine export puts things inside plugins/CraftEngine (one pack per project):
  *   resources/<pack>/pack.yml
- *   resources/<pack>/configuration/items/<folder…>/<folder|item_id>.yml
+ *   resources/<pack>/configuration/items/<folder…>/<folder|item_id>.yml (items with their blocks, furniture, recipes)
  *   resources/<pack>/configuration/{images,sounds,paintings}.yml (glyphs with their emoji, sounds with their jukebox songs)
  *   resources/<pack>/configuration/{equipments,categories}.yml (the armor sets, a category per folder)
  *   resources/<pack>/configuration/lang/<locale>.yml (the items' display name translations)
+ *   resources/<pack>/configuration/{loot_sources,templates,global_variables}.yml (the project-wide configuration)
+ *   resources/<pack>/configuration/attributes.yml (the attribute system)
  *   resources/<pack>/resourcepack/ (the resource pack: pack.mcmeta, pack.png, assets/…)
- * The test server's CraftEngine adapter accepts exactly these paths.
+ * The test server's CraftEngine adapter accepts these paths: pack.yml, configuration/… and resourcepack/….
  */
 import type { MediaKind, Project } from '@resourcepackbuilder/core/project';
 import { exportPackName } from '../../paths';
@@ -17,8 +19,11 @@ export const CRAFT_ENGINE_PLUGIN_DIR = 'plugins/CraftEngine';
 /** Reloads CraftEngine's configuration and rebuilds the resource pack. */
 export const CRAFT_ENGINE_RELOAD_COMMAND = 'ce reload all';
 
-/** CraftEngine's own packs in resources/ ("default", "default_assets", "internal" …); a project may not use their names. */
-export const CRAFT_ENGINE_RESERVED_PACK_NAME = /^(default_.*|default|internal)$/i;
+/**
+ * The packs CraftEngine brings in resources/ (default_assets, default_templates, internal, legacy_armor,
+ * remove_shulker_head, customcrops …, and any `default` or `default_*`); a project may not use their names.
+ */
+export const CRAFT_ENGINE_RESERVED_PACK_NAME = /^(default|default_.*|internal|customcrops|legacy_armor|remove_shulker_head)$/i;
 
 /** The project's pack folder relative to plugins/CraftEngine, e.g. "resources/golden". */
 export function craftEnginePackDir(project: Project): string {

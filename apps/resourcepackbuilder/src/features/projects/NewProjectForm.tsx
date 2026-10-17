@@ -21,7 +21,7 @@ import { isOneOf } from '../../lib/isOneOf';
 import { NamespaceProblemText, useNamespaceProblem } from '../../components/NamespaceProblem';
 import { useProjectActions } from './useProjectActions';
 
-/** Name, namespace and Minecraft version of a new project; the namespace follows the name until edited. */
+/** Plugin, name, namespace and Minecraft version of a new project; the namespace follows the name until edited. */
 export function NewProjectForm({ onDone }: { onDone?: () => void }) {
   const t = useTranslations('layout.projectForm');
   const id = useId();
@@ -40,8 +40,7 @@ export function NewProjectForm({ onDone }: { onDone?: () => void }) {
 
   const submit = async () => {
     if (isInvalid) return;
-    await actions.create(name || defaultName, namespace, version, target);
-    onDone?.();
+    if (await actions.create(name || defaultName, namespace, version, target)) onDone?.();
   };
 
   return (
@@ -52,6 +51,30 @@ export function NewProjectForm({ onDone }: { onDone?: () => void }) {
         void submit();
       }}
     >
+      {/* The plugin comes first: it cannot be changed once the project exists */}
+      <FieldSet>
+        <FieldLegend variant="label">{t('target')}</FieldLegend>
+        <RadioGroup
+          value={target}
+          onValueChange={(value) => {
+            if (isOneOf(PACK_TARGETS, value)) setTarget(value);
+          }}
+          className="grid gap-2 sm:grid-cols-2"
+        >
+          {PACK_TARGETS.map((id) => (
+            <FieldLabel key={id} htmlFor={`${targetId}-${id}`}>
+              <Field orientation="horizontal">
+                <FieldContent>
+                  <FieldTitle>{tTargets(`${id}.name`)}</FieldTitle>
+                  <FieldDescription className="text-xs">{tTargets(`${id}.description`)}</FieldDescription>
+                </FieldContent>
+                <RadioGroupItem id={`${targetId}-${id}`} value={id} data-testid={`new-project-target-${id}`} />
+              </Field>
+            </FieldLabel>
+          ))}
+        </RadioGroup>
+        <FieldDescription>{t('targetHint')}</FieldDescription>
+      </FieldSet>
       <Field>
         <FieldLabel htmlFor={`${id}-name`}>{t('name')}</FieldLabel>
         <Input
@@ -86,29 +109,6 @@ export function NewProjectForm({ onDone }: { onDone?: () => void }) {
           </NativeSelect>
         </Field>
       </AutoGrid>
-      <FieldSet>
-        <FieldLegend variant="label">{t('target')}</FieldLegend>
-        <RadioGroup
-          value={target}
-          onValueChange={(value) => {
-            if (isOneOf(PACK_TARGETS, value)) setTarget(value);
-          }}
-          className="grid gap-2 sm:grid-cols-2"
-        >
-          {PACK_TARGETS.map((id) => (
-            <FieldLabel key={id} htmlFor={`${targetId}-${id}`}>
-              <Field orientation="horizontal">
-                <FieldContent>
-                  <FieldTitle>{tTargets(`${id}.name`)}</FieldTitle>
-                  <FieldDescription className="text-xs">{tTargets(`${id}.description`)}</FieldDescription>
-                </FieldContent>
-                <RadioGroupItem id={`${targetId}-${id}`} value={id} data-testid={`new-project-target-${id}`} />
-              </Field>
-            </FieldLabel>
-          ))}
-        </RadioGroup>
-        <FieldDescription>{t('targetHint')}</FieldDescription>
-      </FieldSet>
       <Button type="submit" size="lg" disabled={isInvalid}>
         <FolderPlus /> {t('create')}
       </Button>

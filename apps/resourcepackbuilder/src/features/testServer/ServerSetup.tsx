@@ -1,5 +1,5 @@
 import { useId } from 'react';
-import { Download, Upload } from 'lucide-react';
+import { Download, Trash2, Upload } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 import { Button } from '@resourcepackbuilder/ui/components/button';
 import { Checkbox } from '@resourcepackbuilder/ui/components/checkbox';
@@ -19,22 +19,36 @@ import {
 import { FormField, FormHelp } from '../../components/FormField';
 import type { TestServerConfig } from '../../platform/desktopApi';
 import { notify } from '../../shell/notify';
+import { confirm } from '../../store/dialogs';
 import { useBusyAction } from '../../hooks/useBusyAction';
 import { useSetConfig, useTestServer } from './useTestServer';
 import { VersionSelect } from './VersionSelect';
 
 const EULA_URL = 'https://aka.ms/MinecraftEULA';
 
-/** Settings of the test server; most of them only apply on the next start. `target` is the open project's. */
-export function ServerSetup({ config, isLocked, target }: { config: TestServerConfig; isLocked: boolean; target: PackTargetId }) {
+/**
+ * Settings of the test server; most of them only apply on the next start. `target` is the open project's; `isReady`:
+ * everything a start needs is set (the card is then no longer the first thing on the page).
+ */
+export function ServerSetup({
+  config,
+  isLocked,
+  isReady,
+  target,
+}: {
+  config: TestServerConfig;
+  isLocked: boolean;
+  isReady: boolean;
+  target: PackTargetId;
+}) {
   const t = useTranslations('media.testServer.setup');
   const setConfig = useSetConfig();
 
   return (
     <SectionCard
       size="sm"
-      title={t('title')}
-      description={isLocked ? t('lockedDescription') : t('description')}
+      title={isReady ? t('title') : t('firstStartTitle')}
+      description={isLocked ? t('lockedDescription') : isReady ? t('description') : t('firstStartDescription')}
       contentClassName="flex flex-col gap-4"
     >
       <AutoGrid min="15rem" fit>
@@ -55,20 +69,91 @@ export function ServerSetup({ config, isLocked, target }: { config: TestServerCo
             ))}
           </NativeSelect>
         </FormField>
-        <FormField label={t('port')} description={<FormHelp>{t('portHelp', { packPort: config.packPort })}</FormHelp>}>
-          <Input
-            className="font-mono"
-            type="number"
-            min={MIN_PORT}
-            max={MAX_PORT}
-            value={config.port}
-            disabled={isLocked}
-            onChange={(e) => setConfig({ port: Number(e.target.value) })}
-          />
-        </FormField>
+        <PortField label={t('port')} help={t('portHelp')} port={config.port} isLocked={isLocked} onCommit={(port) => setConfig({ port })} />
+        <PortField
+          label={t('packPort')}
+          help={t('packPortHelp')}
+          port={config.packPort}
+          isLocked={isLocked}
+          onCommit={(packPort) => setConfig({ packPort })}
+        />
+        <WorldField isLocked={isLocked} />
       </AutoGrid>
       <EulaField isAccepted={config.eulaAccepted} />
     </SectionCard>
+  );
+}
+
+/** A port typed in freely and saved when the input loses focus, once it is a whole number in the allowed range. */
+function PortField({
+  label,
+  help,
+  port,
+  isLocked,
+  onCommit,
+}: {
+  label: string;
+  help: string;
+  port: number;
+  isLocked: boolean;
+  onCommit: (port: number) => void;
+}) {
+  const t = useTranslations('media.testServer.setup');
+  const { draft, setDraft, reset } = useDraft(
+    port,
+    (text) => {
+      const value = Number(text);
+      return Number.isInteger(value) && value >= MIN_PORT && value <= MAX_PORT ? { value } : undefined;
+    },
+    String,
+  );
+  const value = Number(draft);
+  const isValid = Number.isInteger(value) && value >= MIN_PORT && value <= MAX_PORT;
+
+  return (
+    <FormField label={label} description={<FormHelp>{isValid ? help : t('portRange', { min: MIN_PORT, max: MAX_PORT })}</FormHelp>}>
+      <Input
+        className="font-mono"
+        inputMode="numeric"
+        value={draft}
+        disabled={isLocked}
+        aria-invalid={!isValid}
+        onChange={(e) => setDraft(e.target.value.replace(/\D/g, ''))}
+        onBlur={() => {
+          if (!isValid) reset();
+          else if (value !== port) onCommit(value);
+        }}
+      />
+    </FormField>
+  );
+}
+
+/** Deletes the server's world (e.g. one that no longer loads); a fresh flat world is created on the next start. */
+function WorldField({ isLocked }: { isLocked: boolean }) {
+  const t = useTranslations('media.testServer.setup');
+  const testServer = useTestServer();
+  const { isBusy, run } = useBusyAction();
+  const resetWorld = () =>
+    run(async () => {
+      const confirmed = await confirm({
+        title: t('resetWorldTitle'),
+        message: t('resetWorldMessage'),
+        confirmLabel: t('resetWorld'),
+        destructive: true,
+      });
+      if (!confirmed) return;
+      await testServer.resetWorld();
+      notify('success', t('worldResetDone'));
+    });
+
+  return (
+    <FormField label={t('world')} description={<FormHelp>{t('worldHelp')}</FormHelp>}>
+      <div>
+        <Button variant="outline" size="sm" disabled={isBusy || isLocked} onClick={() => void resetWorld()}>
+          <Trash2 /> {t('resetWorld')}
+        </Button>
+      </div>
+    </FormField>
   );
 }
 
@@ -121,6 +206,7 @@ function PluginJarField({ config, target }: { config: TestServerConfig; target: 
           </Button>
         )}
       </div>
+      {!jar && <FormHelp error>{t('noPlugin', { plugin })}</FormHelp>}
       {/* A disabled button shows no tooltip, so the reason is written out */}
       {canDownload && !config.paperVersion && <FormHelp>{t('downloadNeedsVersion')}</FormHelp>}
       <FormHelp>{canDownload ? t('jarDownloadHelp', { plugin }) : t('jarHelp', { plugin, target })}</FormHelp>

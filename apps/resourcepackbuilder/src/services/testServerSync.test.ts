@@ -49,6 +49,7 @@ function fakeApi(versions: () => Promise<string[]>): DesktopTestServerApi {
     sync: () => Promise.reject(new Error('not used')),
     readPluginConfig: () => Promise.resolve(null),
     openFolder: () => Promise.resolve(),
+    resetWorld: () => Promise.resolve(),
     clearLog: () => Promise.resolve(true),
     onEvent: () => () => undefined,
   };
@@ -203,5 +204,25 @@ describe('a server that runs another target', () => {
     setProject(project);
     await service.sync(false);
     expect(sync.mock.calls[1][1].settings).toMatch(/attribute:\s+enable: true/);
+  });
+});
+
+describe('the server log', () => {
+  it('numbers each line once, so a line keeps its id while older lines are dropped', async () => {
+    let emit: Parameters<DesktopTestServerApi['onEvent']>[0] = () => undefined;
+    const api: DesktopTestServerApi = {
+      ...fakeApi(() => Promise.resolve([])),
+      onEvent: (listener) => {
+        emit = listener;
+        return () => undefined;
+      },
+    };
+    await startService(api, '1.21.4');
+    emit({ type: 'log', lines: [{ t: 1, kind: 'info', line: 'a' }] });
+    const [first] = state().log;
+    emit({ type: 'log', lines: [{ t: 2, kind: 'info', line: 'b' }] });
+    expect(state().log.map((l) => l.line)).toEqual(['a', 'b']);
+    expect(state().log[0].id).toBe(first.id);
+    expect(state().log[1].id).not.toBe(first.id);
   });
 });
