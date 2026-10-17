@@ -337,6 +337,15 @@ describe('furniture checks', () => {
     ]);
   });
 
+  it('takes a variant with an external model under any of its keys as not empty', () => {
+    const variant = (key: string): [string, (item: Item) => void] => [
+      `m_${key}`,
+      (item) => (item.config.furniture = { variants: { ground: { [key]: 'chair' } } }),
+    ];
+    const project = furnitureProject(variant('blueprint'), variant('better_model'), variant('model_engine'));
+    expect(codes(project).map(([code]) => code)).not.toContain('ce.furnitureVariantEmpty');
+  });
+
   it('needs a variant', () => {
     const project = furnitureProject(['empty', (item) => (item.config.furniture = { settings: { hit_times: 2 } })]);
     expect(codes(project)).toEqual([['ce.furnitureNoVariant', undefined]]);

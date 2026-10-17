@@ -38,6 +38,7 @@ import {
   type CraftEngineBlockModel,
   definitionEvents,
   furnitureElementType,
+  CE_FURNITURE_EXTERNAL_MODEL_KEYS,
   furnitureHitboxType,
   furnitureVariants,
   isTransparentState,
@@ -474,7 +475,8 @@ export function validateCraftEngineFurniture(
 
   for (const [name, variant] of Object.entries(variants)) {
     const elements = variantList(variant, 'elements');
-    if (elements.length === 0 && variant.blueprint === undefined) report('warning', 'ce.furnitureVariantEmpty', { variant: name });
+    const externalModel = CE_FURNITURE_EXTERNAL_MODEL_KEYS.some((key) => variant[key] !== undefined);
+    if (elements.length === 0 && !externalModel) report('warning', 'ce.furnitureVariantEmpty', { variant: name });
     const where = { variant: name };
     for (const element of elements) validateDisplayElement(itemExport, element, FURNITURE_ELEMENT_CODES, where);
     for (const hitbox of variantList(variant, 'hitboxes')) {

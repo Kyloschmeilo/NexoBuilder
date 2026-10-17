@@ -78,11 +78,14 @@ const REQUIRED_ELEMENT_KEY: Record<string, string> = {
   model_engine: 'model',
 };
 
+/** The keys a variant names its external model (BetterModel, ModelEngine) under, any one of them (`blueprint|…`). */
+export const CE_FURNITURE_EXTERNAL_MODEL_KEYS = ['blueprint', 'better_model', 'model_engine'] as const;
+
 /** Order of the keys of a furniture, of a variant, of an element and of a hitbox (as in the jar's examples). */
 const FURNITURE_ORDER = ['settings', 'variants', 'variant', 'placement', 'behavior', 'behaviors', 'events', 'loot'];
 /** The keys CraftEngine reads a furniture's variants from, in the order it tries them (`variant(s)|placement`) */
 const VARIANTS_KEYS = ['variant', 'variants', 'placement'];
-const VARIANT_ORDER = ['loot_spawn_offset', 'blueprint', 'elements', 'hitboxes'];
+const VARIANT_ORDER = ['loot_spawn_offset', ...CE_FURNITURE_EXTERNAL_MODEL_KEYS, 'elements', 'hitboxes'];
 const ELEMENT_ORDER = [
   'type',
   'item',
