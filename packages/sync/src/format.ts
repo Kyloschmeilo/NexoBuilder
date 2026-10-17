@@ -121,6 +121,22 @@ const ProjectInfoSchema = z.object({
   data: z.object({ id: z.string(), name: lenientString() }),
 });
 
+/** A logical clock value (`rev`): a non-negative safe integer, so `rev + 1` is always a larger number. */
+export const revSchema = z.number().int().min(0).max(Number.MAX_SAFE_INTEGER);
+
+/**
+ * How far a rev read from the folder may lie ahead of the reader's clock (its own clock or the current time, whichever
+ * is later). Revs are millisecond timestamps (see `SyncEngine`), so 30 days tolerate a badly wrong system clock. A rev
+ * further ahead would drag every later rev of everyone along and win against all real changes until then, so an
+ * envelope with such a rev is ignored.
+ */
+export const MAX_REV_AHEAD_MS = 30 * 24 * 60 * 60 * 1000;
+
+/** Whether `rev` is close enough to `clock` to be accepted (see {@link MAX_REV_AHEAD_MS}). */
+export function isPlausibleRev(rev: number, clock: number): boolean {
+  return rev <= clock + MAX_REV_AHEAD_MS;
+}
+
 type EnvelopeOf<K extends EntityKind> = {
   format: typeof SHARE_FORMAT;
   version: number;
@@ -316,7 +332,7 @@ function envelopeSchema<K extends EntityKind>(kind: K, data: z.ZodType<EntityDat
       version: z.number(),
       kind: z.literal(kind),
       id: z.string(),
-      rev: z.number(),
+      rev: revSchema,
       by: z.string(),
       byName: lenientString(),
       deleted: z.unknown().optional(),

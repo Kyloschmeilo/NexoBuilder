@@ -10,15 +10,7 @@
  * the project through `SyncHost`. This allows testing it with an in-memory file system.
  */
 import { z } from 'zod';
-import {
-  CoreError,
-  type Covers,
-  type Fits,
-  lenientNumber,
-  lenientRecord,
-  lenientString,
-  type SchemaChecks,
-} from '@resourcepackbuilder/utils';
+import { CoreError, type Covers, type Fits, lenientRecord, lenientString, type SchemaChecks } from '@resourcepackbuilder/utils';
 import { itemLabel, type MediaEntry, mediaId, type MediaKind, mediaList, type Project } from '@resourcepackbuilder/core/project';
 import {
   changedEntityKeys,
@@ -27,11 +19,13 @@ import {
   entityPath,
   hashData,
   hashString,
+  isPlausibleRev,
   localEntity,
   createEnvelope,
   parseEntityKey,
   parseEntityPath,
   parseEnvelope,
+  revSchema,
   type EntityKind,
   type EntityRef,
   type Envelope,
@@ -75,12 +69,12 @@ export interface SyncState {
   files: Record<string, FileState>;
 }
 
-const EntityVersionSchema = z.object({ rev: z.number(), by: z.string(), byName: lenientString(), hash: z.string() });
+const EntityVersionSchema = z.object({ rev: revSchema, by: z.string(), byName: lenientString(), hash: z.string() });
 const FileStateSchema = z.object({ mtimeMs: z.number(), size: z.number(), hash: z.string() });
 
 /** A stored sync state: broken versions and file entries are dropped (those entries are synced again). */
 export const SyncStateSchema = z.object({
-  clock: lenientNumber(0),
+  clock: revSchema.catch(0),
   versions: lenientRecord(EntityVersionSchema),
   files: lenientRecord(FileStateSchema),
 });
@@ -309,6 +303,11 @@ export class SyncEngine {
       if (env.kind === 'project' && env.id !== this.projectId) {
         throw new ShareFolderError('sync.otherProjectInFolder');
       }
+      // A rev far in the future (broken or hostile file) would poison the clock: ignored until the file changes
+      if (!isPlausibleRev(env.rev, Math.max(this.clock, this.now()))) {
+        this.recordFile(file);
+        continue;
+      }
       this.clock = Math.max(this.clock, env.rev);
       const key = envelopeKey(env);
       const local = this.versions.get(key);
@@ -379,7 +378,7 @@ export async function readShareFolder(fs: SyncFs, now = Date.now()): Promise<{ p
     const text = await fs.read(info.path);
     if (text === null) continue;
     const env = parseEnvelope(text, ref);
-    if (!env) continue;
+    if (!env || !isPlausibleRev(env.rev, now)) continue;
     files[info.path] = { mtimeMs: info.mtimeMs, size: info.size, hash: hashString(text) };
     clock = Math.max(clock, env.rev);
     if (env.kind === 'project') {
