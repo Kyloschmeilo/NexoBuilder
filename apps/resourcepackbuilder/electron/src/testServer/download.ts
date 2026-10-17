@@ -66,13 +66,17 @@ export async function download(
   await fsp.mkdir(path.dirname(target), { recursive: true });
   const partPath = `${target}.part`;
   const file = fs.createWriteStream(partPath);
+  // A write error is thrown by the loop below (an unhandled 'error' event would end the program)
+  let writeError: Error | null = null;
+  file.on('error', (err) => (writeError ??= err));
   const hash = crypto.createHash(algorithm);
+  const reader = response.body.getReader();
   let received = 0;
   let lastPercent: number | null | undefined;
   try {
-    const reader = response.body.getReader();
     for (;;) {
       const { done, value } = await reader.read();
+      if (writeError) throw writeError;
       if (done) break;
       hash.update(value);
       received += value.length;
@@ -89,7 +93,14 @@ export async function download(
     file.end();
     await finished(file);
   } catch (err) {
-    file.destroy();
+    // Stop the transfer and let the file close first: Windows cannot delete a file that is still open
+    await reader.cancel().catch(() => undefined);
+    if (!file.closed) {
+      await new Promise<void>((resolve) => {
+        file.once('close', () => resolve());
+        file.destroy();
+      });
+    }
     await fsp.rm(partPath, { force: true });
     throw err;
   }
