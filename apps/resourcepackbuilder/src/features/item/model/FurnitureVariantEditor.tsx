@@ -6,6 +6,7 @@ import {
   CE_SHULKER_DIRECTIONS,
   formatFurnitureSeat,
   furnitureHitboxType,
+  furnitureHitboxWithType,
   interactionHitboxSize,
   newFurnitureElement,
   newFurnitureHitbox,
@@ -144,7 +145,8 @@ function HitboxCard({
           values={CE_FURNITURE_HITBOX_TYPES}
           // Hitbox types come from core at runtime; a test checks each has a name in en and de
           name={(v) => t(`ceFurniture.hitboxTypes.${v}` as never)}
-          onChange={(v) => set('type', v)}
+          // Keys only the old type reads (an interaction's width and height …) go with it
+          onChange={(v) => update((h) => furnitureHitboxWithType(h as ConfigObject, v))}
         />
       </Labelled>
       <VectorInput
