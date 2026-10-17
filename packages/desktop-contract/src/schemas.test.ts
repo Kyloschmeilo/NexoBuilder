@@ -2,7 +2,13 @@ import { DEFAULT_TEST_SERVER_CONFIG } from '@resourcepackbuilder/test-server';
 import { describe, expect, it } from 'vitest';
 import { DESKTOP_API } from './api';
 import { DesktopError, rehydrateDesktopError, toDesktopErrorPayload } from './errors';
-import { invokeSchemas, savedTestServerConfigSchema, testServerConfigPatchSchema, testServerConfigSchema } from './schemas';
+import {
+  invokeSchemas,
+  savedTestServerConfigSchema,
+  startOnlyChanges,
+  testServerConfigPatchSchema,
+  testServerConfigSchema,
+} from './schemas';
 
 describe('the channel definitions', () => {
   const defs = Object.values(DESKTOP_API).flatMap((group) => Object.values(group));
@@ -28,6 +34,7 @@ describe('invoke arguments', () => {
     expect(invokeSchemas['testserver:sync'].safeParse([files, { target: 'nexo', packName: 'p', reload: true }]).success).toBe(true);
     expect(invokeSchemas['testserver:start'].safeParse(['craftengine']).success).toBe(true);
     expect(invokeSchemas['share:user-name'].safeParse([]).success).toBe(true);
+    expect(invokeSchemas['app:flushed'].safeParse([3]).success).toBe(true);
   });
 
   it('refuse wrong types, missing and extra arguments', () => {
@@ -36,6 +43,8 @@ describe('invoke arguments', () => {
     expect(invokeSchemas['share:list'].safeParse(['']).success).toBe(false);
     expect(invokeSchemas['share:user-name'].safeParse(['x']).success).toBe(false);
     expect(invokeSchemas['app:set-locale'].safeParse(['fr']).success).toBe(false);
+    expect(invokeSchemas['app:flushed'].safeParse(['3']).success).toBe(false);
+    expect(invokeSchemas['app:flushed'].safeParse([0.5]).success).toBe(false);
     expect(
       invokeSchemas['testserver:sync'].safeParse([[{ path: 'a', data: 1 }], { target: 'nexo', packName: 'p', reload: true }]).success,
     ).toBe(false);
@@ -71,6 +80,23 @@ describe('test-server settings', () => {
       pluginJars: { nexo: { file: '../../x' } },
     });
     expect(patch).toEqual({ paperVersion: null, ramGb: 16, port: 25570, playerName: 'Steve', eulaAccepted: false });
+  });
+});
+
+describe('start-only settings', () => {
+  it('lists the start-only settings a patch changes', () => {
+    const config = { ...DEFAULT_TEST_SERVER_CONFIG, paperVersion: '1.21.4' };
+    expect(startOnlyChanges(config, { paperVersion: '1.21.5', ramGb: config.ramGb, port: config.port + 1 })).toEqual([
+      'paperVersion',
+      'port',
+    ]);
+    expect(startOnlyChanges(config, { packPort: config.packPort + 1 })).toEqual(['packPort']);
+  });
+
+  it('ignore the other settings and unchanged values', () => {
+    const config = DEFAULT_TEST_SERVER_CONFIG;
+    expect(startOnlyChanges(config, { playerName: 'Steve', autoUpdate: false, eulaAccepted: true })).toEqual([]);
+    expect(startOnlyChanges(config, { ...config })).toEqual([]);
   });
 });
 

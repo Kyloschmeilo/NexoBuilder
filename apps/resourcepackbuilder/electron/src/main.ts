@@ -1,7 +1,8 @@
 /**
  * ResourcepackBuilder as a desktop program (Electron).
  * Loads the static Next.js export (out/) via the custom app:// protocol in its own window.
- * Projects are saved automatically, just like in the browser (IndexedDB in the app data folder).
+ * Projects are stored by the UI, just like in the browser (IndexedDB in the app data folder); the main process adds
+ * what a browser cannot do: shared folders (share.ts) and the local test server (testServer/).
  *
  * Bundled with esbuild into electron/dist/main.cjs (see electron/build.mjs).
  */
@@ -9,6 +10,7 @@ import { APP_HOST, APP_ORIGIN, APP_SCHEME } from '@resourcepackbuilder/desktop-c
 import { app, BrowserWindow, dialog, Menu, nativeTheme, net, protocol, session, shell, type MenuItemConstructorOptions } from 'electron';
 import path from 'node:path';
 import { pathToFileURL } from 'node:url';
+import { flushBeforeClose, noteQuit, registerFlushHandler } from './flushOnClose';
 import { setLocale, t } from './i18n';
 import { handle } from './ipc';
 import { registerShareHandlers } from './share';
@@ -70,6 +72,7 @@ function createWindow() {
     },
   });
   mainWindow = window;
+  flushBeforeClose(window);
 
   window.once('ready-to-show', () => window.show());
   // No new app windows
@@ -151,9 +154,14 @@ function denyPermissions() {
 }
 
 function run() {
-  // A second launch brings the existing window to the front
+  // A second launch brings the existing window to the front – or opens a new one, e.g. while the window was closed
+  // and the test server is still shutting down
   app.on('second-instance', () => {
-    if (!mainWindow) return;
+    if (!app.isReady()) return;
+    if (!mainWindow) {
+      createWindow();
+      return;
+    }
     if (mainWindow.isMinimized()) mainWindow.restore();
     mainWindow.focus();
   });
@@ -166,6 +174,7 @@ function run() {
     handle('app:set-locale', (_event, locale) => {
       if (setLocale(locale)) buildMenu();
     });
+    registerFlushHandler();
     registerShareHandlers();
     registerTestServerHandlers();
     handleDownloads();
@@ -180,10 +189,18 @@ function run() {
   // A running test server is stopped cleanly before quitting (saves the world)
   let quitting = false;
   app.on('before-quit', (event) => {
-    if (quitting || !isTestServerRunning()) return;
+    if (quitting || !isTestServerRunning()) {
+      noteQuit();
+      return;
+    }
     event.preventDefault();
     quitting = true;
-    void stopTestServer().finally(() => app.quit());
+    const hadWindow = BrowserWindow.getAllWindows().length > 0;
+    void stopTestServer().finally(() => {
+      // The program was launched again while the server stopped after its last window had closed: keep running
+      if (!hadWindow && BrowserWindow.getAllWindows().length > 0) quitting = false;
+      else app.quit();
+    });
   });
 
   app.on('window-all-closed', () => {

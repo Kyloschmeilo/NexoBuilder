@@ -19,6 +19,7 @@ import { spawn, type ChildProcess, type ChildProcessWithoutNullStreams } from 'n
 import type { Readable } from 'node:stream';
 import { describeError, t } from '../i18n';
 import { ensureJava, type JavaInstallation } from './java';
+import { removePidFile, stopOrphanedServers, writePidFile } from './orphan';
 import { ensurePaper, type PaperInstallation } from './paper';
 import { serverDir } from './paths';
 import { prepareServerFiles } from './serverFiles';
@@ -36,6 +37,8 @@ let reloadPending = false;
 /** Why the running server is shutting down on its own (Paper still exits with code 0 then); null while all is well. */
 let failure: string | null = null;
 let packTimer: NodeJS.Timeout | undefined;
+/** The preparation of a start in progress (downloads ...); `stop()` aborts it and waits for it to end. */
+let preparation: { abort: AbortController; done: Promise<unknown> } | null = null;
 
 /** The adapter of the plugin the server runs (or ran last). */
 function adapter(): ServerAdapter {
@@ -175,6 +178,7 @@ function launch(paper: PaperInstallation, java: JavaInstallation, target: PackTa
   const args = ['-Xms512M', `-Xmx${state.config.ramGb}G`, ...encoding, '-jar', paper.jar, '--nogui'];
   const child = spawn(java.path, args, { cwd: serverDir(target), windowsHide: true, stdio: ['pipe', 'pipe', 'pipe'] });
   serverProcess = child;
+  if (child.pid) void writePidFile(target, child.pid, paper.jar);
   readLines(child.stdout, handleLine);
   readLines(child.stderr, (line) => pushLog(line, 'err'));
   child.stdin.on('error', () => undefined);
@@ -184,6 +188,7 @@ function launch(paper: PaperInstallation, java: JavaInstallation, target: PackTa
     processEnded(child, { status: 'error', message });
   });
   child.on('exit', (code) => {
+    void removePidFile(target);
     logInfo(code !== null ? t('testServer.exitedCode', { code }) : t('testServer.exited'));
     const expected = stopRequested || (code === 0 && failure === null);
     processEnded(
@@ -204,25 +209,49 @@ export async function start(target: PackTargetId): Promise<TestServerState> {
   if (!paperVersion) throw new DesktopError('versionRequired');
   stopRequested = false;
   setState({ status: 'preparing', message: t('testServer.preparing'), progress: null, target });
+  const abort = new AbortController();
+  const done = prepareAndLaunch(paperVersion, target, abort.signal);
+  preparation = { abort, done };
+  await done;
+  preparation = null;
+  return publicState();
+}
+
+async function prepareAndLaunch(paperVersion: string, target: PackTargetId, signal: AbortSignal): Promise<void> {
   try {
-    const paper = await ensurePaper(paperVersion);
-    const java = await ensureJava(paper.javaMin);
+    const paper = await ensurePaper(paperVersion, signal);
+    const java = await ensureJava(paper.javaMin, signal);
     state.installed = { paperVersion: paper.version, paperBuild: paper.build, javaPath: java.path, javaVersion: java.version };
     await saveConfig();
     await prepareServerFiles(target);
+    await stopOrphanedServers();
     await setAsideIncompleteWorld(target);
     await assertPortsFree(state.config);
+    signal.throwIfAborted();
     launch(paper, java, target);
   } catch (err) {
+    if (signal.aborted) {
+      logInfo(t('testServer.startCancelled'));
+      setState({ status: 'stopped', message: null, progress: null });
+      return;
+    }
     const message = describeError(err);
     pushLog(message, 'err');
     setState({ status: 'error', message, progress: null });
   }
-  return publicState();
 }
 
-/** Stops the server with "stop" (saves the world); kills it if it does not exit in time. */
+/**
+ * Stops the server with "stop" (saves the world); kills it if it does not exit in time. A start that is still preparing
+ * is cancelled.
+ */
 export async function stop(): Promise<void> {
+  if (preparation) {
+    // Cancels the downloads; the start ends as 'stopped' before anything is launched
+    setState({ status: 'stopping', message: t('testServer.cancellingStart') });
+    preparation.abort.abort();
+    await preparation.done;
+  }
   const child = serverProcess;
   if (!child) {
     if (state.status !== 'stopped') setState({ status: 'stopped', message: null });

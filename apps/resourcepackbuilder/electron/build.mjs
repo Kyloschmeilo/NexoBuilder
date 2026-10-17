@@ -1,6 +1,6 @@
 // Bundles the Electron main process and the preload script (electron/src) into CommonJS files in electron/dist,
-// including the workspace packages they import (core, i18n, desktop-contract) and their dependencies, so the packaged
-// app needs no node_modules. Run by `npm run build:electron` (part of `build`).
+// including the workspace packages they import (core, desktop-contract, i18n, sync, test-server) and their
+// dependencies, so the packaged app needs no node_modules. Run by `npm run build:electron` (part of `build`).
 import { build } from 'esbuild';
 import path from 'node:path';
 

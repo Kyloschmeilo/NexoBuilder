@@ -86,6 +86,16 @@ export const testServerConfigPatchSchema = z.object({
     .optional(),
 }) satisfies z.ZodType<TestServerConfigPatch>;
 
+/** Settings that only take effect when the server starts; they cannot be changed while it is up (or on its way). */
+export const START_ONLY_CONFIG_KEYS = ['paperVersion', 'ramGb', 'port', 'packPort'] as const satisfies ReadonlyArray<
+  keyof TestServerConfig
+>;
+
+/** The start-only settings a (checked) patch would change in `config`. */
+export function startOnlyChanges(config: TestServerConfig, patch: TestServerConfigPatch): string[] {
+  return START_ONLY_CONFIG_KEYS.filter((key) => patch[key] !== undefined && patch[key] !== config[key]);
+}
+
 /* ------------------------------------------------------------------ invoke arguments */
 
 const folder = z.string().min(1);
@@ -102,6 +112,7 @@ const syncOptionsSchema = z.object({
 /** The argument list of every invoke channel. */
 export const invokeSchemas: { [C in DesktopInvokeChannel]: z.ZodType<DesktopInvokeArgs<C>> } = {
   'app:set-locale': z.tuple([z.enum(SUPPORTED_LOCALES)]),
+  'app:flushed': z.tuple([z.number().int().min(1)]),
 
   'share:choose-folder': z.tuple([z.enum(['share', 'join'])]),
   'share:inspect': z.tuple([folder]),

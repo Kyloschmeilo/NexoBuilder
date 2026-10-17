@@ -22,7 +22,7 @@ export function ServerControls({ server }: { server: TestServerState }) {
         </Button>
         <Button
           variant="destructive"
-          disabled={isBusy || status === 'stopping' || status === 'preparing'}
+          disabled={status === 'stopping' || (isBusy && status !== 'preparing')}
           onClick={() => void run(testServer.stop)}
         >
           <Square /> {t('stop')}
