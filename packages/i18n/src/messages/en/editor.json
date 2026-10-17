@@ -5,7 +5,7 @@
   "inputs": {
     "default": "Default",
     "defaultWithHint": "Default ({value})",
-    "defaultTooltip": "Not set – Nexo uses the default value",
+    "defaultTooltip": "Not set – {plugin} uses the default value",
     "allowedRange": "Allowed: {min} to {max}",
     "selectOrType": "Select or type",
     "notSetOption": "– not set –",

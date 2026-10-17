@@ -9,6 +9,7 @@ import { cn } from 'cn';
 import { projectAttributeData } from '@resourcepackbuilder/core/craftEngine';
 import type { Project } from '@resourcepackbuilder/core/project';
 import type { IssueTarget } from '@resourcepackbuilder/utils';
+import { serverAdapterFor } from '@resourcepackbuilder/test-server';
 import { StatusDot, Tip, treeRow, treeRowSlots } from '@resourcepackbuilder/ui';
 import { TEST_SERVER_STATUS_TONE } from '../../features/testServer/status';
 import { usePlan } from '../PlanProvider';
@@ -109,6 +110,7 @@ export function ResourceEntries() {
 export function TestServerEntry() {
   const t = useTranslations('layout.sidebar.testServer');
   const tStatus = useTranslations('media.testServer.status');
+  const project = useOpenProject();
   const status = useTestServerStore((s) => s.server?.status ?? 'stopped');
   return (
     <div className="px-1.5 pb-2">
@@ -116,7 +118,7 @@ export function TestServerEntry() {
         view="testServer"
         icon={<Server className="size-4 text-primary" />}
         label={t('label')}
-        tip={t('hint')}
+        tip={t('hint', { plugin: serverAdapterFor(project.target).pluginName })}
         status={
           <>
             {status !== 'stopped' && <StatusDot tone={TEST_SERVER_STATUS_TONE[status]} />}

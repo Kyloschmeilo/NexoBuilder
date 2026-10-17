@@ -8,6 +8,7 @@ import { Empty, EmptyContent, EmptyDescription, EmptyHeader, EmptyMedia, EmptyTi
 import { InputGroup, InputGroupAddon, InputGroupInput } from '@resourcepackbuilder/ui/components/input-group';
 import { ScrollArea } from '@resourcepackbuilder/ui/components/scroll-area';
 import { moveFolder } from '../../commands/folders';
+import { folderDirPath } from '../../features/folder/folderDir';
 import { useFolderActions } from '../../features/folder/useFolderActions';
 import { useServices } from '../../services/bootstrap';
 import { usePlan } from '../PlanProvider';
@@ -32,6 +33,7 @@ function useSidebarTree(query: string): SidebarTree {
 
 function NoFolders() {
   const t = useTranslations('layout.sidebar.empty');
+  const project = useOpenProject();
   const folders = useFolderActions();
   return (
     <Empty className="px-2 pt-10">
@@ -40,7 +42,7 @@ function NoFolders() {
           <FolderPlus className="size-8 text-muted-foreground" />
         </EmptyMedia>
         <EmptyTitle className="font-heading text-base tracking-wide uppercase">{t('title')}</EmptyTitle>
-        <EmptyDescription className="text-xs">{t('description')}</EmptyDescription>
+        <EmptyDescription className="text-xs">{t('description', { path: folderDirPath(project, null) })}</EmptyDescription>
       </EmptyHeader>
       <EmptyContent>
         <Button onClick={() => void folders.create(null)}>

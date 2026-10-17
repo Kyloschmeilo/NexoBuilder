@@ -14,7 +14,7 @@
     "about": "About {app}"
   },
   "about": {
-    "detail": "Creates ready-to-use Nexo items with a resource pack from Blockbench models, Java models and textures.\n\nProjects are saved automatically in:\n{path}"
+    "detail": "Creates ready-to-use items for Nexo and CraftEngine with a resource pack from Blockbench models, Java models and textures.\n\nProjects are saved automatically in:\n{path}"
   },
   "dialog": {
     "saveAs": "Save as"

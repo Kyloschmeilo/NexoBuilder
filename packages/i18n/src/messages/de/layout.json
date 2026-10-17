@@ -49,7 +49,7 @@
     "searchPlaceholder": "Items suchen …",
     "empty": {
       "title": "Noch keine Ordner",
-      "description": "Ordner werden zu Unterordnern in plugins/Nexo/items. Lege zuerst einen Ordner an, dann kannst du darin Items erstellen.",
+      "description": "Ordner werden zu Unterordnern in {path}. Lege zuerst einen Ordner an, dann kannst du darin Items erstellen.",
       "action": "Ersten Ordner anlegen"
     },
     "addItem": "Item hinzufügen",
@@ -91,7 +91,7 @@
     },
     "testServer": {
       "label": "Testserver",
-      "hint": "Lokaler Minecraft-Testserver mit Nexo – aktualisiert sich automatisch"
+      "hint": "Lokaler Minecraft-Testserver mit {plugin} – aktualisiert sich automatisch"
     },
     "folderMenu": {
       "newItem": "Neues Item",
@@ -114,7 +114,7 @@
   "folder": {
     "newFolderTitle": "Neuer Ordner",
     "newSubfolderTitle": "Neuer Unterordner",
-    "nameLabel": "Name des Ordners (wird zu einem Unterordner in plugins/Nexo/items)",
+    "nameLabel": "Name des Ordners (wird zu einem Unterordner in {path})",
     "renameTitle": "Ordner umbenennen",
     "renameLabel": "Neuer Name",
     "deleteTitle": "Ordner löschen?",
@@ -130,7 +130,7 @@
     "pickTitle": "Wähle links einen Ordner oder ein Item",
     "pickDescription": "Über das + neben einem Ordner erstellst du ein neues Item. Du kannst Modelle auch direkt auf einen Ordner ziehen.",
     "startTitle": "Leg los mit einem Ordner",
-    "startDescription": "Ordner werden zu Unterordnern in plugins/Nexo/items. Darin legst du deine Items an.",
+    "startDescription": "Ordner werden zu Unterordnern in {path}. Darin legst du deine Items an.",
     "createFolder": "Ordner anlegen",
     "dropNeedsFolder": "Lege zuerst einen Ordner an – darin werden die Items erstellt."
   },
@@ -147,11 +147,11 @@
   },
   "rightPanel": {
     "title": "YAML-Vorschau",
-    "empty": "Wähle ein Item, um hier das fertige Nexo-YAML zu sehen.",
+    "empty": "Wähle ein Item, um hier das fertige {plugin}-YAML zu sehen.",
     "checks": "Prüfung"
   },
   "welcome": {
-    "tagline": "Aus Blockbench-Modellen, Java-Modellen oder Texturen werden fertige Nexo-Items – mit Item-Config und Resourcepack als external pack.",
+    "tagline": "Aus Blockbench-Modellen, Java-Modellen oder Texturen werden fertige Items für Nexo oder CraftEngine – mit Item-Config und Resourcepack.",
     "newProject": "Neues Projekt",
     "savedProjects": "Gespeicherte Projekte",
     "openShared": "Geteiltes Projekt öffnen",
@@ -159,7 +159,7 @@
     "steps": {
       "folders": {
         "title": "Ordner anlegen",
-        "text": "Jeder Ordner wird ein Unterordner in plugins/Nexo/items."
+        "text": "Jeder Ordner wird ein Unterordner im Item-Ordner des Plugins."
       },
       "model": {
         "title": "Modell ablegen",
@@ -167,11 +167,11 @@
       },
       "properties": {
         "title": "Eigenschaften hinzufügen",
-        "text": "Components, Mechanics (Furniture, Custom Block …), CustomArmor und mehr."
+        "text": "Components, Furniture, Custom Blocks, Rüstungen und mehr."
       },
       "export": {
         "title": "Exportieren",
-        "text": "ZIP in plugins/Nexo entpacken und /nexo reload all ausführen."
+        "text": "ZIP in den Plugin-Ordner entpacken und das Plugin neu laden – wie genau, steht in der beigelegten INSTALL.txt."
       }
     }
   },

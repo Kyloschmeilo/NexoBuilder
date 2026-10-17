@@ -78,7 +78,7 @@
     "displayName": "Display name (itemname, MiniMessage)",
     "displayNamePlaceholder": "e.g. {tag}Fire Sword",
     "displayNameHelp": "Colors: {colors} · Formatting: {formatting}",
-    "itemId": "Item ID (for /nexo give)",
+    "itemId": "Item ID (for {target, select, nexo {/nexo give} other {/ce item give}})",
     "idEmpty": "The ID must not be empty.",
     "idInvalid": "Only lowercase letters, numbers and _ are allowed.",
     "idDuplicate": "This ID is already used by “{name}”.",

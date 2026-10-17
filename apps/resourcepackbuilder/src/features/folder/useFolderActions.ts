@@ -2,6 +2,7 @@
 import { useTranslations } from 'next-intl';
 import { type Folder, getDescendantFolderIds, itemIdsInFolder } from '@resourcepackbuilder/core/project';
 import { addFolder, deleteFolder, renameFolder } from '../../commands/folders';
+import { folderDirPath } from './folderDir';
 import { confirm, prompt } from '../../store/dialogs';
 import { getProject } from '../../store/project';
 
@@ -13,9 +14,11 @@ export function useFolderActions() {
   return {
     /** Asks for a name and creates a folder (top-level when `parentId` is null). */
     async create(parentId: string | null) {
+      const project = getProject();
+      if (!project) return;
       const name = await prompt({
         title: parentId ? t('newSubfolderTitle') : t('newFolderTitle'),
-        label: t('nameLabel'),
+        label: t('nameLabel', { path: folderDirPath(project, parentId) }),
         initial: '',
         confirmLabel: tCommon('create'),
       });
