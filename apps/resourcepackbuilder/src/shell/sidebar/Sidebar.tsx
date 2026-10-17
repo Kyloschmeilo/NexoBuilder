@@ -97,6 +97,10 @@ export function Sidebar() {
         <div role="tree" aria-label={t('title')} className="px-2 pt-0.5 pb-4">
           {tree.project.rootFolderIds.length === 0 ? (
             <NoFolders />
+          ) : tree.search?.items.size === 0 ? (
+            <p role="status" className="px-2 pt-6 text-center text-xs text-muted-foreground">
+              {t('noMatches')}
+            </p>
           ) : (
             tree.project.rootFolderIds.map((id) => <FolderNode key={id} folderId={id} depth={0} tree={tree} />)
           )}

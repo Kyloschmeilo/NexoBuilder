@@ -47,6 +47,7 @@
     "newFolder": "Neuer Ordner",
     "folderButton": "Ordner",
     "searchPlaceholder": "Items suchen …",
+    "noMatches": "Keine passenden Items",
     "empty": {
       "title": "Noch keine Ordner",
       "description": "Ordner werden zu Unterordnern in {path}. Lege zuerst einen Ordner an, dann kannst du darin Items erstellen.",

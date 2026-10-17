@@ -47,6 +47,7 @@
     "newFolder": "New folder",
     "folderButton": "Folder",
     "searchPlaceholder": "Search items…",
+    "noMatches": "No matching items",
     "empty": {
       "title": "No folders yet",
       "description": "Folders become subfolders in {path}. Create a folder first, then you can create items in it.",
