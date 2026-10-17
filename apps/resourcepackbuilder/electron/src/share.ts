@@ -243,22 +243,35 @@ async function write(folder: string, relativePath: string, content: string): Pro
 
 interface WatchEntry {
   sender: WebContents;
+  /** Ends the watch when `sender` is gone (a closed window never unwatches by itself). */
+  onSenderDestroyed: () => void;
   timer: NodeJS.Timeout | undefined;
   watcher: fs.FSWatcher;
 }
 
 const watchers = new Map<string, WatchEntry>();
+/** Counts the unwatch requests per folder, so a watch that was still being set up when one arrived is dropped. */
+const unwatchCounts = new Map<string, number>();
+
+function setSender(entry: WatchEntry, sender: WebContents) {
+  if (entry.sender === sender) return;
+  entry.sender.off('destroyed', entry.onSenderDestroyed);
+  entry.sender = sender;
+  sender.once('destroyed', entry.onSenderDestroyed);
+}
 
 /**
- * Watches a shared folder and tells `sender` about changes. Returns false if the folder cannot be watched;
- * the UI then polls by itself.
+ * Watches a shared folder and tells `sender` about changes. Returns false if the folder cannot be watched (or the
+ * watch was cancelled by an unwatch while it was being set up); the UI then polls by itself.
  */
 async function watch(sender: WebContents, folder: string): Promise<boolean> {
+  const unwatchCount = unwatchCounts.get(path.resolve(folder)) ?? 0;
   const dir = await checkFolder(folder);
   await rememberProjectFolder(dir);
+  if ((unwatchCounts.get(dir) ?? 0) !== unwatchCount || sender.isDestroyed()) return false;
   const existing = watchers.get(dir);
   if (existing) {
-    existing.sender = sender;
+    setSender(existing, sender);
     return true;
   }
   try {
@@ -267,8 +280,9 @@ async function watch(sender: WebContents, folder: string): Promise<boolean> {
       clearTimeout(entry.timer);
       entry.timer = setTimeout(() => send(entry.sender, 'share:changed', dir), WATCH_DEBOUNCE_MS);
     });
-    const entry: WatchEntry = { sender, timer: undefined, watcher };
-    watcher.on('error', () => unwatch(dir));
+    const entry: WatchEntry = { sender, onSenderDestroyed: () => closeWatch(dir, entry), timer: undefined, watcher };
+    sender.once('destroyed', entry.onSenderDestroyed);
+    watcher.on('error', () => closeWatch(dir, entry));
     watchers.set(dir, entry);
     return true;
   } catch {
@@ -276,13 +290,20 @@ async function watch(sender: WebContents, folder: string): Promise<boolean> {
   }
 }
 
-function unwatch(folder: string) {
-  const dir = path.resolve(folder);
-  const entry = watchers.get(dir);
-  if (!entry) return;
+/** Ends the watch `entry` of `dir` (if it is still the current one). */
+function closeWatch(dir: string, entry: WatchEntry) {
+  if (watchers.get(dir) !== entry) return;
   clearTimeout(entry.timer);
   entry.watcher.close();
+  entry.sender.off('destroyed', entry.onSenderDestroyed);
   watchers.delete(dir);
+}
+
+function unwatch(folder: string) {
+  const dir = path.resolve(folder);
+  unwatchCounts.set(dir, (unwatchCounts.get(dir) ?? 0) + 1);
+  const entry = watchers.get(dir);
+  if (entry) closeWatch(dir, entry);
 }
 
 /* ------------------------------------------------------------------ IPC */
