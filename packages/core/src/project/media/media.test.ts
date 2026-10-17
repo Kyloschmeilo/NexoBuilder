@@ -60,6 +60,18 @@ describe('media items', () => {
     setSoundJukebox(sound, false);
     expect(sound.jukebox).toBeNull();
   });
+
+  it('writes the painting and music disc as CraftEngine item data in CraftEngine projects', () => {
+    const project = createProject('Test', 'pack', '1.21.11', 'craftengine');
+    const painting = paintingItem(project, createPainting('p_1', 'sunset', null));
+    const paintingTarget = insertNewItem(project, { ...painting, folderId: 'none', model: null }, painting.configure);
+    expect(paintingTarget.config.data).toEqual({ painting_variant: 'pack:sunset' });
+    expect(paintingTarget.config.Components).toBeUndefined();
+    const disc = musicDiscItem(project, createSound('s_1', 'music.theme', []));
+    const discTarget = insertNewItem(project, { ...disc, folderId: 'none', model: null }, disc.configure);
+    expect(discTarget.config.data).toEqual({ jukebox_playable: 'pack:music.theme', components: { 'minecraft:max_stack_size': 1 } });
+    expect(discTarget.config.Components).toBeUndefined();
+  });
 });
 
 describe('media files', () => {
