@@ -1,7 +1,8 @@
 /**
  * ResourcepackBuilder as a desktop program (Electron).
  * Loads the static Next.js export (out/) via the custom app:// protocol in its own window.
- * Projects are saved automatically, just like in the browser (IndexedDB in the app data folder).
+ * Projects are stored by the UI, just like in the browser (IndexedDB in the app data folder); the main process adds
+ * what a browser cannot do: shared folders (share.ts) and the local test server (testServer/).
  *
  * Bundled with esbuild into electron/dist/main.cjs (see electron/build.mjs).
  */
