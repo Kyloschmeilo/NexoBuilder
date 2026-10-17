@@ -23,6 +23,8 @@
     "move": "Move",
     "give": "Give in test server",
     "giveTooltip": "Put the item into your inventory on the local test server",
+    "giveNeedsServer": "Start the test server first (Test server in the sidebar)",
+    "giveNeedsName": "Enter your Minecraft name on the Test server page first",
     "giveSuccess": "Gave “{id}” to {player} – you need to be on the test server for this.",
     "invalidPng": "The file is not a valid PNG."
   },

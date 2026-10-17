@@ -153,6 +153,10 @@ export function createTestServerSync(api: DesktopTestServerApi): TestServerSync 
   );
 
   const watcher = watchOpenProject({
+    // The transfer history belongs to the project it was made for
+    onSwitch() {
+      store.setState({ lastResult: null, lastCheck: null, syncError: null });
+    },
     onSettled() {
       const { server } = store.getState();
       if (server?.status === 'running' && server.config.autoUpdate) void transfer.run(true);

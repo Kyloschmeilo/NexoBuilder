@@ -63,7 +63,8 @@ function SelectedPage() {
   if (!selection) return <NothingSelected />;
   switch (selection.kind) {
     case 'item':
-      return <ItemEditor itemId={selection.id} />;
+      // Keyed: editor state (open sections, remembered choices) belongs to one item
+      return <ItemEditor key={selection.id} itemId={selection.id} />;
     case 'folder':
       return <FolderView folderId={selection.id} />;
     case 'view': {

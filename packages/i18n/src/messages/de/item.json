@@ -23,6 +23,8 @@
     "move": "Verschieben",
     "give": "Im Testserver geben",
     "giveTooltip": "Das Item im lokalen Testserver in dein Inventar legen",
+    "giveNeedsServer": "Starte zuerst den Testserver (Testserver in der Seitenleiste)",
+    "giveNeedsName": "Gib zuerst auf der Testserver-Seite deinen Minecraft-Namen ein",
     "giveSuccess": "„{id}“ an {player} gegeben – du musst dafür auf dem Testserver sein.",
     "invalidPng": "Die Datei ist kein gültiges PNG."
   },
