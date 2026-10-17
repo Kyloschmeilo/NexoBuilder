@@ -57,6 +57,8 @@
     "exitedCode": "Server beendet (Code {code}).",
     "crashed": "Der Server wurde unerwartet beendet (Code {code}). Details in der Konsole.",
     "stopping": "Server wird gestoppt (Welt wird gespeichert) …",
+    "cancellingStart": "Start wird abgebrochen …",
+    "startCancelled": "Der Start wurde abgebrochen.",
     "notResponding": "Server reagiert nicht – wird beendet.",
     "skippedFile": "Übersprungen (ungültiger Dateiname): {path}",
     "synced": "Projekt übertragen: {written} geschrieben, {deleted} entfernt.",

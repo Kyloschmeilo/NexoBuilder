@@ -23,6 +23,8 @@
   "javaRequired": "Java {version} wird benötigt. Bitte selbst installieren.",
   "javaExtractFailed": "Java konnte nicht entpackt werden: {error}",
   "javaBroken": "Das heruntergeladene Java funktioniert nicht.",
+  "downloadStalled": "{label}: Der Download hängt (seit {seconds} Sekunden keine Daten). Bitte erneut versuchen.",
+  "requestTimedOut": "Keine Antwort innerhalb von {seconds} Sekunden: {url}",
   "unexpected": "{message}",
   "s3": {
     "invalidCredentials": "Der Zugriffsschlüssel oder geheime Schlüssel wurde abgelehnt.",

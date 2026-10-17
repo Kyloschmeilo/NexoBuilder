@@ -23,6 +23,8 @@
   "javaRequired": "Java {version} is required. Please install it yourself.",
   "javaExtractFailed": "Java could not be extracted: {error}",
   "javaBroken": "The downloaded Java does not work.",
+  "downloadStalled": "{label}: the download stalled (no data for {seconds} seconds). Please try again.",
+  "requestTimedOut": "No answer within {seconds} seconds: {url}",
   "unexpected": "{message}",
   "s3": {
     "invalidCredentials": "The access key or secret key was rejected.",

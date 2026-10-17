@@ -39,12 +39,15 @@ function pickBuild(builds: PaperBuild[]): { build: PaperBuild; stable: boolean }
   return newest && { build: newest, stable: stable.length > 0 };
 }
 
-/** Finds the newest (preferably stable) Paper build for `version` and downloads it unless it is cached. */
-export async function ensurePaper(version: string): Promise<PaperInstallation> {
+/**
+ * Finds the newest (preferably stable) Paper build for `version` and downloads it unless it is cached (until `signal` is
+ * aborted).
+ */
+export async function ensurePaper(version: string, signal?: AbortSignal): Promise<PaperInstallation> {
   if (testHooks.paperJar) return { jar: testHooks.paperJar, version: version || 'test', build: 0, javaMin: 17 };
 
   setState({ message: t('testServer.searchingPaper', { version }) });
-  const entries = await fetchJson(`${PAPER_API}/versions/${encodeURIComponent(version)}/builds`, paperBuildsSchema);
+  const entries = await fetchJson(`${PAPER_API}/versions/${encodeURIComponent(version)}/builds`, paperBuildsSchema, signal);
   if (entries.length === 0) throw new DesktopError('noPaperBuild', { version });
   // Builds without a verifiable server download (e.g. a different layout) are skipped
   const picked = pickBuild(entries.flatMap((entry) => paperBuildSchema.safeParse(entry).data ?? []));
@@ -55,7 +58,7 @@ export async function ensurePaper(version: string): Promise<PaperInstallation> {
 
   let javaMin = guessJavaFor(version);
   try {
-    const meta = await fetchJson(`${PAPER_API}/versions/${encodeURIComponent(version)}`, paperVersionSchema);
+    const meta = await fetchJson(`${PAPER_API}/versions/${encodeURIComponent(version)}`, paperVersionSchema, signal);
     javaMin = meta.version.java.version.minimum;
   } catch {
     // the estimate is good enough
@@ -65,7 +68,7 @@ export async function ensurePaper(version: string): Promise<PaperInstallation> {
   const jarPath = path.join(downloadsDir(), name);
   if (!fs.existsSync(jarPath)) {
     logInfo(t('testServer.downloadingPaper', { version, build }));
-    await download(serverDownload.url, jarPath, `Paper ${version}`, serverDownload.checksums.sha256);
+    await download(serverDownload.url, jarPath, `Paper ${version}`, serverDownload.checksums.sha256, 'sha256', signal);
   }
   return { jar: jarPath, version, build, javaMin };
 }
