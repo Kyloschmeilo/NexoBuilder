@@ -29,6 +29,17 @@ export const CE_FURNITURE_ELEMENT_TYPES = [
 /** Hitbox types (BukkitFurnitureHitboxTypes); `interaction` is the default. */
 export const CE_FURNITURE_HITBOX_TYPES = ['interaction', 'shulker', 'happy_ghast', 'custom'] as const;
 
+/**
+ * The keys only some hitbox types read (their factories in BukkitFurnitureHitboxTypes); every type also reads
+ * position, scale, seats, blocks_building, can_be_hit_by_projectile and can_use_item_on.
+ */
+const HITBOX_TYPE_KEYS: Record<string, readonly string[]> = {
+  interaction: ['width', 'height', 'interactive', 'invisible'],
+  shulker: ['peek', 'direction', 'interaction_entity', 'interactive', 'invisible'],
+  happy_ghast: ['hard_collision'],
+  custom: ['entity_type', 'resource'],
+};
+
 /** Values of a placement rule (RotationRule, AlignmentRule), as CraftEngine reads them in lower case. */
 export const CE_FURNITURE_ROTATIONS = ['any', 'four', 'eight', 'sixteen', 'north', 'east', 'west', 'south'] as const;
 export const CE_FURNITURE_ALIGNMENTS = ['any', 'corner', 'center', 'half', 'quarter', 'center_quarter'] as const;
@@ -173,6 +184,17 @@ export function furnitureHitboxType(hitbox: Record<string, unknown>): string {
   return typeof hitbox.type === 'string' ? ceType(hitbox.type) : 'interaction';
 }
 
+/**
+ * The hitbox as a hitbox of `type`: the keys only other types read (an interaction's `width` and `height` on a
+ * shulker, say) are left out, since CraftEngine ignores them. A type CraftEngine does not know keeps every key.
+ */
+export function furnitureHitboxWithType<T extends Record<string, unknown>>(hitbox: T, type: string): T {
+  const own = HITBOX_TYPE_KEYS[type];
+  if (!own) return { ...hitbox, type };
+  const foreign = new Set(Object.values(HITBOX_TYPE_KEYS).flatMap((keys) => keys.filter((key) => !own.includes(key))));
+  return { ...(Object.fromEntries(Object.entries(hitbox).filter(([key]) => !foreign.has(key))) as T), type };
+}
+
 const toNumber = (value: unknown): number | null => {
   const n = typeof value === 'number' ? value : typeof value === 'string' && value.trim() !== '' ? Number(value) : NaN;
   return Number.isFinite(n) ? n : null;
@@ -293,7 +315,8 @@ export interface BuiltFurniture {
 /**
  * The furniture as the export writes it: the additional YAML's `furniture:` merged over the definition (it wins), the
  * rules taken out for the item behavior, the furniture's item and loot argument filled in with the item's key, and the
- * types of elements and hitboxes written out (CraftEngine's docs advise it).
+ * types of elements and hitboxes written out (CraftEngine's docs advise it). Hitboxes lose the keys only other hitbox
+ * types read.
  */
 export function buildCraftEngineFurniture(
   source: Record<string, unknown>,
@@ -319,7 +342,7 @@ export function buildCraftEngineFurniture(
         }
         if (Array.isArray(variant.hitboxes)) {
           variant.hitboxes = variant.hitboxes.map((h) =>
-            isPlainObject(h) ? ordered({ ...h, type: furnitureHitboxType(h) }, HITBOX_ORDER) : h,
+            isPlainObject(h) ? ordered(furnitureHitboxWithType(h, furnitureHitboxType(h)), HITBOX_ORDER) : h,
           );
         }
         return [name, ordered(variant, VARIANT_ORDER)];
