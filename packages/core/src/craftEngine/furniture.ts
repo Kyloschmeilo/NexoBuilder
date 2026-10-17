@@ -9,6 +9,7 @@
  */
 import { deepClone, deepMerge, isPlainObject } from '@resourcepackbuilder/utils';
 import type { ConfigObject } from '../project/types';
+import { ordered } from './yaml';
 
 /** The variants the `furniture_item` behavior places: on top of a block, on its side, below it. */
 export const CE_FURNITURE_ANCHORS = ['ground', 'wall', 'ceiling'] as const;
@@ -269,14 +270,6 @@ export function parseFurnitureSeat(value: unknown): FurnitureSeat | null {
 export function formatFurnitureSeat(seat: FurnitureSeat): string {
   const position = formatCeVector(seat.position);
   return seat.yaw === null ? position : `${position} ${seat.yaw}`;
-}
-
-/** Copies the keys of `source` in the given order first, the others after them. */
-function ordered(source: Record<string, unknown>, order: string[]): Record<string, unknown> {
-  const result: Record<string, unknown> = {};
-  for (const key of order) if (source[key] !== undefined) result[key] = source[key];
-  for (const [key, value] of Object.entries(source)) if (result[key] === undefined) result[key] = value;
-  return result;
 }
 
 /**

@@ -7,7 +7,7 @@
  */
 import { folderSlug } from '../project/tree';
 import type { Folder, Item, Project } from '../project/types';
-import { craftEngineItemKey } from './itemConfig';
+import { craftEngineItemKey } from './yaml';
 
 /** Builds the categories of the folders that hold any of `items` (the exported items of the project). */
 export function craftEngineCategories(project: Project, items: Item[]): Record<string, Record<string, unknown>> {

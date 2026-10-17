@@ -7,7 +7,7 @@
 import { keyedRecipes, trimShape } from '../project/recipes/export';
 import { INGREDIENT_LETTERS, type Recipe, type RecipeIngredient, type RecipeType } from '../project/recipes/model';
 import type { Item, Project } from '../project/types';
-import { craftEngineItemKey } from './itemConfig';
+import { craftEngineItemKey } from './yaml';
 
 /** CraftEngine's recipe type of each recipe type of the model. */
 const CE_RECIPE_TYPES: Record<RecipeType, string> = {

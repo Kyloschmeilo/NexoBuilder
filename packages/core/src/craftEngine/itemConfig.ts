@@ -37,6 +37,7 @@ import { buildRenderer, rendererElements } from './blockRenderer';
 import { withEventList } from './events';
 import { buildCraftEngineFurniture, craftEngineFurniture } from './furniture';
 import { craftEngineItemName } from './lang';
+import { craftEngineItemKey, ordered } from './yaml';
 
 /** Order of the keys in the YAML (as in the CraftEngine docs); other keys follow in their own order. */
 const TOP_LEVEL_ORDER = ['material', 'client_bound_material', 'data', 'model', 'models', 'settings', 'behavior', 'events'];
@@ -87,25 +88,12 @@ export interface CraftEngineBuildResult {
   rawFurnitureIgnored: boolean;
 }
 
-/** The key of an item under `items:`, e.g. "ruby:ruby_sword". */
-export function craftEngineItemKey(project: Pick<Project, 'namespace'>, item: Pick<Item, 'itemId'>): string {
-  return `${project.namespace}:${item.itemId}`;
-}
-
 /**
  * The item's base material as CraftEngine gets it: the raw YAML's `material` if it sets one, otherwise the app's
  * material in lower case (e.g. "diamond_sword").
  */
 export function craftEngineMaterial(item: Item): string {
   return rawYamlMaterial(item) ?? itemMaterial(item).toLowerCase();
-}
-
-/** Copies the keys of `source` in the given order first, the others after them. */
-function ordered(source: Record<string, unknown>, order: string[]): Record<string, unknown> {
-  const result: Record<string, unknown> = {};
-  for (const key of order) if (source[key] !== undefined) result[key] = source[key];
-  for (const [key, value] of Object.entries(source)) if (result[key] === undefined) result[key] = value;
-  return result;
 }
 
 const asList = (value: unknown): unknown[] => (value === undefined ? [] : Array.isArray(value) ? value : [value]);
