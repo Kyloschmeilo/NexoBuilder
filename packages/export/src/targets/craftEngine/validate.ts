@@ -73,6 +73,7 @@ import { checkFieldValue } from '@resourcepackbuilder/core/form';
 import { listEntryFrame, lootSourceFrame, propertyFrame, type Project, templateFrame } from '@resourcepackbuilder/core/project';
 import { ITEM_ID_PATTERN } from '@resourcepackbuilder/minecraft';
 import type { ItemExport } from '../../types';
+import { asList, isTemplated } from './values';
 import { validateProperties } from '../../validate/itemConfig';
 
 /**
@@ -112,11 +113,6 @@ function knownType(types: readonly LogicType[], entry: Record<string, unknown>):
   const type = entry.type.replace(/^!/, '').replace(/^craftengine:/, '');
   return types.some((t) => t.type === type);
 }
-
-/** A value CraftEngine's templates fill in (a `${argument}`) is only known once the template is applied. */
-const isTemplated = (text: string) => text.includes('${');
-
-const asList = (value: unknown): unknown[] => (value === undefined ? [] : Array.isArray(value) ? value : [value]);
 
 /**
  * The events of an item, block or furniture as the export writes them (the list form): each names a trigger
