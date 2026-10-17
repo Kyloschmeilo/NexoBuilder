@@ -22,7 +22,8 @@ import { useWindowDrop } from './useWindowDrop';
 /** The app frame: top bar, and below it either the open project (sidebar, page, preview) or the welcome screen. */
 export function AppShell() {
   const hasProject = useProjectStore((s) => s.project !== null);
-  const isRightPanelOpen = useUiStore((s) => s.isRightPanelOpen);
+  // The YAML preview has something to show for items, folders and glyphs; the other pages get the room
+  const isRightPanelOpen = useUiStore((s) => s.isRightPanelOpen && (s.selection?.kind !== 'view' || s.selection.view === 'glyphs'));
   useShortcuts();
   useWindowDrop();
   useServiceNotices();

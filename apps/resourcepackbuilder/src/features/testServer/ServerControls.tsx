@@ -1,7 +1,6 @@
 import { Play, RotateCcw, Square } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 import { Button } from '@resourcepackbuilder/ui/components/button';
-import { Tip } from '@resourcepackbuilder/ui';
 import type { TestServerState } from '../../platform/desktopApi';
 import { isTransitioning } from '@resourcepackbuilder/test-server';
 import { useBusyAction } from '../../hooks/useBusyAction';
@@ -33,11 +32,13 @@ export function ServerControls({ server }: { server: TestServerState }) {
   }
 
   const missing = !config.eulaAccepted ? t('missingEula') : !config.paperVersion ? t('missingVersion') : null;
+  // Written out next to the button: a disabled button shows no tooltip to keyboard and screen reader users
   return (
-    <Tip label={missing}>
+    <div className="flex items-center gap-3">
+      {missing && <span className="max-w-56 text-right text-xs text-muted-foreground">{missing}</span>}
       <Button size="lg" disabled={isBusy || missing !== null} onClick={() => void run(testServer.start)}>
         <Play /> {t('start')}
       </Button>
-    </Tip>
+    </div>
   );
 }

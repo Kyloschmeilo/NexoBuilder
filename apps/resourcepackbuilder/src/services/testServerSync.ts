@@ -64,6 +64,8 @@ export interface TestServerSync {
   reload(): Promise<boolean>;
   clearLog(): Promise<void>;
   openFolder(): void;
+  /** Deletes the world of the open project's target server (only while it is stopped). */
+  resetWorld(): Promise<void>;
   /**
    * Loads the Paper versions into the store (once; again after a failure). Without a chosen version the project's
    * version becomes the default – or the newest one when Paper does not support it (yet).
@@ -253,6 +255,9 @@ export function createTestServerSync(api: DesktopTestServerApi): TestServerSync 
     async clearLog() {
       await api.clearLog();
       store.setState({ log: [] });
+    },
+    async resetWorld() {
+      await api.resetWorld(useProjectStore.getState().project?.target ?? DEFAULT_PACK_TARGET);
     },
     openFolder() {
       void api.openFolder();
