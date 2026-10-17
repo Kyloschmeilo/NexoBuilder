@@ -19,7 +19,6 @@
     "copyTooltip": "Alle Eigenschaften kopieren – außer Name, Item-ID, Modell und Ordner",
     "pasteTooltip": "Eigenschaften von „{name}“ einfügen",
     "pasteDisabled": "Zuerst bei einem anderen Item „Kopieren“ wählen",
-    "copyUnsupported": "Eigenschaften kopieren gibt es vorerst nur in Nexo-Projekten",
     "move": "Verschieben",
     "give": "Im Testserver geben",
     "giveTooltip": "Das Item im lokalen Testserver in dein Inventar legen",

@@ -67,17 +67,18 @@ export function FolderNode({ folderId, depth, tree }: { folderId: string; depth:
     { icon: <Plus />, label: t('folderMenu.newItem'), onSelect: newItem },
     { icon: <FolderPlus />, label: t('folderMenu.newSubfolder'), onSelect: () => void folders.create(folderId) },
     { icon: <Pencil />, label: tCommon('rename'), onSelect: () => void folders.rename(folder) },
-    {
-      icon: <ClipboardPaste />,
-      label: t('paste.label'),
-      description: !canCopyItemConfig(project.target)
-        ? t('paste.unsupported')
-        : clip
-          ? t('paste.fromItemIntoFolder', { name: clipboardLabel(clip) })
-          : t('paste.needsCopy'),
-      disabled: !canPasteItemConfig(clip, project.target) || count === 0,
-      onSelect: () => items.pasteProperties(itemIdsInFolder(project, folderId)),
-    },
+    // Copying works on Nexo's property groups; other targets do not offer it
+    ...(canCopyItemConfig(project.target)
+      ? [
+          {
+            icon: <ClipboardPaste />,
+            label: t('paste.label'),
+            description: clip ? t('paste.fromItemIntoFolder', { name: clipboardLabel(clip) }) : t('paste.needsCopy'),
+            disabled: !canPasteItemConfig(clip, project.target) || count === 0,
+            onSelect: () => items.pasteProperties(itemIdsInFolder(project, folderId)),
+          },
+        ]
+      : []),
     'separator',
     { icon: <Trash2 />, label: t('folderMenu.delete'), destructive: true, onSelect: () => void folders.remove(folder) },
   ];

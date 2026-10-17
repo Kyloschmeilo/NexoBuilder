@@ -107,8 +107,7 @@
       "label": "Paste properties…",
       "fromItem": "from “{name}”",
       "fromItemIntoFolder": "from “{name}” into all items of the folder",
-      "needsCopy": "Copy from an item first",
-      "unsupported": "Only in Nexo projects for now"
+      "needsCopy": "Copy from an item first"
     }
   },
   "folder": {

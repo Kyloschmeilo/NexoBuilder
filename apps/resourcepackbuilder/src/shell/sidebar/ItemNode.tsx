@@ -35,21 +35,25 @@ export function ItemNode({ itemId, depth, tree }: { itemId: string; depth: numbe
   const entries: MenuEntry[] = [
     { icon: <Copy />, label: tCommon('duplicate'), onSelect: () => actions.duplicate(item) },
     { icon: <FolderInput />, label: t('itemMenu.move'), onSelect: () => moveItemDialog.openWithPayload({ itemId }) },
-    'separator',
-    {
-      icon: <ClipboardCopy />,
-      label: t('itemMenu.copyProperties'),
-      description: canCopy ? t('itemMenu.copyPropertiesDescription') : t('paste.unsupported'),
-      disabled: !canCopy,
-      onSelect: () => actions.copyProperties(itemId),
-    },
-    {
-      icon: <ClipboardPaste />,
-      label: t('paste.label'),
-      description: !canCopy ? t('paste.unsupported') : clip ? t('paste.fromItem', { name: clipboardLabel(clip) }) : t('paste.needsCopy'),
-      disabled: !canPasteItemConfig(clip, tree.project.target) || clip.sourceId === itemId,
-      onSelect: () => actions.pasteProperties([itemId]),
-    },
+    // Copying works on Nexo's property groups; other targets do not offer it
+    ...(canCopy
+      ? ([
+          'separator',
+          {
+            icon: <ClipboardCopy />,
+            label: t('itemMenu.copyProperties'),
+            description: t('itemMenu.copyPropertiesDescription'),
+            onSelect: () => actions.copyProperties(itemId),
+          },
+          {
+            icon: <ClipboardPaste />,
+            label: t('paste.label'),
+            description: clip ? t('paste.fromItem', { name: clipboardLabel(clip) }) : t('paste.needsCopy'),
+            disabled: !canPasteItemConfig(clip, tree.project.target) || clip.sourceId === itemId,
+            onSelect: () => actions.pasteProperties([itemId]),
+          },
+        ] satisfies MenuEntry[])
+      : []),
     'separator',
     { icon: <Trash2 />, label: tCommon('delete'), destructive: true, onSelect: () => void actions.remove(item) },
   ];

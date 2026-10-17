@@ -12,8 +12,7 @@
   },
   "clipboard": {
     "copied": "Eigenschaften von „{name}“ kopiert. Zum Einfügen im Menü eines anderen Items „Eigenschaften einfügen“ wählen.",
-    "nothingCopied": "Zuerst bei einem Item „Eigenschaften kopieren“ wählen.",
-    "unsupported": "Eigenschaften kopieren gibt es vorerst nur in Nexo-Projekten."
+    "nothingCopied": "Zuerst bei einem Item „Eigenschaften kopieren“ wählen."
   },
   "autosave": {
     "failed": "Automatisches Speichern im Browser ist nicht möglich. Bitte das Projekt regelmäßig als Datei speichern."
