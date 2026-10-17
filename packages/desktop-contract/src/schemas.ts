@@ -127,5 +127,6 @@ export const invokeSchemas: { [C in DesktopInvokeChannel]: z.ZodType<DesktopInvo
   'testserver:sync': z.tuple([z.array(syncFileSchema), syncOptionsSchema]),
   'testserver:read-plugin-config': z.tuple([packTarget]),
   'testserver:open-folder': none,
+  'testserver:reset-world': z.tuple([packTarget]),
   'testserver:clear-log': none,
 };

@@ -16,7 +16,7 @@ import {
 import { pluginFolderFiles } from './files';
 import { guessJavaFor, parseJavaVersion } from './java';
 import { parsePluginDescriptor, readPluginDescriptor } from './pluginJar';
-import { DEFAULT_SERVER_PROPERTIES, parseProperties, patchPaperGlobal, setProperty } from './serverFiles';
+import { DEFAULT_SERVER_PROPERTIES, parseProperties, patchPaperGlobal, setProperty, worldFolders } from './serverFiles';
 import { parseServerLogLine, stripAnsi } from './serverLog';
 import { NEXO_SERVER_ADAPTER } from './nexo/adapter';
 
@@ -29,6 +29,14 @@ describe('Test server: console lines', () => {
     ['[14:02:11 INFO]: Done (6.512s)! For help, type "help"', { type: 'started' }],
     ['[14:02:11 INFO]: Done (12,3s)! For help, type "help"', { type: 'started' }],
     ['[14:02:01 WARN]: **** FAILED TO BIND TO PORT!', { type: 'portInUse' }],
+    [
+      "[19:12:35] [ServerMain/WARN]: Failed to load datapacks, can't proceed with server load. You can either fix your datapacks or reset to vanilla with --safeMode",
+      { type: 'fatal', reason: 'world' },
+    ],
+    [
+      '[19:12:12] [Server thread/ERROR]: This crash report has been saved to: C:\\server\\crash-reports\\crash-2026-10-16_19.12.12-server.txt',
+      { type: 'fatal', reason: 'crash' },
+    ],
     ['[14:02:12 INFO]: [Nexo] Generating resourcepack...', { type: 'packBuilding' }],
     [
       '[14:02:20 INFO]: [Nexo] Resourcepack uploaded and will be dispatched with publicAddress http://127.0.0.1:8082/pack.zip',
@@ -247,5 +255,15 @@ describe('Test server: plugin JAR', () => {
     expect(await readPluginDescriptor(await jar({ 'README.txt': 'hi' }))).toBeNull();
     expect(parsePluginDescriptor('version: 1\n')).toBeNull();
     expect(parsePluginDescriptor('[broken')).toBeNull();
+  });
+});
+
+describe('Test server: world folders', () => {
+  it('uses level-name from server.properties', () => {
+    expect(worldFolders('level-name=testing\nserver-port=25565\n')).toEqual(['testing', 'testing_nether', 'testing_the_end']);
+  });
+
+  it.each([null, '', 'level-name=\n', 'level-name=../outside\n', 'level-name=a/b\n'])('falls back to "world" for %j', (text) => {
+    expect(worldFolders(text)[0]).toBe('world');
   });
 });

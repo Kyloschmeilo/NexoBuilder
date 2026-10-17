@@ -158,6 +158,8 @@ export const DESKTOP_API = {
     /** The target's plugin config file (`ServerAdapter.configFile`), null when it does not exist yet. */
     readPluginConfig: invoke<[target: PackTargetId], string | null>()('testserver:read-plugin-config'),
     openFolder: invoke<[], void>()('testserver:open-folder'),
+    /** Deletes the world of the target's server (only while no server runs); a new one is created on the next start. */
+    resetWorld: invoke<[target: PackTargetId], void>()('testserver:reset-world'),
     clearLog: invoke<[], boolean>()('testserver:clear-log'),
     onEvent: event<TestServerEvent>()('testserver:event'),
   },

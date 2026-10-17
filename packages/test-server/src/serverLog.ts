@@ -15,10 +15,19 @@ export type ServerLogEvent =
   /** The plugin finished the pack; `url` is where it is served, when the line names it. */
   | { type: 'packReady'; url: string | null }
   /** The plugin could not build or upload the pack; `message` is the plugin's own reason, when the line has one. */
-  | { type: 'packFailed'; message: string | null };
+  | { type: 'packFailed'; message: string | null }
+  /**
+   * The server gives up and shuts down (Paper then still exits with code 0): `world` when the saved world cannot be
+   * loaded, `crash` when it wrote a crash report.
+   */
+  | { type: 'fatal'; reason: 'world' | 'crash' };
 
 const STARTED = /Done \([\d.,]+s\)! For help/;
 const PORT_IN_USE = /FAILED TO BIND TO PORT/i;
+/** "Failed to load datapacks, can't proceed with server load" – Paper's reply to a world it cannot read. */
+const WORLD_UNREADABLE = /Failed to load datapacks, can't proceed with server load/;
+/** "This crash report has been saved to: …" – written right before the server stops. */
+const CRASH_REPORT = /This crash report has been saved to/;
 
 /** ANSI escape sequences (colours) in console output. */
 // eslint-disable-next-line no-control-regex -- matches the escape character on purpose
@@ -35,5 +44,7 @@ export function parseServerLogLine(adapter: ServerAdapter, line: string): Server
   if (pluginEvent) return pluginEvent;
   if (STARTED.test(line)) return { type: 'started' };
   if (PORT_IN_USE.test(line)) return { type: 'portInUse' };
+  if (WORLD_UNREADABLE.test(line)) return { type: 'fatal', reason: 'world' };
+  if (CRASH_REPORT.test(line)) return { type: 'fatal', reason: 'crash' };
   return null;
 }

@@ -15,12 +15,15 @@ import fsp from 'node:fs/promises';
 import { openPath } from '../fileHelpers';
 import { handle, type Handler } from '../ipc';
 import { DEFAULT_PACK_TARGET } from '@resourcepackbuilder/core/project';
+import { DesktopError } from '@resourcepackbuilder/desktop-contract';
+import { isConfigLocked } from '@resourcepackbuilder/test-server';
 import { paperVersions } from './paper';
 import { serverDir } from './paths';
 import { choosePluginJar, downloadPlugin } from './pluginJar';
 import { isRunning, requestReload, runUserCommand, start, stop } from './server';
 import { clearLog, loadConfig, publicState, snapshot, state, updateConfig } from './state';
 import { readPluginConfig, syncFiles } from './sync';
+import { deleteWorld } from './world';
 
 /** Like `handle`, but waits until the saved settings are loaded. */
 function handleLoaded<C extends DesktopInvokeChannel>(channel: C, fn: Handler<C>) {
@@ -50,6 +53,10 @@ export function registerTestServerHandlers(): void {
     const dir = serverDir(state.target ?? DEFAULT_PACK_TARGET);
     await fsp.mkdir(dir, { recursive: true });
     await openPath(dir);
+  });
+  handleLoaded('testserver:reset-world', async (_event, target) => {
+    if (isRunning() || isConfigLocked(state.status)) throw new DesktopError('serverRunning');
+    await deleteWorld(target);
   });
   handleLoaded('testserver:clear-log', () => {
     clearLog();

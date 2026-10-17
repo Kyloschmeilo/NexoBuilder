@@ -23,6 +23,7 @@ import { ensurePaper, type PaperInstallation } from './paper';
 import { serverDir } from './paths';
 import { prepareServerFiles } from './serverFiles';
 import { loadConfig, logInfo, publicState, pushLog, saveConfig, setState, state } from './state';
+import { assertPortsFree, setAsideIncompleteWorld } from './world';
 
 const STOP_TIMEOUT_MS = 45_000;
 const PACK_BUILD_TIMEOUT_MS = 3 * 60_000;
@@ -32,6 +33,8 @@ const QUEUED_RELOAD_DELAY_MS = 1000;
 let serverProcess: ChildProcessWithoutNullStreams | null = null;
 let stopRequested = false;
 let reloadPending = false;
+/** Why the running server is shutting down on its own (Paper still exits with code 0 then); null while all is well. */
+let failure: string | null = null;
 let packTimer: NodeJS.Timeout | undefined;
 
 /** The adapter of the plugin the server runs (or ran last). */
@@ -104,7 +107,13 @@ function handleLine(line: string) {
       }
       break;
     case 'portInUse':
-      setState({ message: t('testServer.portInUse', { port: state.config.port }) });
+      failure = t('testServer.portInUse', { port: state.config.port });
+      setState({ message: failure });
+      break;
+    case 'fatal':
+      // A port message that came first explains more than the crash report it causes
+      failure ??= t(event.reason === 'world' ? 'testServer.worldUnreadable' : 'testServer.crashReport');
+      setState({ message: failure });
       break;
   }
 }
@@ -155,6 +164,7 @@ function processEnded(child: ChildProcess, patch: Partial<TestServerState>) {
 function launch(paper: PaperInstallation, java: JavaInstallation, target: PackTargetId) {
   logInfo(t('testServer.startingPaper', { version: paper.version, java: java.version, ram: state.config.ramGb }));
   reloadPending = false;
+  failure = null;
   setState({ status: 'starting', message: t('testServer.starting') });
   // The plugin builds the pack on startup; no reload until then. One that doesn't gets a reload at 'started'.
   if (packBuildTracked() && adapter().buildsPackOnStart) setPack('building', t('testServer.packBuildingOnStart', pluginArgs()));
@@ -175,12 +185,12 @@ function launch(paper: PaperInstallation, java: JavaInstallation, target: PackTa
   });
   child.on('exit', (code) => {
     logInfo(code !== null ? t('testServer.exitedCode', { code }) : t('testServer.exited'));
-    const expected = stopRequested || code === 0;
+    const expected = stopRequested || (code === 0 && failure === null);
     processEnded(
       child,
       expected
         ? { status: 'stopped', message: null }
-        : { status: 'error', message: state.message || t('testServer.crashed', { code: String(code) }) },
+        : { status: 'error', message: failure ?? t('testServer.crashed', { code: String(code) }) },
     );
   });
 }
@@ -200,6 +210,8 @@ export async function start(target: PackTargetId): Promise<TestServerState> {
     state.installed = { paperVersion: paper.version, paperBuild: paper.build, javaPath: java.path, javaVersion: java.version };
     await saveConfig();
     await prepareServerFiles(target);
+    await setAsideIncompleteWorld(target);
+    await assertPortsFree(state.config);
     launch(paper, java, target);
   } catch (err) {
     const message = describeError(err);

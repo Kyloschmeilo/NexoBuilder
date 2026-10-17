@@ -56,7 +56,7 @@
     "packBuilding": "{plugin} is building the resource pack …",
     "packBuildingOnStart": "{plugin} is building the resource pack on startup …",
     "unknownError": "Unknown error",
-    "portInUse": "Port {port} is in use – is another Minecraft server already running?",
+    "portInUse": "Port {port} is already in use by another program – choose a different Minecraft port in the test server settings.",
     "preparing": "Preparing the test server …",
     "startingPaper": "Starting Paper {version} with Java {java} ({ram} GB RAM) …",
     "starting": "Server is starting …",
@@ -71,6 +71,10 @@
     "syncedSettings": "Project transferred: {written} written, {deleted} removed, settings adjusted.",
     "legacyMoveFailed": "The server folder of an older version could not be moved: {error}",
     "settingsReset": "The saved test server settings were damaged and have been reset (kept as {file}).",
-    "manifestReset": "The list of transferred files was damaged (kept as {file}); files from earlier transfers may remain in {folder}."
+    "manifestReset": "The list of transferred files was damaged (kept as {file}); files from earlier transfers may remain in {folder}.",
+    "worldUnreadable": "The server could not load its world. Use “Reset world” and start again.",
+    "crashReport": "The server crashed and wrote a crash report (see the console).",
+    "incompleteWorld": "The world of an earlier start that failed was incomplete; it was moved to {folder} and is created anew.",
+    "worldReset": "The world was deleted; a new one is created on the next start."
   }
 }

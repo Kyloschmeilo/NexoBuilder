@@ -49,6 +49,7 @@ function fakeApi(versions: () => Promise<string[]>): DesktopTestServerApi {
     sync: () => Promise.reject(new Error('not used')),
     readPluginConfig: () => Promise.resolve(null),
     openFolder: () => Promise.resolve(),
+    resetWorld: () => Promise.resolve(),
     clearLog: () => Promise.resolve(true),
     onEvent: () => () => undefined,
   };
