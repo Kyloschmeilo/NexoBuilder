@@ -17,7 +17,9 @@ import {
 import { useTranslations } from 'next-intl';
 import { cn } from 'cn';
 import { countIssues } from '@resourcepackbuilder/utils';
+import type { PackTargetId } from '@resourcepackbuilder/core/project';
 import { IconButton, MenuEntries, type MenuEntry, StatusDot, Tip, TONE_ICONS, TONE_TEXT_CLASS } from '@resourcepackbuilder/ui';
+import { Badge } from '@resourcepackbuilder/ui/components/badge';
 import { Button } from '@resourcepackbuilder/ui/components/button';
 import { Kbd } from '@resourcepackbuilder/ui/components/kbd';
 import {
@@ -124,8 +126,10 @@ function ThemeMenu() {
   );
 }
 
-function ProjectMenu({ name }: { name: string }) {
+/** The project menu, labelled with the project's name and the plugin it is for. */
+function ProjectMenu({ name, target }: { name: string; target: PackTargetId }) {
   const t = useTranslations('layout.topBar');
+  const tTargets = useTranslations('layout.projectForm.targets');
   const actions = useProjectActions();
   const entries: MenuEntry[] = [
     {
@@ -164,6 +168,9 @@ function ProjectMenu({ name }: { name: string }) {
     <DropdownMenu>
       <DropdownMenuTrigger render={<Button variant="ghost" className="max-w-70 min-w-0 shrink" />}>
         <span className="truncate">{name || t('untitled')}</span>
+        <Badge variant="outline" className="text-muted-foreground">
+          {tTargets(`${target}.name`)}
+        </Badge>
         <ChevronDown className="size-3.5" />
       </DropdownMenuTrigger>
       <DropdownMenuContent className="w-65">
@@ -190,7 +197,7 @@ export function TopBar() {
       </div>
       {project && (
         <>
-          <ProjectMenu name={project.name} />
+          <ProjectMenu name={project.name} target={project.target} />
           <div className="flex shrink-0 items-center gap-0.5">
             <IconButton
               label={

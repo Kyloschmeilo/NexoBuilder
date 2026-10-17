@@ -1,12 +1,15 @@
 import { useTranslations } from 'next-intl';
+import { DEFAULT_PACK_TARGET } from '@resourcepackbuilder/core/project';
+import { serverAdapterFor } from '@resourcepackbuilder/test-server';
 import { SegmentedControl, type SegmentedOption } from '@resourcepackbuilder/ui';
+import { useProjectStore } from '../../../store/project';
 
 interface TriStateProps {
   value: boolean | undefined;
   onChange: (value: boolean | undefined) => void;
   /** Offers "Default" (not set) next to yes/no. */
   allowUnset?: boolean;
-  /** The value Nexo uses when unset (display only). */
+  /** The value the plugin uses when unset (display only). */
   defaultHint?: boolean;
 }
 
@@ -17,6 +20,7 @@ type StateName = keyof typeof STATES;
 export function TriState({ value, onChange, allowUnset = true, defaultHint }: TriStateProps) {
   const t = useTranslations('editor');
   const tCommon = useTranslations('common');
+  const plugin = serverAdapterFor(useProjectStore((s) => s.project?.target ?? DEFAULT_PACK_TARGET)).pluginName;
   const current: StateName = value === undefined ? 'unset' : value ? 'true' : 'false';
   const options: Array<SegmentedOption<StateName>> = [
     { value: 'true', label: tCommon('yes') },
@@ -25,7 +29,7 @@ export function TriState({ value, onChange, allowUnset = true, defaultHint }: Tr
   if (allowUnset) {
     options.unshift({
       value: 'unset',
-      hint: t('inputs.defaultTooltip'),
+      hint: t('inputs.defaultTooltip', { plugin }),
       label:
         defaultHint === undefined
           ? t('inputs.default')

@@ -90,9 +90,9 @@ export function ServerConsole() {
         {log.length === 0 ? (
           <div className="text-muted-foreground">{t('empty')}</div>
         ) : (
-          log.map((line, index) => (
+          log.map((line) => (
             <div
-              key={index}
+              key={line.id}
               data-testid="console-line"
               data-level={line.kind}
               className={cn('break-words whitespace-pre-wrap', LINE_COLOR[line.kind])}

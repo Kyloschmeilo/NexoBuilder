@@ -4,6 +4,7 @@ import { useTranslations } from 'next-intl';
 import { Button } from '@resourcepackbuilder/ui/components/button';
 import { Empty, EmptyContent, EmptyDescription, EmptyHeader, EmptyMedia, EmptyTitle } from '@resourcepackbuilder/ui/components/empty';
 import { FolderView } from '../features/folder/FolderView';
+import { folderDirPath } from '../features/folder/folderDir';
 import { useFolderActions } from '../features/folder/useFolderActions';
 import { ItemEditor } from '../features/item/ItemEditor';
 import { AttributesView } from '../features/craftEngine/AttributesView';
@@ -44,7 +45,9 @@ function NothingSelected() {
           )}
         </EmptyMedia>
         <EmptyTitle className="font-heading text-xl tracking-wide uppercase">{hasFolders ? t('pickTitle') : t('startTitle')}</EmptyTitle>
-        <EmptyDescription>{hasFolders ? t('pickDescription') : t('startDescription')}</EmptyDescription>
+        <EmptyDescription>
+          {hasFolders ? t('pickDescription') : t('startDescription', { path: folderDirPath(project, null) })}
+        </EmptyDescription>
       </EmptyHeader>
       {!hasFolders && (
         <EmptyContent>

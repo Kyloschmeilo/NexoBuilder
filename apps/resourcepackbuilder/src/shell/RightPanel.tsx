@@ -4,6 +4,7 @@ import { useTranslations } from 'next-intl';
 import { type ExportPlan, findItemPlan, itemYamlPreview, packTargetFor } from '@resourcepackbuilder/export';
 import { issuesFor, type Issue } from '@resourcepackbuilder/utils';
 import type { Project } from '@resourcepackbuilder/core/project';
+import { serverAdapterFor } from '@resourcepackbuilder/test-server';
 import { Tip } from '@resourcepackbuilder/ui';
 import { ScrollArea } from '@resourcepackbuilder/ui/components/scroll-area';
 import { IssueList } from '../components/IssueList';
@@ -78,7 +79,9 @@ export function RightPanel() {
             <YamlCode text={text} />
           </div>
         ) : (
-          <div className="p-8 text-center text-xs text-muted-foreground">{t('empty')}</div>
+          <div className="p-8 text-center text-xs text-muted-foreground">
+            {t('empty', { plugin: serverAdapterFor(project.target).pluginName })}
+          </div>
         )}
         {issues.length > 0 && (
           <div className="px-2.5 pb-3.5">

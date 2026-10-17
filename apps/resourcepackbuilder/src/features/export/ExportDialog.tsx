@@ -8,11 +8,12 @@ import {
   type ExportSelection,
   listMultiExportPaths,
   type MultiExportPlan,
+  packTargetFor,
   planMultiExport,
   SELECT_ALL,
   selectNothing,
 } from '@resourcepackbuilder/export';
-import { MEDIA_KIND_LIST, mediaList, type Project } from '@resourcepackbuilder/core/project';
+import { MEDIA_KIND_LIST, mediaList, type PackTargetId, type Project } from '@resourcepackbuilder/core/project';
 import { getMcVersion } from '@resourcepackbuilder/minecraft';
 import { SectionLabel } from '@resourcepackbuilder/ui';
 import { Alert, AlertDescription } from '@resourcepackbuilder/ui/components/alert';
@@ -59,7 +60,20 @@ function isNothingExported({ plan, project }: MultiExportPlan['projects'][number
   return plan.items.length === 0 && MEDIA_KIND_LIST.every((kind) => mediaList(project, kind).length === 0);
 }
 
-function ModePicker({ mode, onChange }: { mode: ExportMode; onChange: (mode: ExportMode) => void }) {
+/** The plugin all exported projects are for, or 'mixed' when they are for different ones; `fallback` when none is exported. */
+function exportTargetOf(multi: MultiExportPlan, fallback: PackTargetId): PackTargetId | 'mixed' {
+  const targets = new Set(multi.projects.map((e) => e.project.target));
+  if (targets.size > 1) return 'mixed';
+  return [...targets][0] ?? fallback;
+}
+
+interface ModePickerProps {
+  mode: ExportMode;
+  target: PackTargetId | 'mixed';
+  onChange: (mode: ExportMode) => void;
+}
+
+function ModePicker({ mode, target, onChange }: ModePickerProps) {
   const t = useTranslations('dialogs.export.modes');
   const id = useId();
   return (
@@ -76,9 +90,9 @@ function ModePicker({ mode, onChange }: { mode: ExportMode; onChange: (mode: Exp
             <FieldContent>
               <FieldTitle className="[&_svg]:size-4 [&_svg]:text-primary">
                 {m.icon}
-                {t(`${m.id}.title`)}
+                {t(`${m.id}.title`, { target })}
               </FieldTitle>
-              <FieldDescription className="text-xs">{t(`${m.id}.description`)}</FieldDescription>
+              <FieldDescription className="text-xs">{t(`${m.id}.description`, { target })}</FieldDescription>
             </FieldContent>
             <RadioGroupItem id={`${id}-${m.id}`} value={m.id} />
           </Field>
@@ -174,6 +188,8 @@ function ExportFrame({ choices: { otherProjectIds, selections }, onChoicesChange
   const paths = useMemo(() => listMultiExportPaths(multi, mode), [multi, mode]);
   const hasSeveralProjects = multi.projects.length > 1;
   const isEmpty = multi.projects.every(isNothingExported);
+  const exportTarget = exportTargetOf(multi, project.target);
+  const { layout } = packTargetFor(exportTarget === 'mixed' ? project : { target: exportTarget });
   const expandedProject = choices.find((c) => c.summary.id === expandedId && includedIds.has(c.summary.id))?.project ?? null;
 
   const setIncluded = (projectId: string, isIncluded: boolean) => {
@@ -187,7 +203,7 @@ function ExportFrame({ choices: { otherProjectIds, selections }, onChoicesChange
     if (errorCount > 0) {
       const confirmed = await confirm({
         title: t('confirmErrors.title'),
-        message: t('confirmErrors.message', { count: errorCount }),
+        message: t('confirmErrors.message', { count: errorCount, target: exportTarget }),
         confirmLabel: t('confirmErrors.confirm'),
         destructive: true,
       });
@@ -215,7 +231,7 @@ function ExportFrame({ choices: { otherProjectIds, selections }, onChoicesChange
       }
     >
       <div className="flex flex-col gap-4">
-        <ModePicker mode={mode} onChange={setMode} />
+        <ModePicker mode={mode} target={exportTarget} onChange={setMode} />
 
         <div className="grid items-start gap-5 @3xl/dialog:grid-cols-2">
           <section className="flex min-w-0 flex-col gap-2">
@@ -244,7 +260,9 @@ function ExportFrame({ choices: { otherProjectIds, selections }, onChoicesChange
 
         {mode === 'full' && (
           <Alert variant="info">
-            <AlertDescription className="text-xs">{t.rich('install', richTags)}</AlertDescription>
+            <AlertDescription className="text-xs">
+              {t.rich('install', { ...richTags, target: exportTarget, pluginDir: layout.pluginDir, reload: layout.reloadCommand })}
+            </AlertDescription>
           </Alert>
         )}
       </div>

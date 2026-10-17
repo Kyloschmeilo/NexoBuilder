@@ -14,7 +14,7 @@
     "about": "Über {app}"
   },
   "about": {
-    "detail": "Erstellt fertige Nexo-Items mit Resourcepack aus Blockbench-Modellen, Java-Modellen und Texturen.\n\nProjekte werden automatisch gespeichert in:\n{path}"
+    "detail": "Erstellt fertige Items für Nexo und CraftEngine mit Resourcepack aus Blockbench-Modellen, Java-Modellen und Texturen.\n\nProjekte werden automatisch gespeichert in:\n{path}"
   },
   "dialog": {
     "saveAs": "Speichern unter"

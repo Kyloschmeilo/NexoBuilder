@@ -1,5 +1,10 @@
 {
   "copyButton": {
     "copied": "Copied"
+  },
+  "labels": {
+    "close": "Close",
+    "closeToast": "Close notification",
+    "loading": "Loading"
   }
 }

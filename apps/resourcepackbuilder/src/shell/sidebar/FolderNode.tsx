@@ -58,8 +58,12 @@ export function FolderNode({ folderId, depth, tree }: { folderId: string; depth:
   const isOpen = search !== null || isExpanded;
   const count = tree.itemCounts.get(folderId) ?? 0;
   const newItem = () => newItemDialog.openWithPayload({ folderId });
+  // The row selects (and opens a closed folder); only the chevron and the arrow keys close it again
   const activate = () => {
     select({ kind: 'folder', id: folderId });
+    if (!search && !isExpanded) setExpanded(folderId, true);
+  };
+  const toggle = () => {
     if (!search) setExpanded(folderId, !isExpanded);
   };
 
@@ -67,17 +71,18 @@ export function FolderNode({ folderId, depth, tree }: { folderId: string; depth:
     { icon: <Plus />, label: t('folderMenu.newItem'), onSelect: newItem },
     { icon: <FolderPlus />, label: t('folderMenu.newSubfolder'), onSelect: () => void folders.create(folderId) },
     { icon: <Pencil />, label: tCommon('rename'), onSelect: () => void folders.rename(folder) },
-    {
-      icon: <ClipboardPaste />,
-      label: t('paste.label'),
-      description: !canCopyItemConfig(project.target)
-        ? t('paste.unsupported')
-        : clip
-          ? t('paste.fromItemIntoFolder', { name: clipboardLabel(clip) })
-          : t('paste.needsCopy'),
-      disabled: !canPasteItemConfig(clip, project.target) || count === 0,
-      onSelect: () => items.pasteProperties(itemIdsInFolder(project, folderId)),
-    },
+    // Copying works on Nexo's property groups; other targets do not offer it
+    ...(canCopyItemConfig(project.target)
+      ? [
+          {
+            icon: <ClipboardPaste />,
+            label: t('paste.label'),
+            description: clip ? t('paste.fromItemIntoFolder', { name: clipboardLabel(clip) }) : t('paste.needsCopy'),
+            disabled: !canPasteItemConfig(clip, project.target) || count === 0,
+            onSelect: () => items.pasteProperties(itemIdsInFolder(project, folderId)),
+          },
+        ]
+      : []),
     'separator',
     { icon: <Trash2 />, label: t('folderMenu.delete'), destructive: true, onSelect: () => void folders.remove(folder) },
   ];
@@ -104,6 +109,9 @@ export function FolderNode({ folderId, depth, tree }: { folderId: string; depth:
           if (e.target === e.currentTarget && e.key === 'F2') {
             e.preventDefault();
             void folders.rename(folder);
+          } else if (e.target === e.currentTarget && (e.key === 'ArrowRight' || e.key === 'ArrowLeft')) {
+            e.preventDefault();
+            if (!search) setExpanded(folderId, e.key === 'ArrowRight');
           } else activateOnKey(activate)(e);
         }}
         actions={
@@ -112,7 +120,7 @@ export function FolderNode({ folderId, depth, tree }: { folderId: string; depth:
           </IconButton>
         }
       >
-        <TreeChevron isOpen={isOpen} />
+        <TreeChevron isOpen={isOpen} onToggle={toggle} />
         {isOpen ? <FolderOpen className={treeRowSlots.icon} /> : <FolderIcon className={treeRowSlots.icon} />}
         <span className={treeRowSlots.label}>{folder.name}</span>
         <span className={treeRowSlots.count}>{count}</span>

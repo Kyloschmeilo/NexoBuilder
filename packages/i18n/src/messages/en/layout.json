@@ -47,9 +47,10 @@
     "newFolder": "New folder",
     "folderButton": "Folder",
     "searchPlaceholder": "Search items…",
+    "noMatches": "No matching items",
     "empty": {
       "title": "No folders yet",
-      "description": "Folders become subfolders in plugins/Nexo/items. Create a folder first, then you can create items in it.",
+      "description": "Folders become subfolders in {path}. Create a folder first, then you can create items in it.",
       "action": "Create first folder"
     },
     "addItem": "Add item",
@@ -91,7 +92,7 @@
     },
     "testServer": {
       "label": "Test server",
-      "hint": "Local Minecraft test server with Nexo – updates automatically"
+      "hint": "Local Minecraft test server with {plugin} – updates automatically"
     },
     "folderMenu": {
       "newItem": "New item",
@@ -107,14 +108,13 @@
       "label": "Paste properties…",
       "fromItem": "from “{name}”",
       "fromItemIntoFolder": "from “{name}” into all items of the folder",
-      "needsCopy": "Copy from an item first",
-      "unsupported": "Only in Nexo projects for now"
+      "needsCopy": "Copy from an item first"
     }
   },
   "folder": {
     "newFolderTitle": "New folder",
     "newSubfolderTitle": "New subfolder",
-    "nameLabel": "Folder name (becomes a subfolder in plugins/Nexo/items)",
+    "nameLabel": "Folder name (becomes a subfolder in {path})",
     "renameTitle": "Rename folder",
     "renameLabel": "New name",
     "deleteTitle": "Delete folder?",
@@ -130,7 +130,7 @@
     "pickTitle": "Pick a folder or an item on the left",
     "pickDescription": "Use the + next to a folder to create a new item. You can also drag models straight onto a folder.",
     "startTitle": "Start with a folder",
-    "startDescription": "Folders become subfolders in plugins/Nexo/items. You create your items inside them.",
+    "startDescription": "Folders become subfolders in {path}. You create your items inside them.",
     "createFolder": "Create folder",
     "dropNeedsFolder": "Create a folder first – the items are created inside it."
   },
@@ -147,11 +147,11 @@
   },
   "rightPanel": {
     "title": "YAML preview",
-    "empty": "Select an item to see the finished Nexo YAML here.",
+    "empty": "Select an item to see the finished {plugin} YAML here.",
     "checks": "Check"
   },
   "welcome": {
-    "tagline": "Turns Blockbench models, Java models or textures into finished Nexo items – with item config and a resource pack as external pack.",
+    "tagline": "Turns Blockbench models, Java models or textures into finished items for Nexo or CraftEngine – with item config and resource pack.",
     "newProject": "New project",
     "savedProjects": "Saved projects",
     "openShared": "Open shared project",
@@ -159,7 +159,7 @@
     "steps": {
       "folders": {
         "title": "Create folders",
-        "text": "Every folder becomes a subfolder in plugins/Nexo/items."
+        "text": "Every folder becomes a subfolder of the plugin’s item folder."
       },
       "model": {
         "title": "Drop a model",
@@ -167,11 +167,11 @@
       },
       "properties": {
         "title": "Add properties",
-        "text": "Components, mechanics (furniture, custom block …), CustomArmor and more."
+        "text": "Components, furniture, custom blocks, armor and more."
       },
       "export": {
         "title": "Export",
-        "text": "Unzip the ZIP into plugins/Nexo and run /nexo reload all."
+        "text": "Unzip the ZIP into the plugin folder and reload the plugin – the included INSTALL.txt explains how."
       }
     }
   },
@@ -183,10 +183,13 @@
     "version": "Minecraft version (server)",
     "create": "Create project",
     "target": "Server plugin",
-    "targetHint": "You can't change this later.",
+    "targetHint": "Choose this first – it can’t be changed later, because the whole project is built for this plugin.",
     "targets": {
-      "nexo": { "name": "Nexo", "description": "Items, blocks and furniture for the Nexo plugin." },
-      "craftengine": { "name": "CraftEngine", "description": "Items, blocks and furniture for the CraftEngine plugin." }
+      "nexo": { "name": "Nexo", "description": "Items, blocks and furniture for Nexo. The test server needs your purchased Nexo JAR." },
+      "craftengine": {
+        "name": "CraftEngine",
+        "description": "Items, blocks and furniture for CraftEngine, plus loot sources, templates, global variables and attributes. Free – the test server downloads it from Modrinth."
+      }
     }
   },
   "projectList": {

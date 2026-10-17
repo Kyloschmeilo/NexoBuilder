@@ -1,5 +1,10 @@
 {
   "copyButton": {
     "copied": "Kopiert"
+  },
+  "labels": {
+    "close": "Schließen",
+    "closeToast": "Meldung schließen",
+    "loading": "Wird geladen"
   }
 }

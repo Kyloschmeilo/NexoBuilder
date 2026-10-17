@@ -84,27 +84,27 @@ function ItemActions({ item }: { item: Item }) {
   const clip = useClipboardStore((s) => s.clip);
   const { target } = useOpenProject();
   const actions = useItemActions();
-  // Copying works on Nexo's property groups; other targets show both buttons disabled with the reason
+  // Copying works on Nexo's property groups; other targets do not offer it
   const canCopy = canCopyItemConfig(target);
   const canPaste = canPasteItemConfig(clip, target) && clip.sourceId !== item.id;
-  const pasteTip = !canCopy
-    ? t('editor.copyUnsupported')
-    : clip
-      ? t('editor.pasteTooltip', { name: clipboardLabel(clip) })
-      : t('editor.pasteDisabled');
+  const pasteTip = clip ? t('editor.pasteTooltip', { name: clipboardLabel(clip) }) : t('editor.pasteDisabled');
   return (
     <>
       <GiveButton item={item} />
-      <Tip label={canCopy ? t('editor.copyTooltip') : t('editor.copyUnsupported')}>
-        <Button variant="outline" size="sm" disabled={!canCopy} onClick={() => actions.copyProperties(item.id)}>
-          <ClipboardCopy /> {tCommon('copy')}
-        </Button>
-      </Tip>
-      <Tip label={pasteTip}>
-        <Button variant="outline" size="sm" disabled={!canPaste} onClick={() => actions.pasteProperties([item.id])}>
-          <ClipboardPaste /> {tCommon('paste')}
-        </Button>
-      </Tip>
+      {canCopy && (
+        <>
+          <Tip label={t('editor.copyTooltip')}>
+            <Button variant="outline" size="sm" onClick={() => actions.copyProperties(item.id)}>
+              <ClipboardCopy /> {tCommon('copy')}
+            </Button>
+          </Tip>
+          <Tip label={pasteTip}>
+            <Button variant="outline" size="sm" disabled={!canPaste} onClick={() => actions.pasteProperties([item.id])}>
+              <ClipboardPaste /> {tCommon('paste')}
+            </Button>
+          </Tip>
+        </>
+      )}
       <Button variant="outline" size="sm" onClick={() => actions.duplicate(item)}>
         <Copy /> {tCommon('duplicate')}
       </Button>
