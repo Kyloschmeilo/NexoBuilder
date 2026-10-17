@@ -474,6 +474,12 @@ describe('Shared projects', () => {
     expect(ben.engine.state.clock).toBe(ahead);
   });
 
+  it('resets a stored clock that lies too far ahead', async () => {
+    const { ben, clock } = await setup();
+    ben.connect({ ...ben.engine.state, clock: clock.t + MAX_REV_AHEAD_MS + 1 });
+    expect(ben.engine.state.clock).toBe(clock.t);
+  });
+
   it('skips envelopes with invalid data from other installations and cleans up lenient fields', async () => {
     const { folder, anna, ben } = await setup();
     const glyph = anna.project.glyphs[0];

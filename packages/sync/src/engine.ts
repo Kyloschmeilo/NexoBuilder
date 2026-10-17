@@ -185,7 +185,8 @@ export class SyncEngine {
     const saved = parseSyncState(state);
     this.versions = new Map(Object.entries(saved?.versions ?? {}));
     this.files = new Map(Object.entries(saved?.files ?? {}));
-    this.clock = saved?.clock ?? 0;
+    // A clock pushed far ahead (an older version accepted any rev) would make every own change lose: back to now
+    this.clock = saved && !isPlausibleRev(saved.clock, now()) ? now() : (saved?.clock ?? 0);
     // Everything that changed locally since the last sync (including deletions) must be written
     for (const key of new Set([...entityKeys(project), ...this.versions.keys()])) {
       const ref = parseEntityKey(key);
