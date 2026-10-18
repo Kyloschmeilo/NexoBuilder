@@ -4,7 +4,6 @@
  */
 import {
   CE_FURNITURE_ANCHORS,
-  craftEngineBlock,
   craftEngineFurniture,
   furnitureVariants,
   furnitureVariantsKey,
@@ -28,13 +27,6 @@ export function itemFurniture(item: Item, target: PackTargetId): Record<string, 
 /** Whether the item places furniture, so the editor shows its Furniture section. */
 export function placesFurniture(item: Item, target: PackTargetId): boolean {
   return itemFurniture(item, target) !== null;
-}
-
-/** Whether the item places a block, which an item that places furniture cannot do at the same time. */
-export function placesBlock(item: Item, target: PackTargetId): boolean {
-  return target === 'craftengine'
-    ? craftEngineBlock(item.config) !== null
-    : isPlainObject(getPath(item.config, ['Mechanics', 'custom_block']));
 }
 
 /** The variants the switcher offers: ground, wall and ceiling, then the furniture's own names in their order. */

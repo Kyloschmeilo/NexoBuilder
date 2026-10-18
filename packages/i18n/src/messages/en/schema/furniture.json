@@ -54,18 +54,18 @@
             "label": "Can be placed underwater"
           },
           "seats": {
-            "label": "Seats (x,y,z)",
+            "label": "Seats",
             "placeholder": "0,0.5,0"
           },
           "beds": {
-            "label": "Beds (x,y,z skip_night reset_phantoms)",
+            "label": "Beds",
             "placeholder": "0,0,0 true true"
           },
           "lights": {
             "label": "Light",
             "fields": {
               "lights": {
-                "label": "Light sources (x,y,z level)",
+                "label": "Light sources",
                 "placeholder": "0,0,0 15"
               },
               "toggleable": {

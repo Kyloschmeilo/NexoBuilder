@@ -27,7 +27,7 @@ import { TextInput } from '../../../components/editor/inputs/TextInput';
 import { Vector3Input } from '../../../components/editor/inputs/Vector3Input';
 import { isFieldVisible } from '../../../components/editor/values';
 import { EntrySummary, vectorText } from './nexoEntryEditors';
-import { FurnitureGroup } from './parts';
+import { FurnitureGroup, TypeSelect } from './parts';
 
 /** The object with `key` set, or without it for `undefined`. */
 export function withKey(object: Record<string, unknown>, key: string, value: ConfigValue | undefined): ConfigObject {
@@ -170,12 +170,12 @@ export function ElementFields({
   return (
     <FieldGroup>
       <FieldRow label={t('elementType')} yamlKey="type">
-        <SelectInput
-          aria-label={t('elementType')}
+        <TypeSelect
+          label={t('elementType')}
           value={type}
           // Element types come from core at runtime; a test checks each has a name in en and de
           options={CE_FURNITURE_ELEMENT_TYPES.map((value) => ({ value, text: t(`elementTypes.${value}` as never) }))}
-          onChange={(value) => set('type', value ?? 'item_display')}
+          onChange={(value) => set('type', value)}
         />
       </FieldRow>
       {ITEM_TYPES.has(type) && text('item', t('item'), t('itemPlaceholder'))}

@@ -83,8 +83,8 @@ export function NexoFurnitureEditor({ item, furniture }: { item: Item; furniture
   const categories = Object.keys(OPTION_CATEGORIES).map((id) => ({ id, label: t(`optionCategories.${id}` as never) }));
   return (
     <div className="@container/furniture flex min-w-0 flex-col gap-6">
-      <div className="grid min-w-0 gap-5 @3xl/furniture:grid-cols-[minmax(0,5fr)_minmax(0,6fr)]">
-        <div className="min-w-0 @3xl/furniture:sticky @3xl/furniture:top-3 @3xl/furniture:self-start">
+      <div className="grid min-w-0 gap-5 @2xl/furniture:grid-cols-[minmax(0,5fr)_minmax(0,6fr)]">
+        <div className="min-w-0 @2xl/furniture:sticky @2xl/furniture:top-3 @2xl/furniture:self-start">
           <NexoFurniturePreview item={item} furniture={furniture} />
         </div>
         <div className="flex min-w-0 flex-col gap-5">

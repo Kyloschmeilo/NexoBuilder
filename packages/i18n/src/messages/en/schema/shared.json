@@ -583,19 +583,19 @@
       "help": "Barriers are solid 1×1 blocks; interactions scale freely but have no collision.",
       "fields": {
         "barriers": {
-          "label": "Barriers (x,y,z)",
+          "label": "Barriers",
           "placeholder": "0,0,0  or range 0..1,0,0"
         },
         "interactions": {
-          "label": "Interactions (x,y,z width,height)",
+          "label": "Interactions",
           "placeholder": "0,0,0 1,1"
         },
         "shulkers": {
-          "label": "Shulkers (x,y,z size length [direction])",
+          "label": "Shulkers",
           "placeholder": "0,0,0 1.0 1.0"
         },
         "ghasts": {
-          "label": "Ghasts (x,y,z size [rotation])",
+          "label": "Happy ghasts",
           "placeholder": "0,0,0 0.25"
         }
       }

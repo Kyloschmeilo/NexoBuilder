@@ -54,18 +54,18 @@
             "label": "Kann unter Wasser stehen"
           },
           "seats": {
-            "label": "Sitze (x,y,z)",
+            "label": "Sitze",
             "placeholder": "0,0.5,0"
           },
           "beds": {
-            "label": "Betten (x,y,z nacht_überspringen phantome_zurücksetzen)",
+            "label": "Betten",
             "placeholder": "0,0,0 true true"
           },
           "lights": {
             "label": "Licht",
             "fields": {
               "lights": {
-                "label": "Lichtquellen (x,y,z stufe)",
+                "label": "Lichtquellen",
                 "placeholder": "0,0,0 15"
               },
               "toggleable": {

@@ -147,13 +147,8 @@ describe('CraftEngine furniture section', () => {
     expect(summaryOf(pane.querySelector('[data-slot=list-row]'))).toBe('Seat0, 0.5, 0 · yaw 90');
   });
 
-  it('offers to place furniture, but not on an item that places a block', () => {
+  it('renders nothing while the item places no furniture', () => {
     const item = openProject('craftengine', {});
-    const host = render(<FurnitureSection item={item} />, 'craftengine');
-    click([...host.querySelectorAll('button')].find((b) => b.textContent === 'Place furniture'));
-    expect(itemConfig(item.id)?.furniture).toMatchObject({ variants: { ground: {} } });
-    cleanup();
-    const block = openProject('craftengine', { block: {} });
-    expect(render(<FurnitureSection item={block} />, 'craftengine').textContent).toContain('An item places either a block or furniture.');
+    expect(render(<FurnitureSection item={item} />, 'craftengine').textContent).toBe('');
   });
 });

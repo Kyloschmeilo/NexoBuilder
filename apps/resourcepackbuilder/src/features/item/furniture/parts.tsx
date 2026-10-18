@@ -9,6 +9,7 @@ import type { Field } from '@resourcepackbuilder/core/form';
 import { toYaml } from '@resourcepackbuilder/core/yaml';
 import { compareVersions } from '@resourcepackbuilder/minecraft';
 import { DocsLink, type DocsTarget, Help, type MenuEntry, StatusPill } from '@resourcepackbuilder/ui';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@resourcepackbuilder/ui/components/select';
 import { FieldRenderer } from '../../../components/editor';
 import { useFieldContext } from '../../../components/editor/fieldContext';
 import { BooleanSwitch } from '../../../components/editor/inputs/BooleanSwitch';
@@ -158,5 +159,41 @@ export function FieldFeatureRow({ field, value, onChange, onRemove, yamlKey, lab
     >
       {!control && <FieldRenderer field={field} value={value} root hideLabel={field.type !== 'object'} onChange={onChange} />}
     </FeatureRow>
+  );
+}
+
+/**
+ * A select of a value that is always set (an element's or hitbox's type): no "not set" entry, and a value outside the
+ * options (written in the YAML) stays listed as it is.
+ */
+export function TypeSelect({
+  label,
+  value,
+  options,
+  onChange,
+}: {
+  label: string;
+  value: string;
+  options: ReadonlyArray<{ value: string; text: string }>;
+  onChange: (value: string) => void;
+}) {
+  const items = options.some((o) => o.value === value) ? options : [{ value, text: value }, ...options];
+  return (
+    <Select<string>
+      items={items.map((o) => ({ value: o.value, label: o.text }))}
+      value={value}
+      onValueChange={(next) => next && onChange(next)}
+    >
+      <SelectTrigger aria-label={label} className="w-full">
+        <SelectValue />
+      </SelectTrigger>
+      <SelectContent>
+        {items.map((o) => (
+          <SelectItem key={o.value} value={o.value}>
+            {o.text}
+          </SelectItem>
+        ))}
+      </SelectContent>
+    </Select>
   );
 }

@@ -1,7 +1,7 @@
 /**
  * One variant of a CraftEngine furniture in two panes: the preview with the lists of elements and hitboxes on one
  * side, and the editor of the selected element or hitbox on the other (the variant's own settings while nothing is
- * selected). Below 48 rem the panes stack. A hitbox's seats are a nested list inside its editor.
+ * selected). Below 42 rem the panes stack. A hitbox's seats are a nested list inside its editor.
  */
 import { type ReactNode, useState } from 'react';
 import { useTranslations } from 'next-intl';
@@ -35,7 +35,7 @@ import { useOpenProject } from '../../../store/project';
 import { ElementFields, KeyedFields, toNumber, useElementSummary, vectorSummary, withKey } from './DisplayElementsEditor';
 import { FurniturePreview } from './FurniturePreview';
 import { EntrySummary, vectorText } from './nexoEntryEditors';
-import { FurnitureGroup } from './parts';
+import { FurnitureGroup, TypeSelect } from './parts';
 
 type Edit = (next: (value: ConfigObject) => ConfigObject, historyKey?: string) => void;
 type ListKey = 'elements' | 'hitboxes';
@@ -155,13 +155,13 @@ function HitboxFields({
     <div className="flex min-w-0 flex-col gap-5">
       <FieldGroup>
         <FieldRow label={t('hitboxType')} yamlKey="type">
-          <SelectInput
-            aria-label={t('hitboxType')}
+          <TypeSelect
+            label={t('hitboxType')}
             value={type}
             // Hitbox types come from core at runtime; a test checks each has a name in en and de
             options={CE_FURNITURE_HITBOX_TYPES.map((value) => ({ value, text: t(`hitboxTypes.${value}` as never) }))}
             // Keys only the old type reads (an interaction's width and height …) go with it
-            onChange={(value) => update((h) => furnitureHitboxWithType(h, value ?? 'interaction'))}
+            onChange={(value) => update((h) => furnitureHitboxWithType(h, value))}
           />
         </FieldRow>
         <FieldRow label={t('position')} yamlKey="position">
@@ -362,7 +362,7 @@ export function FurnitureVariantEditor({
   }
 
   return (
-    <div className="grid min-w-0 gap-5 @3xl/furniture:grid-cols-[minmax(0,1fr)_minmax(0,1fr)]">
+    <div className="grid min-w-0 gap-5 @2xl/furniture:grid-cols-[minmax(0,5fr)_minmax(0,6fr)]">
       <div className="flex min-w-0 flex-col gap-5">
         <FurniturePreview project={project} item={item} variantName={name} variant={variant} height={260} />
         <FurnitureGroup
@@ -408,7 +408,7 @@ export function FurnitureVariantEditor({
       </div>
       <div
         data-slot="furniture-detail"
-        className="flex min-w-0 flex-col gap-3 border-t border-line pt-4 @3xl/furniture:sticky @3xl/furniture:top-3 @3xl/furniture:self-start @3xl/furniture:border-t-0 @3xl/furniture:border-l @3xl/furniture:pt-0 @3xl/furniture:pl-5"
+        className="flex min-w-0 flex-col gap-3 border-t border-line pt-4 @2xl/furniture:sticky @2xl/furniture:top-3 @2xl/furniture:self-start @2xl/furniture:border-t-0 @2xl/furniture:border-l @2xl/furniture:pt-0 @2xl/furniture:pl-5"
       >
         {pane}
       </div>
