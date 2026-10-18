@@ -1,6 +1,6 @@
 /** A small outlined pill that states a status (valid, 2 warnings, 1 error) in the status colours, never the accent. */
 import type { ReactNode } from 'react';
-import { cn } from 'cn';
+import { cn } from '../lib/cn';
 
 /** The status a {@link StatusPill} reports. `info` and `muted` are neutral. */
 export type StatusPillTone = 'ok' | 'warning' | 'error' | 'info' | 'muted';

@@ -1,5 +1,5 @@
 import type { ReactNode } from 'react';
-import { cn } from 'cn';
+import { cn } from './lib/cn';
 
 interface ThumbProps {
   /** Image URL; without one `fallback` (usually an icon) is shown. */

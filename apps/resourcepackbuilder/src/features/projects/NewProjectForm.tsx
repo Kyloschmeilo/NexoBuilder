@@ -6,7 +6,7 @@ import { DEFAULT_MC_VERSION, MC_VERSIONS } from '@resourcepackbuilder/minecraft'
 import { DEFAULT_PACK_TARGET, defaultNamespace, PACK_TARGETS, type PackTargetId } from '@resourcepackbuilder/core/project';
 import { CE_WIKI_URL } from '@resourcepackbuilder/core/craftEngine';
 import { NEXO_DOCS_URL } from '@resourcepackbuilder/core/nexo';
-import { cn } from 'cn';
+import { cn } from '@resourcepackbuilder/ui/cn';
 import { Button } from '@resourcepackbuilder/ui/components/button';
 import { Field, FieldDescription, FieldLabel, FieldLegend, FieldSet } from '@resourcepackbuilder/ui/components/field';
 import { Input } from '@resourcepackbuilder/ui/components/input';

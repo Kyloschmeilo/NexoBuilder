@@ -7,7 +7,7 @@
 import { type ComponentProps, type ReactNode, useId, useState } from 'react';
 import { useTranslations } from 'next-intl';
 import { ChevronRight, CircleAlert, Ellipsis, TriangleAlert } from 'lucide-react';
-import { clsx } from 'cn';
+import { cn } from '@resourcepackbuilder/ui/cn';
 import { DocsLink, type DocsRef, MenuEntries, type MenuEntry, Panel, Tip } from '@resourcepackbuilder/ui';
 import { Button } from '@resourcepackbuilder/ui/components/button';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuTrigger } from '@resourcepackbuilder/ui/components/dropdown-menu';
@@ -78,7 +78,7 @@ export function FeatureRow({
       data-slot="feature-row"
       data-feature-id={featureId}
       data-open={isOpen || undefined}
-      className={clsx('@container/feature min-w-0', className)}
+      className={cn('@container/feature min-w-0', className)}
     >
       <div className="flex min-h-11 items-center gap-2 px-2">
         {expandable ? (
@@ -90,7 +90,7 @@ export function FeatureRow({
             onClick={toggle}
             className="flex min-w-0 flex-1 cursor-pointer items-center gap-2 self-stretch rounded-md text-left outline-none focus-visible:ring-2 focus-visible:ring-ring"
           >
-            <ChevronRight className={clsx('size-4 flex-none text-text-muted transition-transform', isOpen && 'rotate-90')} aria-hidden />
+            <ChevronRight className={cn('size-4 flex-none text-text-muted transition-transform', isOpen && 'rotate-90')} aria-hidden />
             <RowLabel label={label} badges={badges} />
             {summary !== undefined && !isOpen && <Summary>{summary}</Summary>}
           </button>
@@ -119,7 +119,7 @@ export function FeatureRow({
             <span
               role="img"
               aria-label={issue.message}
-              className={clsx('inline-grid size-5 flex-none place-items-center', issue.tone === 'error' ? 'text-danger' : 'text-warning')}
+              className={cn('inline-grid size-5 flex-none place-items-center', issue.tone === 'error' ? 'text-danger' : 'text-warning')}
             >
               <IssueIcon className="size-4" aria-hidden />
             </span>
@@ -162,7 +162,7 @@ function Summary({ children }: { children: ReactNode }) {
 
 /** A panel of feature rows separated by hairlines, without gaps. */
 export function FeatureList({ className, ...props }: ComponentProps<'div'>) {
-  return <Panel data-slot="feature-list" className={clsx('divide-y divide-line', className)} {...props} />;
+  return <Panel data-slot="feature-list" className={cn('divide-y divide-line', className)} {...props} />;
 }
 
 /** One muted line of notes below a feature's fields (version, Premium, conflicts). */

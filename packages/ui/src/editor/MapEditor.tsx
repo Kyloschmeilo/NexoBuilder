@@ -4,7 +4,7 @@
  */
 import { useId, useState, type ReactNode } from 'react';
 import { Plus, Trash2 } from 'lucide-react';
-import { cn } from 'cn';
+import { cn } from '../lib/cn';
 import { Button } from '../components/button';
 import { Input } from '../components/input';
 import { IconButton } from '../IconButton';

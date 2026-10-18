@@ -6,7 +6,7 @@
 import { type RefObject, useEffect, useRef } from 'react';
 import { ChevronRight, X } from 'lucide-react';
 import { useTranslations } from 'next-intl';
-import { cn } from 'cn';
+import { cn } from '@resourcepackbuilder/ui/cn';
 import { packTargetFor } from '@resourcepackbuilder/export';
 import { countIssues, type Issue } from '@resourcepackbuilder/utils';
 import { IconButton, Tip } from '@resourcepackbuilder/ui';
@@ -50,7 +50,7 @@ function YamlPane({ output }: { output: Output | null }) {
           </p>
         </Tip>
       )}
-      <ScrollArea className="min-h-0 flex-1">
+      <ScrollArea className={cn('min-h-0 flex-1', output?.text && 'bg-surface-sunken')}>
         {output?.text ? (
           // The code block brings its own copy button
           <YamlCode text={output.text} className="rounded-none border-0" />

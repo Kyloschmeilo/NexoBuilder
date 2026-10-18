@@ -1,7 +1,7 @@
 import { useLayoutEffect, useRef } from 'react';
 import { Trash2 } from 'lucide-react';
 import { useTranslations } from 'next-intl';
-import { cn } from 'cn';
+import { cn } from '@resourcepackbuilder/ui/cn';
 import { Button } from '@resourcepackbuilder/ui/components/button';
 import { Input } from '@resourcepackbuilder/ui/components/input';
 import { Panel, Section, Tip } from '@resourcepackbuilder/ui';

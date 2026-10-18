@@ -1,6 +1,6 @@
 /** The filter chips of the items panel: All, Items, Blocks, Furniture and With issues. One chip is active at a time. */
 import { useTranslations } from 'next-intl';
-import { cn } from 'cn';
+import { cn } from '@resourcepackbuilder/ui/cn';
 import { TREE_FILTERS, type TreeFilter } from './treeIndex';
 
 interface TreeFilterChipsProps {

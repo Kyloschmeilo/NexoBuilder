@@ -1,7 +1,7 @@
 /** A folder row of the sidebar tree with its subfolders and items below it. */
 import { ClipboardPaste, Folder as FolderIcon, FolderOpen, FolderPlus, Pencil, Plus, Trash2 } from 'lucide-react';
 import { useTranslations } from 'next-intl';
-import { cn } from 'cn';
+import { cn } from '@resourcepackbuilder/ui/cn';
 import { itemIdsInFolder } from '@resourcepackbuilder/core/project';
 import { canCopyItemConfig, canPasteItemConfig, clipboardLabel } from '@resourcepackbuilder/core/nexo';
 import {

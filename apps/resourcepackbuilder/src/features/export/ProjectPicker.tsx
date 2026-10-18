@@ -1,6 +1,6 @@
 /** All saved projects to export together; the expanded one shows its selection tree. */
 import { useTranslations } from 'next-intl';
-import { cn } from 'cn';
+import { cn } from '@resourcepackbuilder/ui/cn';
 import { countSelected, SELECT_ALL, type ExportSelection } from '@resourcepackbuilder/export';
 import { MEDIA_KIND_LIST, MEDIA_KINDS, type MediaKind } from '@resourcepackbuilder/core/project';
 import { treeRowSlots } from '@resourcepackbuilder/ui';

@@ -3,7 +3,7 @@
  * wide, a select above it when narrow. `useSectionSpy` keeps the active entry in step with the scroll position.
  */
 import { useCallback, useEffect, useRef, useState } from 'react';
-import { cn } from 'cn';
+import { cn } from '../lib/cn';
 import { NativeSelect, NativeSelectOption } from '../components/native-select';
 import { useUiLabels } from '../labels';
 

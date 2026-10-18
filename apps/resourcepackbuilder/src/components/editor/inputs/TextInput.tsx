@@ -1,5 +1,5 @@
 import { type KeyboardEvent, useMemo, useState } from 'react';
-import { cn } from 'cn';
+import { cn } from '@resourcepackbuilder/ui/cn';
 import { SuggestInput } from '@resourcepackbuilder/ui';
 import { Input } from '@resourcepackbuilder/ui/components/input';
 import { useChoiceText, type Choice } from './choices';

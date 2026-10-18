@@ -1,7 +1,7 @@
 import { useId, useState } from 'react';
 import { useTranslations } from 'next-intl';
 import { ImageUp, Pencil } from 'lucide-react';
-import { cn } from 'cn';
+import { cn } from '@resourcepackbuilder/ui/cn';
 import { DEFAULT_ANIMATION_FRAMETIME, getAnimation, getFrameSize, type ModelTexture } from '@resourcepackbuilder/minecraft';
 import { IconButton, Thumb } from '@resourcepackbuilder/ui';
 import { Button } from '@resourcepackbuilder/ui/components/button';

@@ -3,7 +3,7 @@
  * target's marker colour.
  */
 import { BookOpen } from 'lucide-react';
-import { cn } from 'cn';
+import { cn } from '../lib/cn';
 import { useUiLabels } from '../labels';
 import { Tip } from '../Tip';
 

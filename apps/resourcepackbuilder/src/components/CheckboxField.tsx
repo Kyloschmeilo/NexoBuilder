@@ -3,7 +3,7 @@
  * control for booleans). The name is kept for its callers; clicking the label toggles the switch.
  */
 import { useId, type ReactNode } from 'react';
-import { cn } from 'cn';
+import { cn } from '@resourcepackbuilder/ui/cn';
 import { Switch } from '@resourcepackbuilder/ui/components/switch';
 
 export function CheckboxField({

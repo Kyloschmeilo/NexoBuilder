@@ -1,6 +1,6 @@
 import { useState, type ComponentProps, type ReactNode } from 'react';
 import { Upload } from 'lucide-react';
-import { cn } from 'cn';
+import { cn } from './lib/cn';
 import { Badge } from './components/badge';
 import { carriesFiles, filesFromDataTransfer, pickFiles } from './files';
 

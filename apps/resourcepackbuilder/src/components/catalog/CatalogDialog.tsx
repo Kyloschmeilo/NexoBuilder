@@ -7,7 +7,7 @@
 import { type KeyboardEvent, type ReactNode, useEffect, useId, useMemo, useRef, useState } from 'react';
 import { useTranslations } from 'next-intl';
 import { Check, CornerDownLeft, Search, SearchX } from 'lucide-react';
-import { clsx } from 'cn';
+import { cn } from '@resourcepackbuilder/ui/cn';
 import { DocsLink, StatusPill } from '@resourcepackbuilder/ui';
 import { Button } from '@resourcepackbuilder/ui/components/button';
 import { Dialog, DialogClose, DialogContent, DialogDescription, DialogTitle } from '@resourcepackbuilder/ui/components/dialog';
@@ -338,7 +338,7 @@ function FacetList({
             data-facet={facet.id}
             title={facet.label}
             onClick={() => onChange(facet.id)}
-            className={clsx(
+            className={cn(
               'flex h-7 flex-none items-center gap-2 rounded-4xl border border-line px-2.5 text-meta whitespace-nowrap text-text-muted outline-none hover:text-text focus-visible:ring-2 focus-visible:ring-ring',
               '@2xl/catalog:rounded-md @2xl/catalog:border-transparent @2xl/catalog:px-2',
               selected && 'border-primary bg-accent-soft font-semibold text-primary hover:text-primary @2xl/catalog:border-transparent',
@@ -393,7 +393,7 @@ function IconTile({ item, size = 'sm' }: { item: CatalogItem; size?: 'sm' | 'md'
   return (
     <span
       aria-hidden
-      className={clsx(
+      className={cn(
         'grid flex-none place-items-center rounded-md bg-accent-soft text-primary',
         size === 'sm' ? 'size-6.5 [&_svg]:size-3.5' : 'size-8 [&_svg]:size-4',
       )}
@@ -431,7 +431,7 @@ function CatalogCard({ id, match, active, multi, checked, onHover, onActivate }:
       onMouseDown={(event) => event.preventDefault()}
       onMouseMove={active ? undefined : onHover}
       onClick={onActivate}
-      className={clsx(
+      className={cn(
         'flex min-w-0 cursor-pointer flex-col gap-1 rounded-xl border border-line bg-surface px-3 py-2.5 text-left transition-colors hover:border-line-strong',
         active && 'border-primary ring-1 ring-primary hover:border-primary',
         item.added && 'bg-surface-sunken',
@@ -447,7 +447,7 @@ function CatalogCard({ id, match, active, multi, checked, onHover, onActivate }:
         {multi && !item.added && !disabled && (
           <span
             aria-hidden
-            className={clsx(
+            className={cn(
               'grid size-4 flex-none place-items-center rounded-[4px] border border-input',
               checked && 'border-primary bg-primary text-primary-foreground',
             )}
@@ -461,7 +461,7 @@ function CatalogCard({ id, match, active, multi, checked, onHover, onActivate }:
         <Highlight text={item.yamlKey} ranges={ranges.key} />
       </code>
       {(item.disabledReason ?? item.description) && (
-        <span className={clsx('line-clamp-2 text-meta text-text-muted', disabled && 'text-warning')}>
+        <span className={cn('line-clamp-2 text-meta text-text-muted', disabled && 'text-warning')}>
           {item.disabledReason ?? <Highlight text={item.description ?? ''} ranges={ranges.description} />}
         </span>
       )}

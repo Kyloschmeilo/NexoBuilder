@@ -3,7 +3,7 @@
  * CraftEngine logic) or opens a page (test server, settings). Its entries come from `activities.ts`.
  */
 import { useTranslations } from 'next-intl';
-import { cn } from 'cn';
+import { cn } from '@resourcepackbuilder/ui/cn';
 import { Tip } from '@resourcepackbuilder/ui';
 import { useServices } from '../services/bootstrap';
 import { useTestServerStore } from '../services/testServerStore';

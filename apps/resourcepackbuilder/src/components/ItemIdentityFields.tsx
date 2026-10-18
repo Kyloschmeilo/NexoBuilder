@@ -1,7 +1,7 @@
 /** Display name, item ID and material of an item – in the item editor and for new items. */
 import { useId } from 'react';
 import { useTranslations } from 'next-intl';
-import { cn } from 'cn';
+import { cn } from '@resourcepackbuilder/ui/cn';
 import { normalizeTypedId } from '@resourcepackbuilder/minecraft';
 import {
   DEFAULT_MATERIAL,

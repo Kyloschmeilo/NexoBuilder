@@ -5,7 +5,7 @@
  */
 import type { ReactNode } from 'react';
 import { useTranslations } from 'next-intl';
-import { cn } from 'cn';
+import { cn } from '@resourcepackbuilder/ui/cn';
 import { type Field, fieldName } from '@resourcepackbuilder/core/form';
 import { compareVersions } from '@resourcepackbuilder/minecraft';
 import { FieldRow, Tip } from '@resourcepackbuilder/ui';

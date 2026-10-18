@@ -4,7 +4,7 @@
  * once set, an "Unset" text button clears the value again.
  */
 import { useTranslations } from 'next-intl';
-import { cn } from 'cn';
+import { cn } from '@resourcepackbuilder/ui/cn';
 import { DEFAULT_PACK_TARGET } from '@resourcepackbuilder/core/project';
 import { serverAdapterFor } from '@resourcepackbuilder/test-server';
 import { Tip } from '@resourcepackbuilder/ui';

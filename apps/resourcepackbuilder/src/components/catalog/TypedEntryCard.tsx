@@ -8,7 +8,7 @@
 import { type ReactNode, useId, useState } from 'react';
 import { useTranslations } from 'next-intl';
 import { ChevronRight, Copy, Ellipsis, FileCode2, Trash2 } from 'lucide-react';
-import { clsx } from 'cn';
+import { cn } from '@resourcepackbuilder/ui/cn';
 import { findTypedType, type ObjectField, type TypedType, type YamlField } from '@resourcepackbuilder/core/form';
 import { toYaml } from '@resourcepackbuilder/core/yaml';
 import { isPlainObject } from '@resourcepackbuilder/utils';
@@ -107,9 +107,9 @@ export function TypedEntryCard({
       data-slot="typed-entry-card"
       data-type={name || undefined}
       data-known={!!type || undefined}
-      className={clsx('@container/entry min-w-0 rounded-xl border border-line bg-surface', className)}
+      className={cn('@container/entry min-w-0 rounded-xl border border-line bg-surface', className)}
     >
-      <div className={clsx('flex min-h-11 items-center gap-2 px-2', isOpen && 'border-b border-line')}>
+      <div className={cn('flex min-h-11 items-center gap-2 px-2', isOpen && 'border-b border-line')}>
         <button
           type="button"
           data-slot="entry-toggle"
@@ -118,10 +118,10 @@ export function TypedEntryCard({
           onClick={toggle}
           className="flex min-w-0 flex-1 cursor-pointer items-center gap-2 self-stretch rounded-md text-left outline-none focus-visible:ring-2 focus-visible:ring-ring"
         >
-          <ChevronRight className={clsx('size-4 flex-none text-text-muted transition-transform', isOpen && 'rotate-90')} aria-hidden />
+          <ChevronRight className={cn('size-4 flex-none text-text-muted transition-transform', isOpen && 'rotate-90')} aria-hidden />
           <span
             aria-hidden
-            className={clsx(
+            className={cn(
               'grid size-6.5 flex-none place-items-center rounded-md [&_svg]:size-3.5',
               type ? 'bg-accent-soft text-primary' : 'bg-surface-sunken text-text-muted',
             )}

@@ -23,7 +23,7 @@ import {
   Trees,
 } from 'lucide-react';
 import { useTranslations } from 'next-intl';
-import { cn } from 'cn';
+import { cn } from '@resourcepackbuilder/ui/cn';
 import { projectAttributeData } from '@resourcepackbuilder/core/craftEngine';
 import { multipackTemplateIds } from '@resourcepackbuilder/core/nexo';
 import type { PackTargetId, Project } from '@resourcepackbuilder/core/project';

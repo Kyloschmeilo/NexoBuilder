@@ -1,6 +1,6 @@
 import { useTranslations } from 'next-intl';
 import { Box, RefreshCw, Trash2 } from 'lucide-react';
-import { cn } from 'cn';
+import { cn } from '@resourcepackbuilder/ui/cn';
 import type { Item, VariantDef } from '@resourcepackbuilder/core/project';
 import { DropZone, IconButton, pickFiles, Thumb, Tip } from '@resourcepackbuilder/ui';
 import { useThumbnail } from '../../../components/useThumbnail';

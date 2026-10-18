@@ -4,7 +4,7 @@
  * goes away once its callers move to `FieldRow`.
  */
 import type { ReactNode } from 'react';
-import { cn } from 'cn';
+import { cn } from '@resourcepackbuilder/ui/cn';
 import { Tip } from '@resourcepackbuilder/ui';
 import { Field, FieldDescription, FieldError, FieldLabel } from '@resourcepackbuilder/ui/components/field';
 
