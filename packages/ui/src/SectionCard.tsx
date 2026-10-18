@@ -18,7 +18,7 @@ interface SectionCardProps extends Pick<ComponentProps<typeof Card>, 'size' | 'v
   contentClassName?: string;
 }
 
-/** A card with a bordered header (icon, uppercase title, badges, description, actions) above its content. */
+/** A card with a bordered header (icon, title, badges, description, actions) above its content. */
 export function SectionCard({
   title,
   icon,
@@ -37,7 +37,7 @@ export function SectionCard({
       <CardHeader className={cn('py-3', children !== undefined && 'border-b [.border-b]:pb-3')}>
         <div className="flex min-w-0 flex-wrap items-center gap-x-3 gap-y-1.5">
           {icon}
-          <CardTitle className={cn('min-w-0 font-semibold tracking-wider break-words uppercase', titleClassName)}>{title}</CardTitle>
+          <CardTitle className={cn('min-w-0 font-semibold break-words', titleClassName)}>{title}</CardTitle>
           {badges}
         </div>
         {description && <CardDescription className="text-xs">{description}</CardDescription>}
