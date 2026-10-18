@@ -33,7 +33,7 @@
           "placeableOnWater": {
             "label": "Placeable on water"
           },
-          "requiresSupporting": {
+          "requireSupporting": {
             "label": "Needs a block below"
           },
           "isTall": {

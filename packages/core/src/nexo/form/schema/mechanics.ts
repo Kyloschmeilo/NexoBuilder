@@ -36,10 +36,10 @@ export const MECHANIC_PROPERTIES = properties(
         model: field.text({ format: 'resource', help: true, docs: BLOCK.configuration }),
         hardness: field.number({ min: 0, step: 0.5, docs: BLOCK.hardness }),
         blast_resistant: field.boolean({ docs: BLOCK.blastResistant }),
-        is_falling: field.boolean({ ...NOTEBLOCK, docs: BLOCK.isFalling }),
+        is_falling: field.boolean({ ...whenType('NOTEBLOCK', 'CHORUSBLOCK'), docs: BLOCK.isFalling }),
         beacon_base_block: field.boolean({ ...NOTEBLOCK, docs: BLOCK.beaconBase }),
         placeable_on_water: field.boolean({ ...STRINGBLOCK, docs: BLOCK.placeableOnWater }),
-        requires_supporting: field.boolean({ ...STRINGBLOCK, docs: BLOCK.requiresSupporting }),
+        require_supporting: field.boolean({ ...STRINGBLOCK, docs: BLOCK.requiresSupporting }),
         is_tall: field.boolean({ ...STRINGBLOCK, docs: BLOCK.isTall }),
         random_place: field.stringList({ placeholder: true, ...STRINGBLOCK, docs: BLOCK.randomPlace }),
         directional: field.object(
@@ -163,7 +163,6 @@ export const MECHANIC_PROPERTIES = properties(
       field: field.object({
         ratio: field.number({ min: 0, max: 1, step: 0.05 }),
         fixed_amount: field.number({ integer: true, min: 1 }),
-        nexo_durability_only: field.boolean(),
       }),
       defaultValue: () => ({ ratio: 0.25 }),
     },
@@ -172,8 +171,6 @@ export const MECHANIC_PROPERTIES = properties(
       keepEmpty: true,
       field: field.object({
         breaks_from_cactus: field.boolean(),
-        burns_in_fire: field.boolean(),
-        burns_in_lava: field.boolean(),
         disable_vanilla_interactions: field.boolean(),
         can_strip_logs: field.boolean(),
         piglins_ignore_when_equipped: field.boolean(),
@@ -202,10 +199,9 @@ export const MECHANIC_PROPERTIES = properties(
     'Mechanics.smelting': {
       docs: MECHANICS.smelting,
       field: field.object({
-        enabled: field.boolean(),
         play_sound: field.boolean(),
       }),
-      defaultValue: () => ({ enabled: true, play_sound: true }),
+      defaultValue: () => ({ play_sound: true }),
     },
     'Mechanics.itemtype': {
       docs: MECHANICS.itemtype,

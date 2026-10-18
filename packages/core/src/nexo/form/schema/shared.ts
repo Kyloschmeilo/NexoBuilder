@@ -153,6 +153,7 @@ export const furnitureStatesField = () =>
           lerp_in: field.text({ format: 'duration', ...whenType(...ANIMATION_TYPES) }),
           lerp_out: field.text({ format: 'duration', ...whenType(...ANIMATION_TYPES) }),
           speed: field.number({ min: 0, step: 0.1, ...whenType(...ANIMATION_TYPES) }),
+          force: field.boolean(whenType(...ANIMATION_TYPES)),
           properties: field.yaml({ placeholder: true, ...whenType('FURNITURE') }),
           hitbox: field.yaml({ placeholder: true, ...whenType('FURNITURE') }),
           next_after: field.text({ format: 'duration' }),

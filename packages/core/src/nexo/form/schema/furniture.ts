@@ -1,5 +1,5 @@
 /** The furniture mechanic (Mechanics.furniture) – the largest property, hence its own module. */
-import { DISPLAY_TRANSFORMS, TRACKING_ROTATIONS } from '../options';
+import { CULLABLE_STATES, DISPLAY_TRANSFORMS, TRACKING_ROTATIONS } from '../options';
 import { field, type PropertySpec } from '../../../form/build';
 import { NEXO_DOCS } from './docs';
 import {
@@ -51,7 +51,7 @@ export const FURNITURE: PropertySpec = {
         shadow_strength: field.number({ min: 0, step: 0.1, docs: DOCS.otherProperties }),
         glow_color: field.text({ placeholder: true, docs: DOCS.otherProperties }),
         offset_against_blocks: field.boolean({ defaultHint: true, docs: DOCS.offsetAgainstBlocks }),
-        cullable: field.boolean({ docs: DOCS.culling }),
+        cullable: field.select(CULLABLE_STATES, { docs: DOCS.culling }),
         display_width: field.number({ min: 0, step: 0.1, docs: DOCS.culling }),
         display_height: field.number({ min: 0, step: 0.1, docs: DOCS.culling }),
       },

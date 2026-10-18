@@ -172,9 +172,6 @@
           },
           "fixedAmount": {
             "label": "Feste Menge Haltbarkeit"
-          },
-          "nexoDurabilityOnly": {
-            "label": "Nur Nexo-Items reparieren"
           }
         }
       }
@@ -187,12 +184,6 @@
         "fields": {
           "breaksFromCactus": {
             "label": "Wird von Kakteen zerstört"
-          },
-          "burnsInFire": {
-            "label": "Verbrennt in Feuer"
-          },
-          "burnsInLava": {
-            "label": "Verbrennt in Lava"
           },
           "disableVanillaInteractions": {
             "label": "Vanilla-Interaktionen deaktivieren"
@@ -257,9 +248,6 @@
       "field": {
         "label": "Schmelzen",
         "fields": {
-          "enabled": {
-            "label": "Aktiv"
-          },
           "playSound": {
             "label": "Sound abspielen"
           }

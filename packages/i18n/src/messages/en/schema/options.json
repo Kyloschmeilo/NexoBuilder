@@ -85,6 +85,17 @@
         "label": "CHORUSBLOCK – transparent blocks (up to 63)"
       }
     },
+    "cullableStates": {
+      "true": {
+        "label": "TRUE – allow culling"
+      },
+      "false": {
+        "label": "FALSE – never cull"
+      },
+      "notSet": {
+        "label": "NOT_SET – let Nexo decide"
+      }
+    },
     "customEvents": {
       "clickRightAll": {
         "label": "Right-click (anywhere)"
