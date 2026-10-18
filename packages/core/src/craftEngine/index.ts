@@ -28,6 +28,7 @@ export * from './logic';
 export * from './loot';
 export * from './media';
 export * from './pack';
+export * from './recipeOptions';
 export * from './recipes';
 export * from './templateArgs';
 export * from './templates';

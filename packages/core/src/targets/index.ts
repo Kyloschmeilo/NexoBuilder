@@ -13,6 +13,8 @@ import type { MediaKind } from '../project/media/kinds';
 import type { PackTargetId } from '../project/target';
 import type { Project } from '../project/types';
 
+export * from './recipes';
+
 const FORMS: Record<PackTargetId, FormSchema> = {
   nexo: NEXO_FORM,
   craftengine: CRAFT_ENGINE_FORM,

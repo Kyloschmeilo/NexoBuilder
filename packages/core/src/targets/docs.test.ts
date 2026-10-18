@@ -126,7 +126,10 @@ describe('docs links', () => {
       ...variants.map((v): [string, string] => [`variant ${v.slot}`, nexoVariantDocs(v.slot)]),
       ...ARMOR_LAYERS.map((layer): [string, string] => [`armor ${layer.key}`, nexoArmorLayerDocs(layer)]),
       ...MEDIA_KIND_LIST.map((kind): [string, string] => [`media ${kind}`, NEXO_MEDIA_DOCS[kind]]),
-      ...RECIPE_TYPES.map(({ type }): [string, string] => [`recipe ${type}`, NEXO_RECIPE_DOCS[type]]),
+      ...RECIPE_TYPES.filter((t) => t.targets.includes('nexo')).map(({ type }): [string, string | undefined] => [
+        `recipe ${type}`,
+        NEXO_RECIPE_DOCS[type],
+      ]),
     ];
     expect(offBase(DOCS_BASE.nexo, links)).toEqual([]);
     expect(nexoVariantDocs('state:open')).toBe('https://docs.nexomc.com/mechanics/furniture-mechanic/furniture-states');

@@ -54,7 +54,17 @@ import {
 import type { MediaFile } from './media/entry';
 import type { MediaEntryByKind, MediaKind } from './media/kinds';
 import type { Painting } from './media/painting';
-import { INGREDIENT_LETTERS, RECIPE_TYPES, type Recipe, type RecipeIngredient } from './recipes/model';
+import {
+  type ExtraRecipeSlot,
+  type IngredientRef,
+  type IngredientSource,
+  INGREDIENT_LETTERS,
+  INGREDIENT_SOURCES,
+  RECIPE_SLOTS,
+  RECIPE_TYPES,
+  type Recipe,
+  type RecipeIngredient,
+} from './recipes/model';
 import type { JukeboxSong, Sound, SoundFile } from './media/sound';
 import { itemIdFromName } from './ids';
 import { defaultSettings, DEFAULT_PACK_NAME } from './factory';
@@ -192,29 +202,55 @@ export const MEDIA_SCHEMAS: { [K in MediaKind]: z.ZodType<MediaEntryByKind[K], u
 /* ------------------------------------------------------------ Recipes */
 
 const RECIPE_TYPE_NAMES = RECIPE_TYPES.map((t) => t.type) as [Recipe['type'], ...Recipe['type'][]];
+const INGREDIENT_SOURCE_NAMES = INGREDIENT_SOURCES.map((s) => s.value) as [IngredientSource, ...IngredientSource[]];
 
-const IngredientSchema = z
+/** The options of a recipe or ingredient (keys by YAML name); declared lazily, the config schemas follow below. */
+const recipeOptions = () => optional(z.lazy(() => ConfigObjectSchema));
+
+const IngredientRefSchema = z
   .object({
-    source: lenientEnum(['minecraft', 'nexo', 'tag'], 'minecraft'),
+    source: lenientEnum(INGREDIENT_SOURCE_NAMES, 'minecraft'),
     id: lenientString(),
-    amount: optional(z.number()),
+    itemType: optional(z.string()),
   })
   .transform(withoutUndefined);
 
+const IngredientSchema = z
+  .object({
+    source: lenientEnum(INGREDIENT_SOURCE_NAMES, 'minecraft'),
+    id: lenientString(),
+    itemType: optional(z.string()),
+    amount: optional(z.number()),
+    alternatives: optional(listOf(IngredientRefSchema)),
+    replacement: optional(IngredientRefSchema),
+    options: recipeOptions(),
+  })
+  .transform(withoutUndefined);
+
+/** The single slots besides `input`; a bad one is dropped, no slot at all leaves `slots` out. */
+const RecipeSlotsSchema = z
+  .object(Object.fromEntries(RECIPE_SLOTS.filter((slot) => slot !== 'input').map((slot) => [slot, optional(IngredientSchema)])))
+  .transform((slots) => withoutUndefined(slots) as Partial<Record<ExtraRecipeSlot, RecipeIngredient>>)
+  .transform((slots) => (Object.keys(slots).length > 0 ? slots : undefined));
+
 /** A recipe needs its id and a known type; the shaped grid always has 9 cells. */
-export const RecipeSchema = z.object({
-  id: id(),
-  type: z.enum(RECIPE_TYPE_NAMES),
-  resultAmount: lenientNumber(1),
-  grid: z
-    .array(z.unknown())
-    .catch([])
-    .transform((cells) => INGREDIENT_LETTERS.map((_, i) => (typeof cells[i] === 'string' ? (cells[i] as string) : ''))),
-  ingredients: lenientRecord(IngredientSchema),
-  input: IngredientSchema.nullable().catch(null),
-  cookingTime: lenientNumber(200),
-  experience: lenientNumber(0.1),
-});
+export const RecipeSchema = z
+  .object({
+    id: id(),
+    type: z.enum(RECIPE_TYPE_NAMES),
+    resultAmount: lenientNumber(1),
+    grid: z
+      .array(z.unknown())
+      .catch([])
+      .transform((cells) => INGREDIENT_LETTERS.map((_, i) => (typeof cells[i] === 'string' ? (cells[i] as string) : ''))),
+    ingredients: lenientRecord(IngredientSchema),
+    input: IngredientSchema.nullable().catch(null),
+    cookingTime: lenientNumber(200),
+    experience: lenientNumber(0.1),
+    slots: optional(RecipeSlotsSchema),
+    options: recipeOptions(),
+  })
+  .transform(withoutUndefined);
 
 /* ------------------------------------------------------------ Items */
 
@@ -301,7 +337,9 @@ export function settingsSchema(projectName: string) {
       itemsInProjectFolder: lenientBoolean(defaults.itemsInProjectFolder),
       yamlFileMode: lenientEnum(['folder', 'item'], 'folder'),
       ceCategoriesFromFolders: lenientBoolean(defaults.ceCategoriesFromFolders),
+      disabledRecipes: optional(stringList()),
     })
+    .transform(withoutUndefined)
     .catch(defaults);
 }
 
@@ -404,6 +442,8 @@ export type ProjectSchemaChecks = SchemaChecks<
     Covers<Out<typeof SoundSchema>, Sound>,
     Fits<Out<typeof PaintingSchema>, Painting>,
     Covers<Out<typeof PaintingSchema>, Painting>,
+    Fits<Out<typeof IngredientRefSchema>, IngredientRef>,
+    Covers<Out<typeof IngredientRefSchema>, IngredientRef>,
     Fits<Out<typeof IngredientSchema>, RecipeIngredient>,
     Covers<Out<typeof IngredientSchema>, RecipeIngredient>,
     Fits<Out<typeof RecipeSchema>, Recipe>,

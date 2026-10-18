@@ -6,7 +6,6 @@ import {
   craftEngineTranslations,
   sectionsToYaml,
 } from '@resourcepackbuilder/core/craftEngine';
-import { recipeFrame } from '@resourcepackbuilder/core/project';
 import type { JavaModelJson } from '@resourcepackbuilder/minecraft';
 import type { ItemExport, ItemSections } from '../../types';
 import type { BuiltItem, ItemShared, PackTarget, WrittenItemModels } from '../types';
@@ -106,10 +105,8 @@ function buildItem(itemExport: ItemExport, written: CraftEngineWrittenModels, sh
     sections.blocks = { [key]: built.block };
   }
   validateCraftEngineTemplateUses(itemExport, built.config, built.furniture ?? undefined, built.block ?? undefined);
-  const { recipes, unsupported } = craftEngineRecipes(project, item);
-  for (const recipe of unsupported) {
-    itemExport.report('warning', 'ce.recipeKindUnsupported', { type: recipe.type }, [recipeFrame(recipe.key)]);
-  }
+  // Recipe types CraftEngine does not read are left out; validateRecipes (pluginFiles.ts) reports them
+  const recipes = craftEngineRecipes(project, item);
   if (Object.keys(recipes).length > 0) sections.recipes = recipes;
   return Object.keys(sections).length > 0 ? { config: built.config, sections } : { config: built.config };
 }

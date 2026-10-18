@@ -14,7 +14,6 @@ import {
   stateDef,
   type Item,
   type Project,
-  type RecipeType,
   VARIANTS,
 } from '@resourcepackbuilder/core/project';
 import { createTextureModel, type ImportedModel } from '@resourcepackbuilder/minecraft';
@@ -337,12 +336,12 @@ describe('CraftEngine recipes', () => {
 
   it('reports recipe kinds CraftEngine has no type for and leaves them out', () => {
     const project = oneItemProject((item) => {
-      item.recipes = [{ ...createRecipe('furnace', 'r'), type: 'brewing' as RecipeType }];
+      item.recipes = [createRecipe('crafter', 'r')];
     });
     const plan = planExport(project);
-    const issue = plan.issues.find((i) => i.code === 'ce.recipeKindUnsupported');
-    expect(issue?.args).toEqual({ type: 'brewing' });
-    expect(issue?.context?.at(-1)).toEqual({ code: 'context.recipe', args: { recipe: 'thing_brewing' } });
+    const issue = plan.issues.find((i) => i.code === 'recipe.typeUnsupported');
+    expect(issue?.args).toEqual({ target: 'CraftEngine', type: 'crafter' });
+    expect(issue?.context?.at(-1)).toEqual({ code: 'context.recipe', args: { recipe: 'thing_crafter' } });
     expect([...plan.pluginFiles.values()].some((text) => String(text).includes('recipes:'))).toBe(false);
   });
 });

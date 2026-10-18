@@ -8,6 +8,7 @@
     "recipe": "Recipe “{recipe}”",
     "recipeIngredient": "Recipe “{recipe}”, ingredient {letter}",
     "recipeInput": "Recipe “{recipe}”, input",
+    "recipeSlot": "Recipe “{recipe}”, {slot}",
     "property": "{property}",
     "field": "{field}",
     "listEntry": "#{index}",
@@ -161,7 +162,15 @@
     "tagInvalid": "“{id}” is not a valid tag (e.g. planks).",
     "nexoItemNotInProject": "The Nexo item “{id}” is not in this project – it must exist on the server.",
     "ceItemNotInProject": "The item “{id}” is not in this project. CraftEngine skips the recipe unless another pack on the server has it.",
-    "amountRange": "The amount must be between 1 and 64."
+    "amountRange": "The amount must be between 1 and 64.",
+    "typeUnsupported": "{target} has no “{type}” recipes, so this recipe is not exported. Change its type or remove it.",
+    "sourceUnsupported": "{target} cannot read this ingredient source, so “{id}” is not exported. Pick another source.",
+    "externalIdInvalid": "“{id}” is not a namespaced item ID (e.g. mythicmobs:kingscrown).",
+    "mmoitemsTypeMissing": "The MMOItems item “{id}” needs its item type (e.g. SWORD).",
+    "alternativeMissing": "An alternative item has no ID.",
+    "sourceMissing": "Mark one ingredient as the source item whose data the result keeps.",
+    "sourceMultiple": "Only one ingredient can be the source item.",
+    "trimPatternMissing": "The trim pattern is missing (e.g. minecraft:bolt)."
   },
   "glyph": {
     "idInvalid": "The ID may only contain lowercase letters, digits and _.",
@@ -225,7 +234,6 @@
     "glyphPermissionUnused": "CraftEngine checks permissions only for chat shortcuts, so this glyph's permission is not exported. Add a placeholder to use it.",
     "translationLocaleInvalid": "The translation language \"{locale}\" is not a Minecraft language code (like de_de), so it is left out.",
     "glyphReferenceUnknown": "“{reference}” is not a multi-bitmap glyph of this project. CraftEngine cannot find the cell, so this glyph is not exported.",
-    "recipeKindUnsupported": "CraftEngine has no recipe type for “{type}” recipes, so this recipe is not exported.",
     "materialInvalid": "The material “{material}” is invalid for CraftEngine (e.g. diamond_sword or minecraft:diamond_sword).",
     "variantExtraModels": "CraftEngine uses only the first {used, plural, one {model} other {# models}} of this variant. The other {count} {count, plural, one {is} other {are}} not exported.",
     "reservedPackName": "The pack name “{name}” belongs to one of CraftEngine's own packs (default, default_…, internal, legacy_armor, remove_shulker_head, customcrops). Choose another pack name in the project settings.",

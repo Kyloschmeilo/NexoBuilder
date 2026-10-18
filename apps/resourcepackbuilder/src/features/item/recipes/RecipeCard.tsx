@@ -1,22 +1,37 @@
+/**
+ * One recipe of the item: its ingredients by type (crafting grid, ingredient list or single slots), cooking time,
+ * result amount, the keys the project's target reads for the type (and its Premium keys), its docs link and problems.
+ */
 import { useTranslations } from 'next-intl';
-import { Trash2 } from 'lucide-react';
+import { ExternalLink, Trash2 } from 'lucide-react';
 import {
+  type ConfigObject,
   emptyIngredient,
   getRecipeTypeInfo,
+  isRecipeTypeAvailable,
+  isSlotOptional,
   type Item,
   MAX_RESULT_AMOUNT,
+  optionsField,
+  optionsForType,
   type Recipe,
   recipeIssues,
+  recipeSlot,
+  recipeSlotHelp,
+  recipeSlotLabel,
+  setRecipeSlot,
   TICKS_PER_SECOND,
 } from '@resourcepackbuilder/core/project';
-import { issuesFor } from '@resourcepackbuilder/utils';
+import { RECIPE_SECTION_LABELS, recipeDocsFor, recipeOptionsFor } from '@resourcepackbuilder/core/targets';
+import { isPlainObject, issuesFor } from '@resourcepackbuilder/utils';
 import { recipeFilePath } from '@resourcepackbuilder/core/nexo';
 import { findItemPlan } from '@resourcepackbuilder/export';
 import { IconButton, SectionCard, Tip } from '@resourcepackbuilder/ui';
+import { Alert, AlertDescription } from '@resourcepackbuilder/ui/components/alert';
 import { Badge } from '@resourcepackbuilder/ui/components/badge';
 import { Field, FieldDescription, FieldTitle } from '@resourcepackbuilder/ui/components/field';
 import { removeRecipe, updateRecipe } from '../../../commands/items';
-import { NumberInput } from '../../../components/editor';
+import { FieldRenderer, NumberInput } from '../../../components/editor';
 import { IssueList } from '../../../components/IssueList';
 import { usePlan } from '../../../shell/PlanProvider';
 import { useOpenProject } from '../../../store/project';
@@ -35,7 +50,34 @@ interface RecipeCardProps {
   recipeKey: string;
 }
 
-/** One recipe of the item: its ingredients (by type), result amount and problems. */
+/** The recipe's keys of the target (or only its Premium ones) as one collapsible section. */
+function RecipeOptions({ recipe, update, premium }: { recipe: Recipe; update: RecipeUpdater; premium: boolean }) {
+  const project = useOpenProject();
+  const options = optionsForType(recipeOptionsFor(project.target).recipe, recipe.type, premium);
+  if (options.length === 0) return null;
+  const label = premium ? RECIPE_SECTION_LABELS.premium : RECIPE_SECTION_LABELS.options;
+  const keys = options.map((option) => option.field.key);
+  const value = Object.fromEntries(Object.entries(recipe.options ?? {}).filter(([key]) => keys.includes(key)));
+  return (
+    <FieldRenderer
+      field={optionsField(options, label)}
+      value={value}
+      onChange={(next) =>
+        update(
+          (r) => {
+            // The section edits its own keys; the others (the other section's, the other target's) stay stored
+            const merged = { ...r.options, ...(isPlainObject(next) ? next : {}) } as ConfigObject;
+            for (const key of keys) if (!isPlainObject(next) || next[key] === undefined) delete merged[key];
+            if (Object.keys(merged).length > 0) r.options = merged;
+            else delete r.options;
+          },
+          `${recipe.id}:${premium ? 'premium' : 'options'}`,
+        )
+      }
+    />
+  );
+}
+
 export function RecipeCard({ item, recipe, recipeKey }: RecipeCardProps) {
   const t = useTranslations('item');
   const tSchema = useSchemaText();
@@ -47,6 +89,7 @@ export function RecipeCard({ item, recipe, recipeKey }: RecipeCardProps) {
   // CraftEngine writes the recipe into the item's own file
   const file = project.target === 'craftengine' ? findItemPlan(plan, item.id)?.yamlFile : recipeFilePath(project, recipe.type);
   const update: RecipeUpdater = (change, historyKey) => updateRecipe(item.id, recipe.id, change, historyKey);
+  const isAvailable = isRecipeTypeAvailable(recipe.type, project.target);
 
   return (
     <SectionCard
@@ -64,12 +107,26 @@ export function RecipeCard({ item, recipe, recipeKey }: RecipeCardProps) {
         </>
       }
       actions={
-        <IconButton label={t('recipes.remove')} variant="ghost-destructive" onClick={() => removeRecipe(item.id, recipe.id)}>
-          <Trash2 />
-        </IconButton>
+        <>
+          <IconButton
+            label={t(`properties.docs.${project.target}`)}
+            nativeButton={false}
+            render={<a href={recipeDocsFor(project.target, recipe.type)} target="_blank" rel="noreferrer" />}
+          >
+            <ExternalLink />
+          </IconButton>
+          <IconButton label={t('recipes.remove')} variant="ghost-destructive" onClick={() => removeRecipe(item.id, recipe.id)}>
+            <Trash2 />
+          </IconButton>
+        </>
       }
     >
       <div className="flex flex-col gap-4">
+        {!isAvailable && (
+          <Alert variant="warning">
+            <AlertDescription>{t(`recipes.unsupported.${project.target}`)}</AlertDescription>
+          </Alert>
+        )}
         {info.kind === 'shaped' && (
           <div className="grid gap-5 @3xl:grid-cols-[auto_minmax(0,1fr)] @3xl:items-start">
             <Field className="gap-1.5">
@@ -89,20 +146,23 @@ export function RecipeCard({ item, recipe, recipeKey }: RecipeCardProps) {
             <IngredientList recipe={recipe} update={update} isShaped={false} issues={issues.ingredients} />
           </Field>
         )}
-        {(info.kind === 'cooking' || info.kind === 'stonecutting') && (
-          <Field className="gap-1.5">
-            <FieldTitle>{t('recipes.input')}</FieldTitle>
+        {info.slots.map((slot) => (
+          <Field key={slot} className="gap-1.5">
+            <FieldTitle>
+              {tSchema(recipeSlotLabel(slot))}
+              {isSlotOptional(recipe.type, slot, project.target) && (
+                <span className="font-normal text-muted-foreground">{t('recipes.optional')}</span>
+              )}
+            </FieldTitle>
             <IngredientRow
-              value={recipe.input ?? emptyIngredient()}
-              onChange={(input) =>
-                update((r) => {
-                  r.input = input;
-                }, `${recipe.id}:input`)
-              }
+              value={recipeSlot(recipe, slot) ?? emptyIngredient()}
+              recipeType={recipe.type}
+              onChange={(ingredient) => update((r) => setRecipeSlot(r, slot, ingredient), `${recipe.id}:${slot}`)}
             />
-            <IssueList issues={issues.input} />
+            <FieldDescription className="text-xs">{tSchema(recipeSlotHelp(slot))}</FieldDescription>
+            <IssueList issues={slot === 'input' ? issues.input : (issues.slots.get(slot) ?? [])} />
           </Field>
-        )}
+        ))}
         {info.kind === 'cooking' && (
           <div className="grid grid-cols-1 gap-4 @xl:grid-cols-2">
             <Field className="gap-1.5">
@@ -132,22 +192,28 @@ export function RecipeCard({ item, recipe, recipeKey }: RecipeCardProps) {
             </Field>
           </div>
         )}
-        <div className="flex flex-wrap items-center gap-2.5">
-          <span className="text-sm font-medium">{t('recipes.result')}</span>
-          <NumberInput
-            className="w-20"
-            value={recipe.resultAmount}
-            integer
-            min={1}
-            max={MAX_RESULT_AMOUNT}
-            onChange={(amount) =>
-              update((r) => {
-                r.resultAmount = amount ?? 1;
-              }, `${recipe.id}:amount`)
-            }
-          />
-          <span className="min-w-0 font-mono break-all text-muted-foreground">× {item.itemId}</span>
-        </div>
+        {info.hasResult ? (
+          <div className="flex flex-wrap items-center gap-2.5">
+            <span className="text-sm font-medium">{t('recipes.result')}</span>
+            <NumberInput
+              className="w-20"
+              value={recipe.resultAmount}
+              integer
+              min={1}
+              max={MAX_RESULT_AMOUNT}
+              onChange={(amount) =>
+                update((r) => {
+                  r.resultAmount = amount ?? 1;
+                }, `${recipe.id}:amount`)
+              }
+            />
+            <span className="min-w-0 font-mono break-all text-muted-foreground">× {item.itemId}</span>
+          </div>
+        ) : (
+          <p className="text-sm text-muted-foreground">{t('recipes.noResult')}</p>
+        )}
+        <RecipeOptions recipe={recipe} update={update} premium={false} />
+        <RecipeOptions recipe={recipe} update={update} premium />
         <IssueList issues={issues.recipe} />
       </div>
     </SectionCard>

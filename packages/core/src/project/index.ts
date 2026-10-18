@@ -24,6 +24,7 @@ export * from './recipes/export';
 export * from './recipes/issues';
 export * from './recipes/model';
 export * from './recipes/operations';
+export * from './recipes/options';
 export * from './recipes/validate';
 export * from './repair';
 export * from './schema';

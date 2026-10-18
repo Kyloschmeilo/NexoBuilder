@@ -123,4 +123,27 @@ describe('recipes', () => {
     const pack = await buildMultiExportZip(singleExport(project, plan), 'pack');
     expect(pack.paths.some((p) => p.startsWith('recipes/'))).toBe(false);
   });
+
+  it('writes the smithing folder, the disabled vanilla recipes and the type warnings into the Nexo export', () => {
+    const { project, item } = setup();
+    const trim = createRecipe('smithing_trim', 't');
+    trim.slots = {
+      template: { source: 'minecraft', id: 'PAPER' },
+      base: { source: 'minecraft', id: 'IRON_CHESTPLATE' },
+      addition: { source: 'minecraft', id: 'AMETHYST_SHARD' },
+    };
+    trim.options = { trim_pattern: 'minecraft:silence' };
+    const dye = createRecipe('dye', 'd');
+    item.recipes = [trim, dye];
+    project.settings.disabledRecipes = ['minecraft:diamond_sword'];
+    const plan = planExport(project);
+    expect([...plan.pluginFiles.keys()].filter((p) => p.startsWith('recipes/')).sort()).toEqual([
+      'recipes/disabled_recipes.yml',
+      'recipes/smithing/rezept_test.yml',
+    ]);
+    expect(parse(String(plan.pluginFiles.get('recipes/disabled_recipes.yml')))).toEqual({ disabled_recipes: ['minecraft:diamond_sword'] });
+    expect(plan.issues.filter((i) => i.code.startsWith('recipe.')).map((i) => [i.code, i.args])).toEqual([
+      ['recipe.typeUnsupported', { target: 'Nexo', type: 'dye' }],
+    ]);
+  });
 });

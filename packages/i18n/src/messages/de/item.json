@@ -210,7 +210,25 @@
     "placeholderMinecraft": "z.B. {target, select, craftengine {diamond} other {DIAMOND}}",
     "placeholderNexo": "Item-ID",
     "placeholderTag": "z.B. planks",
-    "amount": "Benötigte Anzahl pro Feld (optional)"
+    "amount": "Benötigte Anzahl pro Feld (optional)",
+    "placeholderExternal": "z. B. mythicmobs:kingscrown",
+    "placeholderCrucible": "MythicCrucible-Item-ID",
+    "placeholderMmoitems": "MMOItems-Item-ID",
+    "placeholderItemType": "Typ, z. B. SWORD",
+    "alternatives": "Ebenfalls akzeptiert in diesem Platz",
+    "addAlternative": "Alternative hinzufügen",
+    "removeAlternative": "Alternative entfernen",
+    "replacement": "Item, das nach dem Herstellen im Raster bleibt",
+    "addReplacement": "Ersatz hinzufügen",
+    "removeReplacement": "Ersatz entfernen",
+    "optional": "(optional)",
+    "unsupported": {
+      "nexo": "Nexo liest diesen Rezepttyp nicht. Er bleibt im Projekt, wird aber nicht exportiert.",
+      "craftengine": "CraftEngine liest diesen Rezepttyp nicht. Er bleibt im Projekt, wird aber nicht exportiert."
+    },
+    "noResult": "Dieses Rezept verändert das Basis-Item und hat kein eigenes Ergebnis.",
+    "disabledTitle": "Abgeschaltete Vanilla-Rezepte",
+    "disabledDescription": "Für das ganze Projekt: Nexo schaltet diese Vanilla-Rezepte ab. Exportiert nach <code>{path}</code>."
   },
   "ceBlock": {
     "title": "Block",
