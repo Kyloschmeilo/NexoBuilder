@@ -22,20 +22,21 @@ import { activityById, isActivityAvailable } from '../activities';
 import { useOpenProject } from '../../store/project';
 import { type ActivityId, SIDEBAR_WIDTH, setSidebarWidth, useUiStore } from '../../store/ui';
 import { FolderNode } from './FolderNode';
-import { countItemsPerFolder, foldersContaining, levelsByTarget, searchItems, type SidebarTree } from './treeIndex';
+import { countItemsPerFolder, filterItems, foldersContaining, levelsByTarget, type SidebarTree, type TreeFilter } from './treeIndex';
+import { TreeFilterChips } from './TreeFilterChips';
 import { DRAG_FOLDER, useDropTarget } from './useDropTarget';
 import { CraftEngineEntries, MediaEntries } from './ViewEntries';
 
-/** The tree data, derived once per project, plan or search change. */
-function useSidebarTree(query: string): SidebarTree {
+/** The tree data, derived once per project, plan, search or filter change. */
+function useSidebarTree(query: string, filter: TreeFilter): SidebarTree {
   const project = useOpenProject();
   const plan = usePlan();
   const itemCounts = useMemo(() => countItemsPerFolder(project), [project]);
   const itemLevels = useMemo(() => levelsByTarget(plan?.issues ?? [], 'item'), [plan]);
   const search = useMemo(() => {
-    const items = searchItems(project, query);
+    const items = filterItems(project, query, filter, itemLevels);
     return items && { items, folders: foldersContaining(project, items) };
-  }, [project, query]);
+  }, [project, query, filter, itemLevels]);
   return { project, itemCounts, itemLevels, search };
 }
 
@@ -70,12 +71,13 @@ function PanelHeader({ title, actions }: { title: string; actions?: ReactNode })
   );
 }
 
-/** Folders and items of the open project, with search. */
+/** Folders and items of the open project, with search and filter chips. */
 function ItemsPanel() {
   const t = useTranslations('layout.sidebar');
   const folders = useFolderActions();
   const [query, setQuery] = useState('');
-  const tree = useSidebarTree(query);
+  const [filter, setFilter] = useState<TreeFilter>('all');
+  const tree = useSidebarTree(query, filter);
   // A folder dropped beside the folders (not onto one) moves to the top level
   const rootDrop = useDropTarget([DRAG_FOLDER], (data) => {
     const folderId = data.getData(DRAG_FOLDER);
@@ -106,6 +108,7 @@ function ItemsPanel() {
             onChange={(e) => setQuery(e.target.value)}
           />
         </InputGroup>
+        {tree.project.rootFolderIds.length > 0 && <TreeFilterChips className="mt-2" value={filter} onChange={setFilter} />}
       </div>
       <ScrollArea className={cn('min-h-0 flex-1', rootDrop.isOver && 'bg-primary/10')} {...rootDrop.handlers}>
         <div role="tree" aria-label={t('title')} className="px-1.5 pt-0.5 pb-4">

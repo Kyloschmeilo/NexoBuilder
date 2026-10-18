@@ -1,3 +1,4 @@
+/** The shared row of the sidebar tree: the clickable row, its context menu and its hover actions. */
 import type { ComponentProps, DragEvent, KeyboardEvent, ReactNode } from 'react';
 import { EllipsisVertical } from 'lucide-react';
 import { useTranslations } from 'next-intl';

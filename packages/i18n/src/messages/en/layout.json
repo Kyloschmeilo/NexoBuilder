@@ -173,6 +173,14 @@
       "fromItem": "from “{name}”",
       "fromItemIntoFolder": "from “{name}” into all items of the folder",
       "needsCopy": "Copy from an item first"
+    },
+    "filters": {
+      "label": "Filter items",
+      "all": "All",
+      "items": "Items",
+      "blocks": "Blocks",
+      "furniture": "Furniture",
+      "issues": "With issues"
     }
   },
   "folder": {
@@ -259,7 +267,10 @@
     "target": "Server plugin",
     "targetHint": "Choose this first – it can’t be changed later, because the whole project is built for this plugin.",
     "targets": {
-      "nexo": { "name": "Nexo", "description": "Items, blocks and furniture for Nexo. The test server needs your purchased Nexo JAR." },
+      "nexo": {
+        "name": "Nexo",
+        "description": "Items, blocks and furniture for Nexo. The test server needs your purchased Nexo JAR."
+      },
       "craftengine": {
         "name": "CraftEngine",
         "description": "Items, blocks and furniture for CraftEngine, plus loot sources, templates, global variables and attributes. Free – the test server downloads it from Modrinth."
