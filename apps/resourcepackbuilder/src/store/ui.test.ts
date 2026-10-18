@@ -99,12 +99,14 @@ describe('registry entries', () => {
     expect(state().selection).toEqual({ kind: 'view', view: 'lootSources' });
   });
 
-  it('opens the glyph, sound or painting an issue belongs to', () => {
+  it('opens the glyph, sound, painting or dialog an issue belongs to', () => {
     selectTarget({ kind: 'glyph', id: 'g1' });
     expect(state().selection).toEqual({ kind: 'view', view: 'glyphs', entry: 'g1' });
     selectTarget({ kind: 'sound', id: 's1' });
     expect(state().selection).toEqual({ kind: 'view', view: 'sounds', entry: 's1' });
     selectTarget({ kind: 'painting', id: 'p1' });
     expect(state().selection).toEqual({ kind: 'view', view: 'paintings', entry: 'p1' });
+    selectTarget({ kind: 'dialog', id: 'd1' });
+    expect(state().selection).toEqual({ kind: 'view', view: 'dialogs', entry: 'd1' });
   });
 });
