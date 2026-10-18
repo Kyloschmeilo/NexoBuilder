@@ -234,6 +234,7 @@
     "blockBaseShared": "The blocks {blocks} all borrow the states of {block}, but each state can only show one of them. Choose another vanilla block for all but one.",
     "rawBlockWithoutBlock": "The additional YAML has a block: section, but the item is no block, so the section is left out. Turn on “Place as a block” in the Block section of the model tab.",
     "blockFenceItemUnknown": "The fence shows the item “{item}”, which the project does not have. Create it with the model of the post or the side, or choose another item in the Block section.",
+    "rawBehaviorsOverride": "The additional YAML lists the item's behaviors itself. The export writes its list instead of the one from the Behaviors tab, keeping the placement of the item's block or furniture in front when the list has none and adding the tab's behaviors of other types.",
     "placementTypeIgnored": "The placement {type} does not fit what the item places, so the export writes the default placement instead. Pick a block placement for a block and a furniture placement for furniture in the Behaviors tab.",
     "behaviorTargetMissing": "The behavior {type} names no block or furniture to place. Enter its ID in the Behaviors tab, or make the item a block or furniture in the model tab.",
     "furnitureWithBlock": "The item is a block and furniture at once. CraftEngine can place only one of them, so the furniture is left out. Turn off one of them in the model tab.",

@@ -91,6 +91,8 @@ export interface CraftEngineBuildResult {
   rawFurnitureIgnored: boolean;
   /** The placement type the config's `behavior` picks, when it does not fit the item's block or furniture (left out) */
   placementTypeIgnored: string | null;
+  /** The additional YAML lists the item's behaviors itself (written in place of the form's extra behaviors) */
+  rawBehaviorsOverride: boolean;
 }
 
 /**
@@ -326,7 +328,7 @@ export function buildCraftEngineItem(context: CraftEngineBuildContext): CraftEng
   const extras = Array.isArray(resolved.behavior)
     ? [...resolved.behavior, ...extraBehaviors(resolved.behaviors)]
     : extraBehaviors(resolved.behaviors);
-  const rawRest = writeBehaviors(resolved, placement.behavior, extras, rawItem);
+  const { raw: rawRest, rawListOverrides } = writeBehaviors(resolved, placement.behavior, extras, rawItem);
 
   // The managed paths are set below, whatever the config holds there
   delete resolved.material;
@@ -357,5 +359,6 @@ export function buildCraftEngineItem(context: CraftEngineBuildContext): CraftEng
     furnitureIgnored: isFurniture && isBlock,
     rawFurnitureIgnored: rawFurniture !== null && !isFurniture,
     placementTypeIgnored: placement.ignoredType,
+    rawBehaviorsOverride: rawListOverrides,
   };
 }

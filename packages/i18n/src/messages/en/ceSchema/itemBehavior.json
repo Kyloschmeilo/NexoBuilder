@@ -19,17 +19,17 @@
           },
           "block": {
             "label": "block",
-            "help": "Left empty for the item's own block.",
+            "help": "Only for an item without a block of its own; for the item's own block the export fills in its ID.",
             "placeholder": "namespace:block"
           },
           "furniture": {
             "label": "furniture",
-            "help": "Left empty for the item's own furniture.",
+            "help": "Only for an item without furniture of its own; for the item's own furniture the export fills in its ID.",
             "placeholder": "namespace:furniture"
           },
           "yOffset": {
             "label": "y_offset",
-            "help": "How many blocks above the liquid surface the block is placed (default 1)."
+            "help": "How many blocks above the liquid surface the block is placed (default 1). The plugin reads y_offset; the wiki's offset_y is ignored."
           },
           "ignorePlacer": {
             "label": "ignore_placer"

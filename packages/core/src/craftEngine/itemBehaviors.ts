@@ -6,7 +6,8 @@
  *    item, the config's `behavior` as it is (it names the block or furniture it places itself)
  *  - after it, the extra behaviors of the config's `behaviors` (range mining, composting …)
  * One behavior is written as `behavior`, more as the list `behaviors`. The additional YAML's `behavior:` (a mapping)
- * is merged into the placement behavior, its `behaviors:` (or a list in `behavior:`) replaces all of them.
+ * is merged into the placement behavior, its `behaviors:` (or a list in `behavior:`) is written in their place, after
+ * the generated placement when it lists none (see writeBehaviors).
  */
 import { deepMerge, isPlainObject } from '@resourcepackbuilder/utils';
 import { ordered } from './yaml';
@@ -84,31 +85,51 @@ export function extraBehaviors(configured: unknown): unknown[] {
   return Array.isArray(configured) ? configured : [configured];
 }
 
+/** Result of {@link writeBehaviors} */
+export interface WrittenBehaviors {
+  /** The additional YAML without the behavior keys handled here */
+  raw: Record<string, unknown> | null;
+  /** The additional YAML lists behaviors of its own, which take the place of the form's extra behaviors */
+  rawListOverrides: boolean;
+}
+
+const entryType = (entry: unknown) => (isPlainObject(entry) && typeof entry.type === 'string' ? entry.type : null);
+
 /**
  * Writes the placement and the extra behaviors into an item config (`behavior` for one, `behaviors` for more) and
- * folds the additional YAML's behaviors in: its `behavior:` mapping is merged into the placement behavior (into the
- * single behavior when there is no placement), its `behaviors:` or a list in `behavior:` replaces them all. The
- * additional YAML is returned without the keys handled here.
+ * folds the additional YAML's behaviors in. Its `behavior:` mapping is merged into the placement behavior (or added
+ * first when there is none). Its `behaviors:` list (or a list in `behavior:`) is written instead of the generated
+ * list, but keeps the generated placement in front when it has no placement behavior of its own, and the form's
+ * extra behaviors of types it does not list after it, so the item still places its block or furniture.
  */
 export function writeBehaviors(
   config: Record<string, unknown>,
   placement: Record<string, unknown> | null,
   extras: unknown[],
   rawItem: Record<string, unknown> | null,
-): Record<string, unknown> | null {
+): WrittenBehaviors {
   delete config.behavior;
   delete config.behaviors;
   const raw = rawItem ? { ...rawItem } : null;
-  const rawList = raw && (raw.behaviors !== undefined || Array.isArray(raw.behavior));
-  if (rawList) return raw;
-
-  let list: unknown[] = [...(placement ? [placement] : []), ...extras];
-  if (raw && isPlainObject(raw.behavior)) {
-    const [first, ...rest] = list;
-    list = [isPlainObject(first) ? deepMerge(first, raw.behavior) : raw.behavior, ...(isPlainObject(first) ? rest : list)];
+  let list: unknown[];
+  let rawListOverrides = false;
+  if (raw && (raw.behaviors !== undefined || Array.isArray(raw.behavior))) {
+    const rawList = extraBehaviors(raw.behaviors !== undefined ? raw.behaviors : raw.behavior);
+    const rawTypes = new Set(rawList.map(entryType));
+    const rawPlaces = [...rawTypes].some((type) => type !== null && CE_PLACEMENT_BEHAVIORS.includes(type));
+    const kept = extras.filter((entry) => !rawTypes.has(entryType(entry)));
+    list = [...(placement && !rawPlaces ? [placement] : []), ...rawList, ...kept];
+    rawListOverrides = true;
     delete raw.behavior;
+    delete raw.behaviors;
+  } else {
+    list = [...(placement ? [placement] : []), ...extras];
+    if (raw && isPlainObject(raw.behavior)) {
+      list = placement ? [deepMerge(placement, raw.behavior), ...extras] : [raw.behavior, ...extras];
+      delete raw.behavior;
+    }
   }
   if (list.length === 1) config.behavior = list[0];
   else if (list.length > 1) config.behaviors = list;
-  return raw;
+  return { raw, rawListOverrides };
 }

@@ -19,17 +19,17 @@
           },
           "block": {
             "label": "block",
-            "help": "Leer lassen für den eigenen Block des Items.",
+            "help": "Nur für ein Item ohne eigenen Block; beim eigenen Block trägt der Export dessen ID ein.",
             "placeholder": "namespace:block"
           },
           "furniture": {
             "label": "furniture",
-            "help": "Leer lassen für das eigene Möbel des Items.",
+            "help": "Nur für ein Item ohne eigenes Möbel; beim eigenen Möbel trägt der Export dessen ID ein.",
             "placeholder": "namespace:moebel"
           },
           "yOffset": {
             "label": "y_offset",
-            "help": "Wie viele Blöcke über der Flüssigkeitsoberfläche der Block platziert wird (Standard 1)."
+            "help": "Wie viele Blöcke über der Flüssigkeitsoberfläche der Block platziert wird (Standard 1). Das Plugin liest y_offset; das offset_y aus dem Wiki wird ignoriert."
           },
           "ignorePlacer": {
             "label": "ignore_placer"

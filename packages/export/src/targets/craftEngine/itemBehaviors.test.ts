@@ -13,7 +13,12 @@ import {
   type Item,
   type Project,
 } from '@resourcepackbuilder/core/project';
-import { newCraftEngineBlock, newCraftEngineFurniture } from '@resourcepackbuilder/core/craftEngine';
+import {
+  applyBlockBehavior,
+  CE_ITEM_BEHAVIOR_PROPERTIES,
+  newCraftEngineBlock,
+  newCraftEngineFurniture,
+} from '@resourcepackbuilder/core/craftEngine';
 import { planExport } from '../../plan';
 import { pluginText } from '../../../test-utils/export';
 
@@ -76,6 +81,36 @@ describe('the placement behavior of a block item', () => {
     ]);
     expect(itemOf(p, 'stone').behavior).toEqual({ type: 'block_item', block: 'werk:stone' });
     expect(codes(p)).toContainEqual(['ce.placementTypeIgnored', { type: 'furniture_item' }]);
+  });
+});
+
+describe('the placement behavior of a door', () => {
+  const door = (item: Item) => {
+    item.config.block = applyBlockBehavior(newCraftEngineBlock(), 'door_block', `werk:${item.itemId}`, { auto_state: 'solid' });
+  };
+  const added = () => CE_ITEM_BEHAVIOR_PROPERTIES.find((def) => def.id === 'behavior')!.defaultValue();
+
+  it('keeps the two-block placement the door needs when the property is added without a pick', () => {
+    const p = project([
+      'gate',
+      (item) => {
+        door(item);
+        item.config.behavior = added();
+      },
+    ]);
+    expect(itemOf(p, 'gate').behavior).toEqual({ type: 'double_high_block_item', block: 'werk:gate' });
+    expect(codes(p).filter(([code]) => code === 'ce.placementTypeIgnored')).toEqual([]);
+  });
+
+  it('writes the placement the user picks instead', () => {
+    const p = project([
+      'gate',
+      (item) => {
+        door(item);
+        item.config.behavior = { type: 'block_item' };
+      },
+    ]);
+    expect(itemOf(p, 'gate').behavior).toEqual({ type: 'block_item', block: 'werk:gate' });
   });
 });
 
@@ -209,16 +244,47 @@ describe('item behaviors in the additional YAML', () => {
     ]);
   });
 
-  it('lets a raw behaviors: list replace every generated behavior', () => {
+  it('keeps the placement in front of a raw behaviors: list without one, with a warning', () => {
     const p = project([
       'stone',
       (item) => {
         asBlock(item);
+        item.config.behaviors = [
+          { type: 'range_mining_item', range: ['0,1,0'] },
+          { type: 'compostable_item', chance: 0.2 },
+        ];
         item.rawYaml = 'behaviors:\n  - type: compostable_item\n    chance: 1\n';
       },
     ]);
     const written = itemOf(p, 'stone');
     expect(written.behavior).toBeUndefined();
-    expect(written.behaviors).toEqual([{ type: 'compostable_item', chance: 1 }]);
+    expect(written.behaviors).toEqual([
+      { type: 'block_item', block: 'werk:stone' },
+      { type: 'compostable_item', chance: 1 },
+      { type: 'range_mining_item', range: ['0,1,0'] },
+    ]);
+    expect(codes(p)).toContainEqual(['ce.rawBehaviorsOverride', undefined]);
+  });
+
+  it('writes a raw behaviors: list with a placement of its own in place of the generated one', () => {
+    const p = project([
+      'stone',
+      (item) => {
+        asBlock(item);
+        item.rawYaml = 'behaviors:\n  - type: wall_block_item\n    block: werk:stone\n  - type: compostable_item\n';
+      },
+    ]);
+    expect(itemOf(p, 'stone').behaviors).toEqual([{ type: 'wall_block_item', block: 'werk:stone' }, { type: 'compostable_item' }]);
+  });
+
+  it('adds a raw behavior: mapping first on an item that places nothing', () => {
+    const p = project([
+      'seeds',
+      (item) => {
+        item.config.behaviors = [{ type: 'compostable_item', chance: 0.3 }];
+        item.rawYaml = 'behavior:\n  type: flint_and_steel_item\n';
+      },
+    ]);
+    expect(itemOf(p, 'seeds').behaviors).toEqual([{ type: 'flint_and_steel_item' }, { type: 'compostable_item', chance: 0.3 }]);
   });
 });

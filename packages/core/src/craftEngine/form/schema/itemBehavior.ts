@@ -35,7 +35,8 @@ export const CE_ITEM_BEHAVIOR_PROPERTIES = properties(
         source_only: field.boolean({ defaultHint: true, ...whenType('liquid_collision_furniture_item') }),
         liquid_type: field.multiSelect(plainOptions([...CE_PLACEMENT_LIQUIDS]), { ...whenType('liquid_collision_furniture_item') }),
       }),
-      defaultValue: () => ({ type: 'block_item' }),
+      // No type: the item's own block or furniture keeps the placement its form needs (a door's double_high_block_item)
+      defaultValue: () => ({}),
       hint: true,
       common: true,
       aliases: ['placement', 'place', 'block_item', 'furniture_item'],
