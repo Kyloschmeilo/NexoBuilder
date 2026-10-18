@@ -119,7 +119,7 @@
       "field": {
         "label": "Item model",
         "placeholder": "e.g. nexo:empty",
-        "help": "Replaces the item model the export sets (nexo:'<'item ID> or the generated one for the inventory icon and furniture). Only the additional YAML overrides it."
+        "help": "Replaces the item model the export sets. Order: additional YAML, then this field, then the definition the export generates (inventory icon, furniture), then nexo:'<'item ID>. The export warns when this field hides a generated definition."
       }
     },
     "packHandSwapAnimation": {

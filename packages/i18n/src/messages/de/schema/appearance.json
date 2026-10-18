@@ -119,7 +119,7 @@
       "field": {
         "label": "Item-Modell",
         "placeholder": "z.B. nexo:empty",
-        "help": "Ersetzt das Item-Modell, das der Export setzt (nexo:'<'Item-ID> oder das erzeugte für Inventar-Icon und Möbel). Nur das zusätzliche YAML überschreibt es."
+        "help": "Ersetzt das Item-Modell, das der Export setzt. Reihenfolge: zusätzliches YAML, dann dieses Feld, dann die vom Export erzeugte Definition (Inventar-Icon, Möbel), dann nexo:'<'Item-ID>. Der Export warnt, wenn dieses Feld eine erzeugte Definition verdeckt."
       }
     },
     "packHandSwapAnimation": {

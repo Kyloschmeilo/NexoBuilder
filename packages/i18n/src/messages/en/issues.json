@@ -84,7 +84,8 @@
     "customBlockMechanicMissing": "Stackable models are uploaded, but the “Custom Block” mechanic is missing – they are not exported.",
     "stackableNeedsStringblock": "Stackable only works with the block type STRINGBLOCK.",
     "fileUnreadable": "The file “{path}” could not be read and is left out.",
-    "unsafePath": "The path “{path}” would leave its folder and is not exported."
+    "unsafePath": "The path “{path}” would leave its folder and is not exported.",
+    "itemModelOverridesGenerated": "The item model {itemModel} replaces the model definition the export generated ({generated}), so the inventory icon and furniture models of that definition are not used."
   },
   "selection": {
     "packNameClash": "“{first}” and “{second}” use the same pack name “{pack}”. Rename it in the settings of one of the projects.",

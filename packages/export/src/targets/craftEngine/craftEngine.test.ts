@@ -7,9 +7,11 @@ import {
   createRecipe,
   insertFolder,
   insertItem,
+  isVariantForTarget,
   type Item,
   type Project,
   type RecipeType,
+  VARIANTS,
 } from '@resourcepackbuilder/core/project';
 import { createTextureModel, type ImportedModel } from '@resourcepackbuilder/minecraft';
 import { makePngDataUrl } from '@resourcepackbuilder/test-utils/png';
@@ -20,6 +22,7 @@ import { planMultiExport } from '../../selection';
 import { buildMultiExportZip, INSTALL_GUIDE_FILE, listMultiExportPaths, pluginFolderEntries } from '../../zip';
 import { pluginText } from '../../../test-utils/export';
 import { CRAFT_ENGINE_TARGET } from '.';
+import { CE_MODEL_SLOTS } from './variants';
 import { folderConfigPath } from '..';
 
 const PNG16 = makePngDataUrl(16, 16);
@@ -205,6 +208,13 @@ describe('CraftEngine variants', () => {
     expect(plan.issues.map((i) => i.code)).toEqual(expect.arrayContaining(['plan.variantWrongMaterial', 'ce.variantUnsupported']));
     expect(plan.items[0].config.models).toBeUndefined();
     expect([...plan.packFiles.keys()].some((path) => path.includes('thing-'))).toBe(false);
+  });
+
+  it('offers only the variant slots its models list uses', () => {
+    const used = new Set(Object.values(CE_MODEL_SLOTS).flatMap((slots) => slots.map((s) => s.slot)));
+    const offered = VARIANTS.filter((def) => isVariantForTarget(def, 'craftengine')).map((def) => def.slot);
+    expect(offered.filter((slot) => !used.has(slot))).toEqual([]);
+    expect(VARIANTS.filter((def) => !isVariantForTarget(def, 'nexo'))).toEqual([]);
   });
 });
 
