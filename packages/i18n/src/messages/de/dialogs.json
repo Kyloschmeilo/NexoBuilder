@@ -22,6 +22,7 @@
     "confirm": "Verschieben"
   },
   "settings": {
+    "pageDescription": "Einstellungen dieses Projekts und dieses Geräts.",
     "project": {
       "title": "Projekt",
       "description": "Wird mit dem Projekt gespeichert."
@@ -32,6 +33,35 @@
     },
     "languageHelp": "Die Sprache, in der ResourcepackBuilder angezeigt wird.",
     "themeHelp": "„System“ folgt der Einstellung deines Betriebssystems.",
+    "appearance": {
+      "title": "Darstellung",
+      "description": "Wie ResourcepackBuilder auf diesem Gerät aussieht."
+    },
+    "colorTheme": "Farbschema",
+    "colorThemeHelp": "Ändert die Farben der ganzen App. Jedes Schema gibt es hell und dunkel.",
+    "mode": "Hell oder dunkel",
+    "colorThemes": {
+      "deepslate": {
+        "name": "Tiefenschiefer",
+        "description": "Kühler Schiefer, Lapis-Akzent"
+      },
+      "amethyst": {
+        "name": "Amethyst",
+        "description": "Violett getönt, Amethyst-Akzent"
+      },
+      "copper": {
+        "name": "Kupfer",
+        "description": "Warmer Stein, Kupfer-Akzent"
+      },
+      "prismarine": {
+        "name": "Prismarin",
+        "description": "Tiefes Meeresgrün, Türkis-Akzent"
+      },
+      "crimson": {
+        "name": "Karmesin",
+        "description": "Netherziegel, Karmesin-Akzent"
+      }
+    },
     "projectName": "Projektname",
     "minecraftVersion": "Minecraft-Version des Servers",
     "target": "Server-Plugin",

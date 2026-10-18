@@ -5,8 +5,10 @@ import type { Issue, IssueContext } from '@resourcepackbuilder/utils';
 export interface RecipeIssues {
   /** Issues of the whole recipe */
   recipe: Issue[];
-  /** Issues of the input of cooking and stonecutting recipes */
+  /** Issues of the input of cooking and stonecutting recipes (the `input` slot of the other single-slot types) */
   input: Issue[];
+  /** Issues of the other single slots (brewing reagent, smithing base …), by slot */
+  slots: Map<string, Issue[]>;
   /** Issues of each ingredient, by its letter */
   ingredients: Map<string, Issue[]>;
 }
@@ -25,15 +27,18 @@ function recipeFrameIndex(context: IssueContext[] | undefined, key: string): num
  * without an ingredient (not in `ingredientLetters`) stay with the recipe and keep the recipe's frame.
  */
 export function recipeIssues(issues: Issue[], key: string, ingredientLetters: readonly string[]): RecipeIssues {
-  const sorted: RecipeIssues = { recipe: [], input: [], ingredients: new Map() };
+  const sorted: RecipeIssues = { recipe: [], input: [], slots: new Map(), ingredients: new Map() };
   for (const issue of issues) {
     const index = recipeFrameIndex(issue.context, key);
     if (index < 0) continue;
     const frame = issue.context![index];
     const local: Issue = { ...issue, context: undefined };
     const letter = frame.code === RECIPE_FRAME_CODES.ingredient ? frame.args?.letter : undefined;
+    const slot = frame.code === RECIPE_FRAME_CODES.slot ? frame.args?.slotName : undefined;
     if (typeof letter === 'string' && ingredientLetters.includes(letter)) {
       sorted.ingredients.set(letter, [...(sorted.ingredients.get(letter) ?? []), local]);
+    } else if (typeof slot === 'string') {
+      sorted.slots.set(slot, [...(sorted.slots.get(slot) ?? []), local]);
     } else if (frame.code === RECIPE_FRAME_CODES.input) {
       sorted.input.push(local);
     } else if (frame.code === RECIPE_FRAME_CODES.recipe) {

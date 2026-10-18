@@ -14,5 +14,6 @@ export * from './glyphs/files';
 export * from './itemConfig';
 export * from './paintings/files';
 export * from './recipes/files';
+export * from './recipes/options';
 export * from './sounds/files';
 export * from './yaml';

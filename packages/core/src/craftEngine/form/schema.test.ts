@@ -12,6 +12,8 @@ import { CE_ATTRIBUTE_LISTS } from '../attributes';
 import { CE_CATEGORY_LIST } from '../categories';
 import { CE_CONFIG_FACTORY_LIST } from '../configFactories';
 import { CE_LANG_MAP, CE_TRANSLATION_MAP } from '../lang';
+import { CE_APPEARANCE_MODEL_FIELD, CE_APPEARANCE_MODELS_FIELD } from '../blockVariants';
+import { CE_FURNITURE_EDITOR_FIELDS } from '../furnitureFields';
 import { CE_LOGIC, logicMessageKeys } from '../logic';
 import { CE_PACK_FIELD } from '../pack';
 import { CE_SCRIPT_LIST } from '../scripts';
@@ -39,10 +41,10 @@ function leafKeys(tree: MessageTree, prefix = ''): string[] {
 const configPaths = CRAFT_ENGINE_FORM.properties.flatMap((p) => (p.storage === 'config' ? [p.path.join('.')] : []));
 
 describe('CraftEngine form', () => {
-  it('uses the ceSchema namespace and shows data, settings, events and loot as tabs', () => {
+  it('uses the ceSchema namespace and shows data, settings, behaviors, events and loot as tabs', () => {
     expect(CRAFT_ENGINE_FORM.target).toBe('craftengine');
     expect(CRAFT_ENGINE_FORM.messages).toBe('ceSchema');
-    expect(CRAFT_ENGINE_FORM.tabs.map((tab) => tab.id)).toEqual(['data', 'settings', 'events', 'loot']);
+    expect(CRAFT_ENGINE_FORM.tabs.map((tab) => tab.id)).toEqual(['data', 'settings', 'behaviors', 'events', 'loot']);
   });
 
   it('shows the loot of the block or the furniture the item places', () => {
@@ -105,6 +107,9 @@ describe('ceSchema message keys', () => {
     ...fieldMessageKeys(CE_PACK_FIELD),
     ...fieldMessageKeys(CE_CONFIG_FACTORY_LIST),
     ...fieldMessageKeys(CE_SCRIPT_LIST),
+    ...fieldMessageKeys(CE_APPEARANCE_MODEL_FIELD),
+    ...fieldMessageKeys(CE_APPEARANCE_MODELS_FIELD),
+    ...CE_FURNITURE_EDITOR_FIELDS.flatMap((f) => fieldMessageKeys(f)),
   ]);
 
   it('references only keys that are well-formed', () => {

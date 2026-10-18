@@ -45,7 +45,7 @@ export const COPY_CATEGORIES: CopyCategoryInfo[] = [
 ];
 
 /** Values that are never copied: they belong to the model and must be unique per item. */
-const NEVER_COPIED_PROPERTIES = new Set(['Pack.custom_model_data']);
+const NEVER_COPIED_PROPERTIES = new Set(['Pack.custom_model_data', 'Components.item_model']);
 
 export interface ItemConfigClipboard {
   format: 'resourcepackbuilder-item-config';

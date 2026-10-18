@@ -12,7 +12,8 @@ function section(parent: Record<string, unknown>, key: string): Record<string, u
 }
 
 /** Returns the config in the current shape (a copy when something changed, the same object otherwise). */
-export function migrateNexoConfig(config: Record<string, unknown>): Record<string, unknown> {
+export function migrateNexoConfig(current: Record<string, unknown>): Record<string, unknown> {
+  const config = migrateNexoComponents(current);
   const mechanics = section(config, 'Mechanics');
   if (!mechanics) return config;
   const next: Record<string, unknown> = structuredClone(config);
@@ -58,5 +59,40 @@ export function migrateNexoConfig(config: Record<string, unknown>): Record<strin
     changed = true;
   }
 
+  return changed ? next : config;
+}
+
+/** Keys of `Components.custom_model_data` as the docs spell them, and the keys Nexo 1.30 reads instead */
+const CUSTOM_MODEL_DATA_KEYS: Array<[docs: string, read: string]> = [
+  ['floats', 'float'],
+  ['colors', 'color'],
+  ['strings', 'string'],
+  ['flags', 'flag'],
+];
+
+/** Moves `object[from]` to `object[to]` (an existing `to` wins); whether the object changed. */
+function renameKey(object: Record<string, unknown>, from: string, to: string): boolean {
+  if (!(from in object)) return false;
+  if (!(to in object)) object[to] = object[from];
+  delete object[from];
+  return true;
+}
+
+/**
+ * Components whose keys Nexo 1.30 reads differently from the docs the editor followed before: the
+ * custom_model_data lists (`floats` → `float` …) and the block list of can_place_on / can_break (`blocks` → `block`).
+ */
+function migrateNexoComponents(config: Record<string, unknown>): Record<string, unknown> {
+  const components = section(config, 'Components');
+  if (!components) return config;
+  const next = structuredClone(config);
+  const nextComponents = section(next, 'Components') as Record<string, unknown>;
+  let changed = false;
+  const modelData = section(nextComponents, 'custom_model_data');
+  if (modelData) for (const [from, to] of CUSTOM_MODEL_DATA_KEYS) changed = renameKey(modelData, from, to) || changed;
+  for (const key of ['can_place_on', 'can_break']) {
+    const predicate = section(nextComponents, key);
+    if (predicate) changed = renameKey(predicate, 'blocks', 'block') || changed;
+  }
   return changed ? next : config;
 }

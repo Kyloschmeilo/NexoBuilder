@@ -90,6 +90,8 @@ describe('CraftEngine block behaviors', () => {
         '                parent: minecraft:block/cube_all',
         '                textures:',
         '                  all: bloecke:block/steine/palm_slab/planks',
+        '    settings:',
+        '      item: bloecke:palm_slab',
         '    behavior:',
         '      type: slab_block',
         '    loot:',
@@ -113,6 +115,8 @@ describe('CraftEngine block behaviors', () => {
         '        stairs_texture_side: bloecke:block/steine/palm_stairs/planks',
         '        stairs_texture_top: bloecke:block/steine/palm_stairs/planks',
         '        stairs_model: bloecke:block/steine/palm_stairs-stairs',
+        '    settings:',
+        '      item: bloecke:palm_stairs',
         '    behavior:',
         '      type: stairs_block',
         '    loot:',
@@ -161,6 +165,8 @@ describe('CraftEngine block behaviors', () => {
         '          appearance: stage_1',
         '        age=2:',
         '          appearance: stage_2',
+        '    settings:',
+        '      item: bloecke:pearl_flower',
         '    behaviors:',
         '      - type: liquid_flowable_block',
         '      - type: bush_block',
@@ -236,12 +242,14 @@ describe('the block in the additional YAML', () => {
     );
     const plan = planExport(project);
     expect(plan.items[0].config.block).toBeUndefined();
-    expect(blocksOf(project)).toContain('    settings:\n      hardness: 0.5\n    behavior:\n      type: falling_block\n');
+    expect(blocksOf(project)).toContain(
+      '    settings:\n      item: bloecke:block_0\n      hardness: 0.5\n    behavior:\n      type: falling_block\n',
+    );
   });
 
   it('lets block: replace the model the export would add', () => {
     const project = blockProject((item) => (item.rawYaml = 'block:\n  state:\n    model:\n      path: my:block/own\n'));
-    expect(blocksOf(project)).toContain('      model:\n        path: my:block/own\n    loot:');
+    expect(blocksOf(project)).toContain('      model:\n        path: my:block/own\n    settings:\n      item: bloecke:block_0\n    loot:');
   });
 
   it('leaves block: out of an item that is no block, with a warning', () => {
@@ -331,6 +339,8 @@ describe('the YAML of the other behavior forms', () => {
       `      template: default:block_state/${template}`,
       '      arguments:',
       ...args.map((line) => `        ${line}`),
+      '    settings:',
+      '      item: bloecke:block_0',
       '    behavior:',
       `      type: ${type}`,
       '    loot:',
@@ -387,6 +397,8 @@ describe('the YAML of the other behavior forms', () => {
         '              parent: minecraft:block/cross',
         '              textures:',
         `                cross: ${T}/planks`,
+        '    settings:',
+        '      item: bloecke:block_0',
         '    behaviors:',
         '      - type: liquid_flowable_block',
         '      - type: bush_block',
@@ -432,6 +444,8 @@ describe('the YAML of the other behavior forms', () => {
         '          appearance: "on"',
         '          settings:',
         '            luminance: 15',
+        '    settings:',
+        '      item: bloecke:block_0',
         '    behavior:',
         '      type: lamp_block',
         '    loot:',

@@ -57,24 +57,47 @@
         "label": "Sounds",
         "fields": {
           "break": {
-            "label": "Abbauen",
-            "placeholder": "minecraft:block.stone.break"
+            "label": "Abbauen"
           },
           "step": {
-            "label": "Schritt",
-            "placeholder": "minecraft:block.stone.step"
+            "label": "Schritt"
           },
           "place": {
-            "label": "Platzieren",
-            "placeholder": "minecraft:block.stone.place"
+            "label": "Platzieren"
           },
           "hit": {
-            "label": "Treffer beim Abbauen",
-            "placeholder": "minecraft:block.stone.hit"
+            "label": "Treffer beim Abbauen"
           },
           "fall": {
-            "label": "Fallen",
-            "placeholder": "minecraft:block.stone.fall"
+            "label": "Fallen"
+          }
+        },
+        "sound": {
+          "choices": {
+            "id": {
+              "label": "Sound",
+              "field": {
+                "label": "Sound-Event",
+                "placeholder": "minecraft:block.stone.break"
+              }
+            },
+            "detailed": {
+              "label": "Sound mit Lautstärke und Tonhöhe",
+              "field": {
+                "fields": {
+                  "id": {
+                    "label": "Sound-Event",
+                    "placeholder": "minecraft:block.stone.break"
+                  },
+                  "volume": {
+                    "label": "Lautstärke"
+                  },
+                  "pitch": {
+                    "label": "Tonhöhe"
+                  }
+                }
+              }
+            }
           }
         }
       }
@@ -92,6 +115,13 @@
       "description": "Der Block lässt nur etwas fallen, wenn er mit einem passenden Werkzeug abgebaut wird.",
       "field": {
         "label": "Passendes Werkzeug nötig"
+      }
+    },
+    "blockSettingsRespectToolComponent": {
+      "label": "Respect Tool Component",
+      "description": "Werkzeuge, deren minecraft:tool-Komponente sie für Drops als richtig kennzeichnet, gelten als richtige Werkzeuge, als stünden sie in Correct Tools.",
+      "field": {
+        "label": "Werkzeug-Komponente beachten"
       }
     },
     "blockSettingsRequiredBreakPower": {
@@ -134,6 +164,21 @@
       "description": "Der Klang eines Notenblocks, der auf dem Block steht.",
       "field": {
         "label": "Instrument"
+      }
+    },
+    "blockSettingsFluidState": {
+      "label": "Fluid State",
+      "description": "Die Flüssigkeit im Block. Wasser macht ihn geflutet; gib gefluteten Varianten diese Einstellung und ein geflutetes Aussehen.",
+      "field": {
+        "label": "Flüssigkeit",
+        "options": {
+          "water": {
+            "label": "Wasser"
+          },
+          "empty": {
+            "label": "Keine"
+          }
+        }
       }
     },
     "blockSettingsBurnable": {
@@ -213,6 +258,14 @@
         "label": "Lässt Tageslicht durch"
       }
     },
+    "blockSettingsUseShapeForLightOcclusion": {
+      "label": "Use Shape For Light Occlusion",
+      "description": "Licht wird von der Form des Blocks aufgehalten statt vom ganzen Blockraum, wie bei Stufen und Treppen.",
+      "field": {
+        "label": "Form hält Licht auf",
+        "help": "Wird von CraftEngine 26.9 gelesen; im Wiki nicht beschrieben."
+      }
+    },
     "blockSettingsFriction": {
       "label": "Friction",
       "description": "Wie rutschig der Block für Mobs und Items ist. Eis hat 0,98. Für Spieler gilt das nicht.",
@@ -247,6 +300,120 @@
       "field": {
         "label": "Block",
         "placeholder": "minecraft:stone"
+      }
+    },
+    "blockSettingsBlockRaytrace": {
+      "label": "Block Raytrace",
+      "description": "Der Block hält Raytraces auf, etwa die Sichtlinie, die CraftEngine prüft.",
+      "field": {
+        "label": "Hält Raytraces auf",
+        "help": "Wird von CraftEngine 26.9 gelesen; im Wiki nicht beschrieben."
+      }
+    },
+    "blockSettingsDestroyStages": {
+      "label": "Destroy Stages",
+      "description": "Items, die beim Abbauen statt der Vanilla-Risse auf dem Block erscheinen, mit Position, Drehung und Größe.",
+      "field": {
+        "label": "Abbaustufen",
+        "fields": {
+          "items": {
+            "label": "Items",
+            "help": "Ein Item pro Stufe, vom ersten bis zum letzten Riss. Beliebig viele Items sind möglich.",
+            "placeholder": "minecraft:destroy_stage_0"
+          },
+          "translation": {
+            "label": "Verschiebung",
+            "placeholder": "0,0.5,0"
+          },
+          "position": {
+            "label": "Position",
+            "placeholder": "0.5,0.5,0.5"
+          },
+          "scale": {
+            "label": "Größe",
+            "placeholder": "1,1,1"
+          },
+          "yaw": {
+            "label": "Gieren (yaw)"
+          },
+          "pitch": {
+            "label": "Neigen (pitch)"
+          },
+          "rotation": {
+            "label": "Drehung",
+            "help": "Ein Winkel um y, Euler-Winkel x,y,z oder ein Quaternion x,y,z,w.",
+            "placeholder": "45,45,0"
+          },
+          "displayTransform": {
+            "label": "Display-Transform"
+          },
+          "billboard": {
+            "label": "Billboard"
+          },
+          "viewRange": {
+            "label": "Sichtweite"
+          },
+          "brightness": {
+            "label": "Helligkeit",
+            "fields": {
+              "blockLight": {
+                "label": "Blocklicht"
+              },
+              "skyLight": {
+                "label": "Himmelslicht"
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "blockStates": {
+    "fields": {
+      "model": {
+        "label": "Modell-Details",
+        "fields": {
+          "textures": {
+            "label": "Texturen",
+            "help": "CraftEngine baut das Modell aus den Texturen: 1 auf allen Seiten, 2 als Enden und Seite, 3 als unten, Seite und oben, 4 als unten, vorne, Seite und oben, 5 oder 6 eine pro Seite (unten, oben, Norden, Süden, Westen, Osten). Beginne eine Textur mit ^, damit sie auch für die Partikel gilt.",
+            "placeholder": "minecraft:block/custom/my_block"
+          },
+          "z": {
+            "label": "Drehung um z",
+            "help": "In Schritten von 90 Grad. Ab Minecraft 1.21.11."
+          },
+          "uvlock": {
+            "label": "UV-Sperre",
+            "help": "Die Texturen behalten ihre Richtung, wenn das Modell gedreht wird."
+          }
+        }
+      },
+      "models": {
+        "label": "Gewichtete Modelle",
+        "help": "Mehrere Modelle: Jeder platzierte Block zeigt eines davon, zufällig nach Gewicht gewählt. Ersetzt das Modell oben.",
+        "itemLabel": "Modell",
+        "fields": {
+          "path": {
+            "label": "Pfad",
+            "placeholder": "minecraft:block/custom/flower_1"
+          },
+          "weight": {
+            "label": "Gewicht"
+          },
+          "x": {
+            "label": "Drehung um x"
+          },
+          "y": {
+            "label": "Drehung um y"
+          },
+          "z": {
+            "label": "Drehung um z",
+            "help": "In Schritten von 90 Grad. Ab Minecraft 1.21.11."
+          },
+          "uvlock": {
+            "label": "UV-Sperre"
+          }
+        }
       }
     }
   }

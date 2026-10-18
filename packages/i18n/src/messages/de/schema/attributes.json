@@ -61,6 +61,49 @@
           "label": "Stufe"
         }
       }
+    },
+    "storedEnchantments": {
+      "label": "Stored Enchantments",
+      "description": "Verzauberungen, die ein verzaubertes Buch speichert und im Amboss weitergibt.",
+      "field": {
+        "label": "Gespeicherte Verzauberungen",
+        "help": "Mit dem Material ENCHANTED_BOOK verwenden. Von Nexo 1.30 gelesen, nicht in der Doku aufgeführt.",
+        "keyLabel": "Verzauberung",
+        "keyPlaceholder": "z.B. mending",
+        "value": {
+          "label": "Stufe"
+        }
+      }
+    },
+    "potionEffects": {
+      "label": "Potion Effects",
+      "description": "Effekte eines Tranks oder Spitzpfeils.",
+      "field": {
+        "label": "Effekte",
+        "help": "Mit POTION, SPLASH_POTION, LINGERING_POTION oder TIPPED_ARROW verwenden. Von Nexo 1.30 gelesen, nicht in der Doku aufgeführt.",
+        "itemLabel": "Effekt",
+        "fields": {
+          "type": {
+            "label": "Effekt"
+          },
+          "duration": {
+            "label": "Dauer",
+            "placeholder": "z.B. 30s"
+          },
+          "amplifier": {
+            "label": "Stufe (0 = I)"
+          },
+          "ambient": {
+            "label": "Umgebung (dezente Partikel)"
+          },
+          "particles": {
+            "label": "Partikel anzeigen"
+          },
+          "icon": {
+            "label": "Symbol anzeigen"
+          }
+        }
+      }
     }
   }
 }

@@ -28,7 +28,7 @@ function ProjectRow({ project, isOpen, isShared, onOpen, onDelete }: ProjectRowP
   return (
     <Item
       variant="outline"
-      className="relative flex-nowrap bg-card py-2 pr-2 hover:border-input hover:bg-muted has-[button:focus-visible]:ring-3 has-[button:focus-visible]:ring-ring/50"
+      className="relative flex-nowrap bg-card py-2 pr-2 hover:border-input hover:bg-muted has-[button:focus-visible]:ring-2 has-[button:focus-visible]:ring-ring"
     >
       <ItemMedia variant="icon" className="text-muted-foreground">
         <Package className="size-4.5" />

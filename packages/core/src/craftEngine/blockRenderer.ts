@@ -56,6 +56,19 @@ export function isTransparentState(state: Record<string, unknown>): boolean {
   return state.transparent === true;
 }
 
+/**
+ * The first `entity_culling` (CraftEngine Premium) the block's state or appearances set, undefined without one.
+ * CraftEngine 26.9 reads the key from the block itself (for every appearance), the wiki next to the renderer; the
+ * export writes it on the block too.
+ */
+export function stateEntityCulling(block: Record<string, unknown>): unknown {
+  const states = isPlainObject(block.states) ? block.states : null;
+  const looks = states && isPlainObject(states.appearances) ? Object.values(states.appearances) : [block.state];
+  for (const look of looks)
+    if (isPlainObject(look) && look.entity_culling !== undefined && look.entity_culling !== null) return look.entity_culling;
+  return undefined;
+}
+
 /** A new element: an item display of the block's own item at the block's center. */
 export function newRendererElement(): ConfigObject {
   return { type: 'item_display' };

@@ -12,7 +12,32 @@ const animationField = () =>
     duration: field.text({ format: 'duration', placeholder: true }),
   });
 
-const blockListField = () => field.object({ blocks: field.stringList({ placeholder: true }) });
+/**
+ * A block predicate of can_place_on / can_break as Nexo 1.30 reads it: vanilla blocks or `#tags` (`block`), Nexo
+ * custom blocks (`nexo_block`) and required block state properties (`state`). Each list may be a single value.
+ */
+const blockPredicateField = () =>
+  field.object({
+    block: field.stringList({ placeholder: true, singleAsString: true }),
+    nexo_block: field.stringList({ placeholder: true, singleAsString: true, help: true, advanced: true }),
+    state: field.map(field.text(), { keyPlaceholder: true, newValue: () => '', help: true, advanced: true }),
+  });
+
+/** Speed and time limits of one effect of a kinetic weapon (dismount, knockback, damage) */
+const kineticConditionField = () =>
+  field.object({
+    max_duration: field.text({ format: 'duration', placeholder: true }),
+    min_speed: field.number({ min: 0, step: 0.1 }),
+    min_relative_speed: field.number({ min: 0, step: 0.1 }),
+  });
+
+/** Item rarity, which colors the name */
+const RARITIES = plainOptions(['COMMON', 'UNCOMMON', 'RARE', 'EPIC']);
+
+/** The vanilla goat horn instruments */
+const GOAT_HORN_INSTRUMENTS = plainOptions(
+  ['ponder', 'sing', 'seek', 'feel', 'admire', 'call', 'yearn', 'dream'].map((name) => `minecraft:${name}_goat_horn`),
+);
 
 /** Every component links to the components page; those with a page or section of their own link there. */
 export const COMPONENT_PROPERTIES = properties(
@@ -50,6 +75,11 @@ export const COMPONENT_PROPERTIES = properties(
       field: field.object({
         nexo_item: field.text({ placeholder: true }),
         minecraft_type: field.select(MATERIALS, { allowCustom: true }),
+        minecraft_item: field.yaml({ help: true, advanced: true }),
+        crucible_item: field.text({ placeholder: true, advanced: true }),
+        mmoitems_type: field.text({ placeholder: true, advanced: true }),
+        mmoitems_id: field.text({ placeholder: true, advanced: true }),
+        amount: field.number({ integer: true, min: 1, advanced: true }),
       }),
       defaultValue: () => ({ minecraft_type: 'GLASS_BOTTLE' }),
     },
@@ -111,6 +141,9 @@ export const COMPONENT_PROPERTIES = properties(
         dispensable: field.boolean(),
         swappable: field.boolean(),
         damage_on_hurt: field.boolean(),
+        equip_on_interact: field.boolean({ minVersion: '1.21.5', help: true, advanced: true }),
+        can_be_sheared: field.boolean({ minVersion: '1.21.6', help: true, advanced: true }),
+        shear_sound: { ...soundField({ help: true }), minVersion: '1.21.6', advanced: true },
       }),
       defaultValue: () => ({ slot: 'HEAD' }),
     },
@@ -137,8 +170,8 @@ export const COMPONENT_PROPERTIES = properties(
     },
     'Components.tooltip_style': { field: field.text({ format: 'resource', placeholder: true }), defaultValue: () => '' },
     'Components.break_sound': { field: soundField(), defaultValue: () => 'entity.item.break', minVersion: '1.21.5' },
-    'Components.can_place_on': { field: blockListField(), defaultValue: () => ({ blocks: ['stone'] }), minVersion: '1.21.5' },
-    'Components.can_break': { field: blockListField(), defaultValue: () => ({ blocks: ['stone'] }), minVersion: '1.21.5' },
+    'Components.can_place_on': { field: blockPredicateField(), defaultValue: () => ({ block: 'stone' }), minVersion: '1.21.5' },
+    'Components.can_break': { field: blockPredicateField(), defaultValue: () => ({ block: 'stone' }), minVersion: '1.21.5' },
     'Components.profile': {
       field: field.object({
         name: field.text(),
@@ -157,14 +190,44 @@ export const COMPONENT_PROPERTIES = properties(
       defaultValue: () => '',
       minVersion: '1.21.7',
     },
-    'Components.custom_model_data': { field: field.yaml({ placeholder: true }), defaultValue: () => ({ floats: [1.0] }) },
+    // Nexo 1.30 reads float/flag/string/color, each a list or one value (the docs spell them floats/flags/colors)
+    'Components.custom_model_data': {
+      hint: true,
+      field: field.object({
+        float: field.stringList({ placeholder: true, singleAsString: true }),
+        flag: field.stringList({ placeholder: true, singleAsString: true }),
+        string: field.stringList({ placeholder: true, singleAsString: true }),
+        color: field.stringList({ placeholder: true, singleAsString: true }),
+      }),
+      defaultValue: () => ({ float: '1.0' }),
+    },
     'Components.custom_data': { field: field.yaml({ placeholder: true }), defaultValue: () => ({ 'myplugin:value': '' }) },
     'Components.unset_components': {
       field: field.stringList({ suggestions: VANILLA_COMPONENTS, placeholder: true }),
       defaultValue: () => ['minecraft:tool'],
     },
     'Components.blocks_attacks': {
-      field: field.yaml({ placeholder: true }),
+      field: field.object({
+        block_delay: field.text({ format: 'duration', placeholder: true }),
+        disable_cooldown_scale: field.number({ min: 0, step: 0.1, placeholder: true }),
+        block_sound: soundField(),
+        disable_sound: soundField(),
+        bypassed_by: field.select(DAMAGE_TYPE_TAGS, { allowCustom: true, placeholder: true }),
+        item_damage: field.object({
+          threshold: field.number({ min: 0, step: 0.5 }),
+          base: field.number({ step: 0.5 }),
+          factor: field.number({ step: 0.1 }),
+        }),
+        damage_reductions: field.objectList(
+          {
+            types: field.stringList({ suggestions: DAMAGE_TYPE_TAGS, placeholder: true, singleAsString: true }),
+            base: field.number({ step: 0.5 }),
+            factor: field.number({ step: 0.1 }),
+            horizontal_blocking: field.number({ min: 0, max: 180, step: 5, placeholder: true }),
+          },
+          { newItem: () => ({ base: 0.0, factor: 1.0, horizontal_blocking: 90.0 }) },
+        ),
+      }),
       defaultValue: () => ({
         block_delay: '0.25s',
         disable_cooldown_scale: 1.0,
@@ -177,8 +240,13 @@ export const COMPONENT_PROPERTIES = properties(
     'Components.attack_range': {
       field: field.object({
         reach: field.text({ format: 'range', placeholder: true }),
+        min_reach: field.number({ min: 0, max: 64, step: 0.5 }),
+        max_reach: field.number({ min: 0, max: 64, step: 0.5 }),
         hitbox_margin: field.number({ min: 0, step: 0.1 }),
         mob_factor: field.number({ min: 0, step: 0.1 }),
+        creative_reach: field.text({ format: 'range', placeholder: true, help: true, advanced: true }),
+        min_creative_reach: field.number({ min: 0, max: 64, step: 0.5, advanced: true }),
+        max_creative_reach: field.number({ min: 0, max: 64, step: 0.5, advanced: true }),
       }),
       defaultValue: () => ({ reach: '0..3', hitbox_margin: 0.3 }),
       minVersion: '1.21.11',
@@ -194,7 +262,17 @@ export const COMPONENT_PROPERTIES = properties(
       minVersion: '1.21.11',
     },
     'Components.kinetic_weapon': {
-      field: field.yaml({ placeholder: true }),
+      field: field.object({
+        contact_cooldown: field.text({ format: 'duration', placeholder: true }),
+        delay: field.text({ format: 'duration', placeholder: true }),
+        damage_multiplier: field.number({ min: 0, step: 0.1, placeholder: true }),
+        forward_movement: field.number({ step: 0.1, help: true, advanced: true }),
+        sound: soundField(),
+        hit_sound: soundField(),
+        dismount_conditions: kineticConditionField(),
+        knockback_conditions: kineticConditionField(),
+        damage_conditions: kineticConditionField(),
+      }),
       defaultValue: () => ({ contact_cooldown: '10t', delay: '0t', damage_multiplier: 1.0 }),
       minVersion: '1.21.11',
     },
@@ -245,6 +323,11 @@ export const COMPONENT_PROPERTIES = properties(
       }),
       defaultValue: () => ({ uses: 1 }),
       minVersion: '26.3',
+    },
+    'Components.rarity': { field: field.select(RARITIES, { help: true, advanced: true }), defaultValue: () => 'RARE' },
+    'Components.instrument': {
+      field: field.select(GOAT_HORN_INSTRUMENTS, { allowCustom: true, help: true, advanced: true }),
+      defaultValue: () => 'minecraft:ponder_goat_horn',
     },
   }),
 );

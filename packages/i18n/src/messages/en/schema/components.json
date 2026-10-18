@@ -106,6 +106,25 @@
           },
           "minecraftType": {
             "label": "or Minecraft item"
+          },
+          "minecraftItem": {
+            "label": "Minecraft item stack",
+            "help": "An item stack as Nexo's in-game builders save it (YAML). Read by Nexo 1.30, not listed in the docs."
+          },
+          "crucibleItem": {
+            "label": "MythicCrucible item",
+            "placeholder": "Item ID"
+          },
+          "mmoitemsType": {
+            "label": "MMOItems type",
+            "placeholder": "e.g. SWORD"
+          },
+          "mmoitemsId": {
+            "label": "MMOItems ID",
+            "placeholder": "e.g. FALCON_BLADE"
+          },
+          "amount": {
+            "label": "Amount"
           }
         }
       }
@@ -213,6 +232,18 @@
           },
           "damageOnHurt": {
             "label": "Takes damage when the wearer is hit"
+          },
+          "equipOnInteract": {
+            "label": "Equip by right-clicking an entity",
+            "help": "Read by Nexo 1.30, not listed in the docs."
+          },
+          "canBeSheared": {
+            "label": "Can be sheared off",
+            "help": "Shears remove the item from a mob. Read by Nexo 1.30, not listed in the docs."
+          },
+          "shearSound": {
+            "label": "Sound on shearing",
+            "help": "Default: item.shears.snip. Read by Nexo 1.30, not listed in the docs."
           }
         }
       }
@@ -292,9 +323,23 @@
       "field": {
         "label": "Placeable on",
         "fields": {
-          "blocks": {
+          "block": {
             "label": "Blocks / tags",
-            "placeholder": "stone"
+            "placeholder": "e.g. stone or #minecraft:logs"
+          },
+          "nexoBlock": {
+            "label": "Nexo blocks",
+            "placeholder": "Item ID",
+            "help": "Custom blocks of Nexo by item ID. Read by Nexo 1.30, not listed in the docs."
+          },
+          "state": {
+            "label": "Block state",
+            "help": "Only blocks with these state properties count (e.g. axis = y). Read by Nexo 1.30, not listed in the docs.",
+            "keyLabel": "Property",
+            "keyPlaceholder": "e.g. axis",
+            "value": {
+              "label": "Value"
+            }
           }
         }
       }
@@ -305,9 +350,23 @@
       "field": {
         "label": "Can break",
         "fields": {
-          "blocks": {
+          "block": {
             "label": "Blocks / tags",
-            "placeholder": "stone"
+            "placeholder": "e.g. stone or #minecraft:logs"
+          },
+          "nexoBlock": {
+            "label": "Nexo blocks",
+            "placeholder": "Item ID",
+            "help": "Custom blocks of Nexo by item ID. Read by Nexo 1.30, not listed in the docs."
+          },
+          "state": {
+            "label": "Block state",
+            "help": "Only blocks with these state properties count (e.g. axis = y). Read by Nexo 1.30, not listed in the docs.",
+            "keyLabel": "Property",
+            "keyPlaceholder": "e.g. axis",
+            "value": {
+              "label": "Value"
+            }
           }
         }
       }
@@ -352,11 +411,29 @@
     },
     "componentsCustomModelData": {
       "label": "Custom Model Data",
-      "description": "New CustomModelData format (floats, flags, strings, colors) – for custom ItemModels.",
+      "description": "Values for the item model's custom_model_data cases (floats, flags, strings, colors).",
       "field": {
-        "label": "Content",
-        "placeholder": "floats: [1.0]\nflags: [true]"
-      }
+        "label": "Values",
+        "fields": {
+          "float": {
+            "label": "Floats",
+            "placeholder": "e.g. 1.0"
+          },
+          "flag": {
+            "label": "Flags",
+            "placeholder": "true / false"
+          },
+          "string": {
+            "label": "Strings",
+            "placeholder": "e.g. red"
+          },
+          "color": {
+            "label": "Colors",
+            "placeholder": "e.g. #ff0000 or 255,0,0"
+          }
+        }
+      },
+      "hint": "Nexo 1.30 reads the keys float, flag, string and color; the docs spell them in plural, which 1.30 ignores."
     },
     "componentsCustomData": {
       "label": "Custom Data",
@@ -378,8 +455,61 @@
       "label": "Blocks Attacks",
       "description": "The item can block attacks like a shield.",
       "field": {
-        "label": "Settings",
-        "placeholder": "block_delay: 0.25s\ndisable_cooldown_scale: 1.0"
+        "label": "Blocking",
+        "fields": {
+          "blockDelay": {
+            "label": "Block delay",
+            "placeholder": "0.25s"
+          },
+          "disableCooldownScale": {
+            "label": "Disable cooldown scale",
+            "placeholder": "1.0"
+          },
+          "blockSound": {
+            "label": "Sound on block"
+          },
+          "disableSound": {
+            "label": "Sound when disabled"
+          },
+          "bypassedBy": {
+            "label": "Bypassed by",
+            "placeholder": "e.g. minecraft:bypasses_shield"
+          },
+          "itemDamage": {
+            "label": "Item damage",
+            "fields": {
+              "threshold": {
+                "label": "Threshold"
+              },
+              "base": {
+                "label": "Base"
+              },
+              "factor": {
+                "label": "Factor"
+              }
+            }
+          },
+          "damageReductions": {
+            "label": "Damage reductions",
+            "itemLabel": "Reduction",
+            "fields": {
+              "types": {
+                "label": "Damage types / tags",
+                "placeholder": "e.g. minecraft:is_projectile"
+              },
+              "base": {
+                "label": "Base"
+              },
+              "factor": {
+                "label": "Factor"
+              },
+              "horizontalBlocking": {
+                "label": "Blocking angle",
+                "placeholder": "90"
+              }
+            }
+          }
+        }
       }
     },
     "componentsAttackRange": {
@@ -397,6 +527,23 @@
           },
           "mobFactor": {
             "label": "Mob factor"
+          },
+          "minReach": {
+            "label": "Min reach"
+          },
+          "maxReach": {
+            "label": "Max reach"
+          },
+          "creativeReach": {
+            "label": "Reach in creative mode",
+            "placeholder": "0..5",
+            "help": "Read by Nexo 1.30, not listed in the docs."
+          },
+          "minCreativeReach": {
+            "label": "Min reach in creative mode"
+          },
+          "maxCreativeReach": {
+            "label": "Max reach in creative mode"
           }
         }
       }
@@ -426,8 +573,76 @@
       "label": "Kinetic Weapon",
       "description": "Enables charge attacks while using (lance).",
       "field": {
-        "label": "Settings",
-        "placeholder": "contact_cooldown: 10t\ndamage_multiplier: 1.0"
+        "label": "Charge attack",
+        "fields": {
+          "contactCooldown": {
+            "label": "Contact cooldown",
+            "placeholder": "10t"
+          },
+          "delay": {
+            "label": "Delay",
+            "placeholder": "0t"
+          },
+          "damageMultiplier": {
+            "label": "Damage multiplier",
+            "placeholder": "1.0"
+          },
+          "forwardMovement": {
+            "label": "Forward movement",
+            "help": "Read by Nexo 1.30, not listed in the docs."
+          },
+          "sound": {
+            "label": "Sound"
+          },
+          "hitSound": {
+            "label": "Hit sound"
+          },
+          "dismountConditions": {
+            "label": "Dismount conditions",
+            "fields": {
+              "maxDuration": {
+                "label": "Max duration",
+                "placeholder": "e.g. 10s"
+              },
+              "minSpeed": {
+                "label": "Min speed"
+              },
+              "minRelativeSpeed": {
+                "label": "Min relative speed"
+              }
+            }
+          },
+          "knockbackConditions": {
+            "label": "Knockback conditions",
+            "fields": {
+              "maxDuration": {
+                "label": "Max duration",
+                "placeholder": "e.g. 10s"
+              },
+              "minSpeed": {
+                "label": "Min speed"
+              },
+              "minRelativeSpeed": {
+                "label": "Min relative speed"
+              }
+            }
+          },
+          "damageConditions": {
+            "label": "Damage conditions",
+            "fields": {
+              "maxDuration": {
+                "label": "Max duration",
+                "placeholder": "e.g. 10s"
+              },
+              "minSpeed": {
+                "label": "Min speed"
+              },
+              "minRelativeSpeed": {
+                "label": "Min relative speed"
+              }
+            }
+          }
+        }
       }
     },
     "componentsSwingAnimation": {
@@ -552,6 +767,22 @@
             "label": "Speed multiplier"
           }
         }
+      }
+    },
+    "componentsRarity": {
+      "label": "Rarity",
+      "description": "Rarity of the item, which colors its name. Read by Nexo 1.30, not listed in the docs.",
+      "field": {
+        "label": "Rarity",
+        "help": "Read by Nexo 1.30, not listed in the docs."
+      }
+    },
+    "componentsInstrument": {
+      "label": "Instrument",
+      "description": "The sound a goat horn plays. Read by Nexo 1.30, not listed in the docs.",
+      "field": {
+        "label": "Instrument",
+        "help": "Use with material GOAT_HORN. Read by Nexo 1.30, not listed in the docs."
       }
     }
   }

@@ -1,3 +1,4 @@
+/** The page of the selected entry: an item's editor, a folder, a project-wide view, the settings, or a start hint. */
 import type { ComponentType } from 'react';
 import { FolderPlus, MousePointerClick } from 'lucide-react';
 import { useTranslations } from 'next-intl';
@@ -18,6 +19,7 @@ import { TranslationsView } from '../features/craftEngine/TranslationsView';
 import { WorldgenView } from '../features/craftEngine/WorldgenView';
 import { LootSourcesView } from '../features/lootSources/LootSourcesView';
 import { GlyphsView, PaintingsView, SoundsView } from '../features/media/MediaView';
+import { SettingsPage } from '../features/settings/SettingsPage';
 import { TestServerView } from '../features/testServer/TestServerView';
 import { useOpenProject } from '../store/project';
 import { useUiStore, type ViewName } from '../store/ui';
@@ -56,7 +58,7 @@ function NothingSelected() {
             <FolderPlus className="size-9 text-muted-foreground" />
           )}
         </EmptyMedia>
-        <EmptyTitle className="font-heading text-xl tracking-wide uppercase">{hasFolders ? t('pickTitle') : t('startTitle')}</EmptyTitle>
+        <EmptyTitle className="text-page font-semibold">{hasFolders ? t('pickTitle') : t('startTitle')}</EmptyTitle>
         <EmptyDescription>
           {hasFolders ? t('pickDescription') : t('startDescription', { path: folderDirPath(project, null) })}
         </EmptyDescription>
@@ -86,12 +88,15 @@ function SelectedPage() {
       const View = VIEWS[selection.view];
       return <View />;
     }
+    case 'settings':
+      return <SettingsPage />;
   }
 }
 
+/** The page area of the workbench: the selected entry's page. */
 export function MainArea() {
   return (
-    <main className="min-h-0 min-w-0 overflow-auto">
+    <main className="min-h-0 min-w-0 flex-1 overflow-auto bg-canvas">
       <SelectedPage />
     </main>
   );

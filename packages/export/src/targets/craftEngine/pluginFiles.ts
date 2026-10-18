@@ -24,8 +24,8 @@ import {
   sectionsToYaml,
   buildPackYml,
 } from '@resourcepackbuilder/core/craftEngine';
-import { type Glyph, mediaFrame, mediaKey, type Project, validateRecipes } from '@resourcepackbuilder/core/project';
-import { armorSetLayers, collectArmorSets } from '../../equipment';
+import { type Glyph, mediaFrame, mediaKey, type Project, soundEventKey, validateRecipes } from '@resourcepackbuilder/core/project';
+import { collectArmorSets, craftEngineEquipment } from '../../equipment';
 import { writeMediaPackFiles } from '../../media';
 import type { PackWriter } from '../../packWriter';
 import type { FileContent, ItemPlan } from '../../types';
@@ -78,26 +78,25 @@ export function planCraftEnginePluginFiles(project: Project, plans: ItemPlan[], 
     );
   }
   for (const [path, text] of planMedia(project, writer, issues)) pluginFiles.set(path, text);
-  for (const [path, text] of planItemExtras(project, plans)) pluginFiles.set(path, text);
+  for (const [path, text] of planItemExtras(project, plans, issues)) pluginFiles.set(path, text);
   for (const [path, text] of planProjectSections(project)) pluginFiles.set(path, text);
   return { pluginFiles };
 }
 
 /**
- * The config files the items share: equipments.yml (one component equipment per armor set, the same model the shared
- * export writes into the pack, which CraftEngine merges with it), categories.yml and the lang files (the items'
+ * The config files the items share: equipments.yml (one equipment per armor set, with the layers of the model the
+ * shared export writes into the pack, which CraftEngine merges with it), categories.yml and the lang files (the items'
  * display names, the client names of their blocks and the project's own lang keys).
  */
-function planItemExtras(project: Project, plans: ItemPlan[]): Map<string, string> {
+function planItemExtras(project: Project, plans: ItemPlan[], issues: Issue[]): Map<string, string> {
   const out = new Map<string, string>();
   const items = plans.map((p) => p.item);
   // The shared export already reported the sets' issues
   const sets = collectArmorSets(items, project.settings.minecraftVersion, []);
   const equipments = Object.fromEntries(
-    [...armorSetLayers(sets)].map(([setId, layers]) => {
-      const assetId = formatResourceLocation(project.namespace, setId);
-      return [assetId, { type: 'component', ...Object.fromEntries(layers.map((layer) => [layer, assetId])) }];
-    }),
+    [...sets.values()]
+      .filter((set) => set.textures.size > 0)
+      .map((set) => [formatResourceLocation(project.namespace, set.id), craftEngineEquipment(set, project.namespace, issues)]),
   );
   if (Object.keys(equipments).length > 0) {
     out.set(craftEngineConfigFile(project, 'equipments'), sectionsToYaml({ equipments }, `armor sets of "${project.name}"`));
@@ -119,7 +118,12 @@ function planItemExtras(project: Project, plans: ItemPlan[]): Map<string, string
 }
 
 /** Media checks that only apply to Nexo (GIF shaders, Nexo's painting datapack) or that CraftEngine reports itself. */
-const NOT_FOR_CRAFT_ENGINE = new Set<IssueCode>(['glyph.animatedShaders', 'glyph.referenceNotInProject', 'painting.datapackNeedsVersion']);
+const NOT_FOR_CRAFT_ENGINE = new Set<IssueCode>([
+  'glyph.animatedShaders',
+  'glyph.referenceNotInProject',
+  'glyph.shadowInvalid',
+  'painting.datapackNeedsVersion',
+]);
 
 /** Writes the media into the pack and returns their config files: images (with emoji), sounds (with jukebox songs), paintings. */
 function planMedia(project: Project, writer: PackWriter, issues: Issue[]): Map<string, string> {
@@ -136,14 +140,14 @@ function planMedia(project: Project, writer: PackWriter, issues: Issue[]): Map<s
 
   const songs = project.sounds.flatMap((sound) => {
     const song = craftEngineJukeboxSong(project, sound);
-    return song ? [[mediaKey(project, sound.soundId), song] as const] : [];
+    return song ? [[soundEventKey(project, sound), song] as const] : [];
   });
   const files: Array<[string, CraftEngineSections, string]> = [
     [craftEngineMediaFile(project, 'images'), { images: glyphs.images, emoji: glyphs.emoji }, 'glyphs'],
     [
       craftEngineMediaFile(project, 'sounds'),
       {
-        sounds: Object.fromEntries(project.sounds.map((sound) => [mediaKey(project, sound.soundId), craftEngineSound(project, sound)])),
+        sounds: Object.fromEntries(project.sounds.map((sound) => [soundEventKey(project, sound), craftEngineSound(project, sound)])),
         jukebox_songs: Object.fromEntries(songs),
       },
       'sounds',

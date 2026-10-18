@@ -9,8 +9,8 @@ import { ARMOR_LAYERS } from '../project/armor';
 import { MEDIA_KIND_LIST } from '../project/media/kinds';
 import { RECIPE_TYPES } from '../project/recipes/model';
 import { PACK_TARGETS, type PackTargetId } from '../project/target';
-import { FURNITURE_MODEL_SLOTS, STACK_MODELS, stateDef, VARIANTS } from '../project/variants';
-import { formFor } from './index';
+import { DIRECTIONAL_MODEL_SLOTS, FURNITURE_MODEL_SLOTS, STACK_MODELS, stateDef, VARIANTS } from '../project/variants';
+import { emojiDocsFor, formFor, jukeboxDocsFor, mediaDocsFor } from './index';
 
 const DOCS_BASE: Record<PackTargetId, string> = {
   nexo: 'https://docs.nexomc.com/',
@@ -109,13 +109,27 @@ describe('docs links', () => {
     );
   });
 
+  for (const target of PACK_TARGETS) {
+    it(`link every ${target} media page, music discs and emoji to the ${target} docs`, () => {
+      const links: Array<[string, string]> = [
+        ...MEDIA_KIND_LIST.map((kind): [string, string] => [`media ${kind}`, mediaDocsFor(target, kind)]),
+        ['jukebox', jukeboxDocsFor(target)],
+        ['emoji', emojiDocsFor(target)],
+      ];
+      expect(offBase(DOCS_BASE[target], links)).toEqual([]);
+    });
+  }
+
   it('link every Nexo model variant, armor layer, media kind and recipe type to the Nexo docs', () => {
-    const variants = [...VARIANTS, ...FURNITURE_MODEL_SLOTS, STACK_MODELS, stateDef('open')];
+    const variants = [...VARIANTS, ...FURNITURE_MODEL_SLOTS, STACK_MODELS, ...DIRECTIONAL_MODEL_SLOTS, stateDef('open')];
     const links: Array<[string, string | undefined]> = [
       ...variants.map((v): [string, string] => [`variant ${v.slot}`, nexoVariantDocs(v.slot)]),
       ...ARMOR_LAYERS.map((layer): [string, string] => [`armor ${layer.key}`, nexoArmorLayerDocs(layer)]),
       ...MEDIA_KIND_LIST.map((kind): [string, string] => [`media ${kind}`, NEXO_MEDIA_DOCS[kind]]),
-      ...RECIPE_TYPES.map(({ type }): [string, string] => [`recipe ${type}`, NEXO_RECIPE_DOCS[type]]),
+      ...RECIPE_TYPES.filter((t) => t.targets.includes('nexo')).map(({ type }): [string, string | undefined] => [
+        `recipe ${type}`,
+        NEXO_RECIPE_DOCS[type],
+      ]),
     ];
     expect(offBase(DOCS_BASE.nexo, links)).toEqual([]);
     expect(nexoVariantDocs('state:open')).toBe('https://docs.nexomc.com/mechanics/furniture-mechanic/furniture-states');

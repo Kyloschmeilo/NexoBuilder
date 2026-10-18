@@ -3,7 +3,8 @@
     "copyId": "Copy ID",
     "replaceImage": "Replace image",
     "optional": "optional",
-    "deleteMessage": "“{name}” will be deleted."
+    "deleteMessage": "“{name}” will be deleted.",
+    "docs": "{target, select, craftengine {Open the CraftEngine wiki page} other {Open the Nexo docs page}}"
   },
   "sounds": {
     "title": "Sounds",
@@ -32,7 +33,15 @@
     "createDisc": "Create music disc item",
     "createDiscHint": "A new item with the “Jukebox Playable” component for this song.",
     "discCreated": "Music disc item created – you can still add a model or texture.",
-    "deleteTitle": "Delete sound?"
+    "deleteTitle": "Delete sound?",
+    "weightHelp": "How often this sound is picked compared to the other entries of the event, default 1",
+    "subtitleHelp": "Translation key of the subtitle (optional)",
+    "subtitlePlaceholder": "e.g. subtitles.block.ruby.place",
+    "referenceHelp": "Another sound event this sound plays (optional). Nexo then plays only that event, without the files.",
+    "referencePlaceholder": "e.g. minecraft:block.bell.use",
+    "preloadHint": "(load with the pack, not when first played)",
+    "replaceHint": "(replace the vanilla sound with this name; without files it goes silent)",
+    "jukeboxDocs": "{target, select, craftengine {Jukebox songs in the CraftEngine wiki} other {Music discs in the Nexo docs}}"
   },
   "paintings": {
     "title": "Paintings",
@@ -96,7 +105,20 @@
     "largeNoPreview": "Large glyph (e.g. GUI) – no chat preview.",
     "previewBefore": "Hello",
     "previewAfter": "world",
-    "deleteTitle": "Delete glyph?"
+    "deleteTitle": "Delete glyph?",
+    "charHelp": "A fixed character for the glyph (optional, otherwise one is picked automatically)",
+    "charPlaceholder": "automatic",
+    "shadowHelp": "Text shadow color of the glyph (optional, otherwise Glyphs.default_shadow in settings.yml)",
+    "shadowPlaceholder": "e.g. #80000000",
+    "templateHelp": "Another glyph whose settings this glyph takes over (optional)",
+    "gifTypeHelp": "How the animation is made: core shader or sprite sheet",
+    "gifTypeDefault": "Default from settings.yml",
+    "interpolateHint": "(blend smoothly between frames)",
+    "emojiHint": "What a chat shortcut of this glyph turns into. Empty fields use CraftEngine’s default.",
+    "emojiDocs": "Emoji in the CraftEngine wiki",
+    "emojiContentHelp": "MiniMessage; '<'arg:emoji> is the image, '<'arg:keyword> the shortcut that was typed",
+    "emojiContentPlaceholder": "'<'white>'<'arg:emoji>'<'/white>",
+    "emojiOverrideHelp": "Content in the {context} only (optional)"
   },
   "testServer": {
     "title": "Test server",

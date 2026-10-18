@@ -1,3 +1,4 @@
+/** The General tab's item root keys: lore, templates, flags, persistent data and the per-item switches of Nexo. */
 import { ITEM_FLAGS, PERSISTENT_DATA_TYPES } from '../options';
 import { field, properties } from '../../../form/build';
 import { withDocs } from '../../../form/docs';
@@ -17,7 +18,12 @@ export const GENERAL_PROPERTIES = properties(
     excludeFromInventory: { field: field.boolean(), defaultValue: () => true, docs: DOCS.excludeFromInventory },
     // Documented next to excludeFromInventory
     excludeFromCommands: { field: field.boolean(), defaultValue: () => true, docs: DOCS.excludeFromInventory },
-    template: { field: field.text({ placeholder: true }), defaultValue: () => '', docs: DOCS.template },
+    // Nexo 1.30 reads `template` as one item ID or a list (the docs write the list as `templates`, which 1.30 ignores)
+    template: {
+      field: field.stringList({ placeholder: true, singleAsString: true, help: true }),
+      defaultValue: () => [''],
+      docs: DOCS.template,
+    },
     ItemFlags: { field: field.multiSelect(ITEM_FLAGS), defaultValue: () => ['HIDE_ATTRIBUTES'], docs: DOCS.itemFlags },
     PersistentData: {
       docs: DOCS.persistentData,
@@ -31,5 +37,12 @@ export const GENERAL_PROPERTIES = properties(
       ),
       defaultValue: () => [{ type: 'STRING', key: 'myplugin:key', value: '' }],
     },
+    customname: {
+      docs: DOCS.itemName,
+      field: field.text({ format: 'minimessage', placeholder: true, help: true, advanced: true }),
+      defaultValue: () => '',
+    },
+    injectId: { field: field.boolean({ help: true, advanced: true }), defaultValue: () => false, docs: DOCS.injectId },
+    no_auto_update: { field: field.boolean({ help: true, advanced: true }), defaultValue: () => true },
   }),
 );

@@ -33,6 +33,7 @@ export function IngredientList({ recipe, update, isShaped, issues }: IngredientL
             <div className="min-w-0 flex-1">
               <IngredientRow
                 value={recipe.ingredients[letter]}
+                recipeType={recipe.type}
                 onChange={(ingredient) =>
                   update((r) => {
                     r.ingredients[letter] = ingredient;

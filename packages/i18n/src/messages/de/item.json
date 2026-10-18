@@ -5,6 +5,7 @@
       "model": "Model & Pack",
       "data": "Data",
       "settings": "Settings",
+      "behaviors": "Verhalten",
       "attributes": "Attributes",
       "components": "Components",
       "mechanics": "Mechanics",
@@ -37,6 +38,7 @@
       "mechanics": "Mechanics",
       "data": "Data",
       "settings": "Settings",
+      "itemBehavior": "Verhalten",
       "blockSettings": "Block Settings",
       "blockBehavior": "Verhalten",
       "events": "Events",
@@ -50,6 +52,7 @@
       "mechanics": "Noch keine Mechanics.",
       "data": "Noch keine Item-Daten (z.B. Food, Equippable).",
       "settings": "Noch keine Settings (z.B. Tags, Fuel Time).",
+      "itemBehavior": "Noch keine Verhalten (z. B. Platzierung an Wänden, Bereichsabbau).",
       "blockSettings": "Noch keine Block-Einstellungen (z. B. Hardness, Sounds).",
       "blockBehavior": "Noch keine Optionen des Verhaltens (z. B. Sounds, weitere Verhalten).",
       "events": "Noch keine Events (z. B. ein Befehl bei Rechtsklick).",
@@ -207,7 +210,25 @@
     "placeholderMinecraft": "z.B. {target, select, craftengine {diamond} other {DIAMOND}}",
     "placeholderNexo": "Item-ID",
     "placeholderTag": "z.B. planks",
-    "amount": "Benötigte Anzahl pro Feld (optional)"
+    "amount": "Benötigte Anzahl pro Feld (optional)",
+    "placeholderExternal": "z. B. mythicmobs:kingscrown",
+    "placeholderCrucible": "MythicCrucible-Item-ID",
+    "placeholderMmoitems": "MMOItems-Item-ID",
+    "placeholderItemType": "Typ, z. B. SWORD",
+    "alternatives": "Ebenfalls akzeptiert in diesem Platz",
+    "addAlternative": "Alternative hinzufügen",
+    "removeAlternative": "Alternative entfernen",
+    "replacement": "Item, das nach dem Herstellen im Raster bleibt",
+    "addReplacement": "Ersatz hinzufügen",
+    "removeReplacement": "Ersatz entfernen",
+    "optional": "(optional)",
+    "unsupported": {
+      "nexo": "Nexo liest diesen Rezepttyp nicht. Er bleibt im Projekt, wird aber nicht exportiert.",
+      "craftengine": "CraftEngine liest diesen Rezepttyp nicht. Er bleibt im Projekt, wird aber nicht exportiert."
+    },
+    "noResult": "Dieses Rezept verändert das Basis-Item und hat kein eigenes Ergebnis.",
+    "disabledTitle": "Abgeschaltete Vanilla-Rezepte",
+    "disabledDescription": "Für das ganze Projekt: Nexo schaltet diese Vanilla-Rezepte ab. Exportiert nach <code>{path}</code>."
   },
   "ceBlock": {
     "title": "Block",
@@ -217,7 +238,7 @@
     "toggleBlocked": "Das Item platziert ein Möbel. Schalte „Als Möbel platzieren“ aus, um es zum Block zu machen.",
     "autoState": "Blockzustand-Gruppe",
     "autoStateHelp": "CraftEngine zeigt den Block über einen freien Zustand dieser Vanilla-Blöcke. Die Gruppe bestimmt die Kollisionsbox: solid für volle Blöcke, leaves für durchsichtige Blöcke, tripwire für flache Pflanzen.",
-    "model": "Der Block zeigt das Modell des Items. Ein flaches Item-Modell wird zu einem Würfel aus seinen Texturen: 1 Textur auf allen Seiten, 2 als Stirn- und Seitenfläche (wie ein Stamm), 3 als Unterseite, Seite und Oberseite.",
+    "model": "Der Block zeigt das Modell des Items. Ein flaches Item-Modell wird zu einem Würfel aus seinen Texturen: 1 Textur auf allen Seiten, 2 als Enden und Seite (wie ein Stamm), 3 als unten, Seite und oben, 4 als unten, vorne, Seite und oben (wie ein Ofen), 5 eine pro Seite (unten, oben, Norden, Süden, Westen; Osten wiederholt Westen).",
     "behavior": "Verhalten",
     "behaviorHelp": "Was der Block tut. Ein Verhalten legt die Zustände an, die es braucht. Jedes andere Verhalten schreibst du im zusätzlichen YAML unter block: (zum Beispiel block: behavior: type: falling_block).",
     "behaviors": {
@@ -264,8 +285,30 @@
       "variantKey": "Werte der Eigenschaften",
       "variantAppearance": "Aussehen",
       "noAppearance": "Kein Aussehen",
-      "withSettings": "+ Einstellungen",
-      "addFacing": "Zum Spieler drehen"
+      "addFacing": "Zum Spieler drehen",
+      "details": "Weitere Optionen",
+      "source": "Vanilla-Zustand",
+      "sourceAuto": "Ein freier Zustand einer Gruppe",
+      "sourceAutoHelp": "CraftEngine wählt einen freien Zustand der Blockzustandsgruppe.",
+      "sourceState": "Ein genauer Vanilla-Zustand",
+      "exactState": "Vanilla-Zustand",
+      "exactStatePlaceholder": "minecraft:note_block[instrument=hat,note=0,powered=false]",
+      "exactStateHelp": "Der Block zeigt immer diesen Vanilla-Zustand, ausgeschrieben oder in einer zugeordneten Kurzform wie note_block:0. Ein Vanilla-Zustand kann nur ein Modell zeigen.",
+      "sharedId": "ID des geteilten Zustands",
+      "sharedIdPlaceholder": "z. B. transparent",
+      "sharedIdHelp": "Erscheinungsbilder mit derselben Gruppe und ID teilen sich einen Vanilla-Zustand. Ausgeblendete Modelle (nur Entity-Renderer) können alle die ID transparent nutzen.",
+      "fixedId": "Feste interne ID",
+      "fixedIdPlaceholder": "Automatisch",
+      "fixedIdHelp": "Meist leer lassen. Eine feste ID hält die internen IDs des Blocks gleich, etwa für Datenpakete; mehrere Zustände belegen die IDs ab dieser. Die IDs müssen über alle Blöcke eindeutig sein.",
+      "variantSettings": "Einstellungen dieser Variante",
+      "variantSettingsHelp": "Block-Einstellungen, die nur für die Zustände dieser Variante gelten, etwa mehr Licht im eingeschalteten Zustand oder Wasser im gefluteten. Sie werden über die Einstellungen des Blocks gelegt.",
+      "nameHints": {
+        "axis": "CraftEngine setzt axis beim Platzieren nach der angeklickten Seite. Nutze den Typ axis.",
+        "facing": "CraftEngine dreht den Block beim Platzieren zum Spieler. Nutze den Typ direction oder horizontal_direction.",
+        "facing_clockwise": "Wie facing, aber beim Platzieren um 90° im Uhrzeigersinn gedreht. Nutze den Typ horizontal_direction.",
+        "rotation": "CraftEngine setzt beim Platzieren eine feine Drehung. Nutze den Typ int mit dem Bereich 0~7 oder 0~15.",
+        "waterlogged": "CraftEngine setzt waterlogged, wenn der Block im Wasser platziert wird. Nutze den Typ boolean und ein geflutetes Aussehen."
+      }
     },
     "renderer": {
       "title": "Entity-Renderer",
@@ -361,14 +404,14 @@
     "addSeat": "Sitz hinzufügen",
     "seatPosition": "Sitzposition",
     "seatYaw": "Yaw",
+    "seatLimit": "Körper bleibt zur Yaw ausgerichtet",
+    "seatForce": "Blick zur Yaw drehen",
     "settings": "Einstellungen",
     "hitTimes": "Schläge bis zum Abbau",
-    "sounds": {
-      "break": "Abbau-Sound",
-      "place": "Platzier-Sound",
-      "hit": "Schlag-Sound"
-    },
-    "settingsHelp": "Verhalten, Events und andere Schlüssel gehören ins zusätzliche YAML unter furniture:.",
+    "settingsHelp": "Andere Schlüssel gehören ins zusätzliche YAML unter furniture:.",
+    "moreKeys": "Weitere Schlüssel ({count})",
+    "behaviors": "Verhalten",
+    "behaviorsHelp": "Lager, Anzeigeplätze für Items und Licht. Jedes Verhalten kann eigene Hitboxen pro Variante setzen.",
     "loot": "Lässt beim Abbau das Item fallen",
     "lootHelp": "Nutzt CraftEngines Möbel-Loot. Anderen Loot schreibst du ins zusätzliche YAML unter furniture: loot:."
   }

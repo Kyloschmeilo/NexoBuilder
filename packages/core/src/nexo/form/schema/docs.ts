@@ -47,16 +47,21 @@ export const NEXO_DOCS = {
     attributeModifiers: `${ITEMS}#attributemodifiers`,
     enchantments: `${ITEMS}#enchantments`,
     disableEnchanting: `${ITEMS}#disable-enchanting`,
+    /** `injectId: false` keeps helper items out of Nexo's item registry (shown with Carpentry doors) */
+    injectId: `${DOCS}/addons/carpentry#custom-doors`,
+    trims: `${DOCS}/configuration/trims`,
   },
   appearance: {
     page: APPEARANCE,
     oversizedInGui: `${APPEARANCE}#oversized-items-in-gui-1.21.6`,
+    invisibleItem: `${APPEARANCE}#invisible-item`,
   },
   components: `${ITEMS}/components`,
   playerHeads: `${ITEMS}/2d-player-heads`,
   armor: {
     page: ARMOR,
     equippable: `${ARMOR}#the-equippable-component`,
+    equipmentModels: `${ARMOR}#custom-equipmentmodels`,
     elytras: ELYTRAS,
     mobArmor: MOB_ARMOR,
     harness: `${MOB_ARMOR}/custom-harness-1.21.6+`,
@@ -137,7 +142,9 @@ export const NEXO_DOCS = {
     smelting: `${ALL_MECHANICS}#smelting`,
     itemtype: `${ALL_MECHANICS}#itemtype`,
     custom: `${DOCS}/mechanics/custom-mechanic`,
+    customEvents: `${DOCS}/mechanics/custom-mechanic#available-events`,
     trident: `${DOCS}/mechanics/custom-trident`,
+    tridentSounds: `${DOCS}/mechanics/custom-trident#trident-sounds`,
     clickActions: CLICK_ACTIONS,
   },
   /** How a config refers to a file of the resource pack (`Pack.model`, textures, namespaces) */
@@ -161,7 +168,14 @@ export const NEXO_DOCS = {
     animated: `${GLYPHS}/animated-glyphs`,
   },
   sounds: `${DOCS}/configuration/sounds`,
-  recipes: { page: RECIPES, amount: `${RECIPES}/predicate-recipes#amount-predicate` },
+  recipes: {
+    page: RECIPES,
+    amount: `${RECIPES}/predicate-recipes#amount-predicate`,
+    replacement: `${RECIPES}/predicate-recipes#replacement-predicate`,
+    damage: `${RECIPES}/predicate-recipes#durability-damage-predicate`,
+    preserve: `${RECIPES}#preserving-components`,
+    disabled: `${RECIPES}#disabling-recipes`,
+  },
 };
 
 /** The documentation page of each media kind */
@@ -171,8 +185,8 @@ export const NEXO_MEDIA_DOCS: Record<MediaKind, string> = {
   painting: NEXO_DOCS.paintings.page,
 };
 
-/** The documentation section of each recipe type */
-export const NEXO_RECIPE_DOCS: Record<RecipeType, string> = {
+/** The documentation section of each recipe type Nexo reads (anvil recipes are only in the jar: the recipes page) */
+export const NEXO_RECIPE_DOCS: Partial<Record<RecipeType, string>> = {
   shaped: `${RECIPES}#shaped-recipes`,
   shapeless: `${RECIPES}#shapeless-recipes`,
   furnace: `${RECIPES}#furnace-blasting-and-smoking-recipes`,
@@ -180,6 +194,12 @@ export const NEXO_RECIPE_DOCS: Record<RecipeType, string> = {
   smoking: `${RECIPES}#furnace-blasting-and-smoking-recipes`,
   campfire: `${RECIPES}#campfire-recipes`,
   stonecutting: `${RECIPES}#stonecutter-recipes`,
+  crafter: `${RECIPES}#crafter-recipes`,
+  brewing: `${RECIPES}#brewing-stand-recipes`,
+  smithing_transform: `${RECIPES}#upgrade-recipes`,
+  smithing_trim: `${RECIPES}#custom-trim-recipes`,
+  transmute: `${RECIPES}/predicate-recipes#transmute-recipes`,
+  anvil: RECIPES,
 };
 
 /** Variant slots by the start of their name, for the families of slots (`connect_left`, `state:open`) */
@@ -199,6 +219,8 @@ const VARIANT_DOCS: Array<[prefix: string, docs: string]> = [
   ['light_on', NEXO_DOCS.furniture.lights],
   ['state:', NEXO_DOCS.furniture.states],
   ['stack_models', NEXO_DOCS.customBlock.stackable],
+  ['broken_model', `${ITEMS}/itemmodel-builder/condition-itemmodel`],
+  ['dir_', NEXO_DOCS.customBlock.directional],
 ];
 
 /** The documentation section of a model variant slot. */

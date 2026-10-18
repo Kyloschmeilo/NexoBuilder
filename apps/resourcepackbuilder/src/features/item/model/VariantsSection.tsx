@@ -1,18 +1,20 @@
 import { useTranslations } from 'next-intl';
-import { type Item, VARIANTS } from '@resourcepackbuilder/core/project';
+import { isVariantForTarget, type Item, VARIANTS } from '@resourcepackbuilder/core/project';
 import { setVariantModels } from '../../../commands/items';
 import { AddMenuButton } from '../../../components/AddMenuButton';
 import { Section } from '../../../components/Section';
 import { useSchemaText } from '../../../components/useSchemaText';
+import { useOpenProject } from '../../../store/project';
 import { VariantCard } from './VariantCard';
 
 function AddVariantButton({ item }: { item: Item }) {
   const tCommon = useTranslations('common');
   const schemaText = useSchemaText();
+  const target = useOpenProject().target;
   return (
     <AddMenuButton
       label={tCommon('add')}
-      options={VARIANTS.filter((v) => item.variants?.[v.slot] === undefined).map((def) => ({
+      options={VARIANTS.filter((v) => item.variants?.[v.slot] === undefined && isVariantForTarget(v, target)).map((def) => ({
         value: def.slot,
         label: schemaText(def.label),
         description: schemaText(def.description),
@@ -22,7 +24,10 @@ function AddVariantButton({ item }: { item: Item }) {
   );
 }
 
-/** Nexo's "Special Item Appearance": extra models for states like pulling a bow or blocking with a shield. */
+/**
+ * Nexo's "Special Item Appearance": extra models for states like pulling a bow or blocking with a shield. Only the
+ * slots of the project's target can be added; a model stored in another slot stays visible so it can be removed.
+ */
 export function VariantsSection({ item }: { item: Item }) {
   const t = useTranslations('item');
   const active = VARIANTS.filter((v) => item.variants?.[v.slot] !== undefined);

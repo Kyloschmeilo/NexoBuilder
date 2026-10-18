@@ -12,11 +12,11 @@ export const TREE_INDENT_PX = 16;
 export const treeRow = cva('group/row flex items-center rounded-sm text-sm select-none', {
   variants: {
     surface: {
-      sidebar: 'h-8 hover:bg-sidebar-accent',
-      panel: 'min-h-8 gap-2 pr-3 text-foreground hover:bg-muted',
+      sidebar: 'h-7 hover:bg-sidebar-accent',
+      panel: 'min-h-7 gap-2 pr-3 text-foreground hover:bg-muted',
     },
     selected: {
-      true: 'bg-primary/10 ring-1 ring-primary ring-inset hover:bg-primary/15',
+      true: 'bg-accent-soft shadow-[inset_2px_0_0_var(--accent)] hover:bg-accent-soft',
       false: '',
     },
     dropTarget: {
@@ -31,7 +31,7 @@ export const treeRow = cva('group/row flex items-center rounded-sm text-sm selec
 export const treeRowSlots = {
   /** The focusable, clickable part of a row. */
   button:
-    'flex h-full min-w-0 flex-1 cursor-pointer items-center gap-1.5 rounded-sm pr-1 text-left outline-none focus-visible:ring-2 focus-visible:ring-ring/50',
+    'flex h-full min-w-0 flex-1 cursor-pointer items-center gap-1.5 rounded-sm pr-1 text-left outline-none focus-visible:ring-2 focus-visible:ring-ring',
   /** An icon, or a span around one. */
   icon: 'grid size-4 shrink-0 place-items-center text-muted-foreground group-data-selected/row:text-primary [&_svg]:size-4',
   label: 'min-w-0 flex-1 truncate',
