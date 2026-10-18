@@ -75,8 +75,11 @@ export interface TargetLayout {
   installGuide(multi: MultiExportPlan, rootFiles: Map<string, string>, guide: InstallGuideOptions): string;
   /** Reloads the plugin's configuration and rebuilds the resource pack */
   reloadCommand: string;
-  /** The config file (relative to pluginDir) that holds the project's entries of `kind` (Nexo: glyphs/<project>.yml, sounds.yml …) */
-  mediaFile(project: Project, kind: MediaKind): string;
+  /**
+   * The config file (relative to pluginDir) that holds the project's entries of `kind` (Nexo: glyphs/<project>.yml,
+   * sounds.yml …), or the folder of a kind with one file per entry (Nexo: dialogs/); null when the target has no such kind.
+   */
+  mediaFile(project: Project, kind: MediaKind): string | null;
 }
 
 export interface InstallGuideOptions {

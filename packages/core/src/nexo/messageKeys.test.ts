@@ -13,7 +13,9 @@ import { keySegment } from '@resourcepackbuilder/utils';
 import type { Option } from '../form/options';
 import * as options from './form/options';
 import { NEXO_FORM, PROPERTIES } from './form/schema';
-import { formMessageKeys, optionMessageKeys } from '../form/messageKeys';
+import { fieldMessageKeys, formMessageKeys, optionMessageKeys } from '../form/messageKeys';
+import { NEXO_DIALOG_FIELD } from './dialogs/form';
+import { NEXO_MULTIPACK_FIELD } from './multipack';
 import { DIRECTIONAL_MODEL_SLOTS, FURNITURE_MODEL_SLOTS, STACK_MODELS, stateDef, VARIANTS } from '../project/variants';
 
 function lookup(tree: MessageTree, key: string): unknown {
@@ -33,7 +35,7 @@ function leafKeys(tree: MessageTree, prefix = ''): string[] {
 }
 
 function referencedKeys(): Set<string> {
-  const keys: string[] = formMessageKeys(NEXO_FORM);
+  const keys: string[] = [...formMessageKeys(NEXO_FORM), ...fieldMessageKeys(NEXO_DIALOG_FIELD), ...fieldMessageKeys(NEXO_MULTIPACK_FIELD)];
   for (const value of Object.values(options)) {
     if (Array.isArray(value)) keys.push(...optionMessageKeys(value as Option[]));
   }

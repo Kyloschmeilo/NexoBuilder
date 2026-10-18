@@ -4,15 +4,19 @@ import type { MultiExportPlan } from '../../selection';
 import type { ExportPlan } from '../../types';
 import type { InstallGuideOptions } from '../types';
 import { NEXO_PLUGIN_DIR, NEXO_RELOAD_COMMAND, packLocation } from './layout';
-import { PAINTINGS_FILE, SOUNDS_FILE } from './rootFiles';
+import { MULTIPACK_FILE, PAINTINGS_FILE, SOUNDS_FILE } from './rootFiles';
 
-/** Note about sounds.yml/paintings.yml – there is only one file of each on the server */
+/** Note about sounds.yml/paintings.yml/multipack.yml – there is only one file of each on the server */
 function rootFileLines(rootFiles: Map<string, string>): string[] {
   const lines: string[] = [];
   if (rootFiles.has(SOUNDS_FILE)) lines.push('   sounds.yml                -> the sounds (the OGG files are in the resource pack)');
   if (rootFiles.has(PAINTINGS_FILE)) lines.push('   paintings.yml             -> the paintings (restart the server afterwards)');
+  if (rootFiles.has(MULTIPACK_FILE)) {
+    lines.push('   multipack.yml             -> the template packs (put each pack into pack/template_packs/<id>)');
+  }
   if (lines.length > 0) {
-    lines.push('   WARNING: sounds.yml/paintings.yml replace existing files – back up your own entries first and copy them over.');
+    const files = [SOUNDS_FILE, PAINTINGS_FILE, MULTIPACK_FILE].filter((file) => rootFiles.has(file)).join('/');
+    lines.push(`   WARNING: ${files} replace existing files – back up your own entries first and copy them over.`);
   }
   return lines;
 }
@@ -63,6 +67,7 @@ function singleGuide(project: Project, plan: ExportPlan, rootFiles: Map<string, 
     '   items/...                 -> the item configurations',
     ...(hasFilesIn(plan, 'recipes/') ? ['   recipes/...               -> the crafting recipes'] : []),
     ...(hasFilesIn(plan, 'glyphs/') ? ['   glyphs/...                -> the glyphs (usage: <glyph:id>)'] : []),
+    ...(hasFilesIn(plan, 'dialogs/') ? ['   dialogs/...               -> the dialogs (new ones need a server restart)'] : []),
     ...rootFileLines(rootFiles),
     `   ${packLocation(project).padEnd(25)} -> the resource pack (Nexo includes it automatically)`,
     '',
@@ -101,6 +106,7 @@ function multiGuide(multi: MultiExportPlan, rootFiles: Map<string, string>, opti
       `Namespace: ${project.namespace} · Minecraft ${project.settings.minecraftVersion}`,
       ...(plan.items.length > 0 ? plan.items.map((p) => `  - ${p.yamlKey}`) : ['  (no items)']),
       ...(project.glyphs.length > 0 ? [`  + ${project.glyphs.length} glyph(s)`] : []),
+      ...(project.dialogs.length > 0 ? [`  + ${project.dialogs.length} dialog(s) in dialogs/`] : []),
       '',
     );
   }

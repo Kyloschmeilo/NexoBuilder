@@ -28,6 +28,9 @@ const CLICK_ACTIONS = `${DOCS}/mechanics/clickaction-mechanic`;
 const FAQ = `${DOCS}/general-usage/faq`;
 const GLYPHS = `${DOCS}/configuration/glyphs`;
 const RECIPES = `${DOCS}/general-usage/recipes`;
+const DIALOGS = `${DOCS}/configuration/dialogs`;
+const CARPENTRY = `${DOCS}/addons/carpentry`;
+const MULTIPACK = `${DOCS}/configuration/resourcepack/multipack-feature`;
 
 /** The Nexo documentation pages and sections the editor links to */
 export const NEXO_DOCS = {
@@ -176,6 +179,41 @@ export const NEXO_DOCS = {
     preserve: `${RECIPES}#preserving-components`,
     disabled: `${RECIPES}#disabling-recipes`,
   },
+  /** Dialogs (plugins/Nexo/dialogs): the type with its buttons, the base with bodies and inputs, the click actions */
+  dialogs: {
+    page: DIALOGS,
+    types: `${DIALOGS}/dialogtype`,
+    notice: `${DIALOGS}/dialogtype#notice-type`,
+    confirm: `${DIALOGS}/dialogtype#confirmation-type`,
+    list: `${DIALOGS}/dialogtype#dialog-list-type`,
+    multi: `${DIALOGS}/dialogtype#multi-action-type`,
+    link: `${DIALOGS}/dialogtype#server-links-type`,
+    base: `${DIALOGS}/dialogbase`,
+    bodies: `${DIALOGS}/dialogbase#dialogbody`,
+    inputs: `${DIALOGS}/dialogbase#dialoginput`,
+    actions: `${DIALOGS}/dialogaction`,
+  },
+  /** The Carpentry addon's custom block types (STAIR, SLAB, DOOR, TRAPDOOR, GRATE, CHAIN, LANTERN, BARS) */
+  carpentry: {
+    page: CARPENTRY,
+    stair: `${CARPENTRY}#custom-stairs`,
+    slab: `${CARPENTRY}#custom-slabs`,
+    door: `${CARPENTRY}#custom-doors`,
+    trapdoor: `${CARPENTRY}#custom-trapdoors`,
+    grate: `${CARPENTRY}#custom-transparent`,
+    chain: `${CARPENTRY}#custom-chain`,
+    lantern: `${CARPENTRY}#custom-lantern`,
+    bars: `${CARPENTRY}#custom-bars`,
+  },
+  /** multipack.yml: extra template packs players can toggle, and the menu to toggle them */
+  multipack: {
+    page: MULTIPACK,
+    templates: `${MULTIPACK}#template-options`,
+    menu: `${MULTIPACK}#menu-configuration`,
+    slots: `${MULTIPACK}#slot-options`,
+    actions: `${MULTIPACK}#action-types`,
+    items: `${MULTIPACK}#item-definition`,
+  },
 };
 
 /** The documentation page of each media kind */
@@ -183,6 +221,7 @@ export const NEXO_MEDIA_DOCS: Record<MediaKind, string> = {
   glyph: NEXO_DOCS.glyphs.page,
   sound: NEXO_DOCS.sounds,
   painting: NEXO_DOCS.paintings.page,
+  dialog: NEXO_DOCS.dialogs.page,
 };
 
 /** The documentation section of each recipe type Nexo reads (anvil recipes are only in the jar: the recipes page) */

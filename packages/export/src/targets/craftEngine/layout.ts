@@ -35,11 +35,13 @@ export function packYmlFile(project: Project): string {
   return `${craftEnginePackDir(project)}/pack.yml`;
 }
 
-/** The media config files: images.yml (with the emoji), sounds.yml (with the jukebox songs), paintings.yml. */
-export const CRAFT_ENGINE_MEDIA_FILES = { glyph: 'images', sound: 'sounds', painting: 'paintings' } as const satisfies Record<
-  MediaKind,
-  string
+/** The media config files: images.yml (with the emoji), sounds.yml (with the jukebox songs), paintings.yml; no dialogs. */
+export const CRAFT_ENGINE_MEDIA_FILES = { glyph: 'images', sound: 'sounds', painting: 'paintings' } as const satisfies Partial<
+  Record<MediaKind, string>
 >;
+
+/** The media kinds CraftEngine has a config file for. */
+export type CraftEngineMediaKind = keyof typeof CRAFT_ENGINE_MEDIA_FILES;
 
 /** A config file of the pack (relative to plugins/CraftEngine), e.g. "resources/golden/configuration/categories.yml". */
 export function craftEngineConfigFile(project: Project, name: string): string {
@@ -47,7 +49,7 @@ export function craftEngineConfigFile(project: Project, name: string): string {
 }
 
 /** A config file of the pack's media (relative to plugins/CraftEngine), e.g. "resources/golden/configuration/images.yml". */
-export function craftEngineMediaFile(project: Project, name: (typeof CRAFT_ENGINE_MEDIA_FILES)[MediaKind]): string {
+export function craftEngineMediaFile(project: Project, name: (typeof CRAFT_ENGINE_MEDIA_FILES)[CraftEngineMediaKind]): string {
   return craftEngineConfigFile(project, name);
 }
 

@@ -36,6 +36,8 @@ export interface NexoRootEntries {
   soundEntries: Array<Record<string, unknown>>;
   /** Entries for plugins/Nexo/paintings.yml (key = namespace:id) */
   paintingEntries: Record<string, Record<string, unknown>>;
+  /** The project's part of plugins/Nexo/multipack.yml (templates by id, the menu); null when it has none */
+  multipack: Record<string, unknown> | null;
 }
 
 export interface ExportPlan {

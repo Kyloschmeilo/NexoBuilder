@@ -1,0 +1,285 @@
+{
+  "nexoDialogs": {
+    "button": {
+      "itemLabel": "Action",
+      "fields": {
+        "label": {
+          "label": "Button text",
+          "placeholder": "'<'green>Continue"
+        },
+        "tooltip": {
+          "label": "Text shown when hovering the button"
+        },
+        "width": {
+          "label": "Button width (1–1024, default 150)"
+        },
+        "action": {
+          "label": "What a click does",
+          "help": "Without an action, the button only closes the dialog (see “After a click”).",
+          "fields": {
+            "type": {
+              "label": "Action type"
+            },
+            "url": {
+              "label": "Web address to open",
+              "placeholder": "https://example.com"
+            },
+            "command": {
+              "label": "Command",
+              "help": "Without the leading slash. RUN_COMMAND runs it as the player, SUGGEST_COMMAND puts it into the chat box.",
+              "placeholder": "nexo inventory"
+            },
+            "page": {
+              "label": "Book page to open"
+            },
+            "clipboard": {
+              "label": "Text copied to the clipboard"
+            },
+            "dialog": {
+              "label": "Dialog to show",
+              "placeholder": "nexo:other_dialog"
+            },
+            "template": {
+              "label": "Command template",
+              "help": "$(key) is replaced by the value of the input with that key.",
+              "placeholder": "say $(text_key)"
+            },
+            "id": {
+              "label": "ID of the custom action",
+              "placeholder": "namespace:action"
+            },
+            "payload": {
+              "label": "Data sent with the action (SNBT)",
+              "help": "Nexo 1.30 reads this key; the Nexo docs do not list it yet."
+            },
+            "additions": {
+              "label": "Extra data sent with the inputs (SNBT)",
+              "help": "Nexo 1.30 reads this key; the Nexo docs do not list it yet."
+            }
+          }
+        }
+      }
+    },
+    "fields": {
+      "dialog": {
+        "label": "Dialog",
+        "fields": {
+          "type": {
+            "label": "Dialog type",
+            "help": "NOTICE has one button, CONFIRM a yes and a no button, LIST links to other dialogs, MULTI shows several actions, LINK shows the server links."
+          },
+          "action": {
+            "label": "The button of the notice"
+          },
+          "yesButton": {
+            "label": "The yes button"
+          },
+          "noButton": {
+            "label": "The no button"
+          },
+          "actions": {
+            "label": "The actions to choose from"
+          },
+          "dialogs": {
+            "label": "Dialogs listed as buttons",
+            "placeholder": "nexo:my_dialog"
+          },
+          "exitAction": {
+            "label": "Button that leaves the dialog"
+          },
+          "columns": {
+            "label": "Columns of buttons (default 2)"
+          },
+          "buttonWidth": {
+            "label": "Width of the buttons (1–1024, default 150)"
+          },
+          "base": {
+            "label": "Content and behavior",
+            "fields": {
+              "title": {
+                "label": "Title, always shown",
+                "placeholder": "'<'gold>Welcome"
+              },
+              "externalTitle": {
+                "label": "Name on buttons that open this dialog",
+                "help": "Defaults to the title."
+              },
+              "canCloseWithEscape": {
+                "label": "Closes with the Escape key"
+              },
+              "pause": {
+                "label": "Pauses a single-player game",
+                "help": "Nexo 1.30 reads this key; the Nexo docs do not list it yet."
+              },
+              "afterAction": {
+                "label": "After a click",
+                "help": "NONE keeps the dialog open, CLOSE (default) closes it, WAIT_FOR_RESPONSE shows a waiting screen."
+              },
+              "bodies": {
+                "label": "Content between title and inputs",
+                "keyLabel": "Key of the element",
+                "keyPlaceholder": "message_body",
+                "value": {
+                  "fields": {
+                    "type": {
+                      "label": "Kind of element"
+                    },
+                    "message": {
+                      "label": "Text (MiniMessage, glyph and shift tags)",
+                      "placeholder": "'<'gray>Read the rules first."
+                    },
+                    "description": {
+                      "label": "Text next to the item",
+                      "choices": {
+                        "text": {
+                          "label": "Text",
+                          "field": {
+                            "label": "Text"
+                          }
+                        },
+                        "sized": {
+                          "label": "Text with width",
+                          "field": {
+                            "fields": {
+                              "contents": {
+                                "label": "Text"
+                              },
+                              "width": {
+                                "label": "Width (default 200)"
+                              }
+                            }
+                          }
+                        }
+                      }
+                    },
+                    "nexoItem": {
+                      "label": "Nexo item shown",
+                      "help": "Nexo 1.30 reads this key; the Nexo docs do not list it yet."
+                    },
+                    "itemModel": {
+                      "label": "Item model shown",
+                      "help": "Nexo 1.30 reads this key; the Nexo docs do not list it yet."
+                    },
+                    "lore": {
+                      "label": "Lore of the shown item",
+                      "help": "Nexo 1.30 reads this key; the Nexo docs do not list it yet."
+                    },
+                    "showDecorations": {
+                      "label": "Show count and durability bar"
+                    },
+                    "showTooltip": {
+                      "label": "Show the tooltip on hover"
+                    },
+                    "width": {
+                      "label": "Width (text 1–1024, default 200; item 1–256, default 16)"
+                    },
+                    "height": {
+                      "label": "Height (1–256, default 16)"
+                    }
+                  }
+                }
+              },
+              "inputs": {
+                "label": "Inputs below the content",
+                "keyLabel": "Key of the input (used as $(key))",
+                "keyPlaceholder": "text_key",
+                "value": {
+                  "fields": {
+                    "type": {
+                      "label": "Kind of input"
+                    },
+                    "label": {
+                      "label": "Label",
+                      "placeholder": "'<'yellow>Your name"
+                    },
+                    "labelVisible": {
+                      "label": "Show the label"
+                    },
+                    "width": {
+                      "label": "Width (1–1024, default 200)"
+                    },
+                    "maxLength": {
+                      "label": "Longest text allowed"
+                    },
+                    "initial": {
+                      "label": "Value when the dialog opens",
+                      "choices": {
+                        "text": {
+                          "label": "Text",
+                          "field": {
+                            "label": "Text"
+                          }
+                        },
+                        "state": {
+                          "label": "Checked",
+                          "field": {
+                            "label": "Checked"
+                          }
+                        },
+                        "number": {
+                          "label": "Number",
+                          "field": {
+                            "label": "Number"
+                          }
+                        }
+                      }
+                    },
+                    "multilineOptions": {
+                      "label": "Several lines",
+                      "fields": {
+                        "maxLines": {
+                          "label": "Most lines"
+                        },
+                        "height": {
+                          "label": "Height in pixels"
+                        }
+                      }
+                    },
+                    "onTrue": {
+                      "label": "Value when checked",
+                      "placeholder": "true"
+                    },
+                    "onFalse": {
+                      "label": "Value when unchecked",
+                      "placeholder": "false"
+                    },
+                    "labelFormat": {
+                      "label": "Translation key of the label",
+                      "help": "Gets the label and the value, e.g. options.generic_value.",
+                      "placeholder": "options.generic_value"
+                    },
+                    "start": {
+                      "label": "Lowest value"
+                    },
+                    "end": {
+                      "label": "Highest value"
+                    },
+                    "step": {
+                      "label": "Step between values (empty: no steps)"
+                    },
+                    "options": {
+                      "label": "Options to choose from",
+                      "keyLabel": "Value of the option",
+                      "keyPlaceholder": "option_1",
+                      "value": {
+                        "fields": {
+                          "display": {
+                            "label": "Shown text",
+                            "placeholder": "First option"
+                          },
+                          "initial": {
+                            "label": "Chosen when the dialog opens"
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}

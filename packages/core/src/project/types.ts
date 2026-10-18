@@ -8,6 +8,7 @@
 import type { DataUrl, ImportedModel, ModelTexture } from '@resourcepackbuilder/minecraft';
 import type { PackTargetId } from './target';
 import type { ArmorSettings } from './armor';
+import type { Dialog } from './media/dialog';
 import type { Glyph } from './media/glyph';
 import type { Painting } from './media/painting';
 import type { Recipe } from './recipes/model';
@@ -73,6 +74,10 @@ export interface ProjectSettings {
   ceCategoriesFromFolders: boolean;
   /** Nexo: vanilla recipe keys (`minecraft:…`) Nexo disables, written to recipes/disabled_recipes.yml; absent when none */
   disabledRecipes?: string[];
+  /** Nexo: the Carpentry addon is installed, so custom blocks may use its types (STAIR, SLAB, DOOR …); absent when not */
+  carpentryAddon?: true;
+  /** Nexo: the content of multipack.yml (`templates` by id, optional `menu`), mirrored 1:1; absent when empty */
+  multipack?: ConfigObject;
 }
 
 /** Project-wide CraftEngine configuration, written to the pack's configuration folder */
@@ -120,6 +125,8 @@ export interface Project {
   sounds: Sound[];
   /** Custom paintings (plugins/Nexo/paintings.yml + texture in the pack) */
   paintings: Painting[];
+  /** Dialogs (plugins/Nexo/dialogs/<id>.yml); only Nexo projects have them */
+  dialogs: Dialog[];
   /** Project-wide CraftEngine configuration; only CraftEngine projects have it */
   craftEngine?: CraftEngineProjectData;
   createdAt: number;

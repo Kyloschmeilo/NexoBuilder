@@ -25,6 +25,7 @@ const MEDIA_COUNT_KEYS = {
   glyph: 'glyphCount',
   sound: 'soundCount',
   painting: 'paintingCount',
+  dialog: 'dialogCount',
 } as const satisfies Record<MediaKind, string>;
 
 /** What is selected of a project, e.g. "12/14 items · 3 glyphs". */

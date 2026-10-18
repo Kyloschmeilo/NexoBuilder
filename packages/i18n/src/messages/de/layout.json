@@ -113,6 +113,14 @@
         "label": "Paintings",
         "hint": "Paintings: eigene Gemälde zum Aufhängen"
       },
+      "dialogs": {
+        "label": "Dialoge",
+        "hint": "Dialoge: Dialogfenster mit Schaltflächen und Eingaben (Minecraft 1.21.6+)"
+      },
+      "multipack": {
+        "label": "Multipack",
+        "hint": "Multipack: zusätzliche Ressourcenpakete, die Spieler ein- und ausschalten"
+      },
       "lootSources": {
         "label": "Loot-Quellen",
         "hint": "Loot-Quellen: zusätzlicher Loot für Vanilla-Blöcke, Mobs, Truhen und Angeln"

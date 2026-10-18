@@ -4,9 +4,11 @@ import { CE_BLOCK_BEHAVIOR_FORMS } from '../craftEngine/blockBehaviors';
 import { CE_WIKI_URL } from '../craftEngine/form/schema/docs';
 import { CE_LOGIC } from '../craftEngine/logic';
 import type { Field, TypedType } from '../form/fields';
-import { NEXO_DOCS_URL, NEXO_MEDIA_DOCS, NEXO_RECIPE_DOCS, nexoArmorLayerDocs, nexoVariantDocs } from '../nexo/form/schema/docs';
+import { NEXO_DIALOG_FIELD } from '../nexo/dialogs/form';
+import { NEXO_MULTIPACK_FIELD } from '../nexo/multipack';
+import { NEXO_DOCS, NEXO_DOCS_URL, NEXO_MEDIA_DOCS, NEXO_RECIPE_DOCS, nexoArmorLayerDocs, nexoVariantDocs } from '../nexo/form/schema/docs';
 import { ARMOR_LAYERS } from '../project/armor';
-import { MEDIA_KIND_LIST } from '../project/media/kinds';
+import { isMediaKindOffered, MEDIA_KIND_LIST } from '../project/media/kinds';
 import { RECIPE_TYPES } from '../project/recipes/model';
 import { PACK_TARGETS, type PackTargetId } from '../project/target';
 import { DIRECTIONAL_MODEL_SLOTS, FURNITURE_MODEL_SLOTS, STACK_MODELS, stateDef, VARIANTS } from '../project/variants';
@@ -84,6 +86,13 @@ describe('docs links', () => {
     });
   }
 
+  it('link the Nexo dialog and multipack editors and the Carpentry addon to the Nexo docs', () => {
+    const fields = [...walkFields([NEXO_DIALOG_FIELD], 'dialog'), ...walkFields([NEXO_MULTIPACK_FIELD], 'multipack')];
+    const linked = fields.filter(([, f]) => f.docs !== undefined).map(([where, f]): [string, string | undefined] => [where, f.docs]);
+    expect(linked.length).toBeGreaterThan(10);
+    expect(offBase(DOCS_BASE.nexo, [...linked, ...Object.entries(NEXO_DOCS.carpentry)])).toEqual([]);
+  });
+
   it('link every type of every CraftEngine logic catalog to its section of the wiki', () => {
     const links = Object.entries(CE_LOGIC).flatMap(([catalog, types]) =>
       types.map((t): [string, string | undefined] => [`${catalog}.${t.type}`, t.docs]),
@@ -110,9 +119,12 @@ describe('docs links', () => {
   });
 
   for (const target of PACK_TARGETS) {
-    it(`link every ${target} media page, music discs and emoji to the ${target} docs`, () => {
+    it(`link every ${target} media page (of the kinds it has), music discs and emoji to the ${target} docs`, () => {
       const links: Array<[string, string]> = [
-        ...MEDIA_KIND_LIST.map((kind): [string, string] => [`media ${kind}`, mediaDocsFor(target, kind)]),
+        ...MEDIA_KIND_LIST.filter((kind) => isMediaKindOffered(target, kind)).map((kind): [string, string] => [
+          `media ${kind}`,
+          mediaDocsFor(target, kind),
+        ]),
         ['jukebox', jukeboxDocsFor(target)],
         ['emoji', emojiDocsFor(target)],
       ];

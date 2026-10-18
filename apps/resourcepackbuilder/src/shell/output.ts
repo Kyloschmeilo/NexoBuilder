@@ -40,11 +40,11 @@ function issuesOfKind(plan: ExportPlan, kind: IssueTarget['kind']): Issue[] {
   return plan.issues.filter((issue) => issue.target?.kind === kind);
 }
 
-/** The project's config file of a media kind, with the issues of its entries. */
+/** The project's config file of a media kind, with the issues of its entries; null when the target has no such kind. */
 function mediaOutput(kind: MediaKind, target: IssueTarget['kind']): ViewOutputProvider {
   return (project, plan) => {
     const file = packTargetFor(project).layout.mediaFile(project, kind);
-    return { file, text: pluginText(plan, file), issues: issuesOfKind(plan, target) };
+    return file === null ? null : { file, text: pluginText(plan, file), issues: issuesOfKind(plan, target) };
   };
 }
 

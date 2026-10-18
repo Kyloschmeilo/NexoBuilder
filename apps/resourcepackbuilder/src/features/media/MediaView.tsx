@@ -1,4 +1,4 @@
-/** The pages of glyphs, sounds and paintings: one descriptor per kind, one page component. */
+/** The pages of glyphs, sounds and paintings: one descriptor per kind, one page component (dialogs: DialogsView). */
 import type { ReactNode } from 'react';
 import { Frame, Link2, Music, Smile } from 'lucide-react';
 import { useTranslations } from 'next-intl';
@@ -6,10 +6,10 @@ import { type ExportPlan, packTargetFor } from '@resourcepackbuilder/export';
 import {
   glyphKindOf,
   type MediaEntryByKind,
-  type MediaKind,
   mediaList,
   type PackTargetId,
   type Project,
+  type UploadMediaKind,
 } from '@resourcepackbuilder/core/project';
 import { mediaDocsFor } from '@resourcepackbuilder/core/targets';
 import { Button } from '@resourcepackbuilder/ui/components/button';
@@ -26,7 +26,7 @@ import { SoundCard } from '../sounds/SoundCard';
 import { DocsLinkButton } from './DocsLinkButton';
 import { MediaPage } from './MediaPage';
 
-interface MediaViewInfo<K extends MediaKind> {
+interface MediaViewInfo<K extends UploadMediaKind> {
   icon: ReactNode;
   /** Message section below `media` */
   section: 'glyphs' | 'sounds' | 'paintings';
@@ -35,7 +35,7 @@ interface MediaViewInfo<K extends MediaKind> {
   card: (entry: MediaEntryByKind[K], project: Project, plan: ExportPlan | null) => ReactNode;
 }
 
-const MEDIA_VIEWS: { [K in MediaKind]: MediaViewInfo<K> } = {
+const MEDIA_VIEWS: { [K in UploadMediaKind]: MediaViewInfo<K> } = {
   glyph: {
     icon: <Smile className="size-7" />,
     section: 'glyphs',
@@ -71,7 +71,7 @@ function ReferenceGlyphButton() {
   );
 }
 
-function MediaView<K extends MediaKind>({ kind }: { kind: K }) {
+function MediaView<K extends UploadMediaKind>({ kind }: { kind: K }) {
   const t = useTranslations('media');
   const project = useOpenProject();
   const plan = usePlan();
@@ -87,7 +87,7 @@ function MediaView<K extends MediaKind>({ kind }: { kind: K }) {
       icon={view.icon}
       title={t(`${section}.title`)}
       count={t(`${section}.count`, { count: entries.length })}
-      configPath={`${layout.pluginDir}/${layout.mediaFile(project, kind)}`}
+      configPath={`${layout.pluginDir}/${layout.mediaFile(project, kind) ?? ''}`}
       actions={
         <>
           {kind === 'glyph' && <ReferenceGlyphButton />}

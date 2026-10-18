@@ -86,6 +86,30 @@
       },
       "chorusblock": {
         "label": "CHORUSBLOCK – transparente Blöcke (bis 63)"
+      },
+      "stair": {
+        "label": "STAIR – Treppen (Carpentry, bis 4)"
+      },
+      "slab": {
+        "label": "SLAB – Stufen (Carpentry, bis 4)"
+      },
+      "door": {
+        "label": "DOOR – Türen (Carpentry, bis 4)"
+      },
+      "trapdoor": {
+        "label": "TRAPDOOR – Falltüren (Carpentry, bis 4)"
+      },
+      "grate": {
+        "label": "GRATE – transparente Blöcke wie Laub (Carpentry, bis 4)"
+      },
+      "chain": {
+        "label": "CHAIN – Ketten (Carpentry, ab 1.21.10)"
+      },
+      "lantern": {
+        "label": "LANTERN – Laternen (Carpentry, ab 1.21.10)"
+      },
+      "bars": {
+        "label": "BARS – Gitter wie Eisengitter (Carpentry, ab 1.21.10)"
       }
     },
     "cullableStates": {

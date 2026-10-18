@@ -7,10 +7,12 @@ import appearance from './appearance.json' with { type: 'json' };
 import attributes from './attributes.json' with { type: 'json' };
 import components from './components.json' with { type: 'json' };
 import customBlock from './customBlock.json' with { type: 'json' };
+import dialogs from './dialogs.json' with { type: 'json' };
 import furniture from './furniture.json' with { type: 'json' };
 import general from './general.json' with { type: 'json' };
 import mechanics from './mechanics.json' with { type: 'json' };
 import misc from './misc.json' with { type: 'json' };
+import multipack from './multipack.json' with { type: 'json' };
 import options from './options.json' with { type: 'json' };
 import recipes from './recipes.json' with { type: 'json' };
 import shared from './shared.json' with { type: 'json' };
@@ -23,10 +25,12 @@ export default mergeCatalogue(
   attributes,
   components,
   customBlock,
+  dialogs,
   furniture,
   general,
   mechanics,
   misc,
+  multipack,
   options,
   recipes,
   shared,

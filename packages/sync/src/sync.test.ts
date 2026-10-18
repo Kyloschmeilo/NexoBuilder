@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import { produce } from 'immer';
 import {
+  createDialog,
   createFolder,
   createGlyph,
   createItem,
@@ -123,7 +124,7 @@ const content = (p: Project) =>
 
 describe('entity keys and paths', () => {
   it('round-trips every kind of entry', () => {
-    for (const kind of ['folder', 'item', 'glyph', 'sound', 'painting'] as const) {
+    for (const kind of ['folder', 'item', 'glyph', 'sound', 'painting', 'dialog'] as const) {
       expect(parseEntityKey(`${kind}:x_1`)).toEqual({ kind, id: 'x_1' });
       expect(parseEntityPath(entityPath({ kind, id: 'x_1' }))).toEqual({ kind, id: 'x_1' });
     }
@@ -227,6 +228,31 @@ describe('Shared projects', () => {
     await anna.sync();
     expect(anna.project.sounds.map((s) => s.soundId)).toEqual(['dong', 'ding']);
     expect(anna.project.paintings).toEqual([]);
+    expect(content(anna.project)).toBe(content(ben.project));
+  });
+
+  it('dialogs and the Nexo project settings are shared – including order', async () => {
+    const { folder, clock, anna, ben } = await setup();
+    clock.t += 10;
+    anna.edit((d) => {
+      d.dialogs.push(createDialog('d_welcome', 'welcome'), createDialog('d_rules', 'rules'));
+      d.settings.carpentryAddon = true;
+      d.settings.multipack = { templates: { music: { default: true } } };
+    });
+    await anna.sync();
+    expect(folder.files.has('dialogs/d_welcome.json')).toBe(true);
+    await ben.sync();
+    expect(ben.project.dialogs.map((dialog) => dialog.dialogId)).toEqual(['welcome', 'rules']);
+    expect(ben.project.settings.carpentryAddon).toBe(true);
+    expect(ben.project.settings.multipack).toEqual({ templates: { music: { default: true } } });
+
+    clock.t += 10;
+    ben.edit((d) => {
+      d.dialogs.reverse();
+    });
+    await ben.sync();
+    await anna.sync();
+    expect(anna.project.dialogs.map((dialog) => dialog.dialogId)).toEqual(['rules', 'welcome']);
     expect(content(anna.project)).toBe(content(ben.project));
   });
 

@@ -1,6 +1,6 @@
 /** Readers for picked or dropped files that report unsupported files with a toast. */
 import { useTranslations } from 'next-intl';
-import type { MediaFile, MediaKind } from '@resourcepackbuilder/core/project';
+import type { MediaFile, UploadMediaKind } from '@resourcepackbuilder/core/project';
 import { fileStem, pickFiles, PNG_ACCEPT } from '@resourcepackbuilder/ui';
 import { MEDIA_FILES, readPngFile, type MediaFileByKind } from '../lib/mediaFiles';
 import { notify } from '../shell/notify';
@@ -32,12 +32,12 @@ const REJECT_KEYS = {
   glyph: 'glyphs.notImage',
   sound: 'sounds.notOgg',
   painting: 'paintings.notPng',
-} as const satisfies Record<MediaKind, string>;
+} as const satisfies Record<UploadMediaKind, string>;
 
 /** Reads dropped or picked files for a glyph, sound or painting (see MEDIA_FILES); other files are reported. */
-export function useMediaFileReader<K extends MediaKind>(kind: K): (files: File[]) => Promise<ReadMediaFile<MediaFileByKind[K]>[]> {
+export function useMediaFileReader<K extends UploadMediaKind>(kind: K): (files: File[]) => Promise<ReadMediaFile<MediaFileByKind[K]>[]> {
   const t = useTranslations('media');
-  const rejectKey: (typeof REJECT_KEYS)[MediaKind] = REJECT_KEYS[kind];
+  const rejectKey: (typeof REJECT_KEYS)[UploadMediaKind] = REJECT_KEYS[kind];
   return createFileReader(MEDIA_FILES[kind].read as (file: File) => Promise<MediaFileByKind[K] | null>, (name) => t(rejectKey, { name }));
 }
 

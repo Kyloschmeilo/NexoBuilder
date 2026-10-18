@@ -63,8 +63,8 @@ export const CE_RECIPE_DOCS: Partial<Record<RecipeType, string>> = {
   dye: `${CE_DOCS.recipes}#recipe-types`,
 };
 
-/** The wiki pages of the media sections: images (with emoji), sounds and paintings */
-export const CE_MEDIA_DOCS: Record<MediaKind, string> = {
+/** The wiki pages of the media sections: images (with emoji), sounds and paintings (CraftEngine has no dialogs) */
+export const CE_MEDIA_DOCS: Partial<Record<MediaKind, string>> = {
   glyph: `${WIKI}/configuration/image`,
   sound: `${WIKI}/configuration/sound`,
   painting: `${WIKI}/configuration/painting`,
