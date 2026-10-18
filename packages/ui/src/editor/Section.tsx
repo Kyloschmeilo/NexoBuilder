@@ -26,10 +26,7 @@ interface SectionProps {
   className?: string;
 }
 
-/**
- * Header padding and title size per level. The title colour is set on the header: `cn` reads `text-title` as a colour,
- * so a colour class next to it would drop the size.
- */
+/** Header padding and title size per level; the title takes its colour from the header. */
 const LEVELS = {
   1: { Heading: 'h2', header: 'min-h-11 px-3 py-2 @xl/section:px-4', title: 'text-title font-semibold' },
   2: { Heading: 'h3', header: 'min-h-9 px-3 py-1.5', title: 'text-label font-semibold' },

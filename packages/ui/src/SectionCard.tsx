@@ -40,10 +40,7 @@ export function SectionCard({
       <CardHeader className={cn('py-2.5', children !== undefined && 'border-b border-line [.border-b]:pb-2.5')}>
         <div className="flex min-w-0 flex-wrap items-center gap-x-3 gap-y-1.5">
           {icon}
-          <CardTitle className={cn('min-w-0 font-semibold break-words text-text', titleClassName)}>
-            {/* The size sits on its own element: `cn` reads `text-title` as a colour and would drop it here */}
-            <span className="text-title">{title}</span>
-          </CardTitle>
+          <CardTitle className={cn('min-w-0 text-title font-semibold break-words text-text', titleClassName)}>{title}</CardTitle>
           {badges}
         </div>
         {description && <CardDescription className="text-meta">{description}</CardDescription>}
