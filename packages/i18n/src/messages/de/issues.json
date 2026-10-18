@@ -194,6 +194,7 @@
     "nexoItemNotInProject": "Das Nexo-Item „{id}“ ist nicht in diesem Projekt – es muss auf dem Server existieren.",
     "ceItemNotInProject": "Das Item „{id}“ ist nicht in diesem Projekt. CraftEngine überspringt das Rezept, wenn kein anderes Pack auf dem Server es hat.",
     "amountRange": "Die Anzahl muss zwischen 1 und 64 liegen.",
+    "typeNeedsVersion": "„{type}“-Rezepte brauchen Minecraft {version} oder neuer; der Server dieses Projekts liest sie nicht.",
     "typeUnsupported": "{target} kennt keine „{type}“-Rezepte, daher wird dieses Rezept nicht exportiert. Ändere den Typ oder entferne es.",
     "sourceUnsupported": "{target} kann diese Zutatenquelle nicht lesen, daher wird „{id}“ nicht exportiert. Wähle eine andere Quelle.",
     "externalIdInvalid": "„{id}“ ist keine Item-ID mit Namespace (z. B. mythicmobs:kingscrown).",
