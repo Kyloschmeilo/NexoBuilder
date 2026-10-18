@@ -12,7 +12,17 @@
     "placeholderOption": "– {placeholder} –",
     "moveUp": "Nach oben",
     "moveDown": "Nach unten",
-    "pickColor": "Farbe wählen"
+    "pickColor": "Farbe wählen",
+    "vector": {
+      "axis": "{label} {axis}"
+    },
+    "switch": {
+      "on": "An",
+      "off": "Aus",
+      "defaultState": "Standard: {state}",
+      "unset": "Zurücksetzen",
+      "unsetHint": "Den Standard des Plugins verwenden ({state})"
+    }
   },
   "field": {
     "minVersion": "ab {version}",
@@ -43,6 +53,55 @@
     "objectHint": "Ein Zahlengeber mit Typ, etwa uniform",
     "premium": "Premium",
     "premiumHint": "Nur CraftEngine Premium liest diesen Typ."
+  },
+  "catalog": {
+    "searchPlaceholder": "Namen, Schlüssel und Beschreibungen durchsuchen",
+    "facets": "Kategorien",
+    "all": "Alle",
+    "common": "Häufig",
+    "added": "Hinzugefügt",
+    "other": "Sonstiges",
+    "addedPill": "Hinzugefügt",
+    "jumpTo": "Hinspringen",
+    "adds": "Fügt hinzu",
+    "premium": "Premium",
+    "fromVersion": "ab {version}",
+    "untilVersion": "bis {version}",
+    "noMatch": "Nichts passt zu „{query}“.",
+    "noMatchHint": "Versuche den YAML-Schlüssel oder ein anderes Wort.",
+    "empty": "Hier gibt es nichts hinzuzufügen.",
+    "checkedCount": "{count} ausgewählt",
+    "addCount": "{count, plural, one {# Eintrag hinzufügen} other {# Einträge hinzufügen}}",
+    "conflict": "Nicht zusammen mit „{name}“ möglich.",
+    "keys": {
+      "move": "bewegen",
+      "add": "hinzufügen",
+      "check": "auswählen",
+      "addKeepOpen": "hinzufügen und offen lassen",
+      "addChecked": "ausgewählte hinzufügen"
+    }
+  },
+  "feature": {
+    "actions": "Aktionen für {name}",
+    "on": "An",
+    "off": "Aus",
+    "notSet": "Nicht gesetzt",
+    "entries": "{count, plural, one {# Eintrag} other {# Einträge}}",
+    "reset": "Auf Standard zurücksetzen",
+    "copyYaml": "YAML kopieren",
+    "remove": "Entfernen",
+    "tooOld": "Braucht Minecraft {min} oder neuer; das Projekt ist auf {version} eingestellt.",
+    "removed": "Gibt es nur bis Minecraft {max}.",
+    "premium": "Nur CraftEngine Premium liest das."
+  },
+  "typedEntry": {
+    "noType": "Noch kein Typ",
+    "noSettings": "Keine Einstellungen",
+    "unknownSummary": "Als YAML bearbeitet",
+    "negate": "Umkehren",
+    "negateHint": "Schreibt ein ! vor den Typ, das die Bedingung umkehrt.",
+    "noFields": "Dieser Typ hat keine Einstellungen. Es reicht, ihn hinzuzufügen.",
+    "unknown": "Für diesen Typ gibt es noch kein Formular; bearbeite ihn als YAML."
   },
   "devPrimitives": {
     "actions": {
@@ -104,9 +163,27 @@
       "lists": "Listen",
       "listsDescription": "Zeilen klappen an Ort und Stelle auf oder öffnen einen Dialog; zum Umsortieren den Griff ziehen oder die Pfeiltasten nutzen.",
       "maps": "Zuordnungen",
-      "mapsDescription": "Schlüssel werden umbenannt, sobald das Eingabefeld den Fokus verliert."
+      "mapsDescription": "Schlüssel werden umbenannt, sobald das Eingabefeld den Fokus verliert.",
+      "catalog": "Katalog und typisierte Einträge",
+      "catalogDescription": "CraftEngine-Blockverhalten: die Auswahl und eine Karte pro Verhalten, auch ein unbekannter Typ.",
+      "features": "Feature-Liste",
+      "featuresDescription": "Nexo-Komponenten als Feature-Zeilen, mit der Auswahl über die Komponentengruppe.",
+      "controls": "Steuerelemente"
     },
     "title": "Editor-Bausteine",
-    "toggleMode": "Hell oder dunkel"
+    "toggleMode": "Hell oder dunkel",
+    "catalog": {
+      "addBehavior": "Verhalten hinzufügen",
+      "behaviorsTitle": "Blockverhalten hinzufügen",
+      "behaviorsDescription": "Wähle, was der Block tun soll. Du kannst mehrere hinzufügen und später ändern.",
+      "behaviorsSearch": "Verhalten suchen, z. B. Tür, wachsen, fallen",
+      "addComponent": "Komponente hinzufügen",
+      "componentsTitle": "Komponente hinzufügen",
+      "componentsSearch": "Komponenten, Schlüssel und Beschreibungen durchsuchen",
+      "stackWarning": "Werkzeuge stapeln meist nur bis 1.",
+      "translation": "Verschiebung",
+      "glint": "Verzauberungsglanz",
+      "unbreakable": "Unzerstörbar"
+    }
   }
 }

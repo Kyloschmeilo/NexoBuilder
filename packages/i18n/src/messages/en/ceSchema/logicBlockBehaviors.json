@@ -787,6 +787,16 @@
           "help": "The geyser burst’s base impulse."
         }
       }
+    },
+    "categories": {
+      "blockBehaviors": {
+        "shapes": "Shapes and building blocks",
+        "redstone": "Redstone and light",
+        "blockEntities": "Storage and displays",
+        "physics": "Physics",
+        "placement": "Placement rules",
+        "plants": "Plants and growth"
+      }
     }
   }
 }

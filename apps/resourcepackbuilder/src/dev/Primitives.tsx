@@ -30,6 +30,7 @@ import { Button } from '@resourcepackbuilder/ui/components/button';
 import { Input } from '@resourcepackbuilder/ui/components/input';
 import { TooltipProvider } from '@resourcepackbuilder/ui/components/tooltip';
 import { I18nProvider } from '../i18n/I18nProvider';
+import { CatalogDemo } from './CatalogDemo';
 import { COLOR_THEMES, type ColorTheme } from '../theme/colorThemes';
 import { useColorTheme } from '../theme/useColorTheme';
 
@@ -89,6 +90,9 @@ function PrimitivesPage() {
     { id: 'choices', label: t('sections.choices') },
     { id: 'feedback', label: t('sections.feedback'), tone: 'error' as const },
     { id: 'empty', label: t('sections.empty'), muted: true },
+    { id: 'catalog', label: t('sections.catalog') },
+    { id: 'features', label: t('sections.features') },
+    { id: 'controls', label: t('sections.controls') },
   ];
   const spy = useSectionSpy(sections.map((section) => section.id));
 
@@ -300,6 +304,8 @@ function PrimitivesPage() {
           emptyText={t('empty.recipes')}
         />
       </Section>
+
+      <CatalogDemo />
     </Page>
   );
 }

@@ -291,7 +291,73 @@ const SPECS: LogicTypeSpec[] = [
   behavior('leaves_block'),
 ];
 
-const TYPES = logicCatalog('blockBehaviors', SPECS);
+/** The catalog categories (`logic.categories.blockBehaviors.<camel(category)>`) and the behaviors listed under each */
+const CATEGORIES: Record<string, string[]> = {
+  shapes: [
+    'slab_block',
+    'stairs_block',
+    'door_block',
+    'trapdoor_block',
+    'fence_gate_block',
+    'fence_block',
+    'sofa_block',
+    'double_high_block',
+    'multi_high_block',
+    'stackable_block',
+    'snowy_block',
+    'hangable_block',
+    'strippable_block',
+  ],
+  redstone: ['button_block', 'pressure_plate_block', 'lamp_block', 'toggleable_lamp_block'],
+  blockEntities: [
+    'seat_block',
+    'simple_storage_block',
+    'drawer_block',
+    'display_item_block',
+    'item_frame_block',
+    'tint_source_block',
+    'simple_particle_block',
+    'wall_torch_particle_block',
+  ],
+  physics: ['falling_block', 'concrete_powder_block', 'bouncing_block', 'chime_block', 'drop_exp_block'],
+  placement: [
+    'bush_block',
+    'hanging_block',
+    'sturdy_base_block',
+    'directional_attached_block',
+    'face_attached_horizontal_directional_block',
+    'liquid_flowable_block',
+    'near_liquid_block',
+    'on_liquid_block',
+    'seagrass_like_block',
+  ],
+  plants: [
+    'crop_block',
+    'sapling_block',
+    'stem_block',
+    'attached_stem_block',
+    'vertical_crop_block',
+    'vine_crop_head_block',
+    'vine_crop_body_block',
+    'budding_block',
+    'decay_block',
+    'change_over_time_block',
+    'spreading_block',
+    'surface_spreading_block',
+    'grass_block',
+    'leaves_block',
+  ],
+};
+
+const CATEGORY_OF = new Map(Object.entries(CATEGORIES).flatMap(([category, types]) => types.map((type) => [type, category] as const)));
+
+const TYPES = logicCatalog(
+  'blockBehaviors',
+  SPECS.map((spec): LogicTypeSpec => {
+    const category = CATEGORY_OF.get(spec.type);
+    return category ? { ...spec, category } : spec;
+  }),
+);
 
 /** The block behavior types; `drop_experience_block` is the plugin's second name of `drop_exp_block`. */
 export const CE_BLOCK_BEHAVIORS: LogicType[] = TYPES.flatMap((type) =>

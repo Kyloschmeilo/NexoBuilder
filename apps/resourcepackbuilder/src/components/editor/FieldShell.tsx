@@ -10,7 +10,7 @@ import { type Field, fieldName } from '@resourcepackbuilder/core/form';
 import { compareVersions } from '@resourcepackbuilder/minecraft';
 import { FieldRow, Tip } from '@resourcepackbuilder/ui';
 import { Badge } from '@resourcepackbuilder/ui/components/badge';
-import { useProjectStore } from '../../store/project';
+import { useFormTarget } from '../formTarget';
 import { useSchemaText } from '../useSchemaText';
 import { useFieldContext } from './fieldContext';
 
@@ -73,7 +73,7 @@ interface FieldShellProps {
 export function FieldShell({ field, hideLabel, wide, error, children }: FieldShellProps) {
   const text = useSchemaText();
   const label = useFieldLabel(field);
-  const target = useProjectStore((s) => s.project?.target);
+  const target = useFormTarget();
   const help = text(field.help);
   const hasLabel = !hideLabel && !!field.label;
   return (

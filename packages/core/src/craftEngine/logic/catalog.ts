@@ -3,7 +3,8 @@
  * and the builder that turns their specs into the typed-list types of the form DSL, each linked to its wiki section.
  *
  * Messages (in `ceSchema`): `logic.<catalog>.<camel(type)>.label` (the type itself in both languages) and `.help`
- * (a short description); the fields of a type below `.fields.<camel(key)>` like any field spec. Field titles show the
+ * (a short description); the fields of a type below `.fields.<camel(key)>` like any field spec; the name of a
+ * category at `logic.categories.<catalog>.<camel(category)>`. Field titles show the
  * CraftEngine key as it is written in the YAML.
  */
 import { keySegment } from '@resourcepackbuilder/utils';
@@ -69,11 +70,25 @@ export function withKeyNames(fields: Field[]): Field[] {
 export function logicCatalog(catalog: LogicCatalogName, specs: LogicTypeSpec[]): LogicType[] {
   return specs.map(({ type, fields = {}, docs = ceLogicDocs(catalog, type), ...rest }) => {
     const scope = `logic.${catalog}.${keySegment(type)}`;
-    return { type, label: `${scope}.label`, help: `${scope}.help`, fields: withKeyNames(resolveFields(fields, scope)), docs, ...rest };
+    const categoryLabel = rest.category ? `logic.categories.${catalog}.${keySegment(rest.category)}` : undefined;
+    return {
+      type,
+      label: `${scope}.label`,
+      help: `${scope}.help`,
+      fields: withKeyNames(resolveFields(fields, scope)),
+      docs,
+      ...rest,
+      ...(categoryLabel && { categoryLabel }),
+    };
   });
 }
 
 /** All message keys of a catalog's types and their fields. */
 export function logicMessageKeys(types: readonly LogicType[]): string[] {
-  return types.flatMap((t) => [t.label, ...(t.help ? [t.help] : []), ...t.fields.flatMap(fieldMessageKeys)]);
+  return types.flatMap((t) => [
+    t.label,
+    ...(t.help ? [t.help] : []),
+    ...(t.categoryLabel ? [t.categoryLabel] : []),
+    ...t.fields.flatMap(fieldMessageKeys),
+  ]);
 }
