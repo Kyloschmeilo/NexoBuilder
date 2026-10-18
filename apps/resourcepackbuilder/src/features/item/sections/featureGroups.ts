@@ -5,7 +5,7 @@ import type { PackTargetId } from '@resourcepackbuilder/core/project';
 /** The feature groups of each target, in nav order. */
 export const FEATURE_GROUPS: Readonly<Record<PackTargetId, readonly PropertyGroup[]>> = {
   nexo: ['components', 'mechanics', 'attributes', 'appearance'],
-  craftengine: ['data', 'settings', 'itemBehavior'],
+  craftengine: ['data', 'settings', 'itemBehavior', 'model'],
 };
 
 /** Property ids a feature group leaves out because a section of their own edits them, per target and group. */

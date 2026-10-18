@@ -11,12 +11,13 @@ import type { Item, PackTargetId } from '@resourcepackbuilder/core/project';
 import type { SectionNavItem } from '@resourcepackbuilder/ui';
 import { CraftEngineBlockSection } from './model/CraftEngineBlockSection';
 import { CraftEngineFurnitureSection } from './model/CraftEngineFurnitureSection';
-import { RecipesTab } from './recipes/RecipesTab';
+import { TexturesSection } from './model';
+import { RecipesSection } from './recipes';
 import { AdvancedSection } from './sections/AdvancedSection';
 import { BasicsSection } from './sections/BasicsSection';
 import { FEATURE_EXCLUDE, FEATURE_GROUPS } from './sections/featureGroups';
 import { EventsSection, ItemFeaturesSection, LootSection } from './sections/GroupSections';
-import { ModelSection, TexturesSection } from './sections/ModelSection';
+import { ItemModelSection } from './sections/ModelSection';
 
 /** Id of a section of the item editor (also its `editorSection` value in the ui store). */
 export type ItemSectionId =
@@ -61,7 +62,7 @@ function limitedGroupCount(group: PropertyGroup) {
 /** Every section, in nav order. */
 export const ITEM_SECTIONS: readonly ItemSectionDef[] = [
   { id: 'basics', Component: BasicsSection },
-  { id: 'model', Component: ModelSection },
+  { id: 'model', Component: ItemModelSection },
   { id: 'textures', available: (item) => !!item.model, count: (item) => item.model?.textures.length ?? 0, Component: TexturesSection },
   {
     id: 'features',
@@ -72,7 +73,7 @@ export const ITEM_SECTIONS: readonly ItemSectionDef[] = [
   { id: 'furniture', targets: ['craftengine'], Component: CraftEngineFurnitureSection },
   { id: 'events', targets: ['craftengine'], count: limitedGroupCount('events'), Component: EventsSection },
   { id: 'loot', targets: ['craftengine'], count: limitedGroupCount('loot'), Component: LootSection },
-  { id: 'recipes', count: (item) => item.recipes.length, Component: RecipesTab },
+  { id: 'recipes', count: (item) => item.recipes.length, Component: RecipesSection },
   { id: 'advanced', Component: AdvancedSection },
 ];
 
