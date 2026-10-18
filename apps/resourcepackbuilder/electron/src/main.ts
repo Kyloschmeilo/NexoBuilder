@@ -22,8 +22,11 @@ const APP_NAME = 'ResourcepackBuilder';
 const APP_DIR = path.join(__dirname, '..', '..');
 const OUT_DIR = path.join(APP_DIR, 'out');
 const ICON = path.join(APP_DIR, 'build', 'icon.png');
-/** `--background` of packages/ui/src/styles.css (light and dark), shown until the UI has painted. */
-const BACKGROUND = { light: '#f4f7f5', dark: '#0a1110' };
+/**
+ * `--canvas` of the default colour theme (Deepslate) in packages/ui/src/styles.css, light and dark, shown until the UI
+ * has painted. A test keeps it in line with the stylesheet.
+ */
+const BACKGROUND = { light: '#eceff3', dark: '#111519' };
 /** Web permissions the UI needs: copy buttons write to the clipboard. Everything else is denied. */
 const ALLOWED_PERMISSIONS = new Set(['clipboard-sanitized-write']);
 

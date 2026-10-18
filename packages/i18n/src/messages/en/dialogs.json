@@ -22,6 +22,7 @@
     "confirm": "Move"
   },
   "settings": {
+    "pageDescription": "Settings of this project and of this device.",
     "project": {
       "title": "Project",
       "description": "Saved with this project."

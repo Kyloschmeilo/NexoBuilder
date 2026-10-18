@@ -1,4 +1,9 @@
-import { useMemo, useState } from 'react';
+/**
+ * The sidebar: the panel of the current activity (the folder and item tree, the media lists, or a CraftEngine
+ * project's logic lists), resizable by its right edge. Activities that open a page have no panel; the sidebar is
+ * then left out and the page gets its room.
+ */
+import { useMemo, useState, type ReactNode } from 'react';
 import { FolderPlus, Search } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 import { cn } from 'cn';
@@ -12,11 +17,14 @@ import { folderDirPath } from '../../features/folder/folderDir';
 import { useFolderActions } from '../../features/folder/useFolderActions';
 import { useServices } from '../../services/bootstrap';
 import { usePlan } from '../PlanProvider';
+import { ResizeHandle } from '../ResizeHandle';
+import { activityById, isActivityAvailable } from '../activities';
 import { useOpenProject } from '../../store/project';
+import { type ActivityId, SIDEBAR_WIDTH, setSidebarWidth, useUiStore } from '../../store/ui';
 import { FolderNode } from './FolderNode';
 import { countItemsPerFolder, foldersContaining, levelsByTarget, searchItems, type SidebarTree } from './treeIndex';
 import { DRAG_FOLDER, useDropTarget } from './useDropTarget';
-import { ResourceEntries, TestServerEntry } from './ViewEntries';
+import { CraftEngineEntries, MediaEntries } from './ViewEntries';
 
 /** The tree data, derived once per project, plan or search change. */
 function useSidebarTree(query: string): SidebarTree {
@@ -41,8 +49,8 @@ function NoFolders() {
         <EmptyMedia>
           <FolderPlus className="size-8 text-muted-foreground" />
         </EmptyMedia>
-        <EmptyTitle className="font-heading text-base tracking-wide uppercase">{t('title')}</EmptyTitle>
-        <EmptyDescription className="text-xs">{t('description', { path: folderDirPath(project, null) })}</EmptyDescription>
+        <EmptyTitle className="text-title font-semibold">{t('title')}</EmptyTitle>
+        <EmptyDescription className="text-meta">{t('description', { path: folderDirPath(project, null) })}</EmptyDescription>
       </EmptyHeader>
       <EmptyContent>
         <Button onClick={() => void folders.create(null)}>
@@ -53,11 +61,19 @@ function NoFolders() {
   );
 }
 
-/** Folders and items of the open project, with search, and the project-wide views below. */
-export function Sidebar() {
+/** The heading of a panel, with optional actions on the right. */
+function PanelHeader({ title, actions }: { title: string; actions?: ReactNode }) {
+  return (
+    <SectionLabel className="min-h-9 pt-1.5 pr-2 pb-1 pl-3" actions={actions}>
+      <h2 className="truncate">{title}</h2>
+    </SectionLabel>
+  );
+}
+
+/** Folders and items of the open project, with search. */
+function ItemsPanel() {
   const t = useTranslations('layout.sidebar');
   const folders = useFolderActions();
-  const isTestServerAvailable = useServices().testServer !== null;
   const [query, setQuery] = useState('');
   const tree = useSidebarTree(query);
   // A folder dropped beside the folders (not onto one) moves to the top level
@@ -67,9 +83,9 @@ export function Sidebar() {
   });
 
   return (
-    <aside className="flex min-h-0 min-w-0 flex-col border-r border-sidebar-border bg-sidebar text-sidebar-foreground">
-      <SectionLabel
-        className="pt-3 pr-3 pb-2 pl-4"
+    <>
+      <PanelHeader
+        title={t('title')}
         actions={
           <Tip label={t('newFolder')}>
             <Button variant="ghost" size="sm" onClick={() => void folders.create(null)}>
@@ -77,10 +93,8 @@ export function Sidebar() {
             </Button>
           </Tip>
         }
-      >
-        <h2 className="truncate">{t('title')}</h2>
-      </SectionLabel>
-      <div className="px-3 pb-2">
+      />
+      <div className="px-2.5 pb-2">
         <InputGroup className="h-7.5">
           <InputGroupAddon>
             <Search className="size-3.5" />
@@ -94,11 +108,11 @@ export function Sidebar() {
         </InputGroup>
       </div>
       <ScrollArea className={cn('min-h-0 flex-1', rootDrop.isOver && 'bg-primary/10')} {...rootDrop.handlers}>
-        <div role="tree" aria-label={t('title')} className="px-2 pt-0.5 pb-4">
+        <div role="tree" aria-label={t('title')} className="px-1.5 pt-0.5 pb-4">
           {tree.project.rootFolderIds.length === 0 ? (
             <NoFolders />
           ) : tree.search?.items.size === 0 ? (
-            <p role="status" className="px-2 pt-6 text-center text-xs text-muted-foreground">
+            <p role="status" className="px-2 pt-6 text-center text-meta text-muted-foreground">
               {t('noMatches')}
             </p>
           ) : (
@@ -106,8 +120,62 @@ export function Sidebar() {
           )}
         </div>
       </ScrollArea>
-      <ResourceEntries />
-      {isTestServerAvailable && <TestServerEntry />}
+    </>
+  );
+}
+
+/** A panel listing project-wide views (the media lists or a CraftEngine project's own lists). */
+function RegistryPanel({ activity, children }: { activity: ActivityId; children: ReactNode }) {
+  const t = useTranslations('layout.activities');
+  return (
+    <>
+      <PanelHeader title={t(`${activity}.label`)} />
+      <ScrollArea className="min-h-0 flex-1">
+        <div className="flex flex-col gap-px px-1.5 pt-0.5 pb-4">{children}</div>
+      </ScrollArea>
+    </>
+  );
+}
+
+/** The panel content of each activity that has one. */
+const PANELS: Partial<Record<ActivityId, () => ReactNode>> = {
+  items: () => <ItemsPanel />,
+  media: () => (
+    <RegistryPanel activity="media">
+      <MediaEntries />
+    </RegistryPanel>
+  ),
+  logic: () => (
+    <RegistryPanel activity="logic">
+      <CraftEngineEntries />
+    </RegistryPanel>
+  ),
+};
+
+/** The activity whose panel the sidebar shows: the current one, or Items when the current one is not offered here. */
+export function usePanelActivity(): ActivityId | null {
+  const project = useOpenProject();
+  const hasTestServer = useServices().testServer !== null;
+  const activityId = useUiStore((s) => s.activity);
+  const activity = activityById(activityId);
+  if (!activity || !isActivityAvailable(activity, { project, hasTestServer })) return 'items';
+  return PANELS[activity.id] ? activity.id : null;
+}
+
+/** The sidebar with the panel of `activity`, resizable by its right edge. */
+export function Sidebar({ activity }: { activity: ActivityId }) {
+  const t = useTranslations('layout.sidebar');
+  const width = useUiStore((s) => s.sidebarWidth);
+  const panel = PANELS[activity];
+  if (!panel) return null;
+  return (
+    <aside
+      aria-label={t('label')}
+      style={{ width }}
+      className="relative flex min-h-0 shrink-0 flex-col border-r border-sidebar-border bg-sidebar text-sidebar-foreground"
+    >
+      {panel()}
+      <ResizeHandle edge="right" width={width} range={SIDEBAR_WIDTH} onResize={setSidebarWidth} label={t('resize')} />
     </aside>
   );
 }
