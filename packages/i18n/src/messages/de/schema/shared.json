@@ -71,6 +71,10 @@
             "diameter": {
               "label": "Durchmesser",
               "placeholder": "16.0"
+            },
+            "directionalParticles": {
+              "label": "Gerichtete Partikel",
+              "help": "Minecraft 26.3+. Von Nexo 1.30 gelesen, nicht in der Doku aufgeführt."
             }
           }
         },
@@ -125,9 +129,8 @@
               "label": "oder Crucible-Item"
             },
             "minecraftItem": {
-              "label": "oder Minecraft-Item mit Komponenten",
-              "help": "Nexo 1.30 liest diesen Schlüssel; die Nexo-Doku führt ihn noch nicht auf.",
-              "placeholder": "z. B. diamond_sword"
+              "label": "oder Minecraft-Itemstack",
+              "help": "Ein Itemstack, wie ihn die Ingame-Builder von Nexo speichern (YAML). Nexo 1.30 liest diesen Schlüssel; die Nexo-Doku führt ihn noch nicht auf."
             },
             "mmoitemsType": {
               "label": "oder MMOItems-Typ",

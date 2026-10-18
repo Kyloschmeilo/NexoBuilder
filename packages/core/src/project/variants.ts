@@ -6,6 +6,7 @@
 import { normalizeTypedId } from '@resourcepackbuilder/minecraft';
 import { isPlainObject, keySegment } from '@resourcepackbuilder/utils';
 import type { ConfigObject } from './types';
+import type { PackTargetId } from './target';
 import { getPath } from './config';
 
 /** Variants that Nexo itself builds into the ItemModel via Pack.<slot> */
@@ -18,7 +19,8 @@ export type PackVariantSlot =
   | 'throwing_model'
   | 'damaged_models'
   | 'dyeable_model'
-  | 'composite_models';
+  | 'composite_models'
+  | 'broken_model';
 
 const CONNECT_STATES = ['straight', 'left', 'right', 'inner', 'outer'] as const;
 const PLACEMENTS = ['floor', 'wall', 'roof'] as const;
@@ -69,9 +71,15 @@ export interface VariantDef {
   materials?: string[];
   /** Message key in the `schema` namespace */
   hint?: string;
+  /**
+   * The pack targets whose export uses the slot (unset = every target). The editor offers the slot only to these
+   * targets; another target keeps and reports a model already stored in it. A slot only Nexo reads (e.g. the
+   * `dir_<face>` models of directional blocks) sets `['nexo']`.
+   */
+  targets?: readonly PackTargetId[];
 }
 
-interface VariantOptions extends Partial<Pick<VariantDef, 'multiple' | 'firstIndex' | 'materials'>> {
+interface VariantOptions extends Partial<Pick<VariantDef, 'multiple' | 'firstIndex' | 'materials' | 'targets'>> {
   /** The variant has a hint at `variants.<camel(slot)>.hint` */
   hint?: boolean;
 }
@@ -96,17 +104,27 @@ function variant(
   };
 }
 
+/** Slots only Nexo's export uses; CraftEngine's `models:` list has no place for them (see CE_MODEL_SLOTS) */
+const NEXO_ONLY = ['nexo'] as const;
+
+/** Whether the editor offers the variant slot to projects of `target`. */
+export function isVariantForTarget(def: Pick<VariantDef, 'targets'>, target: PackTargetId): boolean {
+  return def.targets === undefined || def.targets.includes(target);
+}
+
 export const VARIANTS: VariantDef[] = [
   variant('pulling_models', 'pack', 'pulling', { multiple: true, firstIndex: 0, materials: ['BOW', 'CROSSBOW'] }),
   variant('charged_model', 'pack', 'charged', { materials: ['CROSSBOW'] }),
   variant('firework_model', 'pack', 'firework', { materials: ['CROSSBOW'] }),
   variant('blocking_model', 'pack', 'blocking', { materials: ['SHIELD'], hint: true }),
   variant('cast_model', 'pack', 'cast', { materials: ['FISHING_ROD'] }),
-  variant('throwing_model', 'pack', 'throwing', { materials: ['TRIDENT'], hint: true }),
+  variant('throwing_model', 'pack', 'throwing', { materials: ['TRIDENT'], hint: true, targets: NEXO_ONLY }),
   variant('damaged_models', 'pack', 'damaged', { multiple: true, firstIndex: 1, hint: true }),
-  variant('dyeable_model', 'pack', 'dyeable', { hint: true }),
-  variant('composite_models', 'pack', 'composite', { multiple: true, firstIndex: 1 }),
-  variant('gui_model', 'definition', 'gui', { hint: true }),
+  variant('dyeable_model', 'pack', 'dyeable', { hint: true, targets: NEXO_ONLY }),
+  variant('composite_models', 'pack', 'composite', { multiple: true, firstIndex: 1, targets: NEXO_ONLY }),
+  variant('gui_model', 'definition', 'gui', { hint: true, targets: NEXO_ONLY }),
+  // Read by Nexo 1.30 (NexoMeta), not in the docs: shown while the item is broken (one durability point left)
+  variant('broken_model', 'pack', 'broken', { hint: true, targets: NEXO_ONLY }),
 ];
 
 /** Connectable furniture: one model per connection state */
@@ -117,13 +135,13 @@ export const PLACEMENT_SLOTS = PLACEMENTS.map((placement) => ({ slot: `placement
 
 /** Models for furniture features – shown in the model tab when the furniture mechanic is active */
 export const FURNITURE_MODEL_SLOTS: VariantDef[] = [
-  ...CONNECT_SLOTS.map(({ slot, state }) => variant(slot, 'furniture', state)),
-  ...PLACEMENT_SLOTS.map(({ slot, placement }) => variant(slot, 'furniture', placement)),
-  variant('light_on', 'furniture', 'light_on'),
+  ...CONNECT_SLOTS.map(({ slot, state }) => variant(slot, 'furniture', state, { targets: NEXO_ONLY })),
+  ...PLACEMENT_SLOTS.map(({ slot, placement }) => variant(slot, 'furniture', placement, { targets: NEXO_ONLY })),
+  variant('light_on', 'furniture', 'light_on', { targets: NEXO_ONLY }),
 ];
 
 /** Stack stages of a StringBlock (Mechanics.custom_block.stackable) */
-export const STACK_MODELS: VariantDef = variant('stack_models', 'block', 'stack', { multiple: true, firstIndex: 1 });
+export const STACK_MODELS: VariantDef = variant('stack_models', 'block', 'stack', { multiple: true, firstIndex: 1, targets: NEXO_ONLY });
 
 /** The faces each directional type of Nexo reads a variation and a model for (DirectionalBlock in Nexo 1.30). */
 export const DIRECTIONAL_TYPE_FACES: Record<string, readonly DirectionalFace[]> = {
@@ -134,7 +152,9 @@ export const DIRECTIONAL_TYPE_FACES: Record<string, readonly DirectionalFace[]> 
 };
 
 /** Models of the faces of a directional NoteBlock (Mechanics.custom_block.directional.<face>_model) */
-export const DIRECTIONAL_MODEL_SLOTS: VariantDef[] = DIRECTIONAL_FACES.map((face) => variant(`dir_${face}`, 'block', `dir_${face}`));
+export const DIRECTIONAL_MODEL_SLOTS: VariantDef[] = DIRECTIONAL_FACES.map((face) =>
+  variant(`dir_${face}`, 'block', `dir_${face}`, { targets: NEXO_ONLY }),
+);
 
 function stateSlot(name: string): StateSlot {
   return `state:${name}`;
@@ -144,6 +164,7 @@ export function stateDef(name: string): VariantDef {
   return {
     slot: stateSlot(name),
     kind: 'furniture',
+    targets: NEXO_ONLY,
     label: 'variants.state.label',
     description: 'variants.state.description',
     params: { name },

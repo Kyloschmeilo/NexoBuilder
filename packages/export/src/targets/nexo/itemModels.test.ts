@@ -153,3 +153,20 @@ describe('Additional models', () => {
     expect(yaml.Pack.throwing_model).toBe('wf:item/dreizacke/dreizack-throwing');
   });
 });
+
+describe('Manual item model', () => {
+  const issue = (plan: ReturnType<typeof planExport>) => plan.issues.find((i) => i.code === 'plan.itemModelOverridesGenerated');
+
+  it('warns when the item_model property replaces the generated definition', () => {
+    const project = furnitureProject();
+    const sofa = Object.values(project.items)[0];
+    sofa.config.Components = { item_model: 'nexo:empty' };
+    const plan = planExport(project);
+    expect(issue(plan)?.args).toEqual({ itemModel: 'nexo:empty', generated: 'moebel:sofas/sofa' });
+    expect(parse(pluginText(plan, 'items/sofas/sofas.yml')).sofa.Components.item_model).toBe('nexo:empty');
+  });
+
+  it('stays quiet when the generated definition is used', () => {
+    expect(issue(planExport(furnitureProject()))).toBeUndefined();
+  });
+});

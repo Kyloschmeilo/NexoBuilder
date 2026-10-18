@@ -89,6 +89,11 @@
       "label": "{name}",
       "description": "Model in state “{name}”"
     },
+    "brokenModel": {
+      "label": "Broken Model",
+      "description": "Model shown while the item is broken (one durability point left).",
+      "hint": "The item needs durability. Nexo builds a condition item model on the broken property from it. Read by Nexo 1.30, not listed in the docs."
+    },
     "dirY": {
       "label": "Upright (y)",
       "description": "Face model of a LOG standing upright"

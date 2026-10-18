@@ -47,10 +47,14 @@ export const NEXO_DOCS = {
     attributeModifiers: `${ITEMS}#attributemodifiers`,
     enchantments: `${ITEMS}#enchantments`,
     disableEnchanting: `${ITEMS}#disable-enchanting`,
+    /** `injectId: false` keeps helper items out of Nexo's item registry (shown with Carpentry doors) */
+    injectId: `${DOCS}/addons/carpentry#custom-doors`,
+    trims: `${DOCS}/configuration/trims`,
   },
   appearance: {
     page: APPEARANCE,
     oversizedInGui: `${APPEARANCE}#oversized-items-in-gui-1.21.6`,
+    invisibleItem: `${APPEARANCE}#invisible-item`,
   },
   components: `${ITEMS}/components`,
   playerHeads: `${ITEMS}/2d-player-heads`,
@@ -201,6 +205,7 @@ const VARIANT_DOCS: Array<[prefix: string, docs: string]> = [
   ['light_on', NEXO_DOCS.furniture.lights],
   ['state:', NEXO_DOCS.furniture.states],
   ['stack_models', NEXO_DOCS.customBlock.stackable],
+  ['broken_model', `${ITEMS}/itemmodel-builder/condition-itemmodel`],
   ['dir_', NEXO_DOCS.customBlock.directional],
 ];
 

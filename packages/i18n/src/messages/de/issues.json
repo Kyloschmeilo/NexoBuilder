@@ -88,7 +88,8 @@
     "directionalNeedsNoteblock": "Nur NOTEBLOCK-Blöcke können directional sein – Nexo ignoriert „directional“ bei {type}.",
     "hitboxEntryInvalid": "Der {kind}-Hitbox-Eintrag „{entry}“ hat nicht das Format, das Nexo liest.",
     "fileUnreadable": "Die Datei „{path}“ konnte nicht gelesen werden und wird weggelassen.",
-    "unsafePath": "Der Pfad „{path}“ würde seinen Ordner verlassen und wird nicht exportiert."
+    "unsafePath": "Der Pfad „{path}“ würde seinen Ordner verlassen und wird nicht exportiert.",
+    "itemModelOverridesGenerated": "Das Item-Modell {itemModel} ersetzt die vom Export erzeugte Modelldefinition ({generated}), daher werden deren Inventar-Icon und Möbel-Modelle nicht verwendet."
   },
   "selection": {
     "packNameClash": "„{first}“ und „{second}“ verwenden denselben Pack-Namen „{pack}“. Bitte in den Einstellungen eines Projekts umbenennen.",

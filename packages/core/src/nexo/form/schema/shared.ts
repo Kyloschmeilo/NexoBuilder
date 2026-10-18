@@ -82,7 +82,11 @@ export const consumeEffectsField = (label: string) =>
       }),
       REMOVE_EFFECTS: field.stringList({ suggestions: POTION_EFFECTS, placeholder: true }),
       CLEAR_ALL_EFFECTS: field.presence(),
-      TELEPORT_RANDOMLY: field.object({ diameter: field.number({ min: 0, step: 1, placeholder: true }) }),
+      TELEPORT_RANDOMLY: field.object({
+        diameter: field.number({ min: 0, step: 1, placeholder: true }),
+        // Read by Nexo 1.30 on Minecraft 26.3+ only (not in the docs)
+        directional_particles: field.boolean({ minVersion: '26.3', help: true, advanced: true }),
+      }),
       PLAY_SOUND: field.object({ sound: soundField() }),
     },
     { scope: 'shared.consumeEffects', label },
@@ -100,7 +104,8 @@ export const dropField = () =>
           nexo_item: field.text({ placeholder: true }),
           minecraft_type: field.select(MATERIALS, { allowCustom: true }),
           crucible_item: field.text({ advanced: true }),
-          minecraft_item: field.text({ placeholder: true, ...JAR_ONLY }),
+          // Nexo's Loot reads a serialized Bukkit ItemStack here (as its in-game builders save it), not an item ID
+          minecraft_item: field.yaml({ ...JAR_ONLY }),
           mmoitems_type: field.text({ ...JAR_ONLY }),
           mmoitems_id: field.text({ ...JAR_ONLY }),
           amount: field.text({ format: 'range', placeholder: true }),

@@ -111,6 +111,11 @@ function buildItem(itemExport: ItemExport, written: NexoWrittenModels, shared: I
   });
   if (built.rawYamlError?.kind === 'syntax') itemExport.report('error', 'plan.rawYamlError', { error: built.rawYamlError.message });
   else if (built.rawYamlError) itemExport.report('error', 'plan.rawYamlNotMapping');
+  // The item's own item_model (or the additional YAML) wins over the definition the export generated, which then goes unused
+  const itemModel = (built.config.Components as Record<string, unknown> | undefined)?.item_model;
+  if (written.itemModel && itemModel !== written.itemModel) {
+    itemExport.report('warning', 'plan.itemModelOverridesGenerated', { itemModel: String(itemModel), generated: written.itemModel });
+  }
   validateItemConfig(itemExport, { config: built.config, usedVariations: shared.usedVariations, armorSlot: shared.armor?.slot ?? null });
   return built.config;
 }
