@@ -9,6 +9,7 @@
  * The project keeps both as lists (`configuredFeatures`, `placedFeatures` of `Project.craftEngine`), each entry with
  * its `id`; the feature bodies are YAML, as the wiki suggests writing them with a datapack generator.
  */
+import { compareVersions, FEATURE_VERSIONS } from '@resourcepackbuilder/minecraft';
 import { isPlainObject } from '@resourcepackbuilder/utils';
 import { field, resolveFields } from '../form/build';
 import type { ObjectListField } from '../form/fields';
@@ -160,14 +161,32 @@ export const CE_CONFIGURED_FEATURE_LIST = configuredList as ObjectListField;
 /** The project's placed features as the editor edits them (messages at `craftEngine.fields.placedFeatures`). */
 export const CE_PLACED_FEATURE_LIST = placedList as ObjectListField;
 
-/** The `configured_features` and `placed_features` sections. */
+/**
+ * The `configured_features` and `placed_features` sections. From Minecraft 26.3 on the game reads a feature's
+ * config next to its `type` (CraftEngine's own packs write it so for `$$>=26.3`), so the `config` of a configured
+ * feature and of an inline feature of a placed feature is written there; before, under `config` as edited.
+ */
 export function craftEngineWorldgen(project: Project): {
   configured_features: Record<string, ConfigObject>;
   placed_features: Record<string, ConfigObject>;
 } {
+  const configured = entrySection(project, projectConfiguredFeatures(project), CE_CONFIGURED_FEATURE_LIST);
+  const placed = entrySection(project, projectPlacedFeatures(project), CE_PLACED_FEATURE_LIST);
+  if (compareVersions(project.settings.minecraftVersion, FEATURE_VERSIONS.inlineFeatureConfig) < 0) {
+    return { configured_features: configured, placed_features: placed };
+  }
+  const inline = (feature: ConfigObject): ConfigObject => {
+    const { config, ...rest } = feature;
+    return isPlainObject(config) ? { ...rest, ...config } : feature;
+  };
   return {
-    configured_features: entrySection(project, projectConfiguredFeatures(project), CE_CONFIGURED_FEATURE_LIST),
-    placed_features: entrySection(project, projectPlacedFeatures(project), CE_PLACED_FEATURE_LIST),
+    configured_features: Object.fromEntries(Object.entries(configured).map(([key, feature]) => [key, inline(feature)])),
+    placed_features: Object.fromEntries(
+      Object.entries(placed).map(([key, entry]) => [
+        key,
+        isPlainObject(entry.feature) ? { ...entry, feature: inline(entry.feature) } : entry,
+      ]),
+    ),
   };
 }
 
