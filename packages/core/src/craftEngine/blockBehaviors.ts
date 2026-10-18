@@ -16,6 +16,7 @@ import {
   enumStates,
   intStates,
   oneLookStates,
+  statesMap,
   statesTemplate,
   switchStates,
   templateArguments,
@@ -78,20 +79,19 @@ function requiredProperties(behavior: Record<string, unknown>): Record<string, s
 }
 
 /**
- * The keys each behavior cannot do without (the plugin rejects the block without them); a list names keys of which
- * one is enough (a sapling grows a feature or a structure). Checked against the behavior factories of the plugin.
+ * The keys each behavior cannot do without (the plugin rejects the block without them: `getNonNull…` and
+ * `getNonEmpty…` in its behavior factories); a list names keys of which one is enough (a sapling grows a feature or a
+ * structure). Lists the plugin defaults to empty (a stackable block's items, a budding block's stages, a near-liquid
+ * block's positions) are not required.
  */
 export const CE_BEHAVIOR_REQUIRED_KEYS: Record<string, Array<string | string[]>> = {
   attached_stem_block: ['fruit', 'stem'],
-  budding_block: ['blocks'],
   change_over_time_block: ['next_block'],
   concrete_powder_block: ['solid_block'],
   grass_block: [['feature', 'placed_feature']],
   multi_high_block: ['property'],
-  near_liquid_block: ['positions'],
   sapling_block: [['feature', 'configured_feature', 'structure']],
   spreading_block: ['target_block'],
-  stackable_block: [['items', 'item']],
   stem_block: ['fruit', 'attached_stem'],
   strippable_block: ['stripped'],
   vine_crop_body_block: ['head'],
@@ -356,8 +356,8 @@ const FORMS: Array<Omit<BlockBehaviorForm, 'docs'>> = [
   {
     type: 'stem_block',
     properties: [],
-    preset: (itemKey) => ({
-      behavior: { type: 'stem_block', fruit: 'minecraft:melon', attached_stem: `${itemKey}_attached` },
+    preset: () => ({
+      behavior: { type: 'stem_block', fruit: 'minecraft:melon', attached_stem: '' },
       behaviors: supportedBy({ bottom_blocks: ['minecraft:farmland'] }),
       states: stagedStates('age', 7, 'tripwire'),
     }),
@@ -367,7 +367,11 @@ const FORMS: Array<Omit<BlockBehaviorForm, 'docs'>> = [
     type: 'attached_stem_block',
     properties: [],
     preset: (itemKey) => ({
-      behavior: { type: 'attached_stem_block', fruit: 'minecraft:melon', stem: itemKey.replace(/_attached$/, '') },
+      behavior: {
+        type: 'attached_stem_block',
+        fruit: 'minecraft:melon',
+        stem: itemKey.endsWith('_attached') ? itemKey.slice(0, -'_attached'.length) : '',
+      },
       behaviors: supportedBy({ bottom_blocks: ['minecraft:farmland'] }),
       states: withFacing(oneLookStates({}, 'tripwire')),
     }),
@@ -543,27 +547,164 @@ export function blockBehaviorPropertyIds(block: Record<string, unknown>): string
 /** Drops the forms set themselves; a block that drops one of them gets the drops of its new behavior. */
 const PRESET_LOOT = ['default:loot_table/self', 'default:loot_table/slab', 'default:loot_table/door'];
 
+const asList = (value: unknown): ConfigValue[] =>
+  value === undefined ? [] : Array.isArray(value) ? (value as ConfigValue[]) : [value as ConfigValue];
+const typeOfEntry = (entry: unknown) => (isPlainObject(entry) && typeof entry.type === 'string' ? entry.type : undefined);
+const sameValue = (a: unknown, b: unknown) => JSON.stringify(a) === JSON.stringify(b);
+
 /**
- * Gives the block the behavior of a form (with the states it needs), or none (`null`: a plain block with a single
- * state). The settings and other keys stay; the states the old behavior needed are replaced.
+ * Whether the block's states are those the preset of its current behavior wrote: the same template (its arguments
+ * may have changed), or the same states written out. Other states are the user's own.
  */
-export function applyBlockBehavior(block: ConfigObject, type: string | null, itemKey: string, singleState: ConfigObject): ConfigObject {
-  const { behavior: _behavior, behaviors: _behaviors, state, states: _states, ...rest } = block;
+function presetOwnsStates(block: Record<string, unknown>, itemKey: string): boolean {
+  const states = blockStates(block);
+  if (!states) return true;
+  const preset = blockBehaviorForm(blockBehaviorType(block))?.preset(itemKey).states;
+  if (!preset) return false;
+  const template = statesTemplate(states);
+  return template ? template === statesTemplate(preset) : sameValue(states, preset);
+}
+
+/**
+ * Whether giving the block the behavior of this form (or none) would replace states of the user's own: the form needs
+ * a template, or no states at all is asked for … while the block has states the user wrote (or a template of another
+ * form). The editor asks before it replaces them; otherwise applyBlockBehavior keeps them.
+ */
+export function blockBehaviorReplacesStates(block: Record<string, unknown>, type: string | null, itemKey: string): boolean {
+  const states = blockStates(block);
+  if (!states || presetOwnsStates(block, itemKey)) return false;
+  const preset = blockBehaviorForm(type)?.preset(itemKey).states;
+  // Written-out states take the properties the form needs; a template replaces everything
+  return preset !== undefined && (statesTemplate(preset) !== null || statesTemplate(states) !== null);
+}
+
+/** The user's states with the properties the form's states define added where they lack them. */
+function withPresetProperties(states: Record<string, unknown>, preset: ConfigObject): ConfigObject {
+  const properties = { ...statesMap(preset, 'properties'), ...statesMap(states, 'properties') };
+  const result: ConfigObject = { ...(states as ConfigObject), properties: properties as ConfigObject };
+  if (Object.keys(statesMap(states, 'appearances')).length === 0) {
+    result.appearances = statesMap(preset, 'appearances') as ConfigObject;
+    result.variants = { ...statesMap(preset, 'variants'), ...statesMap(states, 'variants') } as ConfigObject;
+  }
+  return result;
+}
+
+export interface ApplyBlockBehaviorOptions {
+  /** Replace states of the user's own with the form's (after the user agreed); otherwise they are kept */
+  replaceStates?: boolean;
+}
+
+/**
+ * Gives the block the behavior of a form (with the states, support behaviors and drops it needs), or none (`null`:
+ * a plain block). The settings and other keys stay, and so does the user's work:
+ *  - further behaviors stay, except the support behaviors the old form added and the new one does not need; a
+ *    support behavior the new form needs is added unless the list has one of its type (whose keys win);
+ *  - a main behavior no form set up (written by hand) moves to the further behaviors;
+ *  - states the old form wrote are replaced; states of the user's own are kept, with the properties the new form
+ *    needs added (unless `replaceStates`; a template cannot be merged, see blockBehaviorReplacesStates).
+ */
+export function applyBlockBehavior(
+  block: ConfigObject,
+  type: string | null,
+  itemKey: string,
+  singleState: ConfigObject,
+  { replaceStates = false }: ApplyBlockBehaviorOptions = {},
+): ConfigObject {
+  const { behavior: oldBehavior, behaviors: oldBehaviors, state, states: oldStates, ...rest } = block;
+  const oldForm = blockBehaviorForm(blockBehaviorType(block));
   const form = blockBehaviorForm(type);
+  const preset = form?.preset(itemKey);
   const keepLoot = !(isPlainObject(rest.loot) && PRESET_LOOT.includes(String(rest.loot.template)));
   const plainState = isPlainObject(state) ? state : singleState;
-  if (!form) {
-    if (keepLoot || !rest.loot) return { ...rest, state: plainState };
-    return { ...rest, state: plainState, loot: { template: 'default:loot_table/self' } };
-  }
-  const preset = form.preset(itemKey);
+
+  // Further behaviors: the user's, without the old form's support behaviors the new form does not use
+  const oldSupport = new Set((oldForm?.preset(itemKey).behaviors ?? []).map(typeOfEntry));
+  const newSupport = preset?.behaviors ?? [];
+  const newSupportTypes = new Set(newSupport.map(typeOfEntry));
+  const kept = asList(oldBehaviors).filter((entry) => {
+    const entryType = typeOfEntry(entry);
+    return !(entryType && oldSupport.has(entryType) && !newSupportTypes.has(entryType));
+  });
+  const keptTypes = new Set(kept.map(typeOfEntry));
+  // A main behavior written by hand moves to the further behaviors when a form takes its place
+  const handWritten =
+    !form || oldForm
+      ? []
+      : isPlainObject(oldBehavior) && oldBehavior.type !== type
+        ? [oldBehavior]
+        : Array.isArray(oldBehavior)
+          ? oldBehavior
+          : [];
+  const behaviors = [...newSupport.filter((entry) => !keptTypes.has(typeOfEntry(entry))), ...kept, ...handWritten];
+
   const result: ConfigObject = { ...rest };
-  if (preset.behaviors) result.behaviors = preset.behaviors;
-  result.behavior = preset.behavior;
-  if (preset.states) result.states = preset.states;
+  if (behaviors.length > 0) result.behaviors = behaviors;
+  if (preset) result.behavior = preset.behavior;
+
+  // States: the user's own stay unless they are to be replaced
+  const userStates = isPlainObject(oldStates) && !replaceStates && !presetOwnsStates(block, itemKey) ? oldStates : null;
+  if (userStates) {
+    result.states =
+      preset?.states && !statesTemplate(preset.states) && !statesTemplate(userStates)
+        ? withPresetProperties(userStates, preset.states)
+        : (userStates as ConfigObject);
+  } else if (preset?.states) result.states = preset.states;
   else result.state = plainState;
-  if (!keepLoot || !rest.loot) result.loot = preset.loot ?? { template: 'default:loot_table/self' };
+
+  if (!form) {
+    if (!keepLoot && rest.loot) result.loot = { template: 'default:loot_table/self' };
+    return result;
+  }
+  if (!keepLoot || !rest.loot) result.loot = preset?.loot ?? { template: 'default:loot_table/self' };
   return result;
+}
+
+/* ====================================================================== Storage */
+
+/** Whether a storage block switches its look while open (its states have an `open` property). */
+export function hasStorageOpenLook(block: Record<string, unknown>): boolean {
+  const states = blockStates(block);
+  return states !== null && isPlainObject(statesMap(states, 'properties').open);
+}
+
+/**
+ * Gives a storage block an `open` boolean property with a look for closed and open (CraftEngine sets it while a
+ * player has the container open), or takes it away again. A single state becomes the closed look and starts the
+ * open look; states the block already has get the property only (their variants decide the looks).
+ */
+export function setStorageOpenLook(block: ConfigObject, open: boolean): ConfigObject {
+  const states = blockStates(block);
+  if (open) {
+    if (states)
+      return {
+        ...block,
+        states: {
+          ...(states as ConfigObject),
+          properties: { ...statesMap(states, 'properties'), open: { type: 'boolean', default: false } } as ConfigObject,
+        },
+      };
+    const { state, ...rest } = block;
+    const look = isPlainObject(state) ? state : { auto_state: 'solid' };
+    return {
+      ...rest,
+      states: {
+        properties: { open: { type: 'boolean', default: false } },
+        appearances: { closed: look, open: look },
+        variants: { 'open=false': { appearance: 'closed' }, 'open=true': { appearance: 'open' } },
+      },
+    };
+  }
+  if (!states) return block;
+  const { open: _open, ...properties } = statesMap(states, 'properties');
+  const variants = Object.fromEntries(Object.entries(statesMap(states, 'variants')).filter(([key]) => !/(^|,)\s*open=/.test(key)));
+  // Only the open property: back to one state, the closed look
+  if (Object.keys(properties).length === 0) {
+    const { states: _states, ...rest } = block;
+    const appearances = statesMap(states, 'appearances');
+    const closed = appearances.closed ?? Object.values(appearances)[0];
+    return { ...rest, state: (isPlainObject(closed) ? closed : { auto_state: 'solid' }) as ConfigObject };
+  }
+  return { ...block, states: { ...(states as ConfigObject), properties: properties as ConfigObject, variants: variants as ConfigObject } };
 }
 
 export interface SharedBaseBlock {

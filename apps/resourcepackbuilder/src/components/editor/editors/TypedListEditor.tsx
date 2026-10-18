@@ -32,8 +32,8 @@ const ENTRY_YAML: YamlField = { type: 'yaml', key: '', label: '' };
 
 /**
  * The searchable type input of an entry, with a Premium badge, a link to the type's docs and (for conditions) the "!"
- * toggle. The type is set
- * when it is picked or typed out (blur, Enter), so the entry's fields do not switch on every keystroke.
+ * toggle. The type is set when it is picked or typed out (blur, Enter), so the entry's fields do not switch on every
+ * keystroke.
  */
 export function TypeInput({
   source,

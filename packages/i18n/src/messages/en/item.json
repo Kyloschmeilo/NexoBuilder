@@ -224,6 +224,13 @@
     "behavior": "Behavior",
     "behaviorHelp": "What the block does. A behavior sets up the states it needs; its keys show below. Add more behaviors (any behavior of the CraftEngine wiki) under More behaviors.",
     "behaviorKeys": "The keys of the behavior. Unset keys take the plugin’s default.",
+    "replaceStates": {
+      "title": "Replace the block’s states?",
+      "message": "This behavior brings states from a template, which cannot be combined with the states you set up. Replacing them removes your properties, appearances and variants.",
+      "confirm": "Replace states"
+    },
+    "storageOpenLook": "Look open while in use",
+    "storageOpenLookHelp": "Adds the open property: the block shows its open appearance while a player has the container open.",
     "behaviors": {
       "none": "None",
       "other": "Other (from the additional YAML)",

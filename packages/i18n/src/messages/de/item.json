@@ -224,6 +224,13 @@
     "behavior": "Verhalten",
     "behaviorHelp": "Was der Block tut. Ein Verhalten legt die Zustände an, die es braucht; seine Schlüssel stehen darunter. Weitere Verhalten (jedes aus dem CraftEngine-Wiki) fügst du unter Weitere Verhalten hinzu.",
     "behaviorKeys": "Die Schlüssel des Verhaltens. Leere Schlüssel nehmen den Standard des Plugins.",
+    "replaceStates": {
+      "title": "Zustände des Blocks ersetzen?",
+      "message": "Dieses Verhalten bringt Zustände aus einer Vorlage mit, die sich nicht mit deinen eingerichteten Zuständen kombinieren lassen. Beim Ersetzen gehen deine Eigenschaften, Aussehen und Varianten verloren.",
+      "confirm": "Zustände ersetzen"
+    },
+    "storageOpenLook": "Offen aussehen, solange es benutzt wird",
+    "storageOpenLookHelp": "Fügt die Eigenschaft open hinzu: Der Block zeigt sein offenes Aussehen, solange ein Spieler den Behälter geöffnet hat.",
     "behaviors": {
       "none": "Keins",
       "other": "Anderes (aus dem zusätzlichen YAML)",

@@ -11,10 +11,13 @@ import type { ConfigObject, ConfigValue } from '../project/types';
 import {
   applyBlockBehavior,
   blockBehaviorPropertyIds,
+  blockBehaviorReplacesStates,
   CE_BLOCK_BEHAVIOR_FORMS,
+  hasStorageOpenLook,
   missingBehaviorKeys,
   missingBehaviorProperties,
   seagrassWithoutWater,
+  setStorageOpenLook,
 } from './blockBehaviors';
 import { blockPropertyTypes, enumStates, intStates, oneLookStates, switchStates, withFacing } from './blockStates';
 import { CRAFT_ENGINE_FORM } from './form/schema';
@@ -191,6 +194,10 @@ describe('the checks of a block behavior', () => {
       { behavior: 'stem_block', key: 'attached_stem' },
     ]);
     expect(missingBehaviorKeys({ behavior: { type: 'grass_block', placed_feature: 'a:b' } })).toEqual([]);
+    // Lists the plugin defaults to empty are not required
+    for (const type of ['stackable_block', 'budding_block', 'near_liquid_block']) {
+      expect(missingBehaviorKeys({ behavior: { type } })).toEqual([]);
+    }
   });
 
   it('warns about a seagrass-like block without water', () => {
@@ -219,9 +226,15 @@ describe('the behavior presets', () => {
       missingBehaviorKeys(cleanConfig(CRAFT_ENGINE_FORM, { block: withBehavior(form.type) }).block as ConfigObject),
     );
     expect(missing).toEqual([
+      { behavior: 'stem_block', key: 'attached_stem' },
+      { behavior: 'attached_stem_block', key: 'stem' },
       { behavior: 'concrete_powder_block', key: 'solid_block' },
       { behavior: 'strippable_block', key: 'stripped' },
     ]);
+    // An attached stem named <stem>_attached points back at its stem
+    expect(applyBlockBehavior({ state: SOLID }, 'attached_stem_block', 'blocks:melon_stem_attached', SOLID).behavior).toMatchObject({
+      stem: 'blocks:melon_stem',
+    });
   });
 
   it('write the jar’s button: the button template on any face', () => {
@@ -252,6 +265,83 @@ describe('the behavior presets', () => {
 
   it('show the main behavior as a list only when it is one', () => {
     expect(blockBehaviorPropertyIds({ behavior: [{ type: 'falling_block' }] })).toEqual(['block.behavior', 'block.behaviors']);
+  });
+});
+
+describe('picking a preset', () => {
+  const lamp = { type: 'lamp_block' };
+
+  it('keeps the further behaviors the user added and drops only the old preset’s support behaviors', () => {
+    const crop = withBehavior('crop_block');
+    const block = { ...crop, behaviors: [...(crop.behaviors as ConfigObject[]), { type: 'falling_block', hurt_amount: 2 }] };
+    // crop → lamp: liquid_flowable and bush_block came with the crop
+    expect(withBehavior('lamp_block', block).behaviors).toEqual([{ type: 'falling_block', hurt_amount: 2 }]);
+    // crop → sapling: the user's bush_block keys win over the sapling's
+    const own: ConfigObject = { ...crop, behaviors: [{ type: 'bush_block', bottom_blocks: ['minecraft:sand'] }, { type: 'chime_block' }] };
+    expect(withBehavior('sapling_block', own).behaviors).toEqual([
+      { type: 'liquid_flowable_block' },
+      { type: 'bush_block', bottom_blocks: ['minecraft:sand'] },
+      { type: 'chime_block' },
+    ]);
+    // none: the user's behaviors stay
+    expect(withBehavior(null, block).behaviors).toEqual([{ type: 'falling_block', hurt_amount: 2 }]);
+  });
+
+  it('moves a main behavior written by hand to the further behaviors', () => {
+    const block = { state: SOLID, behavior: { type: 'bouncing_block', fall_damage_multiplier: 0 } };
+    expect(withBehavior('lamp_block', block)).toMatchObject({
+      behavior: lamp,
+      behaviors: [{ type: 'bouncing_block', fall_damage_multiplier: 0 }],
+    });
+  });
+
+  it('keeps states the user wrote and adds the properties the preset needs', () => {
+    const states = {
+      properties: { color: { type: 'string', default: 'red', values: ['red', 'blue'] } },
+      appearances: { red: SOLID, blue: SOLID },
+      variants: { 'color=blue': { appearance: 'blue' } },
+    };
+    const block = { states, behavior: { type: 'falling_block' }, behaviors: [{ type: 'chime_block' }] };
+    const result = withBehavior('lamp_block', block);
+    expect(result.states).toEqual({ ...states, properties: { lit: { type: 'boolean', default: false }, ...states.properties } });
+    expect(missingBehaviorProperties(result, blockPropertyTypes(result))).toEqual([]);
+    expect(blockBehaviorReplacesStates(block, 'lamp_block', 'blocks:b0')).toBe(false);
+    // A template cannot be merged: the editor asks, and only replaces when told to
+    expect(blockBehaviorReplacesStates(block, 'slab_block', 'blocks:b0')).toBe(true);
+    expect(withBehavior('slab_block', block).states).toEqual(states);
+    expect(applyBlockBehavior(block, 'slab_block', 'blocks:b0', SOLID, { replaceStates: true }).states).toMatchObject({
+      template: 'default:block_state/slab',
+    });
+  });
+
+  it('replaces the states the old preset wrote without asking', () => {
+    const slab = withBehavior('slab_block');
+    expect(blockBehaviorReplacesStates(slab, 'stairs_block', 'blocks:b0')).toBe(false);
+    expect((withBehavior('stairs_block', slab).states as ConfigObject).template).toBe('default:block_state/stairs');
+    const lit = withBehavior('lamp_block');
+    expect(withBehavior('crop_block', lit).states).toEqual(withBehavior('crop_block').states);
+  });
+});
+
+describe('the open look of a storage block', () => {
+  it('switches between closed and open by the open property, and back to one state', () => {
+    const storage = withBehavior('simple_storage_block');
+    expect(hasStorageOpenLook(storage)).toBe(false);
+    const open = setStorageOpenLook(storage, true);
+    expect(hasStorageOpenLook(open)).toBe(true);
+    expect(open.states).toEqual({
+      properties: { open: { type: 'boolean', default: false } },
+      appearances: { closed: SOLID, open: SOLID },
+      variants: { 'open=false': { appearance: 'closed' }, 'open=true': { appearance: 'open' } },
+    });
+    expect(setStorageOpenLook(open, false)).toEqual(storage);
+  });
+
+  it('adds and removes only the property on states with more properties', () => {
+    const states = withFacing(oneLookStates({}, 'solid'));
+    const open = setStorageOpenLook({ states }, true);
+    expect(Object.keys((open.states as ConfigObject).properties as ConfigObject)).toEqual(['facing', 'open']);
+    expect(setStorageOpenLook(open, false)).toEqual({ states });
   });
 });
 
