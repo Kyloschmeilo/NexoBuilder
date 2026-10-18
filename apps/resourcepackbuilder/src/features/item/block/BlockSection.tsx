@@ -39,6 +39,12 @@ export function itemPlaces(item: Pick<Item, 'config'>, target: PackTargetId): It
   return mechanic(NEXO_FURNITURE_PROPERTY) ? 'furniture' : 'nothing';
 }
 
+/** Whether the item has both a block and furniture (only possible through YAML written by hand). */
+function placesBoth(item: Pick<Item, 'config'>, target: PackTargetId): boolean {
+  if (target === 'craftengine') return craftEngineBlock(item.config) !== null && craftEngineFurniture(item.config) !== null;
+  return [NEXO_BLOCK_PROPERTY, NEXO_FURNITURE_PROPERTY].every((id) => getPath(item.config, id.split('.')) !== undefined);
+}
+
 /** The YAML key of what the item places, for the key rail. */
 function placesKey(places: ItemPlaces, target: PackTargetId): string | undefined {
   if (places === 'nothing') return undefined;
@@ -54,10 +60,12 @@ export function PlacesControl({ item }: { item: Item }) {
   const choose = async (next: ItemPlaces) => {
     if (next === places) return;
     if (places !== 'nothing') {
+      // An item written by hand may have both; "Nothing" then removes both
+      const removed = next === 'nothing' && placesBoth(item, target) ? 'both' : places;
       const ok = await confirm({
-        title: t(`block.leave.${places}.title`),
-        message: t(`block.leave.${places}.message`),
-        confirmLabel: t(`block.leave.${places}.confirm`),
+        title: t(`block.leave.${removed}.title`),
+        message: t(`block.leave.${removed}.message`),
+        confirmLabel: t(`block.leave.${removed}.confirm`),
         destructive: true,
       });
       if (!ok) return;

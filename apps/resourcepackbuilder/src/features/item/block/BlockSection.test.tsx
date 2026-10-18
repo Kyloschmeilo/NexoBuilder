@@ -1,13 +1,14 @@
 // @vitest-environment jsdom
 /**
  * The Block section in the DOM: the places choice, the behavior cards (main behavior first, one card open at a time),
- * the states summary and the empty block settings for CraftEngine; the type and features of a Nexo custom block.
+ * the edit dialog of a behavior, the states summary and the empty block settings for CraftEngine; the type and features of a Nexo custom block.
  */
+import { act } from 'react';
 import { afterEach, describe, expect, it } from 'vitest';
 import { createFolder, createProject, insertFolder, insertNewItem, type Item, type PackTargetId } from '@resourcepackbuilder/core/project';
 import { addBlockBehaviors, setItemPlaces } from '../../../commands/items';
 import { cleanup, click, render } from '../../../components/catalog/testRender';
-import { getProject, setProject } from '../../../store/project';
+import { getProject, setProject, useOpenProject } from '../../../store/project';
 import { BlockSection } from './BlockSection';
 
 function openItem(target: PackTargetId): string {
@@ -20,7 +21,14 @@ function openItem(target: PackTargetId): string {
 }
 
 const item = (id: string): Item => getProject()!.items[id]!;
-const cards = (host: HTMLElement) => [...host.querySelectorAll<HTMLElement>('[data-slot=typed-entry-card]')];
+const cards = (host: HTMLElement) => [...host.querySelectorAll<HTMLElement>('[data-slot=behavior-card]')];
+const dialog = () => document.querySelector<HTMLElement>('[data-slot=behavior-dialog]');
+
+/** The section of the item as the store has it now (edits made in the section show up). */
+function Live({ id }: { id: string }) {
+  const current = useOpenProject().items[id];
+  return current ? <BlockSection item={current} /> : null;
+}
 const pressed = (host: HTMLElement) =>
   [...host.querySelectorAll('[data-testid=item-places] [aria-pressed=true], [data-testid=item-places] [data-pressed]')].map(
     (button) => button.textContent,
@@ -57,15 +65,40 @@ describe('BlockSection', () => {
     expect(list[0]?.textContent).toContain('Crop');
     expect(list[0]?.textContent).toContain('Main');
     expect(list[1]?.textContent).not.toContain('Main');
-    // Cards start collapsed; opening one shows its fields
-    expect(list.every((card) => card.querySelector('[data-slot=entry-toggle]')?.getAttribute('aria-expanded') === 'false')).toBe(true);
-    click(list[0]?.querySelector('[data-slot=entry-toggle]'));
-    expect(cards(host)[0]?.querySelectorAll('[data-slot=field-row]').length).toBeGreaterThan(3);
+    // The cards stay compact: name, type and a summary, no fields in the list
+    expect(host.querySelectorAll('[data-slot=field-row]').length).toBeLessThan(10);
+    expect(list[0]?.querySelector('a[data-target=craftengine]')).not.toBeNull();
     // The states the crop preset wrote and the empty settings
     const states = host.querySelector('[data-section-id=block-states]');
     expect(states?.textContent).toMatch(/\d+ states/);
     expect(states?.querySelector('[role=table]')).not.toBeNull();
     expect(host.querySelector('[data-section-id=block-settings]')?.textContent).toContain('No settings yet.');
+  });
+
+  it('edits a behavior in a dialog: its keys, Remove and Done, and focus goes back to the card', async () => {
+    const id = openItem('craftengine');
+    setItemPlaces(id, 'block');
+    addBlockBehaviors(id, ['crop_block', 'bouncing_block']);
+    const host = render(<Live id={id} />);
+    const open = cards(host)[0]?.querySelector<HTMLButtonElement>('[data-slot=behavior-open]');
+    open?.focus();
+    click(open);
+    const body = dialog();
+    expect(body?.querySelectorAll('[data-slot=field-row]').length).toBeGreaterThan(3);
+    expect(document.querySelector('[data-slot=behavior-dialog-title]')?.textContent).toContain('Crop behavior');
+    expect(document.querySelector('[data-slot=behavior-dialog-title] a[data-target=craftengine]')).not.toBeNull();
+    // Done closes it and the focus returns to the card
+    const done = [...document.querySelectorAll('button')].find((button) => button.textContent === 'Done');
+    click(done);
+    await act(async () => {
+      await new Promise((resolve) => setTimeout(resolve, 20));
+    });
+    expect(dialog()).toBeNull();
+    expect(document.activeElement).toBe(cards(host)[0]?.querySelector('[data-slot=behavior-open]'));
+    // Remove in the dialog of the last card removes that behavior only
+    click(cards(host)[3]?.querySelector('[data-slot=behavior-open]'));
+    click([...document.querySelectorAll('button')].find((button) => button.textContent?.trim() === 'Remove behavior'));
+    expect(cards(host).map((card) => card.getAttribute('data-type'))).toEqual(['crop_block', 'liquid_flowable_block', 'bush_block']);
   });
 
   it('edits a Nexo custom block: its type and plain keys, and its parts as features', () => {

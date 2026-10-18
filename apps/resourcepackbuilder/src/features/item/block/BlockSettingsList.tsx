@@ -11,7 +11,7 @@ import { activeProperties, emptyPropertyValue, type FormSchema, getPropertyValue
 import { type Item, toConfigValue } from '@resourcepackbuilder/core/project';
 import { EmptyHint } from '@resourcepackbuilder/ui';
 import { Button } from '@resourcepackbuilder/ui/components/button';
-import { setItemProperty } from '../../../commands/items';
+import { setItemProperties, setItemProperty } from '../../../commands/items';
 import { CatalogDialog, catalogFromPropertyGroup, useCatalogText } from '../../../components/catalog';
 import { expandFeature, FeatureList, featureExpansionKey, PropertyFeatureRow } from '../../../components/features';
 import { useOpenProject } from '../../../store/project';
@@ -27,12 +27,13 @@ export function useBlockSettings(item: Item, schema: FormSchema, scope: string) 
   const [isPicking, setPicking] = useState(false);
   const active = activeProperties(schema, item, BLOCK_SETTINGS_GROUP);
   const add = (ids: string[]) => {
-    for (const id of ids) {
-      const def = schema.properties.find((candidate) => candidate.id === id);
-      if (!def) continue;
-      setItemProperty(item.id, def, def.defaultValue());
-      expandFeature(`${item.id}/${scope}`, def.id);
-    }
+    const defs = ids.flatMap((id) => schema.properties.filter((candidate) => candidate.id === id));
+    // One undo step for everything added at once
+    setItemProperties(
+      item.id,
+      defs.map((def) => [def, def.defaultValue()] as const),
+    );
+    for (const def of defs) expandFeature(`${item.id}/${scope}`, def.id);
   };
   const catalog = isPicking
     ? catalogFromPropertyGroup(schema, item, BLOCK_SETTINGS_GROUP, { text, version })

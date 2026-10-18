@@ -80,6 +80,13 @@ export function setItemProperty(itemId: string, def: PropertyDef, value: ConfigV
   updateItem(itemId, (item) => setPropertyValue(item, def, value), historyKey);
 }
 
+/** Sets several property values of an item in one undo step (e.g. the settings added from a catalog at once). */
+export function setItemProperties(itemId: string, values: ReadonlyArray<readonly [PropertyDef, ConfigValue | undefined]>): void {
+  updateItem(itemId, (item) => {
+    for (const [def, value] of values) setPropertyValue(item, def, value);
+  });
+}
+
 /** A property of the open project's form. */
 function projectProperty(propertyId: string): PropertyDef | undefined {
   const project = getProject();

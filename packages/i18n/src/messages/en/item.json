@@ -512,6 +512,11 @@
         "title": "Remove the furniture?",
         "message": "The furniture’s variants, elements and hitboxes are removed. Undo brings them back.",
         "confirm": "Remove furniture"
+      },
+      "both": {
+        "title": "Remove the block and the furniture?",
+        "message": "The item has both a block and furniture. Both are removed. Undo brings them back.",
+        "confirm": "Remove both"
       }
     },
     "behaviors": {
@@ -526,7 +531,9 @@
       "setUp": "Set up its states",
       "presetNote": "The block has no main behavior yet, so this one becomes it: adding it also sets up the states it needs, its helper behaviors and its drops.",
       "missingKeys": "Needs {keys}",
-      "missingProperties": "Needs the property {names}"
+      "missingProperties": "Needs the property {names}",
+      "editTitle": "{name} behavior",
+      "remove": "Remove behavior"
     },
     "states": {
       "title": "States",

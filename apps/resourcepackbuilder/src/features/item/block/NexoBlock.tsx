@@ -70,8 +70,10 @@ export function NexoBlockFeatures({ item }: { item: Item }) {
   const [isPicking, setPicking] = useState(false);
   const [openKey, setOpenKey] = useState<{ itemId: string; key: string } | null>(null);
   if (!def || def.field.type !== 'object') return null;
+  // The catalog offers the parts the block's type reads; a part that is set stays listed after a type change, so it can
+  // still be edited or removed
   const parts = def.field.fields.filter((field) => isFeatureField(field) && isFieldVisible(field, block));
-  const used = parts.filter((field) => block[field.key] !== undefined);
+  const used = def.field.fields.filter((field) => isFeatureField(field) && block[field.key] !== undefined);
   const path = (field: Field) => `Mechanics.custom_block.${field.key}`;
   const setPart = (key: string, value: ConfigValue | undefined) => {
     const next: ConfigObject = { ...(block as ConfigObject) };
@@ -150,7 +152,7 @@ export function NexoBlockFeatures({ item }: { item: Item }) {
                 {field.type === 'object' ? (
                   <ObjectFields field={field} value={value} onChange={change} />
                 ) : (
-                  <FieldRenderer field={field} value={value} siblings={block} root hideLabel onChange={change} />
+                  <FieldRenderer field={field} value={value} root hideLabel onChange={change} />
                 )}
               </FeatureRow>
             );

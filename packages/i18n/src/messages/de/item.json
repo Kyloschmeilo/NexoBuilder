@@ -512,6 +512,11 @@
         "title": "Möbelstück entfernen?",
         "message": "Die Varianten, Elemente und Hitboxen des Möbelstücks werden entfernt. Rückgängig holt sie zurück.",
         "confirm": "Möbelstück entfernen"
+      },
+      "both": {
+        "title": "Block und Möbelstück entfernen?",
+        "message": "Das Item hat einen Block und ein Möbelstück. Beide werden entfernt. Rückgängig holt sie zurück.",
+        "confirm": "Beide entfernen"
       }
     },
     "behaviors": {
@@ -526,7 +531,9 @@
       "setUp": "Zustände dafür einrichten",
       "presetNote": "Der Block hat noch kein Hauptverhalten, also wird es dieses: Beim Hinzufügen richtet es auch die nötigen Zustände, seine Hilfsverhalten und die Drops ein.",
       "missingKeys": "Braucht {keys}",
-      "missingProperties": "Braucht die Eigenschaft {names}"
+      "missingProperties": "Braucht die Eigenschaft {names}",
+      "editTitle": "Verhalten: {name}",
+      "remove": "Verhalten entfernen"
     },
     "states": {
       "title": "Zustände",
