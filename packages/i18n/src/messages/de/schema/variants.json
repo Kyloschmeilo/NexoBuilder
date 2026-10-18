@@ -88,6 +88,42 @@
     "state": {
       "label": "{name}",
       "description": "Modell im Zustand „{name}“"
+    },
+    "dirY": {
+      "label": "Aufrecht (y)",
+      "description": "Seitenmodell eines LOG, der aufrecht steht"
+    },
+    "dirX": {
+      "label": "Entlang x",
+      "description": "Seitenmodell eines LOG, der entlang der x-Achse liegt"
+    },
+    "dirZ": {
+      "label": "Entlang z",
+      "description": "Seitenmodell eines LOG, der entlang der z-Achse liegt"
+    },
+    "dirNorth": {
+      "label": "Norden",
+      "description": "Seitenmodell des Blocks mit Blick nach Norden"
+    },
+    "dirSouth": {
+      "label": "Süden",
+      "description": "Seitenmodell des Blocks mit Blick nach Süden"
+    },
+    "dirEast": {
+      "label": "Osten",
+      "description": "Seitenmodell des Blocks mit Blick nach Osten"
+    },
+    "dirWest": {
+      "label": "Westen",
+      "description": "Seitenmodell des Blocks mit Blick nach Westen"
+    },
+    "dirUp": {
+      "label": "Oben",
+      "description": "Seitenmodell des Blocks mit Blick nach oben"
+    },
+    "dirDown": {
+      "label": "Unten",
+      "description": "Seitenmodell des Blocks mit Blick nach unten"
     }
   }
 }

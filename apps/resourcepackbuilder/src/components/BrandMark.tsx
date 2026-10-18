@@ -11,7 +11,7 @@ export function BrandMark({ size = 'sm', className }: { size?: keyof typeof SIZE
     <span
       aria-hidden="true"
       className={cn(
-        'grid shrink-0 place-items-center rounded-sm bg-primary font-heading leading-none font-bold text-primary-foreground',
+        'grid shrink-0 place-items-center rounded-sm bg-primary font-brand leading-none font-bold text-primary-foreground',
         SIZES[size],
         className,
       )}

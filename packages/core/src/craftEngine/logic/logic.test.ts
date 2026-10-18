@@ -90,6 +90,7 @@ describe('the logic catalogs', () => {
       damageFormulas: 3,
       damageEffects: 3,
       furnitureBehaviors: 3,
+      itemUpdaters: 3,
     });
   });
 
@@ -114,7 +115,7 @@ describe('the logic catalogs', () => {
 });
 
 describe('typedList', () => {
-  const typedCatalogs = ['conditions', 'functions', 'numbers', 'lootSources', 'lootEntries', 'lootFunctions'] as const;
+  const typedCatalogs = ['conditions', 'functions', 'numbers', 'lootSources', 'lootEntries', 'lootFunctions', 'itemUpdaters'] as const;
   for (const catalog of typedCatalogs) {
     it.each(CE_LOGIC[catalog].map((t: LogicType) => [t.type, t]))(`round-trips a sample ${catalog} entry: %s`, (type, t) => {
       const entry = { type, ...sampleObject((t as LogicType).fields) };

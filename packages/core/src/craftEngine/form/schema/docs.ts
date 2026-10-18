@@ -14,6 +14,7 @@ const WIKI = CE_WIKI_URL.slice(0, -1);
 export const CE_DOCS = {
   data: `${WIKI}/configuration/item/data`,
   settings: `${WIKI}/configuration/item/settings`,
+  updater: `${WIKI}/configuration/item/updater`,
   blockSettings: `${WIKI}/configuration/block/settings`,
   blockStates: `${WIKI}/configuration/block/states`,
   blockBehaviors: `${WIKI}/configuration/block/behaviors`,
@@ -208,6 +209,7 @@ const LOGIC_DOCS: Record<LogicCatalogName, { page: string; anchors: Record<strin
   damageEffects: { page: CE_DOCS.damageFormulas, anchors: same('life_steal', 'potion_effect', 'function') },
   // Each behavior has a page of its own (the catalog links it)
   furnitureBehaviors: { page: CE_DOCS.furnitureBehaviors, anchors: {} },
+  itemUpdaters: { page: CE_DOCS.updater, anchors: same('apply_data', 'transmute', 'reset') },
 };
 
 /** The wiki section of a logic type: its heading on the catalog's page, or the page when it has none. */

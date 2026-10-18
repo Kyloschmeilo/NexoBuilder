@@ -45,7 +45,7 @@
           },
           "directional": {
             "label": "Orientation when placed (like logs)",
-            "help": "Nexo rotates the model depending on the direction and assigns the required variations itself.",
+            "help": "Nexo rotates the model depending on the direction and assigns the variations itself. A face model (here or on the model tab) is used as it is, without rotation.",
             "fields": {
               "type": {
                 "label": "Kind",
@@ -63,6 +63,70 @@
                     "label": "BARREL – 6 directions"
                   }
                 }
+              },
+              "yVariation": {
+                "label": "Variation upright (y)"
+              },
+              "xVariation": {
+                "label": "Variation lying along x"
+              },
+              "zVariation": {
+                "label": "Variation lying along z"
+              },
+              "northVariation": {
+                "label": "Variation facing north",
+                "help": "Nexo 1.30 reads this key; the Nexo docs do not list it yet."
+              },
+              "southVariation": {
+                "label": "Variation facing south",
+                "help": "Nexo 1.30 reads this key; the Nexo docs do not list it yet."
+              },
+              "eastVariation": {
+                "label": "Variation facing east",
+                "help": "Nexo 1.30 reads this key; the Nexo docs do not list it yet."
+              },
+              "westVariation": {
+                "label": "Variation facing west",
+                "help": "Nexo 1.30 reads this key; the Nexo docs do not list it yet."
+              },
+              "upVariation": {
+                "label": "Variation facing up",
+                "help": "Nexo 1.30 reads this key; the Nexo docs do not list it yet."
+              },
+              "downVariation": {
+                "label": "Variation facing down",
+                "help": "Nexo 1.30 reads this key; the Nexo docs do not list it yet."
+              },
+              "yModel": {
+                "label": "Model upright (y)"
+              },
+              "xModel": {
+                "label": "Model lying along x"
+              },
+              "zModel": {
+                "label": "Model lying along z"
+              },
+              "northModel": {
+                "label": "Model facing north"
+              },
+              "southModel": {
+                "label": "Model facing south"
+              },
+              "eastModel": {
+                "label": "Model facing east"
+              },
+              "westModel": {
+                "label": "Model facing west"
+              },
+              "upModel": {
+                "label": "Model facing up"
+              },
+              "downModel": {
+                "label": "Model facing down"
+              },
+              "parentBlock": {
+                "label": "Parent block (item ID)",
+                "help": "Nexo sets this on the generated face blocks itself. Nexo 1.30 reads this key; the Nexo docs do not list it yet."
               }
             }
           },
@@ -75,6 +139,10 @@
               "drop": {
                 "label": "Additional drop (item ID)",
                 "placeholder": "e.g. bark"
+              },
+              "decreaseAxeDurability": {
+                "label": "Stripping wears the axe",
+                "help": "Nexo 1.30 reads this key; the Nexo docs do not list it yet."
               }
             }
           },
@@ -106,7 +174,31 @@
               },
               "schematic": {
                 "label": "Schematic",
-                "placeholder": "e.g. palm"
+                "choices": {
+                  "single": {
+                    "label": "One schematic",
+                    "field": {
+                      "label": "Schematic",
+                      "placeholder": "e.g. palm"
+                    }
+                  },
+                  "list": {
+                    "label": "Random from a list",
+                    "field": {
+                      "label": "Schematics",
+                      "itemLabel": "Schematic",
+                      "fields": {
+                        "schem": {
+                          "label": "Schematic",
+                          "placeholder": "e.g. palm_1"
+                        },
+                        "chance": {
+                          "label": "Chance"
+                        }
+                      }
+                    }
+                  }
+                }
               },
               "replaceBlocks": {
                 "label": "Replace blocks"
@@ -116,6 +208,46 @@
               },
               "copyEntities": {
                 "label": "Copy entities"
+              }
+            }
+          },
+          "immovable": {
+            "label": "Pistons cannot move it",
+            "help": "Nexo 1.30 reads this key; the Nexo docs do not list it yet."
+          },
+          "canIgnite": {
+            "label": "Can be set on fire",
+            "help": "Nexo 1.30 reads this key; the Nexo docs do not list it yet."
+          },
+          "instrument": {
+            "label": "Note block sound",
+            "help": "Sound played when the block is hit, if note block features are reimplemented in mechanics.yml. Nexo 1.30 reads this key; the Nexo docs do not list it yet.",
+            "placeholder": "block.note_block.bass"
+          },
+          "variants": {
+            "label": "Random models",
+            "help": "Weighted, rotated models Nexo picks from at random for each placed block. Nexo 1.30 reads this key; the Nexo docs do not list it yet.",
+            "itemLabel": "Model",
+            "fields": {
+              "model": {
+                "label": "Model",
+                "placeholder": "e.g. my_pack:block/stone_2"
+              },
+              "weight": {
+                "label": "Weight"
+              },
+              "x": {
+                "label": "Rotation around x (degrees)"
+              },
+              "y": {
+                "label": "Rotation around y (degrees)"
+              },
+              "uvlock": {
+                "label": "Keep the texture unrotated (uvlock)"
+              },
+              "offset": {
+                "label": "Offset (x,y,z)",
+                "placeholder": "0,0,0"
               }
             }
           }

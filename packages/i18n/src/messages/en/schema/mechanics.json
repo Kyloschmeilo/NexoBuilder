@@ -36,6 +36,38 @@
               "materials": {
                 "label": "Materials",
                 "placeholder": "DIAMOND"
+              },
+              "tags": {
+                "label": "Item tags",
+                "help": "Nexo 1.30 reads this key; the Nexo docs do not list it yet.",
+                "placeholder": "minecraft:shulker_boxes"
+              }
+            }
+          },
+          "volume": {
+            "label": "Sound volume",
+            "help": "Nexo 1.30 reads this key; the Nexo docs do not list it yet."
+          },
+          "pitch": {
+            "label": "Sound pitch",
+            "help": "Nexo 1.30 reads this key; the Nexo docs do not list it yet."
+          },
+          "whitelist": {
+            "label": "Allowed items (only these)",
+            "help": "Nexo 1.30 reads this key; the Nexo docs do not list it yet.",
+            "fields": {
+              "nexoItems": {
+                "label": "Nexo items",
+                "placeholder": "Item ID"
+              },
+              "materials": {
+                "label": "Materials",
+                "placeholder": "DIAMOND"
+              },
+              "tags": {
+                "label": "Item tags",
+                "help": "Nexo 1.30 reads this key; the Nexo docs do not list it yet.",
+                "placeholder": "minecraft:shulker_boxes"
               }
             }
           }
@@ -95,6 +127,15 @@
             "actions": {
               "label": "Actions",
               "placeholder": "[console] give '<'player> diamond 1"
+            },
+            "cancelEvent": {
+              "label": "Cancel the event",
+              "help": "Nexo 1.30 reads this key; the Nexo docs do not list it yet."
+            },
+            "cooldown": {
+              "label": "Cooldown",
+              "help": "Nexo 1.30 reads this key; the Nexo docs do not list it yet.",
+              "placeholder": "e.g. 5s"
             }
           }
         }
@@ -113,6 +154,10 @@
           "entries": {
             "label": "Effects",
             "keyLabel": "Effect"
+          },
+          "resetOnUnequip": {
+            "label": "Remove effects on unequip",
+            "help": "Nexo 1.30 reads this key; the Nexo docs do not list it yet."
           }
         }
       }
@@ -238,6 +283,10 @@
           },
           "cooldown": {
             "label": "Cooldown (milliseconds)"
+          },
+          "lowerItemDurability": {
+            "label": "Harvesting wears the tool",
+            "help": "Nexo 1.30 reads this key; the Nexo docs do not list it yet."
           }
         }
       }
