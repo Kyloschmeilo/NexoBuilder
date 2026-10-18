@@ -345,12 +345,19 @@ describe('CraftEngine scripts', () => {
         { path: 'utils/math.js', source: 'function add(a, b) { return a + b; }\n' },
         { path: 'Bad Path', source: 'x' },
         { path: 'combo', source: 'taken' },
+        { path: 'utils/../../evil', source: 'x' },
+        { path: './x', source: 'x' },
       ],
     });
     const plan = planExport(project);
     expect(pluginText(plan, `${PACK}/script/combo.js`)).toBe('function onRightClick() {}\n');
     expect(pluginText(plan, `${PACK}/script/utils/math.js`)).toBe('function add(a, b) { return a + b; }\n');
     expect([...plan.pluginFiles.keys()].filter((path) => path.includes('/script/'))).toHaveLength(2);
+    expect(plan.issues.filter((issue) => issue.code === 'ce.scriptPathInvalid').map((issue) => issue.args?.path)).toEqual([
+      'Bad Path',
+      'utils/../../evil',
+      './x',
+    ]);
     expect(codes(project)).toEqual(expect.arrayContaining(['ce.scriptPathInvalid', 'ce.scriptPathDuplicate', 'ce.scriptsNeedScripting']));
   });
 });

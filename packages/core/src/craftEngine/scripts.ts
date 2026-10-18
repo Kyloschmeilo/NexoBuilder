@@ -13,8 +13,8 @@ import type { ObjectListField } from '../form/fields';
 import { type Option, plainOptions } from '../form/options';
 import type { ConfigObject, Project } from '../project/types';
 
-/** Paths a script can have: lower-case folders and a file name, without `.js` */
-export const CE_SCRIPT_PATH = /^[a-z0-9_.-]+(\/[a-z0-9_.-]+)*$/;
+/** Paths a script can have: lower-case folders and a file name, without `.js`; no `.` or `..` segment */
+export const CE_SCRIPT_PATH = /^(?!\.\.?(\/|$))[a-z0-9_.-]+(\/(?!\.\.?(\/|$))[a-z0-9_.-]+)*$/;
 
 /** The project's scripts (an empty list for a project without any). */
 export const projectScripts = (project: Pick<Project, 'craftEngine'>): ConfigObject[] => project.craftEngine?.scripts ?? [];
