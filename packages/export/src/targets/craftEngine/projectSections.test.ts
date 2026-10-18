@@ -219,6 +219,36 @@ describe('CraftEngine worldgen features', () => {
     expect(older.placed_features['welt:patch'].feature).toEqual({ type: 'minecraft:simple_block', config: { schedule_tick: true } });
   });
 
+  it('keeps the feature type when the config names one too', () => {
+    const { project } = ceProject({ configuredFeatures: [{ id: 'vein', type: 'minecraft:ore', config: { type: 'oops', size: 2 } }] });
+    project.settings.minecraftVersion = '26.3';
+    const file = parse(pluginText(planExport(project), `${CONFIG}/worldgen.yml`));
+    expect(file.configured_features['welt:vein']).toEqual({ type: 'minecraft:ore', size: 2 });
+  });
+
+  it('warns when a feature writes block states in the format of another Minecraft version', () => {
+    const legacy = { type: 'minecraft:simple_state_provider', state: { Name: 'minecraft:stone' } };
+    const modern = { type: 'minecraft:simple', state: { id: 'minecraft:stone' } };
+    const { project } = ceProject({
+      configuredFeatures: [
+        { id: 'old', type: 'minecraft:simple_block', config: { to_place: legacy } },
+        { id: 'new', type: 'minecraft:simple_block', config: { to_place: modern } },
+      ],
+      placedFeatures: [{ id: 'inline', feature: { type: 'minecraft:simple_block', config: { to_place: legacy } }, placement: [] }],
+    });
+    const stateIssues = () =>
+      planExport(project)
+        .issues.filter((issue) => issue.code.startsWith('ce.featureState'))
+        .map((issue) => [issue.code, issue.level, issue.context?.[0]?.code, issue.context?.[0]?.args?.id]);
+    project.settings.minecraftVersion = '26.3';
+    expect(stateIssues()).toEqual([
+      ['ce.featureStateLegacy', 'warning', 'context.configuredFeature', 'old'],
+      ['ce.featureStateLegacy', 'warning', 'context.placedFeature', 'inline'],
+    ]);
+    project.settings.minecraftVersion = '26.2';
+    expect(stateIssues()).toEqual([['ce.featureStateModern', 'warning', 'context.configuredFeature', 'new']]);
+  });
+
   it('reports a biome filter without the biome modifier, a missing feature and an unknown one', () => {
     const { project } = ceProject({
       configuredFeatures: [{ id: 'no_type', config: {} }],

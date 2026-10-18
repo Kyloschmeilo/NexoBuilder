@@ -367,6 +367,8 @@
     "sectionEntryIdMissing": "The entry has no id, so it is left out.",
     "sectionEntryIdInvalid": "The id “{id}” may only contain lowercase letters, digits and _ . - / (and one : after the namespace).",
     "sectionEntryIdDuplicate": "Another entry already uses the id “{id}”, so this one is left out.",
+    "featureStateLegacy": "The feature writes block states in the format before Minecraft 26.3 (a “…_state_provider” type or “Name:”); a {version} server rejects it. Write providers as “minecraft:simple” … and states as “id:”/“properties:”.",
+    "featureStateModern": "The feature writes block states in the Minecraft 26.3 format (“id:” states); a {version} server reads “Name:”/“Properties:” and the “…_state_provider” types.",
     "configuredFeatureTypeMissing": "The configured feature has no type, so CraftEngine rejects it.",
     "placedFeatureFeatureMissing": "The placed feature has no feature to place, so CraftEngine rejects it.",
     "placedFeatureUnknown": "There is no configured feature “{feature}” in this project. Unless another pack defines it, CraftEngine rejects the placed feature.",

@@ -367,6 +367,8 @@
     "sectionEntryIdMissing": "Der Eintrag hat keine ID und wird deshalb weggelassen.",
     "sectionEntryIdInvalid": "Die ID „{id}“ darf nur Kleinbuchstaben, Ziffern und _ . - / enthalten (und einen : nach dem Namespace).",
     "sectionEntryIdDuplicate": "Ein anderer Eintrag nutzt schon die ID „{id}“, deshalb wird dieser weggelassen.",
+    "featureStateLegacy": "Das Feature schreibt Blockzustände im Format vor Minecraft 26.3 (ein „…_state_provider“-Typ oder „Name:“); ein {version}-Server lehnt es ab. Schreibe Provider als „minecraft:simple“ … und Zustände als „id:“/„properties:“.",
+    "featureStateModern": "Das Feature schreibt Blockzustände im Format von Minecraft 26.3 („id:“-Zustände); ein {version}-Server liest „Name:“/„Properties:“ und die „…_state_provider“-Typen.",
     "configuredFeatureTypeMissing": "Das konfigurierte Feature hat keinen Typ, deshalb lehnt CraftEngine es ab.",
     "placedFeatureFeatureMissing": "Das platzierte Feature hat kein Feature zum Platzieren, deshalb lehnt CraftEngine es ab.",
     "placedFeatureUnknown": "Es gibt kein konfiguriertes Feature „{feature}“ in diesem Projekt. Wenn kein anderes Pack es definiert, lehnt CraftEngine das platzierte Feature ab.",

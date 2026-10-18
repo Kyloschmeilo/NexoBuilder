@@ -9,7 +9,7 @@
  * The project keeps both as lists (`configuredFeatures`, `placedFeatures` of `Project.craftEngine`), each entry with
  * its `id`; the feature bodies are YAML, as the wiki suggests writing them with a datapack generator.
  */
-import { compareVersions, FEATURE_VERSIONS } from '@resourcepackbuilder/minecraft';
+import { compareVersions, DEFAULT_MC_VERSION, FEATURE_VERSIONS } from '@resourcepackbuilder/minecraft';
 import { isPlainObject } from '@resourcepackbuilder/utils';
 import { field, resolveFields } from '../form/build';
 import type { ObjectListField } from '../form/fields';
@@ -96,12 +96,41 @@ export const projectConfiguredFeatures = (project: Pick<Project, 'craftEngine'>)
 /** The project's placed features (an empty list for a project without any). */
 export const projectPlacedFeatures = (project: Pick<Project, 'craftEngine'>): ConfigObject[] => project.craftEngine?.placedFeatures ?? [];
 
-/** A new configured feature: a simple block to fill in */
-export const newConfiguredFeature = (): ConfigObject => ({
-  id: '',
-  type: 'craftengine:simple_block',
-  config: { to_place: { type: 'craftengine:simple_state_provider', state: { Name: 'minecraft:stone' } } },
-});
+/**
+ * Whether `minecraftVersion` writes worldgen block states in the 26.3 format: providers `minecraft:simple`,
+ * `minecraft:weighted` …, states as `{id, properties}` (before: `*_state_provider`, `{Name, Properties}`).
+ */
+export const usesModernFeatureStates = (minecraftVersion: string): boolean =>
+  compareVersions(minecraftVersion, FEATURE_VERSIONS.inlineFeatureConfig) >= 0;
+
+/** A new configured feature for `minecraftVersion` (default: the newest): a simple block to fill in */
+export const newConfiguredFeature = (minecraftVersion: string = DEFAULT_MC_VERSION): ConfigObject =>
+  usesModernFeatureStates(minecraftVersion)
+    ? { id: '', type: 'minecraft:simple_block', config: { to_place: { type: 'minecraft:simple', state: { id: 'minecraft:stone' } } } }
+    : {
+        id: '',
+        type: 'craftengine:simple_block',
+        config: { to_place: { type: 'craftengine:simple_state_provider', state: { Name: 'minecraft:stone' } } },
+      };
+
+/**
+ * The block-state format a feature's YAML uses: `legacy` (a `*_state_provider` type or a `{Name, …}` state, before
+ * Minecraft 26.3), `modern` (a `state`/`data` object with `id` and no `Name`, from 26.3 on), or null when it names no
+ * block state. A feature that mixes both counts as legacy.
+ */
+export function featureStateFormat(feature: unknown): 'legacy' | 'modern' | null {
+  let modern = false;
+  const walk = (node: unknown, key: string | null): boolean => {
+    if (Array.isArray(node)) return node.some((child) => walk(child, key));
+    if (!isPlainObject(node)) return false;
+    if (typeof node.Name === 'string') return true;
+    if (typeof node.type === 'string' && node.type.endsWith('_state_provider')) return true;
+    if ((key === 'state' || key === 'data') && typeof node.id === 'string') modern = true;
+    return Object.entries(node).some(([childKey, child]) => walk(child, childKey));
+  };
+  if (walk(feature, null)) return 'legacy';
+  return modern ? 'modern' : null;
+}
 
 /** A new placed feature: rare, on the surface, in the overworld */
 export const newPlacedFeature = (): ConfigObject => ({
@@ -123,7 +152,7 @@ const [configuredList, placedList] = resolveFields(
         type: field.select(CE_FEATURE_TYPES, { allowCustom: true, help: true }),
         config: field.yaml({ help: true, placeholder: true }),
       },
-      { titleKey: 'id', newItem: newConfiguredFeature },
+      { titleKey: 'id', newItem: () => newConfiguredFeature() },
     ),
     placed_features: field.objectList(
       {
@@ -177,7 +206,8 @@ export function craftEngineWorldgen(project: Project): {
   }
   const inline = (feature: ConfigObject): ConfigObject => {
     const { config, ...rest } = feature;
-    return isPlainObject(config) ? { ...rest, ...config } : feature;
+    // The feature's own keys (its type) win over a key of the same name in the config
+    return isPlainObject(config) ? { ...config, ...rest } : feature;
   };
   return {
     configured_features: Object.fromEntries(Object.entries(configured).map(([key, feature]) => [key, inline(feature)])),
