@@ -120,6 +120,32 @@ describe('outputFor', () => {
     expect(output?.issues.map((issue) => issue.code)).toEqual(['multipack.unknownTemplate']);
   });
 
+  it('shows the id checks of each CraftEngine section only in that section', () => {
+    const { project } = sampleProject('craftengine');
+    project.craftEngine = {
+      categories: [{ id: 'Bad Id' }, {}],
+      configuredFeatures: [
+        { id: 'Bad Feature', type: 'minecraft:ore', config: {} },
+        { type: 'minecraft:ore', config: {} },
+      ],
+      atlases: [{}],
+    };
+    const plan = planExport(project, { includeBinaries: false });
+    const sectionChecks = (view: 'categories' | 'worldgen' | 'atlases') =>
+      outputFor(project, plan, { kind: 'view', view })
+        ?.issues.filter((issue) => issue.code.startsWith('ce.sectionEntryId'))
+        .map((issue) => issue.context?.[0]);
+    expect(sectionChecks('categories')).toEqual([
+      { code: 'context.category', args: { id: 'Bad Id' } },
+      { code: 'context.listEntry', args: { index: 2, section: 'category' } },
+    ]);
+    expect(sectionChecks('worldgen')).toEqual([
+      { code: 'context.configuredFeature', args: { id: 'Bad Feature' } },
+      { code: 'context.listEntry', args: { index: 2, section: 'configuredFeature' } },
+    ]);
+    expect(sectionChecks('atlases')).toEqual([{ code: 'context.listEntry', args: { index: 1, section: 'atlas' } }]);
+  });
+
   it('has a provider for every registry view', () => {
     expect([...MEDIA_VIEW_NAMES, ...CRAFT_ENGINE_VIEW_NAMES].filter((view) => !VIEW_OUTPUTS[view])).toEqual([]);
   });

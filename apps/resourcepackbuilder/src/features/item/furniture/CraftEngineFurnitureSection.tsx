@@ -21,7 +21,7 @@ import {
   withLightObjects,
 } from '@resourcepackbuilder/core/craftEngine';
 import type { ConfigObject, ConfigValue, Item } from '@resourcepackbuilder/core/project';
-import { EmptyHint, FieldGroup, FieldRow, SegmentedControl } from '@resourcepackbuilder/ui';
+import { EmptyHint, FieldGroup, FieldRow, SegmentedControl, useRowKeys } from '@resourcepackbuilder/ui';
 import { Button } from '@resourcepackbuilder/ui/components/button';
 import { isPlainObject } from '@resourcepackbuilder/utils';
 import { addCraftEngineFurnitureVariant, removeCraftEngineFurnitureVariant, updateCraftEngineFurniture } from '../../../commands/items';
@@ -133,6 +133,8 @@ function FurnitureBehaviors({
   // Lights written as text show as their position and level
   const list = behaviorList(withLightObjects(furniture[key]));
   const used = list.map((entry) => (isPlainObject(entry) && typeof entry.type === 'string' ? entry.type : '')).filter(Boolean);
+  // Each card keeps its open state when a card before it is removed or duplicated
+  const cardKeys = useRowKeys(list.length);
   const commit = (next: unknown[], historyKey?: string) =>
     edit((f) => {
       const target = behaviorsKey(f);
@@ -167,7 +169,7 @@ function FurnitureBehaviors({
         <div className="flex min-w-0 flex-col gap-2">
           {list.map((entry, i) => (
             <TypedEntryCard
-              key={i}
+              key={cardKeys.keys[i]}
               source={CE_FURNITURE_BEHAVIOR_LIST}
               entry={entry}
               onChange={(next) =>
@@ -176,12 +178,18 @@ function FurnitureBehaviors({
                   `behavior-${i}`,
                 )
               }
-              onRemove={() => commit(list.filter((_, j) => j !== i))}
+              onRemove={() => {
+                cardKeys.remove(i);
+                commit(list.filter((_, j) => j !== i));
+              }}
               menu={[
                 {
                   icon: <Copy />,
                   label: tFurniture('duplicate'),
-                  onSelect: () => commit([...list.slice(0, i + 1), structuredClone(entry), ...list.slice(i + 1)]),
+                  onSelect: () => {
+                    cardKeys.insert(i + 1);
+                    commit([...list.slice(0, i + 1), structuredClone(entry), ...list.slice(i + 1)]);
+                  },
                 },
               ]}
             />

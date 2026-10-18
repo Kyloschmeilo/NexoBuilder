@@ -14,7 +14,7 @@ import {
   packYmlFile,
 } from '@resourcepackbuilder/export';
 import { buildDialogFiles, dialogFilePath, MULTIPACK_FILE, multipackFile } from '@resourcepackbuilder/core/nexo';
-import type { MediaKind, Project } from '@resourcepackbuilder/core/project';
+import { isProjectEntryFrame, type MediaKind, type Project, type ProjectEntryKind } from '@resourcepackbuilder/core/project';
 import { issuesFor, type Issue, type IssueTarget } from '@resourcepackbuilder/utils';
 import type { Selection, ViewName } from '../store/ui';
 
@@ -92,24 +92,31 @@ function craftEngineFileOutput(name: string): ViewOutputProvider {
 }
 
 /**
- * The issues of a CraftEngine project section: those whose code, or the code of one of their frames, starts with one
- * of `prefixes` (the section checks have no issue target).
+ * The issues of a CraftEngine project section: those whose code starts with one of `prefixes`, or that belong to an
+ * entry of one of the section's `kinds` (by its id or, for an entry without one, its position). The section checks have
+ * no issue target, and the id checks (`ce.sectionEntryId*`) are shared by all sections, so the entry frame decides.
  */
-function sectionIssues(plan: ExportPlan, prefixes: readonly string[]): Issue[] {
+function sectionIssues(plan: ExportPlan, prefixes: readonly string[], kinds: readonly ProjectEntryKind[] = []): Issue[] {
   const matches = (code: string) => prefixes.some((prefix) => code.startsWith(prefix));
-  return plan.issues.filter((issue) => matches(issue.code) || (issue.context ?? []).some((frame) => matches(frame.code)));
+  return plan.issues.filter(
+    (issue) => matches(issue.code) || (issue.context ?? []).some((frame) => kinds.some((kind) => isProjectEntryFrame(frame, kind))),
+  );
 }
 
 /**
  * A CraftEngine project section: the first of the config files `names` the export writes (the first name while none
  * is written yet), with the section's issues.
  */
-function craftEngineSectionOutput(names: readonly string[], issuePrefixes: readonly string[]): ViewOutputProvider {
+function craftEngineSectionOutput(
+  names: readonly string[],
+  issuePrefixes: readonly string[],
+  kinds: readonly ProjectEntryKind[] = [],
+): ViewOutputProvider {
   return (project, plan) => {
     if (project.target !== 'craftengine') return null;
     const files = names.map((name) => craftEngineConfigFile(project, name));
     const file = files.find((path) => plan.pluginFiles.has(path)) ?? files[0];
-    return { file, text: pluginText(plan, file), issues: sectionIssues(plan, issuePrefixes) };
+    return { file, text: pluginText(plan, file), issues: sectionIssues(plan, issuePrefixes, kinds) };
   };
 }
 
@@ -133,22 +140,19 @@ export const VIEW_OUTPUTS: Partial<Record<ViewName, ViewOutputProvider>> = {
       entry?.startsWith('lang/') ? [entry] : entry?.startsWith('server/') ? ['translations'] : ['translations', 'lang/en_us'],
       ['ce.translationsLocaleInvalid', 'ce.langLocaleInvalid'],
     )(project, plan),
-  categories: craftEngineSectionOutput(['categories'], ['ce.sectionEntryId', 'context.category']),
-  worldgen: craftEngineSectionOutput(
-    ['worldgen'],
-    ['ce.configuredFeature', 'ce.placedFeature', 'context.configuredFeature', 'context.placedFeature'],
-  ),
-  atlases: craftEngineSectionOutput(['atlases'], ['ce.atlas', 'context.atlas']),
+  categories: craftEngineSectionOutput(['categories'], [], ['category']),
+  worldgen: craftEngineSectionOutput(['worldgen'], ['ce.configuredFeature', 'ce.placedFeature'], ['configuredFeature', 'placedFeature']),
+  atlases: craftEngineSectionOutput(['atlases'], ['ce.atlas'], ['atlas']),
   pack: (project, plan) => {
     if (project.target !== 'craftengine') return null;
     const file = packYmlFile(project);
-    return { file, text: pluginText(plan, file), issues: sectionIssues(plan, ['ce.configFactory', 'context.configFactory']) };
+    return { file, text: pluginText(plan, file), issues: sectionIssues(plan, ['ce.configFactory'], ['configFactory']) };
   },
   scripts: (project, plan) => {
     if (project.target !== 'craftengine') return null;
     // The first script file; the issues of all scripts
     const file = [...plan.pluginFiles.keys()].find((path) => path.startsWith(`${craftEnginePackDir(project)}/script/`)) ?? null;
-    return { file, text: file ? pluginText(plan, file) : '', issues: sectionIssues(plan, ['ce.script', 'context.script']) };
+    return { file, text: file ? pluginText(plan, file) : '', issues: sectionIssues(plan, ['ce.script'], ['script']) };
   },
 };
 

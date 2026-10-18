@@ -283,7 +283,7 @@ export function selectTarget(target: IssueTarget): void {
       select({ kind: 'view', view: 'paintings', entry: target.id });
       break;
     case 'dialog':
-      select({ kind: 'view', view: 'dialogs' });
+      select({ kind: 'view', view: 'dialogs', entry: target.id });
       break;
   }
 }

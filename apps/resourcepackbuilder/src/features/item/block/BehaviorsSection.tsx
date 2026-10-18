@@ -153,7 +153,10 @@ function BehaviorCard({
           <span className="truncate text-label font-semibold text-text">{label}</span>
           {entry.main && <StatusPill tone="muted" label={t('block.behaviors.main')} />}
         </span>
-        <code className="max-w-full truncate font-mono text-micro text-text-faint">{entry.type ?? ''}</code>
+        {/* The key, unless the label already is it (a type without a human name) */}
+        {entry.type && entry.type !== label && (
+          <code className="max-w-full truncate font-mono text-micro text-text-faint">{entry.type}</code>
+        )}
         <span className="max-w-full truncate font-mono text-meta text-text-muted">{summary}</span>
       </button>
       <div className="relative z-10 flex flex-none items-center gap-0.5">

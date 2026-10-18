@@ -79,12 +79,25 @@ export function templateFrame(id: string): IssueContext {
   return { code: 'context.template', args: { id: id || '?' } };
 }
 
+/** The kind of an entry of a CraftEngine project section; it names the entry's frame (`context.<kind>`). */
+export type ProjectEntryKind = 'category' | 'configuredFeature' | 'placedFeature' | 'atlas' | 'configFactory' | 'script';
+
 /** An entry of a CraftEngine project section (`context.category`, `context.placedFeature`, …), named by its id. */
-export function projectEntryFrame(
-  kind: 'category' | 'configuredFeature' | 'placedFeature' | 'atlas' | 'configFactory' | 'script',
-  id: string,
-): IssueContext {
+export function projectEntryFrame(kind: ProjectEntryKind, id: string): IssueContext {
   return { code: `context.${kind}`, args: { id: id || '?' } };
+}
+
+/**
+ * Entry `index` (counted from 1) of a CraftEngine project section, for an entry without an id. It reads like
+ * {@link listEntryFrame}; its `section` arg keeps the entry's kind so the section's checks can be told apart.
+ */
+export function projectListEntryFrame(kind: ProjectEntryKind, index: number): IssueContext {
+  return { code: 'context.listEntry', args: { index, section: kind } };
+}
+
+/** Whether `frame` names an entry of kind `kind` of a CraftEngine project section, by its id or its position. */
+export function isProjectEntryFrame(frame: IssueContext, kind: ProjectEntryKind): boolean {
+  return frame.code === `context.${kind}` || (frame.code === 'context.listEntry' && frame.args?.section === kind);
 }
 
 /**

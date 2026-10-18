@@ -51,6 +51,11 @@ the CraftEngine wiki and Nexo 1.30 describe. Every feature links to its section 
 - **Media**: fixed glyph characters, Nexo glyph shadows, templates and sprite GIFs, CraftEngine emoji per chat context,
   sound weight, preload, subtitles, sound references and vanilla sound replacement, a baby armor layer, overlay
   textures, dyeable armor, player-texture wings and CraftEngine trim equipment.
+- **Checks found on real servers**: warnings for Nexo furniture lights inside barriers, dialog buttons that open other
+  Nexo dialogs, Nexo `blocks_attacks` below Minecraft 26.1, CraftEngine dye recipes before 26.1 and CraftEngine worldgen
+  features whose block states use another Minecraft version's format, plus a hint for Nexo's old-style armor ids
+  (`*_chestplate`, `*_leggings`, `*_boots`, `*_elytra` without `CustomArmor`). `npm run verify:plugins` checks sample
+  exports on real Nexo and CraftEngine servers.
 
 ### Changed
 
@@ -89,12 +94,17 @@ the CraftEngine wiki and Nexo 1.30 describe. Every feature links to its section 
 - **Easier to read**: content groups sit on their own panels, inputs on clear wells, every theme has stronger contrast
   between page, panels and borders, and editor text sizes follow the design.
 - CraftEngine wiki links point to the wiki's new home (`xiao-momi.github.io/craft-engine-wiki`).
+- New CraftEngine configured features start in the block-state format of the project's Minecraft version.
 
 ### Fixed
 
 - **Nexo keys**: the block support toggle, fireproof items, furniture culling, `can_place_on`/`can_break` and
   `custom_model_data` now use the keys Nexo 1.30 reads. Saved projects are migrated automatically.
 - Ctrl+K and Ctrl+J no longer act behind open dialogs, and the narrow output dock handles focus and Escape.
+- **Test server (Nexo):** a Nexo project's dialogs and `multipack.yml` are now installed, and Nexo 1.30's pack upload
+  is recognised.
+- The exported Nexo `sounds.yml` keeps Nexo's settings section, and CraftEngine worldgen features use the inline config
+  Minecraft 26.3 reads.
 
 ## 2.0.0
 

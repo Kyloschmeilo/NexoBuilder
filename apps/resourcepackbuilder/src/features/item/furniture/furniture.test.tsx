@@ -3,6 +3,7 @@
  * The furniture editors: variant helpers, the furniture commands, the structured Nexo hitbox, seat and light lists
  * (also as the schema field's editor), and the CraftEngine variant editor's two panes.
  */
+import { act } from 'react';
 import { afterEach, describe, expect, it } from 'vitest';
 import type { ObjectField } from '@resourcepackbuilder/core/form';
 import { createItem, createProject, insertItem, type Item, type PackTargetId } from '@resourcepackbuilder/core/project';
@@ -10,7 +11,7 @@ import { formFor } from '@resourcepackbuilder/core/targets';
 import { addCraftEngineFurnitureVariant, removeCraftEngineFurnitureVariant, updateNexoFurniture } from '../../../commands/items';
 import { cleanup, click, render, type } from '../../../components/catalog/testRender';
 import { FieldRenderer } from '../../../components/editor';
-import { getProject, setProject } from '../../../store/project';
+import { getProject, setProject, useProjectStore } from '../../../store/project';
 import { FurnitureSection } from './FurnitureSection';
 import { itemFurniture, placesFurniture, variantNameError, variantNames, withoutVariant, withVariant } from './model';
 import { NexoHitboxList, NexoLightList, NexoSeatList } from '../../../components/editor/nexoFurnitureEditors';
@@ -165,6 +166,27 @@ describe('CraftEngine furniture section', () => {
     const pane = host.querySelector('[data-slot=furniture-detail]')!;
     expect(pane.textContent).toContain('Hitbox 1');
     expect(summaryOf(pane.querySelector('[data-slot=list-row]'))).toBe('Seat0, 0.5, 0 · yaw 90');
+  });
+
+  it('keeps each behavior card open or collapsed when a card before it is removed', async () => {
+    const item = openProject('craftengine', {
+      furniture: { ...furniture, behaviors: [{ type: 'simple_storage_furniture' }, { type: 'glowing_furniture' }] },
+    });
+    function Live() {
+      const live = useProjectStore((state) => state.project?.items[item.id]);
+      return live ? <FurnitureSection item={live} /> : null;
+    }
+    const host = render(<Live />, 'craftengine');
+    const cards = () => [...host.querySelectorAll<HTMLElement>('[data-slot=typed-entry-card]')];
+    const expanded = (card: HTMLElement) => card.querySelector('[data-slot=entry-toggle]')?.getAttribute('aria-expanded');
+    click(cards()[1].querySelector('[data-slot=entry-toggle]'));
+    expect(cards().map(expanded)).toEqual(['true', 'false']);
+    click(cards()[0].querySelector('[aria-label^="Actions for"]'));
+    await act(async () => new Promise((resolve) => setTimeout(resolve, 50)));
+    click([...document.querySelectorAll('[role=menuitem]')].find((entry) => entry.textContent === 'Remove'));
+    await act(async () => new Promise((resolve) => setTimeout(resolve, 50)));
+    expect(cards().map((card) => card.getAttribute('data-type'))).toEqual(['glowing_furniture']);
+    expect(cards().map(expanded)).toEqual(['false']);
   });
 
   it('renders nothing while the item places no furniture', () => {
