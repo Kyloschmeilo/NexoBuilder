@@ -6,6 +6,7 @@ import { mergeCatalogue } from '../../../mergeCatalogue';
 import attributes from './attributes.json' with { type: 'json' };
 import blockBehavior from './blockBehavior.json' with { type: 'json' };
 import blockSettings from './blockSettings.json' with { type: 'json' };
+import categories from './categories.json' with { type: 'json' };
 import craftEngine from './craftEngine.json' with { type: 'json' };
 import data from './data.json' with { type: 'json' };
 import events from './events.json' with { type: 'json' };
@@ -29,6 +30,7 @@ export default mergeCatalogue(
   attributes,
   blockBehavior,
   blockSettings,
+  categories,
   craftEngine,
   data,
   events,

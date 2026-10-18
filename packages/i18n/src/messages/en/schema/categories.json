@@ -1,0 +1,44 @@
+{
+  "groups": {
+    "general": {
+      "categories": {
+        "text": "Name and lore",
+        "item": "Item",
+        "nexo": "Nexo options"
+      }
+    },
+    "appearance": {
+      "categories": {
+        "model": "Model",
+        "colors": "Colors and trims",
+        "armor": "Armor"
+      }
+    },
+    "attributes": {
+      "categories": {
+        "modifiers": "Attributes",
+        "enchantments": "Enchantments",
+        "effects": "Potion effects"
+      }
+    },
+    "components": {
+      "categories": {
+        "foodUse": "Food and use",
+        "combat": "Tools and combat",
+        "tooltip": "Tooltip",
+        "equipment": "Equipment",
+        "appearance": "Appearance",
+        "behavior": "Behavior"
+      }
+    },
+    "mechanics": {
+      "categories": {
+        "placement": "Blocks and furniture",
+        "actions": "Actions",
+        "tools": "Tools and farming",
+        "wearables": "Armor and effects",
+        "misc": "Other"
+      }
+    }
+  }
+}

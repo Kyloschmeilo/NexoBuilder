@@ -1,0 +1,29 @@
+{
+  "groups": {
+    "general": {
+      "categories": {
+        "text": "Name and lore",
+        "item": "Item",
+        "templates": "Templates"
+      }
+    },
+    "data": {
+      "categories": {
+        "text": "Name and tooltip",
+        "appearance": "Appearance",
+        "foodUse": "Food and use",
+        "combat": "Combat and equipment",
+        "components": "Components and data"
+      }
+    },
+    "settings": {
+      "categories": {
+        "behavior": "Behavior",
+        "crafting": "Fuel and crafting",
+        "repair": "Durability and repair",
+        "equipment": "Equipment",
+        "appearance": "Appearance"
+      }
+    }
+  }
+}
