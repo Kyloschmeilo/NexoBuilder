@@ -14,9 +14,17 @@ import { lootTemplates } from './shared';
 
 type MessageTree = { [key: string]: string | MessageTree };
 
+// Each catalogue is read and parsed once – parsing it per key made the key check slow enough to time out on CI
+const catalogues = new Map<'en' | 'de', MessageTree>();
+
 function lookup(locale: 'en' | 'de', key: string): unknown {
-  const url = new URL(`../../../../i18n/src/messages/${locale}/ceSchema.json`, import.meta.url);
-  let node: unknown = JSON.parse(readFileSync(url, 'utf8')) as MessageTree;
+  let catalogue = catalogues.get(locale);
+  if (!catalogue) {
+    const url = new URL(`../../../../i18n/src/messages/${locale}/ceSchema.json`, import.meta.url);
+    catalogue = JSON.parse(readFileSync(url, 'utf8')) as MessageTree;
+    catalogues.set(locale, catalogue);
+  }
+  let node: unknown = catalogue;
   for (const part of key.split('.')) node = typeof node === 'object' && node !== null ? (node as MessageTree)[part] : undefined;
   return node;
 }
