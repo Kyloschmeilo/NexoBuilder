@@ -100,6 +100,20 @@ describe('furniture hitboxes', () => {
     ]);
     expect(issues.every((issue) => issue.level === 'warning')).toBe(true);
   });
+
+  it('warns about lights inside a barrier, which Nexo ignores', () => {
+    const project = projectWith({
+      Mechanics: {
+        furniture: {
+          hitbox: { barriers: ['0,0,0', '1..2,0,0'] },
+          lights: { lights: ['0,0,0 15', '2, 0, 0 10', '0,1,0 12', '1,1,0 5'] },
+        },
+      },
+    });
+    const issues = issuesOf(project, 'plan.furnitureLightInBarrier');
+    expect(issues.map((issue) => issue.args?.light)).toEqual(['0,0,0 15', '2, 0, 0 10']);
+    expect(issues.every((issue) => issue.level === 'warning')).toBe(true);
+  });
 });
 
 describe('Carpentry blocks', () => {

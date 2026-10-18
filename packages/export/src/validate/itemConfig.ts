@@ -19,7 +19,9 @@ import {
   isCarpentryBlockType,
   isReadableNexoEntry,
   NEXO_HITBOX_KINDS,
+  type NexoVec3,
   parseNexoHitbox,
+  parseNexoLight,
   PROPERTIES,
 } from '@resourcepackbuilder/core/nexo';
 import type { ItemExport } from '../types';
@@ -97,8 +99,9 @@ export function validateItemConfig(itemExport: ItemExport, { config, usedVariati
   }
 }
 
-/** Warns about furniture hitbox entries whose format Nexo cannot read. */
-function validateHitbox({ item, report }: ItemExport): void {
+/** Warns about furniture hitbox entries whose format Nexo cannot read, and about lights inside a barrier. */
+function validateHitbox(itemExport: ItemExport): void {
+  const { item, report } = itemExport;
   const hitbox = getPath(item.config, ['Mechanics', 'furniture', 'hitbox']);
   if (!isPlainObject(hitbox)) return;
   // The editor's parser decides, so the editor and the checks agree on what Nexo reads
@@ -110,6 +113,27 @@ function validateHitbox({ item, report }: ItemExport): void {
         report('warning', 'plan.hitboxEntryInvalid', { kind, entry });
       }
     }
+  }
+  validateLights(itemExport, hitbox);
+}
+
+/** The entries of a list key that may also hold a single string. */
+const listEntries = (value: unknown): unknown[] => (typeof value === 'string' ? [value] : Array.isArray(value) ? value : []);
+
+/** Warns about furniture lights inside a barrier hitbox: Nexo ignores them ("lights that overlap with the barrierHitboxes"). */
+function validateLights({ item, report }: ItemExport, hitbox: Record<string, unknown>): void {
+  const lights = getPath(item.config, ['Mechanics', 'furniture', 'lights', 'lights']);
+  const barriers = listEntries(hitbox.barriers).flatMap((entry) => {
+    const barrier = parseNexoHitbox('barriers', entry);
+    return barrier?.kind === 'barriers' ? [barrier] : [];
+  });
+  const inside = (position: NexoVec3) =>
+    barriers.some(({ from, to }) =>
+      position.every((value, axis) => value >= Math.min(from[axis], to[axis]) && value <= Math.max(from[axis], to[axis])),
+    );
+  for (const entry of listEntries(lights)) {
+    const light = parseNexoLight(entry);
+    if (light && inside(light.position)) report('warning', 'plan.furnitureLightInBarrier', { light: String(entry) });
   }
 }
 

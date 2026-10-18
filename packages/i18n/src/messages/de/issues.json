@@ -98,6 +98,7 @@
     "carpentryNotInstalled": "{type} ist ein Blocktyp des Carpentry-Addons. Schalte „Carpentry-Addon installiert“ in den Projekteinstellungen ein, sobald das Addon auf dem Server ist – ohne es kennt Nexo den Typ nicht.",
     "carpentryNeedsVersion": "Die {type}-Blöcke von Carpentry brauchen einen Server mit Minecraft {version}.",
     "hitboxEntryInvalid": "Der {kind}-Hitbox-Eintrag „{entry}“ hat nicht das Format, das Nexo liest.",
+    "furnitureLightInBarrier": "Das Licht „{light}“ liegt in einer Barrier-Hitbox; Nexo ignoriert es.",
     "fileUnreadable": "Die Datei „{path}“ konnte nicht gelesen werden und wird weggelassen.",
     "unsafePath": "Der Pfad „{path}“ würde seinen Ordner verlassen und wird nicht exportiert.",
     "itemModelNeedsVersion": "{feature} braucht Minecraft {version} oder neuer – das Projekt zielt auf {target}.",
