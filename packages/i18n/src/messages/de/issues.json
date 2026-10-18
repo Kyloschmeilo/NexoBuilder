@@ -20,7 +20,8 @@
     "attribute": "Attribut „{id}“",
     "attributeOperation": "Attribut-Operation „{id}“",
     "equipmentSet": "Ausrüstungsset „{id}“",
-    "damageRule": "Schadensregel „{id}“"
+    "damageRule": "Schadensregel „{id}“",
+    "itemModelNode": "Item-Modell: {path}"
   },
   "plan": {
     "missingModel": "Kein Modell – das Item nutzt das Aussehen des Basis-Materials.",
@@ -84,7 +85,22 @@
     "customBlockMechanicMissing": "Es sind Stackable-Modelle hochgeladen, aber die Mechanic „Custom Block“ fehlt – sie werden nicht exportiert.",
     "stackableNeedsStringblock": "Stackable funktioniert nur mit dem Block-Typ STRINGBLOCK.",
     "fileUnreadable": "Die Datei „{path}“ konnte nicht gelesen werden und wird weggelassen.",
-    "unsafePath": "Der Pfad „{path}“ würde seinen Ordner verlassen und wird nicht exportiert."
+    "unsafePath": "Der Pfad „{path}“ würde seinen Ordner verlassen und wird nicht exportiert.",
+    "itemModelNeedsVersion": "{feature} braucht Minecraft {version} oder neuer – das Projekt zielt auf {target}.",
+    "itemModelRemoved": "{feature} gibt es ab Minecraft {version} nicht mehr.",
+    "itemModelMissingKey": "Der Schlüssel „{key}“ fehlt.",
+    "itemModelUnknownVariant": "„{id}“ kennt der Editor nicht – prüfe die Schreibweise. Es wird unverändert geschrieben.",
+    "itemModelUnknownType": "Unbekannter Item-Modell-Typ „{type}“. Er wird unverändert geschrieben.",
+    "itemModelMainModelMissing": "Zeigt das eigene Modell des Items, aber das Item hat keins. Importiere ein Modell oder gib einen Modellpfad ein.",
+    "itemModelMissingBranch": "„{branch}“ braucht ein Modell.",
+    "itemModelTransformationIgnored": "Der Typ {type} nimmt keine Transformation; Minecraft ignoriert sie.",
+    "itemModelEmptyList": "„{key}“ ist leer.",
+    "itemModelCaseWithoutWhen": "Ein Fall braucht mindestens einen Wert unter „when“.",
+    "itemModelDuplicateWhen": "Mehr als ein Fall passt auf „{value}“. Minecraft lehnt dann die ganze Definition ab.",
+    "itemModelThresholdInvalid": "Der Schwellenwert muss eine Zahl sein.",
+    "itemModelNotANumber": "„{key}“ muss eine Zahl sein.",
+    "itemModelTreeReplacesGenerated": "Der Item-Modell-Baum ersetzt das Item-Modell, das ResourcepackBuilder sonst erzeugen würde für: {slots}.",
+    "itemModelTreeOverriddenByRawYaml": "Das zusätzliche YAML setzt das Modell des Items selbst, deshalb wird der Item-Modell-Baum nicht geschrieben."
   },
   "selection": {
     "packNameClash": "„{first}“ und „{second}“ verwenden denselben Pack-Namen „{pack}“. Bitte in den Einstellungen eines Projekts umbenennen.",

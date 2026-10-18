@@ -20,7 +20,8 @@
     "attribute": "Attribute “{id}”",
     "attributeOperation": "Attribute operation “{id}”",
     "equipmentSet": "Equipment set “{id}”",
-    "damageRule": "Damage rule “{id}”"
+    "damageRule": "Damage rule “{id}”",
+    "itemModelNode": "Item model: {path}"
   },
   "plan": {
     "missingModel": "No model – the item uses the look of its base material.",
@@ -84,7 +85,22 @@
     "customBlockMechanicMissing": "Stackable models are uploaded, but the “Custom Block” mechanic is missing – they are not exported.",
     "stackableNeedsStringblock": "Stackable only works with the block type STRINGBLOCK.",
     "fileUnreadable": "The file “{path}” could not be read and is left out.",
-    "unsafePath": "The path “{path}” would leave its folder and is not exported."
+    "unsafePath": "The path “{path}” would leave its folder and is not exported.",
+    "itemModelNeedsVersion": "{feature} needs Minecraft {version} or newer – the project targets {target}.",
+    "itemModelRemoved": "{feature} no longer exists from Minecraft {version} on.",
+    "itemModelMissingKey": "The key “{key}” is missing.",
+    "itemModelUnknownVariant": "“{id}” is not known to the editor – check the spelling. It is written as is.",
+    "itemModelUnknownType": "Unknown item model type “{type}”. It is written as is.",
+    "itemModelMainModelMissing": "Shows the item’s own model, but the item has none. Import a model or enter a model path.",
+    "itemModelMissingBranch": "“{branch}” needs a model.",
+    "itemModelTransformationIgnored": "The type {type} takes no transformation; Minecraft ignores it.",
+    "itemModelEmptyList": "“{key}” is empty.",
+    "itemModelCaseWithoutWhen": "A case needs at least one value under “when”.",
+    "itemModelDuplicateWhen": "More than one case matches “{value}”. Minecraft rejects the whole definition.",
+    "itemModelThresholdInvalid": "The threshold must be a number.",
+    "itemModelNotANumber": "“{key}” must be a number.",
+    "itemModelTreeReplacesGenerated": "The item model tree replaces the item model ResourcepackBuilder would generate for: {slots}.",
+    "itemModelTreeOverriddenByRawYaml": "The additional YAML sets the item’s model itself, so the item model tree is not written."
   },
   "selection": {
     "packNameClash": "“{first}” and “{second}” use the same pack name “{pack}”. Rename it in the settings of one of the projects.",

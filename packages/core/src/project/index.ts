@@ -6,6 +6,7 @@ export * from './factory';
 export * from './ids';
 export * from './issueFrames';
 export * from './item';
+export * from './itemModel';
 export * from './media/entry';
 export * from './media/glyph';
 export * from './media/items';

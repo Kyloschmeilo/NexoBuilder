@@ -16,6 +16,7 @@ import { INGREDIENT_SOURCES, RECIPE_TYPES } from '../project/recipes/model';
 import { NEXO_FORM, PROPERTIES } from './form/schema';
 import { formMessageKeys, optionMessageKeys } from '../form/messageKeys';
 import { FURNITURE_MODEL_SLOTS, STACK_MODELS, stateDef, VARIANTS } from '../project/variants';
+import { itemModelMessageKeys } from '../project/itemModel';
 
 function lookup(tree: MessageTree, key: string): unknown {
   let node: unknown = tree;
@@ -47,6 +48,7 @@ function referencedKeys(): Set<string> {
   for (const source of INGREDIENT_SOURCES) keys.push(source.label);
   for (const category of COPY_CATEGORIES) keys.push(category.label, category.description);
   for (const template of TEXTURE_TEMPLATES) keys.push(template.label, template.description);
+  keys.push(...itemModelMessageKeys());
 
   const invalid: Array<[TextField['format'], string]> = [
     ['duration', 'x'],

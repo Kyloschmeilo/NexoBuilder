@@ -9,6 +9,7 @@ import components from './components.json' with { type: 'json' };
 import customBlock from './customBlock.json' with { type: 'json' };
 import furniture from './furniture.json' with { type: 'json' };
 import general from './general.json' with { type: 'json' };
+import itemModel from './itemModel.json' with { type: 'json' };
 import mechanics from './mechanics.json' with { type: 'json' };
 import misc from './misc.json' with { type: 'json' };
 import options from './options.json' with { type: 'json' };
@@ -24,6 +25,7 @@ export default mergeCatalogue(
   customBlock,
   furniture,
   general,
+  itemModel,
   mechanics,
   misc,
   options,
