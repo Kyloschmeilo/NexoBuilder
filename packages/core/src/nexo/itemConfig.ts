@@ -3,6 +3,10 @@
  *  1. clean up the structured config (remove empty fields, resolve placeholders)
  *  2. add automatic values (itemname, material, Pack.model, Components.item_model)
  *  3. overlay the user's additional YAML
+ *
+ * `Components.item_model` comes from the first of: the additional YAML, the item's own `Components.item_model`
+ * property (e.g. `nexo:empty`), the item model definition the export generated (inventory icon, connectable
+ * furniture …), and `nexo:<id>` when the project uses item models and the item has no custom_model_data.
  */
 import { deepClone, deepMerge, isPlainObject, mapData, MODEL_TOKEN } from '@resourcepackbuilder/utils';
 import type { ConfigObject, ConfigValue, Item, Project } from '../project/types';
@@ -13,21 +17,28 @@ import { cleanConfig } from '../form/prune';
 import { parseRawYaml, type RawYamlError } from '../yaml';
 import { NEXO_FORM } from './form/schema';
 
-/** Order of the keys in the YAML (as in the Nexo docs) */
+/** Order of the keys in the YAML (as in the Nexo docs; keys only Nexo's code reads next to their relatives) */
 const TOP_LEVEL_ORDER = [
   'itemname',
   'material',
+  'customname',
   'template',
   'templates',
   'lore',
   'color',
+  'trim_pattern',
+  'trim_material',
   'unbreakable',
   'excludeFromInventory',
   'excludeFromCommands',
+  'injectId',
+  'no_auto_update',
   'Pack',
   'Components',
   'AttributeModifiers',
   'Enchantments',
+  'StoredEnchantments',
+  'PotionEffects',
   'ItemFlags',
   'PersistentData',
   'CustomArmor',
@@ -73,6 +84,7 @@ export function buildItemConfig(context: BuildContext): BuildResult {
   const resolved = resolveTokens(cleaned, modelKey) as Record<string, unknown>;
 
   // 3. Automatic values
+  const manualItemModel = section(resolved, 'Components').item_model;
   const result: Record<string, unknown> = {};
   const name = item.displayName.trim();
   if (name) result.itemname = name;
@@ -90,7 +102,8 @@ export function buildItemConfig(context: BuildContext): BuildResult {
       resolved.Components = { item_model: `nexo:${item.itemId}`, ...components };
     }
   }
-  if (context.itemModel) {
+  // The generated definition replaces the automatic value, but not one the user entered
+  if (context.itemModel && manualItemModel === undefined) {
     resolved.Components = { ...section(resolved, 'Components'), item_model: context.itemModel };
   }
   for (const extra of context.extraConfig ?? []) {

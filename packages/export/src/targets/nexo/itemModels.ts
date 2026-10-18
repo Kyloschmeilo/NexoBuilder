@@ -1,7 +1,7 @@
 /**
  * Nexo: models for which ResourcepackBuilder writes item model definitions (assets/<ns>/items/…) itself:
  * custom inventory icon, connectable furniture, placement, light and state models of furniture
- * as well as stack stages of blocks. The matching values in the item configuration are returned too.
+ * as well as stack stages and face models of blocks. The matching values in the item configuration are returned too.
  * The item's own item model tree (`item.itemModel`) is written as its `ItemModel` (Nexo's ItemModel builder) and
  * replaces the generated main definition (inventory icon, connectable furniture).
  */
@@ -10,6 +10,10 @@ import type { ConfigAddition } from '@resourcepackbuilder/core/nexo';
 import {
   CONNECT_SLOTS,
   customBlockConfig,
+  DIRECTIONAL_MODEL_SLOTS,
+  directionalFace,
+  directionalFaces,
+  directionalModelPath,
   FURNITURE_MODEL_SLOTS,
   itemModelRootValues,
   resolveItemModelTokens,
@@ -199,6 +203,41 @@ export function writeItemModels(
     }
   }
   return result;
+}
+
+/**
+ * Writes the face models of a directional NoteBlock (variant slots `dir_<face>`) and returns the
+ * `Mechanics.custom_block.directional.<face>_model` values that point at them. A value the user entered wins; a face
+ * the block's directional type does not have is reported and not written.
+ * @param modelKey key of the item's main model (null = it has none)
+ */
+export function writeDirectionalModels(itemExport: ItemExport, modelKey: string | null): ConfigAddition[] {
+  const { item, report } = itemExport;
+  const slots = DIRECTIONAL_MODEL_SLOTS.filter((def) => (item.variants?.[def.slot]?.length ?? 0) > 0);
+  if (slots.length === 0) return [];
+  if (!modelKey) {
+    report('error', 'plan.extraModelsNeedMainModel');
+    return [];
+  }
+  const faces = directionalFaces(item.config);
+  if (faces.length === 0) {
+    report('warning', 'plan.directionalMissing');
+    return [];
+  }
+  const additions: ConfigAddition[] = [];
+  for (const def of slots) {
+    const face = directionalFace(def.slot);
+    if (!face) continue;
+    if (!faces.includes(face)) {
+      report('warning', 'plan.directionalFaceUnused', { face }, [variantFrame(def)]);
+      continue;
+    }
+    const model = item.variants?.[def.slot]?.[0];
+    if (!model) continue;
+    const key = itemExport.writeModel(model, `${itemExport.modelPath}-${def.suffix}`, variantFrame(def, def.suffix)).key;
+    additions.push({ path: directionalModelPath(face), value: key, ifMissing: true });
+  }
+  return additions;
 }
 
 /** The slots the generated main definition would show (inventory icon, connectable furniture models). */

@@ -89,6 +89,8 @@ function buildItem(itemExport: ItemExport, written: CraftEngineWrittenModels, sh
   if (built.furnitureIgnored) itemExport.report('error', 'ce.furnitureWithBlock');
   if (built.itemModelTreeIgnored) itemExport.report('warning', 'plan.itemModelTreeOverriddenByRawYaml');
   else validateItemModelTree(itemExport, written.mainKey !== null);
+  if (built.rawBehaviorsOverride) itemExport.report('warning', 'ce.rawBehaviorsOverride');
+  if (built.placementTypeIgnored) itemExport.report('warning', 'ce.placementTypeIgnored', { type: built.placementTypeIgnored });
   for (const locale of craftEngineTranslations(item).invalidLocales)
     itemExport.report('warning', 'ce.translationLocaleInvalid', { locale });
   validateCraftEngineItem(itemExport, built.config);

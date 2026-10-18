@@ -6,6 +6,7 @@ import {
   availableProperties,
   type FormSchema,
   propertyConflict,
+  type PropertyDef,
   type PropertyGroup,
   propertyYamlPath,
 } from '@resourcepackbuilder/core/form';
@@ -24,17 +25,22 @@ function matchesQuery(_value: string, search: string, keywords: string[] = []): 
   return !query || keywords.some((keyword) => keyword.toLowerCase().includes(query)) ? 1 : 0;
 }
 
-/** "Add" with a searchable list of the group's properties (those in `only`, if given) the item does not use yet. */
+/**
+ * "Add" with a searchable list of the group's properties (those in `only`, if given) the item does not use yet.
+ * `onAdd` replaces adding by id, for properties that are not in the form (e.g. the settings of a block state variant).
+ */
 export function AddPropertyButton({
   schema,
   item,
   group,
   only,
+  onAdd,
 }: {
   schema: FormSchema;
   item: Item;
   group: PropertyGroup;
   only?: string[];
+  onAdd?: (def: PropertyDef) => void;
 }) {
   const t = useTranslations('item');
   const tCommon = useTranslations('common');
@@ -64,7 +70,8 @@ export function AddPropertyButton({
                   keywords={[label, description, propertyYamlPath(def) ?? def.id]}
                   disabled={!!conflict}
                   onSelect={() => {
-                    addProperty(item.id, def.id);
+                    if (onAdd) onAdd(def);
+                    else addProperty(item.id, def.id);
                     setIsOpen(false);
                   }}
                 >

@@ -12,21 +12,24 @@ import { CE_BLOCK_SETTINGS_PROPERTIES } from './schema/blockSettings';
 import { CE_DATA_PROPERTIES } from './schema/data';
 import { CE_EVENT_PROPERTIES } from './schema/events';
 import { CE_GENERAL_PROPERTIES } from './schema/general';
+import { CE_ITEM_BEHAVIOR_PROPERTIES } from './schema/itemBehavior';
 import { CE_LOOT_PROPERTIES } from './schema/loot';
 import { CE_MODEL_PROPERTIES } from './schema/model';
 import { CE_SETTINGS_PROPERTIES } from './schema/settings';
 
-export type CraftEnginePropertyGroup = 'general' | 'data' | 'settings' | 'blockSettings' | 'blockBehavior' | 'events' | 'loot' | 'model';
+export type CraftEnginePropertyGroup =
+  'general' | 'data' | 'settings' | 'itemBehavior' | 'blockSettings' | 'blockBehavior' | 'events' | 'loot' | 'model';
 
 /** `label` and `description` are message keys in the `ceSchema` namespace. */
 export const CE_PROPERTY_GROUPS: Array<{ id: CraftEnginePropertyGroup; label: string; description: string }> = (
-  ['general', 'data', 'settings', 'blockSettings', 'blockBehavior', 'events', 'loot', 'model'] as const
+  ['general', 'data', 'settings', 'itemBehavior', 'blockSettings', 'blockBehavior', 'events', 'loot', 'model'] as const
 ).map((id) => ({ id, label: `groups.${id}.label`, description: `groups.${id}.description` }));
 
 export const CE_PROPERTIES: PropertyDef[] = [
   ...CE_GENERAL_PROPERTIES,
   ...CE_DATA_PROPERTIES,
   ...CE_SETTINGS_PROPERTIES,
+  ...CE_ITEM_BEHAVIOR_PROPERTIES,
   ...CE_BLOCK_SETTINGS_PROPERTIES,
   ...CE_BLOCK_BEHAVIOR_PROPERTIES,
   ...CE_EVENT_PROPERTIES,
@@ -39,7 +42,8 @@ export const CE_MANAGED_PATHS = ['material', 'data.item_name'];
 
 /**
  * The CraftEngine item editor. The group `general` is shown on the app's General tab, `blockSettings` and
- * `blockBehavior` in the Block section of the model tab (only while the item is a block). The Events tab shows the
+ * `blockBehavior` in the Block section of the model tab (only while the item is a block), `itemBehavior` on the
+ * Behaviors tab (how the item places its block or furniture, and its other behaviors). The Events tab shows the
  * item's events and those of the block or furniture it places, the Loot tab what that block or furniture drops. The
  * group `model` (the item keys around its model) is shown on the model tab.
  */
@@ -51,6 +55,7 @@ export const CRAFT_ENGINE_FORM: FormSchema = {
   managedPaths: CE_MANAGED_PATHS,
   tabs: [
     ...(['data', 'settings'] as const).map((group) => ({ id: group, group })),
+    { id: 'behaviors', group: 'itemBehavior' },
     { id: 'events', group: 'events', only: eventPropertyIds },
     { id: 'loot', group: 'loot', only: lootPropertyIds },
   ],

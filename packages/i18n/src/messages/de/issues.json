@@ -84,6 +84,10 @@
     "stateTypeUnused": "State „{state}“ ist vom Typ {type} – das hochgeladene Modell wird dafür nicht verwendet.",
     "customBlockMechanicMissing": "Es sind Stackable-Modelle hochgeladen, aber die Mechanic „Custom Block“ fehlt – sie werden nicht exportiert.",
     "stackableNeedsStringblock": "Stackable funktioniert nur mit dem Block-Typ STRINGBLOCK.",
+    "directionalMissing": "Es sind Modelle für Blockseiten hochgeladen, aber der Custom Block hat keinen Directional-Typ – sie werden nicht exportiert.",
+    "directionalFaceUnused": "Der Directional-Typ dieses Blocks hat keine Seite „{face}“ – ihr Modell wird nicht exportiert.",
+    "directionalNeedsNoteblock": "Nur NOTEBLOCK-Blöcke können directional sein – Nexo ignoriert „directional“ bei {type}.",
+    "hitboxEntryInvalid": "Der {kind}-Hitbox-Eintrag „{entry}“ hat nicht das Format, das Nexo liest.",
     "fileUnreadable": "Die Datei „{path}“ konnte nicht gelesen werden und wird weggelassen.",
     "unsafePath": "Der Pfad „{path}“ würde seinen Ordner verlassen und wird nicht exportiert.",
     "itemModelNeedsVersion": "{feature} braucht Minecraft {version} oder neuer – das Projekt zielt auf {target}.",
@@ -100,7 +104,8 @@
     "itemModelThresholdInvalid": "Der Schwellenwert muss eine Zahl sein.",
     "itemModelNotANumber": "„{key}“ muss eine Zahl sein.",
     "itemModelTreeReplacesGenerated": "Der Item-Modell-Baum ersetzt das Item-Modell, das ResourcepackBuilder sonst erzeugen würde für: {slots}.",
-    "itemModelTreeOverriddenByRawYaml": "Das zusätzliche YAML setzt das Modell des Items selbst, deshalb wird der Item-Modell-Baum nicht geschrieben."
+    "itemModelTreeOverriddenByRawYaml": "Das zusätzliche YAML setzt das Modell des Items selbst, deshalb wird der Item-Modell-Baum nicht geschrieben.",
+    "itemModelOverridesGenerated": "Das Item-Modell {itemModel} ersetzt die vom Export erzeugte Modelldefinition ({generated}), daher werden deren Inventar-Icon und Möbel-Modelle nicht verwendet."
   },
   "selection": {
     "packNameClash": "„{first}“ und „{second}“ verwenden denselben Pack-Namen „{pack}“. Bitte in den Einstellungen eines Projekts umbenennen.",
@@ -190,7 +195,9 @@
     "gridUneven": "Das Bild ({width}×{height}) lässt sich nicht gleichmäßig in {rows} Zeile(n) × {columns} Spalte(n) teilen.",
     "cellTooLarge": "Ein Glyph-Feld ist {width}×{height} groß (maximal {max}×{max}). Bild verkleinern oder in Zeilen/Spalten aufteilen.",
     "fontInvalid": "Die Schriftart muss wie namespace:name aussehen.",
-    "animatedShaders": "Animierte Glyphen nutzen Core-Shader und können bei Minecraft-Updates kaputtgehen."
+    "animatedShaders": "Animierte Glyphen nutzen Core-Shader und können bei Minecraft-Updates kaputtgehen.",
+    "charInvalid": "Das Zeichen muss genau ein Zeichen sein.",
+    "shadowInvalid": "Die Schattenfarbe muss wie #AARRGGBB oder #RRGGBB aussehen."
   },
   "sound": {
     "idInvalid": "Der Name darf nur Kleinbuchstaben, Zahlen sowie _ . - enthalten (z.B. block.rubin.place).",
@@ -200,7 +207,10 @@
     "volumeRange": "Die Lautstärke sollte zwischen 0 und 1 liegen (größer als 1 erhöht nur die Reichweite).",
     "jukeboxDurationMissing": "Bei der Musik-CD fehlt die Länge des Liedes (z.B. 2m 30s oder 150s).",
     "comparatorRange": "Das Komparator-Signal muss zwischen 0 und 15 liegen.",
-    "streamLongSongs": "Lange Lieder besser „streamen“ – dann lädt Minecraft sie nicht komplett in den Speicher."
+    "streamLongSongs": "Lange Lieder besser „streamen“ – dann lädt Minecraft sie nicht komplett in den Speicher.",
+    "weightInvalid": "Die Gewichtung muss eine ganze Zahl ab 1 sein.",
+    "referenceInvalid": "Das verwiesene Sound-Event muss wie namespace:name aussehen (z. B. minecraft:block.stone.break).",
+    "referenceIgnoresFiles": "Nexo spielt nur das verwiesene Sound-Event ab, die hochgeladenen Dateien dieses Sounds werden also nicht genutzt."
   },
   "painting": {
     "datapackNeedsVersion": "Nexo erzeugt das Datapack für eigene Gemälde erst ab Minecraft 1.21.5 – für ältere Versionen musst du es selbst anlegen.",
@@ -241,6 +251,7 @@
     "blockExtraTextures": "Ein Block aus Texturen nutzt höchstens {max} davon. {count, plural, one {Die andere Textur fehlt} other {Die anderen # Texturen fehlen}} im Block.",
     "autoStateBudget": "Die Blöcke des Projekts brauchen {used} Blockzustände der Gruppe „{group}“, CraftEngine hat aber nur {capacity}. Verschiebe einige Blöcke in eine andere Gruppe.",
     "blockAppearanceStateMissing": "Das Aussehen „{appearance}“ hat keinen Blockzustand. Wähle im Bereich Block des Modell-Tabs eine Blockzustandsgruppe dafür.",
+    "blockModelPathMissing": "Das Modell von „{look}“ wird aus mehreren Texturen gebaut und braucht einen Pfad, unter dem es gespeichert wird. Gib ihm einen Modellpfad oder dem Item ein Modell.",
     "blockPropertyInvalid": "Die Blockeigenschaft „{property}“ ist unvollständig: Sie braucht einen bekannten Typ, ein int einen Bereich und ein string seine Werte.",
     "blockNoAppearance": "Die Zustände des Blocks haben kein Aussehen. Füge im Bereich Block des Modell-Tabs eines hinzu.",
     "blockVariantInvalid": "Die Variante „{variant}“ nennt eine Eigenschaft oder einen Wert, die der Block nicht hat. Schreibe sie als Paare eigenschaft=wert, durch Kommas getrennt.",
@@ -250,6 +261,9 @@
     "blockBaseShared": "Die Blöcke {blocks} leihen sich alle die Zustände von {block}, aber jeder Zustand kann nur einen davon zeigen. Wähle für alle bis auf einen einen anderen Vanilla-Block.",
     "rawBlockWithoutBlock": "Das zusätzliche YAML hat einen Abschnitt block:, aber das Item ist kein Block, daher fehlt der Abschnitt. Schalte „Als Block platzieren“ im Bereich Block des Modell-Tabs ein.",
     "blockFenceItemUnknown": "Der Zaun zeigt das Item „{item}“, das es im Projekt nicht gibt. Lege es mit dem Modell des Pfostens oder der Seite an oder wähle im Bereich Block ein anderes Item.",
+    "rawBehaviorsOverride": "Das zusätzliche YAML listet die Verhalten des Items selbst. Der Export schreibt diese Liste statt der aus dem Tab Verhalten, behält die Platzierung des eigenen Blocks oder Möbels vorne, wenn die Liste keine hat, und ergänzt die Verhalten anderer Typen aus dem Tab.",
+    "placementTypeIgnored": "Die Platzierung {type} passt nicht zu dem, was das Item platziert, daher schreibt der Export stattdessen die Standard-Platzierung. Wähle im Tab Verhalten eine Block-Platzierung für einen Block und eine Möbel-Platzierung für ein Möbel.",
+    "behaviorTargetMissing": "Das Verhalten {type} nennt keinen Block und kein Möbel zum Platzieren. Trage die ID im Tab Verhalten ein oder mache das Item im Modell-Tab zu einem Block oder Möbel.",
     "furnitureWithBlock": "Das Item ist zugleich Block und Möbel. CraftEngine kann nur eins davon platzieren, daher fehlt das Möbel. Schalte eins davon im Modell-Tab aus.",
     "rawFurnitureWithoutFurniture": "Das zusätzliche YAML hat einen Abschnitt furniture:, aber das Item ist kein Möbel, daher fehlt der Abschnitt. Schalte „Als Möbel platzieren“ im Bereich Möbel des Modell-Tabs ein.",
     "furnitureNoVariant": "Das Möbel hat keine Variante. Füge eine im Bereich Möbel des Modell-Tabs hinzu.",
@@ -304,7 +318,9 @@
     "equipmentSetPiecesMissing": "Das Ausrüstungsset hat keine Stufen (pieces), deshalb lehnt CraftEngine es ab.",
     "equipmentSetTierInvalid": "Die Stufe „{tier}“ muss eine ganze Anzahl Teile ab 1 sein, deshalb lehnt CraftEngine das Set ab.",
     "damageRuleTypeMissing": "Die Schadensregel hat keinen Schadenstyp und wird deshalb weggelassen.",
-    "damageRuleEmpty": "Die Schadensregel hat weder eine Formel noch Effekte, deshalb lehnt CraftEngine sie ab."
+    "damageRuleEmpty": "Die Schadensregel hat weder eine Formel noch Effekte, deshalb lehnt CraftEngine sie ab.",
+    "armorLayerUnsupported": "CraftEngine kennt keine Ausrüstungsebene „{layer}“, sie fehlt daher in equipments.yml.",
+    "armorTrimLayers": "Trim-basierte Ausrüstung nutzt nur die Texturen der Spielerrüstung (Ebene 1 und 2), die anderen Ebenen und die Ebenen-Optionen des Sets „{set}“ fallen daher weg."
   },
   "issueList": {
     "openItem": "Zum Item",

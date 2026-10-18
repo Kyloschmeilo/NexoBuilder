@@ -8,7 +8,7 @@ import type { Item, Project } from '../types';
 import { toIdentifier } from '@resourcepackbuilder/utils';
 import { DEFAULT_MATERIAL } from '../item';
 import type { Painting } from './painting';
-import type { Sound } from './sound';
+import { soundEventKey, type Sound } from './sound';
 import { mediaKey } from './entry';
 
 /** What a new item for a media entry starts with; `configure` adds its components. */
@@ -41,7 +41,7 @@ export function musicDiscItem(project: Pick<Project, 'namespace' | 'target'>, so
     itemId: `${toIdentifier(sound.soundId, ID_CHARS, 'sound')}_disc`,
     material: DEFAULT_MATERIAL,
     configure: (item) => {
-      const song = mediaKey(project, sound.soundId);
+      const song = soundEventKey(project, sound);
       if (project.target === 'craftengine') {
         item.config.data = { jukebox_playable: song, components: { 'minecraft:max_stack_size': 1 } };
       } else {

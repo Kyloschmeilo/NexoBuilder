@@ -8,6 +8,7 @@ import { NumberInput, TextInput } from '../../components/editor';
 import { CheckboxField } from '../../components/CheckboxField';
 import { FormField } from '../../components/FormField';
 import { NexoKey } from '../media/NexoKey';
+import { GlyphExtraFields } from './GlyphExtraFields';
 import { useOpenProject } from '../../store/project';
 
 const DEFAULT_FONT = 'minecraft:default';
@@ -122,6 +123,7 @@ export function GlyphFields({ glyph, glyphs }: { glyph: Glyph; glyphs: Glyph[] }
           description={t('tabCompleteHint')}
         />
       </div>
+      <GlyphExtraFields glyph={glyph} glyphs={glyphs} />
     </>
   );
 }

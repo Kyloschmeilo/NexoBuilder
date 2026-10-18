@@ -10,6 +10,7 @@ import craftEngine from './craftEngine.json' with { type: 'json' };
 import data from './data.json' with { type: 'json' };
 import events from './events.json' with { type: 'json' };
 import general from './general.json' with { type: 'json' };
+import itemBehavior from './itemBehavior.json' with { type: 'json' };
 import logicConditions from './logicConditions.json' with { type: 'json' };
 import logicFunctions from './logicFunctions.json' with { type: 'json' };
 import logicLoot from './logicLoot.json' with { type: 'json' };
@@ -29,6 +30,7 @@ export default mergeCatalogue(
   data,
   events,
   general,
+  itemBehavior,
   logicConditions,
   logicFunctions,
   logicLoot,
