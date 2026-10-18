@@ -1,0 +1,103 @@
+{
+  "groups": {
+    "itemBehavior": {
+      "label": "Behaviors",
+      "description": "How the item places its block or furniture, and what else it does (range mining, composting …)"
+    }
+  },
+  "properties": {
+    "behavior": {
+      "label": "Placement Behavior",
+      "description": "How the item places its block or furniture: on any face, only on the ground, walls or ceilings, on liquids, or over several blocks. For an item that places nothing of its own, name the block or furniture it places.",
+      "hint": "For an item with its own block or furniture, the export fills in its ID and keeps only a placement that fits it. Placement rules per furniture variant (rotation, alignment) are set in the Furniture section of the model tab.",
+      "field": {
+        "label": "Placement",
+        "fields": {
+          "type": {
+            "label": "type",
+            "help": "The block placements (…block_item) fit a block, the furniture placements (…furniture_item) fit furniture."
+          },
+          "block": {
+            "label": "block",
+            "help": "Left empty for the item's own block.",
+            "placeholder": "namespace:block"
+          },
+          "furniture": {
+            "label": "furniture",
+            "help": "Left empty for the item's own furniture.",
+            "placeholder": "namespace:furniture"
+          },
+          "yOffset": {
+            "label": "y_offset",
+            "help": "How many blocks above the liquid surface the block is placed (default 1)."
+          },
+          "ignorePlacer": {
+            "label": "ignore_placer"
+          },
+          "ignoreEntities": {
+            "label": "ignore_entities"
+          },
+          "againstBlocks": {
+            "label": "against_blocks",
+            "help": "Block IDs or states such as minecraft:oak_fence[east=true].",
+            "placeholder": "minecraft:stone"
+          },
+          "againstBlockTags": {
+            "label": "against_block_tags",
+            "help": "Block tags, written without #.",
+            "placeholder": "minecraft:planks"
+          },
+          "blacklist": {
+            "label": "blacklist",
+            "help": "On (default): the furniture cannot be placed against these blocks. Off: only against these blocks."
+          },
+          "sourceOnly": {
+            "label": "source_only"
+          },
+          "liquidType": {
+            "label": "liquid_type"
+          }
+        }
+      }
+    },
+    "behaviors": {
+      "label": "Extra Behaviors",
+      "description": "Behaviors the item has besides placing: mining an area, composting, lighting fires. The export lists them after the placement.",
+      "field": {
+        "label": "Behaviors"
+      }
+    }
+  },
+  "logic": {
+    "itemBehaviors": {
+      "rangeMiningItem": {
+        "label": "range_mining_item",
+        "help": "Breaks more blocks around the mined one; the range turns with the direction the player faces.",
+        "fields": {
+          "conditions": {
+            "label": "conditions"
+          },
+          "range": {
+            "label": "range",
+            "help": "Offsets width,height,depth from the mined block, one per entry.",
+            "placeholder": "0,1,0"
+          }
+        }
+      },
+      "compostableItem": {
+        "label": "compostable_item",
+        "help": "Makes an item compostable that is not compostable in vanilla. Hoppers ignore it.",
+        "fields": {
+          "chance": {
+            "label": "chance",
+            "help": "Chance that the composter level rises (0–1, default 0.55)."
+          }
+        }
+      },
+      "flintAndSteelItem": {
+        "label": "flint_and_steel_item",
+        "help": "Lights fires like flint and steel. Registered in CraftEngine 26.9, not documented on the wiki."
+      }
+    }
+  }
+}

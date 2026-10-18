@@ -1,0 +1,103 @@
+{
+  "groups": {
+    "itemBehavior": {
+      "label": "Verhalten",
+      "description": "Wie das Item seinen Block oder sein Möbel platziert, und was es sonst noch tut (Bereichsabbau, Kompostieren …)"
+    }
+  },
+  "properties": {
+    "behavior": {
+      "label": "Placement Behavior",
+      "description": "Wie das Item seinen Block oder sein Möbel platziert: an jeder Seite, nur auf dem Boden, an Wänden oder Decken, auf Flüssigkeiten oder über mehrere Blöcke. Für ein Item ohne eigenen Block oder eigenes Möbel nennst du, was es platziert.",
+      "hint": "Bei einem Item mit eigenem Block oder Möbel trägt der Export dessen ID ein und behält nur eine Platzierung, die dazu passt. Platzierungsregeln je Möbelvariante (Drehung, Ausrichtung) stellst du im Bereich Möbel des Modell-Tabs ein.",
+      "field": {
+        "label": "Platzierung",
+        "fields": {
+          "type": {
+            "label": "type",
+            "help": "Die Block-Platzierungen (…block_item) passen zu einem Block, die Möbel-Platzierungen (…furniture_item) zu einem Möbel."
+          },
+          "block": {
+            "label": "block",
+            "help": "Leer lassen für den eigenen Block des Items.",
+            "placeholder": "namespace:block"
+          },
+          "furniture": {
+            "label": "furniture",
+            "help": "Leer lassen für das eigene Möbel des Items.",
+            "placeholder": "namespace:moebel"
+          },
+          "yOffset": {
+            "label": "y_offset",
+            "help": "Wie viele Blöcke über der Flüssigkeitsoberfläche der Block platziert wird (Standard 1)."
+          },
+          "ignorePlacer": {
+            "label": "ignore_placer"
+          },
+          "ignoreEntities": {
+            "label": "ignore_entities"
+          },
+          "againstBlocks": {
+            "label": "against_blocks",
+            "help": "Block-IDs oder Zustände wie minecraft:oak_fence[east=true].",
+            "placeholder": "minecraft:stone"
+          },
+          "againstBlockTags": {
+            "label": "against_block_tags",
+            "help": "Block-Tags, ohne # geschrieben.",
+            "placeholder": "minecraft:planks"
+          },
+          "blacklist": {
+            "label": "blacklist",
+            "help": "An (Standard): Das Möbel kann nicht an diese Blöcke platziert werden. Aus: nur an diese Blöcke."
+          },
+          "sourceOnly": {
+            "label": "source_only"
+          },
+          "liquidType": {
+            "label": "liquid_type"
+          }
+        }
+      }
+    },
+    "behaviors": {
+      "label": "Extra Behaviors",
+      "description": "Verhalten, die das Item neben dem Platzieren hat: einen Bereich abbauen, kompostieren, Feuer entzünden. Der Export listet sie nach der Platzierung.",
+      "field": {
+        "label": "Verhalten"
+      }
+    }
+  },
+  "logic": {
+    "itemBehaviors": {
+      "rangeMiningItem": {
+        "label": "range_mining_item",
+        "help": "Baut weitere Blöcke um den abgebauten herum ab; der Bereich dreht sich mit der Blickrichtung des Spielers.",
+        "fields": {
+          "conditions": {
+            "label": "conditions"
+          },
+          "range": {
+            "label": "range",
+            "help": "Versatz Breite,Höhe,Tiefe vom abgebauten Block, einer je Eintrag.",
+            "placeholder": "0,1,0"
+          }
+        }
+      },
+      "compostableItem": {
+        "label": "compostable_item",
+        "help": "Macht ein Item kompostierbar, das in Vanilla nicht kompostierbar ist. Trichter ignorieren es.",
+        "fields": {
+          "chance": {
+            "label": "chance",
+            "help": "Chance, dass der Füllstand des Komposters steigt (0–1, Standard 0.55)."
+          }
+        }
+      },
+      "flintAndSteelItem": {
+        "label": "flint_and_steel_item",
+        "help": "Entzündet Feuer wie ein Feuerzeug. In CraftEngine 26.9 registriert, im Wiki nicht dokumentiert."
+      }
+    }
+  }
+}
