@@ -3,7 +3,8 @@
     "copyId": "ID kopieren",
     "replaceImage": "Bild ersetzen",
     "optional": "optional",
-    "deleteMessage": "„{name}“ wird gelöscht."
+    "deleteMessage": "„{name}“ wird gelöscht.",
+    "docs": "{target, select, craftengine {Seite im CraftEngine-Wiki öffnen} other {Seite in der Nexo-Doku öffnen}}"
   },
   "sounds": {
     "title": "Sounds",
@@ -32,7 +33,15 @@
     "createDisc": "Musik-CD-Item anlegen",
     "createDiscHint": "Ein neues Item mit der Component „Jukebox Playable“ für diesen Song.",
     "discCreated": "Musik-CD-Item angelegt – Modell oder Textur kannst du noch hinzufügen.",
-    "deleteTitle": "Sound löschen?"
+    "deleteTitle": "Sound löschen?",
+    "weightHelp": "Wie oft dieser Sound im Vergleich zu den anderen Einträgen des Events gewählt wird, Standard 1",
+    "subtitleHelp": "Übersetzungsschlüssel des Untertitels (optional)",
+    "subtitlePlaceholder": "z. B. subtitles.block.ruby.place",
+    "referenceHelp": "Ein anderes Sound-Event, das dieser Sound abspielt (optional). Nexo spielt dann nur dieses Event, ohne die Dateien.",
+    "referencePlaceholder": "z. B. minecraft:block.bell.use",
+    "preloadHint": "(mit dem Pack laden, nicht erst beim ersten Abspielen)",
+    "replaceHint": "(ersetzt den Vanilla-Sound mit diesem Namen; ohne Dateien wird er stumm)",
+    "jukeboxDocs": "{target, select, craftengine {Jukebox-Songs im CraftEngine-Wiki} other {Musikplatten in der Nexo-Doku}}"
   },
   "paintings": {
     "title": "Paintings",
@@ -96,7 +105,20 @@
     "largeNoPreview": "Großer Glyph (z.B. GUI) – keine Chat-Vorschau.",
     "previewBefore": "Hallo",
     "previewAfter": "Welt",
-    "deleteTitle": "Glyph löschen?"
+    "deleteTitle": "Glyph löschen?",
+    "charHelp": "Ein festes Zeichen für die Glyphe (optional, sonst wird eins automatisch gewählt)",
+    "charPlaceholder": "automatisch",
+    "shadowHelp": "Farbe des Textschattens der Glyphe (optional, sonst Glyphs.default_shadow in settings.yml)",
+    "shadowPlaceholder": "z. B. #80000000",
+    "templateHelp": "Eine andere Glyphe, deren Einstellungen diese Glyphe übernimmt (optional)",
+    "gifTypeHelp": "Wie die Animation entsteht: Core-Shader oder Sprite-Sheet",
+    "gifTypeDefault": "Standard aus settings.yml",
+    "interpolateHint": "(weich zwischen den Bildern überblenden)",
+    "emojiHint": "Was aus einem Chat-Kürzel dieser Glyphe wird. Leere Felder nutzen den Standard von CraftEngine.",
+    "emojiDocs": "Emoji im CraftEngine-Wiki",
+    "emojiContentHelp": "MiniMessage; '<'arg:emoji> ist das Bild, '<'arg:keyword> das eingegebene Kürzel",
+    "emojiContentPlaceholder": "'<'white>'<'arg:emoji>'<'/white>",
+    "emojiOverrideHelp": "Inhalt nur im Kontext {context} (optional)"
   },
   "testServer": {
     "title": "Testserver",

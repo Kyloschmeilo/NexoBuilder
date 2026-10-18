@@ -1,0 +1,320 @@
+{
+  "recipes": {
+    "types": {
+      "crafter": {
+        "label": "Crafter",
+        "description": "Crafter block only: like a shaped recipe, but not in crafting tables or the inventory."
+      },
+      "shapedTransform": {
+        "label": "Shaped Transform",
+        "description": "Crafting table in a pattern: one ingredient is the source item whose data the result keeps."
+      },
+      "shapelessTransform": {
+        "label": "Shapeless Transform",
+        "description": "Crafting table in any arrangement: one ingredient is the source item whose data the result keeps."
+      },
+      "brewing": {
+        "label": "Brewing",
+        "description": "Brewing stand: an ingredient turns the item in the bottle slot into this item."
+      },
+      "smithingTransform": {
+        "label": "Smithing Upgrade",
+        "description": "Smithing table: upgrades the base item into this item, like netherite gear."
+      },
+      "smithingTrim": {
+        "label": "Smithing Trim",
+        "description": "Smithing table: puts a trim pattern on the base item; this recipe has no result of its own."
+      },
+      "transmute": {
+        "label": "Transmute",
+        "description": "Crafting table: turns the input into this item and keeps the components you list."
+      },
+      "anvil": {
+        "label": "Anvil",
+        "description": "Anvil: combines the input with a material into this item or repairs it. Read by Nexo 1.30; not in the docs."
+      },
+      "dye": {
+        "label": "Dye",
+        "description": "Crafting table: dyes the target item. Read by CraftEngine 26.9; not in the wiki."
+      }
+    },
+    "sources": {
+      "external": "Other plugin item",
+      "crucible": "MythicCrucible item",
+      "mmoitems": "MMOItems item"
+    },
+    "slots": {
+      "input": {
+        "label": "Input",
+        "help": "The furnace or stonecutter input, the bottle of a brewing stand, the item to transmute or repair, or the item to dye."
+      },
+      "reagent": {
+        "label": "Ingredient",
+        "help": "The item added at the top of the brewing stand."
+      },
+      "template": {
+        "label": "Template",
+        "help": "The smithing template in the first slot."
+      },
+      "base": {
+        "label": "Base",
+        "help": "The item that is upgraded or trimmed."
+      },
+      "addition": {
+        "label": "Addition",
+        "help": "The material in the third slot, e.g. a netherite ingot or a trim material."
+      },
+      "material": {
+        "label": "Material",
+        "help": "The item combined with the input."
+      },
+      "dye": {
+        "label": "Dye",
+        "help": "The dye or dye tag that colors the target."
+      }
+    },
+    "categories": {
+      "building": {
+        "label": "Building blocks"
+      },
+      "redstone": {
+        "label": "Redstone"
+      },
+      "equipment": {
+        "label": "Equipment"
+      },
+      "misc": {
+        "label": "Miscellaneous"
+      },
+      "food": {
+        "label": "Food"
+      },
+      "blocks": {
+        "label": "Blocks"
+      }
+    },
+    "options": {
+      "fields": {
+        "permission": {
+          "label": "Permission a player needs to craft the recipe",
+          "help": "Players without it cannot use the recipe. Read by Nexo 1.30; not in the docs.",
+          "placeholder": "e.g. ruby.craft.sword"
+        },
+        "nexoGroup": {
+          "label": "Recipe book group",
+          "help": "Recipes with the same group share one slot in the recipe book. Read by Nexo 1.30; not in the docs."
+        },
+        "nexoCraftingCategory": {
+          "label": "Recipe book tab",
+          "help": "The tab of the recipe book the recipe is listed in. Read by Nexo 1.30; not in the docs."
+        },
+        "nexoCookingCategory": {
+          "label": "Recipe book tab",
+          "help": "The tab of the furnace recipe book the recipe is listed in. Read by Nexo 1.30; not in the docs."
+        },
+        "copyComponents": {
+          "label": "Copy the base item’s data to the result",
+          "help": "Keeps names, lore, enchantments and other components of the base item."
+        },
+        "trimPattern": {
+          "label": "Trim pattern put on the base item",
+          "help": "A vanilla pattern or one from a data pack.",
+          "placeholder": "e.g. minecraft:silence"
+        },
+        "recipePreserve": {
+          "label": "Components the result keeps from the input",
+          "help": "E.g. damage, enchantments or custom_name."
+        },
+        "anvilCost": {
+          "label": "Experience levels the anvil takes",
+          "help": "Costs at or above the anvil’s maximum (Recipes.anvil_max_repair_cost) show as too expensive outside creative mode. Read by Nexo 1.30; not in the docs."
+        },
+        "anvilRepair": {
+          "label": "Durability the anvil restores",
+          "help": "When set, the anvil repairs the input by this amount instead of producing this item. Read by Nexo 1.30; not in the docs."
+        },
+        "damage": {
+          "label": "Durability the item loses instead of being used up",
+          "help": "The ingredient stays in the grid and takes this much damage, like a knife."
+        },
+        "preserve": {
+          "label": "Components the result keeps from this ingredient",
+          "help": "E.g. damage, enchantments or custom_name; lets a recipe upgrade an item without wiping it."
+        },
+        "craftingCategory": {
+          "label": "Recipe book tab",
+          "help": "The tab of the recipe book the recipe is listed in."
+        },
+        "cookingCategory": {
+          "label": "Recipe book tab",
+          "help": "The tab of the furnace recipe book the recipe is listed in."
+        },
+        "group": {
+          "label": "Recipe book group",
+          "help": "Recipes with the same group in the same tab share one slot in the recipe book."
+        },
+        "unlockOnIngredientObtained": {
+          "label": "Unlock when the player has the ingredients",
+          "help": "Overrides the default of config.yml (recipe.unlock-on-ingredient-obtained)."
+        },
+        "unlockOnJoin": {
+          "label": "Unlock when the player joins",
+          "help": "Unlocks the recipe on join, whether or not the player has the ingredients."
+        },
+        "showNotification": {
+          "label": "Show the unlock toast",
+          "help": "Shows a notification when the recipe is unlocked (on by default). Read by CraftEngine 26.9; not in the wiki."
+        },
+        "alwaysRebuildResult": {
+          "label": "Build the result anew on every craft",
+          "help": "Off reuses the built result item. Read by CraftEngine 26.9; not in the wiki."
+        },
+        "mergeComponents": {
+          "label": "Merge the source item’s components into the result",
+          "help": "On by default, like vanilla smithing."
+        },
+        "transformProcessors": {
+          "label": "How the source item’s data reaches the result",
+          "help": "Apply data, merge enchantments, or keep custom data, components or tags of the source item."
+        },
+        "postProcessors": {
+          "label": "Changes to the result item",
+          "help": "Applies item data to the result, e.g. enchantments, so one recipe can produce a varied item."
+        },
+        "pattern": {
+          "label": "Trim pattern put on the base item",
+          "help": "Required from Minecraft 1.21.5 on.",
+          "placeholder": "e.g. minecraft:bolt"
+        },
+        "conditions": {
+          "label": "Conditions a player must meet to use the recipe",
+          "help": "All must hold. CraftEngine Premium only."
+        },
+        "functions": {
+          "label": "Functions run when the recipe is crafted",
+          "help": "E.g. a command or a sound. CraftEngine Premium only."
+        },
+        "visualResult": {
+          "label": "Result shown in the crafting grid instead of the real one",
+          "help": "Hides a random result until it is crafted (id, count, post_processors). CraftEngine Premium only.",
+          "placeholder": "id: ruby:ruby_sword\ncount: 1"
+        },
+        "disabledRecipes": {
+          "label": "Vanilla recipes Nexo disables",
+          "help": "Recipe keys like minecraft:diamond_sword, written to recipes/disabled_recipes.yml for the whole project.",
+          "placeholder": "minecraft:diamond_sword"
+        }
+      },
+      "ingredient": {
+        "fields": {
+          "predicate": {
+            "label": "Checks the ingredient must pass",
+            "help": "Require enchantments or an exact data component beyond the item ID."
+          },
+          "source": {
+            "label": "Source item whose data the result keeps",
+            "help": "Mark exactly one ingredient of a transform recipe."
+          }
+        }
+      }
+    },
+    "processors": {
+      "applyData": {
+        "label": "Apply data",
+        "help": "Applies item data to the combined item.",
+        "fields": {
+          "data": {
+            "label": "Item data to apply, like an item’s data section",
+            "help": "Written as YAML, e.g. enchantment or lore.",
+            "placeholder": "enchantment:\n  minecraft:efficiency: 5"
+          }
+        }
+      },
+      "mergeEnchantments": {
+        "label": "Merge enchantments",
+        "help": "Combines the enchantments of the result and the source item instead of picking one."
+      },
+      "keepCustomData": {
+        "label": "Keep custom data",
+        "help": "Keeps paths of the custom_data component (1.20.5+).",
+        "fields": {
+          "paths": {
+            "label": "Paths inside custom_data to keep",
+            "placeholder": "energy.fly"
+          }
+        }
+      },
+      "keepComponents": {
+        "label": "Keep components",
+        "help": "Keeps the listed data components (1.20.5+).",
+        "fields": {
+          "components": {
+            "label": "Data components to keep"
+          }
+        }
+      },
+      "keepTags": {
+        "label": "Keep tags",
+        "help": "Keeps the listed NBT tags (1.20–1.20.4).",
+        "fields": {
+          "tags": {
+            "label": "NBT tags to keep",
+            "placeholder": "display.Name"
+          }
+        }
+      }
+    },
+    "postProcessors": {
+      "applyData": {
+        "label": "Apply data",
+        "help": "Applies item data to the result.",
+        "fields": {
+          "data": {
+            "label": "Item data to apply, like an item’s data section",
+            "help": "Written as YAML, e.g. enchantment or lore.",
+            "placeholder": "enchantment:\n  minecraft:efficiency: 5"
+          }
+        }
+      }
+    },
+    "predicates": {
+      "enchantment": {
+        "label": "Enchantment",
+        "help": "The item needs at least these enchantment levels.",
+        "fields": {
+          "enchantments": {
+            "label": "Minimum level per enchantment",
+            "keyLabel": "Enchantment",
+            "value": {
+              "label": "Minimum level"
+            }
+          }
+        }
+      },
+      "exact": {
+        "label": "Exact component",
+        "help": "The item needs this exact component value; copy it with /ce debug item-component.",
+        "fields": {
+          "component": {
+            "label": "Data component to compare"
+          },
+          "value": {
+            "label": "Value with its format prefix",
+            "placeholder": "(snbt) ..."
+          }
+        }
+      }
+    },
+    "sections": {
+      "options": {
+        "label": "Recipe options"
+      },
+      "premium": {
+        "label": "CraftEngine Premium"
+      },
+      "ingredient": {
+        "label": "More ingredient options"
+      }
+    }
+  }
+}

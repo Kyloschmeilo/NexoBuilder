@@ -1,6 +1,7 @@
 import { CE_COMPONENTS, CE_LOCALES } from '../options';
 import { field, properties } from '../../../form/build';
 import { withDocs } from '../../../form/docs';
+import { ceDataDocs, loreLines } from './data';
 import { CE_DOCS } from './docs';
 
 /**
@@ -11,8 +12,10 @@ export const CE_GENERAL_PROPERTIES = properties(
   'general',
   withDocs(CE_DOCS.data, {
     'data.lore': {
-      field: field.stringList({ format: 'minimessage', placeholder: true }),
+      field: loreLines(),
       defaultValue: () => [''],
+      docs: ceDataDocs('lore'),
+      common: true,
     },
     'data.custom_name': {
       field: field.text({ format: 'minimessage', placeholder: true }),

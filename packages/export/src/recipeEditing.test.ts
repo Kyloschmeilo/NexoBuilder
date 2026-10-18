@@ -16,8 +16,10 @@ import {
   recipeInputFrame,
   recipeIssues,
   removeIngredient,
+  setRecipeSlot,
   withIngredientAmount,
   withIngredientId,
+  withIngredientSource,
 } from '@resourcepackbuilder/core/project';
 import { issuesFor, type Issue, type IssueCode, type IssueContext } from '@resourcepackbuilder/utils';
 
@@ -90,5 +92,21 @@ describe('recipe operations', () => {
     expect(ingredient.amount).toBe(3);
     expect('amount' in withIngredientAmount(ingredient, 1)).toBe(false);
     expect('amount' in withIngredientAmount(ingredient, undefined)).toBe(false);
+  });
+
+  it('switches the source, upper-casing materials and keeping the item type only for MMOItems', () => {
+    expect(withIngredientSource({ source: 'nexo', id: 'iron_ingot' }, 'minecraft')).toEqual({ source: 'minecraft', id: 'IRON_INGOT' });
+    const mmo = withIngredientSource({ source: 'mmoitems', id: 'CUTLASS', itemType: 'SWORD', amount: 2 }, 'mmoitems');
+    expect(mmo).toEqual({ source: 'mmoitems', id: 'CUTLASS', itemType: 'SWORD', amount: 2 });
+    expect(withIngredientSource(mmo, 'crucible')).toEqual({ source: 'crucible', id: 'CUTLASS', amount: 2 });
+  });
+
+  it('puts single ingredients into the input or the other slots', () => {
+    const recipe = createRecipe('brewing', 'r');
+    expect(recipe.slots).toEqual({ reagent: emptyIngredient() });
+    setRecipeSlot(recipe, 'input', { source: 'minecraft', id: 'GLASS_BOTTLE' });
+    setRecipeSlot(recipe, 'reagent', { source: 'nexo', id: 'leaf' });
+    expect(recipe.input).toEqual({ source: 'minecraft', id: 'GLASS_BOTTLE' });
+    expect(recipe.slots).toEqual({ reagent: { source: 'nexo', id: 'leaf' } });
   });
 });

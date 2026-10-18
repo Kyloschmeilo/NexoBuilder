@@ -8,6 +8,7 @@
     "recipe": "Recipe “{recipe}”",
     "recipeIngredient": "Recipe “{recipe}”, ingredient {letter}",
     "recipeInput": "Recipe “{recipe}”, input",
+    "recipeSlot": "Recipe “{recipe}”, {slot}",
     "property": "{property}",
     "field": "{field}",
     "listEntry": "#{index}",
@@ -83,8 +84,13 @@
     "stateTypeUnused": "State “{state}” is of type {type} – the uploaded model is not used for it.",
     "customBlockMechanicMissing": "Stackable models are uploaded, but the “Custom Block” mechanic is missing – they are not exported.",
     "stackableNeedsStringblock": "Stackable only works with the block type STRINGBLOCK.",
+    "directionalMissing": "Face models are uploaded, but the custom block has no directional type – they are not exported.",
+    "directionalFaceUnused": "The directional type of this block has no face “{face}” – its model is not exported.",
+    "directionalNeedsNoteblock": "Only NOTEBLOCK blocks can be directional – Nexo ignores “directional” on {type}.",
+    "hitboxEntryInvalid": "The {kind} hitbox entry “{entry}” does not have the format Nexo reads.",
     "fileUnreadable": "The file “{path}” could not be read and is left out.",
-    "unsafePath": "The path “{path}” would leave its folder and is not exported."
+    "unsafePath": "The path “{path}” would leave its folder and is not exported.",
+    "itemModelOverridesGenerated": "The item model {itemModel} replaces the model definition the export generated ({generated}), so the inventory icon and furniture models of that definition are not used."
   },
   "selection": {
     "packNameClash": "“{first}” and “{second}” use the same pack name “{pack}”. Rename it in the settings of one of the projects.",
@@ -156,7 +162,15 @@
     "tagInvalid": "“{id}” is not a valid tag (e.g. planks).",
     "nexoItemNotInProject": "The Nexo item “{id}” is not in this project – it must exist on the server.",
     "ceItemNotInProject": "The item “{id}” is not in this project. CraftEngine skips the recipe unless another pack on the server has it.",
-    "amountRange": "The amount must be between 1 and 64."
+    "amountRange": "The amount must be between 1 and 64.",
+    "typeUnsupported": "{target} has no “{type}” recipes, so this recipe is not exported. Change its type or remove it.",
+    "sourceUnsupported": "{target} cannot read this ingredient source, so “{id}” is not exported. Pick another source.",
+    "externalIdInvalid": "“{id}” is not a namespaced item ID (e.g. mythicmobs:kingscrown).",
+    "mmoitemsTypeMissing": "The MMOItems item “{id}” needs its item type (e.g. SWORD).",
+    "alternativeMissing": "An alternative item has no ID.",
+    "sourceMissing": "Mark one ingredient as the source item whose data the result keeps.",
+    "sourceMultiple": "Only one ingredient can be the source item.",
+    "trimPatternMissing": "The trim pattern is missing (e.g. minecraft:bolt)."
   },
   "glyph": {
     "idInvalid": "The ID may only contain lowercase letters, digits and _.",
@@ -174,7 +188,9 @@
     "gridUneven": "The image ({width}×{height}) cannot be split evenly into {rows} row(s) × {columns} column(s).",
     "cellTooLarge": "A glyph cell is {width}×{height} (at most {max}×{max}). Scale the image down or split it into rows/columns.",
     "fontInvalid": "The font must look like namespace:name.",
-    "animatedShaders": "Animated glyphs use core shaders and may break with Minecraft updates."
+    "animatedShaders": "Animated glyphs use core shaders and may break with Minecraft updates.",
+    "charInvalid": "The character must be exactly one character.",
+    "shadowInvalid": "The shadow color must look like #AARRGGBB or #RRGGBB."
   },
   "sound": {
     "idInvalid": "The name may only contain lowercase letters, digits and _ . - (e.g. block.ruby.place).",
@@ -184,7 +200,10 @@
     "volumeRange": "The volume should be between 0 and 1 (more than 1 only increases the range).",
     "jukeboxDurationMissing": "The music disc is missing the length of the song (e.g. 2m 30s or 150s).",
     "comparatorRange": "The comparator signal must be between 0 and 15.",
-    "streamLongSongs": "Better “stream” long songs – then Minecraft does not load them into memory completely."
+    "streamLongSongs": "Better “stream” long songs – then Minecraft does not load them into memory completely.",
+    "weightInvalid": "The weight must be a whole number of at least 1.",
+    "referenceInvalid": "The referenced sound event must look like namespace:name (e.g. minecraft:block.stone.break).",
+    "referenceIgnoresFiles": "Nexo plays only the referenced sound event, so the uploaded files of this sound are not used."
   },
   "painting": {
     "datapackNeedsVersion": "Nexo only creates the datapack for custom paintings from Minecraft 1.21.5 on – for older versions you have to create it yourself.",
@@ -215,7 +234,6 @@
     "glyphPermissionUnused": "CraftEngine checks permissions only for chat shortcuts, so this glyph's permission is not exported. Add a placeholder to use it.",
     "translationLocaleInvalid": "The translation language \"{locale}\" is not a Minecraft language code (like de_de), so it is left out.",
     "glyphReferenceUnknown": "“{reference}” is not a multi-bitmap glyph of this project. CraftEngine cannot find the cell, so this glyph is not exported.",
-    "recipeKindUnsupported": "CraftEngine has no recipe type for “{type}” recipes, so this recipe is not exported.",
     "materialInvalid": "The material “{material}” is invalid for CraftEngine (e.g. diamond_sword or minecraft:diamond_sword).",
     "variantExtraModels": "CraftEngine uses only the first {used, plural, one {model} other {# models}} of this variant. The other {count} {count, plural, one {is} other {are}} not exported.",
     "reservedPackName": "The pack name “{name}” belongs to one of CraftEngine's own packs (default, default_…, internal, legacy_armor, remove_shulker_head, customcrops). Choose another pack name in the project settings.",
@@ -225,6 +243,7 @@
     "blockExtraTextures": "A block made from textures uses at most {max} of them, so {count, plural, one {one more texture is} other {# more textures are}} left out of the block.",
     "autoStateBudget": "The project’s blocks need {used} block states of the group “{group}”, but CraftEngine has only {capacity}. Move some blocks to another group.",
     "blockAppearanceStateMissing": "The appearance “{appearance}” has no block state. Choose a block state group for it in the Block section of the model tab.",
+    "blockModelPathMissing": "The model of “{look}” is built from several textures and needs a path to be saved at. Give it a model path, or give the item a model.",
     "blockPropertyInvalid": "The block property “{property}” is incomplete: it needs a known type, an int a range and a string its values.",
     "blockNoAppearance": "The block’s states have no appearance. Add one in the Block section of the model tab.",
     "blockVariantInvalid": "The variant “{variant}” names a property or value the block does not have. Write it as property=value pairs, separated by commas.",
@@ -234,6 +253,9 @@
     "blockBaseShared": "The blocks {blocks} all borrow the states of {block}, but each state can only show one of them. Choose another vanilla block for all but one.",
     "rawBlockWithoutBlock": "The additional YAML has a block: section, but the item is no block, so the section is left out. Turn on “Place as a block” in the Block section of the model tab.",
     "blockFenceItemUnknown": "The fence shows the item “{item}”, which the project does not have. Create it with the model of the post or the side, or choose another item in the Block section.",
+    "rawBehaviorsOverride": "The additional YAML lists the item's behaviors itself. The export writes its list instead of the one from the Behaviors tab, keeping the placement of the item's block or furniture in front when the list has none and adding the tab's behaviors of other types.",
+    "placementTypeIgnored": "The placement {type} does not fit what the item places, so the export writes the default placement instead. Pick a block placement for a block and a furniture placement for furniture in the Behaviors tab.",
+    "behaviorTargetMissing": "The behavior {type} names no block or furniture to place. Enter its ID in the Behaviors tab, or make the item a block or furniture in the model tab.",
     "furnitureWithBlock": "The item is a block and furniture at once. CraftEngine can place only one of them, so the furniture is left out. Turn off one of them in the model tab.",
     "rawFurnitureWithoutFurniture": "The additional YAML has a furniture: section, but the item is no furniture, so the section is left out. Turn on “Place as furniture” in the Furniture section of the model tab.",
     "furnitureNoVariant": "The furniture has no variant. Add one in the Furniture section of the model tab.",
@@ -288,7 +310,9 @@
     "equipmentSetPiecesMissing": "The equipment set has no tiers (pieces), so CraftEngine rejects it.",
     "equipmentSetTierInvalid": "The tier “{tier}” must be a whole number of pieces from 1 up, so CraftEngine rejects the set.",
     "damageRuleTypeMissing": "The damage rule has no damage type, so it is left out.",
-    "damageRuleEmpty": "The damage rule has neither a formula nor effects, so CraftEngine rejects it."
+    "damageRuleEmpty": "The damage rule has neither a formula nor effects, so CraftEngine rejects it.",
+    "armorLayerUnsupported": "CraftEngine has no equipment layer “{layer}”, so it is left out of equipments.yml.",
+    "armorTrimLayers": "Trim-based equipment only uses the player armor textures (layer 1 and 2), so the other layers and the layer options of the set “{set}” are left out."
   },
   "issueList": {
     "openItem": "Go to item",

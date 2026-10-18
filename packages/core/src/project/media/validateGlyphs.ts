@@ -2,7 +2,7 @@ import type { Issue } from '@resourcepackbuilder/utils';
 import { ITEM_ID_PATTERN, RESOURCE_LOCATION_PATTERN } from '@resourcepackbuilder/minecraft';
 import type { Project } from '../types';
 import { validateEntries } from './entry';
-import { MAX_GLYPH_CELL } from './glyph';
+import { GLYPH_SHADOW_PATTERN, isMultiBitmap, isSingleCharacter, MAX_GLYPH_CELL } from './glyph';
 
 /** Checks all glyphs of the project; each issue targets its glyph and carries a `context.glyph` frame. */
 export function validateGlyphs(project: Project): Issue[] {
@@ -13,6 +13,10 @@ export function validateGlyphs(project: Project): Issue[] {
       const owner = placeholderOwner.get(p);
       if (owner && owner !== glyph.glyphId) add('warning', 'glyph.placeholderShared', { placeholder: p, owner });
       placeholderOwner.set(p, glyph.glyphId);
+    }
+    if (glyph.shadow.trim() && !GLYPH_SHADOW_PATTERN.test(glyph.shadow.trim())) add('error', 'glyph.shadowInvalid');
+    if (glyph.kind !== 'reference' && !isMultiBitmap(glyph) && glyph.char && !isSingleCharacter(glyph.char)) {
+      add('error', 'glyph.charInvalid');
     }
 
     if (glyph.kind === 'reference') {

@@ -195,3 +195,41 @@ describe('CraftEngine block entity renderers', () => {
     ]);
   });
 });
+
+describe('block entity culling', () => {
+  // CraftEngine 26.9 (AbstractBlockManager) reads entity_culling from the block itself, for every appearance
+  it('writes the culling set on the block next to its state', () => {
+    const project = rendererProject([
+      'lamp',
+      (item) =>
+        (item.config.block = {
+          entity_culling: { view_distance: 32 },
+          state: { auto_state: 'solid', entity_renderer: [{ type: 'item_display' }] },
+        }),
+    ]);
+    const block = blocksOf(project)['moebel:lamp'];
+    expect(block.entity_culling).toEqual({ view_distance: 32 });
+    expect((block.state as Record<string, unknown>).entity_culling).toBeUndefined();
+  });
+
+  it('also writes on the block a culling written next to a renderer', () => {
+    const project = rendererProject([
+      'vase',
+      (item) =>
+        (item.config.block = {
+          states: {
+            properties: { lit: { type: 'boolean', default: false } },
+            appearances: {
+              off: { auto_state: 'solid', entity_culling: false, entity_renderer: [{ type: 'item_display' }] },
+              on: { auto_state: 'solid', entity_renderer: [{ type: 'item_display' }] },
+            },
+            variants: { 'lit=false': { appearance: 'off' }, 'lit=true': { appearance: 'on' } },
+          },
+        }),
+    ]);
+    const block = blocksOf(project)['moebel:vase'];
+    expect(block.entity_culling).toBe(false);
+    // The state keeps it for the versions the wiki describes, which read it there
+    expect((block.states as { appearances: Record<string, Record<string, unknown>> }).appearances.off.entity_culling).toBe(false);
+  });
+});

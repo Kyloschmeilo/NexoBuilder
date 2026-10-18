@@ -1,34 +1,45 @@
+/**
+ * The CraftEngine furniture section of the Model tab: the toggle, the variants with their placement rules, elements,
+ * hitboxes and seats, the settings, the behaviors and the loot.
+ */
 import { useState } from 'react';
 import { useTranslations } from 'next-intl';
 import { Plus, Trash2 } from 'lucide-react';
 import {
+  CE_DOCS,
   CE_FURNITURE_ALIGNMENTS,
+  CE_FURNITURE_BEHAVIOR_LIST,
+  CE_FURNITURE_FIELDS,
   CE_FURNITURE_ANCHORS,
   CE_FURNITURE_LOOT_TEMPLATE,
   CE_FURNITURE_ROTATIONS,
+  CE_FURNITURE_SETTINGS_FIELDS,
   craftEngineBlock,
   craftEngineFurniture,
   furnitureVariants,
   furnitureVariantsKey,
   newFurnitureVariant,
+  withLightObjects,
 } from '@resourcepackbuilder/core/craftEngine';
 import type { ConfigObject, ConfigValue, Item } from '@resourcepackbuilder/core/project';
 import { SegmentedControl } from '@resourcepackbuilder/ui';
 import { Button } from '@resourcepackbuilder/ui/components/button';
-import { Input } from '@resourcepackbuilder/ui/components/input';
 import { NativeSelect, NativeSelectOption } from '@resourcepackbuilder/ui/components/native-select';
 import { isPlainObject } from '@resourcepackbuilder/utils';
 import { CheckboxField } from '../../../components/CheckboxField';
+import { FieldRenderer } from '../../../components/editor';
 import { Section } from '../../../components/Section';
 import { setCraftEngineFurniture, updateCraftEngineFurniture } from '../../../commands/items';
 import { useOpenProject } from '../../../store/project';
 import { FurniturePreview } from './FurniturePreview';
-import { NumberInput, withKey } from './DisplayElementsEditor';
+import { DocsLink, KeyedFields, NumberInput, withKey } from './DisplayElementsEditor';
 import { FurnitureVariantEditor } from './FurnitureVariantEditor';
 
 const ANCHORS: readonly string[] = CE_FURNITURE_ANCHORS;
-const SOUNDS = ['break', 'place', 'hit'] as const;
 const objectAt = (value: unknown): ConfigObject => (isPlainObject(value) ? (value as ConfigObject) : {});
+/** The key a furniture's behaviors are under: `behavior` when only that one is set, else `behaviors` */
+const behaviorsKey = (furniture: Record<string, unknown>) =>
+  furniture.behaviors === undefined && furniture.behavior !== undefined ? 'behavior' : 'behaviors';
 
 /** The loot each item turned off last (with its arguments), so turning it on again in the session brings it back. */
 const lastLoot = new Map<string, ConfigObject>();
@@ -99,7 +110,7 @@ function FurnitureEditor({ item, furniture }: { item: Item; furniture: Record<st
       return withKey(f, 'rules', Object.keys(nextRules).length > 0 ? nextRules : undefined);
     });
   const settings = objectAt(furniture.settings);
-  const sounds = objectAt(settings.sounds);
+  const behaviors = behaviorsKey(furniture);
   const setSetting = (key: string, value: ConfigValue | undefined, historyKey?: string) =>
     edit((f) => {
       const next = withKey(objectAt(f.settings), key, value);
@@ -179,7 +190,10 @@ function FurnitureEditor({ item, furniture }: { item: Item; furniture: Record<st
       )}
 
       <div className="flex flex-col gap-2">
-        <span className="text-sm font-medium">{t('ceFurniture.settings')}</span>
+        <span className="flex items-center gap-1 text-sm font-medium">
+          {t('ceFurniture.settings')}
+          <DocsLink href={CE_DOCS.furnitureSettings} />
+        </span>
         <div className="grid grid-cols-[repeat(auto-fill,minmax(11rem,1fr))] gap-2">
           <label className="flex flex-col gap-1">
             <span className="text-xs text-muted-foreground">{t('ceFurniture.hitTimes')}</span>
@@ -190,22 +204,32 @@ function FurnitureEditor({ item, furniture }: { item: Item; furniture: Record<st
               onChange={(n) => setSetting('hit_times', n, 'hit-times')}
             />
           </label>
-          {SOUNDS.map((sound) => (
-            <label key={sound} className="flex flex-col gap-1">
-              <span className="text-xs text-muted-foreground">{t(`ceFurniture.sounds.${sound}`)}</span>
-              <Input
-                className="h-7"
-                placeholder={`minecraft:block.wood.${sound}`}
-                value={typeof sounds[sound] === 'string' ? sounds[sound] : ''}
-                onChange={(e) => {
-                  const next = withKey(sounds, sound, e.target.value.trim() === '' ? undefined : e.target.value);
-                  setSetting('sounds', Object.keys(next).length > 0 ? next : undefined, `sound-${sound}`);
-                }}
-              />
-            </label>
-          ))}
+          <KeyedFields fields={CE_FURNITURE_SETTINGS_FIELDS} object={settings} siblings={settings} set={setSetting} historyKey="setting" />
         </div>
         <p className="text-xs text-muted-foreground">{t('ceFurniture.settingsHelp')}</p>
+      </div>
+
+      <KeyedFields
+        fields={CE_FURNITURE_FIELDS}
+        object={furniture}
+        siblings={furniture}
+        set={(key, value, historyKey) => edit((f) => withKey(f, key, value), historyKey)}
+        historyKey="furniture"
+      />
+
+      <div className="flex flex-col gap-2">
+        <span className="flex items-center gap-1 text-sm font-medium">
+          {t('ceFurniture.behaviors')}
+          <DocsLink href={CE_DOCS.furnitureBehaviors} />
+        </span>
+        <p className="text-xs text-muted-foreground">{t('ceFurniture.behaviorsHelp')}</p>
+        <FieldRenderer
+          field={CE_FURNITURE_BEHAVIOR_LIST}
+          // Lights written as text show as their position and level
+          value={withLightObjects(furniture[behaviors])}
+          hideLabel
+          onChange={(value) => edit((f) => withKey(f, behaviors, value as ConfigValue | undefined), 'behaviors')}
+        />
       </div>
 
       <CheckboxField checked={dropsItem} onChange={setDropsItem} label={t('ceFurniture.loot')} description={t('ceFurniture.lootHelp')} />

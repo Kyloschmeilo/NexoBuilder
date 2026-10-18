@@ -8,6 +8,14 @@ import type { MediaFile } from './entry';
 
 export type GlyphKind = 'image' | 'gif' | 'reference';
 
+/** How Nexo animates a GIF glyph: a core shader or a sprite sheet (Nexo's `Glyphs.default_gif_type` when empty). */
+export type GlyphGifType = '' | 'SHADER' | 'SPRITE';
+export const GLYPH_GIF_TYPES: GlyphGifType[] = ['', 'SHADER', 'SPRITE'];
+
+/** The text contexts in which CraftEngine replaces an emoji's keywords and that can have content of their own. */
+export const EMOJI_CONTEXTS = ['chat', 'book', 'anvil', 'sign'] as const;
+export type EmojiContext = (typeof EMOJI_CONTEXTS)[number];
+
 export interface Glyph {
   id: string;
   /** Key in the YAML, used as <glyph:id> */
@@ -29,6 +37,20 @@ export interface Glyph {
   /** reference glyphs only */
   reference: string;
   index: number;
+  /** Explicit character of a single-cell glyph (Nexo and CraftEngine `char`); empty = assigned automatically */
+  char: string;
+  /** Nexo: text shadow color (`default_shadow`, #AARRGGBB); empty = `Glyphs.default_shadow` */
+  shadow: string;
+  /** Nexo GIF glyphs: animation type (`type`) */
+  gifType: GlyphGifType;
+  /** Nexo sprite-animated GIF glyphs: blend between frames (`interpolate`) */
+  interpolate: boolean;
+  /** Nexo: glyph whose settings this glyph inherits (`template`) */
+  template: string;
+  /** CraftEngine emoji: MiniMessage that replaces a keyword (`content`); empty = CraftEngine's default */
+  emojiContent: string;
+  /** CraftEngine emoji: content per text context (`content_overrides`) */
+  emojiOverrides: Partial<Record<EmojiContext, string>>;
 }
 
 /** Height of chat text in Minecraft pixels; the height of small glyphs (emojis). */
@@ -61,6 +83,13 @@ export function createGlyph(id: string, glyphId: string, file: MediaFile | null,
     offset: null,
     reference: '',
     index: 1,
+    char: '',
+    shadow: '',
+    gifType: '',
+    interpolate: false,
+    template: '',
+    emojiContent: '',
+    emojiOverrides: {},
   };
 }
 
@@ -78,6 +107,14 @@ export function isMultiBitmap(glyph: Glyph): boolean {
 export function glyphTag(glyph: Glyph): string {
   return isMultiBitmap(glyph) ? `<glyph:${glyph.glyphId}:1>` : `<glyph:${glyph.glyphId}>`;
 }
+
+/** Whether `text` is exactly one character (one Unicode code point), as an explicit glyph `char` must be. */
+export function isSingleCharacter(text: string): boolean {
+  return [...text].length === 1;
+}
+
+/** A shadow color as Nexo reads it: `#RRGGBB` or `#AARRGGBB` (also with `0x`). */
+export const GLYPH_SHADOW_PATTERN = /^(#|0x)([0-9a-f]{6}|[0-9a-f]{8})$/i;
 
 /** Reads a dropped PNG/GIF file as a glyph file. */
 export function glyphFileFromDataUrl(name: string, dataUrl: string): MediaFile | null {

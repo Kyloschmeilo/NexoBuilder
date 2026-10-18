@@ -89,6 +89,7 @@ describe('CraftEngine templates and global variables', () => {
     ]);
     const blocks = parsed(project, ITEMS).blocks as Record<string, Record<string, unknown>>;
     expect(blocks['vorlagen:ruby_ore'].settings).toEqual({
+      item: 'vorlagen:ruby_ore',
       template: ['default:settings/ore'],
       arguments: { break_power: '2' },
       luminance: 3,

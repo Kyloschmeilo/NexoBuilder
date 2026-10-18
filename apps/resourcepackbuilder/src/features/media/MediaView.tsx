@@ -11,6 +11,7 @@ import {
   type PackTargetId,
   type Project,
 } from '@resourcepackbuilder/core/project';
+import { mediaDocsFor } from '@resourcepackbuilder/core/targets';
 import { Button } from '@resourcepackbuilder/ui/components/button';
 import { Tip } from '@resourcepackbuilder/ui';
 import { addGlyph, addPainting, addSound } from '../../commands/media';
@@ -22,6 +23,7 @@ import { useOpenProject } from '../../store/project';
 import { GlyphCard } from '../glyphs/GlyphCard';
 import { PaintingCard } from '../paintings/PaintingCard';
 import { SoundCard } from '../sounds/SoundCard';
+import { DocsLinkButton } from './DocsLinkButton';
 import { MediaPage } from './MediaPage';
 
 interface MediaViewInfo<K extends MediaKind> {
@@ -86,7 +88,12 @@ function MediaView<K extends MediaKind>({ kind }: { kind: K }) {
       title={t(`${section}.title`)}
       count={t(`${section}.count`, { count: entries.length })}
       configPath={`${layout.pluginDir}/${layout.mediaFile(project, kind)}`}
-      actions={kind === 'glyph' && <ReferenceGlyphButton />}
+      actions={
+        <>
+          {kind === 'glyph' && <ReferenceGlyphButton />}
+          <DocsLinkButton href={mediaDocsFor(project.target, kind)} label={t('shared.docs', { target: project.target })} />
+        </>
+      }
       // Only the glyph hint uses {tag}
       hint={t.rich(`${section}.hint`, { ...richTags, target: project.target, tag: GLYPH_TAG_EXAMPLES[project.target] })}
       drop={{

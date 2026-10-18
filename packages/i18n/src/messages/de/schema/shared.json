@@ -71,6 +71,10 @@
             "diameter": {
               "label": "Durchmesser",
               "placeholder": "16.0"
+            },
+            "directionalParticles": {
+              "label": "Gerichtete Partikel",
+              "help": "Minecraft 26.3+. Von Nexo 1.30 gelesen, nicht in der Doku aufgeführt."
             }
           }
         },
@@ -120,6 +124,29 @@
             },
             "inExplosion": {
               "label": "Auch bei Explosion droppen"
+            },
+            "crucibleItem": {
+              "label": "oder Crucible-Item"
+            },
+            "minecraftItem": {
+              "label": "oder Minecraft-Itemstack",
+              "help": "Ein Itemstack, wie ihn die Ingame-Builder von Nexo speichern (YAML). Nexo 1.30 liest diesen Schlüssel; die Nexo-Doku führt ihn noch nicht auf."
+            },
+            "mmoitemsType": {
+              "label": "oder MMOItems-Typ",
+              "help": "Nexo 1.30 liest mmoitems_type; die Nexo-Doku schreibt mmoitem_type."
+            },
+            "mmoitemsId": {
+              "label": "MMOItems-ID",
+              "help": "Nexo 1.30 liest mmoitems_id; die Nexo-Doku schreibt mmoitem_id."
+            },
+            "minAmount": {
+              "label": "Mindestanzahl",
+              "help": "Nexo 1.30 liest diesen Schlüssel; die Nexo-Doku führt ihn noch nicht auf."
+            },
+            "maxAmount": {
+              "label": "Höchstanzahl",
+              "help": "Nexo 1.30 liest diesen Schlüssel; die Nexo-Doku führt ihn noch nicht auf."
             }
           }
         }
@@ -142,6 +169,21 @@
         },
         "fallSound": {
           "label": "Fallen"
+        },
+        "place": {
+          "label": "Platzieren, mit Lautstärke und Tonhöhe"
+        },
+        "break": {
+          "label": "Abbauen, mit Lautstärke und Tonhöhe"
+        },
+        "hit": {
+          "label": "Schlagen, mit Lautstärke und Tonhöhe"
+        },
+        "step": {
+          "label": "Betreten, mit Lautstärke und Tonhöhe"
+        },
+        "fall": {
+          "label": "Fallen, mit Lautstärke und Tonhöhe"
         }
       }
     },
@@ -164,6 +206,22 @@
         },
         "closeSound": {
           "label": "Sound beim Schließen"
+        },
+        "volume": {
+          "label": "Lautstärke",
+          "help": "Nexo 1.30 liest diesen Schlüssel; die Nexo-Doku führt ihn noch nicht auf."
+        },
+        "pitch": {
+          "label": "Tonhöhe",
+          "help": "Nexo 1.30 liest diesen Schlüssel; die Nexo-Doku führt ihn noch nicht auf."
+        },
+        "openAnimation": {
+          "label": "Animation beim Öffnen",
+          "help": "Nexo 1.30 liest diesen Schlüssel; die Nexo-Doku führt ihn noch nicht auf."
+        },
+        "closeAnimation": {
+          "label": "Animation beim Schließen",
+          "help": "Nexo 1.30 liest diesen Schlüssel; die Nexo-Doku führt ihn noch nicht auf."
         }
       }
     },
@@ -374,6 +432,28 @@
         },
         "scale": {
           "label": "Skalierung (x,y,z)"
+        },
+        "leftRotation": {
+          "label": "Linke Drehung (Grad oder x,y,z,w)",
+          "placeholder": "45"
+        },
+        "rightRotation": {
+          "label": "Rechte Drehung (Grad oder x,y,z,w)",
+          "placeholder": "0"
+        },
+        "brightness": {
+          "label": "Helligkeit überschreiben",
+          "fields": {
+            "blockLight": {
+              "label": "Blocklicht"
+            },
+            "skyLight": {
+              "label": "Himmelslicht"
+            }
+          }
+        },
+        "viewRange": {
+          "label": "Sichtweite"
         }
       }
     },
@@ -389,6 +469,47 @@
         "actions": {
           "label": "Aktionen",
           "placeholder": "[console] say hallo '<'player>"
+        }
+      }
+    },
+    "soundSettings": {
+      "volumePlaceholder": "1.0",
+      "pitchPlaceholder": "1.0",
+      "choices": {
+        "key": {
+          "label": "Sound",
+          "field": {
+            "label": "Sound"
+          }
+        },
+        "settings": {
+          "label": "Mit Lautstärke und Tonhöhe",
+          "field": {
+            "fields": {
+              "sound": {
+                "label": "Sound"
+              },
+              "volume": {
+                "label": "Lautstärke"
+              },
+              "pitch": {
+                "label": "Tonhöhe"
+              }
+            }
+          }
+        }
+      }
+    },
+    "blockSoundEvent": {
+      "fields": {
+        "sound": {
+          "label": "Sound"
+        },
+        "volume": {
+          "label": "Lautstärke"
+        },
+        "pitch": {
+          "label": "Tonhöhe"
         }
       }
     }

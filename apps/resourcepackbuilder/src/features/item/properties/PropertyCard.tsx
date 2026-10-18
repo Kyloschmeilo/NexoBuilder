@@ -38,8 +38,11 @@ function PropertyHints({ def, version }: { def: PropertyDef; version: string }) 
   );
 }
 
-/** One property of an item: its editor with version hints, YAML path, docs link and remove button. */
-export function PropertyCard({ item, def }: { item: Item; def: PropertyDef }) {
+/**
+ * One property of an item: its editor with version hints, YAML path, docs link and remove button. `onRemove` replaces
+ * the removal by id, for properties that are not in the form (e.g. the settings of a block state variant).
+ */
+export function PropertyCard({ item, def, onRemove }: { item: Item; def: PropertyDef; onRemove?: () => void }) {
   const t = useTranslations('item');
   const tSchema = useSchemaText();
   const project = useOpenProject();
@@ -70,7 +73,11 @@ export function PropertyCard({ item, def }: { item: Item; def: PropertyDef }) {
               <ExternalLink />
             </IconButton>
           )}
-          <IconButton label={t('properties.remove')} variant="ghost-destructive" onClick={() => removeProperty(item.id, def.id)}>
+          <IconButton
+            label={t('properties.remove')}
+            variant="ghost-destructive"
+            onClick={onRemove ?? (() => removeProperty(item.id, def.id))}
+          >
             <Trash2 />
           </IconButton>
         </>

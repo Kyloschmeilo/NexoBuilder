@@ -128,3 +128,49 @@ describe('block model', () => {
     });
   });
 });
+
+describe('block model from many textures', () => {
+  const flat = (...names: string[]) => ({
+    parent: 'minecraft:item/generated',
+    textures: Object.fromEntries(names.map((name, i) => [`layer${i}`, `a:block/${name}`])),
+  });
+
+  it('generates an orientable block from four textures (in CraftEngine slot order: bottom, front, side, top)', () => {
+    expect(craftEngineBlockModel('a:block/x', flat('b', 'f', 's', 't')).model).toEqual({
+      path: 'a:block/x-block',
+      generation: {
+        parent: 'minecraft:block/orientable',
+        textures: { bottom: 'a:block/b', front: 'a:block/f', side: 'a:block/s', top: 'a:block/t' },
+      },
+    });
+  });
+
+  it('generates a cube with a texture per face from five (west on east too) or six textures', () => {
+    expect(craftEngineBlockModel('a:block/x', flat('d', 'u', 'n', 's', 'w')).model?.generation).toEqual({
+      parent: 'minecraft:block/cube',
+      textures: {
+        down: 'a:block/d',
+        up: 'a:block/u',
+        north: 'a:block/n',
+        south: 'a:block/s',
+        west: 'a:block/w',
+        east: 'a:block/w',
+        particle: 'a:block/n',
+      },
+    });
+    const six = craftEngineBlockModel('a:block/x', flat('d', 'u', 'n', 's', 'w', 'e', 'extra'));
+    expect(six.model?.generation).toEqual({
+      parent: 'minecraft:block/cube',
+      textures: {
+        down: 'a:block/d',
+        up: 'a:block/u',
+        north: 'a:block/n',
+        south: 'a:block/s',
+        west: 'a:block/w',
+        east: 'a:block/e',
+        particle: 'a:block/n',
+      },
+    });
+    expect(six.unusedTextures).toBe(1);
+  });
+});

@@ -80,6 +80,7 @@ describe('CraftEngine blocks', () => {
         '      model:',
         '        path: kristall:block/kram/crystal_block',
         '    settings:',
+        '      item: kristall:crystal_block',
         '      hardness: 3',
         '      tags:',
         '        - minecraft:mineable/pickaxe',
@@ -120,6 +121,8 @@ describe('CraftEngine blocks', () => {
         '          parent: minecraft:block/cube_all',
         '          textures:',
         '            all: bloecke:block/steine/block_0/stone',
+        '    settings:',
+        '      item: bloecke:block_0',
         '',
       ].join('\n'),
     );
@@ -147,10 +150,10 @@ describe('CraftEngine blocks', () => {
     );
   });
 
-  it('uses three textures at most and reports the others', () => {
-    const project = blockProject('1.21.11', (item) => (item.model = layered('a', 'b', 'c', 'd')));
-    expect(blockOf(project)).toContain('parent: minecraft:block/cube_bottom_top');
-    expect(planExport(project).issues.find((i) => i.code === 'ce.blockExtraTextures')?.args).toEqual({ max: 3, count: 1 });
+  it('uses every layer of a flat item model (five at most), one per face of a cube', () => {
+    const project = blockProject('1.21.11', (item) => (item.model = layered('a', 'b', 'c', 'd', 'e')));
+    expect(blockOf(project)).toContain('parent: minecraft:block/cube\n');
+    expect(codes(project)).not.toContain('ce.blockExtraTextures');
   });
 
   it('accepts the aliases CraftEngine accepts for a group', () => {

@@ -12,6 +12,7 @@ import general from './general.json' with { type: 'json' };
 import mechanics from './mechanics.json' with { type: 'json' };
 import misc from './misc.json' with { type: 'json' };
 import options from './options.json' with { type: 'json' };
+import recipes from './recipes.json' with { type: 'json' };
 import shared from './shared.json' with { type: 'json' };
 import textureTemplates from './textureTemplates.json' with { type: 'json' };
 import validation from './validation.json' with { type: 'json' };
@@ -27,6 +28,7 @@ export default mergeCatalogue(
   mechanics,
   misc,
   options,
+  recipes,
   shared,
   textureTemplates,
   validation,
