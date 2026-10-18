@@ -177,11 +177,6 @@ function entryIssues(
 }
 
 /**
- * A placed feature needs a feature: a configured feature of the project, of the vanilla game or another pack (only a
- * reference into the project's namespace is checked), or one inline. A `biome` filter only works with the
- * `minecraft:biome` modifier in its placement.
- */
-/**
  * Warns when a feature writes its block states in the format of another Minecraft version (26.3 renamed the state
  * providers and the keys of a block state); the server rejects such a feature.
  */
@@ -192,6 +187,11 @@ function reportStateFormat(project: Project, feature: unknown, report: Report): 
   if (format === 'modern' && !modern) report('warning', 'ce.featureStateModern', { version: project.settings.minecraftVersion });
 }
 
+/**
+ * A placed feature needs a feature: a configured feature of the project, of the vanilla game or another pack (only a
+ * reference into the project's namespace is checked), or one inline. A `biome` filter only works with the
+ * `minecraft:biome` modifier in its placement.
+ */
 function placedFeatureIssues(project: Project): Issue[] {
   const configured = new Set(keyedEntries(project, projectConfiguredFeatures(project)).keys());
   return entryIssues(project, 'placedFeature', projectPlacedFeatures(project), CE_PLACED_FEATURE_LIST, (entry, report) => {
