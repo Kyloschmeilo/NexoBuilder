@@ -4,6 +4,8 @@ import { Input } from '@resourcepackbuilder/ui/components/input';
 import { parseNumber } from '../values';
 
 interface NumberInputProps {
+  /** Id of the input, for a label outside it */
+  id?: string;
   /** A string is shown as is (e.g. a number written as text in the YAML); null and undefined mean empty. */
   value: number | string | null | undefined;
   /** Receives undefined for an empty field; invalid text is not reported. */
@@ -23,7 +25,7 @@ type NumberValue = number | string | null | undefined;
 const formatNumber = (value: NumberValue) => (value === undefined || value === null ? '' : String(value));
 
 /** Number field that keeps intermediate states like "-" or "1." while typing. */
-export function NumberInput({ value, onChange, placeholder, label, integer, min, max, invalid, className }: NumberInputProps) {
+export function NumberInput({ id, value, onChange, placeholder, label, integer, min, max, invalid, className }: NumberInputProps) {
   const t = useTranslations('editor');
   const parse = (text: string): { value: number | undefined } | undefined => {
     if (text.trim() === '') return { value: undefined };
@@ -36,6 +38,7 @@ export function NumberInput({ value, onChange, placeholder, label, integer, min,
   return (
     <Tip label={label ?? range}>
       <Input
+        id={id}
         aria-label={label}
         className={className}
         aria-invalid={bad || invalid || undefined}

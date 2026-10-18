@@ -19,7 +19,7 @@
     "volumeHelp": "Loudness, default 1",
     "pitchHelp": "Pitch, default 1",
     "distanceHelp": "Range in blocks, default 16",
-    "files": "Sounds",
+    "files": "Files",
     "filesRandom": "(one file is played at random)",
     "removeFile": "Remove file",
     "addFile": "Add file",
@@ -41,7 +41,9 @@
     "referencePlaceholder": "e.g. minecraft:block.bell.use",
     "preloadHint": "(load with the pack, not when first played)",
     "replaceHint": "(replace the vanilla sound with this name; without files it goes silent)",
-    "jukeboxDocs": "{target, select, craftengine {Jukebox songs in the CraftEngine wiki} other {Music discs in the Nexo docs}}"
+    "jukeboxDocs": "{target, select, craftengine {Jukebox songs in the CraftEngine wiki} other {Music discs in the Nexo docs}}",
+    "noFiles": "No files yet. A sound without files replaces or references another sound.",
+    "durationMissing": "Enter how long the song plays, e.g. 2m 30s."
   },
   "paintings": {
     "title": "Paintings",
@@ -236,7 +238,12 @@
     "hint": "A template is a piece of config with placeholders for arguments. Blocks use one in their settings, items for the whole item, loot tables and events too. CraftEngine's default templates (default:…) are always there.",
     "docs": "Templates in the CraftEngine wiki",
     "defaults": "CraftEngine's default templates",
-    "defaultsHint": "Every block, item and furniture can use these. Required arguments are marked with *."
+    "defaultsHint": "Every block, item and furniture can use these. Required arguments are marked with *.",
+    "argumentRequired": "Required argument",
+    "argumentOptional": "Optional argument",
+    "copyId": "Copy ID",
+    "searchDefaults": "Search default templates…",
+    "noDefaults": "No default template matches."
   },
   "globalVariables": {
     "title": "Global variables",
@@ -326,5 +333,191 @@
     "count": "{count, plural, one {# script} other {# scripts}}",
     "docs": "Scripting in the CraftEngine wiki",
     "hint": "Scripts go into the pack's script folder. js functions and conditions call their functions by the script id namespace:path; annotations like //@Subscribe and //@Task register event handlers and tasks. CraftEngine runs them only with scripting.js.enable: true in its config.yml; the test server switches it on."
+  },
+  "registry": {
+    "search": "Search entries…",
+    "noMatches": "No matching entries",
+    "entries": "Entries",
+    "entryCount": "{count, plural, one {# entry} other {# entries}}",
+    "keyTaken": "This name is already taken.",
+    "keyEmpty": "Enter a name.",
+    "type": "Type",
+    "value": "Value",
+    "moveUp": "Move up",
+    "moveDown": "Move down",
+    "generic": {
+      "title": "Entries",
+      "add": "New entry",
+      "empty": "No entries yet.",
+      "untitled": "Unnamed entry"
+    },
+    "groups": {
+      "glyphs": {
+        "title": "Glyphs",
+        "add": "Upload glyphs",
+        "empty": "No glyphs yet.",
+        "untitled": "Unnamed glyph"
+      },
+      "sounds": {
+        "title": "Sounds",
+        "add": "Upload sounds",
+        "empty": "No sounds yet.",
+        "untitled": "Unnamed sound"
+      },
+      "paintings": {
+        "title": "Paintings",
+        "add": "Upload paintings",
+        "empty": "No paintings yet.",
+        "untitled": "Unnamed painting"
+      },
+      "lootSources": {
+        "title": "Loot sources",
+        "add": "New loot source",
+        "empty": "No loot sources yet.",
+        "untitled": "Unnamed loot source"
+      },
+      "templates": {
+        "title": "Templates",
+        "add": "New template",
+        "empty": "No templates yet.",
+        "untitled": "Unnamed template"
+      },
+      "globalVariables": {
+        "title": "Global variables",
+        "add": "New global variable",
+        "empty": "No global variables yet.",
+        "untitled": "Unnamed variable",
+        "keyLabel": "Name"
+      },
+      "definitions": {
+        "title": "Attributes",
+        "add": "New attribute",
+        "empty": "No attributes yet.",
+        "untitled": "Unnamed attribute"
+      },
+      "operations": {
+        "title": "Operations",
+        "add": "New operation",
+        "empty": "No operations yet.",
+        "untitled": "Unnamed operation"
+      },
+      "equipmentSets": {
+        "title": "Equipment sets",
+        "add": "New equipment set",
+        "empty": "No equipment sets yet.",
+        "untitled": "Unnamed equipment set"
+      },
+      "damageRules": {
+        "title": "Damage rules",
+        "add": "New damage rule",
+        "empty": "No damage rules yet.",
+        "untitled": "Unnamed damage rule"
+      },
+      "lang": {
+        "title": "Lang keys",
+        "add": "New lang locale",
+        "empty": "No lang keys yet.",
+        "untitled": "Unnamed locale",
+        "keyLabel": "Locale"
+      },
+      "server": {
+        "title": "Server translations",
+        "add": "New translation locale",
+        "empty": "No server translations yet.",
+        "untitled": "Unnamed locale",
+        "keyLabel": "Locale"
+      },
+      "categories": {
+        "title": "Categories",
+        "add": "New category",
+        "empty": "No categories yet.",
+        "untitled": "Unnamed category"
+      },
+      "configuredFeatures": {
+        "title": "Configured features",
+        "add": "New configured feature",
+        "empty": "No configured features yet.",
+        "untitled": "Unnamed feature"
+      },
+      "placedFeatures": {
+        "title": "Placed features",
+        "add": "New placed feature",
+        "empty": "No placed features yet.",
+        "untitled": "Unnamed feature"
+      },
+      "atlases": {
+        "title": "Atlases",
+        "add": "New atlas",
+        "empty": "No atlases yet.",
+        "untitled": "Unnamed atlas"
+      },
+      "configFactories": {
+        "title": "Config factories",
+        "add": "New config factory",
+        "empty": "No config factories yet.",
+        "untitled": "Unnamed config factory"
+      },
+      "scripts": {
+        "title": "Scripts",
+        "add": "New script",
+        "empty": "No scripts yet.",
+        "untitled": "Unnamed script"
+      }
+    }
+  },
+  "sections": {
+    "preview": "Preview",
+    "basics": "Basics",
+    "chat": "Chat",
+    "advanced": "Advanced",
+    "emoji": "Emoji content",
+    "playback": "Playback",
+    "jukebox": "Jukebox",
+    "placement": "Placement",
+    "item": "Item",
+    "checks": "Checks"
+  },
+  "fields": {
+    "id": "ID",
+    "reference": "Reference",
+    "index": "Cell",
+    "height": "Height",
+    "ascent": "Ascent",
+    "rows": "Rows",
+    "columns": "Columns",
+    "font": "Font",
+    "frameCount": "Frame count",
+    "offset": "Offset",
+    "permission": "Permission",
+    "placeholders": "Chat shortcuts",
+    "isEmoji": "Emoji list",
+    "tabComplete": "Tab completion",
+    "char": "Character",
+    "shadow": "Default shadow",
+    "template": "Template",
+    "gifType": "Animation type",
+    "interpolate": "Interpolate",
+    "emojiContent": "Content",
+    "emojiOverride": "Content in {context}",
+    "volume": "Volume",
+    "pitch": "Pitch",
+    "distance": "Attenuation distance",
+    "weight": "Weight",
+    "subtitle": "Subtitle",
+    "stream": "Stream",
+    "preload": "Preload",
+    "replace": "Replace vanilla sound",
+    "jukebox": "Jukebox song",
+    "duration": "Duration",
+    "description": "Description",
+    "comparatorOutput": "Comparator output",
+    "range": "Range",
+    "title": "Title",
+    "author": "Author",
+    "width": "Width (blocks)",
+    "paintingHeight": "Height (blocks)",
+    "randomPlace": "Random placement",
+    "animated": "Animated",
+    "frametime": "Frame time"
   }
 }

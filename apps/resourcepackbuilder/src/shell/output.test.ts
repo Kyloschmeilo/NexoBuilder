@@ -4,6 +4,7 @@ import {
   createFolder,
   createItem,
   createProject,
+  createSound,
   insertFolder,
   insertItem,
   type PackTargetId,
@@ -69,6 +70,18 @@ describe('outputFor', () => {
     expect(outputFor(project, plan, { kind: 'item', id: 'gone' })).toBeNull();
     expect(outputFor(project, plan, null)).toBeNull();
     expect(outputFor(project, null, { kind: 'settings' })).toBeNull();
+  });
+
+  it('narrows the checks of a media view to the selected entry', () => {
+    const { project } = sampleProject('nexo');
+    project.sounds.push(createSound('s1', 'click', []), createSound('s2', 'clack', []));
+    const plan = planExport(project, { includeBinaries: false });
+    const all = outputFor(project, plan, { kind: 'view', view: 'sounds' });
+    const one = outputFor(project, plan, { kind: 'view', view: 'sounds', entry: 's2' });
+    expect(all?.issues.some((issue) => issue.target?.id === 's1')).toBe(true);
+    expect(one?.issues.length).toBeGreaterThan(0);
+    expect(one?.issues.every((issue) => issue.target?.kind === 'sound' && issue.target.id === 's2')).toBe(true);
+    expect(one?.file).toBe(all?.file);
   });
 
   it('has a provider for every registry view', () => {

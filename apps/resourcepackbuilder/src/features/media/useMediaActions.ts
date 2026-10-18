@@ -13,6 +13,8 @@ import { addMediaItem, MEDIA_COMMANDS } from '../../commands/media';
 import { notify } from '../../shell/notify';
 import { confirm } from '../../store/dialogs';
 import { useOpenProject } from '../../store/project';
+import { selectEntry } from '../../store/ui';
+import { MEDIA_KIND_INFO } from './mediaKinds';
 
 const DELETE_TITLE_KEYS = {
   glyph: 'glyphs.deleteTitle',
@@ -28,7 +30,7 @@ export function useMediaActions() {
   const project = useOpenProject();
 
   return {
-    /** Asks before deleting the entry. */
+    /** Asks before deleting the entry; then shows the overview of its kind. */
     async remove<K extends MediaKind>(kind: K, entry: MediaEntryByKind[K]) {
       const titleKey: (typeof DELETE_TITLE_KEYS)[MediaKind] = DELETE_TITLE_KEYS[kind];
       const confirmed = await confirm({
@@ -37,7 +39,10 @@ export function useMediaActions() {
         confirmLabel: tCommon('delete'),
         destructive: true,
       });
-      if (confirmed) MEDIA_COMMANDS[kind].remove(entry.id);
+      if (!confirmed) return;
+      MEDIA_COMMANDS[kind].remove(entry.id);
+      // The page of the deleted entry falls back to its overview
+      selectEntry(MEDIA_KIND_INFO[kind].view);
     },
 
     /** Creates an item that hangs the painting, selects it and reports it. */

@@ -1,9 +1,9 @@
+/** The OGG files of a sound (variants played at random), each with a player, its pack path and size. */
 import { Plus, Trash2 } from 'lucide-react';
 import { useFormatter, useTranslations } from 'next-intl';
 import { type Sound, soundFilePath } from '@resourcepackbuilder/core/project';
+import { EmptyHint, IconButton, Panel, pickFiles } from '@resourcepackbuilder/ui';
 import { Button } from '@resourcepackbuilder/ui/components/button';
-import { Item, ItemActions, ItemContent, ItemMedia, ItemTitle } from '@resourcepackbuilder/ui/components/item';
-import { IconButton, Tip, pickFiles } from '@resourcepackbuilder/ui';
 import { addSoundFiles, removeSoundFile } from '../../commands/media';
 import { useMediaFileReader } from '../../hooks/useFileReaders';
 import { MEDIA_FILES } from '../../lib/mediaFiles';
@@ -11,7 +11,6 @@ import { MEDIA_FILES } from '../../lib/mediaFiles';
 const BYTES_PER_KB = 1000;
 const BYTES_PER_MB = 1_000_000;
 
-/** The sound's OGG files (variants played at random) with player, path and size. */
 export function SoundFileList({ sound }: { sound: Sound }) {
   const t = useTranslations('media.sounds');
   const format = useFormatter();
@@ -31,31 +30,36 @@ export function SoundFileList({ sound }: { sound: Sound }) {
       );
   };
 
+  if (sound.files.length === 0)
+    return (
+      <EmptyHint actionLabel={t('addFile')} onAction={() => void addFiles()}>
+        {t('noFiles')}
+      </EmptyHint>
+    );
+
   return (
-    <div className="flex flex-col gap-1.5">
-      <span className="text-xs font-medium text-muted-foreground">
-        {t('files')} {sound.files.length > 1 && <span className="font-normal">{t('filesRandom')}</span>}
-      </span>
-      {sound.files.map((file, index) => (
-        <Item key={`${index}:${file.name}`} variant="muted" size="xs" className="gap-x-3 gap-y-1.5 border-border px-2 py-1.5">
-          <ItemMedia className="w-full @md/media-card:w-64">
-            <audio controls preload="none" src={file.dataUrl} className="h-8 w-full" />
-          </ItemMedia>
-          <ItemContent className="min-w-0">
-            <Tip label={file.name}>
-              <ItemTitle className="max-w-full truncate font-mono text-xs font-normal">{soundFilePath(sound, index)}.ogg</ItemTitle>
-            </Tip>
-          </ItemContent>
-          <ItemActions>
-            <span className="text-xs text-muted-foreground">{fileSize(file.size)}</span>
-            <IconButton label={t('removeFile')} variant="ghost-destructive" onClick={() => removeSoundFile(sound.id, index)}>
-              <Trash2 />
-            </IconButton>
-          </ItemActions>
-        </Item>
-      ))}
+    <div className="flex flex-col gap-2">
+      <Panel className="overflow-hidden">
+        <ul className="m-0 flex list-none flex-col p-0">
+          {sound.files.map((file, index) => (
+            <li
+              key={`${index}:${file.name}`}
+              className="@container/sound-file flex flex-wrap items-center gap-x-3 gap-y-1.5 border-t border-line px-3 py-2 first:border-t-0"
+            >
+              <audio controls preload="none" src={file.dataUrl} aria-label={file.name} className="h-8 w-full @md/sound-file:w-64" />
+              <code title={file.name} className="min-w-0 flex-1 truncate font-mono text-micro text-text-muted">
+                {soundFilePath(sound, index)}.ogg
+              </code>
+              <span className="text-micro text-text-muted tabular-nums">{fileSize(file.size)}</span>
+              <IconButton label={t('removeFile')} variant="ghost-destructive" onClick={() => removeSoundFile(sound.id, index)}>
+                <Trash2 />
+              </IconButton>
+            </li>
+          ))}
+        </ul>
+      </Panel>
       <div>
-        <Button variant="outline" size="sm" onClick={() => void addFiles()}>
+        <Button variant="ghost" size="sm" onClick={() => void addFiles()}>
           <Plus /> {t('addFile')}
         </Button>
       </div>

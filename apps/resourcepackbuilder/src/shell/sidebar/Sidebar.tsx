@@ -1,13 +1,13 @@
 /**
- * The sidebar: the panel of the current activity (the folder and item tree, the media lists, or a CraftEngine
- * project's logic lists), resizable by its right edge. Activities that open a page have no panel; the sidebar is
+ * The sidebar: the panel of the current activity (the folder and item tree, or the entries of the media or a CraftEngine
+ * project's logic registries), resizable by its right edge. Activities that open a page have no panel; the sidebar is
  * then left out and the page gets its room.
  */
 import { useMemo, useState, type ReactNode } from 'react';
 import { FolderPlus, Search } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 import { cn } from 'cn';
-import { SectionLabel, Tip } from '@resourcepackbuilder/ui';
+import { Tip } from '@resourcepackbuilder/ui';
 import { Button } from '@resourcepackbuilder/ui/components/button';
 import { Empty, EmptyContent, EmptyDescription, EmptyHeader, EmptyMedia, EmptyTitle } from '@resourcepackbuilder/ui/components/empty';
 import { InputGroup, InputGroupAddon, InputGroupInput } from '@resourcepackbuilder/ui/components/input-group';
@@ -24,7 +24,9 @@ import { type ActivityId, SIDEBAR_WIDTH, setSidebarWidth, useUiStore } from '../
 import { FolderNode } from './FolderNode';
 import { countItemsPerFolder, foldersContaining, levelsByTarget, searchItems, type SidebarTree } from './treeIndex';
 import { DRAG_FOLDER, useDropTarget } from './useDropTarget';
-import { CraftEngineEntries, MediaEntries } from './ViewEntries';
+import { LogicPanel } from './panels/LogicPanel';
+import { MediaPanel } from './panels/MediaPanel';
+import { PanelHeader } from './panels/PanelHeader';
 
 /** The tree data, derived once per project, plan or search change. */
 function useSidebarTree(query: string): SidebarTree {
@@ -58,15 +60,6 @@ function NoFolders() {
         </Button>
       </EmptyContent>
     </Empty>
-  );
-}
-
-/** The heading of a panel, with optional actions on the right. */
-function PanelHeader({ title, actions }: { title: string; actions?: ReactNode }) {
-  return (
-    <SectionLabel className="min-h-9 pt-1.5 pr-2 pb-1 pl-3" actions={actions}>
-      <h2 className="truncate">{title}</h2>
-    </SectionLabel>
   );
 }
 
@@ -124,32 +117,11 @@ function ItemsPanel() {
   );
 }
 
-/** A panel listing project-wide views (the media lists or a CraftEngine project's own lists). */
-function RegistryPanel({ activity, children }: { activity: ActivityId; children: ReactNode }) {
-  const t = useTranslations('layout.activities');
-  return (
-    <>
-      <PanelHeader title={t(`${activity}.label`)} />
-      <ScrollArea className="min-h-0 flex-1">
-        <div className="flex flex-col gap-px px-1.5 pt-0.5 pb-4">{children}</div>
-      </ScrollArea>
-    </>
-  );
-}
-
 /** The panel content of each activity that has one. */
 const PANELS: Partial<Record<ActivityId, () => ReactNode>> = {
   items: () => <ItemsPanel />,
-  media: () => (
-    <RegistryPanel activity="media">
-      <MediaEntries />
-    </RegistryPanel>
-  ),
-  logic: () => (
-    <RegistryPanel activity="logic">
-      <CraftEngineEntries />
-    </RegistryPanel>
-  ),
+  media: () => <MediaPanel />,
+  logic: () => <LogicPanel />,
 };
 
 /** The activity whose panel the sidebar shows: the current one, or Items when the current one is not offered here. */

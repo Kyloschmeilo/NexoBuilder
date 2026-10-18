@@ -27,8 +27,11 @@ export interface Output {
   issues: Issue[];
 }
 
-/** The output of a project-wide view; null when the view writes no file. */
-export type ViewOutputProvider = (project: Project, plan: ExportPlan) => Output | null;
+/**
+ * The output of a project-wide view; null when the view writes no file. `entry` is the selected entry of a registry
+ * view (see `Selection`), which may narrow the checks to that entry.
+ */
+export type ViewOutputProvider = (project: Project, plan: ExportPlan, entry?: string) => Output | null;
 
 /** A text file of the plan's plugin folder ('' when there is none). */
 export function pluginText(plan: ExportPlan, path: string): string {
@@ -41,11 +44,12 @@ function issuesOfKind(plan: ExportPlan, kind: IssueTarget['kind']): Issue[] {
   return plan.issues.filter((issue) => issue.target?.kind === kind);
 }
 
-/** The project's config file of a media kind, with the issues of its entries. */
+/** The project's config file of a media kind, with the issues of its entries (of the selected entry, if any). */
 function mediaOutput(kind: MediaKind, target: IssueTarget['kind']): ViewOutputProvider {
-  return (project, plan) => {
+  return (project, plan, entry) => {
     const file = packTargetFor(project).layout.mediaFile(project, kind);
-    return { file, text: pluginText(plan, file), issues: issuesOfKind(plan, target) };
+    const issues = entry === undefined ? issuesOfKind(plan, target) : issuesFor(plan.issues, { kind: target, id: entry });
+    return { file, text: pluginText(plan, file), issues };
   };
 }
 
@@ -138,7 +142,7 @@ export const SELECTION_OUTPUTS: { [K in SelectionKind]: (project: Project, plan:
       );
       return { file: entry?.yamlFile ?? null, text: entry ? pluginText(plan, entry.yamlFile) : '', issues };
     },
-    view: (project, plan, { view }) => VIEW_OUTPUTS[view]?.(project, plan) ?? null,
+    view: (project, plan, { view, entry }) => VIEW_OUTPUTS[view]?.(project, plan, entry) ?? null,
     // CraftEngine writes the pack settings into pack.yml; Nexo keeps them in its own config
     settings: (project, plan) => {
       if (project.target !== 'craftengine') return null;
