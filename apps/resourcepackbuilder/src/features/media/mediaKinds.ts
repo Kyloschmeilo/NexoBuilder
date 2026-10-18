@@ -3,7 +3,7 @@
  * its view, icon and how a file becomes an entry); a Nexo project's dialogs start from a template. The Media panel
  * lists their entries; another media kind only needs its own {@link Registry} in {@link MEDIA_REGISTRIES}.
  */
-import { Frame, type LucideIcon, MessageSquare, Music, Smile } from 'lucide-react';
+import { Frame, type LucideIcon, Music, Smile } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 import type { ExportPlan } from '@resourcepackbuilder/export';
 import {
@@ -133,9 +133,6 @@ const dialogRegistry: Registry = {
     return { add: () => Promise.resolve(addDialog(t('defaultId'))) };
   },
 };
-
-/** The icon of each media kind. */
-export const MEDIA_KIND_ICONS: Record<MediaKind, LucideIcon> = { glyph: Smile, sound: Music, painting: Frame, dialog: MessageSquare };
 
 /** The registries of the Media panel (the multipack page has no entries and stays a page link). */
 export const MEDIA_REGISTRIES: RegistryTable = {

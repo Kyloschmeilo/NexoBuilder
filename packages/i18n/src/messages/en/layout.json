@@ -162,10 +162,6 @@
         "hint": "Scripts: JavaScript files for js functions and conditions"
       }
     },
-    "testServer": {
-      "label": "Test server",
-      "hint": "Local Minecraft test server with {plugin} – updates automatically"
-    },
     "folderMenu": {
       "newItem": "New item",
       "newSubfolder": "New subfolder",

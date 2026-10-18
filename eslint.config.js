@@ -47,6 +47,14 @@ const targetImportsOther = (other) => ({
   group: coreImports(other, 'targets'),
   message: 'A target must not depend on another target or on targets/ (only targets/ imports every target).',
 });
+/**
+ * The `cn` package's own merger does not know the Workbench type steps (it drops `text-meta` next to a text colour), so
+ * every class merge goes through `@resourcepackbuilder/ui/cn`; only that module (packages/ui/src/lib/cn.ts) imports `cn`.
+ */
+const BARE_CN = {
+  regex: '^cn(?:/|$)',
+  message: 'Import cn from @resourcepackbuilder/ui/cn (or ./lib/cn inside packages/ui): the bare cn package does not know the type steps.',
+};
 const importBoundaries = WORKSPACES.flatMap((dir) => {
   const pkg = JSON.parse(fs.readFileSync(path.join(import.meta.dirname, dir, 'package.json'), 'utf8'));
   const declared = Object.keys({ ...pkg.dependencies, ...pkg.devDependencies, ...pkg.peerDependencies })
@@ -56,8 +64,11 @@ const importBoundaries = WORKSPACES.flatMap((dir) => {
     regex: `^@resourcepackbuilder/(?!(?:${declared.join('|')})(?:/|$))`,
     message: `Not a dependency of ${pkg.name}: declare it in package.json, keeping the package graph one-directional.`,
   };
-  const rule = (patterns) => ({ 'no-restricted-imports': ['error', { patterns }] });
+  const rule = (patterns) => ({ 'no-restricted-imports': ['error', { patterns: [...patterns, BARE_CN] }] });
   const blocks = [{ files: [`${dir}/**/*.{ts,tsx,mjs,js}`], rules: rule([undeclared]) }];
+  if (dir === 'packages/ui') {
+    blocks.push({ files: [`${dir}/src/lib/cn.ts`], rules: { 'no-restricted-imports': ['error', { patterns: [undeclared] }] } });
+  }
   if (dir === 'packages/core') {
     blocks.push({ files: [`${dir}/src/project/**`], rules: rule([undeclared, PROJECT_IMPORTS_TARGET]) });
     blocks.push({ files: [`${dir}/src/form/**`], rules: rule([undeclared, FORM_IMPORTS_TARGET]) });

@@ -184,10 +184,8 @@
       "useMainModel": "Modell des Items verwenden",
       "fromVersion": "Ab {version}",
       "removedIn": "Bis {version}",
-      "docs": "Dokumentation zu {type}",
       "unknownType": "Diesen Typ kennt der Editor nicht. Bearbeite ihn im zusätzlichen YAML.",
-      "unset": "Nicht gesetzt",
-      "rootKeysHelp": "Schlüssel an der Wurzel der Item-Modell-Definition."
+      "unset": "Nicht gesetzt"
     }
   }
 }

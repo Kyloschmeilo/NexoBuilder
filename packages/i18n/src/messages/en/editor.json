@@ -3,13 +3,9 @@
     "unnamed": "Unnamed"
   },
   "inputs": {
-    "default": "Default",
-    "defaultWithHint": "Default ({value})",
     "defaultTooltip": "Not set – {plugin} uses the default value",
     "allowedRange": "Allowed: {min} to {max}",
     "selectOrType": "Select or type",
-    "moveUp": "Move up",
-    "moveDown": "Move down",
     "pickColor": "Pick colour",
     "axis": "{axis} value",
     "defaultIs": "Default: {value}",
@@ -32,13 +28,6 @@
     "unsetWithDefault": "Unset (default: {value})",
     "vector": {
       "axis": "{label} {axis}"
-    },
-    "switch": {
-      "on": "On",
-      "off": "Off",
-      "defaultState": "Default: {state}",
-      "unset": "Unset",
-      "unsetHint": "Use the plugin default ({state})"
     }
   },
   "field": {
@@ -48,7 +37,6 @@
     "clearSection": "Clear section",
     "addEntry": "Add entry",
     "addItem": "Add {item}",
-    "keyTaken": "“{key}” already exists.",
     "yamlError": "YAML error: {error}",
     "noTexture": "No texture yet",
     "noTextureHint": "No texture yet (recommended: {size})",
@@ -59,7 +47,6 @@
     "listEmpty": "No entries yet."
   },
   "typed": {
-    "entry": "Entry",
     "typePlaceholder": "Choose or type a type",
     "docs": "Open the docs of this type",
     "chooseType": "Choose a type to see its keys.",

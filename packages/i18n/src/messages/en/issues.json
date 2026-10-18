@@ -383,7 +383,6 @@
   "issueList": {
     "openItem": "Go to item",
     "openGlyphs": "Open glyphs",
-    "noIssues": "No problems found.",
     "level": {
       "error": "Error",
       "warning": "Warning",

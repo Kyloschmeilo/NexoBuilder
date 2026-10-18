@@ -3,8 +3,7 @@
     "copyId": "ID kopieren",
     "replaceImage": "Bild ersetzen",
     "optional": "optional",
-    "deleteMessage": "„{name}“ wird gelöscht.",
-    "docs": "{target, select, craftengine {Seite im CraftEngine-Wiki öffnen} other {Seite in der Nexo-Doku öffnen}}"
+    "deleteMessage": "„{name}“ wird gelöscht."
   },
   "sounds": {
     "title": "Sounds",
@@ -83,8 +82,7 @@
   "multipack": {
     "title": "Multipack",
     "count": "{count, plural, one {# Vorlage} other {# Vorlagen}}",
-    "hint": "Vorlagenpakete sind Ressourcenpakete, die Nexo zusätzlich zum Hauptpaket sendet. Lege jedes nach plugins/Nexo/pack/template_packs/'<'id> auf den Server; der Export schreibt nur multipack.yml. Spieler schalten optionale Vorlagen mit /nexo multipack um.",
-    "docs": "Nexo-Doku öffnen"
+    "hint": "Vorlagenpakete sind Ressourcenpakete, die Nexo zusätzlich zum Hauptpaket sendet. Lege jedes nach plugins/Nexo/pack/template_packs/'<'id> auf den Server; der Export schreibt nur multipack.yml. Spieler schalten optionale Vorlagen mit /nexo multipack um."
   },
   "glyphs": {
     "title": "Glyphs",
@@ -244,15 +242,11 @@
   },
   "lootSources": {
     "title": "Loot-Quellen",
-    "count": "{count, plural, one {# Loot-Quelle} other {# Loot-Quellen}}",
-    "hint": "Eine Loot-Quelle hängt eine Loot-Tabelle an ein Vanilla-Loot-Ereignis: einen Block abbauen, einen Mob töten, eine Truhe öffnen, angeln und mehr. Mit overwrite ersetzt sie die Vanilla-Items oder die Erfahrung.",
-    "docs": "Loot-Quellen im CraftEngine-Wiki"
+    "hint": "Eine Loot-Quelle hängt eine Loot-Tabelle an ein Vanilla-Loot-Ereignis: einen Block abbauen, einen Mob töten, eine Truhe öffnen, angeln und mehr. Mit overwrite ersetzt sie die Vanilla-Items oder die Erfahrung."
   },
   "templates": {
     "title": "Vorlagen",
-    "count": "{count, plural, one {# Vorlage} other {# Vorlagen}}",
     "hint": "Eine Vorlage ist ein Stück Konfiguration mit Platzhaltern für Argumente. Blöcke nutzen sie in ihren Einstellungen, Items für das ganze Item, dazu Loot-Tabellen und Events. Die Standardvorlagen von CraftEngine (default:…) gibt es immer.",
-    "docs": "Vorlagen im CraftEngine-Wiki",
     "defaults": "Standardvorlagen von CraftEngine",
     "defaultsHint": "Jeder Block, jedes Item und jedes Möbelstück kann sie nutzen. Pflichtargumente sind mit * markiert.",
     "argumentRequired": "Pflicht-Argument",
@@ -263,15 +257,11 @@
   },
   "globalVariables": {
     "title": "Globale Variablen",
-    "count": "{count, plural, one {# Variable} other {# Variablen}}",
-    "hint": "Eine globale Variable ist ein MiniMessage-Text, den CraftEngine überall einsetzt, wo ein Text '<'global:name> sagt: in Item-Namen, Lore und mehr. Die Vorschauen im Item-Editor zeigen ihn auch.",
-    "docs": "Globale Variablen im CraftEngine-Wiki"
+    "hint": "Eine globale Variable ist ein MiniMessage-Text, den CraftEngine überall einsetzt, wo ein Text '<'global:name> sagt: in Item-Namen, Lore und mehr. Die Vorschauen im Item-Editor zeigen ihn auch."
   },
   "attributes": {
     "title": "Attribute",
-    "count": "{count, plural, one {# Eintrag} other {# Einträge}}",
     "hint": "Das Attributsystem von CraftEngine ist experimentell und läuft nur mit attribute.enable: true in seiner config.yml, die es beim Start liest. Der Testserver schaltet es für ein Projekt mit Attributen ein; starte ihn nach dem ersten Attribut neu.",
-    "docs": "Attribute im CraftEngine-Wiki",
     "definitions": {
       "title": "Attribute",
       "hint": "Eigene Werte wie Stärke oder kritische Trefferchance, jeweils mit Basiswert und Grenzen. Items ändern sie in ihren Einstellungen (Custom Attribute Modifiers)."
@@ -291,9 +281,7 @@
   },
   "translations": {
     "title": "Übersetzungen",
-    "count": "{count, plural, one {# Schlüssel} other {# Schlüssel}}",
     "hint": "Itemnamen mit Übersetzungen und die Namen eigener Blöcke landen von selbst in den Sprachdateien. Hier fügst du eigene Schlüssel hinzu: Lang-Schlüssel, die der Client übersetzt (als '<'lang:key>), und Server-Übersetzungen, die CraftEngine selbst einsetzt ('<'l10n:key> in der Sprache jedes Spielers, '<'i18n:key> in der des Servers).",
-    "docs": "Übersetzungen im CraftEngine-Wiki",
     "lang": {
       "title": "Lang-Schlüssel (Resource Pack)",
       "hint": "Werden in die Sprachdateien des Resource Packs geschrieben. Die Sprache all schreibt einen Schlüssel in jede Sprache; block_name:namespace:id benennt einen eigenen Block. Änderungen brauchen ein Neuladen des Resource Packs."
@@ -305,17 +293,13 @@
   },
   "categories": {
     "title": "Kategorien",
-    "count": "{count, plural, one {# Kategorie} other {# Kategorien}}",
     "hint": "Eine Kategorie gruppiert Items im /ce-Item-Browser von CraftEngine. Sie listet Items und andere Kategorien, findet Item-IDs über einen regulären Ausdruck oder nimmt alle Items. Ein Item kann sich auch selbst über seine Eigenschaft Category hinzufügen.",
     "fromFoldersOn": "Der Export schreibt außerdem eine Kategorie pro Ordner (Projekteinstellung); eine eigene mit derselben ID ersetzt sie.",
-    "fromFoldersOff": "Die Projekteinstellung für eine Kategorie pro Ordner ist aus, deshalb werden nur diese Kategorien geschrieben.",
-    "docs": "Kategorien im CraftEngine-Wiki"
+    "fromFoldersOff": "Die Projekteinstellung für eine Kategorie pro Ordner ist aus, deshalb werden nur diese Kategorien geschrieben."
   },
   "worldgen": {
     "title": "Weltgenerierung",
-    "count": "{count, plural, one {# Feature} other {# Features}}",
     "hint": "Ein konfiguriertes Feature ist das, was entsteht, z. B. die Form eines Baums; ein platziertes Feature bestimmt, wo und wie oft. Schreib das YAML mit misodes Datapack-Generator (auf die Version deines Servers und YAML-Ausgabe gestellt) und nutze darin die IDs deiner eigenen Blöcke.",
-    "docs": "Weltgenerierung im CraftEngine-Wiki",
     "configured": {
       "title": "Konfigurierte Features",
       "hint": "Setzlinge wachsen zu diesen. Ein platziertes Feature nennt eines oder enthält ein eigenes."
@@ -327,13 +311,10 @@
   },
   "atlases": {
     "title": "Atlanten",
-    "count": "{count, plural, one {# Atlas} other {# Atlanten}}",
-    "hint": "Die meisten Packs brauchen keinen Atlas: CraftEngine repariert die üblichen Fälle der Block- und Item-Atlanten selbst. Füge einen hinzu, um Texturen in einen Vanilla-Atlas zu bringen oder einen eigenen Sprite-Atlas zu bauen.",
-    "docs": "Atlanten im CraftEngine-Wiki"
+    "hint": "Die meisten Packs brauchen keinen Atlas: CraftEngine repariert die üblichen Fälle der Block- und Item-Atlanten selbst. Füge einen hinzu, um Texturen in einen Vanilla-Atlas zu bringen oder einen eigenen Sprite-Atlas zu bauen."
   },
   "pack": {
     "title": "Pack",
-    "docs": "Pack-Aufbau im CraftEngine-Wiki",
     "hint": "Namespace und Beschreibung kommen aus den Projekteinstellungen; den Rest von pack.yml legst du hier fest.",
     "packYml": {
       "title": "pack.yml",
@@ -346,8 +327,6 @@
   },
   "scripts": {
     "title": "Skripte",
-    "count": "{count, plural, one {# Skript} other {# Skripte}}",
-    "docs": "Skripte im CraftEngine-Wiki",
     "hint": "Skripte kommen in den script-Ordner des Packs. js-Funktionen und -Bedingungen rufen ihre Funktionen über die Skript-ID namespace:path auf; Annotationen wie //@Subscribe und //@Task registrieren Event-Handler und Tasks. CraftEngine führt sie nur mit scripting.js.enable: true in seiner config.yml aus; der Testserver schaltet das ein."
   },
   "registry": {

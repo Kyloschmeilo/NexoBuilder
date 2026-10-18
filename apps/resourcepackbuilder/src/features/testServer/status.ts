@@ -11,14 +11,6 @@ export const TEST_SERVER_STATUS_TONE: Record<TestServerStatus, Tone> = {
   error: 'error',
 };
 
-/** Tone per resource pack status; the label is `media.testServer.pack.<status>`. */
-export const PACK_STATUS_TONE: Record<PackStatus, Tone> = {
-  idle: 'neutral',
-  building: 'busy',
-  ready: 'success',
-  failed: 'error',
-};
-
 /** Pill tone per server status (the page header); a transition is `info` because the pill has no busy state. */
 export const TEST_SERVER_PILL_TONE: Record<TestServerStatus, StatusPillTone> = {
   stopped: 'muted',

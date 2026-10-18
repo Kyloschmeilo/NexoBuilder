@@ -3,13 +3,9 @@
     "unnamed": "Unbenannt"
   },
   "inputs": {
-    "default": "Standard",
-    "defaultWithHint": "Standard ({value})",
     "defaultTooltip": "Nicht gesetzt – {plugin} verwendet den Standardwert",
     "allowedRange": "Erlaubt: {min} bis {max}",
     "selectOrType": "Auswählen oder eingeben",
-    "moveUp": "Nach oben",
-    "moveDown": "Nach unten",
     "pickColor": "Farbe wählen",
     "axis": "{axis}-Wert",
     "defaultIs": "Standard: {value}",
@@ -32,13 +28,6 @@
     "unsetWithDefault": "Zurücksetzen (Standard: {value})",
     "vector": {
       "axis": "{label} {axis}"
-    },
-    "switch": {
-      "on": "An",
-      "off": "Aus",
-      "defaultState": "Standard: {state}",
-      "unset": "Zurücksetzen",
-      "unsetHint": "Den Standard des Plugins verwenden ({state})"
     }
   },
   "field": {
@@ -48,7 +37,6 @@
     "clearSection": "Abschnitt leeren",
     "addEntry": "Eintrag hinzufügen",
     "addItem": "{item} hinzufügen",
-    "keyTaken": "„{key}“ ist bereits vorhanden.",
     "yamlError": "YAML-Fehler: {error}",
     "noTexture": "Noch keine Textur",
     "noTextureHint": "Noch keine Textur (empfohlen: {size})",
@@ -59,7 +47,6 @@
     "listEmpty": "Noch keine Einträge."
   },
   "typed": {
-    "entry": "Eintrag",
     "typePlaceholder": "Typ wählen oder eingeben",
     "docs": "Doku zu diesem Typ öffnen",
     "chooseType": "Wähle einen Typ, um seine Schlüssel zu sehen.",

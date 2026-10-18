@@ -184,10 +184,8 @@
       "useMainModel": "Use the item’s model",
       "fromVersion": "From {version}",
       "removedIn": "Until {version}",
-      "docs": "Documentation for {type}",
       "unknownType": "The editor does not know this type. Edit it in the additional YAML.",
-      "unset": "Not set",
-      "rootKeysHelp": "Keys at the root of the item model definition."
+      "unset": "Not set"
     }
   }
 }

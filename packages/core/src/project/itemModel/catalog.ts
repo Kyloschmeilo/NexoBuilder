@@ -375,10 +375,8 @@ export const ITEM_MODEL_UI_KEYS = [
   'useMainModel',
   'fromVersion',
   'removedIn',
-  'docs',
   'unknownType',
   'unset',
-  'rootKeysHelp',
 ] as const;
 
 /** Every message key the tree editor and its catalog use (checked against the catalogue by the tests). */
