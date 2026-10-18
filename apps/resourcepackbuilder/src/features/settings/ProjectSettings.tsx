@@ -3,16 +3,18 @@ import { useId } from 'react';
 import { useTranslations } from 'next-intl';
 import { MC_VERSIONS, PACK_NAME_PATTERN } from '@resourcepackbuilder/minecraft';
 import { packTargetFor } from '@resourcepackbuilder/export';
-import { Field, FieldDescription, FieldError, FieldLabel } from '@resourcepackbuilder/ui/components/field';
+import { Field, FieldDescription, FieldError, FieldLabel, FieldTitle } from '@resourcepackbuilder/ui/components/field';
 import { Input } from '@resourcepackbuilder/ui/components/input';
 import { NativeSelect, NativeSelectOption } from '@resourcepackbuilder/ui/components/native-select';
 import { CheckboxField } from '../../components/CheckboxField';
+import { TargetDot } from '../../components/TargetDot';
 import { updateProjectSettings } from '../../commands/settings';
 import { richTags } from '../../i18n/richTags';
 import { useOpenProject } from '../../store/project';
 import { NamespaceProblemText, useNamespaceProblem } from '../../components/NamespaceProblem';
 import { PackIconField } from './PackIconField';
 
+/** The settings stored in the open project: name, target, Minecraft version, namespace, pack and target options. */
 export function ProjectSettings() {
   const t = useTranslations('dialogs.settings');
   const id = useId();
@@ -26,14 +28,18 @@ export function ProjectSettings() {
 
   return (
     <div className="flex flex-col gap-5">
-      <div className="grid gap-4 @xl/dialog:grid-cols-2">
+      <div className="grid gap-4 @xl/settings:grid-cols-2">
         <Field>
           <FieldLabel htmlFor={`${id}-name`}>{t('projectName')}</FieldLabel>
           <Input id={`${id}-name`} value={project.name} onChange={(e) => updateProjectSettings((p) => (p.name = e.target.value))} />
         </Field>
         <Field>
-          <FieldLabel htmlFor={`${id}-target`}>{t('target')}</FieldLabel>
-          <Input id={`${id}-target`} readOnly disabled value={tTargets(`${project.target}.name`)} />
+          <FieldTitle>{t('target')}</FieldTitle>
+          {/* A fact of the project, not a choice: shown as text with the target's colour */}
+          <p className="flex h-7.5 items-center gap-2 text-body">
+            <TargetDot target={project.target} className="size-2" />
+            {tTargets(`${project.target}.name`)}
+          </p>
           <FieldDescription>{t('targetHelp')}</FieldDescription>
         </Field>
         <Field>
@@ -78,7 +84,7 @@ export function ProjectSettings() {
             <FieldError>{t('packNameInvalid')}</FieldError>
           )}
         </Field>
-        <Field className="@xl/dialog:col-span-2">
+        <Field className="@xl/settings:col-span-2">
           <FieldLabel htmlFor={`${id}-description`}>{t('packDescription')}</FieldLabel>
           <Input
             id={`${id}-description`}

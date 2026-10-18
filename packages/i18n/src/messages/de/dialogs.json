@@ -22,6 +22,7 @@
     "confirm": "Verschieben"
   },
   "settings": {
+    "pageDescription": "Einstellungen dieses Projekts und dieses Geräts.",
     "project": {
       "title": "Projekt",
       "description": "Wird mit dem Projekt gespeichert."

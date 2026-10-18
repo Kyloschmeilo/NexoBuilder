@@ -14,7 +14,7 @@ export function DeviceSettings() {
   const languageId = useId();
   const locale = useLocaleStore((s) => s.locale);
   return (
-    <div className="grid gap-4 @xl/dialog:grid-cols-2">
+    <div className="grid gap-4 @xl/settings:grid-cols-2">
       <Field>
         <FieldLabel htmlFor={languageId}>{tCommon('language')}</FieldLabel>
         <NativeSelect

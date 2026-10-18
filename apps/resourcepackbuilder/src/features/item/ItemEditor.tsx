@@ -9,7 +9,7 @@ import { FieldContext } from '../../components/editor';
 import { isOneOf } from '../../lib/isOneOf';
 import { usePlan } from '../../shell/PlanProvider';
 import { useOpenProject } from '../../store/project';
-import { setEditorTab, useUiStore, type EditorTab } from '../../store/ui';
+import { setEditorSection, useUiStore, type EditorSection } from '../../store/ui';
 import { GeneralTab } from './GeneralTab';
 import { ItemHeader } from './ItemHeader';
 import { ModelTab } from './model/ModelTab';
@@ -22,7 +22,7 @@ import { YamlTab } from './YamlTab';
 type ItemTranslator = ReturnType<typeof useTranslations<'item'>>;
 
 /** The editor's tabs with their labels: the fixed ones around the property tabs of the form. */
-function editorTabs(schema: FormSchema, t: ItemTranslator): Array<{ id: EditorTab; label: string }> {
+function editorTabs(schema: FormSchema, t: ItemTranslator): Array<{ id: EditorSection; label: string }> {
   return [
     { id: 'general', label: t('editor.tabs.general') },
     { id: 'model', label: t('editor.tabs.model') },
@@ -34,7 +34,7 @@ function editorTabs(schema: FormSchema, t: ItemTranslator): Array<{ id: EditorTa
 }
 
 /** Number shown on a tab: how many entries it has. */
-function tabCounts(schema: FormSchema, item: Item): Partial<Record<EditorTab, number>> {
+function tabCounts(schema: FormSchema, item: Item): Partial<Record<EditorSection, number>> {
   return {
     ...Object.fromEntries(
       schema.tabs.map((tab) => {
@@ -49,7 +49,7 @@ function tabCounts(schema: FormSchema, item: Item): Partial<Record<EditorTab, nu
 function ItemEditorContent({ item }: { item: Item }) {
   const t = useTranslations('item');
   const plan = usePlan();
-  const activeTab = useUiStore((s) => s.editorTab);
+  const activeTab = useUiStore((s) => s.editorSection);
   const fieldContext = useItemFieldContext(item);
   const schema = useProjectForm();
   const issues = plan ? issuesFor(plan.issues, { kind: 'item', id: item.id }) : [];
@@ -65,7 +65,7 @@ function ItemEditorContent({ item }: { item: Item }) {
         <Tabs
           value={tabIds.includes(activeTab) ? activeTab : 'general'}
           onValueChange={(value) => {
-            if (isOneOf(tabIds, value)) setEditorTab(value);
+            if (isOneOf(tabIds, value)) setEditorSection(value);
           }}
           className="gap-5"
         >

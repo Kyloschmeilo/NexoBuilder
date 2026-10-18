@@ -36,14 +36,54 @@
       "warnings": "{count, plural, one {# Warnung} other {# Warnungen}}",
       "ok": "Alles ok"
     },
-    "preview": {
-      "show": "Vorschau einblenden",
-      "hide": "Vorschau ausblenden"
-    },
     "export": "Exportieren"
+  },
+  "activities": {
+    "title": "Aktivitäten",
+    "items": {
+      "label": "Items",
+      "hint": "Ordner und Items des Projekts"
+    },
+    "media": {
+      "label": "Medien",
+      "hint": "Glyphs, Sounds und Paintings"
+    },
+    "logic": {
+      "label": "Logik und Daten",
+      "hint": "Loot-Quellen, Vorlagen, globale Variablen, Attribute und weitere CraftEngine-Listen"
+    },
+    "testServer": {
+      "label": "Testserver",
+      "hint": "Lokaler Minecraft-Testserver, der sich automatisch aktualisiert"
+    },
+    "settings": {
+      "label": "Einstellungen",
+      "hint": "Projekt, Sprache und Darstellung"
+    },
+    "badge": {
+      "errors": "{count, plural, one {# Fehler} other {# Fehler}}",
+      "warnings": "{count, plural, one {# Warnung} other {# Warnungen}}",
+      "withBadge": "{label}, {badge}"
+    }
+  },
+  "commandPalette": {
+    "trigger": "Items, Seiten und Aktionen suchen …",
+    "shortcut": "Strg+K",
+    "title": "Befehlspalette",
+    "description": "Items, Ordner, Seiten und Aktionen suchen",
+    "placeholder": "Name, ID oder Aktion eingeben …",
+    "empty": "Nichts gefunden.",
+    "groups": {
+      "actions": "Aktionen",
+      "pages": "Seiten",
+      "folders": "Ordner",
+      "items": "Items"
+    }
   },
   "sidebar": {
     "title": "Ordner & Items",
+    "label": "Seitenleiste",
+    "resize": "Breite der Seitenleiste ändern",
     "newFolder": "Neuer Ordner",
     "folderButton": "Ordner",
     "searchPlaceholder": "Items suchen …",
@@ -145,10 +185,20 @@
     "itemsHeading": "Items in diesem Ordner",
     "subfoldersHeading": "Unterordner"
   },
-  "rightPanel": {
-    "title": "YAML-Vorschau",
-    "empty": "Wähle ein Item, um hier das fertige {plugin}-YAML zu sehen.",
-    "checks": "Prüfung"
+  "dock": {
+    "label": "Ausgabe",
+    "yamlTab": "YAML",
+    "checksTab": "Prüfung",
+    "show": "Ausgabe einblenden",
+    "hide": "Ausgabe ausblenden",
+    "toggleShortcut": "Strg+J",
+    "resize": "Breite der Ausgabe ändern",
+    "emptyFile": "In diese Datei wird noch nichts geschrieben.",
+    "noFile": "Diese Seite schreibt keine Datei.",
+    "entryChecks": "Dieser Eintrag",
+    "entryChecksEmpty": "Keine Probleme gefunden.",
+    "projectChecks": "Ganzes Projekt ({count})",
+    "projectChecksEmpty": "Keine Probleme im Projekt."
   },
   "welcome": {
     "tagline": "Aus Blockbench-Modellen, Java-Modellen oder Texturen werden fertige Items für Nexo oder CraftEngine – mit Item-Config und Resourcepack.",

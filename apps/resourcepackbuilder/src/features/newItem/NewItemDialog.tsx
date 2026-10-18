@@ -15,7 +15,7 @@ import { FolderSelect } from '../../components/FolderSelect';
 import { richTags } from '../../i18n/richTags';
 import { notify } from '../../shell/notify';
 import { useOpenProject } from '../../store/project';
-import { setEditorTab } from '../../store/ui';
+import { setEditorSection } from '../../store/ui';
 import { MODEL_ACCEPT, MODEL_FORMATS } from '../../components/modelFiles';
 import { DraftCard } from './DraftCard';
 import { ItemIdentityFields } from '../../components/ItemIdentityFields';
@@ -62,7 +62,7 @@ function NewItemFrame({ folderId, files: initialFiles }: { folderId: string; fil
     addItems(toCreate);
     newItemDialog.close();
     notify('success', t('created', { count: toCreate.length }));
-    setEditorTab('general');
+    setEditorSection('general');
   };
 
   return (
