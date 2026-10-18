@@ -196,6 +196,22 @@
             "placeholder": "- color: white"
           }
         }
+      },
+      "scripts": {
+        "label": "scripts",
+        "itemLabel": "Skript",
+        "fields": {
+          "path": {
+            "label": "path",
+            "help": "Die Datei im script-Ordner des Packs, ohne .js. Funktionen und Bedingungen nennen sie als namespace:path.",
+            "placeholder": "z. B. utils/combo"
+          },
+          "source": {
+            "label": "source",
+            "help": "JavaScript. //@Subscribe, //@Task, //@Enable und //@Disable über einer Funktion registrieren sie.",
+            "placeholder": "function run() '{' … '}'"
+          }
+        }
       }
     }
   },

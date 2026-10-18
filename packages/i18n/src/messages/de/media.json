@@ -298,5 +298,11 @@
       "title": "Config-Factories",
       "hint": "Eine Config-Factory schreibt ihren Blueprint einmal pro Instanz, jedes Mal mit deren Argumenten: z. B. ein Sofa-Item mit Rezept für jede Wollfarbe."
     }
+  },
+  "scripts": {
+    "title": "Skripte",
+    "count": "{count, plural, one {# Skript} other {# Skripte}}",
+    "docs": "Skripte im CraftEngine-Wiki",
+    "hint": "Skripte kommen in den script-Ordner des Packs. js-Funktionen und -Bedingungen rufen ihre Funktionen über die Skript-ID namespace:path auf; Annotationen wie //@Subscribe und //@Task registrieren Event-Handler und Tasks. CraftEngine führt sie nur mit scripting.js.enable: true in seiner config.yml aus; der Testserver schaltet das ein."
   }
 }

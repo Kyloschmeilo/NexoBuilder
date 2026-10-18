@@ -307,6 +307,7 @@ export const CraftEngineProjectSchema = z
     atlases: optional(lenientList(ConfigObjectSchema)),
     pack: optional(ConfigObjectSchema),
     configFactories: optional(lenientList(ConfigObjectSchema)),
+    scripts: optional(lenientList(ConfigObjectSchema)),
   })
   .transform((data) => withoutUndefined(data))
   .transform((data) => (Object.keys(data).length > 0 ? data : undefined));

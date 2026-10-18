@@ -1,8 +1,8 @@
 /**
  * The project-level sections of a CraftEngine pack that have no item behind them: the server translations
  * (configuration/translations.yml), the worldgen features (worldgen.yml), the atlases (atlases.yml) and the config
- * factories (config_factories.yml), and the checks of these sections, of the project's own lang keys and of its
- * categories.
+ * factories (config_factories.yml), the script files (script/<path>.js), and the checks of these sections, of the
+ * project's own lang keys and of its categories.
  */
 import { createIssue, type Issue, isPlainObject, issueCode, issueReporter } from '@resourcepackbuilder/utils';
 import {
@@ -13,9 +13,11 @@ import {
   CE_CONFIGURED_FEATURE_LIST,
   CE_ENTRY_ID,
   CE_PLACED_FEATURE_LIST,
+  CE_SCRIPT_PATH,
   configFactoryId,
   craftEngineAtlases,
   craftEngineConfigFactories,
+  craftEngineScriptFiles,
   craftEngineServerTranslations,
   craftEngineWorldgen,
   hasBiomeModifier,
@@ -29,13 +31,15 @@ import {
   projectEntryKey,
   projectLang,
   projectPlacedFeatures,
+  projectScripts,
   projectServerTranslations,
+  scriptPath,
   sectionsToYaml,
 } from '@resourcepackbuilder/core/craftEngine';
 import { checkFieldValue, type ObjectListField } from '@resourcepackbuilder/core/form';
 import { type ConfigObject, listEntryFrame, type Project, projectEntryFrame } from '@resourcepackbuilder/core/project';
 import { toYaml, yamlHeader } from '@resourcepackbuilder/core/yaml';
-import { craftEngineConfigFile } from './layout';
+import { craftEngineConfigFile, craftEnginePackDir } from './layout';
 
 /** The config files of the project-level sections, by their path relative to plugins/CraftEngine. */
 export function planProjectSections(project: Project): Map<string, string> {
@@ -56,6 +60,7 @@ export function planProjectSections(project: Project): Map<string, string> {
   if (Object.keys(factories).length > 0) {
     out.set(craftEngineConfigFile(project, 'config_factories'), yamlHeader(`config factories of "${project.name}"`) + toYaml(factories));
   }
+  for (const [file, source] of craftEngineScriptFiles(project)) out.set(`${craftEnginePackDir(project)}/${file}`, source);
   return out;
 }
 
@@ -75,7 +80,28 @@ export function projectSectionIssues(project: Project): Issue[] {
       if (!Array.isArray(entry.sources) || entry.sources.length === 0) report('warning', 'ce.atlasSourcesMissing');
     }),
     ...configFactoryIssues(project),
+    ...scriptIssues(project),
   ];
+}
+
+/** Each script needs a path CraftEngine reads, used once, and a source; scripts only run with scripting switched on. */
+function scriptIssues(project: Project): Issue[] {
+  const issues: Issue[] = [];
+  const paths = new Set<string>();
+  const scripts = projectScripts(project);
+  scripts.forEach((entry, i) => {
+    const path = scriptPath(entry);
+    const report = issueReporter(issues, { context: [path ? projectEntryFrame('script', path) : listEntryFrame(i + 1)] });
+    if (!path) report('error', 'ce.scriptPathMissing');
+    else if (!CE_SCRIPT_PATH.test(path)) report('error', 'ce.scriptPathInvalid', { path });
+    else {
+      if (paths.has(path)) report('error', 'ce.scriptPathDuplicate', { path });
+      paths.add(path);
+    }
+    if (typeof entry.source !== 'string' || !entry.source.trim()) report('warning', 'ce.scriptSourceMissing');
+  });
+  if (scripts.length > 0) issues.push(createIssue('info', 'ce.scriptsNeedScripting'));
+  return issues;
 }
 
 /**

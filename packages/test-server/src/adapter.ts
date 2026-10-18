@@ -21,10 +21,11 @@ export interface ServerAdapter {
   /** Plugin config the app patches, relative to pluginDir: 'settings.yml' | 'config.yml' */
   configFile: string;
   /**
-   * The plugin config with the values the test server needs (served locally on `packPort`). `attributes`: the open
-   * project uses CraftEngine's attribute system, which the CraftEngine config then switches on.
+   * The plugin config with the values the test server needs (served locally on `packPort`). `attributes` and
+   * `scripting`: the open project uses CraftEngine's attribute system or ships scripts, which the CraftEngine config
+   * then switches on.
    */
-  patchConfig(current: string | null, options: { packPort: number; attributes?: boolean }): string;
+  patchConfig(current: string | null, options: { packPort: number; attributes?: boolean; scripting?: boolean }): string;
   /** Values the plugin needs in Paper's config/paper-global.yml. */
   paperGlobalOverrides: Array<[string[], unknown]>;
   /**

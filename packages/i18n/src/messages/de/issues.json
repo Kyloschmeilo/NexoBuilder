@@ -307,7 +307,12 @@
     "atlasSourcesMissing": "Der Atlas hat keine Quellen und fügt deshalb nichts hinzu.",
     "configFactoryIdInvalid": "Die ID „{id}“ der Config-Factory darf nur Buchstaben, Ziffern und _ . - enthalten, deshalb wird sie weggelassen.",
     "configFactoryBlueprintMissing": "Die Config-Factory hat keinen Blueprint und wird deshalb weggelassen.",
-    "configFactoryInstancesMissing": "Die Config-Factory hat keine Instanzen und wird deshalb weggelassen."
+    "configFactoryInstancesMissing": "Die Config-Factory hat keine Instanzen und wird deshalb weggelassen.",
+    "scriptPathMissing": "Das Skript hat keinen Pfad und wird deshalb weggelassen.",
+    "scriptPathInvalid": "Der Skriptpfad „{path}“ darf nur Kleinbuchstaben, Ziffern, _ . - und / zwischen Ordnern enthalten und wird deshalb weggelassen.",
+    "scriptPathDuplicate": "Ein anderes Skript nutzt schon den Pfad „{path}“, deshalb wird dieses weggelassen.",
+    "scriptSourceMissing": "Das Skript ist leer.",
+    "scriptsNeedScripting": "CraftEngine führt Skripte nur mit scripting.js.enable: true in seiner config.yml aus, was einen Serverneustart braucht. Der Testserver schaltet es ein."
   },
   "issueList": {
     "openItem": "Zum Item",

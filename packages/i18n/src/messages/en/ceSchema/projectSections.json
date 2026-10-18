@@ -196,6 +196,22 @@
             "placeholder": "- color: white"
           }
         }
+      },
+      "scripts": {
+        "label": "scripts",
+        "itemLabel": "Script",
+        "fields": {
+          "path": {
+            "label": "path",
+            "help": "The file below the pack's script folder, without .js. Functions and conditions name it as namespace:path.",
+            "placeholder": "e.g. utils/combo"
+          },
+          "source": {
+            "label": "source",
+            "help": "JavaScript. //@Subscribe, //@Task, //@Enable and //@Disable above a function register it.",
+            "placeholder": "function run() '{' … '}'"
+          }
+        }
       }
     }
   },

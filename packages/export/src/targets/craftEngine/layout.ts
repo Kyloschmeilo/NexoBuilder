@@ -9,6 +9,7 @@
  *   resources/<pack>/configuration/attributes.yml (the attribute system)
  *   resources/<pack>/configuration/{translations,worldgen,atlases,config_factories}.yml (server translations,
  *     worldgen features, atlases, config factories)
+ *   resources/<pack>/script/<path>.js (the project's scripts)
  *   resources/<pack>/resourcepack/ (the resource pack: pack.mcmeta, pack.png, assets/…)
  * The test server's CraftEngine adapter accepts these paths: pack.yml, configuration/… and resourcepack/….
  */

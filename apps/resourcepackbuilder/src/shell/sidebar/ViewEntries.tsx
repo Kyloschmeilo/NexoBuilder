@@ -1,12 +1,13 @@
 /**
  * The entries below the tree that open project-wide views: glyphs, sounds, paintings, a CraftEngine project's loot
- * sources, templates, global variables, attributes, translations, categories, worldgen features, atlases and pack
- * settings, and the test server.
+ * sources, templates, global variables, attributes, translations, categories, worldgen features, atlases, pack
+ * settings and scripts, and the test server.
  */
 import type { ReactNode } from 'react';
 import {
   Braces,
   Dumbbell,
+  FileCode,
   Frame,
   Gem,
   Images,
@@ -91,6 +92,7 @@ const CRAFT_ENGINE_VIEWS = [
   },
   { view: 'atlases', icon: <Images className="size-4" />, count: (p: Project) => p.craftEngine?.atlases?.length ?? 0 },
   { view: 'pack', icon: <Package className="size-4" />, count: (p: Project) => p.craftEngine?.configFactories?.length ?? 0 },
+  { view: 'scripts', icon: <FileCode className="size-4" />, count: (p: Project) => p.craftEngine?.scripts?.length ?? 0 },
 ] as const satisfies ReadonlyArray<{ view: ViewName; icon: ReactNode; count: (project: Project) => number }>;
 
 /** Project-wide lists below the tree, each with its size and the worst issue level of its entries (the CraftEngine lists only in CraftEngine projects). */

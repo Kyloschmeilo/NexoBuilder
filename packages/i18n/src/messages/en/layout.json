@@ -108,6 +108,10 @@
       "pack": {
         "label": "Pack",
         "hint": "Pack: pack.yml and config factories"
+      },
+      "scripts": {
+        "label": "Scripts",
+        "hint": "Scripts: JavaScript files for js functions and conditions"
       }
     },
     "testServer": {

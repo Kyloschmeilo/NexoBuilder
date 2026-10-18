@@ -298,5 +298,11 @@
       "title": "Config factories",
       "hint": "A config factory writes its blueprint once per instance, each time with that instance's arguments: e.g. a sofa item and recipe for every wool color."
     }
+  },
+  "scripts": {
+    "title": "Scripts",
+    "count": "{count, plural, one {# script} other {# scripts}}",
+    "docs": "Scripting in the CraftEngine wiki",
+    "hint": "Scripts go into the pack's script folder. js functions and conditions call their functions by the script id namespace:path; annotations like //@Subscribe and //@Task register event handlers and tasks. CraftEngine runs them only with scripting.js.enable: true in its config.yml; the test server switches it on."
   }
 }

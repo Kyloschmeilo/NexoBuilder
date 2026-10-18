@@ -99,6 +99,8 @@ export interface CraftEngineProjectData {
   pack?: ConfigObject;
   /** Config factories (`config_factory#<id>`), each with its `id`, `blueprint` and `instances` */
   configFactories?: ConfigObject[];
+  /** JavaScript files of the pack (script/<path>.js), each with its `path` and `source` (core/craftEngine/scripts.ts) */
+  scripts?: ConfigObject[];
 }
 
 /**

@@ -336,3 +336,21 @@ describe('CraftEngine config factories', () => {
     expect(codes(project)).toContain('ce.configFactoryInstancesMissing');
   });
 });
+
+describe('CraftEngine scripts', () => {
+  it('writes each script into the pack script folder and reports bad paths', () => {
+    const { project } = ceProject({
+      scripts: [
+        { path: 'combo', source: 'function onRightClick() {}' },
+        { path: 'utils/math.js', source: 'function add(a, b) { return a + b; }\n' },
+        { path: 'Bad Path', source: 'x' },
+        { path: 'combo', source: 'taken' },
+      ],
+    });
+    const plan = planExport(project);
+    expect(pluginText(plan, `${PACK}/script/combo.js`)).toBe('function onRightClick() {}\n');
+    expect(pluginText(plan, `${PACK}/script/utils/math.js`)).toBe('function add(a, b) { return a + b; }\n');
+    expect([...plan.pluginFiles.keys()].filter((path) => path.includes('/script/'))).toHaveLength(2);
+    expect(codes(project)).toEqual(expect.arrayContaining(['ce.scriptPathInvalid', 'ce.scriptPathDuplicate', 'ce.scriptsNeedScripting']));
+  });
+});

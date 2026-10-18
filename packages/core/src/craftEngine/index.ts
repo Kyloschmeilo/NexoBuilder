@@ -29,6 +29,7 @@ export * from './pack';
 export * from './projectEntries';
 export * from './projectSuggestions';
 export * from './recipes';
+export * from './scripts';
 export * from './templateArgs';
 export * from './templates';
 export * from './worldgen';

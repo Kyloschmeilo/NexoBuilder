@@ -12,6 +12,7 @@ import { AttributesView } from '../features/craftEngine/AttributesView';
 import { CategoriesView } from '../features/craftEngine/CategoriesView';
 import { GlobalVariablesView } from '../features/craftEngine/GlobalVariablesView';
 import { PackView } from '../features/craftEngine/PackView';
+import { ScriptsView } from '../features/craftEngine/ScriptsView';
 import { TemplatesView } from '../features/craftEngine/TemplatesView';
 import { TranslationsView } from '../features/craftEngine/TranslationsView';
 import { WorldgenView } from '../features/craftEngine/WorldgenView';
@@ -35,6 +36,7 @@ const VIEWS: Record<ViewName, ComponentType> = {
   worldgen: WorldgenView,
   atlases: AtlasesView,
   pack: PackView,
+  scripts: ScriptsView,
   testServer: TestServerView,
 };
 
