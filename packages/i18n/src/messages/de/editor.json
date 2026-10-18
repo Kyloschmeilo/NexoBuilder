@@ -43,5 +43,70 @@
     "objectHint": "Ein Zahlengeber mit Typ, etwa uniform",
     "premium": "Premium",
     "premiumHint": "Nur CraftEngine Premium liest diesen Typ."
+  },
+  "devPrimitives": {
+    "actions": {
+      "addBehavior": "Verhalten hinzufügen",
+      "addRecipe": "Rezept hinzufügen",
+      "copyFeatures": "Funktionen kopieren",
+      "delete": "Item löschen",
+      "duplicate": "Duplizieren"
+    },
+    "choices": {
+      "block": "Block",
+      "furniture": "Möbel",
+      "nothing": "Nichts"
+    },
+    "colorTheme": "Farbschema",
+    "empty": {
+      "behaviors": "Noch keine Verhalten.",
+      "recipes": "Noch keine Rezepte."
+    },
+    "fields": {
+      "delay": "Verzögerung",
+      "delayHelp": "Ticks, bevor das Verhalten erneut läuft. 20 Ticks sind eine Sekunde.",
+      "displayName": "Anzeigename",
+      "displayNameHelp": "MiniMessage-Tags wie '<'gold> oder '<'bold> gestalten den Namen.",
+      "glint": "Verzauberungsglanz",
+      "hardness": "Härte",
+      "hardnessHelp": "Zeit zum Abbauen des Blocks. Stein hat 1,5, Obsidian 50.",
+      "lore": "Beschreibung",
+      "loreValue": "Verbrennt alles, was es berührt",
+      "material": "Material",
+      "materialWarning": "Von der Vorlage übernommen.",
+      "places": "Platziert",
+      "saturation": "Sättigung",
+      "saturationError": "Die Sättigung muss 0 oder größer sein.",
+      "type": "Typ",
+      "unbreakable": "Unzerstörbar",
+      "variable": "Variable",
+      "variableValue": "Wert"
+    },
+    "meta": {
+      "folder": "Waffen"
+    },
+    "panel": "Ein Panel enthält Listen und Vorschauen.",
+    "pills": {
+      "draft": "Entwurf",
+      "errors": "{count, plural, one {# Fehler} other {# Fehler}}",
+      "info": "Info",
+      "valid": "Gültig",
+      "warnings": "{count, plural, one {# Warnung} other {# Warnungen}}"
+    },
+    "sections": {
+      "choices": "Auswahl",
+      "empty": "Leere Zustände",
+      "feedback": "Rückmeldung",
+      "fields": "Felder",
+      "fieldsDescription": "Feldzeilen mit Bezeichnung, Eingabe und YAML-Schlüssel, Doku-Links neben der Bezeichnung und Hilfe im Popover.",
+      "food": "Nahrung",
+      "foodDescription": "Ein Unterabschnitt mit drei kurzen Feldern nebeneinander.",
+      "lists": "Listen",
+      "listsDescription": "Zeilen klappen an Ort und Stelle auf oder öffnen einen Dialog; zum Umsortieren den Griff ziehen oder die Pfeiltasten nutzen.",
+      "maps": "Zuordnungen",
+      "mapsDescription": "Schlüssel werden umbenannt, sobald das Eingabefeld den Fokus verliert."
+    },
+    "title": "Editor-Bausteine",
+    "toggleMode": "Hell oder dunkel"
   }
 }

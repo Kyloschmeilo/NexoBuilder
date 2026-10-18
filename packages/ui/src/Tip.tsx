@@ -29,7 +29,7 @@ export function Tip({ label, side, children }: TipProps) {
         <TooltipTrigger
           render={
             <span
-              className="inline-flex rounded-md outline-none focus-visible:ring-2 focus-visible:ring-ring/50"
+              className="inline-flex rounded-md outline-none focus-visible:ring-2 focus-visible:ring-ring"
               tabIndex={0}
               aria-describedby={descriptionId}
             />

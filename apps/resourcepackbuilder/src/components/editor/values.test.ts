@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import type { Field } from '@resourcepackbuilder/core/form';
 import {
+  arrangeObjectFields,
   countSetValues,
   hexToNexoColor,
   insertAt,
@@ -128,5 +129,21 @@ describe('typed entries', () => {
     expect(withEntryType(entry, 'command', command)).toEqual({ type: 'command', conditions: [] });
     expect(withEntryType(entry, 'comm', undefined)).toEqual({ type: 'comm', message: 'hi', conditions: [] });
     expect(withEntryType(entry, '', undefined)).toEqual({ message: 'hi', conditions: [] });
+  });
+});
+
+describe('arrangeObjectFields', () => {
+  it('puts simple fields before wide ones and keeps advanced fields apart, each in schema order', () => {
+    const fields: Field[] = [
+      { type: 'stringList', key: 'list', label: 'l' },
+      text({ key: 'a' }),
+      text({ key: 'rare', advanced: true }),
+      { type: 'yaml', key: 'raw', label: 'l', advanced: true },
+      text({ key: 'b' }),
+      text({ key: 'rarer', advanced: true }),
+    ];
+    const { common, advanced } = arrangeObjectFields(fields);
+    expect(common.map((f) => f.key)).toEqual(['a', 'b', 'list']);
+    expect(advanced.map((f) => f.key)).toEqual(['rare', 'rarer', 'raw']);
   });
 });
