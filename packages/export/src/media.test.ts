@@ -54,6 +54,8 @@ describe('sounds and paintings', () => {
     const zip = await JSZip.loadAsync(result.data);
     const sounds = parse(await zip.file('sounds.yml')!.async('string'));
     expect(sounds).toEqual({
+      // Nexo's own section of the file, which it otherwise adds back with a console message on every start
+      settings: { generate_sounds: true },
       sounds: [
         { id: 'klang:block.glocke.ding', sound: 'klang:block/glocke/ding', volume: 0.8 },
         {

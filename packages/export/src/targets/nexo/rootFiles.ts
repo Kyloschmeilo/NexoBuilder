@@ -11,6 +11,12 @@ export const SOUNDS_FILE = 'sounds.yml';
 export const PAINTINGS_FILE = 'paintings.yml';
 export { MULTIPACK_FILE };
 
+/**
+ * The `settings` section of Nexo's own sounds.yml with its default. The export replaces the file, and Nexo adds a
+ * missing section back on every start ("Configuration option "settings" not found, adding it!").
+ */
+const SOUNDS_SETTINGS = { generate_sounds: true };
+
 /** The root files of the Nexo projects among `plans` (plans of other targets have no `nexo` part). */
 export function buildRootFiles(plans: Array<Pick<ExportPlan, 'nexo'>>): Map<string, string> {
   const files = new Map<string, string>();
@@ -19,7 +25,8 @@ export function buildRootFiles(plans: Array<Pick<ExportPlan, 'nexo'>>): Map<stri
   if (sounds.length > 0) {
     files.set(
       SOUNDS_FILE,
-      yamlHeader('replaces an existing sounds.yml. Please add your own entries from there here.') + toYaml({ sounds }),
+      yamlHeader('replaces an existing sounds.yml. Please add your own entries from there here.') +
+        toYaml({ settings: SOUNDS_SETTINGS, sounds }),
     );
   }
   const paintings: Record<string, Record<string, unknown>> = Object.assign({}, ...entries.map((e) => e.paintingEntries));
