@@ -8,7 +8,7 @@ import type { ItemExport } from '../../types';
 import { validateItemConfig } from '../../validate/itemConfig';
 import type { ItemShared, PackTarget, WrittenItemModels } from '../types';
 import { nexoInstallGuide } from './installGuide';
-import { writeItemModels } from './itemModels';
+import { writeItemModels, writeItemModelTree } from './itemModels';
 import { itemYamlFile, NEXO_PLUGIN_DIR, NEXO_RELOAD_COMMAND, packLocation } from './layout';
 import { planNexoPluginFiles } from './pluginFiles';
 import { PAINTINGS_FILE, SOUNDS_FILE } from './rootFiles';
@@ -56,8 +56,9 @@ function writeModels(itemExport: ItemExport, mainKey: string | null): NexoWritte
   if (!mainKey) itemExport.report('info', 'plan.missingModel');
   const variantKeys = writeVariants(itemExport, mainKey !== null);
   const packSlots = VARIANTS.filter((def) => variantKeys[def.slot] !== undefined).map((def) => def.slot);
-  const itemModels = writeItemModels(itemExport, mainKey, packSlots);
-  return { mainKey, variantKeys, itemModel: itemModels.itemModel, extraConfig: itemModels.config };
+  const tree = writeItemModelTree(itemExport, mainKey);
+  const itemModels = writeItemModels(itemExport, mainKey, packSlots, { treeReplacesMain: tree !== null });
+  return { mainKey, variantKeys, itemModel: itemModels.itemModel, extraConfig: [...itemModels.config, ...(tree ?? [])] };
 }
 
 /**

@@ -9,6 +9,7 @@ import {
 import { recipeFrame } from '@resourcepackbuilder/core/project';
 import type { JavaModelJson } from '@resourcepackbuilder/minecraft';
 import type { ItemExport, ItemSections } from '../../types';
+import { validateItemModelTree } from '../../validate/itemModelTree';
 import type { BuiltItem, ItemShared, PackTarget, WrittenItemModels } from '../types';
 import { validateCraftEngineAttributes } from './attributes';
 import { craftEngineInstallGuide } from './installGuide';
@@ -86,6 +87,8 @@ function buildItem(itemExport: ItemExport, written: CraftEngineWrittenModels, sh
   if (built.rawBlockInvalid) itemExport.report('warning', 'ce.rawBlockNotMapping');
   if (built.rawFurnitureIgnored) itemExport.report('warning', 'ce.rawFurnitureWithoutFurniture');
   if (built.furnitureIgnored) itemExport.report('error', 'ce.furnitureWithBlock');
+  if (built.itemModelTreeIgnored) itemExport.report('warning', 'plan.itemModelTreeOverriddenByRawYaml');
+  else validateItemModelTree(itemExport, written.mainKey !== null);
   for (const locale of craftEngineTranslations(item).invalidLocales)
     itemExport.report('warning', 'ce.translationLocaleInvalid', { locale });
   validateCraftEngineItem(itemExport, built.config);
