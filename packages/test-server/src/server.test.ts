@@ -2,7 +2,7 @@ import JSZip from 'jszip';
 import { describe, expect, it } from 'vitest';
 import { parse } from 'yaml';
 import { NEXO_RELOAD_COMMAND, planExport } from '@resourcepackbuilder/export';
-import { createFolder, createItem, createProject, insertFolder, insertItem } from '@resourcepackbuilder/core/project';
+import { createDialog, createFolder, createItem, createProject, insertFolder, insertItem } from '@resourcepackbuilder/core/project';
 import { createTextureModel } from '@resourcepackbuilder/minecraft';
 import { makePngDataUrl } from '@resourcepackbuilder/test-utils/png';
 import { consoleCommandText, opCommand } from './commands';
@@ -38,6 +38,10 @@ describe('Test server: console lines', () => {
       { type: 'fatal', reason: 'crash' },
     ],
     ['[14:02:12 INFO]: [Nexo] Generating resourcepack...', { type: 'packBuilding' }],
+    // Nexo 1.30 with the self-host server the test server sets (real lines from Paper 26.3)
+    ['[23:54:16 INFO]: Nexo | Generating resourcepack...', { type: 'packBuilding' }],
+    ['[23:54:17 INFO]: Nexo | Resourcepack has been uploaded to SelfHost!', { type: 'packReady', url: null }],
+    ['[23:54:17 INFO]: Nexo | ResourcePack has been uploaded to Hermes!', { type: 'packReady', url: null }],
     [
       '[14:02:20 INFO]: [Nexo] Resourcepack uploaded and will be dispatched with publicAddress http://127.0.0.1:8082/pack.zip',
       { type: 'packReady', url: 'http://127.0.0.1:8082/pack.zip' },
@@ -148,6 +152,16 @@ describe('Test server: paths the project may write', () => {
     const files = pluginFolderFiles(project, planExport(project, { includeBinaries: true }));
     expect(files.length).toBeGreaterThan(0);
     for (const file of files) expect(syncPathSegments(file.path), file.path).not.toBeNull();
+  });
+
+  it('allows the dialogs, multipack.yml and the disabled recipes Nexo projects export', () => {
+    const project = createProject('Test Pack', 'testpack', undefined, 'nexo');
+    project.dialogs = [createDialog('d1', 'welcome')];
+    project.settings.multipack = { templates: { dark_ui: { default: true } } };
+    project.settings.disabledRecipes = ['minecraft:bread'];
+    const paths = pluginFolderFiles(project, planExport(project, { includeBinaries: true })).map((file) => file.path);
+    expect(paths).toEqual(expect.arrayContaining(['dialogs/welcome.yml', 'multipack.yml', 'recipes/disabled_recipes.yml']));
+    for (const path of paths) expect(syncPathSegments(path), path).not.toBeNull();
   });
 
   it.each([

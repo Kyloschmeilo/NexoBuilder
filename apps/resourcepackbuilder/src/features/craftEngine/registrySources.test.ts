@@ -131,8 +131,17 @@ describe('list and map operations', () => {
   });
 
   it('creates new list entries from the field template (empty for a typed entry)', () => {
-    expect(newListEntry(lootSources)).toEqual({});
-    expect(newListEntry(CRAFT_ENGINE_SOURCES.templates[0] as ListSource)).toEqual({ id: '', body: {} });
+    const project = createProject('Demo', 'demo', undefined, 'craftengine');
+    expect(newListEntry(lootSources, project)).toEqual({});
+    expect(newListEntry(CRAFT_ENGINE_SOURCES.templates[0] as ListSource, project)).toEqual({ id: '', body: {} });
+  });
+
+  it('starts a configured feature in the block-state format of the project version', () => {
+    const configured = CRAFT_ENGINE_SOURCES.worldgen[0] as ListSource;
+    const toPlace = (version: string) =>
+      (newListEntry(configured, createProject('Demo', 'demo', version, 'craftengine')).config as Record<string, unknown>).to_place;
+    expect(toPlace('26.3')).toEqual({ type: 'minecraft:simple', state: { id: 'minecraft:stone' } });
+    expect(toPlace('1.21.11')).toEqual({ type: 'craftengine:simple_state_provider', state: { Name: 'minecraft:stone' } });
   });
 });
 

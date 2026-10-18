@@ -11,7 +11,8 @@
   "scripts": {
     "typecheck": "tsc -b",
     "test": "vitest run",
-    "lint": "eslint ."
+    "lint": "eslint .",
+    "verify:plugins": "node verify/run.mjs"
   },
   "dependencies": {
     "@resourcepackbuilder/core": "*",
@@ -25,6 +26,7 @@
   "devDependencies": {
     "@resourcepackbuilder/config": "*",
     "@resourcepackbuilder/test-utils": "*",
+    "esbuild": "^0.28.2",
     "vitest": "^5.0.3"
   }
 }

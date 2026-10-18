@@ -107,6 +107,8 @@ export interface RecipeTypeInfo {
   hasResult: boolean;
   /** One ingredient is marked as the source whose data the result keeps (CraftEngine's transform recipes) */
   hasSource?: boolean;
+  /** First Minecraft version whose server reads the type (CraftEngine registers dye recipes from 26.1 on) */
+  minVersion?: string;
   defaultCookingTime?: number;
 }
 
@@ -148,7 +150,7 @@ export const RECIPE_TYPES: RecipeTypeInfo[] = [
   recipeType('smithing_trim', 'slots', BOTH, { slots: SMITHING_SLOTS, hasResult: false }),
   recipeType('transmute', 'slots', NEXO, { slots: ['input', 'material'] }),
   recipeType('anvil', 'slots', NEXO, { slots: ['input', 'material'] }),
-  recipeType('dye', 'slots', CRAFT_ENGINE, { slots: ['input', 'dye'] }),
+  recipeType('dye', 'slots', CRAFT_ENGINE, { slots: ['input', 'dye'], minVersion: '26.1' }),
 ];
 
 export function getRecipeTypeInfo(type: RecipeType): RecipeTypeInfo {

@@ -35,6 +35,17 @@ describe('recipe checks per target', () => {
     expect(issue.args).toEqual({ target: 'CraftEngine', type: 'anvil' });
   });
 
+  it('warns about a recipe type the project version does not have yet', () => {
+    const recipe = withSlots('dye', { source: 'nexo', id: 'ruby' }, { source: 'tag', id: 'minecraft:dyes' });
+    expect(codes(recipe, 'craftengine')).toEqual([]);
+    const project = projectFor('craftengine');
+    project.settings.minecraftVersion = '1.21.11';
+    const issues = validateRecipe(recipe, project, 'key');
+    expect(issues.map((issue) => [issue.code, issue.level, issue.args])).toEqual([
+      ['recipe.typeNeedsVersion', 'warning', { type: 'dye', version: '26.1' }],
+    ]);
+  });
+
   it('reports ingredient sources the target does not read', () => {
     const recipe = createRecipe('stonecutting', 'r');
     recipe.input = { source: 'crucible', id: 'blade' };

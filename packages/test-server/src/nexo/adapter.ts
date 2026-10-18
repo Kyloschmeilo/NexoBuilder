@@ -1,5 +1,6 @@
 /** The test server's Nexo plugin: plugins/Nexo, settings.yml, the Nexo commands and its pack build log lines. */
-import { NEXO_PLUGIN_DIR, NEXO_RELOAD_COMMAND, PAINTINGS_FILE, SOUNDS_FILE } from '@resourcepackbuilder/export';
+import { DIALOGS_DIR } from '@resourcepackbuilder/core/nexo';
+import { MULTIPACK_FILE, NEXO_PLUGIN_DIR, NEXO_RELOAD_COMMAND, PAINTINGS_FILE, SOUNDS_FILE } from '@resourcepackbuilder/export';
 import type { ServerAdapter } from '../adapter';
 import { assertCommandArg, assertPlayerName } from '../commands';
 import { isUnderSyncPaths, safePathSegments } from '../syncPaths';
@@ -7,9 +8,9 @@ import { parseNexoLogLine } from './log';
 import { patchNexoSettings } from './settings';
 
 /** Folders under plugins/Nexo the export writes into. */
-const SYNC_DIRS = ['items/', 'recipes/', 'glyphs/', 'pack/external_packs/'];
+const SYNC_DIRS = ['items/', 'recipes/', 'glyphs/', `${DIALOGS_DIR}/`, 'pack/external_packs/'];
 /** Single files directly in plugins/Nexo (there is only one of each). */
-const SYNC_FILES = [SOUNDS_FILE, PAINTINGS_FILE];
+const SYNC_FILES = [SOUNDS_FILE, PAINTINGS_FILE, MULTIPACK_FILE];
 
 /** Recommended by Nexo; otherwise custom blocks based on note blocks, tripwire and chorus plants break. */
 const NEXO_BLOCK_UPDATE_SETTINGS = ['disable-noteblock-updates', 'disable-tripwire-updates', 'disable-chorus-plant-updates'];

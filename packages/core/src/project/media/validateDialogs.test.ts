@@ -68,6 +68,25 @@ describe('validateDialogs', () => {
       ['dialog.unknownDialog', { dialog: 'nexo:gone' }],
     ]);
   });
+
+  it('warns that a button cannot open another Nexo dialog, which Nexo 1.30 builds before it registers them', () => {
+    const p = project();
+    const other = addMediaEntry(p, 'dialog', 'other', createDialog);
+    const dialog = addMediaEntry(p, 'dialog', 'menu', createDialog);
+    dialog.config = {
+      type: 'MULTI',
+      actions: [
+        { label: 'Other', action: { type: 'SHOW_DIALOG', dialog: dialogKey(other.dialogId) } },
+        { label: 'Links', action: { type: 'SHOW_DIALOG', dialog: 'minecraft:server_links' } },
+      ],
+      exitAction: { label: 'Back', action: { type: 'SHOW_DIALOG', dialog: 'nexo:gone' } },
+    };
+    const issues = validateDialogs(p);
+    expect(issues.map((i) => [i.code, i.level, i.args])).toEqual([
+      ['dialog.showDialogNexo', 'warning', { dialog: 'nexo:other' }],
+      ['dialog.unknownDialog', 'warning', { dialog: 'nexo:gone' }],
+    ]);
+  });
 });
 
 describe('stored dialogs and Nexo settings', () => {

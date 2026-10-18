@@ -3,7 +3,13 @@ import type { ServerLogEvent } from '../serverLog';
 
 const NEXO = /Nexo/;
 const PACK_BUILDING = /Generating resourcepack/i;
-const PACK_READY = /Resourcepack uploaded and will be dispatched with publicAddress\s*(\S*)|ResourcePack uploaded:\s*(\S*)/i;
+/**
+ * The pack is served: "Resourcepack uploaded and will be dispatched with publicAddress <url>" and "ResourcePack
+ * uploaded: <url>", "Resourcepack has been uploaded to SelfHost!" (Nexo 1.30 with the self-host
+ * server the test server sets) and "ResourcePack has been uploaded to <server>" (its other pack servers).
+ */
+const PACK_READY =
+  /Resourcepack uploaded and will be dispatched with publicAddress\s*(\S*)|ResourcePack uploaded:\s*(\S*)|Resource ?pack has been uploaded to\b/i;
 const PACK_FAILED = /Failed to build and send the finished ResourcePack:\s*(.*)|Upload failed:\s*(.*)|could not be uploaded(.*)/i;
 
 /** What a Nexo console line tells about the resource pack, or null for any other line. */

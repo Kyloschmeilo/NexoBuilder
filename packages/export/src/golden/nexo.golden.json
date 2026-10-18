@@ -23,7 +23,7 @@
     "pack/external_packs/golden_pack/pack.mcmeta": "c5d597d336566749c299846f1679bc5b14c7772887e6e7f5472832101904bb02",
     "paintings.yml": "fb66ce8dd3fbc3bbfbcd8d68df62f4e0ab73ee0282d9f700470fdad6cb4ef619",
     "recipes/shaped/golden_pack.yml": "42e44b2d58d8e75a1ea42c12911da9cc2db191efed1a9955e932cefb3e30de8c",
-    "sounds.yml": "936283e6eec593a2e2a341f411882c601ba8817460fcb1470bc2bf48332e912a"
+    "sounds.yml": "c43ccbdf892bbb2cd0e474f62504a96d02be46a29daa68b52ab28bbd185c90dc"
   },
   "single-folder-pack": {
     "assets/golden/equipment/rubin.json": "f73544661066f36fe1990dcc3cd6b0ffd8b9c814009d6ed9264084a884736084",
@@ -50,7 +50,7 @@
     "items/waffen/waffen.yml": "de1cd8bdc9fc481a1b0eb13ff1d7e68a38ec5d57375c8aeb51905a0c4eee8f2c",
     "paintings.yml": "fb66ce8dd3fbc3bbfbcd8d68df62f4e0ab73ee0282d9f700470fdad6cb4ef619",
     "recipes/shaped/golden_pack.yml": "42e44b2d58d8e75a1ea42c12911da9cc2db191efed1a9955e932cefb3e30de8c",
-    "sounds.yml": "936283e6eec593a2e2a341f411882c601ba8817460fcb1470bc2bf48332e912a"
+    "sounds.yml": "c43ccbdf892bbb2cd0e474f62504a96d02be46a29daa68b52ab28bbd185c90dc"
   },
   "single-zip-full": {
     "INSTALL.txt": "e5bf6b184ee0cd6c03e0420876010d5f0ab27eaa584e7b3550578f1110d998e6",
@@ -77,7 +77,7 @@
     "pack/external_packs/golden_pack.zip!/pack.mcmeta": "c5d597d336566749c299846f1679bc5b14c7772887e6e7f5472832101904bb02",
     "paintings.yml": "fb66ce8dd3fbc3bbfbcd8d68df62f4e0ab73ee0282d9f700470fdad6cb4ef619",
     "recipes/shaped/golden_pack.yml": "42e44b2d58d8e75a1ea42c12911da9cc2db191efed1a9955e932cefb3e30de8c",
-    "sounds.yml": "936283e6eec593a2e2a341f411882c601ba8817460fcb1470bc2bf48332e912a"
+    "sounds.yml": "c43ccbdf892bbb2cd0e474f62504a96d02be46a29daa68b52ab28bbd185c90dc"
   },
   "single-zip-pack": {
     "assets/golden/equipment/rubin.json": "f73544661066f36fe1990dcc3cd6b0ffd8b9c814009d6ed9264084a884736084",
@@ -104,7 +104,7 @@
     "items/waffen/waffen.yml": "de1cd8bdc9fc481a1b0eb13ff1d7e68a38ec5d57375c8aeb51905a0c4eee8f2c",
     "paintings.yml": "fb66ce8dd3fbc3bbfbcd8d68df62f4e0ab73ee0282d9f700470fdad6cb4ef619",
     "recipes/shaped/golden_pack.yml": "42e44b2d58d8e75a1ea42c12911da9cc2db191efed1a9955e932cefb3e30de8c",
-    "sounds.yml": "936283e6eec593a2e2a341f411882c601ba8817460fcb1470bc2bf48332e912a"
+    "sounds.yml": "c43ccbdf892bbb2cd0e474f62504a96d02be46a29daa68b52ab28bbd185c90dc"
   },
   "multi-full": {
     "INSTALL.txt": "e24af026b555f46495ba7b4dccc4e7f91c13414c37d0ce0c7eff21f9e4125eb4",
@@ -135,7 +135,7 @@
     "pack/external_packs/zweites_pack/pack.mcmeta": "203a54ee35484a1de7e7d6c57745da201873ef3da818e0ab7bdde58b1fe34be5",
     "paintings.yml": "fb66ce8dd3fbc3bbfbcd8d68df62f4e0ab73ee0282d9f700470fdad6cb4ef619",
     "recipes/shaped/golden_pack.yml": "42e44b2d58d8e75a1ea42c12911da9cc2db191efed1a9955e932cefb3e30de8c",
-    "sounds.yml": "936283e6eec593a2e2a341f411882c601ba8817460fcb1470bc2bf48332e912a"
+    "sounds.yml": "c43ccbdf892bbb2cd0e474f62504a96d02be46a29daa68b52ab28bbd185c90dc"
   },
   "multi-pack": {
     "golden_pack/assets/golden/equipment/rubin.json": "f73544661066f36fe1990dcc3cd6b0ffd8b9c814009d6ed9264084a884736084",
@@ -166,6 +166,6 @@
     "items/zweites_pack/dinge/dinge.yml": "5405b569eb49bb8ea914df31c4d63fa88a1c3dade99921fe26be08bb7dd7dff0",
     "paintings.yml": "fb66ce8dd3fbc3bbfbcd8d68df62f4e0ab73ee0282d9f700470fdad6cb4ef619",
     "recipes/shaped/golden_pack.yml": "42e44b2d58d8e75a1ea42c12911da9cc2db191efed1a9955e932cefb3e30de8c",
-    "sounds.yml": "936283e6eec593a2e2a341f411882c601ba8817460fcb1470bc2bf48332e912a"
+    "sounds.yml": "c43ccbdf892bbb2cd0e474f62504a96d02be46a29daa68b52ab28bbd185c90dc"
   }
 }

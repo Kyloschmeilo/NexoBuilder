@@ -19,7 +19,9 @@ import {
   isCarpentryBlockType,
   isReadableNexoEntry,
   NEXO_HITBOX_KINDS,
+  type NexoVec3,
   parseNexoHitbox,
+  parseNexoLight,
   PROPERTIES,
 } from '@resourcepackbuilder/core/nexo';
 import type { ItemExport } from '../types';
@@ -94,11 +96,27 @@ export function validateItemConfig(itemExport: ItemExport, { config, usedVariati
   if (isPlainObject(components)) {
     const stack = components.max_stack_size;
     if (typeof stack === 'number' && components.max_damage !== undefined && stack > 1) report('error', 'plan.damageableStackable');
+    // Nexo 1.30 calls a Paper API method for blocks_attacks that older Paper lacks, and then builds no item at all
+    const version = itemExport.project.settings.minecraftVersion;
+    if (components.blocks_attacks !== undefined && compareVersions(version, NEXO_BLOCKS_ATTACKS_VERSION) < 0) {
+      report('warning', 'plan.blocksAttacksNeedsVersion', { version: NEXO_BLOCKS_ATTACKS_VERSION });
+    }
+    // Nexo's converter takes such ids for armor of its old naming scheme and prints two misleading lines
+    if (isPlainObject(components.equippable) && LEGACY_ARMOR_ID.test(item.itemId) && config.CustomArmor === undefined) {
+      report('info', 'plan.nexoLegacyArmorName');
+    }
   }
 }
 
-/** Warns about furniture hitbox entries whose format Nexo cannot read. */
-function validateHitbox({ item, report }: ItemExport): void {
+/** First Minecraft version on which Nexo 1.30 builds an item with `blocks_attacks` (on Paper 1.21.11 it fails). */
+const NEXO_BLOCKS_ATTACKS_VERSION = '26.1';
+
+/** Item ids Nexo's converter checks for old-style armor textures (`<set>_armor_layer_1.png`) without a CustomArmor section. */
+const LEGACY_ARMOR_ID = /^.+?_(chestplate|leggings|boots|elytra)$/;
+
+/** Warns about furniture hitbox entries whose format Nexo cannot read, and about lights inside a barrier. */
+function validateHitbox(itemExport: ItemExport): void {
+  const { item, report } = itemExport;
   const hitbox = getPath(item.config, ['Mechanics', 'furniture', 'hitbox']);
   if (!isPlainObject(hitbox)) return;
   // The editor's parser decides, so the editor and the checks agree on what Nexo reads
@@ -110,6 +128,27 @@ function validateHitbox({ item, report }: ItemExport): void {
         report('warning', 'plan.hitboxEntryInvalid', { kind, entry });
       }
     }
+  }
+  validateLights(itemExport, hitbox);
+}
+
+/** The entries of a list key that may also hold a single string. */
+const listEntries = (value: unknown): unknown[] => (typeof value === 'string' ? [value] : Array.isArray(value) ? value : []);
+
+/** Warns about furniture lights inside a barrier hitbox: Nexo ignores them ("lights that overlap with the barrierHitboxes"). */
+function validateLights({ item, report }: ItemExport, hitbox: Record<string, unknown>): void {
+  const lights = getPath(item.config, ['Mechanics', 'furniture', 'lights', 'lights']);
+  const barriers = listEntries(hitbox.barriers).flatMap((entry) => {
+    const barrier = parseNexoHitbox('barriers', entry);
+    return barrier?.kind === 'barriers' ? [barrier] : [];
+  });
+  const inside = (position: NexoVec3) =>
+    barriers.some(({ from, to }) =>
+      position.every((value, axis) => value >= Math.min(from[axis], to[axis]) && value <= Math.max(from[axis], to[axis])),
+    );
+  for (const entry of listEntries(lights)) {
+    const light = parseNexoLight(entry);
+    if (light && inside(light.position)) report('warning', 'plan.furnitureLightInBarrier', { light: String(entry) });
   }
 }
 

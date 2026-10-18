@@ -1,11 +1,11 @@
 /**
  * Checks of the project's recipes before export, for the project's target: recipe types and ingredient sources the
- * target's plugin does not read, missing and malformed ingredients, the source ingredient of transform recipes and
- * the trim pattern of trim recipes.
+ * target's plugin does not read, recipe types the project's Minecraft version does not have yet, missing and
+ * malformed ingredients, the source ingredient of transform recipes and the trim pattern of trim recipes.
  */
 import { itemFrame, itemTarget, recipeFrame, recipeIngredientFrame, recipeInputFrame, recipeSlotFrame } from '../issueFrames';
 import { inContext, isPlainObject, issueReporter, type Issue, type IssueContext, type ReportIssue } from '@resourcepackbuilder/utils';
-import { RESOURCE_LOCATION_PATTERN } from '@resourcepackbuilder/minecraft';
+import { compareVersions, RESOURCE_LOCATION_PATTERN } from '@resourcepackbuilder/minecraft';
 import type { Item, Project } from '../types';
 import type { PackTargetId } from '../target';
 import { recipeKeys } from './export';
@@ -98,6 +98,9 @@ export function validateRecipe(recipe: Recipe, project: Project, key: string): I
   if (!isRecipeTypeAvailable(recipe.type, project.target)) {
     add('warning', 'recipe.typeUnsupported', { target: TARGET_NAMES[project.target], type: recipe.type });
     return issues;
+  }
+  if (info.minVersion && compareVersions(project.settings.minecraftVersion, info.minVersion) < 0) {
+    add('warning', 'recipe.typeNeedsVersion', { type: recipe.type, version: info.minVersion });
   }
   const ingredientContext = (letter: string) => recipeIngredientFrame(key, letter);
   if (info.hasResult && (!Number.isInteger(recipe.resultAmount) || recipe.resultAmount < 1 || recipe.resultAmount > MAX_RESULT_AMOUNT)) {

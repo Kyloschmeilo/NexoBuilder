@@ -3,6 +3,7 @@
  * worldgen features, atlases, pack.yml, config factories and script files.
  */
 import { describe, expect, it } from 'vitest';
+import { parse } from 'yaml';
 import {
   type CraftEngineProjectData,
   createFolder,
@@ -198,6 +199,54 @@ describe('CraftEngine worldgen features', () => {
       ].join('\n'),
     );
     expect(codes(project).filter((code) => code.startsWith('ce.'))).toEqual([]);
+  });
+
+  it('writes the feature config next to its type from Minecraft 26.3 on, as the game reads it there', () => {
+    const ore = { size: 6, targets: [{ target: { predicate_type: 'minecraft:tag_match', tag: 'minecraft:stone_ore_replaceables' } }] };
+    const { project } = ceProject({
+      configuredFeatures: [{ id: 'vein', type: 'minecraft:ore', config: ore }],
+      placedFeatures: [{ id: 'patch', feature: { type: 'minecraft:simple_block', config: { schedule_tick: true } }, placement: [] }],
+    });
+    project.settings.minecraftVersion = '26.3';
+    const file = parse(pluginText(planExport(project), `${CONFIG}/worldgen.yml`));
+    expect(file.configured_features['welt:vein']).toEqual({ type: 'minecraft:ore', ...ore });
+    expect(file.placed_features['welt:patch'].feature).toEqual({ type: 'minecraft:simple_block', schedule_tick: true });
+
+    // Before 26.3 the game reads the config under `config`
+    project.settings.minecraftVersion = '26.2';
+    const older = parse(pluginText(planExport(project), `${CONFIG}/worldgen.yml`));
+    expect(older.configured_features['welt:vein']).toEqual({ type: 'minecraft:ore', config: ore });
+    expect(older.placed_features['welt:patch'].feature).toEqual({ type: 'minecraft:simple_block', config: { schedule_tick: true } });
+  });
+
+  it('keeps the feature type when the config names one too', () => {
+    const { project } = ceProject({ configuredFeatures: [{ id: 'vein', type: 'minecraft:ore', config: { type: 'oops', size: 2 } }] });
+    project.settings.minecraftVersion = '26.3';
+    const file = parse(pluginText(planExport(project), `${CONFIG}/worldgen.yml`));
+    expect(file.configured_features['welt:vein']).toEqual({ type: 'minecraft:ore', size: 2 });
+  });
+
+  it('warns when a feature writes block states in the format of another Minecraft version', () => {
+    const legacy = { type: 'minecraft:simple_state_provider', state: { Name: 'minecraft:stone' } };
+    const modern = { type: 'minecraft:simple', state: { id: 'minecraft:stone' } };
+    const { project } = ceProject({
+      configuredFeatures: [
+        { id: 'old', type: 'minecraft:simple_block', config: { to_place: legacy } },
+        { id: 'new', type: 'minecraft:simple_block', config: { to_place: modern } },
+      ],
+      placedFeatures: [{ id: 'inline', feature: { type: 'minecraft:simple_block', config: { to_place: legacy } }, placement: [] }],
+    });
+    const stateIssues = () =>
+      planExport(project)
+        .issues.filter((issue) => issue.code.startsWith('ce.featureState'))
+        .map((issue) => [issue.code, issue.level, issue.context?.[0]?.code, issue.context?.[0]?.args?.id]);
+    project.settings.minecraftVersion = '26.3';
+    expect(stateIssues()).toEqual([
+      ['ce.featureStateLegacy', 'warning', 'context.configuredFeature', 'old'],
+      ['ce.featureStateLegacy', 'warning', 'context.placedFeature', 'inline'],
+    ]);
+    project.settings.minecraftVersion = '26.2';
+    expect(stateIssues()).toEqual([['ce.featureStateModern', 'warning', 'context.configuredFeature', 'new']]);
   });
 
   it('reports a biome filter without the biome modifier, a missing feature and an unknown one', () => {

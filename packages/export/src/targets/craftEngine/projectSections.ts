@@ -20,7 +20,9 @@ import {
   craftEngineScriptFiles,
   craftEngineServerTranslations,
   craftEngineWorldgen,
+  featureStateFormat,
   hasBiomeModifier,
+  usesModernFeatureStates,
   invalidLocales,
   keyedEntries,
   projectAtlases,
@@ -74,6 +76,7 @@ export function projectSectionIssues(project: Project): Issue[] {
     ...entryIssues(project, 'category', projectCategories(project), CE_CATEGORY_LIST),
     ...entryIssues(project, 'configuredFeature', projectConfiguredFeatures(project), CE_CONFIGURED_FEATURE_LIST, (entry, report) => {
       if (typeof entry.type !== 'string' || !entry.type.trim()) report('error', 'ce.configuredFeatureTypeMissing');
+      reportStateFormat(project, entry, report);
     }),
     ...placedFeatureIssues(project),
     ...entryIssues(project, 'atlas', projectAtlases(project), CE_ATLAS_LIST, (entry, report) => {
@@ -170,6 +173,17 @@ function entryIssues(
  * reference into the project's namespace is checked), or one inline. A `biome` filter only works with the
  * `minecraft:biome` modifier in its placement.
  */
+/**
+ * Warns when a feature writes its block states in the format of another Minecraft version (26.3 renamed the state
+ * providers and the keys of a block state); the server rejects such a feature.
+ */
+function reportStateFormat(project: Project, feature: unknown, report: Report): void {
+  const format = featureStateFormat(feature);
+  const modern = usesModernFeatureStates(project.settings.minecraftVersion);
+  if (format === 'legacy' && modern) report('warning', 'ce.featureStateLegacy', { version: project.settings.minecraftVersion });
+  if (format === 'modern' && !modern) report('warning', 'ce.featureStateModern', { version: project.settings.minecraftVersion });
+}
+
 function placedFeatureIssues(project: Project): Issue[] {
   const configured = new Set(keyedEntries(project, projectConfiguredFeatures(project)).keys());
   return entryIssues(project, 'placedFeature', projectPlacedFeatures(project), CE_PLACED_FEATURE_LIST, (entry, report) => {
@@ -179,7 +193,7 @@ function placedFeatureIssues(project: Project): Issue[] {
     } else if (typeof feature === 'string') {
       const key = projectEntryKey(project, feature);
       if (key.startsWith(`${project.namespace}:`) && !configured.has(key)) report('warning', 'ce.placedFeatureUnknown', { feature: key });
-    }
+    } else reportStateFormat(project, feature, report);
     const biomes = entry.biome;
     if (((Array.isArray(biomes) && biomes.length > 0) || typeof biomes === 'string') && !hasBiomeModifier(entry.placement)) {
       report('warning', 'ce.placedFeatureBiomeWithoutModifier');

@@ -18,6 +18,7 @@ import {
   CE_SCRIPT_LIST,
   CE_TEMPLATE_LIST,
   CE_TRANSLATION_MAP,
+  newConfiguredFeature,
   projectAtlases,
   projectAttributeEntries,
   projectCategories,
@@ -53,6 +54,8 @@ export interface ListSource {
   field: ObjectListField | TypedListField;
   read: (project: Project) => unknown[];
   write: (value: unknown[]) => void;
+  /** A new entry for `project`, when it depends on the project (otherwise the field's template) */
+  newEntry?: (project: Project) => Record<string, unknown>;
 }
 
 /** A map of entries: each key is an entry, edited with the map field's value field. */
@@ -86,7 +89,8 @@ const list = (
   field: ObjectListField | TypedListField,
   read: (project: Project) => unknown[],
   write: (value: unknown[]) => void,
-): ListSource => ({ kind: 'list', id, field, read, write });
+  newEntry?: (project: Project) => Record<string, unknown>,
+): ListSource => ({ kind: 'list', id, field, read, write, ...(newEntry && { newEntry }) });
 
 const attributeList = (part: AttributePart): ListSource =>
   list(
@@ -110,8 +114,13 @@ export const CRAFT_ENGINE_SOURCES: Record<CraftEngineRegistryView, readonly Entr
   ],
   categories: [list('categories', CE_CATEGORY_LIST, projectCategories, (value) => setCraftEngineList('categories', value))],
   worldgen: [
-    list('configuredFeatures', CE_CONFIGURED_FEATURE_LIST, projectConfiguredFeatures, (value) =>
-      setCraftEngineList('configuredFeatures', value),
+    list(
+      'configuredFeatures',
+      CE_CONFIGURED_FEATURE_LIST,
+      projectConfiguredFeatures,
+      (value) => setCraftEngineList('configuredFeatures', value),
+      // Minecraft 26.3 changed how a feature names block states
+      (project) => newConfiguredFeature(project.settings.minecraftVersion),
     ),
     list('placedFeatures', CE_PLACED_FEATURE_LIST, projectPlacedFeatures, (value) => setCraftEngineList('placedFeatures', value)),
   ],
@@ -191,8 +200,12 @@ export function sourceGroups(sources: readonly EntrySource[], project: Project):
   }));
 }
 
-/** A new, empty entry of a list source: the field's template, or an empty object (a typed entry then picks its type). */
-export function newListEntry(source: ListSource): Record<string, unknown> {
+/**
+ * A new, empty entry of a list source for `project`: the source's own entry, the field's template, or an empty object
+ * (a typed entry then picks its type).
+ */
+export function newListEntry(source: ListSource, project: Project): Record<string, unknown> {
+  if (source.newEntry) return source.newEntry(project);
   return source.field.type === 'objectList' ? (source.field.newItem?.() ?? {}) : {};
 }
 

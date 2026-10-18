@@ -37,7 +37,7 @@ export function useAddEntry(): (source: EntrySource) => Promise<string | null> {
     if (!project) return null;
     if (source.kind === 'list') {
       const entries = source.read(project);
-      source.write([...entries, newListEntry(source)]);
+      source.write([...entries, newListEntry(source, project)]);
       return entryKey(source, entries.length);
     }
     const taken = source.read(project);
