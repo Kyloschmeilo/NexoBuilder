@@ -6,11 +6,11 @@
         "description": "Crafter block only: like a shaped recipe, but not in crafting tables or the inventory."
       },
       "shapedTransform": {
-        "label": "Shaped Transform",
+        "label": "Shaped transform",
         "description": "Crafting table in a pattern: one ingredient is the source item whose data the result keeps."
       },
       "shapelessTransform": {
-        "label": "Shapeless Transform",
+        "label": "Shapeless transform",
         "description": "Crafting table in any arrangement: one ingredient is the source item whose data the result keeps."
       },
       "brewing": {
@@ -18,11 +18,11 @@
         "description": "Brewing stand: an ingredient turns the item in the bottle slot into this item."
       },
       "smithingTransform": {
-        "label": "Smithing Upgrade",
+        "label": "Smithing upgrade",
         "description": "Smithing table: upgrades the base item into this item, like netherite gear."
       },
       "smithingTrim": {
-        "label": "Smithing Trim",
+        "label": "Smithing trim",
         "description": "Smithing table: puts a trim pattern on the base item; this recipe has no result of its own."
       },
       "transmute": {
