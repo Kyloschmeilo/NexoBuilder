@@ -15,7 +15,7 @@ import * as options from './form/options';
 import { INGREDIENT_SOURCES, RECIPE_TYPES } from '../project/recipes/model';
 import { NEXO_FORM, PROPERTIES } from './form/schema';
 import { formMessageKeys, optionMessageKeys } from '../form/messageKeys';
-import { FURNITURE_MODEL_SLOTS, STACK_MODELS, stateDef, VARIANTS } from '../project/variants';
+import { DIRECTIONAL_MODEL_SLOTS, FURNITURE_MODEL_SLOTS, STACK_MODELS, stateDef, VARIANTS } from '../project/variants';
 
 function lookup(tree: MessageTree, key: string): unknown {
   let node: unknown = tree;
@@ -39,7 +39,7 @@ function referencedKeys(): Set<string> {
     if (Array.isArray(value)) keys.push(...optionMessageKeys(value as Option[]));
   }
   for (const layer of ARMOR_LAYERS) keys.push(layer.label);
-  for (const def of [...VARIANTS, ...FURNITURE_MODEL_SLOTS, STACK_MODELS, stateDef('on')]) {
+  for (const def of [...VARIANTS, ...FURNITURE_MODEL_SLOTS, STACK_MODELS, ...DIRECTIONAL_MODEL_SLOTS, stateDef('on')]) {
     keys.push(def.label, def.description);
     if (def.hint) keys.push(def.hint);
   }
@@ -150,7 +150,7 @@ describe('message key derivation', () => {
 
   it('derives option, variant and armor layer labels from their values', () => {
     for (const option of options.ATTRIBUTE_SLOTS) expect(option.label).toBe(`options.attributeSlots.${keySegment(option.value)}.label`);
-    for (const def of [...VARIANTS, ...FURNITURE_MODEL_SLOTS, STACK_MODELS])
+    for (const def of [...VARIANTS, ...FURNITURE_MODEL_SLOTS, STACK_MODELS, ...DIRECTIONAL_MODEL_SLOTS])
       expect(def.label).toBe(`variants.${keySegment(def.slot)}.label`);
     for (const layer of ARMOR_LAYERS) expect(layer.label).toBe(`armor.layers.${keySegment(layer.key)}`);
   });

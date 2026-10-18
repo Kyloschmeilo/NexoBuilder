@@ -106,6 +106,25 @@
           },
           "minecraftType": {
             "label": "oder Minecraft-Item"
+          },
+          "minecraftItem": {
+            "label": "Minecraft-Itemstack",
+            "help": "Ein Itemstack, wie ihn die Ingame-Builder von Nexo speichern (YAML). Von Nexo 1.30 gelesen, nicht in der Doku aufgeführt."
+          },
+          "crucibleItem": {
+            "label": "MythicCrucible-Item",
+            "placeholder": "Item-ID"
+          },
+          "mmoitemsType": {
+            "label": "MMOItems-Typ",
+            "placeholder": "z.B. SWORD"
+          },
+          "mmoitemsId": {
+            "label": "MMOItems-ID",
+            "placeholder": "z.B. FALCON_BLADE"
+          },
+          "amount": {
+            "label": "Anzahl"
           }
         }
       }
@@ -213,6 +232,18 @@
           },
           "damageOnHurt": {
             "label": "Nimmt Schaden, wenn der Träger getroffen wird"
+          },
+          "equipOnInteract": {
+            "label": "Per Rechtsklick auf ein Entity anziehen",
+            "help": "Von Nexo 1.30 gelesen, nicht in der Doku aufgeführt."
+          },
+          "canBeSheared": {
+            "label": "Kann abgeschoren werden",
+            "help": "Eine Schere entfernt das Item von einem Mob. Von Nexo 1.30 gelesen, nicht in der Doku aufgeführt."
+          },
+          "shearSound": {
+            "label": "Sound beim Abscheren",
+            "help": "Standard: item.shears.snip. Von Nexo 1.30 gelesen, nicht in der Doku aufgeführt."
           }
         }
       }
@@ -292,9 +323,23 @@
       "field": {
         "label": "Platzierbar auf",
         "fields": {
-          "blocks": {
+          "block": {
             "label": "Blöcke / Tags",
-            "placeholder": "stone"
+            "placeholder": "z.B. stone oder #minecraft:logs"
+          },
+          "nexoBlock": {
+            "label": "Nexo-Blöcke",
+            "placeholder": "Item-ID",
+            "help": "Eigene Blöcke von Nexo per Item-ID. Von Nexo 1.30 gelesen, nicht in der Doku aufgeführt."
+          },
+          "state": {
+            "label": "Blockzustand",
+            "help": "Nur Blöcke mit diesen Zustandswerten zählen (z.B. axis = y). Von Nexo 1.30 gelesen, nicht in der Doku aufgeführt.",
+            "keyLabel": "Eigenschaft",
+            "keyPlaceholder": "z.B. axis",
+            "value": {
+              "label": "Wert"
+            }
           }
         }
       }
@@ -305,9 +350,23 @@
       "field": {
         "label": "Kann abbauen",
         "fields": {
-          "blocks": {
+          "block": {
             "label": "Blöcke / Tags",
-            "placeholder": "stone"
+            "placeholder": "z.B. stone oder #minecraft:logs"
+          },
+          "nexoBlock": {
+            "label": "Nexo-Blöcke",
+            "placeholder": "Item-ID",
+            "help": "Eigene Blöcke von Nexo per Item-ID. Von Nexo 1.30 gelesen, nicht in der Doku aufgeführt."
+          },
+          "state": {
+            "label": "Blockzustand",
+            "help": "Nur Blöcke mit diesen Zustandswerten zählen (z.B. axis = y). Von Nexo 1.30 gelesen, nicht in der Doku aufgeführt.",
+            "keyLabel": "Eigenschaft",
+            "keyPlaceholder": "z.B. axis",
+            "value": {
+              "label": "Wert"
+            }
           }
         }
       }
@@ -352,11 +411,29 @@
     },
     "componentsCustomModelData": {
       "label": "Custom Model Data",
-      "description": "Neues CustomModelData-Format (floats, flags, strings, colors) – für eigene ItemModels.",
+      "description": "Werte für die custom_model_data-Fälle des Item-Modells (floats, flags, strings, colors).",
       "field": {
-        "label": "Inhalt",
-        "placeholder": "floats: [1.0]\nflags: [true]"
-      }
+        "label": "Werte",
+        "fields": {
+          "float": {
+            "label": "Floats",
+            "placeholder": "z.B. 1.0"
+          },
+          "flag": {
+            "label": "Flags",
+            "placeholder": "true / false"
+          },
+          "string": {
+            "label": "Strings",
+            "placeholder": "z.B. red"
+          },
+          "color": {
+            "label": "Farben",
+            "placeholder": "z.B. #ff0000 oder 255,0,0"
+          }
+        }
+      },
+      "hint": "Nexo 1.30 liest die Schlüssel float, flag, string und color; die Doku schreibt sie im Plural, den 1.30 ignoriert."
     },
     "componentsCustomData": {
       "label": "Custom Data",
@@ -378,8 +455,61 @@
       "label": "Blocks Attacks",
       "description": "Das Item kann wie ein Schild Angriffe blocken.",
       "field": {
-        "label": "Einstellungen",
-        "placeholder": "block_delay: 0.25s\ndisable_cooldown_scale: 1.0"
+        "label": "Blocken",
+        "fields": {
+          "blockDelay": {
+            "label": "Verzögerung bis zum Blocken",
+            "placeholder": "0.25s"
+          },
+          "disableCooldownScale": {
+            "label": "Faktor der Sperrzeit",
+            "placeholder": "1.0"
+          },
+          "blockSound": {
+            "label": "Sound beim Blocken"
+          },
+          "disableSound": {
+            "label": "Sound beim Ausschalten"
+          },
+          "bypassedBy": {
+            "label": "Umgangen von",
+            "placeholder": "z.B. minecraft:bypasses_shield"
+          },
+          "itemDamage": {
+            "label": "Schaden am Item",
+            "fields": {
+              "threshold": {
+                "label": "Schwelle"
+              },
+              "base": {
+                "label": "Grundwert"
+              },
+              "factor": {
+                "label": "Faktor"
+              }
+            }
+          },
+          "damageReductions": {
+            "label": "Schadensminderungen",
+            "itemLabel": "Minderung",
+            "fields": {
+              "types": {
+                "label": "Schadensarten / Tags",
+                "placeholder": "z.B. minecraft:is_projectile"
+              },
+              "base": {
+                "label": "Grundwert"
+              },
+              "factor": {
+                "label": "Faktor"
+              },
+              "horizontalBlocking": {
+                "label": "Blockwinkel",
+                "placeholder": "90"
+              }
+            }
+          }
+        }
       }
     },
     "componentsAttackRange": {
@@ -397,6 +527,23 @@
           },
           "mobFactor": {
             "label": "Faktor für Mobs"
+          },
+          "minReach": {
+            "label": "Mindestreichweite"
+          },
+          "maxReach": {
+            "label": "Maximale Reichweite"
+          },
+          "creativeReach": {
+            "label": "Reichweite im Kreativmodus",
+            "placeholder": "0..5",
+            "help": "Von Nexo 1.30 gelesen, nicht in der Doku aufgeführt."
+          },
+          "minCreativeReach": {
+            "label": "Mindestreichweite im Kreativmodus"
+          },
+          "maxCreativeReach": {
+            "label": "Maximale Reichweite im Kreativmodus"
           }
         }
       }
@@ -426,8 +573,76 @@
       "label": "Kinetic Weapon",
       "description": "Ermöglicht Sturmangriffe beim Benutzen (Lanze).",
       "field": {
-        "label": "Einstellungen",
-        "placeholder": "contact_cooldown: 10t\ndamage_multiplier: 1.0"
+        "label": "Sturmangriff",
+        "fields": {
+          "contactCooldown": {
+            "label": "Abklingzeit nach Kontakt",
+            "placeholder": "10t"
+          },
+          "delay": {
+            "label": "Verzögerung",
+            "placeholder": "0t"
+          },
+          "damageMultiplier": {
+            "label": "Schadensfaktor",
+            "placeholder": "1.0"
+          },
+          "forwardMovement": {
+            "label": "Vorwärtsbewegung",
+            "help": "Von Nexo 1.30 gelesen, nicht in der Doku aufgeführt."
+          },
+          "sound": {
+            "label": "Sound"
+          },
+          "hitSound": {
+            "label": "Treffer-Sound"
+          },
+          "dismountConditions": {
+            "label": "Bedingungen zum Abwerfen",
+            "fields": {
+              "maxDuration": {
+                "label": "Maximale Dauer",
+                "placeholder": "z.B. 10s"
+              },
+              "minSpeed": {
+                "label": "Mindestgeschwindigkeit"
+              },
+              "minRelativeSpeed": {
+                "label": "Mindest-Relativgeschwindigkeit"
+              }
+            }
+          },
+          "knockbackConditions": {
+            "label": "Bedingungen für Rückstoß",
+            "fields": {
+              "maxDuration": {
+                "label": "Maximale Dauer",
+                "placeholder": "z.B. 10s"
+              },
+              "minSpeed": {
+                "label": "Mindestgeschwindigkeit"
+              },
+              "minRelativeSpeed": {
+                "label": "Mindest-Relativgeschwindigkeit"
+              }
+            }
+          },
+          "damageConditions": {
+            "label": "Bedingungen für Schaden",
+            "fields": {
+              "maxDuration": {
+                "label": "Maximale Dauer",
+                "placeholder": "z.B. 10s"
+              },
+              "minSpeed": {
+                "label": "Mindestgeschwindigkeit"
+              },
+              "minRelativeSpeed": {
+                "label": "Mindest-Relativgeschwindigkeit"
+              }
+            }
+          }
+        }
       }
     },
     "componentsSwingAnimation": {
@@ -552,6 +767,22 @@
             "label": "Geschwindigkeits-Faktor"
           }
         }
+      }
+    },
+    "componentsRarity": {
+      "label": "Rarity",
+      "description": "Seltenheit des Items, die seinen Namen färbt. Von Nexo 1.30 gelesen, nicht in der Doku aufgeführt.",
+      "field": {
+        "label": "Seltenheit",
+        "help": "Von Nexo 1.30 gelesen, nicht in der Doku aufgeführt."
+      }
+    },
+    "componentsInstrument": {
+      "label": "Instrument",
+      "description": "Der Klang, den ein Ziegenhorn spielt. Von Nexo 1.30 gelesen, nicht in der Doku aufgeführt.",
+      "field": {
+        "label": "Instrument",
+        "help": "Mit dem Material GOAT_HORN verwenden. Von Nexo 1.30 gelesen, nicht in der Doku aufgeführt."
       }
     }
   }

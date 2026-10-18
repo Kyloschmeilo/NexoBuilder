@@ -112,6 +112,47 @@
           }
         }
       }
+    },
+    "componentsItemModel": {
+      "label": "Item Model",
+      "description": "The item model the item shows; nexo:empty makes it invisible.",
+      "field": {
+        "label": "Item model",
+        "placeholder": "e.g. nexo:empty",
+        "help": "Replaces the item model the export sets. Order: additional YAML, then this field, then the definition the export generates (inventory icon, furniture), then nexo:'<'item ID>. The export warns when this field hides a generated definition."
+      }
+    },
+    "packHandSwapAnimation": {
+      "label": "Hand Swap Animation",
+      "description": "Plays the hand animation when the item is switched to.",
+      "field": {
+        "label": "Animate swapping",
+        "help": "Read by Nexo 1.30, not listed in the docs."
+      }
+    },
+    "packSwapAnimationScale": {
+      "label": "Swap Animation Scale",
+      "description": "Speed of the animation when the item is switched to.",
+      "field": {
+        "label": "Scale",
+        "help": "Read by Nexo 1.30, not listed in the docs."
+      }
+    },
+    "trimPattern": {
+      "label": "Trim Pattern",
+      "description": "Armor trim pattern on the item (vanilla armor only).",
+      "field": {
+        "label": "Pattern",
+        "help": "Set the trim material too. Read by Nexo 1.30, not listed in the docs."
+      }
+    },
+    "trimMaterial": {
+      "label": "Trim Material",
+      "description": "Material (color) of the armor trim.",
+      "field": {
+        "label": "Material",
+        "help": "Set the trim pattern too. Read by Nexo 1.30, not listed in the docs."
+      }
     }
   }
 }

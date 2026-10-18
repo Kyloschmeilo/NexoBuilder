@@ -8,7 +8,7 @@ import type { ItemExport } from '../../types';
 import { validateItemConfig } from '../../validate/itemConfig';
 import type { ItemShared, PackTarget, WrittenItemModels } from '../types';
 import { nexoInstallGuide } from './installGuide';
-import { writeItemModels } from './itemModels';
+import { writeDirectionalModels, writeItemModels } from './itemModels';
 import { itemYamlFile, NEXO_PLUGIN_DIR, NEXO_RELOAD_COMMAND, packLocation } from './layout';
 import { planNexoPluginFiles } from './pluginFiles';
 import { PAINTINGS_FILE, SOUNDS_FILE } from './rootFiles';
@@ -51,13 +51,17 @@ export const NEXO_TARGET: PackTarget<NexoWrittenModels> = {
   },
 };
 
-/** The variants Nexo builds in, then the item model definitions ResourcepackBuilder writes for Nexo itself. */
+/**
+ * The variants Nexo builds in, then the item model definitions ResourcepackBuilder writes for Nexo itself and the
+ * face models of a directional block.
+ */
 function writeModels(itemExport: ItemExport, mainKey: string | null): NexoWrittenModels {
   if (!mainKey) itemExport.report('info', 'plan.missingModel');
   const variantKeys = writeVariants(itemExport, mainKey !== null);
   const packSlots = VARIANTS.filter((def) => variantKeys[def.slot] !== undefined).map((def) => def.slot);
   const itemModels = writeItemModels(itemExport, mainKey, packSlots);
-  return { mainKey, variantKeys, itemModel: itemModels.itemModel, extraConfig: itemModels.config };
+  const extraConfig = [...itemModels.config, ...writeDirectionalModels(itemExport, mainKey)];
+  return { mainKey, variantKeys, itemModel: itemModels.itemModel, extraConfig };
 }
 
 /**
@@ -107,6 +111,11 @@ function buildItem(itemExport: ItemExport, written: NexoWrittenModels, shared: I
   });
   if (built.rawYamlError?.kind === 'syntax') itemExport.report('error', 'plan.rawYamlError', { error: built.rawYamlError.message });
   else if (built.rawYamlError) itemExport.report('error', 'plan.rawYamlNotMapping');
+  // The item's own item_model (or the additional YAML) wins over the definition the export generated, which then goes unused
+  const itemModel = (built.config.Components as Record<string, unknown> | undefined)?.item_model;
+  if (written.itemModel && itemModel !== written.itemModel) {
+    itemExport.report('warning', 'plan.itemModelOverridesGenerated', { itemModel: String(itemModel), generated: written.itemModel });
+  }
   validateItemConfig(itemExport, { config: built.config, usedVariations: shared.usedVariations, armorSlot: shared.armor?.slot ?? null });
   return built.config;
 }
