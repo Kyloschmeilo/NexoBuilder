@@ -58,6 +58,12 @@ describe('CraftEngine block settings', () => {
     });
     expect(codes(states(' '))).toContain('ce.blockAppearanceStateMissing');
     expect(codes(states('minecraft:stone'))).not.toContain('ce.blockAppearanceStateMissing');
+    // The additional YAML is not pruned: a blank state written there reaches the export as it is
+    const raw = blockProject((item) => {
+      item.config.block = {};
+      item.rawYaml = "block:\n  state:\n    state: ''\n";
+    });
+    expect(planExport(raw).issues.map((i) => i.code)).toContain('ce.blockStateMissing');
   });
 
   it('keeps an item the settings name, and the other settings after it', () => {
