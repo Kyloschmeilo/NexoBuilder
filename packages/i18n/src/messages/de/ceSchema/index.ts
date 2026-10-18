@@ -9,6 +9,7 @@ import blockSettings from './blockSettings.json' with { type: 'json' };
 import craftEngine from './craftEngine.json' with { type: 'json' };
 import data from './data.json' with { type: 'json' };
 import events from './events.json' with { type: 'json' };
+import furniture from './furniture.json' with { type: 'json' };
 import general from './general.json' with { type: 'json' };
 import itemBehavior from './itemBehavior.json' with { type: 'json' };
 import logicConditions from './logicConditions.json' with { type: 'json' };
@@ -28,6 +29,7 @@ export default mergeCatalogue(
   craftEngine,
   data,
   events,
+  furniture,
   general,
   itemBehavior,
   logicConditions,

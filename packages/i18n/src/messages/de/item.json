@@ -386,14 +386,14 @@
     "addSeat": "Sitz hinzufügen",
     "seatPosition": "Sitzposition",
     "seatYaw": "Yaw",
+    "seatLimit": "Körper bleibt zur Yaw ausgerichtet",
+    "seatForce": "Blick zur Yaw drehen",
     "settings": "Einstellungen",
     "hitTimes": "Schläge bis zum Abbau",
-    "sounds": {
-      "break": "Abbau-Sound",
-      "place": "Platzier-Sound",
-      "hit": "Schlag-Sound"
-    },
-    "settingsHelp": "Verhalten, Events und andere Schlüssel gehören ins zusätzliche YAML unter furniture:.",
+    "settingsHelp": "Andere Schlüssel gehören ins zusätzliche YAML unter furniture:.",
+    "moreKeys": "Weitere Schlüssel ({count})",
+    "behaviors": "Verhalten",
+    "behaviorsHelp": "Lager, Anzeigeplätze für Items und Licht. Jedes Verhalten kann eigene Hitboxen pro Variante setzen.",
     "loot": "Lässt beim Abbau das Item fallen",
     "lootHelp": "Nutzt CraftEngines Möbel-Loot. Anderen Loot schreibst du ins zusätzliche YAML unter furniture: loot:."
   }

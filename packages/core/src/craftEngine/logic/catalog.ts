@@ -25,6 +25,7 @@ export type LogicCatalogName =
   | 'damageFormulas'
   | 'damageEffects'
   | 'itemBehaviors'
+  | 'furnitureBehaviors'
   | 'itemUpdaters';
 
 /** The objects that fire events (and so have event triggers) */

@@ -9,6 +9,7 @@ import { fieldMessageKeys, formMessageKeys } from '../../form/messageKeys';
 import { loadCatalogue, type MessageTree } from '@resourcepackbuilder/test-utils/catalogue';
 import { CE_ATTRIBUTE_LISTS } from '../attributes';
 import { CE_APPEARANCE_MODEL_FIELD, CE_APPEARANCE_MODELS_FIELD } from '../blockVariants';
+import { CE_FURNITURE_EDITOR_FIELDS } from '../furnitureFields';
 import { CE_LOGIC, logicMessageKeys } from '../logic';
 import { CE_LOOT_SOURCE_LIST } from '../loot';
 import { CE_GLOBAL_VARIABLE_MAP, CE_TEMPLATE_LIST } from '../templates';
@@ -92,6 +93,7 @@ describe('ceSchema message keys', () => {
     ...Object.values(CE_ATTRIBUTE_LISTS).flatMap((list) => fieldMessageKeys(list)),
     ...fieldMessageKeys(CE_APPEARANCE_MODEL_FIELD),
     ...fieldMessageKeys(CE_APPEARANCE_MODELS_FIELD),
+    ...CE_FURNITURE_EDITOR_FIELDS.flatMap((f) => fieldMessageKeys(f)),
   ]);
 
   it('references only keys that are well-formed', () => {

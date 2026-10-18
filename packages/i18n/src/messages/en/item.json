@@ -386,14 +386,14 @@
     "addSeat": "Add seat",
     "seatPosition": "Seat position",
     "seatYaw": "Yaw",
+    "seatLimit": "Keep the body facing the yaw",
+    "seatForce": "Turn the view to the yaw",
     "settings": "Settings",
     "hitTimes": "Hits to break",
-    "sounds": {
-      "break": "Break sound",
-      "place": "Place sound",
-      "hit": "Hit sound"
-    },
-    "settingsHelp": "Behaviors, events and other keys go in the additional YAML under furniture:.",
+    "settingsHelp": "Other keys go in the additional YAML under furniture:.",
+    "moreKeys": "More keys ({count})",
+    "behaviors": "Behaviors",
+    "behaviorsHelp": "Storage, item display slots and lights. Each behavior can set its own hitboxes per variant.",
     "loot": "Drops the item when broken",
     "lootHelp": "Uses CraftEngine’s furniture loot. Other loot goes in the additional YAML under furniture: loot:."
   }

@@ -35,7 +35,7 @@ import {
 } from './block';
 import { blockBehaviorForm, blockBehaviorType } from './blockBehaviors';
 import { blockStates, CE_STATE_TEMPLATES, statesTemplate, templateArguments } from './blockStates';
-import { buildRenderer, rendererElements } from './blockRenderer';
+import { buildRenderer, rendererElements, stateEntityCulling } from './blockRenderer';
 import { withEventList } from './events';
 import { buildCraftEngineFurniture, craftEngineFurniture } from './furniture';
 import { extraBehaviors, type OwnPlacement, placementBehavior, writeBehaviors } from './itemBehaviors';
@@ -248,6 +248,12 @@ function buildBlock(source: Record<string, unknown>, context: CraftEngineBuildCo
   // The block's item, which the creative pick (middle click) gives; an item the settings name wins
   const settings = isPlainObject(merged.settings) ? merged.settings : {};
   merged.settings = { item: itemKey, ...settings };
+
+  // Entity culling is read from the block itself (blockRenderer.ts)
+  if (merged.entity_culling === undefined) {
+    const culling = stateEntityCulling(merged);
+    if (culling !== undefined) merged.entity_culling = deepClone(culling);
+  }
 
   // CraftEngine reads one of `behavior` and `behaviors`: the form's behavior goes after the other ones
   // A behavior's type comes first (the form's keys may sit before it in the config)

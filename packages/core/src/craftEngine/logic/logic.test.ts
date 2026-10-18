@@ -90,6 +90,7 @@ describe('the logic catalogs', () => {
       damageFormulas: 3,
       damageEffects: 3,
       itemBehaviors: 3,
+      furnitureBehaviors: 3,
       itemUpdaters: 3,
     });
   });

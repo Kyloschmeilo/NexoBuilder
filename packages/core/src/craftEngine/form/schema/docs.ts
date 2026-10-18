@@ -24,6 +24,11 @@ export const CE_DOCS = {
   equipment: `${WIKI}/configuration/equipment`,
   equipmentComponent: `${WIKI}/configuration/equipment#component-based`,
   equipmentTrim: `${WIKI}/configuration/equipment#trim-based`,
+  entityRenderer: `${WIKI}/configuration/block/states/entity_renderer`,
+  furniture: `${WIKI}/configuration/furniture`,
+  furnitureBehaviors: `${WIKI}/configuration/furniture/behaviors`,
+  furnitureSettings: `${WIKI}/configuration/furniture/settings`,
+  furnitureVariants: `${WIKI}/configuration/furniture/variants`,
   lang: `${WIKI}/configuration/translations`,
   events: `${WIKI}/reference/events`,
   conditions: `${WIKI}/reference/conditions`,
@@ -228,6 +233,8 @@ const LOGIC_DOCS: Record<LogicCatalogName, { page: string; anchors: Record<strin
   damageEffects: { page: CE_DOCS.damageFormulas, anchors: same('life_steal', 'potion_effect', 'function') },
   // Each item behavior has a page of its own (ceItemBehaviorDocs); one without links to the behaviors page
   itemBehaviors: { page: CE_DOCS.itemBehaviors, anchors: {} },
+  // Each behavior has a page of its own (the catalog links it)
+  furnitureBehaviors: { page: CE_DOCS.furnitureBehaviors, anchors: {} },
   itemUpdaters: { page: CE_DOCS.updater, anchors: same('apply_data', 'transmute', 'reset') },
 };
 
