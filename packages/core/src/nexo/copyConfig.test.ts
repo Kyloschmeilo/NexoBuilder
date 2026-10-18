@@ -71,6 +71,14 @@ describe('copy properties', () => {
     expect(Object.keys(target.assets)).toEqual(['a1']);
   });
 
+  it("keeps the target's own item model, like its custom_model_data", () => {
+    const { project, source, target } = setup();
+    source.config.Components = { max_stack_size: 1, item_model: 'nexo:ruby' };
+    target.config.Components = { item_model: 'nexo:empty' };
+    pasteItemConfig(project, target, copyItemConfig(source, project), { categories: ALL, mode: 'replace' });
+    expect(target.config.Components).toEqual({ max_stack_size: 1, item_model: 'nexo:empty' });
+  });
+
   it('assigns a free variation to custom blocks', () => {
     const { project, source, target } = setup();
     pasteItemConfig(project, target, copyItemConfig(source, project), { categories: ALL, mode: 'replace' });
