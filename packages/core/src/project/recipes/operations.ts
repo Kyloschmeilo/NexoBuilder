@@ -1,5 +1,4 @@
 /** Edits of a recipe's ingredients; the functions mutate the recipe (for Immer drafts or tests). */
-import type { ConfigObject } from '../types';
 import { emptyIngredient, type IngredientRef, INGREDIENT_LETTERS, type Recipe, type RecipeIngredient, type RecipeSlot } from './model';
 
 /** Game ticks per second (cooking times are stored in ticks). */
@@ -44,18 +43,6 @@ export function withIngredientSource<T extends IngredientRef>(ingredient: T, sou
 export function setRecipeSlot(recipe: Recipe, slot: RecipeSlot, ingredient: RecipeIngredient): void {
   if (slot === 'input') recipe.input = ingredient;
   else recipe.slots = { ...recipe.slots, [slot]: ingredient };
-}
-
-/** The options object with `key` set, or without it for undefined; an empty object becomes undefined. */
-export function withOption(
-  options: ConfigObject | undefined,
-  key: string,
-  value: ConfigObject[string] | undefined,
-): ConfigObject | undefined {
-  const next: ConfigObject = { ...options };
-  if (value === undefined) delete next[key];
-  else next[key] = value;
-  return Object.keys(next).length > 0 ? next : undefined;
 }
 
 /** The ingredient with an amount; one (or none) is the default and is not stored. */
