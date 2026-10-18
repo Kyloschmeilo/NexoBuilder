@@ -119,7 +119,6 @@
     "unreadable": "Das Modell konnte nicht gelesen werden.",
     "fileUnreadable": "„{name}“ konnte nicht gelesen werden.",
     "onlyFirst": "Es wurde nur das erste Modell übernommen.",
-    "noneTitle": "Kein Modell",
     "noneDescription": "Ohne Modell sieht das Item wie das Basis-Material ({material}) aus.",
     "dropTitle": "Modell hier ablegen",
     "dropSubtitle": "Blockbench-Projekt (.bbmodel), Java-Modell (.json) mit PNG-Texturen oder PNG-Texturen",
@@ -140,7 +139,6 @@
     "ambientOcclusionHelp": "Weiche Schatten in Ecken und Kanten (ambientocclusion). Aus für flache oder leuchtende Modelle.",
     "shade": "Shade",
     "shadeOverride": "Das Modell nutzt shade_direction_override (aus Blockbench) – bitte dort ändern.",
-    "shadeSome": "Richtungs-Schattierung der Würfel (shade) – bei {off} von {total} Würfeln aus.",
     "shadeHelp": "Richtungs-Schattierung der Würfel (shade). Aus = alle Seiten gleich hell.",
     "texture": {
       "size": "{width}×{height} px",
@@ -154,11 +152,20 @@
       "minecraftTexture": "(Minecraft-Textur)",
       "notInPack": "(nicht im Pack!)",
       "assignOwnPng": "Eigene PNG zuweisen"
-    }
+    },
+    "title": "Modell",
+    "displayHelp": "Wie ein flaches Modell in der Hand gehalten wird. Legt das Parent-Modell fest.",
+    "holdStyles": {
+      "generated": "Flaches Item",
+      "handheld": "Werkzeug",
+      "handheldRod": "Angel"
+    },
+    "shadeOff": "Aus bei {off} von {total} Würfeln",
+    "texturesEmpty": "Noch keine Texturen. Füge zuerst ein Modell hinzu.",
+    "texturesCount": "{count, plural, one {# Textur} other {# Texturen}}"
   },
   "variants": {
-    "title": "Special Item Appearance",
-    "empty": "Pulling, Charged, Blocking, Cast, Throwing, Damaged, Dyeable, Composite oder ein eigenes GUI Model: weitere Modelle über <b>„Hinzufügen“</b>.",
+    "title": "Besondere Darstellung",
     "ownItemModel": "eigenes ItemModel",
     "remove": "Variante entfernen",
     "wrongMaterial": "Funktioniert nur mit dem Material {materials} – aktuell {material}.",
@@ -167,7 +174,30 @@
     "dropManySubtitle": "Mehrere Dateien auf einmal möglich – sie werden nach Dateinamen sortiert (z.B. bow_0, bow_1, bow_2).",
     "dropOneSubtitle": ".bbmodel, .json + .png oder .png",
     "moveUp": "Nach oben",
-    "moveDown": "Nach unten"
+    "moveDown": "Nach unten",
+    "description": "Zusätzliche Modelle für Zustände wie einen gespannten Bogen, einen blockenden Schild oder ein beschädigtes Werkzeug.",
+    "emptyText": "Noch keine besondere Darstellung.",
+    "add": "Darstellung hinzufügen",
+    "catalogTitle": "Besondere Darstellung hinzufügen",
+    "modelCount": "{count, plural, =0 {Noch kein Modell} one {# Modell} other {# Modelle}}",
+    "notExported": "Wird für {plugin} nicht exportiert",
+    "needsMaterial": "Braucht {materials}"
+  },
+  "modelTree": {
+    "nodes": "Knoten des Item-Model-Baums",
+    "emptyText": "Kein Item-Model-Baum. Das Item nutzt das Modell, das ResourcepackBuilder erzeugt.",
+    "rootKeys": "Schlüssel der Definition",
+    "caseSlot": "Fall {value}",
+    "caseNoValue": "Fall ohne Wert",
+    "entrySlot": "Ab {threshold}",
+    "modelSlot": "Modell {index}",
+    "caseHeading": "Fall",
+    "entryHeading": "Eintrag",
+    "branches": "Zweige",
+    "property": "Eigenschaft",
+    "open": "{name} öffnen",
+    "removeNode": "Knoten entfernen",
+    "noChildren": "Noch keine Einträge."
   },
   "slots": {
     "model": "Modell",
@@ -190,16 +220,9 @@
   },
   "recipes": {
     "title": "Rezepte",
-    "empty": "Noch keine Rezepte. Über <b>„Hinzufügen“</b> legst du fest, wie dieses Item hergestellt werden kann.",
-    "key": "Schlüssel des Rezepts",
-    "file": "Datei:",
     "remove": "Rezept entfernen",
-    "input": "Eingabe",
     "source": "Quelle der Zutat",
-    "cookingTime": "Garzeit in Ticks ({seconds, number} s)",
     "experience": "Erfahrung",
-    "result": "Ergebnis:",
-    "exportHint": "Rezepte werden nach <code>{path}</code> exportiert und mit <code>{command}</code> geladen.",
     "typePlaceholder": "typ",
     "grid": "Raster",
     "emptySlot": "leer",
@@ -230,7 +253,33 @@
     },
     "noResult": "Dieses Rezept verändert das Basis-Item und hat kein eigenes Ergebnis.",
     "disabledTitle": "Abgeschaltete Vanilla-Rezepte",
-    "disabledDescription": "Für das ganze Projekt: Nexo schaltet diese Vanilla-Rezepte ab. Exportiert nach <code>{path}</code>."
+    "addRecipe": "Rezept hinzufügen",
+    "catalogTitle": "Rezept hinzufügen",
+    "catalogDescription": "Wähle, wie Spieler dieses Item bekommen.",
+    "catalogSearch": "Rezepttypen, Schlüssel und Beschreibungen durchsuchen",
+    "categories": {
+      "crafting": "Herstellen",
+      "cooking": "Garen und Schmelzen",
+      "smithing": "Schmieden",
+      "stations": "Andere Stationen"
+    },
+    "writtenTo": "Wird nach {path} geschrieben",
+    "emptyHint": "Noch keine Rezepte.",
+    "sectionDescription": "Wird nach {path} exportiert und mit {command} geladen.",
+    "summary": {
+      "empty": "leer",
+      "noIngredients": "Noch keine Zutaten",
+      "seconds": "{seconds, number} s",
+      "makes": "ergibt {amount, number}"
+    },
+    "resultLabel": "Ergebnis",
+    "resultAmount": "Hergestellte Menge",
+    "duplicate": "Duplizieren",
+    "moveUp": "Nach oben",
+    "moveDown": "Nach unten",
+    "cookingTimeLabel": "Garzeit",
+    "cookingTimeHelp": "In Ticks; 20 Ticks sind eine Sekunde.",
+    "disabledSummary": "Für das ganze Projekt: Nexo schaltet diese Vanilla-Rezepte ab. Exportiert nach {path}."
   },
   "ceBlock": {
     "autoState": "Blockzustand-Gruppe",

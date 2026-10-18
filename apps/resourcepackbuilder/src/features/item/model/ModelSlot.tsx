@@ -1,3 +1,4 @@
+/** A slot that holds exactly one model (a furniture feature or state): its name, the model's thumbnail or a drop zone. */
 import { useTranslations } from 'next-intl';
 import { Box, RefreshCw, Trash2 } from 'lucide-react';
 import { cn } from '@resourcepackbuilder/ui/cn';
@@ -30,11 +31,13 @@ export function ModelSlot({ item, def }: { item: Item; def: VariantDef }) {
   };
 
   return (
-    <div className={cn('flex min-w-0 flex-col gap-2 rounded-md border p-2', model && 'border-primary bg-primary/10')}>
+    <div
+      data-slot="model-slot"
+      data-filled={model ? true : undefined}
+      className={cn('flex min-w-0 flex-col gap-2 rounded-lg border border-line p-2', model && 'border-primary bg-accent-soft')}
+    >
       <div className="flex min-h-7 items-center gap-0.5">
-        <span className="min-w-0 flex-1 truncate font-heading text-xs font-semibold tracking-[0.08em] uppercase">
-          {tSchema(def.label, def.params)}
-        </span>
+        <span className="min-w-0 flex-1 truncate text-label font-medium text-text">{tSchema(def.label, def.params)}</span>
         {model && (
           <>
             <IconButton label={t('model.replace')} size="icon-xs" onClick={() => void replace()}>
@@ -55,7 +58,7 @@ export function ModelSlot({ item, def }: { item: Item; def: VariantDef }) {
         <div className="flex min-w-0 items-center gap-2">
           <Thumb size={THUMB_SIZE} src={thumb} fallback={<Box className="size-4.5 opacity-60" />} />
           <Tip label={model.fileName}>
-            <span className="truncate text-xs text-muted-foreground">{model.fileName}</span>
+            <span className="truncate text-meta text-text-muted">{model.fileName}</span>
           </Tip>
         </div>
       ) : (

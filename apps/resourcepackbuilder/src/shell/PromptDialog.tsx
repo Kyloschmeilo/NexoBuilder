@@ -13,6 +13,7 @@ export function PromptDialog({ question: { options, resolve } }: { question: Ext
   const t = useTranslations('dialogs');
   const tCommon = useTranslations('common');
   const inputId = useId();
+  const listId = useId();
   const inputRef = useRef<HTMLInputElement>(null);
   const [value, setValue] = useState(options.initial);
   const error = value.trim() ? (options.validate?.(value) ?? null) : t('prompt.nameRequired');
@@ -55,9 +56,21 @@ export function PromptDialog({ question: { options, resolve } }: { question: Ext
               id={inputId}
               aria-invalid={isInvalid}
               value={value}
+              placeholder={options.placeholder}
+              list={options.suggestions?.length ? listId : undefined}
+              spellCheck={options.suggestions?.length ? false : undefined}
               onChange={(e) => setValue(e.target.value)}
               onFocus={(e) => e.target.select()}
             />
+            {!!options.suggestions?.length && (
+              <datalist id={listId}>
+                {options.suggestions.map((suggestion) => (
+                  <option key={suggestion.value} value={suggestion.value}>
+                    {suggestion.text}
+                  </option>
+                ))}
+              </datalist>
+            )}
           </FieldRow>
         </form>
       </DialogFrame>

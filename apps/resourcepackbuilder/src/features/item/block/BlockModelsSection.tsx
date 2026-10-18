@@ -15,7 +15,8 @@ export function BlockModelsSection({ item }: { item: Item }) {
   const faces = directionalFaces(item.config);
   const faceDefs = DIRECTIONAL_MODEL_SLOTS.filter((def) => faces.some((face) => def.slot === `dir_${face}`));
   const isStackable = isStringBlock(item.config);
-  if (!isStackable && faceDefs.length === 0) return null;
+  // The extra models build on the item's model; without one there is nothing to add them to
+  if (!item.model || (!isStackable && faceDefs.length === 0)) return null;
   return (
     <Section id={BLOCK_MODELS_SECTION_ID} title={t('slots.blockTitle')} description={t('block.nexo.modelsDescription')}>
       <div className="flex flex-col gap-3">

@@ -1,46 +1,20 @@
-import { useTranslations } from 'next-intl';
-import { Box } from 'lucide-react';
-import { type Item, itemMaterial } from '@resourcepackbuilder/core/project';
-import { DropZone, SectionCard } from '@resourcepackbuilder/ui';
-import { setItemModel } from '../../../commands/items';
+/**
+ * The model tab of the item editor's tab layout: the Model and Textures sections, the furniture and block models, the
+ * model-related property groups and CraftEngine's block and furniture sections. The section layout of the item
+ * editor mounts `ModelSection` and `TexturesSection` (see `./index.ts`) and the block and furniture sections directly.
+ */
+import type { Item } from '@resourcepackbuilder/core/project';
 import { PropertiesPanel } from '../properties/PropertiesPanel';
 import { useProjectForm } from '../properties/useProjectForm';
 import { BlockSection, hasBlockSettings } from '../block';
 import { CraftEngineFurnitureSection } from './CraftEngineFurnitureSection';
 import { FurnitureModelsSection } from './FurnitureModelsSection';
-import { ItemModelTreeSection } from './itemModelTree';
-import { ModelCard } from './ModelCard';
+import { ModelSection } from './ModelSection';
 import { TexturesSection } from './TexturesSection';
-import { MODEL_ACCEPT, MODEL_FORMATS } from '../../../components/modelFiles';
-import { useModelImport } from './useModelImport';
-import { VariantsSection } from './VariantsSection';
 
 const APPEARANCE_GROUP = 'appearance';
 /** CraftEngine's item keys around the model (oversized_in_gui, item_model …) */
 const MODEL_GROUP = 'model';
-
-function NoModelCard({ item }: { item: Item }) {
-  const t = useTranslations('item');
-  const { importModel } = useModelImport();
-  return (
-    <SectionCard
-      icon={<Box className="size-4.5" />}
-      title={t('model.noneTitle')}
-      description={t('model.noneDescription', { material: itemMaterial(item) })}
-    >
-      <DropZone
-        onFiles={async (files) => {
-          const model = await importModel(files);
-          if (model) setItemModel(item.id, model);
-        }}
-        accept={MODEL_ACCEPT}
-        title={t('model.dropTitle')}
-        subtitle={t('model.dropSubtitle')}
-        formats={MODEL_FORMATS}
-      />
-    </SectionCard>
-  );
-}
 
 /**
  * The item's model with its textures, extra models (variants, furniture, block) and the appearance properties, if the
@@ -48,23 +22,14 @@ function NoModelCard({ item }: { item: Item }) {
  * sections instead, and the model group. Both targets get the item model tree.
  */
 export function ModelTab({ item }: { item: Item }) {
-  const model = item.model;
   const groups = useProjectForm().groups;
   const hasAppearance = groups.some((group) => group.id === APPEARANCE_GROUP);
   const hasModelGroup = groups.some((group) => group.id === MODEL_GROUP);
   return (
-    <div className="flex flex-col gap-6">
-      {model ? (
-        <>
-          <ModelCard item={item} model={model} />
-          <TexturesSection itemId={item.id} model={model} />
-          <VariantsSection item={item} />
-          <FurnitureModelsSection item={item} />
-        </>
-      ) : (
-        <NoModelCard item={item} />
-      )}
-      <ItemModelTreeSection item={item} />
+    <div className="flex flex-col gap-3">
+      <ModelSection item={item} />
+      {item.model && <TexturesSection item={item} />}
+      {item.model && <FurnitureModelsSection item={item} />}
       {hasModelGroup && <PropertiesPanel item={item} group={MODEL_GROUP} />}
       <BlockSection item={item} />
       {hasBlockSettings(groups) && <CraftEngineFurnitureSection item={item} />}
