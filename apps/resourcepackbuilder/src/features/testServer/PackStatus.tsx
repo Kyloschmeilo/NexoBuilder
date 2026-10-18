@@ -1,10 +1,10 @@
 import { RefreshCw, Upload } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 import { Button } from '@resourcepackbuilder/ui/components/button';
-import { StatusBadge, Tip } from '@resourcepackbuilder/ui';
+import { StatusPill, Tip } from '@resourcepackbuilder/ui';
 import { PLAYER_NAME_PATTERN, type ServerAdapter } from '@resourcepackbuilder/test-server';
 import type { TestServerState } from '../../platform/desktopApi';
-import { PACK_STATUS_TONE } from './status';
+import { PACK_PILL_TONE } from './status';
 import { useBusyAction } from '../../hooks/useBusyAction';
 import { useTestServer } from './useTestServer';
 
@@ -20,7 +20,7 @@ export function PackStatus({ pack, player, adapter }: { pack: TestServerState['p
 
   return (
     <div className="flex flex-wrap items-center gap-2.5">
-      <StatusBadge tone={PACK_STATUS_TONE[pack.status]}>{t(pack.status)}</StatusBadge>
+      <StatusPill dot tone={PACK_PILL_TONE[pack.status]} label={t(pack.status)} />
       <Tip label={detail}>
         <span className="min-w-0 flex-[1_1_8rem] truncate font-mono text-xs text-muted-foreground">{detail}</span>
       </Tip>

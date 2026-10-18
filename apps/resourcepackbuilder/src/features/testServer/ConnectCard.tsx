@@ -1,7 +1,7 @@
-import { FolderOpen, Plug } from 'lucide-react';
+import { FolderOpen } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 import { Button } from '@resourcepackbuilder/ui/components/button';
-import { CopyButton, SectionCard, Tip } from '@resourcepackbuilder/ui';
+import { CopyButton, Section, Tip } from '@resourcepackbuilder/ui';
 import { richTags } from '../../i18n/richTags';
 import { DEFAULT_PACK_TARGET } from '@resourcepackbuilder/core/project';
 import { isConfigLocked, serverAdapterFor } from '@resourcepackbuilder/test-server';
@@ -24,11 +24,9 @@ export function ConnectCard({ server }: { server: TestServerState }) {
   const isRunning = server.status === 'running';
 
   return (
-    <SectionCard
-      size="sm"
-      icon={<Plug className="size-5 flex-none text-muted-foreground" />}
+    <Section
+      id="connect"
       title={t.rich(isRunning ? 'connect' : 'connectLater', { ...richTags, version: config.paperVersion ?? '–', address: server.address })}
-      titleClassName="font-sans tracking-normal normal-case"
       description={t('connectHint', { plugin: adapter.pluginName })}
       actions={
         <>
@@ -40,9 +38,8 @@ export function ConnectCard({ server }: { server: TestServerState }) {
           </Tip>
         </>
       }
-      contentClassName="py-3"
     >
       {isRunning && hasPlugin ? <PackStatus pack={server.pack} player={config.playerName} adapter={adapter} /> : undefined}
-    </SectionCard>
+    </Section>
   );
 }

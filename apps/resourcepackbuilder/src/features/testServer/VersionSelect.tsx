@@ -1,9 +1,8 @@
-import { useCallback, useEffect } from 'react';
+import { useCallback, useEffect, useId } from 'react';
 import { RefreshCw } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 import { NativeSelect, NativeSelectOption } from '@resourcepackbuilder/ui/components/native-select';
-import { IconButton } from '@resourcepackbuilder/ui';
-import { FormField, FormHelp } from '../../components/FormField';
+import { FieldRow, IconButton } from '@resourcepackbuilder/ui';
 import { useErrorMessage } from '../../i18n/errors';
 import { notify } from '../../shell/notify';
 import { useOpenProject } from '../../store/project';
@@ -28,18 +27,23 @@ export function VersionSelect({ paperVersion, isLocked }: { paperVersion: string
   useEffect(load, [load]);
 
   const options = versions ?? (paperVersion ? [paperVersion] : []);
-  const help = hasFailed ? (
-    <FormHelp error>{t('versionsFailed', { error: errorMessage(loadError) })}</FormHelp>
-  ) : paperVersion && projectVersion && paperVersion !== projectVersion ? (
-    <FormHelp>{t('versionMismatch', { version: projectVersion })}</FormHelp>
-  ) : (
-    <FormHelp>{t('versionHelp')}</FormHelp>
-  );
+  const id = useId();
 
   return (
-    <FormField label={t('version')} description={help}>
+    <FieldRow
+      label={t('version')}
+      htmlFor={id}
+      help={t('versionHelp')}
+      error={hasFailed ? t('versionsFailed', { error: errorMessage(loadError) }) : undefined}
+      warning={
+        !hasFailed && paperVersion && projectVersion && paperVersion !== projectVersion
+          ? t('versionMismatch', { version: projectVersion })
+          : undefined
+      }
+    >
       <div className="flex gap-1.5">
         <NativeSelect
+          id={id}
           data-testid="test-server-version"
           className="min-w-0 flex-1"
           value={paperVersion ?? ''}
@@ -59,6 +63,6 @@ export function VersionSelect({ paperVersion, isLocked }: { paperVersion: string
           </IconButton>
         )}
       </div>
-    </FormField>
+    </FieldRow>
   );
 }
