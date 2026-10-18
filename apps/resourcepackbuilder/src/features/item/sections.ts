@@ -79,7 +79,9 @@ export const ITEM_SECTIONS: readonly ItemSectionDef[] = [
 
 /** The sections a project of `target` offers for `item`, in nav order. */
 export function itemSections(target: PackTargetId, item: Item): ItemSectionDef[] {
-  return ITEM_SECTIONS.filter((section) => (!section.targets || section.targets.includes(target)) && (section.available?.(item, target) ?? true));
+  return ITEM_SECTIONS.filter(
+    (section) => (!section.targets || section.targets.includes(target)) && (section.available?.(item, target) ?? true),
+  );
 }
 
 /** Texts of the nav entries. */

@@ -47,12 +47,7 @@ function ItemEditorContent({ item }: { item: Item }) {
         <Page
           header={<ItemHeader item={item} issues={issues} />}
           nav={
-            <SectionNav
-              label={t('sections.nav')}
-              items={itemSectionNav(schema, item, labels)}
-              activeId={navId}
-              onSelect={goToSection}
-            />
+            <SectionNav label={t('sections.nav')} items={itemSectionNav(schema, item, labels)} activeId={navId} onSelect={goToSection} />
           }
         >
           <div data-item-section={section.id} className="min-w-0">
