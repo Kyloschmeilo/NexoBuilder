@@ -1,12 +1,13 @@
 /**
  * The CraftEngine logic catalogs: conditions, functions, number providers, event triggers, loot sources, loot tables,
- * the typed values of the attribute system and the extra item behaviors.
+ * the typed values of the attribute system, the extra item behaviors and the item updater types.
  */
 import { CE_ATTRIBUTE_BASES, CE_ATTRIBUTE_SYNC_VALUES, CE_DAMAGE_EFFECTS, CE_DAMAGE_FORMULAS } from './attributes';
 import type { LogicCatalogName, LogicType } from './catalog';
 import { CE_CONDITIONS } from './conditions';
 import { CE_FUNCTIONS } from './functions';
 import { CE_ITEM_BEHAVIORS } from './itemBehaviors';
+import { CE_ITEM_UPDATERS } from './itemUpdaters';
 import { CE_LOOT_ENTRIES, CE_LOOT_FUNCTIONS } from './loot';
 import { CE_LOOT_SOURCES } from './lootSources';
 import { CE_NUMBERS } from './numbers';
@@ -17,6 +18,7 @@ export * from './catalog';
 export { CE_CONDITIONS } from './conditions';
 export { CE_FUNCTIONS } from './functions';
 export { CE_ITEM_BEHAVIORS } from './itemBehaviors';
+export { CE_ITEM_UPDATERS } from './itemUpdaters';
 export { CE_LOOT_ENTRIES, CE_LOOT_FUNCTIONS } from './loot';
 export { CE_LOOT_SOURCES } from './lootSources';
 export { lootTable } from './shared';
@@ -37,4 +39,5 @@ export const CE_LOGIC: Record<LogicCatalogName, readonly LogicType[]> = {
   damageFormulas: CE_DAMAGE_FORMULAS,
   damageEffects: CE_DAMAGE_EFFECTS,
   itemBehaviors: CE_ITEM_BEHAVIORS,
+  itemUpdaters: CE_ITEM_UPDATERS,
 };

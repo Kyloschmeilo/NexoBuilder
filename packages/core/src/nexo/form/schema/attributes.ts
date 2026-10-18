@@ -1,4 +1,5 @@
-import { ATTRIBUTE_OPERATIONS, ATTRIBUTE_SLOTS, ATTRIBUTES, ENCHANTMENTS } from '../options';
+/** The Attributes tab: attribute modifiers, enchantments, stored enchantments and potion effects. */
+import { ATTRIBUTE_OPERATIONS, ATTRIBUTE_SLOTS, ATTRIBUTES, ENCHANTMENTS, POTION_EFFECTS } from '../options';
 import { field, properties, whenType } from '../../../form/build';
 import { withDocs } from '../../../form/docs';
 import { NEXO_DOCS } from './docs';
@@ -34,6 +35,33 @@ export const ATTRIBUTE_PROPERTIES = properties(
         newValue: () => 1,
       }),
       defaultValue: () => ({ sharpness: 1 }),
+    },
+    // Read by Nexo 1.30 (ItemParser), not in the docs: the enchantments an enchanted book stores
+    StoredEnchantments: {
+      docs: NEXO_DOCS.items.enchantments,
+      field: field.map(field.number({ integer: true, min: 1, max: 255 }), {
+        keyOptions: ENCHANTMENTS,
+        keyPlaceholder: true,
+        newValue: () => 1,
+        help: true,
+        advanced: true,
+      }),
+      defaultValue: () => ({ mending: 1 }),
+    },
+    // Read by Nexo 1.30 (ItemParser), not in the docs: effects of a potion or tipped arrow
+    PotionEffects: {
+      field: field.objectList(
+        {
+          type: field.select(POTION_EFFECTS, { allowCustom: true }),
+          duration: field.text({ format: 'duration', placeholder: true }),
+          amplifier: field.number({ integer: true, min: 0, max: 255 }),
+          ambient: field.boolean(),
+          particles: field.boolean({ defaultHint: true }),
+          icon: field.boolean({ defaultHint: true }),
+        },
+        { titleKey: 'type', help: true, advanced: true, newItem: () => ({ type: 'speed', duration: '30s', amplifier: 0 }) },
+      ),
+      defaultValue: () => [{ type: 'speed', duration: '30s', amplifier: 0 }],
     },
   }),
 );

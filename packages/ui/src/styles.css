@@ -1,7 +1,18 @@
 /*
- * ResourcepackBuilder in the CastCrafter design: forest floor surfaces, one emerald signal (primary),
- * gold and ember only for warnings and errors. Surfaces are separated by 1px lines, not by shadows.
- * Import after `tailwindcss` (see the app's globals.css). Light is the base palette; `.dark` on <html> (set by the theme script) switches to the dark one.
+ * The Workbench design tokens: a dense desktop tool with hairline 1px lines, small radii and shadows only on overlays.
+ * Import after `tailwindcss` (see the app's globals.css).
+ *
+ * Colour comes in five themes (`data-color-theme` on <html>: deepslate, amethyst, copper, prismarine, crimson), each
+ * with a light and a dark variant (`.dark` on <html>, set by next-themes). Deepslate is the fallback without the
+ * attribute. A theme can also be scoped to any element with `data-color-theme`, which is how theme swatches preview
+ * their palette, and an element with the `dark` class shows the current theme's dark variant. Components use the semantic tokens (`--canvas`, `--surface`, `--text`, `--accent`, …), never raw hex;
+ * the shadcn names (`--background`, `--primary`, `--border`, …) are aliases of them.
+ *
+ * Tailwind names: `bg-canvas`, `bg-surface`, `bg-surface-raised`, `bg-surface-sunken`, `border-line`,
+ * `border-line-strong`, `text-text`, `text-text-muted`, `text-text-faint`, `bg-accent-soft`, `text-accent-contrast`,
+ * `text-success`, `text-warning`, `text-danger`, `text-target-nexo`, `text-target-ce`, `text-yaml-*`. The vivid accent is
+ * `primary` in Tailwind (`bg-primary`, `text-primary`); Tailwind's `accent` stays shadcn's highlight surface and maps to
+ * `--accent-soft`. The overlay shadow is `shadow-(--shadow-overlay)`.
  */
 @import 'tw-animate-css';
 
@@ -13,96 +24,296 @@
 @custom-variant data-horizontal (&[data-orientation='horizontal']);
 @custom-variant data-vertical (&[data-orientation='vertical']);
 
+/* ---- Shape and size: the same in every theme ---- */
 :root {
-  --radius: 0.5rem;
+  --radius: 6px;
+  --radius-control: 4px;
+  --radius-panel: 6px;
+  --radius-overlay: 8px;
 
-  --background: #f4f7f5;
-  --foreground: #0e1a16;
-  --card: #ffffff;
-  --card-foreground: #0e1a16;
-  --popover: #ffffff;
-  --popover-foreground: #0e1a16;
-  --primary: #0c7a4c;
-  --primary-foreground: #ffffff;
-  --secondary: #e4ece8;
-  --secondary-foreground: #0e1a16;
-  --muted: #e4ece8;
-  --muted-foreground: #4b6057;
-  --accent: #dbe6e0;
-  --accent-foreground: #0e1a16;
-  --destructive: #b93b1d;
-  --destructive-foreground: #ffffff;
-  --warning: #8a5a00;
-  --warning-foreground: #ffffff;
-  --info: #1a6f9e;
-  --success: #0c7a4c;
-  --border: #d2ded8;
-  --input: #93ab9f;
-  --ring: #0c7a4c;
-  --scrim: #0e1a1666;
-
-  --chart-1: #0c7a4c;
-  --chart-2: #1a6f9e;
-  --chart-3: #8a5a00;
-  --chart-4: #b93b1d;
-  --chart-5: #4b6057;
-
-  --sidebar: #eaf0ed;
-  --sidebar-foreground: #0e1a16;
-  --sidebar-primary: #0c7a4c;
-  --sidebar-primary-foreground: #ffffff;
-  --sidebar-accent: #dbe6e0;
-  --sidebar-accent-foreground: #0e1a16;
-  --sidebar-border: #d2ded8;
-  --sidebar-ring: #0c7a4c;
+  --control-height: 30px;
+  --control-height-compact: 26px;
+  --tree-row-height: 28px;
+  --focus-ring-width: 2px;
 }
 
+/* ---- Light, shared by every theme: status colours, target markers, soft accent, scrim, overlay shadow ---- */
+:root,
+[data-color-theme] {
+  --success: #1f8550;
+  --warning: #9a6a00;
+  --danger: #c23b33;
+  --target-nexo: #a86c08;
+  --target-ce: #17806f;
+
+  --success-contrast: #ffffff;
+  --warning-contrast: #ffffff;
+  --danger-contrast: #ffffff;
+
+  --accent-soft: color-mix(in srgb, var(--accent) 10%, transparent);
+  --scrim: color-mix(in srgb, #000000 35%, transparent);
+  --shadow-overlay: 0 8px 24px rgb(0 0 0 / 0.18), 0 0 0 1px var(--line);
+}
+
+/* ---- Dark, shared by every theme ---- */
+.dark,
+.dark [data-color-theme] {
+  --success: #4cbb7f;
+  --warning: #e0a83a;
+  --danger: #e5675e;
+  --target-nexo: #e3a63c;
+  --target-ce: #4fb3a2;
+
+  --success-contrast: #04140b;
+  --warning-contrast: #1a1200;
+  --danger-contrast: #1a0604;
+
+  --accent-soft: color-mix(in srgb, var(--accent) 15%, transparent);
+  --scrim: color-mix(in srgb, #000000 55%, transparent);
+  --shadow-overlay: 0 12px 32px rgb(0 0 0 / 0.45), 0 0 0 1px var(--line);
+}
+
+/*
+ * ---- The five palettes ----
+ * Each sets canvas (app background), surface (panels), surface-raised (popovers, dialogs), surface-sunken (inputs, code),
+ * line, text, text-muted (at least 4.5:1 on surface, surface-raised and canvas), accent and the text colour on the accent.
+ */
+:root,
+[data-color-theme='deepslate'] {
+  --canvas: #eceff3;
+  --surface: #ffffff;
+  --surface-raised: #f5f7fa;
+  --surface-sunken: #f3f5f8;
+  --line: #d3d9e1;
+  --text: #17202b;
+  --text-muted: #5a6676;
+  --accent: #1d6aa3;
+  --accent-contrast: #ffffff;
+}
+.dark,
+.dark[data-color-theme='deepslate'],
+.dark [data-color-theme='deepslate'],
+[data-color-theme='deepslate'] .dark {
+  --canvas: #111519;
+  --surface: #171c22;
+  --surface-raised: #1f252d;
+  --surface-sunken: #0d1014;
+  --line: #2a323c;
+  --text: #e3e8ee;
+  --text-muted: #8693a3;
+  --accent: #58a6dc;
+  --accent-contrast: #06141f;
+}
+
+[data-color-theme='amethyst'] {
+  --canvas: #f1eef6;
+  --surface: #ffffff;
+  --surface-raised: #f8f6fb;
+  --surface-sunken: #f6f3fa;
+  --line: #dcd4e8;
+  --text: #211a2c;
+  --text-muted: #695e7b;
+  --accent: #7144c6;
+  --accent-contrast: #ffffff;
+}
+.dark[data-color-theme='amethyst'],
+.dark [data-color-theme='amethyst'],
+[data-color-theme='amethyst'] .dark {
+  --canvas: #15121b;
+  --surface: #1c1824;
+  --surface-raised: #251f2f;
+  --surface-sunken: #110e16;
+  --line: #342b42;
+  --text: #ece6f5;
+  --text-muted: #9a8fae;
+  --accent: #b48ef2;
+  --accent-contrast: #1a0f2c;
+}
+
+/* Copper: a verdigris CraftEngine marker, set apart from the copper accent. */
+[data-color-theme='copper'] {
+  --canvas: #ecebe8;
+  --surface: #ffffff;
+  --surface-raised: #f6f5f3;
+  --surface-sunken: #f5f3f0;
+  --line: #dad5cf;
+  --text: #231d18;
+  --text-muted: #6c6156;
+  --accent: #a95a26;
+  --accent-contrast: #ffffff;
+  --target-ce: #2d7d6b;
+}
+.dark[data-color-theme='copper'],
+.dark [data-color-theme='copper'],
+[data-color-theme='copper'] .dark {
+  --canvas: #151312;
+  --surface: #1c1917;
+  --surface-raised: #25211e;
+  --surface-sunken: #110f0e;
+  --line: #35302b;
+  --text: #eee8e1;
+  --text-muted: #a29789;
+  --accent: #dc8c55;
+  --accent-contrast: #25120a;
+  --target-ce: #5fae9c;
+}
+
+/* Prismarine: a blue CraftEngine marker, because the teal one would clash with the accent. */
+[data-color-theme='prismarine'] {
+  --canvas: #eaf0ef;
+  --surface: #ffffff;
+  --surface-raised: #f4f8f7;
+  --surface-sunken: #f2f6f5;
+  --line: #cfdcd9;
+  --text: #14211f;
+  --text-muted: #566c68;
+  --accent: #137a6c;
+  --accent-contrast: #ffffff;
+  --target-ce: #2a64a0;
+}
+.dark[data-color-theme='prismarine'],
+.dark [data-color-theme='prismarine'],
+[data-color-theme='prismarine'] .dark {
+  --canvas: #0f1716;
+  --surface: #141e1d;
+  --surface-raised: #1b2624;
+  --surface-sunken: #0b1211;
+  --line: #273634;
+  --text: #e1ece9;
+  --text-muted: #86a09b;
+  --accent: #4cc2b0;
+  --accent-contrast: #04201b;
+  --target-ce: #7fb0e0;
+}
+
+/* Crimson: an orange-red danger colour, so errors don't look like the crimson accent. */
+[data-color-theme='crimson'] {
+  --canvas: #f1ecec;
+  --surface: #ffffff;
+  --surface-raised: #f8f4f4;
+  --surface-sunken: #f7f2f2;
+  --line: #e0d3d4;
+  --text: #261719;
+  --text-muted: #74585c;
+  --accent: #b3263c;
+  --accent-contrast: #ffffff;
+  --danger: #b4521a;
+}
+.dark[data-color-theme='crimson'],
+.dark [data-color-theme='crimson'],
+[data-color-theme='crimson'] .dark {
+  --canvas: #161112;
+  --surface: #1d1618;
+  --surface-raised: #271d1f;
+  --surface-sunken: #120d0e;
+  --line: #3a2a2d;
+  --text: #f0e5e6;
+  --text-muted: #a8898d;
+  --accent: #e0566a;
+  --accent-contrast: #2a0910;
+  --danger: #f08a4b;
+}
+
+/*
+ * ---- Derived tokens and shadcn aliases ----
+ * Declared on every theme scope (and on elements forced dark with a local `.dark` class) so they resolve against
+ * that scope's palette.
+ */
+:root,
+[data-color-theme],
 .dark {
-  --background: #0a1110;
-  --foreground: #e8f2ed;
-  --card: #0f1917;
-  --card-foreground: #e8f2ed;
-  --popover: #0f1917;
-  --popover-foreground: #e8f2ed;
-  --primary: #1fbf7a;
-  --primary-foreground: #04130c;
-  --secondary: #16241f;
-  --secondary-foreground: #e8f2ed;
-  --muted: #16241f;
-  --muted-foreground: #94aaa0;
-  --accent: #10382a;
-  --accent-foreground: #e8f2ed;
-  --destructive: #ff7a59;
-  --destructive-foreground: #1a0600;
-  --warning: #f2b52c;
-  --warning-foreground: #1a1200;
-  --info: #5ab8ea;
-  --success: #1fbf7a;
-  --border: #1f302a;
-  --input: #54766a;
-  --ring: #1fbf7a;
-  --scrim: #0a1110a3;
+  --line-strong: color-mix(in oklab, var(--line), var(--text) 18%);
+  --text-faint: color-mix(in oklab, var(--text-muted), var(--surface) 30%);
 
-  --chart-1: #1fbf7a;
-  --chart-2: #5ab8ea;
-  --chart-3: #f2b52c;
-  --chart-4: #ff7a59;
-  --chart-5: #94aaa0;
+  --yaml-key: var(--accent);
+  --yaml-string: var(--success);
+  --yaml-number: var(--target-nexo);
+  --yaml-bool: var(--target-nexo);
+  --yaml-comment: var(--text-muted);
 
-  --sidebar: #0f1917;
-  --sidebar-foreground: #e8f2ed;
-  --sidebar-primary: #1fbf7a;
-  --sidebar-primary-foreground: #04130c;
-  --sidebar-accent: #16241f;
-  --sidebar-accent-foreground: #e8f2ed;
-  --sidebar-border: #1f302a;
-  --sidebar-ring: #1fbf7a;
+  --background: var(--canvas);
+  --foreground: var(--text);
+  --card: var(--surface);
+  --card-foreground: var(--text);
+  --popover: var(--surface-raised);
+  --popover-foreground: var(--text);
+  --primary: var(--accent);
+  --primary-foreground: var(--accent-contrast);
+  --secondary: color-mix(in oklab, var(--canvas), var(--text) 5%);
+  --secondary-foreground: var(--text);
+  --muted: color-mix(in oklab, var(--canvas), var(--text) 5%);
+  --muted-foreground: var(--text-muted);
+  --accent-foreground: var(--text);
+  --destructive: var(--danger);
+  --destructive-foreground: var(--danger-contrast);
+  --warning-foreground: var(--warning-contrast);
+  --info: var(--accent);
+  --border: var(--line);
+  --input: var(--line-strong);
+  --ring: var(--accent);
+
+  --chart-1: var(--accent);
+  --chart-2: var(--success);
+  --chart-3: var(--warning);
+  --chart-4: var(--danger);
+  --chart-5: var(--text-muted);
+
+  --sidebar: var(--surface);
+  --sidebar-foreground: var(--text);
+  --sidebar-primary: var(--accent);
+  --sidebar-primary-foreground: var(--accent-contrast);
+  --sidebar-accent: var(--accent-soft);
+  --sidebar-accent-foreground: var(--text);
+  --sidebar-border: var(--line);
+  --sidebar-ring: var(--accent);
 }
 
 @theme inline {
-  --font-sans: 'Hanken Grotesk', 'Public Sans', sans-serif;
-  --font-heading: 'Chakra Petch', 'Barlow Condensed', sans-serif;
-  --font-mono: 'Martian Mono', 'JetBrains Mono', monospace;
+  --font-sans: 'IBM Plex Sans', 'Segoe UI', system-ui, sans-serif;
+  --font-heading: 'IBM Plex Sans', 'Segoe UI', system-ui, sans-serif;
+  --font-mono: 'IBM Plex Mono', ui-monospace, Consolas, monospace;
+  --font-brand: 'Chakra Petch', 'IBM Plex Sans', sans-serif;
+
+  /* Type steps (size / line height). `text-sm`, used by the shadcn components, is the 13 px body size. */
+  --text-micro: 11px;
+  --text-micro--line-height: 14px;
+  --text-meta: 12px;
+  --text-meta--line-height: 16px;
+  --text-label: 13px;
+  --text-label--line-height: 18px;
+  --text-body: 13px;
+  --text-body--line-height: 18px;
+  --text-title: 15px;
+  --text-title--line-height: 20px;
+  --text-page: 18px;
+  --text-page--line-height: 24px;
+  --text-sm: 13px;
+  --text-sm--line-height: 18px;
+
+  --color-canvas: var(--canvas);
+  --color-surface: var(--surface);
+  --color-surface-raised: var(--surface-raised);
+  --color-surface-sunken: var(--surface-sunken);
+  --color-line: var(--line);
+  --color-line-strong: var(--line-strong);
+  --color-text: var(--text);
+  --color-text-muted: var(--text-muted);
+  --color-text-faint: var(--text-faint);
+  --color-accent-soft: var(--accent-soft);
+  --color-accent-contrast: var(--accent-contrast);
+  --color-success: var(--success);
+  --color-success-contrast: var(--success-contrast);
+  --color-warning: var(--warning);
+  --color-warning-foreground: var(--warning-foreground);
+  --color-danger: var(--danger);
+  --color-danger-contrast: var(--danger-contrast);
+  --color-target-nexo: var(--target-nexo);
+  --color-target-ce: var(--target-ce);
+  --color-yaml-key: var(--yaml-key);
+  --color-yaml-string: var(--yaml-string);
+  --color-yaml-number: var(--yaml-number);
+  --color-yaml-bool: var(--yaml-bool);
+  --color-yaml-comment: var(--yaml-comment);
 
   --color-background: var(--background);
   --color-foreground: var(--foreground);
@@ -116,14 +327,11 @@
   --color-secondary-foreground: var(--secondary-foreground);
   --color-muted: var(--muted);
   --color-muted-foreground: var(--muted-foreground);
-  --color-accent: var(--accent);
+  --color-accent: var(--accent-soft);
   --color-accent-foreground: var(--accent-foreground);
   --color-destructive: var(--destructive);
   --color-destructive-foreground: var(--destructive-foreground);
-  --color-warning: var(--warning);
-  --color-warning-foreground: var(--warning-foreground);
   --color-info: var(--info);
-  --color-success: var(--success);
   --color-border: var(--border);
   --color-input: var(--input);
   --color-ring: var(--ring);
@@ -142,25 +350,26 @@
   --color-sidebar-border: var(--sidebar-border);
   --color-sidebar-ring: var(--sidebar-ring);
 
-  --radius-sm: calc(var(--radius) - 4px);
-  --radius-md: calc(var(--radius) - 2px);
-  --radius-lg: var(--radius);
-  --radius-xl: calc(var(--radius) + 4px);
-  --radius-2xl: calc(var(--radius) + 8px);
-  --radius-3xl: calc(var(--radius) + 12px);
-  --radius-4xl: calc(var(--radius) + 16px);
+  /* Controls and menus use md/lg, cards and panels xl, dialogs and popovers 2xl; badges keep their pill shape. */
+  --radius-sm: 2px;
+  --radius-md: var(--radius-control);
+  --radius-lg: var(--radius-control);
+  --radius-xl: var(--radius-panel);
+  --radius-2xl: var(--radius-overlay);
+  --radius-3xl: var(--radius-overlay);
+  --radius-4xl: 9999px;
 }
 
 @layer base {
   * {
-    @apply border-border outline-ring/50;
+    @apply border-border outline-ring;
   }
   html,
   body {
     @apply h-full;
   }
   body {
-    @apply bg-background font-sans text-[15px] leading-6 text-foreground antialiased;
+    @apply bg-background font-sans text-body text-foreground antialiased;
   }
   h1,
   h2,
@@ -169,7 +378,7 @@
     @apply font-heading font-semibold;
   }
   ::selection {
-    @apply bg-accent text-foreground;
+    @apply bg-accent-soft text-foreground;
   }
   /* Tailwind v4 dropped the pointer cursor on buttons; every clickable element gets it back, disabled ones don't. */
   :is(
@@ -204,5 +413,16 @@
   }
   ::-webkit-scrollbar-track {
     @apply bg-transparent;
+  }
+  /* Reduced motion: transitions and animations finish at once (their end events still fire). */
+  @media (prefers-reduced-motion: reduce) {
+    *,
+    ::before,
+    ::after {
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.01ms !important;
+      scroll-behavior: auto !important;
+    }
   }
 }

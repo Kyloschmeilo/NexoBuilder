@@ -72,6 +72,9 @@
       },
       "disposal": {
         "label": "DISPOSAL (trash can)"
+      },
+      "shulker": {
+        "label": "SHULKER (like a shulker box)"
       }
     },
     "customBlockTypes": {
@@ -144,6 +147,18 @@
       },
       "dropAll": {
         "label": "Last copy dropped"
+      },
+      "invClickRightAll": {
+        "label": "Right-click in inventory"
+      },
+      "invClickLeftAll": {
+        "label": "Left-click in inventory"
+      },
+      "invClickLeftShift": {
+        "label": "Shift-left-click in inventory"
+      },
+      "invClickMiddleAll": {
+        "label": "Middle-click in inventory"
       }
     }
   }

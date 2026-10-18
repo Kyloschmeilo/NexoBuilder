@@ -8,11 +8,7 @@
   "properties": {
     "dataLore": {
       "label": "Lore",
-      "description": "Textzeilen unter dem Item-Namen (MiniMessage, z.B. '<'gray>).",
-      "field": {
-        "label": "Zeilen",
-        "placeholder": "'<'gray>Eine Zeile"
-      }
+      "description": "Textzeilen unter dem Item-Namen (MiniMessage, z.B. '<'gray>)."
     },
     "dataCustomName": {
       "label": "Custom Name",

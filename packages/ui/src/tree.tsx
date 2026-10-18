@@ -12,8 +12,8 @@ export const TREE_INDENT_PX = 16;
 export const treeRow = cva('group/row flex items-center rounded-sm text-sm select-none', {
   variants: {
     surface: {
-      sidebar: 'h-8 hover:bg-sidebar-accent',
-      panel: 'min-h-8 gap-2 pr-3 text-foreground hover:bg-muted',
+      sidebar: 'h-7 hover:bg-sidebar-accent',
+      panel: 'min-h-7 gap-2 pr-3 text-foreground hover:bg-muted',
     },
     selected: {
       true: 'bg-primary/10 ring-1 ring-primary ring-inset hover:bg-primary/15',

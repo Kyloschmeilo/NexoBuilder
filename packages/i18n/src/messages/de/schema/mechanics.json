@@ -36,6 +36,38 @@
               "materials": {
                 "label": "Materialien",
                 "placeholder": "DIAMOND"
+              },
+              "tags": {
+                "label": "Item-Tags",
+                "help": "Nexo 1.30 liest diesen Schlüssel; die Nexo-Doku führt ihn noch nicht auf.",
+                "placeholder": "minecraft:shulker_boxes"
+              }
+            }
+          },
+          "volume": {
+            "label": "Lautstärke",
+            "help": "Nexo 1.30 liest diesen Schlüssel; die Nexo-Doku führt ihn noch nicht auf."
+          },
+          "pitch": {
+            "label": "Tonhöhe",
+            "help": "Nexo 1.30 liest diesen Schlüssel; die Nexo-Doku führt ihn noch nicht auf."
+          },
+          "whitelist": {
+            "label": "Erlaubte Items (nur diese)",
+            "help": "Nexo 1.30 liest diesen Schlüssel; die Nexo-Doku führt ihn noch nicht auf.",
+            "fields": {
+              "nexoItems": {
+                "label": "Nexo-Items",
+                "placeholder": "Item-ID"
+              },
+              "materials": {
+                "label": "Materialien",
+                "placeholder": "DIAMOND"
+              },
+              "tags": {
+                "label": "Item-Tags",
+                "help": "Nexo 1.30 liest diesen Schlüssel; die Nexo-Doku führt ihn noch nicht auf.",
+                "placeholder": "minecraft:shulker_boxes"
               }
             }
           }
@@ -95,6 +127,15 @@
             "actions": {
               "label": "Aktionen",
               "placeholder": "[console] give '<'player> diamond 1"
+            },
+            "cancelEvent": {
+              "label": "Ereignis abbrechen",
+              "help": "Nexo 1.30 liest diesen Schlüssel; die Nexo-Doku führt ihn noch nicht auf."
+            },
+            "cooldown": {
+              "label": "Abklingzeit",
+              "help": "Nexo 1.30 liest diesen Schlüssel; die Nexo-Doku führt ihn noch nicht auf.",
+              "placeholder": "z. B. 5s"
             }
           }
         }
@@ -113,6 +154,10 @@
           "entries": {
             "label": "Effekte",
             "keyLabel": "Effekt"
+          },
+          "resetOnUnequip": {
+            "label": "Effekte beim Ablegen entfernen",
+            "help": "Nexo 1.30 liest diesen Schlüssel; die Nexo-Doku führt ihn noch nicht auf."
           }
         }
       }
@@ -238,6 +283,10 @@
           },
           "cooldown": {
             "label": "Cooldown (Millisekunden)"
+          },
+          "lowerItemDurability": {
+            "label": "Ernten nutzt das Werkzeug ab",
+            "help": "Nexo 1.30 liest diesen Schlüssel; die Nexo-Doku führt ihn noch nicht auf."
           }
         }
       }
