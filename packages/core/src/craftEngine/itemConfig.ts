@@ -258,6 +258,21 @@ function addArmor(resolved: Record<string, unknown>, data: Record<string, unknow
   }
 }
 
+/** A craft remainder with its `type` first, in the remainders of its recipe terms and its fallback too. */
+function remainderTypeFirst(value: unknown): unknown {
+  if (!isPlainObject(value)) return value;
+  const result = ordered(value, ['type']);
+  if (Array.isArray(result.terms)) {
+    result.terms = result.terms.map((term) =>
+      isPlainObject(term) && term.craft_remainder !== undefined
+        ? { ...term, craft_remainder: remainderTypeFirst(term.craft_remainder) }
+        : term,
+    );
+  }
+  if (result.fallback !== undefined) result.fallback = remainderTypeFirst(result.fallback);
+  return result;
+}
+
 /** Placement keys the furniture definition adds to the item's furniture behavior (`placementExtras`, when built). */
 function furniturePlacementExtras(furniture: object): Record<string, unknown> | null {
   const extras = 'placementExtras' in furniture ? furniture.placementExtras : undefined;
@@ -274,6 +289,10 @@ function withEventLists<T extends Record<string, unknown>>(config: T): T {
 export function buildCraftEngineItem(context: CraftEngineBuildContext): CraftEngineBuildResult {
   const { project, item, modelKey, models } = context;
   const resolved: Record<string, unknown> = cleanConfig(CRAFT_ENGINE_FORM, withEventLists(deepClone(item.config)));
+
+  if (isPlainObject(resolved.settings) && resolved.settings.craft_remainder !== undefined) {
+    resolved.settings.craft_remainder = remainderTypeFirst(resolved.settings.craft_remainder);
+  }
 
   const raw = parseRawYaml(item.rawYaml);
   const rawItem = raw.value ? { ...raw.value } : null;
