@@ -44,6 +44,15 @@ export interface TypedEntryCardProps {
   open?: boolean;
   defaultOpen?: boolean;
   onOpenChange?: (open: boolean) => void;
+  /**
+   * The header opens the entry elsewhere (a dialog for deeply nested entries) instead of expanding the body: the
+   * toggle announces a dialog, and `onOpenChange(true)` asks the caller to open it.
+   */
+  opensDialog?: boolean;
+  /** Whether the header collapses the body; a card that is always open (e.g. alone in a dialog) has a plain header. */
+  collapsible?: boolean;
+  /** What "Copy YAML" copies (as a one-entry list), when the YAML entry differs from `entry`; `entry` by default. */
+  yamlEntry?: unknown;
   /** Content after the fields, such as the nested lists of an event (two `SubSection`s). */
   children?: ReactNode;
   className?: string;
@@ -61,6 +70,9 @@ export function TypedEntryCard({
   open,
   defaultOpen = true,
   onOpenChange,
+  opensDialog = false,
+  collapsible = true,
+  yamlEntry = entry,
   children,
   className,
 }: TypedEntryCardProps) {
@@ -71,7 +83,7 @@ export function TypedEntryCard({
   const target = useFormTarget();
   const bodyId = useId();
   const [ownOpen, setOwnOpen] = useState(defaultOpen);
-  const isOpen = open ?? ownOpen;
+  const isOpen = !opensDialog && (!collapsible || (open ?? ownOpen));
   const record = isPlainObject(entry) ? entry : {};
   const { name, inverted } = typeParts(record.type, source.invertible);
   const type = findTypedType(source, entry);
@@ -90,17 +102,37 @@ export function TypedEntryCard({
     : t('unknownSummary');
 
   const toggle = () => {
+    if (opensDialog) {
+      onOpenChange?.(true);
+      return;
+    }
     setOwnOpen(!isOpen);
     onOpenChange?.(!isOpen);
   };
   const setInverted = (next: boolean) => onChange({ ...record, type: next ? `!${name}` : name });
   const entries: MenuEntry[] = [
     ...menu,
-    { icon: <Copy />, label: tFeature('copyYaml'), onSelect: () => void navigator.clipboard?.writeText(toYaml([entry])) },
+    { icon: <Copy />, label: tFeature('copyYaml'), onSelect: () => void navigator.clipboard?.writeText(toYaml([yamlEntry])) },
     ...(onRemove
       ? (['separator', { icon: <Trash2 />, label: tFeature('remove'), destructive: true, onSelect: onRemove }] as MenuEntry[])
       : []),
   ];
+
+  const heading = (
+    <>
+      <span
+        aria-hidden
+        className={cn(
+          'grid size-6.5 flex-none place-items-center rounded-md [&_svg]:size-3.5',
+          type ? 'bg-accent-soft text-primary' : 'bg-surface-sunken text-text-muted',
+        )}
+      >
+        {type ? categoryIcon(type.category) : <FileCode2 />}
+      </span>
+      <span className="truncate text-label font-semibold text-text">{label}</span>
+      {!isOpen && <span className="min-w-0 flex-1 truncate text-meta text-text-muted">{summary}</span>}
+    </>
+  );
 
   return (
     <div
@@ -110,27 +142,22 @@ export function TypedEntryCard({
       className={cn('@container/entry min-w-0 rounded-xl border border-line bg-surface', className)}
     >
       <div className={cn('flex min-h-11 items-center gap-2 px-2', isOpen && 'border-b border-line')}>
-        <button
-          type="button"
-          data-slot="entry-toggle"
-          aria-expanded={isOpen}
-          aria-controls={bodyId}
-          onClick={toggle}
-          className="flex min-w-0 flex-1 cursor-pointer items-center gap-2 self-stretch rounded-md text-left outline-none focus-visible:ring-2 focus-visible:ring-ring"
-        >
-          <ChevronRight className={cn('size-4 flex-none text-text-muted transition-transform', isOpen && 'rotate-90')} aria-hidden />
-          <span
-            aria-hidden
-            className={cn(
-              'grid size-6.5 flex-none place-items-center rounded-md [&_svg]:size-3.5',
-              type ? 'bg-accent-soft text-primary' : 'bg-surface-sunken text-text-muted',
-            )}
+        {collapsible ? (
+          <button
+            type="button"
+            data-slot="entry-toggle"
+            aria-expanded={opensDialog ? undefined : isOpen}
+            aria-haspopup={opensDialog ? 'dialog' : undefined}
+            aria-controls={opensDialog ? undefined : bodyId}
+            onClick={toggle}
+            className="flex min-w-0 flex-1 cursor-pointer items-center gap-2 self-stretch rounded-md text-left outline-none focus-visible:ring-2 focus-visible:ring-ring"
           >
-            {type ? categoryIcon(type.category) : <FileCode2 />}
-          </span>
-          <span className="truncate text-label font-semibold text-text">{label}</span>
-          {!isOpen && <span className="min-w-0 flex-1 truncate text-meta text-text-muted">{summary}</span>}
-        </button>
+            <ChevronRight className={cn('size-4 flex-none text-text-muted transition-transform', isOpen && 'rotate-90')} aria-hidden />
+            {heading}
+          </button>
+        ) : (
+          <div className="flex min-w-0 flex-1 items-center gap-2 self-stretch pl-1">{heading}</div>
+        )}
         {source.invertible && name && (
           <Tip label={t('negateHint')}>
             <label className="flex flex-none items-center gap-1.5 text-meta text-text-muted">

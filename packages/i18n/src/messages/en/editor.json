@@ -66,11 +66,7 @@
     "unknownType": "The form has no fields for “{type}”. Edit this entry as YAML.",
     "invert": "Invert",
     "invertHint": "Writes a leading ! before the type, which negates the condition.",
-    "value": "Value",
-    "valueHint": "A number, a range like 1~3 or an expression",
     "valuePlaceholder": "1, 1~3 or an expression",
-    "object": "Type",
-    "objectHint": "A typed number provider, such as uniform",
     "premium": "Premium",
     "premiumHint": "Only CraftEngine Premium reads this type."
   },
@@ -122,6 +118,75 @@
     "negateHint": "Writes a leading ! before the type, which inverts the condition.",
     "noFields": "This type has no settings. Adding it is enough.",
     "unknown": "No form for this type yet; edit it as YAML."
+  },
+  "typedList": {
+    "default": {
+      "add": "Add entry",
+      "title": "Add an entry",
+      "noun": "Entry"
+    },
+    "catalogs": {
+      "conditions": {
+        "add": "Add condition",
+        "title": "Add a condition",
+        "noun": "Condition"
+      },
+      "functions": {
+        "add": "Add function",
+        "title": "Add a function",
+        "noun": "Function"
+      },
+      "triggers": {
+        "add": "Add event",
+        "title": "Add an event",
+        "noun": "Event"
+      },
+      "lootEntries": {
+        "add": "Add loot entry",
+        "title": "Add a loot entry",
+        "noun": "Loot entry"
+      },
+      "lootFunctions": {
+        "add": "Add loot function",
+        "title": "Add a loot function",
+        "noun": "Loot function"
+      },
+      "lootSources": {
+        "add": "Add loot source",
+        "title": "Add a loot source",
+        "noun": "Loot source"
+      },
+      "blockBehaviors": {
+        "add": "Add behavior",
+        "title": "Add a block behavior",
+        "noun": "Behavior"
+      },
+      "itemBehaviors": {
+        "add": "Add behavior",
+        "title": "Add an item behavior",
+        "noun": "Behavior"
+      },
+      "furnitureBehaviors": {
+        "add": "Add behavior",
+        "title": "Add a furniture behavior",
+        "noun": "Behavior"
+      },
+      "itemUpdaters": {
+        "add": "Add step",
+        "title": "Add an updater step",
+        "noun": "Updater step"
+      }
+    },
+    "crumb": "{noun}: {label}",
+    "changeType": "Change type",
+    "changeTrigger": "Change trigger",
+    "triggerTitle": "Choose a trigger",
+    "number": {
+      "useType": "Use a number type",
+      "title": "Choose a number type",
+      "changeType": "Change number type",
+      "useValue": "Use a plain value"
+    }
   },
   "devPrimitives": {
     "actions": {
