@@ -12,6 +12,7 @@ import {
 import { RESERVED_STATE_KEYS } from '../../../project/variants';
 import { isPlainObject } from '@resourcepackbuilder/utils';
 import { field, whenType } from '../../../form/build';
+import { furnitureHitboxSpec, furniturePropertiesSpec } from './furnitureParts';
 
 /**
  * Options of a field Nexo 1.30 reads although its docs do not list it yet: tucked away as advanced, with a help text
@@ -211,8 +212,15 @@ export const furnitureStatesField = () =>
           lerp_out: field.text({ format: 'duration', ...whenType(...ANIMATION_TYPES) }),
           speed: field.number({ min: 0, step: 0.1, ...whenType(...ANIMATION_TYPES) }),
           force: field.boolean(whenType(...ANIMATION_TYPES)),
-          properties: field.yaml({ placeholder: true, ...whenType('FURNITURE') }),
-          hitbox: field.yaml({ placeholder: true, ...whenType('FURNITURE') }),
+          // A FURNITURE state shows the furniture with these display properties and this hitbox
+          properties: {
+            ...furniturePropertiesSpec('shared.furnitureStates.fields.entries.value.fields.properties.label'),
+            ...whenType('FURNITURE'),
+          },
+          hitbox: {
+            ...furnitureHitboxSpec('shared.furnitureStates.fields.entries.value.fields.hitbox.label'),
+            ...whenType('FURNITURE'),
+          },
           next_after: field.text({ format: 'duration' }),
           reset_after: field.text({ format: 'duration' }),
           conditions: field.stringList({ placeholder: true }),

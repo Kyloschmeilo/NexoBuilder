@@ -7,95 +7,10 @@
         "label": "Möbel",
         "fields": {
           "hitbox": {
-            "label": "Hitbox",
-            "help": "Barrieren sind feste 1×1-Blöcke, Interaktionen sind frei skalierbar aber ohne Kollision.",
-            "fields": {
-              "barriers": {
-                "label": "Barrieren (x,y,z)",
-                "placeholder": "0,0,0  oder Bereich 0..1,0,0"
-              },
-              "interactions": {
-                "label": "Interaktionen (x,y,z breite,höhe)",
-                "placeholder": "0,0,0 1,1"
-              },
-              "shulkers": {
-                "label": "Shulker (x,y,z größe länge [richtung])",
-                "placeholder": "0,0,0 1.0 1.0"
-              },
-              "ghasts": {
-                "label": "Ghasts (x,y,z größe [rotation])",
-                "placeholder": "0,0,0 0.25"
-              }
-            }
+            "label": "Hitbox"
           },
           "properties": {
-            "label": "Darstellung",
-            "fields": {
-              "displayTransform": {
-                "label": "Display-Transform",
-                "placeholder": "NONE"
-              },
-              "trackingRotation": {
-                "label": "Ausrichtung zum Spieler"
-              },
-              "translation": {
-                "label": "Verschiebung (x,y,z)",
-                "placeholder": "0,0,0"
-              },
-              "scale": {
-                "label": "Skalierung (x,y,z)",
-                "placeholder": "1,1,1"
-              },
-              "leftRotation": {
-                "label": "Rotation links (Grad oder x,y,z,w)",
-                "placeholder": "45"
-              },
-              "rightRotation": {
-                "label": "Rotation rechts (Grad oder x,y,z,w)",
-                "placeholder": "0"
-              },
-              "brightness": {
-                "label": "Helligkeit überschreiben",
-                "fields": {
-                  "blockLight": {
-                    "label": "Blocklicht"
-                  },
-                  "skyLight": {
-                    "label": "Himmelslicht"
-                  }
-                }
-              },
-              "viewRange": {
-                "label": "Sichtweite"
-              },
-              "shadowRadius": {
-                "label": "Schattenradius"
-              },
-              "shadowStrength": {
-                "label": "Schattenstärke"
-              },
-              "glowColor": {
-                "label": "Leuchtfarbe",
-                "placeholder": "z.B. #FF0000"
-              },
-              "offsetAgainstBlocks": {
-                "label": "Auf Stufen/Teppichen anheben"
-              },
-              "cullable": {
-                "label": "Culling erlauben"
-              },
-              "displayWidth": {
-                "label": "Culling-Breite"
-              },
-              "displayHeight": {
-                "label": "Culling-Höhe"
-              },
-              "delay": {
-                "label": "Animationsdauer",
-                "help": "Wie lange eine animierte Änderung dieser Eigenschaften dauert, z. B. das Öffnen einer Tür.",
-                "placeholder": "z. B. 4t"
-              }
-            }
+            "label": "Darstellung"
           },
           "rotatable": {
             "label": "Drehbar",
@@ -139,18 +54,18 @@
             "label": "Kann unter Wasser stehen"
           },
           "seats": {
-            "label": "Sitze (x,y,z)",
+            "label": "Sitze",
             "placeholder": "0,0.5,0"
           },
           "beds": {
-            "label": "Betten (x,y,z nacht_überspringen phantome_zurücksetzen)",
+            "label": "Betten",
             "placeholder": "0,0,0 true true"
           },
           "lights": {
             "label": "Licht",
             "fields": {
               "lights": {
-                "label": "Lichtquellen (x,y,z stufe)",
+                "label": "Lichtquellen",
                 "placeholder": "0,0,0 15"
               },
               "toggleable": {
@@ -236,8 +151,7 @@
                 "label": "Automatisch schließen nach"
               },
               "openProperties": {
-                "label": "Darstellung im offenen Zustand",
-                "placeholder": "translation: -0.85,1,0"
+                "label": "Darstellung im offenen Zustand"
               }
             }
           },

@@ -28,6 +28,11 @@ export interface BaseField {
   docs?: string;
   /** A field few items need, which the editor may tuck away behind the common ones */
   advanced?: boolean;
+  /**
+   * Name of a hand-written editor the UI shows instead of the generic one of the field's type (e.g. a furniture's
+   * hitbox entries read into their parts); the value and its checks stay those of the type.
+   */
+  editor?: string;
 }
 
 export interface TextField extends BaseField {
