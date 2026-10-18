@@ -1,5 +1,6 @@
 /** Edits of a recipe's ingredients; the functions mutate the recipe (for Immer drafts or tests). */
-import { emptyIngredient, INGREDIENT_LETTERS, type Recipe, type RecipeIngredient } from './model';
+import type { ConfigObject } from '../types';
+import { emptyIngredient, type IngredientRef, INGREDIENT_LETTERS, type Recipe, type RecipeIngredient, type RecipeSlot } from './model';
 
 /** Game ticks per second (cooking times are stored in ticks). */
 export const TICKS_PER_SECOND = 20;
@@ -28,8 +29,33 @@ export function removeIngredient(recipe: Recipe, letter: string): void {
 }
 
 /** The ingredient with a typed ID: Minecraft materials are upper case. */
-export function withIngredientId(ingredient: RecipeIngredient, id: string): RecipeIngredient {
+export function withIngredientId<T extends IngredientRef>(ingredient: T, id: string): T {
   return { ...ingredient, id: ingredient.source === 'minecraft' ? id.toUpperCase() : id };
+}
+
+/** The ingredient from another source; only MMOItems ingredients keep their item type. */
+export function withIngredientSource<T extends IngredientRef>(ingredient: T, source: IngredientRef['source']): T {
+  const next = { ...ingredient, source };
+  if (source !== 'mmoitems') delete next.itemType;
+  return withIngredientId(next, next.id);
+}
+
+/** Puts an ingredient into a single slot of the recipe (`input` or one of `slots`). */
+export function setRecipeSlot(recipe: Recipe, slot: RecipeSlot, ingredient: RecipeIngredient): void {
+  if (slot === 'input') recipe.input = ingredient;
+  else recipe.slots = { ...recipe.slots, [slot]: ingredient };
+}
+
+/** The options object with `key` set, or without it for undefined; an empty object becomes undefined. */
+export function withOption(
+  options: ConfigObject | undefined,
+  key: string,
+  value: ConfigObject[string] | undefined,
+): ConfigObject | undefined {
+  const next: ConfigObject = { ...options };
+  if (value === undefined) delete next[key];
+  else next[key] = value;
+  return Object.keys(next).length > 0 ? next : undefined;
 }
 
 /** The ingredient with an amount; one (or none) is the default and is not stored. */

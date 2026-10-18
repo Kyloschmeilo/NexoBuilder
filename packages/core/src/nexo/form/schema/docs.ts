@@ -161,7 +161,14 @@ export const NEXO_DOCS = {
     animated: `${GLYPHS}/animated-glyphs`,
   },
   sounds: `${DOCS}/configuration/sounds`,
-  recipes: { page: RECIPES, amount: `${RECIPES}/predicate-recipes#amount-predicate` },
+  recipes: {
+    page: RECIPES,
+    amount: `${RECIPES}/predicate-recipes#amount-predicate`,
+    replacement: `${RECIPES}/predicate-recipes#replacement-predicate`,
+    damage: `${RECIPES}/predicate-recipes#durability-damage-predicate`,
+    preserve: `${RECIPES}#preserving-components`,
+    disabled: `${RECIPES}#disabling-recipes`,
+  },
 };
 
 /** The documentation page of each media kind */
@@ -171,8 +178,8 @@ export const NEXO_MEDIA_DOCS: Record<MediaKind, string> = {
   painting: NEXO_DOCS.paintings.page,
 };
 
-/** The documentation section of each recipe type */
-export const NEXO_RECIPE_DOCS: Record<RecipeType, string> = {
+/** The documentation section of each recipe type Nexo reads (anvil recipes are only in the jar: the recipes page) */
+export const NEXO_RECIPE_DOCS: Partial<Record<RecipeType, string>> = {
   shaped: `${RECIPES}#shaped-recipes`,
   shapeless: `${RECIPES}#shapeless-recipes`,
   furnace: `${RECIPES}#furnace-blasting-and-smoking-recipes`,
@@ -180,6 +187,12 @@ export const NEXO_RECIPE_DOCS: Record<RecipeType, string> = {
   smoking: `${RECIPES}#furnace-blasting-and-smoking-recipes`,
   campfire: `${RECIPES}#campfire-recipes`,
   stonecutting: `${RECIPES}#stonecutter-recipes`,
+  crafter: `${RECIPES}#crafter-recipes`,
+  brewing: `${RECIPES}#brewing-stand-recipes`,
+  smithing_transform: `${RECIPES}#upgrade-recipes`,
+  smithing_trim: `${RECIPES}#custom-trim-recipes`,
+  transmute: `${RECIPES}/predicate-recipes#transmute-recipes`,
+  anvil: RECIPES,
 };
 
 /** Variant slots by the start of their name, for the families of slots (`connect_left`, `state:open`) */

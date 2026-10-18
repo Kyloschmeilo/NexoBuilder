@@ -71,6 +71,8 @@ export interface ProjectSettings {
   yamlFileMode: 'folder' | 'item';
   /** CraftEngine: write categories.yml with one category per folder (the item browser of /ce) */
   ceCategoriesFromFolders: boolean;
+  /** Nexo: vanilla recipe keys (`minecraft:…`) Nexo disables, written to recipes/disabled_recipes.yml; absent when none */
+  disabledRecipes?: string[];
 }
 
 /** Project-wide CraftEngine configuration, written to the pack's configuration folder */

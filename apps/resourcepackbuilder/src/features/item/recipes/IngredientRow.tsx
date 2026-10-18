@@ -35,11 +35,12 @@ export function IngredientRow({ value, onChange }: { value: RecipeIngredient; on
   const nexoItems = useMemo(() => itemChoices(project), [project]);
   const materials = project.target === 'craftengine' ? LOWER_CASE_MATERIALS : CRAFTING_MATERIALS;
   const suggestions = value.source === 'minecraft' ? materials : value.source === 'nexo' ? nexoItems : ITEM_TAGS;
-  const placeholder = {
-    minecraft: t('recipes.placeholderMinecraft', { target: project.target }),
-    nexo: t('recipes.placeholderNexo'),
-    tag: t('recipes.placeholderTag'),
-  }[value.source];
+  const placeholder =
+    value.source === 'minecraft'
+      ? t('recipes.placeholderMinecraft', { target: project.target })
+      : value.source === 'tag'
+        ? t('recipes.placeholderTag')
+        : t('recipes.placeholderNexo');
 
   return (
     <div className="grid grid-cols-[minmax(0,1fr)_4.5rem] gap-1.5 @2xl:grid-cols-[9rem_minmax(0,1fr)_4.5rem]">

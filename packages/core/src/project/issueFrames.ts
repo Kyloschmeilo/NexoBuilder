@@ -4,6 +4,7 @@
  */
 import { labelArg, schemaKey, type IssueContext, type IssueTarget } from '@resourcepackbuilder/utils';
 import type { MediaKind } from './media/kinds';
+import { recipeSlotLabel, type RecipeSlot } from './recipes/model';
 import type { VariantDef } from './variants';
 import { itemLabel } from './item';
 import type { Item, Project } from './types';
@@ -30,6 +31,7 @@ export const RECIPE_FRAME_CODES = {
   recipe: 'context.recipe',
   ingredient: 'context.recipeIngredient',
   input: 'context.recipeInput',
+  slot: 'context.recipeSlot',
 } as const;
 
 /** A recipe; `key` is its unique key (see recipeKeys). */
@@ -45,6 +47,11 @@ export function recipeIngredientFrame(key: string, letter: string): IssueContext
 /** The single input of a furnace, stonecutter … recipe. */
 export function recipeInputFrame(key: string): IssueContext {
   return { code: RECIPE_FRAME_CODES.input, args: { recipe: key } };
+}
+
+/** A named single slot of a recipe (brewing reagent, smithing base …); `slot` is translated by its schema label. */
+export function recipeSlotFrame(key: string, slot: RecipeSlot): IssueContext {
+  return { code: RECIPE_FRAME_CODES.slot, args: { recipe: key, slot: labelArg(schemaKey(recipeSlotLabel(slot))), slotName: slot } };
 }
 
 /** A configuration property; `label` is a message key in the `schema` namespace. */

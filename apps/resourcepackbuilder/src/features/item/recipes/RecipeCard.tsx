@@ -89,7 +89,7 @@ export function RecipeCard({ item, recipe, recipeKey }: RecipeCardProps) {
             <IngredientList recipe={recipe} update={update} isShaped={false} issues={issues.ingredients} />
           </Field>
         )}
-        {(info.kind === 'cooking' || info.kind === 'stonecutting') && (
+        {(info.kind === 'cooking' || info.kind === 'slots') && (
           <Field className="gap-1.5">
             <FieldTitle>{t('recipes.input')}</FieldTitle>
             <IngredientRow

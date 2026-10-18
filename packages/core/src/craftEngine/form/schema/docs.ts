@@ -4,6 +4,7 @@
  * are the slugged heading texts); a type without a heading of its own links to its catalog's page.
  */
 import type { LogicCatalogName } from '../../logic/catalog';
+import type { RecipeType } from '../../../project/recipes/model';
 
 /** The wiki's base URL; every CraftEngine docs link starts with it. */
 export const CE_WIKI_URL = 'https://xiao-momi.github.io/craft-engine-wiki/';
@@ -32,6 +33,24 @@ export const CE_DOCS = {
   attributeModifiers: `${WIKI}/configuration/attribute/modifier`,
   equipmentSets: `${WIKI}/configuration/attribute/equipment-set`,
   damageFormulas: `${WIKI}/configuration/attribute/damage-formula`,
+  recipes: `${WIKI}/configuration/recipe`,
+};
+
+/** The wiki section of each recipe type CraftEngine reads (`dye` is only in the plugin source: the recipe types) */
+export const CE_RECIPE_DOCS: Partial<Record<RecipeType, string>> = {
+  shaped: `${CE_DOCS.recipes}#shaped-crafting-recipe`,
+  shapeless: `${CE_DOCS.recipes}#shapeless-crafting-recipe`,
+  furnace: `${CE_DOCS.recipes}#cooking-recipe`,
+  blasting: `${CE_DOCS.recipes}#cooking-recipe`,
+  smoking: `${CE_DOCS.recipes}#cooking-recipe`,
+  campfire: `${CE_DOCS.recipes}#cooking-recipe`,
+  stonecutting: `${CE_DOCS.recipes}#stone-cutting-recipe`,
+  shaped_transform: `${CE_DOCS.recipes}#shaped-transform-recipe`,
+  shapeless_transform: `${CE_DOCS.recipes}#shapeless-transform-recipe`,
+  brewing: `${CE_DOCS.recipes}#brewing-recipe`,
+  smithing_transform: `${CE_DOCS.recipes}#smithing-transform-recipe`,
+  smithing_trim: `${CE_DOCS.recipes}#smithing-trim-recipe`,
+  dye: `${CE_DOCS.recipes}#recipe-types`,
 };
 
 /** The wiki page of a block behavior (`configuration/block/behaviors/<type>`). */

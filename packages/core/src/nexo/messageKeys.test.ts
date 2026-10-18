@@ -12,7 +12,6 @@ import { type Field, type TextField, validateTextFormat } from '../form/fields';
 import { keySegment } from '@resourcepackbuilder/utils';
 import type { Option } from '../form/options';
 import * as options from './form/options';
-import { INGREDIENT_SOURCES, RECIPE_TYPES } from '../project/recipes/model';
 import { NEXO_FORM, PROPERTIES } from './form/schema';
 import { formMessageKeys, optionMessageKeys } from '../form/messageKeys';
 import { FURNITURE_MODEL_SLOTS, STACK_MODELS, stateDef, VARIANTS } from '../project/variants';
@@ -43,8 +42,6 @@ function referencedKeys(): Set<string> {
     keys.push(def.label, def.description);
     if (def.hint) keys.push(def.hint);
   }
-  for (const type of RECIPE_TYPES) keys.push(type.label, type.description);
-  for (const source of INGREDIENT_SOURCES) keys.push(source.label);
   for (const category of COPY_CATEGORIES) keys.push(category.label, category.description);
   for (const template of TEXTURE_TEMPLATES) keys.push(template.label, template.description);
 
@@ -92,8 +89,9 @@ describe('schema message keys', () => {
     });
   }
 
+  // The recipe editor's texts serve both targets; targets/recipes.test.ts checks them
   it('has no unreferenced keys in the catalogue', () => {
-    const unused = leafKeys(loadCatalogue('en', 'schema')).filter((k) => !keys.has(k));
+    const unused = leafKeys(loadCatalogue('en', 'schema')).filter((k) => !keys.has(k) && !k.startsWith('recipes.'));
     expect(unused).toEqual([]);
   });
 });

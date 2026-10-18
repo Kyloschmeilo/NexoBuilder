@@ -8,6 +8,7 @@
     "recipe": "Rezept „{recipe}“",
     "recipeIngredient": "Rezept „{recipe}“, Zutat {letter}",
     "recipeInput": "Rezept „{recipe}“, Eingabe",
+    "recipeSlot": "Rezept „{recipe}“, {slot}",
     "property": "{property}",
     "field": "{field}",
     "listEntry": "#{index}",
@@ -156,7 +157,15 @@
     "tagInvalid": "„{id}“ ist kein gültiger Tag (z.B. planks).",
     "nexoItemNotInProject": "Das Nexo-Item „{id}“ ist nicht in diesem Projekt – es muss auf dem Server existieren.",
     "ceItemNotInProject": "Das Item „{id}“ ist nicht in diesem Projekt. CraftEngine überspringt das Rezept, wenn kein anderes Pack auf dem Server es hat.",
-    "amountRange": "Die Anzahl muss zwischen 1 und 64 liegen."
+    "amountRange": "Die Anzahl muss zwischen 1 und 64 liegen.",
+    "typeUnsupported": "{target} kennt keine „{type}“-Rezepte, daher wird dieses Rezept nicht exportiert. Ändere den Typ oder entferne es.",
+    "sourceUnsupported": "{target} kann diese Zutatenquelle nicht lesen, daher wird „{id}“ nicht exportiert. Wähle eine andere Quelle.",
+    "externalIdInvalid": "„{id}“ ist keine Item-ID mit Namespace (z. B. mythicmobs:kingscrown).",
+    "mmoitemsTypeMissing": "Das MMOItems-Item „{id}“ braucht seinen Item-Typ (z. B. SWORD).",
+    "alternativeMissing": "Einem alternativen Item fehlt die ID.",
+    "sourceMissing": "Markiere eine Zutat als Quell-Item, dessen Daten das Ergebnis übernimmt.",
+    "sourceMultiple": "Nur eine Zutat kann das Quell-Item sein.",
+    "trimPatternMissing": "Das Rüstungsbesatz-Muster fehlt (z. B. minecraft:bolt)."
   },
   "glyph": {
     "idInvalid": "Die ID darf nur Kleinbuchstaben, Zahlen und _ enthalten.",
@@ -215,7 +224,6 @@
     "glyphPermissionUnused": "CraftEngine prüft Berechtigungen nur bei Chat-Kürzeln, deshalb wird die Berechtigung dieses Glyphs nicht exportiert. Füge ein Kürzel hinzu, um sie zu nutzen.",
     "translationLocaleInvalid": "Die Übersetzungssprache „{locale}“ ist kein Minecraft-Sprachcode (wie de_de) und wird deshalb weggelassen.",
     "glyphReferenceUnknown": "„{reference}“ ist kein Multi-Bitmap-Glyph dieses Projekts. CraftEngine findet die Zelle nicht, deshalb wird dieser Glyph nicht exportiert.",
-    "recipeKindUnsupported": "CraftEngine hat keinen Rezepttyp für „{type}“-Rezepte, darum wird dieses Rezept nicht exportiert.",
     "materialInvalid": "Das Material „{material}“ ist für CraftEngine ungültig (z. B. diamond_sword oder minecraft:diamond_sword).",
     "variantExtraModels": "CraftEngine nutzt nur {used, plural, one {das erste Modell} other {die ersten # Modelle}} dieser Variante. {count, plural, one {Das andere wird} other {Die anderen # werden}} nicht exportiert.",
     "reservedPackName": "Der Pack-Name „{name}“ gehört zu einem eigenen Pack von CraftEngine (default, default_…, internal, legacy_armor, remove_shulker_head, customcrops). Wähle in den Projekteinstellungen einen anderen Pack-Namen.",
