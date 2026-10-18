@@ -1,6 +1,6 @@
 import { useEffect, useId, useState } from 'react';
 import { useFormatter, useTranslations } from 'next-intl';
-import { FolderOpen, FolderSync, RefreshCw, TriangleAlert, Unplug, Users } from 'lucide-react';
+import { FolderOpen, FolderSync, RefreshCw, TriangleAlert, Unplug } from 'lucide-react';
 import { Tip } from '@resourcepackbuilder/ui';
 import { Alert, AlertDescription } from '@resourcepackbuilder/ui/components/alert';
 import { Button } from '@resourcepackbuilder/ui/components/button';
@@ -171,7 +171,7 @@ function ShareFrame() {
   const project = useOpenProject();
   const isShared = useShareStore((share) => isProjectShared(share, project.id));
   return (
-    <DialogFrame title={t('title')} icon={<Users />} footer={<Button onClick={() => shareDialog.close()}>{tCommon('done')}</Button>}>
+    <DialogFrame title={t('title')} footer={<Button onClick={() => shareDialog.close()}>{tCommon('done')}</Button>}>
       {!shareSync ? (
         <Alert variant="warning">
           <TriangleAlert />

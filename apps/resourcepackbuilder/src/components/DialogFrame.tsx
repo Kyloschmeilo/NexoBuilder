@@ -1,3 +1,9 @@
+/**
+ * The frame of every app dialog in the Workbench look: a hairline-framed overlay panel with a sentence-case title and
+ * an optional one-line description above a hairline, the body as a size container, and a footer with a muted summary
+ * on the left and the buttons (secondary, then primary) on the right. `FeatureDialog` is the root of the dialogs the
+ * shell mounts once and opens through a handle.
+ */
 import { createContext, useContext, useEffect, useRef, useState, type ReactNode, type RefObject } from 'react';
 import { cn } from 'cn';
 import {
@@ -69,20 +75,28 @@ export function FeatureDialog<P>({ handle, isProjectBound = true, children }: Fe
 
 interface DialogFrameProps {
   title: ReactNode;
-  icon?: ReactNode;
   description?: ReactNode;
   size?: keyof typeof SIZES;
   /** Prevents closing by clicking outside (e.g. with unsaved input). Escape still closes. */
   sticky?: boolean;
   /** Muted text on the left of the footer (e.g. a summary). */
   footerStart?: ReactNode;
-  /** Footer buttons, right-aligned. */
+  /** Footer buttons, right-aligned: the secondary ones first, the primary one last. */
   footer?: ReactNode;
   /** Element focused when the dialog opens; defaults to the first focusable element. */
   initialFocus?: RefObject<HTMLElement | null>;
   className?: string;
   children: ReactNode;
 }
+
+/** Overlay panel of a dialog: surface colour, overlay radius and shadow, no ring of its own (the shadow draws the line). */
+export const DIALOG_POPUP_CLASS = 'rounded-(--radius-overlay) bg-surface text-text shadow-(--shadow-overlay) ring-0';
+/**
+ * Title of a dialog: sentence case in the title size, never uppercase or in the accent colour. The size is written as
+ * an arbitrary length so the class merge replaces the dialog primitives' own `text-xl`.
+ */
+export const DIALOG_TITLE_CLASS =
+  'font-sans text-[length:var(--text-title)] leading-(--text-title--line-height) font-semibold tracking-normal text-text normal-case';
 
 /**
  * Frame of every app dialog: the popup of the surrounding dialog root ({@link FeatureDialog} or a controlled
@@ -91,7 +105,6 @@ interface DialogFrameProps {
  */
 export function DialogFrame({
   title,
-  icon,
   description,
   size = 'normal',
   sticky = false,
@@ -109,19 +122,16 @@ export function DialogFrame({
   return (
     <DialogContent
       initialFocus={initialFocus}
-      className={cn('flex max-h-[calc(100vh-2.5rem)] flex-col gap-0 overflow-hidden p-0', SIZES[size], className)}
+      className={cn('flex max-h-[calc(100vh-2.5rem)] flex-col gap-0 overflow-hidden p-0', DIALOG_POPUP_CLASS, SIZES[size], className)}
     >
-      <DialogHeader className="px-6 pt-5 pr-12 pb-3">
-        <DialogTitle>
-          {icon}
-          {title}
-        </DialogTitle>
-        {description && <DialogDescription>{description}</DialogDescription>}
+      <DialogHeader className="gap-0.5 border-b border-line px-4 pt-3.5 pr-12 pb-3">
+        <DialogTitle className={DIALOG_TITLE_CLASS}>{title}</DialogTitle>
+        {description && <DialogDescription className="text-meta text-text-muted">{description}</DialogDescription>}
       </DialogHeader>
-      <div className="@container/dialog min-h-0 flex-1 overflow-auto px-6 pt-1 pb-6">{children}</div>
+      <div className="@container/dialog min-h-0 flex-1 overflow-auto px-4 py-4">{children}</div>
       {(footer || footerStart) && (
-        <DialogFooter className="mx-0 mb-0 items-center px-6 py-4 sm:flex-row">
-          {footerStart && <div className="mr-auto min-w-0 text-xs text-muted-foreground">{footerStart}</div>}
+        <DialogFooter className="mx-0 mb-0 items-center rounded-none border-t border-line bg-transparent px-4 py-2.5 sm:flex-row">
+          {footerStart && <div className="mr-auto min-w-0 text-meta text-text-muted">{footerStart}</div>}
           {footer}
         </DialogFooter>
       )}

@@ -1,13 +1,14 @@
+/** The UI of `prompt()` from the dialog store: one required text field (a name) in a narrow dialog. */
 import { useId, useRef, useState } from 'react';
 import { useTranslations } from 'next-intl';
+import { FieldRow } from '@resourcepackbuilder/ui';
 import { Button } from '@resourcepackbuilder/ui/components/button';
 import { Dialog } from '@resourcepackbuilder/ui/components/dialog';
-import { Field, FieldError, FieldLabel } from '@resourcepackbuilder/ui/components/field';
 import { Input } from '@resourcepackbuilder/ui/components/input';
 import { DialogFrame } from '../components/DialogFrame';
 import type { Question } from '../store/dialogs';
 
-/** The UI of `prompt()` from the dialog store. */
+/** Asks for a name; Enter submits, an empty or invalid name keeps the dialog open. */
 export function PromptDialog({ question: { options, resolve } }: { question: Extract<Question, { kind: 'prompt' }> }) {
   const t = useTranslations('dialogs');
   const tCommon = useTranslations('common');
@@ -48,8 +49,7 @@ export function PromptDialog({ question: { options, resolve } }: { question: Ext
             submit();
           }}
         >
-          <Field data-invalid={isInvalid}>
-            <FieldLabel htmlFor={inputId}>{options.label}</FieldLabel>
+          <FieldRow label={options.label} htmlFor={inputId} layout="stacked" error={isInvalid ? (error ?? undefined) : undefined}>
             <Input
               ref={inputRef}
               id={inputId}
@@ -58,8 +58,7 @@ export function PromptDialog({ question: { options, resolve } }: { question: Ext
               onChange={(e) => setValue(e.target.value)}
               onFocus={(e) => e.target.select()}
             />
-            {isInvalid && <FieldError>{error}</FieldError>}
-          </Field>
+          </FieldRow>
         </form>
       </DialogFrame>
     </Dialog>

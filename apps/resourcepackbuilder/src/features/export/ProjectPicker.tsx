@@ -76,7 +76,7 @@ export function ProjectPicker({
             >
               <span className={cn(treeRowSlots.label, 'font-medium')}>{summary.name}</span>
               {isOpen && (
-                <Badge variant="outline" className="font-heading tracking-wider text-muted-foreground uppercase">
+                <Badge variant="outline" className="text-text-muted">
                   {t('open')}
                 </Badge>
               )}

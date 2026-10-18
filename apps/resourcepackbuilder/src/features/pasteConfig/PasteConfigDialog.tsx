@@ -51,7 +51,6 @@ function PasteDialogContent({ clip, targetItemIds }: { clip: ItemConfigClipboard
   return (
     <DialogFrame
       title={t('title')}
-      icon={<ClipboardPaste />}
       size="wide"
       footerStart={
         <>
