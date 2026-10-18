@@ -61,6 +61,7 @@ export const NEXO_DOCS = {
   armor: {
     page: ARMOR,
     equippable: `${ARMOR}#the-equippable-component`,
+    equipmentModels: `${ARMOR}#custom-equipmentmodels`,
     elytras: ELYTRAS,
     mobArmor: MOB_ARMOR,
     harness: `${MOB_ARMOR}/custom-harness-1.21.6+`,

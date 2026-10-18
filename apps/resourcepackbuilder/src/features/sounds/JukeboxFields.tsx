@@ -7,6 +7,9 @@ import { AutoGrid } from '@resourcepackbuilder/ui';
 import { updateJukeboxSong } from '../../commands/media';
 import { NumberInput } from '../../components/editor';
 import { FormField } from '../../components/FormField';
+import { jukeboxDocsFor } from '@resourcepackbuilder/core/targets';
+import { useOpenProject } from '../../store/project';
+import { DocsLinkButton } from '../media/DocsLinkButton';
 import { NexoKey } from '../media/NexoKey';
 import { useMediaActions } from '../media/useMediaActions';
 
@@ -17,6 +20,7 @@ const MAX_COMPARATOR_OUTPUT = 15;
 export function JukeboxFields({ sound, song }: { sound: Sound; song: JukeboxSong }) {
   const t = useTranslations('media.sounds');
   const media = useMediaActions();
+  const { target } = useOpenProject();
   const update = (recipe: (draft: JukeboxSong) => void, historyKey: string) => updateJukeboxSong(sound.id, recipe, historyKey);
 
   return (
@@ -52,6 +56,9 @@ export function JukeboxFields({ sound, song }: { sound: Sound; song: JukeboxSong
           <Disc3 /> {t('createDisc')}
         </Button>
         <span className="text-xs text-muted-foreground">{t('createDiscHint')}</span>
+        <span className="ml-auto">
+          <DocsLinkButton href={jukeboxDocsFor(target)} label={t('jukeboxDocs', { target })} />
+        </span>
       </div>
     </div>
   );

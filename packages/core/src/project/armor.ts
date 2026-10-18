@@ -19,10 +19,28 @@ export type ArmorSettings = {
   set: string;
   layer1?: string;
   layer2?: string;
+  humanoid_baby?: string;
   elytra?: string;
   mob?: Record<string, string>;
   saddles?: Record<string, string>;
+  /** Second texture per player/elytra layer, drawn over the first and never dyed (key = layer key) */
+  overlays?: Record<string, string>;
+  /** The layers take the item's dye color (`dyeable`) */
+  dyeable?: boolean;
+  /** Color of dyeable layers while the item is not dyed, as "R, G, B" (`dyeable.color_when_undyed`) */
+  color_when_undyed?: string;
+  /** Elytra wings show the player's own elytra or cape texture (`use_player_texture`) */
+  use_player_texture?: boolean;
+  /** CraftEngine: how the equipment is made; `trim` works from 1.20 on, player armor layers only */
+  type?: ArmorEquipmentType;
 };
+
+/** CraftEngine's equipment types: the equippable component (1.21.2+) or an armor trim (1.20+). */
+export type ArmorEquipmentType = 'component' | 'trim';
+export const ARMOR_EQUIPMENT_TYPES: ArmorEquipmentType[] = ['component', 'trim'];
+
+/** Layer keys that can have an overlay texture (see {@link ArmorSettings.overlays}). */
+export const ARMOR_OVERLAY_KEYS = ['layer1', 'layer2', 'humanoid_baby', 'elytra'] as const;
 
 interface ArmorLayerBase {
   /** Layer type in the Minecraft equipment model */
@@ -53,7 +71,7 @@ export interface ItemArmor {
 
 /** Where the layer's texture lives in {@link ArmorSettings}: `settings[key]` or `settings[section][key]`. */
 export type ArmorLayerDef = ArmorLayerBase &
-  ({ section: null; key: 'layer1' | 'layer2' | 'elytra' } | { section: ArmorSection; key: string });
+  ({ section: null; key: 'layer1' | 'layer2' | 'humanoid_baby' | 'elytra' } | { section: ArmorSection; key: string });
 
 type LayerOptions = Omit<ArmorLayerBase, 'label' | 'group' | 'slot' | 'equipment'>;
 
@@ -95,6 +113,16 @@ export const ARMOR_LAYERS: ArmorLayerDef[] = [
   player('layer2', 'humanoid_leggings'),
   {
     section: null,
+    key: 'humanoid_baby',
+    equipment: 'humanoid_baby',
+    label: 'armor.layers.humanoidBaby',
+    group: 'player',
+    slot: 'HEAD',
+    minVersion: '26.1',
+    help: true,
+  },
+  {
+    section: null,
     key: 'elytra',
     equipment: 'wings',
     label: 'armor.layers.elytra',
@@ -126,6 +154,11 @@ export function armorTexture(settings: ArmorSettings, layer: ArmorLayerDef): str
   return layer.section ? settings[layer.section]?.[layer.key] : settings[layer.key];
 }
 
+/** The overlay texture reference of a player or elytra layer, if set. */
+export function armorOverlayTexture(settings: ArmorSettings, layer: ArmorLayerDef): string | undefined {
+  return layer.section ? undefined : settings.overlays?.[layer.key];
+}
+
 /** Reads armor settings from untyped data (form values, stored `$armor` objects); unknown keys are dropped. */
 export function toArmorSettings(value: unknown): ArmorSettings {
   const source = isPlainObject(value) ? value : {};
@@ -137,7 +170,28 @@ export function toArmorSettings(value: unknown): ArmorSettings {
     if (layer.section) settings[layer.section] = { ...settings[layer.section], [layer.key]: texture };
     else settings[layer.key] = texture;
   }
+  const overlays = isPlainObject(source.overlays) ? source.overlays : {};
+  for (const key of ARMOR_OVERLAY_KEYS) {
+    const texture = overlays[key];
+    if (typeof texture === 'string' && texture) settings.overlays = { ...settings.overlays, [key]: texture };
+  }
+  if (typeof source.dyeable === 'boolean') settings.dyeable = source.dyeable;
+  if (typeof source.color_when_undyed === 'string' && source.color_when_undyed) settings.color_when_undyed = source.color_when_undyed;
+  if (typeof source.use_player_texture === 'boolean') settings.use_player_texture = source.use_player_texture;
+  if (source.type === 'component' || source.type === 'trim') settings.type = source.type;
   return settings;
+}
+
+/**
+ * A color "R, G, B" as the signed ARGB integer (fully opaque) that equipment models and CraftEngine read; null when
+ * the text is no such color.
+ */
+export function armorColorInt(text: string): number | null {
+  const match = /^\s*(\d{1,3})\s*,\s*(\d{1,3})\s*,\s*(\d{1,3})\s*$/.exec(text);
+  if (!match) return null;
+  const [r, g, b] = [match[1], match[2], match[3]].map(Number);
+  if (r > 255 || g > 255 || b > 255) return null;
+  return 0xff000000 | (r << 16) | (g << 8) | b | 0;
 }
 
 /** Determines the equipment slot from the material. */

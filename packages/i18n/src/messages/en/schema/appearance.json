@@ -47,6 +47,10 @@
             "label": "Player: Layer 2 (leggings)",
             "help": "Corresponds to e.g. diamond_layer_2.png"
           },
+          "humanoidBaby": {
+            "label": "Player: Baby layer (26.1+)",
+            "help": "Armor as worn by baby zombies and other baby humanoids."
+          },
           "elytra": {
             "label": "Elytra wings",
             "help": "Like elytra.png. Without material ELYTRA, ResourcepackBuilder adds the glider component automatically."
@@ -109,6 +113,37 @@
                 "label": "Camel husk"
               }
             }
+          },
+          "overlays": {
+            "label": "Overlay textures",
+            "help": "A second texture drawn over the layer. It keeps its colors on dyeable armor, e.g. for buckles or gems.",
+            "fields": {
+              "layer1": {
+                "label": "Over layer 1"
+              },
+              "layer2": {
+                "label": "Over layer 2"
+              },
+              "humanoidBaby": {
+                "label": "Over the baby layer"
+              },
+              "elytra": {
+                "label": "Over the elytra wings"
+              }
+            }
+          },
+          "dyeable": {
+            "label": "Dyeable",
+            "help": "The layers take the item’s dye color, like leather armor. The item needs a dye color itself to show one."
+          },
+          "colorWhenUndyed": {
+            "label": "Color when undyed",
+            "help": "Color of the dyeable layers while the item is not dyed. Empty = no tint.",
+            "placeholder": "e.g. 160, 101, 64"
+          },
+          "usePlayerTexture": {
+            "label": "Use player texture",
+            "help": "The elytra wings show the player’s own elytra or cape texture instead of this set’s texture."
           }
         }
       }

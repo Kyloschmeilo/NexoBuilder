@@ -191,6 +191,18 @@
             "label": "Set ID",
             "placeholder": "e.g. ruby"
           },
+          "type": {
+            "label": "Equipment type",
+            "help": "Component works from 1.21.2 on. Trim also works from 1.20 on but only uses player armor (layer 1 and 2), and the item can take no other trim.",
+            "options": {
+              "component": {
+                "label": "Component (equippable)"
+              },
+              "trim": {
+                "label": "Trim (1.20+)"
+              }
+            }
+          },
           "layer1": {
             "label": "Player: Layer 1 (helmet, chestplate, boots)",
             "help": "Corresponds to e.g. diamond_layer_1.png"
@@ -198,6 +210,10 @@
           "layer2": {
             "label": "Player: Layer 2 (leggings)",
             "help": "Corresponds to e.g. diamond_layer_2.png"
+          },
+          "humanoidBaby": {
+            "label": "Player: Baby layer (26.1+)",
+            "help": "Armor as worn by baby zombies and other baby humanoids."
           },
           "elytra": {
             "label": "Elytra wings",
@@ -261,6 +277,37 @@
                 "label": "Camel husk"
               }
             }
+          },
+          "overlays": {
+            "label": "Overlay textures",
+            "help": "A second texture drawn over the layer. It keeps its colors on dyeable armor, e.g. for buckles or gems.",
+            "fields": {
+              "layer1": {
+                "label": "Over layer 1"
+              },
+              "layer2": {
+                "label": "Over layer 2"
+              },
+              "humanoidBaby": {
+                "label": "Over the baby layer"
+              },
+              "elytra": {
+                "label": "Over the elytra wings"
+              }
+            }
+          },
+          "dyeable": {
+            "label": "Dyeable",
+            "help": "The layers take the item’s dye color, like leather armor. The item needs a dye color itself to show one."
+          },
+          "colorWhenUndyed": {
+            "label": "Color when undyed",
+            "help": "Color of the dyeable layers while the item is not dyed. Empty = no tint.",
+            "placeholder": "e.g. 160, 101, 64"
+          },
+          "usePlayerTexture": {
+            "label": "Use player texture",
+            "help": "The elytra wings show the player’s own elytra or cape texture instead of this set’s texture."
           }
         }
       }

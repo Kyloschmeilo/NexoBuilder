@@ -1,9 +1,12 @@
-/** Export of glyphs: the glyph file (textures: see export/paths). */
+/**
+ * Export of glyphs: the glyph file (textures: see export/paths). Nexo 1.30 reads `type`, `interpolate`,
+ * `default_shadow`, `template` and `char`, which its docs do not list yet.
+ */
 import { formatResourceLocation } from '@resourcepackbuilder/minecraft';
 import type { Project } from '../../project/types';
 import { projectFileName } from '../../project/factory';
 import { itemsToYaml } from '../yaml';
-import type { Glyph } from '../../project/media/glyph';
+import { isMultiBitmap, type Glyph } from '../../project/media/glyph';
 
 function glyphToYaml(project: Project, glyph: Glyph): Record<string, unknown> {
   const out: Record<string, unknown> = {};
@@ -24,7 +27,12 @@ function glyphToYaml(project: Project, glyph: Glyph): Record<string, unknown> {
     if (glyph.kind === 'gif') {
       if (glyph.frameCount) out.frame_count = glyph.frameCount;
       if (glyph.offset !== null && glyph.offset !== undefined) out.offset = glyph.offset;
+      if (glyph.gifType) out.type = glyph.gifType;
+      if (glyph.gifType === 'SPRITE' && glyph.interpolate) out.interpolate = true;
     }
+    if (glyph.char && !isMultiBitmap(glyph)) out.char = glyph.char;
+    if (glyph.shadow.trim()) out.default_shadow = glyph.shadow.trim();
+    if (glyph.template.trim()) out.template = glyph.template.trim();
   }
   if (glyph.permission.trim()) out.permission = glyph.permission.trim();
   const placeholders = glyph.placeholders.map((p) => p.trim()).filter(Boolean);

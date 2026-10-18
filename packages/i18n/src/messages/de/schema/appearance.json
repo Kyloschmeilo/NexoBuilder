@@ -47,6 +47,10 @@
             "label": "Spieler: Layer 2 (Hose)",
             "help": "Entspricht z.B. diamond_layer_2.png"
           },
+          "humanoidBaby": {
+            "label": "Spieler: Baby-Layer (ab 26.1)",
+            "help": "Rüstung, wie Babyzombies und andere Baby-Humanoide sie tragen."
+          },
           "elytra": {
             "label": "Elytra-Flügel",
             "help": "Wie elytra.png. Ohne Material ELYTRA setzt ResourcepackBuilder die Gleiter-Komponente automatisch."
@@ -109,6 +113,37 @@
                 "label": "Wüstenkamel"
               }
             }
+          },
+          "overlays": {
+            "label": "Überlagerungs-Texturen",
+            "help": "Eine zweite Textur, die über die Ebene gezeichnet wird. Sie behält bei färbbarer Rüstung ihre Farben, z. B. für Schnallen oder Edelsteine.",
+            "fields": {
+              "layer1": {
+                "label": "Über Layer 1"
+              },
+              "layer2": {
+                "label": "Über Layer 2"
+              },
+              "humanoidBaby": {
+                "label": "Über dem Baby-Layer"
+              },
+              "elytra": {
+                "label": "Über den Elytra-Flügeln"
+              }
+            }
+          },
+          "dyeable": {
+            "label": "Färbbar",
+            "help": "Die Ebenen nehmen die Färbung des Items an, wie Lederrüstung. Das Item braucht selbst eine Farbe, damit eine zu sehen ist."
+          },
+          "colorWhenUndyed": {
+            "label": "Farbe ungefärbt",
+            "help": "Farbe der färbbaren Ebenen, solange das Item nicht gefärbt ist. Leer = keine Tönung.",
+            "placeholder": "z. B. 160, 101, 64"
+          },
+          "usePlayerTexture": {
+            "label": "Spieler-Textur verwenden",
+            "help": "Die Elytra-Flügel zeigen die eigene Elytra- oder Umhang-Textur des Spielers statt der Textur dieses Sets."
           }
         }
       }

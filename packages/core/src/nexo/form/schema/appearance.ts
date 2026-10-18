@@ -1,5 +1,5 @@
 /** The Model tab's properties: the item's color, its own item model, the Pack options and the armor trim. */
-import { ARMOR_PROPERTY } from '../../../form/armor';
+import { armorProperty } from '../../../form/armor';
 import { field, properties } from '../../../form/build';
 import { withDocs } from '../../../form/docs';
 import { plainOptions } from '../../../form/options';
@@ -78,6 +78,6 @@ export const APPEARANCE_PROPERTIES = properties(
       field: field.select(TRIM_MATERIALS, { allowCustom: true, help: true, advanced: true }),
       defaultValue: () => 'minecraft:gold',
     },
-    armor: { ...ARMOR_PROPERTY, docs: NEXO_DOCS.armor.page },
+    armor: armorProperty({ page: NEXO_DOCS.armor.page, options: NEXO_DOCS.armor.equipmentModels }),
   }),
 );
