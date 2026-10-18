@@ -1,10 +1,11 @@
 /**
  * The cards of display entity elements (item, block and text displays …) that CraftEngine furniture variants and
- * block entity renderers share, with the small fields the furniture editor uses too.
+ * block entity renderers share, with the small fields the furniture editor uses too. Keys beyond an element's type,
+ * item, position and transform come from core's field lists and show through the generic field editors.
  */
 import type { ReactNode } from 'react';
 import { useTranslations } from 'next-intl';
-import { Plus, Trash2 } from 'lucide-react';
+import { ExternalLink, Plus, Trash2 } from 'lucide-react';
 import {
   CE_BILLBOARDS,
   CE_DISPLAY_TRANSFORMS,
@@ -15,12 +16,15 @@ import {
   rotationAngles,
   type Vec3,
 } from '@resourcepackbuilder/core/craftEngine';
+import type { Field } from '@resourcepackbuilder/core/form';
 import type { ConfigObject, ConfigValue } from '@resourcepackbuilder/core/project';
 import { IconButton, useDraft } from '@resourcepackbuilder/ui';
 import { Button } from '@resourcepackbuilder/ui/components/button';
 import { Input } from '@resourcepackbuilder/ui/components/input';
 import { NativeSelect, NativeSelectOption } from '@resourcepackbuilder/ui/components/native-select';
 import { isPlainObject } from '@resourcepackbuilder/utils';
+import { FieldRenderer } from '../../../components/editor';
+import { isFieldVisible } from '../../../components/editor/values';
 
 /** The object with `key` set, or without it for `undefined`. */
 export function withKey(object: Record<string, unknown>, key: string, value: ConfigValue | undefined): ConfigObject {
@@ -136,13 +140,44 @@ export function ValueSelect({
   );
 }
 
-/** A titled list of cards with an add button. */
-export function ListSection({ title, help, onAdd, children }: { title: string; help: string; onAdd: () => void; children: ReactNode }) {
+/** A link to the CraftEngine wiki section of a hand-written part of the editor. */
+export function DocsLink({ href }: { href: string }) {
+  const t = useTranslations('item');
+  return (
+    <IconButton
+      label={t('properties.docs.craftengine')}
+      size="icon-xs"
+      variant="ghost"
+      nativeButton={false}
+      render={<a href={href} target="_blank" rel="noreferrer" />}
+    >
+      <ExternalLink />
+    </IconButton>
+  );
+}
+
+/** A titled list of cards with an add button (and a link to the list's wiki section). */
+export function ListSection({
+  title,
+  help,
+  docs,
+  onAdd,
+  children,
+}: {
+  title: string;
+  help: string;
+  docs?: string;
+  onAdd: () => void;
+  children: ReactNode;
+}) {
   const tCommon = useTranslations('common');
   return (
     <div className="flex flex-col gap-2">
       <div className="flex items-center justify-between gap-2">
-        <span className="text-sm font-medium">{title}</span>
+        <span className="flex items-center gap-1 text-sm font-medium">
+          {title}
+          {docs && <DocsLink href={docs} />}
+        </span>
         <Button size="xs" variant="outline" onClick={onAdd}>
           <Plus /> {tCommon('add')}
         </Button>
@@ -169,6 +204,60 @@ export function EntryCard({ title, onRemove, children }: { title: string; onRemo
   );
 }
 
+/** Field kinds that take a whole row of a card's grid */
+const WIDE_FIELDS = new Set<Field['type']>(['object', 'objectList', 'map', 'typedList', 'choice', 'stringList', 'yaml']);
+
+/**
+ * Keys of an object edited through the generic field editors, each under its YAML key; the object's other keys stay.
+ * `siblings` decides which fields show (their `showIf`, usually the object with its type written out); the advanced
+ * ones sit behind a disclosure. `set` changes one key (undefined removes it).
+ */
+export function KeyedFields({
+  fields,
+  object,
+  siblings,
+  set,
+  historyKey,
+}: {
+  fields: readonly Field[];
+  object: Record<string, unknown>;
+  siblings: Record<string, unknown>;
+  set: (key: string, value: ConfigValue | undefined, historyKey?: string) => void;
+  /** Prefix of the undo history key of each field (edits of one field coalesce) */
+  historyKey: string;
+}) {
+  const t = useTranslations('item');
+  const visible = fields.filter((f) => isFieldVisible(f, siblings));
+  const advanced = visible.filter((f) => f.advanced);
+  const grid = 'grid grid-cols-[repeat(auto-fill,minmax(11rem,1fr))] gap-2';
+  const render = (f: Field) => (
+    // Two fields can share a key for different types (an armor stand's glow_color is a color name)
+    <div key={`${f.key}:${f.label}`} className={WIDE_FIELDS.has(f.type) ? 'col-span-full' : undefined}>
+      <FieldRenderer
+        field={f}
+        value={object[f.key]}
+        siblings={siblings}
+        onChange={(value) => set(f.key, value as ConfigValue | undefined, `${historyKey}-${f.key}`)}
+      />
+    </div>
+  );
+  // An advanced key the object already sets shows with the others
+  const shown = visible.filter((f) => !f.advanced || object[f.key] !== undefined);
+  const tucked = advanced.filter((f) => object[f.key] === undefined);
+  if (visible.length === 0) return null;
+  return (
+    <div className="col-span-full flex flex-col gap-2">
+      {shown.length > 0 && <div className={grid}>{shown.map(render)}</div>}
+      {tucked.length > 0 && (
+        <details>
+          <summary className="cursor-pointer text-xs text-muted-foreground">{t('ceFurniture.moreKeys', { count: tucked.length })}</summary>
+          <div className={`${grid} mt-2`}>{tucked.map(render)}</div>
+        </details>
+      )}
+    </div>
+  );
+}
+
 /** Element types with a transform of their own (translation, rotation, scale, billboard) */
 const DISPLAY_TYPES = new Set(['item_display', 'block_display', 'text_display']);
 const ITEM_TYPES = new Set(['item_display', 'item', 'armor_stand']);
@@ -177,12 +266,14 @@ function ElementCard({
   element,
   index,
   defaultPosition,
+  fields,
   set,
   onRemove,
 }: {
   element: Record<string, unknown>;
   index: number;
   defaultPosition: Vec3;
+  fields: readonly Field[];
   set: (key: string, value: ConfigValue | undefined, historyKey?: string) => void;
   onRemove: () => void;
 }) {
@@ -270,28 +361,34 @@ function ElementCard({
           />
         </>
       )}
+      <KeyedFields fields={fields} object={element} siblings={{ ...element, type }} set={set} historyKey={String(index)} />
     </EntryCard>
   );
 }
 
 /**
  * The editable list of display elements; `edit` changes the list. A new element is `newElement()`; an element without
- * a position shows `defaultPosition(type)`, where CraftEngine puts it.
+ * a position shows `defaultPosition(type)`, where CraftEngine puts it. `fields` are the further keys an element of the
+ * context reads (core's CE_FURNITURE_ELEMENT_FIELDS or CE_RENDERER_ELEMENT_FIELDS).
  */
 export function DisplayElementList({
   elements,
   edit,
   newElement,
   defaultPosition,
+  fields,
   title,
   help,
+  docs,
 }: {
   elements: ConfigValue[];
   edit: (next: (elements: ConfigValue[]) => ConfigValue[], historyKey?: string) => void;
   newElement: () => ConfigObject;
   defaultPosition: (type: string | null) => Vec3;
+  fields: readonly Field[];
   title: string;
   help: string;
+  docs?: string;
 }) {
   const setEntry = (index: number) => (field: string, value: ConfigValue | undefined, historyKey?: string) =>
     edit(
@@ -299,7 +396,7 @@ export function DisplayElementList({
       historyKey && `element-${historyKey}`,
     );
   return (
-    <ListSection title={title} help={help} onAdd={() => edit((list) => [...list, newElement()])}>
+    <ListSection title={title} help={help} docs={docs} onAdd={() => edit((list) => [...list, newElement()])}>
       {elements.map((element, i) =>
         isPlainObject(element) ? (
           <ElementCard
@@ -307,6 +404,7 @@ export function DisplayElementList({
             element={element}
             index={i}
             defaultPosition={defaultPosition(furnitureElementType(element))}
+            fields={fields}
             set={setEntry(i)}
             onRemove={() => edit((list) => list.filter((_, j) => j !== i))}
           />

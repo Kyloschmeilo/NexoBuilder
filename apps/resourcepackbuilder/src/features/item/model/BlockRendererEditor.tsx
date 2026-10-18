@@ -1,7 +1,13 @@
-/** The entity renderers of a CraftEngine block's state or appearances: whether they hide the model, and their elements. */
+/**
+ * The entity renderers of a CraftEngine block's state or appearances: whether they hide the model, their elements and
+ * their entity culling.
+ */
 import { useId, useState } from 'react';
 import { useTranslations } from 'next-intl';
 import {
+  CE_DOCS,
+  CE_RENDERER_ELEMENT_FIELDS,
+  CE_RENDERER_STATE_FIELDS,
   isTransparentState,
   newRendererElement,
   rendererDefaultPosition,
@@ -12,7 +18,7 @@ import type { ConfigObject, ConfigValue, Item } from '@resourcepackbuilder/core/
 import { NativeSelect, NativeSelectOption } from '@resourcepackbuilder/ui/components/native-select';
 import { CheckboxField } from '../../../components/CheckboxField';
 import { useOpenProject } from '../../../store/project';
-import { DisplayElementList, withKey } from './DisplayElementsEditor';
+import { DisplayElementList, KeyedFields, withKey } from './DisplayElementsEditor';
 import { BlockRendererPreview } from './FurniturePreview';
 
 type StateEdit = (next: (state: ConfigObject) => ConfigObject, historyKey?: string) => void;
@@ -54,9 +60,20 @@ function BlockRendererEditor({
         }
         newElement={newRendererElement}
         defaultPosition={rendererDefaultPosition}
+        fields={CE_RENDERER_ELEMENT_FIELDS}
         title={t('ceBlock.renderer.elements')}
         help={t('ceBlock.renderer.elementsHelp')}
+        docs={CE_DOCS.entityRenderer}
       />
+      {elements.length > 0 && (
+        <KeyedFields
+          fields={CE_RENDERER_STATE_FIELDS}
+          object={state}
+          siblings={state}
+          set={(key, value, historyKey) => edit((s) => withKey(s, key, value), historyKey)}
+          historyKey="state"
+        />
+      )}
     </div>
   );
 }
