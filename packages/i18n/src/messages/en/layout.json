@@ -208,14 +208,28 @@
   },
   "folderView": {
     "targetHint": "Target in the plugin folder",
-    "itemCount": "{count, plural, one {# item} other {# items}}",
     "newItem": "New item",
     "newSubfolder": "Create subfolder",
     "delete": "Delete folder",
     "dropTitle": "Drop models here to create items",
     "dropSubtitle": "Several .bbmodel files create several items",
-    "itemsHeading": "Items in this folder",
-    "subfoldersHeading": "Subfolders"
+    "itemsHeading": "Items",
+    "subfoldersHeading": "Subfolders",
+    "addItem": "Add item",
+    "noItems": "No items in this folder yet.",
+    "table": {
+      "thumbnail": "Thumbnail",
+      "name": "Name",
+      "id": "ID",
+      "kind": "Type",
+      "issues": "Checks",
+      "noIssues": "No problems",
+      "kinds": {
+        "item": "Item",
+        "block": "Block",
+        "furniture": "Furniture"
+      }
+    }
   },
   "dock": {
     "label": "Output",

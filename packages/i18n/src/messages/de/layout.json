@@ -208,14 +208,28 @@
   },
   "folderView": {
     "targetHint": "Ziel im Plugin-Ordner",
-    "itemCount": "{count, plural, one {# Item} other {# Items}}",
     "newItem": "Neues Item",
     "newSubfolder": "Unterordner anlegen",
     "delete": "Ordner löschen",
     "dropTitle": "Modelle hier ablegen, um Items zu erstellen",
     "dropSubtitle": "Mehrere .bbmodel-Dateien ergeben mehrere Items",
-    "itemsHeading": "Items in diesem Ordner",
-    "subfoldersHeading": "Unterordner"
+    "itemsHeading": "Items",
+    "subfoldersHeading": "Unterordner",
+    "addItem": "Item hinzufügen",
+    "noItems": "Noch keine Items in diesem Ordner.",
+    "table": {
+      "thumbnail": "Vorschaubild",
+      "name": "Name",
+      "id": "ID",
+      "kind": "Art",
+      "issues": "Prüfungen",
+      "noIssues": "Keine Probleme",
+      "kinds": {
+        "item": "Item",
+        "block": "Block",
+        "furniture": "Möbel"
+      }
+    }
   },
   "dock": {
     "label": "Ausgabe",
