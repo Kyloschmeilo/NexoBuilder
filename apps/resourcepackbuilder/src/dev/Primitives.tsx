@@ -208,7 +208,7 @@ function PrimitivesPage() {
         id="lists"
         title={t('sections.lists')}
         description={t('sections.listsDescription')}
-        meta={<StatusPill tone="warning" count={2} label={t('pills.warnings')} />}
+        meta={<StatusPill tone="warning" label={t('pills.warnings', { count: 2 })} />}
       >
         <div className="flex flex-col gap-4">
           <ListEditor
@@ -273,8 +273,8 @@ function PrimitivesPage() {
         <div className="flex flex-col gap-3">
           <div className="flex flex-wrap items-center gap-2">
             <StatusPill tone="ok" dot label={t('pills.valid')} />
-            <StatusPill tone="warning" count={2} label={t('pills.warnings')} />
-            <StatusPill tone="error" count={1} label={t('pills.errors')} />
+            <StatusPill tone="warning" label={t('pills.warnings', { count: 2 })} />
+            <StatusPill tone="error" label={t('pills.errors', { count: 1 })} />
             <StatusPill tone="info" label={t('pills.info')} />
             <StatusPill tone="muted" label={t('pills.draft')} />
           </div>

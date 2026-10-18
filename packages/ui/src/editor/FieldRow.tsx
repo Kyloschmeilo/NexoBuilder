@@ -1,7 +1,9 @@
 /**
  * One field of a form in the Workbench layout: label | control | key rail. The label column carries the docs link,
  * the ⓘ help and badges; the key rail shows the field's YAML key in mono. Errors and warnings sit below the control.
- * In a narrow container, or with `layout="stacked"`, the label (with the key beside it) sits above the control.
+ * The row is its own size container: below 36 rem (or with `layout="stacked"`) the label sits above the control; from
+ * 36 rem label and control share a line, and from 42 rem the key moves from beside the label into its own rail, so the
+ * control column never gets squeezed by the rail.
  */
 import { useId, type ReactNode } from 'react';
 import { RotateCcw } from 'lucide-react';
@@ -74,6 +76,11 @@ export function FieldRow({
 }: FieldRowProps) {
   const labels = useUiLabels();
   const labelId = useId();
+  const messageId = useId();
+  const describedBy =
+    [error && `${messageId}-error`, warning && `${messageId}-warning`, help && helpInline && `${messageId}-help`]
+      .filter(Boolean)
+      .join(' ') || undefined;
   const isSide = layout === 'side';
   const hasLabel = label !== undefined && label !== null && label !== '';
   const LabelTag = htmlFor ? 'label' : 'span';
@@ -89,12 +96,14 @@ export function FieldRow({
       <div
         className={cn(
           'grid grid-cols-[minmax(0,1fr)] gap-x-3 gap-y-1',
-          isSide && hasLabel && '@md/field:grid-cols-[11rem_minmax(0,1fr)_8.5rem]',
-          isSide && !hasLabel && yamlKey && '@md/field:grid-cols-[minmax(0,1fr)_8.5rem]',
+          isSide &&
+            hasLabel &&
+            '@xl/field:grid-cols-[minmax(7.5rem,min(30%,11rem))_minmax(0,1fr)] @2xl/field:grid-cols-[minmax(7.5rem,min(30%,11rem))_minmax(0,1fr)_8.5rem]',
+          isSide && !hasLabel && yamlKey && '@2xl/field:grid-cols-[minmax(0,1fr)_8.5rem]',
         )}
       >
         {hasLabel && (
-          <div className={cn('relative flex min-h-6 min-w-0 flex-wrap items-center gap-x-1.5 gap-y-0.5', isSide && '@md/field:min-h-7.5')}>
+          <div className={cn('relative flex min-h-6 min-w-0 flex-wrap items-center gap-x-1.5 gap-y-0.5', isSide && '@xl/field:min-h-7.5')}>
             {state !== 'default' && (
               <span
                 aria-hidden
@@ -107,7 +116,7 @@ export function FieldRow({
             <LabelTag id={labelId} htmlFor={htmlFor} className="min-w-0 text-label font-medium break-words text-text">
               {label}
             </LabelTag>
-            {yamlKey && <YamlKey yamlKey={yamlKey} className={cn(isSide && '@md/field:hidden')} />}
+            {yamlKey && <YamlKey yamlKey={yamlKey} className={cn(isSide && '@2xl/field:hidden')} />}
             {docs && <DocsLink url={docs.url} target={docs.target} label={docs.label ?? (typeof label === 'string' ? label : undefined)} />}
             {help && !helpInline && <Help>{help}</Help>}
             {badges}
@@ -126,19 +135,32 @@ export function FieldRow({
         <div
           role={isGroup ? 'group' : undefined}
           aria-labelledby={isGroup ? labelId : undefined}
+          aria-describedby={isGroup ? describedBy : undefined}
           className={cn('flex min-w-0 flex-col gap-1', error && INVALID_CONTROL)}
         >
           {children}
-          {error && <p className="m-0 text-meta text-danger">{error}</p>}
-          {warning && <p className="m-0 text-meta text-warning">{warning}</p>}
-          {help && helpInline && <p className="m-0 text-meta text-text-muted">{help}</p>}
+          {error && (
+            <p id={`${messageId}-error`} className="m-0 text-meta text-danger">
+              {error}
+            </p>
+          )}
+          {warning && (
+            <p id={`${messageId}-warning`} className="m-0 text-meta text-warning">
+              {warning}
+            </p>
+          )}
+          {help && helpInline && (
+            <p id={`${messageId}-help`} className="m-0 text-meta text-text-muted">
+              {help}
+            </p>
+          )}
         </div>
         {isSide && yamlKey && (
-          <div className="hidden min-w-0 justify-end pt-2 @md/field:flex">
+          <div className="hidden min-w-0 justify-end pt-2 @2xl/field:flex">
             <YamlKey yamlKey={yamlKey} />
           </div>
         )}
-        {isSide && hasLabel && !yamlKey && <div className="hidden @md/field:block" aria-hidden />}
+        {isSide && hasLabel && !yamlKey && <div className="hidden @2xl/field:block" aria-hidden />}
       </div>
     </div>
   );

@@ -127,6 +127,17 @@ describe('FieldRow', () => {
     expect(host.textContent).toContain('Unusual value.');
   });
 
+  it('describes the control group with its error and warning', () => {
+    const host = render(
+      <FieldRow label="Saturation" error="Too small." warning="Unusual.">
+        <input />
+      </FieldRow>,
+    );
+    const group = host.querySelector('[role=group]');
+    const ids = group?.getAttribute('aria-describedby')?.split(' ') ?? [];
+    expect(ids.map((id) => host.querySelector(`[id="${id}"]`)?.textContent)).toEqual(['Too small.', 'Unusual.']);
+  });
+
   it('keeps help in a popover unless it is inline, and drops the label column without a label', () => {
     const popover = render(
       <FieldRow label="Hardness" help="Stone is 1.5.">
@@ -227,6 +238,21 @@ describe('interactive primitives', () => {
       expect(summaries()).toEqual(['a', 'c', 'a']);
     });
 
+    it('moves the focus to the next row after a remove', () => {
+      mount(<Names initial={['a', 'b', 'c']} />);
+      const remove = button('Remove', 1);
+      act(() => remove.focus());
+      click(remove);
+      expect(summaries()).toEqual(['a', 'c']);
+      expect(document.activeElement?.closest('[data-slot=list-row]')?.querySelector('[data-testid=summary]')?.textContent).toBe('c');
+    });
+
+    it('offers no duplicate when entries have keys of their own', () => {
+      mount(<ListEditor items={[{ id: 'x' }]} onChange={() => {}} getKey={(item) => item.id} renderSummary={(item) => item.id} />);
+      expect(button('Duplicate')).toBeUndefined();
+      expect(button('Remove')).toBeDefined();
+    });
+
     it('moves a row with the arrow keys on its handle and keeps the focus there', () => {
       mount(<Names initial={['a', 'b', 'c']} />);
       const handle = host.querySelectorAll<HTMLButtonElement>('[data-slot=drag-handle]')[0];
@@ -307,6 +333,21 @@ describe('interactive primitives', () => {
 
       click(button('Remove', 0));
       expect(onChange).toHaveBeenLastCalledWith({ currency: 'gems' });
+    });
+
+    it('keeps the focus in the value input the user moves to right after a rename', () => {
+      const onChange = vi.fn();
+      mount(<Variables onChange={onChange} />);
+      const key = keyInputs()[0];
+      act(() => key.focus());
+      type(key, 'tag');
+      const value = host.querySelector<HTMLInputElement>('[data-testid=value-prefix]')!;
+      // Moving the focus blurs the key input, which applies the rename; the row must not remount
+      act(() => value.focus());
+      expect(Object.keys(onChange.mock.lastCall![0])).toEqual(['tag', 'currency']);
+      expect(value.isConnected).toBe(true);
+      expect(value.dataset.testid).toBe('value-tag');
+      expect(document.activeElement).toBe(value);
     });
 
     it('shows the old key again after a rename to a taken key', () => {

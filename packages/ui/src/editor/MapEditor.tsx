@@ -1,6 +1,6 @@
 /**
  * A string-keyed map as a two-column table: mono keys that rename on blur, a value editor per entry, and an add row at
- * the bottom. Keys keep their order; a rename keeps the entry in place.
+ * the bottom. Keys keep their order; a rename keeps the entry in place and keeps focus where the user moved it.
  */
 import { useId, useState, type ReactNode } from 'react';
 import { Plus, Trash2 } from 'lucide-react';
@@ -86,6 +86,16 @@ export function MapEditor<V>({
   const [newKey, setNewKey] = useState('');
   const keyHeader = keyLabel ?? labels.key;
   const shown = Object.entries(entries).filter(([key]) => !reservedKeys.includes(key));
+  // Rows are keyed by an id of their own, not by the map key: a rename on blur must not remount the row, or the value
+  // input the user tabs or clicks into loses focus. A rename hands the id on to the new key.
+  const [rowIds, setRowIds] = useState<Readonly<Record<string, string>>>({});
+  let ids = rowIds;
+  const missing = shown.filter(([key]) => !Object.hasOwn(rowIds, key));
+  if (missing.length > 0) {
+    // Adjusting state while rendering: entries added from outside (paste, undo) get their ids in the same frame
+    ids = { ...rowIds, ...Object.fromEntries(missing.map(([key]) => [key, crypto.randomUUID()])) };
+    setRowIds(ids);
+  }
   const problem = newKey.trim() ? mapKeyProblem(entries, newKey, reservedKeys) : null;
   const suggestions = keySuggestions?.filter((key) => !Object.hasOwn(entries, key) && !reservedKeys.includes(key));
 
@@ -97,6 +107,10 @@ export function MapEditor<V>({
   const rename = (oldKey: string, key: string): boolean => {
     if (mapKeyProblem(entries, key, reservedKeys, oldKey)) return false;
     onChange(renameMapKey(entries, oldKey, key));
+    setRowIds((prev) => {
+      const { [oldKey]: id, ...rest } = prev;
+      return id === undefined ? rest : { ...rest, [key]: id };
+    });
     return true;
   };
   const grid = stacked ? 'grid-cols-[minmax(0,1fr)_auto]' : 'grid-cols-[minmax(7rem,2fr)_minmax(0,3fr)_auto]';
@@ -112,7 +126,7 @@ export function MapEditor<V>({
           </div>
           <div className="divide-y divide-line">
             {shown.map(([key, value]) => (
-              <div key={key} role="row" data-slot="map-row" className={cn('grid items-start gap-x-2 gap-y-1.5 px-2 py-1.5', grid)}>
+              <div key={ids[key]} role="row" data-slot="map-row" className={cn('grid items-start gap-x-2 gap-y-1.5 px-2 py-1.5', grid)}>
                 <div role="cell" className="min-w-0">
                   <KeyCell value={key} label={keyHeader} onRename={(next) => rename(key, next)} />
                 </div>

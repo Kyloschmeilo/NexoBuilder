@@ -87,10 +87,10 @@
     "panel": "A panel holds lists and previews.",
     "pills": {
       "draft": "Draft",
-      "errors": "errors",
+      "errors": "{count, plural, one {# error} other {# errors}}",
       "info": "Info",
       "valid": "Valid",
-      "warnings": "warnings"
+      "warnings": "{count, plural, one {# warning} other {# warnings}}"
     },
     "sections": {
       "choices": "Choices",

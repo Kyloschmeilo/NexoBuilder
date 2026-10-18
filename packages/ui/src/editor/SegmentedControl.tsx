@@ -27,7 +27,7 @@ interface SegmentedControlProps<T extends string> {
 
 /**
  * One hairline frame on the canvas colour; the active segment is filled with the soft accent and set in the accent
- * colour (radio behaviour on a toggle group).
+ * colour (radio behaviour on a toggle group). In a column too narrow for all segments they wrap onto the next line.
  */
 export function SegmentedControl<T extends string>({ value, options, onChange, size, className, ...props }: SegmentedControlProps<T>) {
   return (
@@ -35,7 +35,8 @@ export function SegmentedControl<T extends string>({ value, options, onChange, s
       size={size}
       spacing={0}
       aria-label={props['aria-label']}
-      className={cn('h-7.5 max-w-full overflow-hidden rounded-md border border-line bg-canvas data-[size=sm]:h-6.5', className)}
+      // Segments wrap onto a second line instead of being clipped when the control column is narrow
+      className={cn('h-auto max-w-full flex-wrap overflow-hidden rounded-md border border-line bg-canvas', className)}
       value={[value]}
       onValueChange={(next: string[]) => {
         // Clicking the active segment would empty the group; the selection stays instead
@@ -48,7 +49,7 @@ export function SegmentedControl<T extends string>({ value, options, onChange, s
           <ToggleGroupItem
             value={option.value}
             className={cn(
-              'h-full rounded-none! px-3 text-label text-text-muted hover:bg-muted hover:text-text focus-visible:ring-inset',
+              'h-7 rounded-none! px-3 group-data-[size=sm]/toggle-group:h-6 text-label text-text-muted hover:bg-muted hover:text-text focus-visible:ring-inset',
               'data-pressed:bg-accent data-pressed:font-semibold data-pressed:text-primary',
               option.className,
             )}

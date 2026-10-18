@@ -15,7 +15,10 @@ const TONE_CLASS: Record<StatusPillTone, string> = {
 
 interface StatusPillProps {
   tone: StatusPillTone;
-  /** Shown before the label in tabular figures ("2 warnings"). */
+  /**
+   * Shown before the label in tabular figures. The label is not pluralised here: pass a label that fits the count, or
+   * leave `count` out and pass the whole pluralised text ("2 warnings").
+   */
   count?: number;
   label: ReactNode;
   /** A dot in the tone's colour before the text. */

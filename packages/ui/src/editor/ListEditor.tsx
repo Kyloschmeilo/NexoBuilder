@@ -39,7 +39,10 @@ export interface ListEditorProps<T> {
   emptyText?: ReactNode;
   /** Shows the drag handle and the move buttons; on by default. */
   reorderable?: boolean;
-  /** The copy a duplicate inserts below the row (`structuredClone` by default); `false` hides the button. */
+  /**
+   * The copy a duplicate inserts below the row; `false` hides the button. The default is `structuredClone`, or no
+   * duplicate button when `getKey` is given (a clone would repeat the key, so pass a copy with a new identity).
+   */
   duplicate?: false | ((item: T) => T);
   /** Hides the remove button. */
   required?: boolean;
@@ -68,7 +71,7 @@ export function ListEditor<T>({
   addLabel,
   emptyText,
   reorderable = true,
-  duplicate = (item) => structuredClone(item),
+  duplicate,
   required,
   getKey,
   className,
@@ -102,14 +105,21 @@ export function ListEditor<T>({
     if (!getKey) rows.move(from, to);
     onChange(moveItem(items, from, to));
   };
+  /** Removes a row and moves the focus to the row that takes its place (or the one above), so it is not lost. */
   const remove = (index: number) => {
-    if (!getKey) rows.remove(index);
-    onChange(removeItem(items, index));
+    const neighbour = keys[index + 1] ?? keys[index - 1];
+    flushSync(() => {
+      if (!getKey) rows.remove(index);
+      onChange(removeItem(items, index));
+    });
+    if (neighbour) list?.querySelector<HTMLElement>(`[data-row-key="${CSS.escape(neighbour)}"] button`)?.focus();
   };
+  // A clone would repeat the identity `getKey` reads, so lists with their own keys must pass a `duplicate` of their own
+  const copyOf = duplicate === undefined ? (getKey ? false : (item: T) => structuredClone(item)) : duplicate;
   const copy = (index: number) => {
-    if (!duplicate) return;
+    if (!copyOf) return;
     if (!getKey) rows.insert(index + 1);
-    onChange(insertItem(items, index + 1, duplicate(items[index])));
+    onChange(insertItem(items, index + 1, copyOf(items[index])));
   };
   const edit = (index: number, item: T) => onChange(replaceItem(items, index, item));
   const toggle = (key: string) =>
@@ -234,7 +244,7 @@ export function ListEditor<T>({
                     <div className="min-w-0 flex-1 truncate px-1 text-label text-text">{renderSummary(item, index)}</div>
                   )}
                   <div className="flex flex-none items-center opacity-0 transition-opacity group-focus-within/row:opacity-100 group-hover/row:opacity-100">
-                    {duplicate && (
+                    {copyOf && (
                       <IconButton label={labels.duplicate} size="icon-xs" onClick={() => copy(index)}>
                         <Copy />
                       </IconButton>

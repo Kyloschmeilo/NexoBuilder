@@ -87,10 +87,10 @@
     "panel": "Ein Panel enthält Listen und Vorschauen.",
     "pills": {
       "draft": "Entwurf",
-      "errors": "Fehler",
+      "errors": "{count, plural, one {# Fehler} other {# Fehler}}",
       "info": "Info",
       "valid": "Gültig",
-      "warnings": "Warnungen"
+      "warnings": "{count, plural, one {# Warnung} other {# Warnungen}}"
     },
     "sections": {
       "choices": "Auswahl",
