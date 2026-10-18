@@ -390,7 +390,6 @@
   "issueList": {
     "openItem": "Zum Item",
     "openGlyphs": "Glyphs öffnen",
-    "noIssues": "Keine Probleme gefunden.",
     "level": {
       "error": "Fehler",
       "warning": "Warnung",

@@ -3,8 +3,7 @@
     "copyId": "Copy ID",
     "replaceImage": "Replace image",
     "optional": "optional",
-    "deleteMessage": "“{name}” will be deleted.",
-    "docs": "{target, select, craftengine {Open the CraftEngine wiki page} other {Open the Nexo docs page}}"
+    "deleteMessage": "“{name}” will be deleted."
   },
   "sounds": {
     "title": "Sounds",
@@ -83,8 +82,7 @@
   "multipack": {
     "title": "Multipack",
     "count": "{count, plural, one {# template} other {# templates}}",
-    "hint": "Template packs are resource packs Nexo sends along with the main pack. Put each one into plugins/Nexo/pack/template_packs/'<'id> on the server; the export only writes multipack.yml. Players toggle optional templates with /nexo multipack.",
-    "docs": "Open the Nexo docs page"
+    "hint": "Template packs are resource packs Nexo sends along with the main pack. Put each one into plugins/Nexo/pack/template_packs/'<'id> on the server; the export only writes multipack.yml. Players toggle optional templates with /nexo multipack."
   },
   "glyphs": {
     "title": "Glyphs",
@@ -244,15 +242,11 @@
   },
   "lootSources": {
     "title": "Loot sources",
-    "count": "{count, plural, one {# loot source} other {# loot sources}}",
-    "hint": "A loot source adds a loot table to a vanilla loot event: breaking a block, killing a mob, opening a chest, fishing and more. With overwrite it replaces the vanilla items or experience.",
-    "docs": "Loot sources in the CraftEngine wiki"
+    "hint": "A loot source adds a loot table to a vanilla loot event: breaking a block, killing a mob, opening a chest, fishing and more. With overwrite it replaces the vanilla items or experience."
   },
   "templates": {
     "title": "Templates",
-    "count": "{count, plural, one {# template} other {# templates}}",
     "hint": "A template is a piece of config with placeholders for arguments. Blocks use one in their settings, items for the whole item, loot tables and events too. CraftEngine's default templates (default:…) are always there.",
-    "docs": "Templates in the CraftEngine wiki",
     "defaults": "CraftEngine's default templates",
     "defaultsHint": "Every block, item and furniture can use these. Required arguments are marked with *.",
     "argumentRequired": "Required argument",
@@ -263,15 +257,11 @@
   },
   "globalVariables": {
     "title": "Global variables",
-    "count": "{count, plural, one {# variable} other {# variables}}",
-    "hint": "A global variable is a MiniMessage text that CraftEngine puts in wherever a text says '<'global:name>: in item names, lore and more. The previews in the item editor show it too.",
-    "docs": "Global variables in the CraftEngine wiki"
+    "hint": "A global variable is a MiniMessage text that CraftEngine puts in wherever a text says '<'global:name>: in item names, lore and more. The previews in the item editor show it too."
   },
   "attributes": {
     "title": "Attributes",
-    "count": "{count, plural, one {# entry} other {# entries}}",
     "hint": "CraftEngine's attribute system is experimental and only runs with attribute.enable: true in its config.yml, which it reads on startup. The test server switches it on for a project that uses attributes; restart it after adding the first one.",
-    "docs": "Attributes in the CraftEngine wiki",
     "definitions": {
       "title": "Attributes",
       "hint": "Custom values such as strength or critical chance, each with a base value and limits. Items change them in their settings (Custom Attribute Modifiers)."
@@ -291,9 +281,7 @@
   },
   "translations": {
     "title": "Translations",
-    "count": "{count, plural, one {# key} other {# keys}}",
     "hint": "Item names with translations and the names of custom blocks go into the language files by themselves. Here you add your own keys: lang keys the client translates (use them as '<'lang:key>), and server translations CraftEngine fills in itself ('<'l10n:key> in each player's language, '<'i18n:key> in the server's).",
-    "docs": "Translations in the CraftEngine wiki",
     "lang": {
       "title": "Lang keys (resource pack)",
       "hint": "Written into the resource pack's language files. The language all writes a key into every language; block_name:namespace:id names a custom block. Changes need a resource pack reload."
@@ -305,17 +293,13 @@
   },
   "categories": {
     "title": "Categories",
-    "count": "{count, plural, one {# category} other {# categories}}",
     "hint": "A category groups items in CraftEngine's /ce item browser. It lists items and other categories, matches item ids by a regular expression or takes all items. An item can also add itself with its Category property.",
     "fromFoldersOn": "The export also writes a category for each folder (project setting); one of yours with the same id replaces it.",
-    "fromFoldersOff": "The project setting for one category per folder is off, so only these categories are written.",
-    "docs": "Categories in the CraftEngine wiki"
+    "fromFoldersOff": "The project setting for one category per folder is off, so only these categories are written."
   },
   "worldgen": {
     "title": "Worldgen features",
-    "count": "{count, plural, one {# feature} other {# features}}",
     "hint": "A configured feature is what generates, e.g. the shape of a tree; a placed feature is where and how often. Write the YAML with misode's datapack generator (set to your server's version and YAML output) and use your custom block ids in it.",
-    "docs": "Worldgen features in the CraftEngine wiki",
     "configured": {
       "title": "Configured features",
       "hint": "Saplings grow these. A placed feature names one or holds its own."
@@ -327,13 +311,10 @@
   },
   "atlases": {
     "title": "Atlases",
-    "count": "{count, plural, one {# atlas} other {# atlases}}",
-    "hint": "Most packs need no atlas: CraftEngine repairs the common block and item atlas cases itself. Add one to put textures into a vanilla atlas or build a custom sprite atlas.",
-    "docs": "Atlases in the CraftEngine wiki"
+    "hint": "Most packs need no atlas: CraftEngine repairs the common block and item atlas cases itself. Add one to put textures into a vanilla atlas or build a custom sprite atlas."
   },
   "pack": {
     "title": "Pack",
-    "docs": "Pack structure in the CraftEngine wiki",
     "hint": "The namespace and description come from the project settings; set the rest of pack.yml here.",
     "packYml": {
       "title": "pack.yml",
@@ -346,8 +327,6 @@
   },
   "scripts": {
     "title": "Scripts",
-    "count": "{count, plural, one {# script} other {# scripts}}",
-    "docs": "Scripting in the CraftEngine wiki",
     "hint": "Scripts go into the pack's script folder. js functions and conditions call their functions by the script id namespace:path; annotations like //@Subscribe and //@Task register event handlers and tasks. CraftEngine runs them only with scripting.js.enable: true in its config.yml; the test server switches it on."
   },
   "registry": {

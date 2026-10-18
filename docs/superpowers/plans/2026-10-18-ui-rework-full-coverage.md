@@ -76,8 +76,8 @@ under the settings namespace.
    the light/dark/system choice.
 6. Drop the uppercase and tracking from the section label components. Update the YAML highlighter colors to the
    `--yaml-*` tokens.
-Verify: all checks pass. Run the app (`npm run dev`, port shown in the console) and take screenshots of the item
-editor in Deepslate dark, Amethyst light and Crimson dark into `<workspace>/shots/task-1/`.
+   Verify: all checks pass. Run the app (`npm run dev`, port shown in the console) and take screenshots of the item
+   editor in Deepslate dark, Amethyst light and Crimson dark into `<workspace>/shots/task-1/`.
 
 ### Task 2: Docs-link infrastructure, URL fix, schema flags
 
@@ -98,7 +98,7 @@ definitions (`craftEngine/logic/*`).
 5. Schema flags (UX §5, items 1–4): `Field.advanced?: boolean`, and `PropertyBase.category?: string`,
    `common?: boolean` and `aliases?: string[]`. All optional, with no behavior change.
 6. Test: every property and typed type of both forms has `docs` starting with the target's base URL.
-Verify: all checks pass.
+   Verify: all checks pass.
 
 ### Task 3: Split the big i18n catalogues per group
 
@@ -115,13 +115,14 @@ Verify: all checks pass, and the key count before and after is the same (write t
 
 Files: `packages/core/src/nexo/**`, `packages/export/src/**` (Nexo only), the matching i18n keys, tests and goldens.
 Do `nexo-features.md` §0 and chunk A (§15):
+
 - `requires_supporting` → `require_supporting`, with a read-side migration of saved projects.
 - Remove `misc.burns_in_fire` / `misc.burns_in_lava`. Migrate existing values to `Components.damage_resistant` the way
   Nexo's converter does.
 - Move per-item `repair.nexo_durability_only` out of the item schema (it is a `mechanics.yml` key). Remove it when the
   app does not write `mechanics.yml`, and migrate it away.
 - Make `cullable` a three-state value, and add the state `force` key.
-Verify: all checks pass, goldens regenerated, migration tests added.
+  Verify: all checks pass, goldens regenerated, migration tests added.
 
 ## Wave 2: primitives and shell (after wave 1 is merged)
 
@@ -137,6 +138,7 @@ a thin adapter onto `FieldRow`, so every existing editor picks up the look. Add 
 ### Task 6: Shell (Workbench layout)
 
 UX §2.2 and Phase 0c, adapted to Workbench:
+
 - The new AppShell grid: activity rail, sidebar, page and output dock, resizable, with the dock always visible on
   wide screens and an overlay below 1280 px.
 - `ActivityBar` with `activities.ts` as data. A slim `TopBar`.
@@ -154,6 +156,7 @@ tests for the adapters and the catalog search ordering.
 ## Wave 1b: feature coverage, data first (after Tasks 2 and 3 merge; runs in parallel with Wave 2)
 
 Rules for every feature task:
+
 - Data first. The schema in `packages/core/src/{nexo,craftEngine}/form/schema/*`, the core model and migration, the
   exporter, validation, i18n (en + de in the split group files) and tests. Every new property and typed type carries
   `docs` (`withDocs`) with a verified URL, plus `category`, `common` and `aliases` where they help the catalog.
@@ -170,6 +173,7 @@ Rules for every feature task:
 ### Task 4 (moved here): Nexo correctness fixes. Runs after Task 3 merges.
 
 ### Task 8: CraftEngine block behaviors, all types (CE chunks 2 and 3, plus 18 particle options)
+
 Every behavior type in `craftengine-features.md` §3.4 and §12 (the vine crop pair included) becomes a `TypedType` in a
 `blockBehaviors` logic catalog with its params. `block.behaviors` becomes `typedList('blockBehaviors')`, rendered by
 the existing typed-list editor. The preset forms of chunk 3 also generate their states and item behavior. Required
@@ -179,58 +183,69 @@ particles, `schema/blockBehavior.ts`, `ce/blockBehaviors.ts`, `ce/blockStates.ts
 `ceSchema/blockBehavior.json`, and a minimal change to `CraftEngineBlockSection.tsx`.
 
 ### Task 9: CraftEngine block settings and states/model completion (CE chunks 4 and 5)
+
 Owns `schema/blockSettings.ts`, `ce/block.ts`, the variant-settings helpers in `ce/blockStates.ts`,
 `CraftEngineStatesEditor.tsx`, the `ceSchema/blockSettings.json` slice, and the auto `settings.item` for blocks in
 `ce/itemConfig.ts` `buildBlock`. If it touches the state builders, coordinate with Task 8 by limiting its own edits to
 model and variant helpers.
 
 ### Task 10: CraftEngine furniture and display elements (CE chunks 6 and 7)
+
 Shared display-element params, furniture settings, hitboxes, seats, variant extras, and a `furnitureBehaviors`
 catalog of 3 types. Owns `ce/furniture.ts`, `ce/blockRenderer.ts`, the new `logic/furnitureBehaviors.ts`, and
 `DisplayElementsEditor.tsx`, `BlockRendererEditor.tsx`, `CraftEngineFurnitureSection.tsx`,
 `FurnitureVariantEditor.tsx`, `FurniturePreview.tsx`.
 
 ### Task 11: CraftEngine item behaviors and item settings (CE chunks 8 and 11)
+
 Owns the new `schema/itemBehavior.ts` group, `schema/settings.ts`, `ce/attributes.ts` (shared specs only), and the
 behaviors assembly in `ce/itemConfig.ts`. It touches `ce/furniture.ts` only through a small `BuiltFurniture` extension
 agreed by name (`placementExtras`).
 
 ### Task 12: CraftEngine item data and item updater (CE chunks 10 and 13)
+
 Owns `schema/data.ts`, `schema/general.ts`, the new `logic/itemUpdaters.ts`, and the `ceSchema/{data,general}.json`
 slices.
 
 ### Task 13: Item model definition trees for both targets (CE chunk 12, Nexo chunk I)
+
 One shared tree model (model, composite, condition, select, range_dispatch, special, empty, bundle/selected_item,
 tints), a CE writer and a Nexo writer (`export/src/targets/nexo/itemModels.ts`), and the root model fields. The user's
 tree takes precedence over the auto-generated paths. A structured tree editor in the item Model area, built as a
 self-contained component (`features/item/model/itemModelTree/*`).
 
 ### Task 14: Recipes for both targets (CE chunk 9, Nexo chunk G)
+
 New types per target (gated by target), ingredient extensions, recipe-level keys, CE processors and transforms, and
 Nexo `disabled_recipes.yml` if the app already writes plugin files. Owns `core/src/project/recipes/*`,
 `ce/recipes.ts`, `nexo/recipes/*`, the recipes part of `export/src/targets/*/pluginFiles.ts`, and
 `features/item/recipes/*`.
 
 ### Task 15: Media for both targets (CE chunk 14, Nexo chunk H)
+
 Glyph, emoji, sound, jukebox and equipment completeness. Owns `core/src/project/media/*`, `ce/media.ts`,
 `nexo/{glyphs,sounds}/*`, `export/src/equipment.ts`, `features/{media,glyphs,sounds,paintings}/*`, and `media.json`.
 
 ### Task 16: CraftEngine project-level sections (CE chunks 15, 16, 17, 19, 20, done in that order)
+
 Translations and lang, the categories editor, worldgen features and atlases, pack.yml and template power features, and
 script files. One agent, because they all extend the shared lists (`ViewName`, `VIEWS`, `CRAFT_ENGINE_VIEWS`,
 `CraftEngineProjectData`, `pluginFiles.ts`, `SECTION_ORDER`). New views follow the existing CE views' structure;
 Wave 3 restyles them.
 
 ### Task 17: Nexo furniture, custom blocks and mechanics (Nexo chunks C, E, and the mechanics part of F)
+
 Owns `nexo/form/schema/{furniture,mechanics,shared}.ts`, `nexo/form/options.ts`, `project/variants.ts` (directional
 faces), `export/src/targets/nexo/itemModels.ts` (only the variant slots; coordinate with Task 13 by adding new slots in
 a separate function), and `export/src/validate/itemConfig.ts`.
 
 ### Task 18: Nexo components and item root keys (Nexo chunk D, plus F's root, Pack and drop keys)
+
 Owns `nexo/form/schema/{components,general,appearance,attributes}.ts` and `nexo/itemConfig.ts` (`TOP_LEVEL_ORDER`,
 item_model precedence).
 
 ### Task 19: Nexo new content kinds (Nexo chunk J)
+
 Dialogs as a media kind, Carpentry block types behind an "addon installed" project setting, and multipack templates.
 Runs after Tasks 15 and 17 merge, because it touches their files.
 
@@ -238,6 +253,7 @@ Runs after Tasks 15 and 17 merge, because it touches their files.
 
 Every screen moves to the Workbench primitives (`packages/ui/src/editor`), the catalog and typed-entry components
 (Task 7) and the shell (Task 6). Rules for every migration:
+
 - Keep every field and feature the feature tasks (8–18) added. A migration restyles and restructures; it never drops
   options. Before you finish, list the fields of every editor you touched and compare them to the old one.
 - Follow the UX spec §4 pattern for the screen, its acceptance checklist (§6) and its copy rules (§7). The Workbench
@@ -250,6 +266,7 @@ Every screen moves to the Workbench primitives (`packages/ui/src/editor`), the c
   they never edit `ItemEditor.tsx`.
 
 ### Task 20: Item editor frame and features (UX M1 + M2)
+
 `Page` + `SectionNav` + the slim `PageHeader`; sections from `features/item/sections.ts`; Basics; Advanced (raw YAML);
 remove the YAML tab, since the dock shows the YAML. Property groups become sub-sections with a `FeatureList` and an
 "Add feature" `CatalogDialog` prefiltered to the group. Fill `category`, `common` and `aliases` on the Nexo and CE
@@ -259,6 +276,7 @@ the new `features/item/sections.ts` and `sections/*`, `features/item/properties/
 settings ("hardness" → jump or add).
 
 ### Task 21: Field editors (UX M3)
+
 The control rules of UX §3.2 (switch / segmented / select / combobox by option count; Vector3 for vectors; resource-id
 picker; MiniMessage preview chip). Lists and maps onto `ListEditor` and `MapEditor`; `MoreOptions` in `ObjectEditor`.
 Set `advanced: true` on rarely used fields across both schemas, where the research marks them advanced or jar-only.
@@ -267,6 +285,7 @@ owns), `components/editor/inputs/*`, `components/editor/values.ts`, `components/
 `components/FormField.tsx`.
 
 ### Task 22: CraftEngine block and Nexo custom block (UX M4)
+
 A "Places" segmented control (Nothing / Block / Furniture) for both targets. A Behaviors `ListEditor` of
 `TypedEntryCard`s with "Add behavior" → `CatalogDialog` over the blockBehaviors catalog (Task 8), with categories
 (Plants, Building, Interaction, Redstone, Physics, Light, Storage, …) and presets. A states table; block settings as a
@@ -275,6 +294,7 @@ feature list; per-variant settings (Task 9). Nexo custom_block gets the same fra
 → `features/item/block/*`, plus the behavior commands in `commands/items.ts`.
 
 ### Task 23: Furniture for both targets (UX M5, plus the rest of Task 17)
+
 A two-pane variant editor; elements, hitboxes, seats and lights as `ListEditor`s with Vector3 inputs; the furniture
 behaviors catalog (Task 10). For Nexo: structured hitbox, seat, bed and light editors, and nested forms for
 `open_properties` and the FURNITURE-type state properties. Exports `FurnitureSection`. Owns
@@ -282,20 +302,24 @@ behaviors catalog (Task 10). For Nexo: structured hitbox, seat, bed and light ed
 → `features/item/furniture/*`, plus the furniture commands.
 
 ### Task 24: Model, textures, variants and the item model tree (UX M6)
+
 Model and Textures as sections; special-appearance variants as a `ListEditor` (target-filtered); the item model tree
 editor (Task 13) restyled as a tree with typed node cards. Exports `ModelSection` and `TexturesSection`. Owns
 `features/item/model/*` except the files of Tasks 22 and 23, plus `components/ModelPreview.tsx`.
 
 ### Task 25: Typed lists: events, loot, number providers, item behaviors and updaters (UX M7)
+
 `TypedEntryCard` + `CatalogDialog` for every logic catalog, with categories and docs, nested lists, and a dialog for
 depth over 2. Owns `components/editor/editors/{TypedListEditor,NumberProviderEditor,ChoiceEditor}.tsx`, and the
 `category` field in `craftEngine/logic/*` catalogs.
 
 ### Task 26: Recipes (UX M8)
+
 A recipe `ListEditor` with "Add recipe" → catalog of the target's types; the shaped grid stays visual; smithing,
 brewing, anvil and transmute layouts. Owns `features/item/recipes/*`.
 
 ### Task 27: Media and CraftEngine registries as master/detail (UX M9 + M10)
+
 Glyphs, sounds, paintings, jukebox, equipment, loot sources, templates (including a reference of the default
 templates), global variables, attributes, and Task 16's new views (translations, categories, worldgen, atlases,
 scripts), each as master/detail. The list lives in the sidebar panel; the entry editor is on the page; the dock shows
@@ -303,22 +327,26 @@ the output. Owns `features/{media,glyphs,sounds,paintings,craftEngine,lootSource
 `shell/sidebar/panels/*`.
 
 ### Task 28: Folder page, tree, settings page, dialogs and welcome (UX M11–M14)
+
 Folder item table, tree rows, the settings page with `SectionNav`, all dialogs onto the restyled `DialogFrame`, and the
 welcome screen with target cards and both docs links. Owns `features/{folder,settings,newItem,export,share,projects,moveItem,pasteConfig}/*`,
 `components/DialogFrame.tsx`, `shell/{ConfirmDialog,PromptDialog}.tsx`, `shell/sidebar/{FolderNode,ItemNode,TreeRow,rowStyles}.tsx`
 and `packages/ui/src/tree.tsx`.
 
 ### Task 29: Test server view (UX M15)
+
 Adopt `Section`, `FieldRow` and `StatusPill`. Owns `features/testServer/*`.
 
 ## Wave 4: cleanup and verification
 
 ### Task 30: Cleanup
+
 Delete the components no longer used (UX §6 final cleanup list), remove the orphaned i18n keys
 (`layout.sidebar.testServer.*` and others), write the `CHANGELOG.md` Unreleased entries from every report's changelog
 line, and update the README screenshots.
 
 ### Task 31: Plugin verification on a real server
+
 Export a sample project per target that uses many of the new features. Boot the local test server (Paper plus Nexo
 1.30 dev from the user's jar, Paper plus the latest CraftEngine) and check the logs for config errors. Fix what the
 logs report.

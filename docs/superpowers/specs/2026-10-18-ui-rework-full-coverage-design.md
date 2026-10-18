@@ -24,15 +24,16 @@ Date: 2026-10-18 · Branch: `feat/ui-rework-full-coverage` · Status: approved d
   - Copper: warm stone, copper accent
   - Prismarine: deep sea green, teal accent
   - Crimson: nether brick, crimson accent
-  The palettes are those of the approved preview (https://claude.ai/artifact/C2KkZkEEFXXaMd2VXSgunc), mapped onto the
-  token names of the UX spec §2.1. Nexo and CraftEngine marker colors are fixed tokens (`--target-nexo`,
-  `--target-ce`), readable on every theme.
+    The palettes are those of the approved preview (https://claude.ai/artifact/C2KkZkEEFXXaMd2VXSgunc), mapped onto the
+    token names of the UX spec §2.1. Nexo and CraftEngine marker colors are fixed tokens (`--target-nexo`,
+    `--target-ce`), readable on every theme.
 - Default theme for new installs: Deepslate, mode: system.
 
 ## Reference material
 
 The research reports live in the plan workspace (`.superpowers/sdd/<plan>/research/`, git-ignored) and are the
 detailed source for every task:
+
 - `architecture.md`: data model, form DSL, the generic renderer, how to add a field end to end, hotspots, conventions.
 - `ux-redesign.md`: audit, IA, the component inventory (§3), editor patterns (§4), schema additions (§5), phases (§6),
   acceptance checklist, copy rules. **Where it conflicts with the Decisions above (fonts, radii, palette, card style),

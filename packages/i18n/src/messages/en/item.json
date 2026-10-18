@@ -1,26 +1,11 @@
 {
   "editor": {
-    "tabs": {
-      "general": "General",
-      "model": "Model & Pack",
-      "data": "Data",
-      "settings": "Settings",
-      "behaviors": "Behaviors",
-      "attributes": "Attributes",
-      "components": "Components",
-      "mechanics": "Mechanics",
-      "events": "Events",
-      "recipes": "Recipes",
-      "yaml": "YAML",
-      "loot": "Loot"
-    },
     "itemId": "Item ID",
     "folder": "Folder",
     "ready": "Ready",
     "copyTooltip": "Copy all properties – except name, item ID, model and folder",
     "pasteTooltip": "Paste properties from “{name}”",
     "pasteDisabled": "Choose “Copy” on another item first",
-    "move": "Move",
     "give": "Give in test server",
     "giveTooltip": "Put the item into your inventory on the local test server",
     "giveNeedsServer": "Start the test server first (Test server in the sidebar)",
@@ -32,27 +17,27 @@
     "emptyHint": "{text} Use <b>Add</b> to choose properties.",
     "titles": {
       "general": "General",
-      "appearance": "Pack & Appearance",
-      "attributes": "AttributeModifiers & Enchantments",
+      "appearance": "Appearance",
+      "attributes": "Attributes",
       "components": "Components",
       "mechanics": "Mechanics",
       "data": "Data",
       "settings": "Settings",
       "itemBehavior": "Behaviors",
-      "blockSettings": "Block Settings",
+      "blockSettings": "Block settings",
       "blockBehavior": "Behavior",
       "events": "Events",
       "loot": "Loot",
-      "model": "Item Model"
+      "model": "Item model"
     },
     "empty": {
       "general": "Nothing added yet (e.g. Lore).",
-      "appearance": "No pack options yet (e.g. CustomArmor, Color).",
-      "attributes": "No AttributeModifiers or Enchantments yet.",
+      "appearance": "No appearance options yet (e.g. color, custom armor).",
+      "attributes": "No attributes or enchantments yet.",
       "components": "No components yet.",
       "mechanics": "No mechanics yet.",
       "data": "No item data yet (e.g. Food, Equippable).",
-      "settings": "No settings yet (e.g. Tags, Fuel Time).",
+      "settings": "No settings yet (e.g. tags, fuel time).",
       "itemBehavior": "No behaviors yet (e.g. a placement on walls, range mining).",
       "blockSettings": "No block settings yet (e.g. Hardness, Sounds).",
       "blockBehavior": "No behavior options yet (e.g. sounds, extra behaviors).",
@@ -91,18 +76,18 @@
     "materialHelp": "Base item in Minecraft. Default is PAPER; for tools/armor use the matching material.",
     "folder": "Folder",
     "tooltipPreview": "Tooltip preview",
-    "tooltipHelp": "Without its own color, Minecraft shows the lore purple and italic."
+    "tooltipHelp": "Without its own color, Minecraft shows the lore purple and italic.",
+    "nameLabel": "Display name",
+    "idLabel": "Item ID",
+    "idHelp": "The key of the item in the YAML and in {target, select, nexo {/nexo give} other {/ce item give}}. Lowercase letters, numbers and _ only.",
+    "nameHelp": "MiniMessage text. Colors: {colors} · Formatting: {formatting}"
   },
   "yaml": {
     "notObject": "Expected key-value pairs (e.g. \"Mechanics:\").",
-    "extraTitle": "Additional YAML",
     "extraDescription": "For everything the editor doesn’t offer (yet). Applied last on top of the settings and overrides identical keys.",
     "example": "# Example:",
     "error": "YAML error: {error}",
-    "keyHint": "Don’t include the item key ({id}) – only the content below it.",
-    "finalTitle": "Final YAML",
-    "finalDescription": "This is how the item ends up in {file}",
-    "computing": "# computing …"
+    "keyHint": "Don’t include the item key ({id}) – only the content below it."
   },
   "model": {
     "parents": {
@@ -191,8 +176,6 @@
     "caseNoValue": "Case without value",
     "entrySlot": "From {threshold}",
     "modelSlot": "Model {index}",
-    "caseHeading": "Case",
-    "entryHeading": "Entry",
     "branches": "Branches",
     "property": "Property",
     "open": "Open {name}",
@@ -328,7 +311,9 @@
       "simple_particle_block": "Particles",
       "wall_torch_particle_block": "Wall torch",
       "directional_attached_block": "Attached to a wall",
-      "on_liquid_block": "On water (lily pad)"
+      "on_liquid_block": "On water (lily pad)",
+      "none": "None",
+      "other": "Other (from the additional YAML)"
     },
     "states": {
       "toMulti": "Use several states",
@@ -389,28 +374,22 @@
       "elements": "Elements",
       "elementsHelp": "What the block shows. An item display without an item shows this item’s model. Positions are in blocks from the block’s corner; without one, an element stands at the block’s center (a block display at the corner).",
       "previewHelp": "The block’s outline is yellow. Other blocks and texts show as grey blocks."
-    }
+    },
+    "title": "Block",
+    "description": "CraftEngine places the item as a block of its own."
   },
   "ceFurniture": {
     "title": "Furniture",
     "description": "CraftEngine places the item as furniture made of display entities, which can sit anywhere on a block.",
-    "toggle": "Place as furniture",
-    "toggleHelp": "The item places furniture with the same ID.",
-    "toggleBlocked": "The item places a block. Turn off “Place as a block” to make it furniture.",
     "variant": "Variant",
-    "variantHelp": "Each variant is how the furniture looks when a player places it on top of a block, on its side or below it.",
     "anchors": {
       "ground": "Ground",
       "wall": "Wall",
       "ceiling": "Ceiling"
     },
-    "variantMissing": "The furniture has no variant here, so the item cannot be placed this way.",
-    "addVariant": "Add this variant",
     "removeVariant": "Remove variant",
-    "previewHelp": "The variant as placed in front of the player. Hitboxes are yellow, seats blue. Other blocks and texts show as grey blocks.",
     "rotation": "Rotation",
     "alignment": "Alignment",
-    "rulesHelp": "How the furniture snaps when a player places it.",
     "rotations": {
       "any": "Any angle",
       "four": "In 90° steps",
@@ -479,11 +458,9 @@
     "settings": "Settings",
     "hitTimes": "Hits to break",
     "settingsHelp": "Other keys go in the additional YAML under furniture:.",
-    "moreKeys": "More keys ({count})",
     "behaviors": "Behaviors",
     "behaviorsHelp": "Storage, item display slots and lights. Each behavior can set its own hitboxes per variant.",
     "loot": "Drops the item when broken",
-    "lootHelp": "Uses CraftEngine’s furniture loot. Other loot goes in the additional YAML under furniture: loot:.",
     "seat": "Seat",
     "seatYawValue": "yaw {yaw}",
     "seatCount": "{count, plural, one {# seat} other {# seats}}"
@@ -673,5 +650,41 @@
       "advancedNote": "Rarely needed. Nexo reads it, but most blocks do without it.",
       "modelsDescription": "The extra models the block’s type uses: its stack stages or one model per face."
     }
+  },
+  "sections": {
+    "nav": "Item sections",
+    "basics": "Basics",
+    "model": "Model",
+    "textures": "Textures",
+    "features": "Features",
+    "block": "Block",
+    "furniture": "Furniture",
+    "events": "Events",
+    "loot": "Loot",
+    "recipes": "Recipes",
+    "advanced": "Advanced"
+  },
+  "features": {
+    "add": "Add feature",
+    "addTitle": "Add to {group}",
+    "addDescription": "Pick what this item should have. The search finds names, YAML keys and descriptions.",
+    "count": "{count, plural, one {# feature} other {# features}}"
+  },
+  "header": {
+    "copy": "Copy features",
+    "paste": "Paste features",
+    "moveToFolder": "Move to folder",
+    "delete": "Delete item"
+  },
+  "advanced": {
+    "title": "Raw YAML",
+    "showYaml": "Show the final YAML"
+  },
+  "palette": {
+    "group": "Settings of this item",
+    "added": "In {group}",
+    "available": "Add to {group}",
+    "tooOld": "Add to {group} (needs Minecraft {version} or newer)",
+    "removed": "Add to {group} (only up to Minecraft {version})"
   }
 }

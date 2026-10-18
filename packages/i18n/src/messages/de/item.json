@@ -1,26 +1,11 @@
 {
   "editor": {
-    "tabs": {
-      "general": "General",
-      "model": "Model & Pack",
-      "data": "Data",
-      "settings": "Settings",
-      "behaviors": "Verhalten",
-      "attributes": "Attributes",
-      "components": "Components",
-      "mechanics": "Mechanics",
-      "events": "Events",
-      "recipes": "Recipes",
-      "yaml": "YAML",
-      "loot": "Loot"
-    },
     "itemId": "Item-ID",
     "folder": "Ordner",
     "ready": "Bereit",
     "copyTooltip": "Alle Eigenschaften kopieren – außer Name, Item-ID, Modell und Ordner",
     "pasteTooltip": "Eigenschaften von „{name}“ einfügen",
     "pasteDisabled": "Zuerst bei einem anderen Item „Kopieren“ wählen",
-    "move": "Verschieben",
     "give": "Im Testserver geben",
     "giveTooltip": "Das Item im lokalen Testserver in dein Inventar legen",
     "giveNeedsServer": "Starte zuerst den Testserver (Testserver in der Seitenleiste)",
@@ -31,28 +16,28 @@
   "properties": {
     "emptyHint": "{text} Über <b>„Hinzufügen“</b> kannst du Eigenschaften auswählen.",
     "titles": {
-      "general": "General",
-      "appearance": "Pack & Appearance",
-      "attributes": "AttributeModifiers & Enchantments",
-      "components": "Components",
-      "mechanics": "Mechanics",
-      "data": "Data",
-      "settings": "Settings",
+      "general": "Allgemein",
+      "appearance": "Aussehen",
+      "attributes": "Attribute",
+      "components": "Komponenten",
+      "mechanics": "Mechaniken",
+      "data": "Daten",
+      "settings": "Einstellungen",
       "itemBehavior": "Verhalten",
-      "blockSettings": "Block Settings",
+      "blockSettings": "Blockeinstellungen",
       "blockBehavior": "Verhalten",
-      "events": "Events",
-      "loot": "Loot",
-      "model": "Item Model"
+      "events": "Ereignisse",
+      "loot": "Beute",
+      "model": "Item-Modell"
     },
     "empty": {
       "general": "Noch nichts hinzugefügt (z.B. Lore).",
-      "appearance": "Noch keine Pack-Optionen (z.B. CustomArmor, Color).",
-      "attributes": "Noch keine AttributeModifiers oder Enchantments.",
+      "appearance": "Noch keine Optionen fürs Aussehen (z. B. Farbe, eigene Rüstung).",
+      "attributes": "Noch keine Attribute oder Verzauberungen.",
       "components": "Noch keine Components.",
       "mechanics": "Noch keine Mechanics.",
       "data": "Noch keine Item-Daten (z.B. Food, Equippable).",
-      "settings": "Noch keine Settings (z.B. Tags, Fuel Time).",
+      "settings": "Noch keine Einstellungen (z. B. Tags, Brenndauer).",
       "itemBehavior": "Noch keine Verhalten (z. B. Platzierung an Wänden, Bereichsabbau).",
       "blockSettings": "Noch keine Block-Einstellungen (z. B. Hardness, Sounds).",
       "blockBehavior": "Noch keine Optionen des Verhaltens (z. B. Sounds, weitere Verhalten).",
@@ -91,18 +76,18 @@
     "materialHelp": "Basis-Item in Minecraft. Standard ist PAPER; für Werkzeuge/Rüstung das passende Material.",
     "folder": "Ordner",
     "tooltipPreview": "Tooltip-Vorschau",
-    "tooltipHelp": "Ohne eigene Farbe zeigt Minecraft die Lore lila und kursiv an."
+    "tooltipHelp": "Ohne eigene Farbe zeigt Minecraft die Lore lila und kursiv an.",
+    "nameLabel": "Anzeigename",
+    "idLabel": "Item-ID",
+    "idHelp": "Der Schlüssel des Items im YAML und in {target, select, nexo {/nexo give} other {/ce item give}}. Nur Kleinbuchstaben, Zahlen und _.",
+    "nameHelp": "MiniMessage-Text. Farben: {colors} · Formatierung: {formatting}"
   },
   "yaml": {
     "notObject": "Erwartet Schlüssel-Wert-Paare (z.B. \"Mechanics:\").",
-    "extraTitle": "Zusätzliches YAML",
     "extraDescription": "Für alles, was es im Editor (noch) nicht gibt. Wird zum Schluss über die Einstellungen gelegt und überschreibt gleiche Schlüssel.",
     "example": "# Beispiel:",
     "error": "YAML-Fehler: {error}",
-    "keyHint": "Nicht den Item-Schlüssel ({id}) angeben – nur den Inhalt darunter.",
-    "finalTitle": "Fertiges YAML",
-    "finalDescription": "So landet das Item in {file}",
-    "computing": "# wird berechnet …"
+    "keyHint": "Nicht den Item-Schlüssel ({id}) angeben – nur den Inhalt darunter."
   },
   "model": {
     "parents": {
@@ -191,8 +176,6 @@
     "caseNoValue": "Fall ohne Wert",
     "entrySlot": "Ab {threshold}",
     "modelSlot": "Modell {index}",
-    "caseHeading": "Fall",
-    "entryHeading": "Eintrag",
     "branches": "Zweige",
     "property": "Eigenschaft",
     "open": "{name} öffnen",
@@ -328,7 +311,9 @@
       "simple_particle_block": "Partikel",
       "wall_torch_particle_block": "Wandfackel",
       "directional_attached_block": "An der Wand haftend",
-      "on_liquid_block": "Auf dem Wasser (Seerose)"
+      "on_liquid_block": "Auf dem Wasser (Seerose)",
+      "none": "Keins",
+      "other": "Anderes (aus dem zusätzlichen YAML)"
     },
     "states": {
       "toMulti": "Mehrere Zustände nutzen",
@@ -389,28 +374,22 @@
       "elements": "Elemente",
       "elementsHelp": "Was der Block zeigt. Ein Item-Display ohne Item zeigt das Modell dieses Items. Positionen sind in Blöcken ab der Ecke des Blocks; ohne Position steht ein Element in der Mitte des Blocks (ein Block-Display an der Ecke).",
       "previewHelp": "Der Umriss des Blocks ist gelb. Andere Blöcke und Texte erscheinen als graue Blöcke."
-    }
+    },
+    "title": "Block",
+    "description": "CraftEngine platziert das Item als eigenen Block."
   },
   "ceFurniture": {
     "title": "Möbel",
     "description": "CraftEngine platziert das Item als Möbel aus Display-Entities, das frei auf einem Block stehen kann.",
-    "toggle": "Als Möbel platzieren",
-    "toggleHelp": "Das Item platziert ein Möbel mit derselben ID.",
-    "toggleBlocked": "Das Item platziert einen Block. Schalte „Als Block platzieren“ aus, um es zum Möbel zu machen.",
     "variant": "Variante",
-    "variantHelp": "Jede Variante zeigt, wie das Möbel aussieht, wenn ein Spieler es auf einen Block, an seine Seite oder darunter setzt.",
     "anchors": {
       "ground": "Boden",
       "wall": "Wand",
       "ceiling": "Decke"
     },
-    "variantMissing": "Das Möbel hat hier keine Variante, daher lässt sich das Item so nicht platzieren.",
-    "addVariant": "Variante hinzufügen",
     "removeVariant": "Variante entfernen",
-    "previewHelp": "Die Variante, wie sie vor dem Spieler steht. Hitboxen sind gelb, Sitze blau. Andere Blöcke und Texte erscheinen als graue Blöcke.",
     "rotation": "Drehung",
     "alignment": "Ausrichtung",
-    "rulesHelp": "Wie das Möbel einrastet, wenn ein Spieler es platziert.",
     "rotations": {
       "any": "Beliebiger Winkel",
       "four": "In 90°-Schritten",
@@ -479,11 +458,9 @@
     "settings": "Einstellungen",
     "hitTimes": "Schläge bis zum Abbau",
     "settingsHelp": "Andere Schlüssel gehören ins zusätzliche YAML unter furniture:.",
-    "moreKeys": "Weitere Schlüssel ({count})",
     "behaviors": "Verhalten",
     "behaviorsHelp": "Lager, Anzeigeplätze für Items und Licht. Jedes Verhalten kann eigene Hitboxen pro Variante setzen.",
     "loot": "Lässt beim Abbau das Item fallen",
-    "lootHelp": "Nutzt CraftEngines Möbel-Loot. Anderen Loot schreibst du ins zusätzliche YAML unter furniture: loot:.",
     "seat": "Sitz",
     "seatYawValue": "Yaw {yaw}",
     "seatCount": "{count, plural, one {# Sitz} other {# Sitze}}"
@@ -673,5 +650,41 @@
       "advancedNote": "Selten nötig. Nexo liest es, die meisten Blöcke kommen ohne aus.",
       "modelsDescription": "Die zusätzlichen Modelle, die der Blocktyp nutzt: seine Stapelstufen oder ein Modell pro Seite."
     }
+  },
+  "sections": {
+    "nav": "Bereiche des Items",
+    "basics": "Grundlagen",
+    "model": "Modell",
+    "textures": "Texturen",
+    "features": "Eigenschaften",
+    "block": "Block",
+    "furniture": "Möbel",
+    "events": "Ereignisse",
+    "loot": "Beute",
+    "recipes": "Rezepte",
+    "advanced": "Erweitert"
+  },
+  "features": {
+    "add": "Eigenschaft hinzufügen",
+    "addTitle": "Zu {group} hinzufügen",
+    "addDescription": "Wähle, was dieses Item haben soll. Die Suche findet Namen, YAML-Schlüssel und Beschreibungen.",
+    "count": "{count, plural, one {# Eigenschaft} other {# Eigenschaften}}"
+  },
+  "header": {
+    "copy": "Eigenschaften kopieren",
+    "paste": "Eigenschaften einfügen",
+    "moveToFolder": "In Ordner verschieben",
+    "delete": "Item löschen"
+  },
+  "advanced": {
+    "title": "Roh-YAML",
+    "showYaml": "Fertiges YAML zeigen"
+  },
+  "palette": {
+    "group": "Einstellungen dieses Items",
+    "added": "In {group}",
+    "available": "Zu {group} hinzufügen",
+    "tooOld": "Zu {group} hinzufügen (braucht Minecraft {version} oder neuer)",
+    "removed": "Zu {group} hinzufügen (nur bis Minecraft {version})"
   }
 }

@@ -138,6 +138,7 @@ export function PropertyFeatureRow({
   return (
     <FeatureRow
       featureId={def.id}
+      keepMounted
       label={label}
       summary={summary}
       yamlKey={propertyYamlPath(def) ?? undefined}

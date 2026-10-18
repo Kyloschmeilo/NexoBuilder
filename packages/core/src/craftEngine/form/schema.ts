@@ -4,11 +4,13 @@
  * default assets. The groups live in `schema/`; `form/build.ts` explains how paths and message keys are derived.
  */
 import type { PropertyDef } from '../../form/build';
+import { withCatalog } from '../../form/catalogMeta';
 import type { FormSchema } from '../../form/types';
 import { eventPropertyIds } from '../events';
 import { lootPropertyIds } from '../loot';
 import { CE_BLOCK_BEHAVIOR_PROPERTIES } from './schema/blockBehavior';
 import { CE_BLOCK_SETTINGS_PROPERTIES } from './schema/blockSettings';
+import { CE_CATALOG } from './schema/catalog';
 import { CE_DATA_PROPERTIES } from './schema/data';
 import { CE_EVENT_PROPERTIES } from './schema/events';
 import { CE_GENERAL_PROPERTIES } from './schema/general';
@@ -25,17 +27,21 @@ export const CE_PROPERTY_GROUPS: Array<{ id: CraftEnginePropertyGroup; label: st
   ['general', 'data', 'settings', 'itemBehavior', 'blockSettings', 'blockBehavior', 'events', 'loot', 'model'] as const
 ).map((id) => ({ id, label: `groups.${id}.label`, description: `groups.${id}.description` }));
 
-export const CE_PROPERTIES: PropertyDef[] = [
-  ...CE_GENERAL_PROPERTIES,
-  ...CE_DATA_PROPERTIES,
-  ...CE_SETTINGS_PROPERTIES,
-  ...CE_ITEM_BEHAVIOR_PROPERTIES,
-  ...CE_BLOCK_SETTINGS_PROPERTIES,
-  ...CE_BLOCK_BEHAVIOR_PROPERTIES,
-  ...CE_EVENT_PROPERTIES,
-  ...CE_LOOT_PROPERTIES,
-  ...CE_MODEL_PROPERTIES,
-];
+/** Every property, with the catalog categories, common flags and aliases of `schema/catalog.ts`. */
+export const CE_PROPERTIES: PropertyDef[] = withCatalog(
+  [
+    ...CE_GENERAL_PROPERTIES,
+    ...CE_DATA_PROPERTIES,
+    ...CE_SETTINGS_PROPERTIES,
+    ...CE_ITEM_BEHAVIOR_PROPERTIES,
+    ...CE_BLOCK_SETTINGS_PROPERTIES,
+    ...CE_BLOCK_BEHAVIOR_PROPERTIES,
+    ...CE_EVENT_PROPERTIES,
+    ...CE_LOOT_PROPERTIES,
+    ...CE_MODEL_PROPERTIES,
+  ],
+  CE_CATALOG,
+);
 
 /** Paths that ResourcepackBuilder sets automatically: the material and the display name. */
 export const CE_MANAGED_PATHS = ['material', 'data.item_name'];

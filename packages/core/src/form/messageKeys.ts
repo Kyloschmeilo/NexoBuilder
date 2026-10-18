@@ -1,4 +1,5 @@
 /** The message keys a form references, for the tests that check them against the catalogues. */
+import { categoryMessageKey } from './catalogMeta';
 import type { Field } from './fields';
 import type { Option } from './options';
 import type { FormSchema } from './types';
@@ -33,13 +34,14 @@ export function fieldMessageKeys(field: Field): string[] {
   return keys;
 }
 
-/** The keys of the groups and properties of a form, in its `messages` namespace. */
+/** The keys of the groups, properties and property categories of a form, in its `messages` namespace. */
 export function formMessageKeys(schema: FormSchema): string[] {
   const keys: string[] = [];
   for (const group of schema.groups) keys.push(group.label, group.description);
   for (const property of schema.properties) {
     keys.push(property.label, property.description, ...fieldMessageKeys(property.field));
     if (property.hint) keys.push(property.hint);
+    if (property.category) keys.push(categoryMessageKey(property.group, property.category));
   }
   return keys;
 }

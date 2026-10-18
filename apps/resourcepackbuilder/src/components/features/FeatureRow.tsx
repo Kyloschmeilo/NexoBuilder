@@ -40,6 +40,11 @@ export interface FeatureRowProps {
   onOpenChange?: (open: boolean) => void;
   /** The `⋯` menu (Reset, Copy YAML, Remove). */
   menu?: MenuEntry[];
+  /**
+   * Keeps the expanded content mounted (hidden) once it was open, so drafts that do not parse yet survive closing the
+   * row, e.g. when opening another feature closes it.
+   */
+  keepMounted?: boolean;
   /** Set on the row, for jumping to a feature (`[data-feature-id]`). */
   featureId?: string;
   className?: string;
@@ -59,6 +64,7 @@ export function FeatureRow({
   defaultOpen = false,
   onOpenChange,
   menu,
+  keepMounted = false,
   featureId,
   className,
 }: FeatureRowProps) {
@@ -67,6 +73,9 @@ export function FeatureRow({
   const [ownOpen, setOwnOpen] = useState(defaultOpen);
   const expandable = !control && children !== undefined && children !== null && children !== false;
   const isOpen = expandable && (open ?? ownOpen);
+  // With keepMounted, fields once opened stay mounted while collapsed
+  const [wasOpen, setWasOpen] = useState(isOpen);
+  if (isOpen && !wasOpen) setWasOpen(true);
   const toggle = () => {
     setOwnOpen(!isOpen);
     onOpenChange?.(!isOpen);
@@ -140,7 +149,7 @@ export function FeatureRow({
       </div>
       {expandable && (
         <div id={contentId} hidden={!isOpen} className="pr-3 pb-3 pl-8">
-          {isOpen && children}
+          {(isOpen || (keepMounted && wasOpen)) && children}
         </div>
       )}
     </div>

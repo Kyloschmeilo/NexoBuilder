@@ -39,8 +39,9 @@ describe('catalogFromPropertyGroup', () => {
     });
     expect(food?.preview).toMatch(/^Components:\n {2}food:\n/);
     expect(food?.added).toBeUndefined();
-    // No Nexo component has a category yet: one "Other" category
-    expect(categories).toEqual([{ id: 'other', label: 'Other' }]);
+    // Every Nexo component has a category, named from the catalogue, in the order the form first uses them
+    expect(categories.map((category) => category.id)).toEqual(['behavior', 'combat', 'appearance', 'tooltip', 'foodUse', 'equipment']);
+    expect(categories.find((category) => category.id === 'foodUse')?.label).toBe(lookup('schema', 'groups.components.categories.foodUse'));
   });
 
   it('marks the properties the item uses as added', () => {
@@ -75,7 +76,8 @@ describe('catalogFromPropertyGroup', () => {
           ? { ...def, category: 'food', common: true, aliases: ['eat'] }
           : def.id === 'Components.max_damage'
             ? { ...def, category: 'durability_stuff' }
-            : def,
+            : // The other entries go under "Other"
+              { ...def, category: undefined },
       ),
     };
     const { items, categories } = catalogFromPropertyGroup(schema, { config: {} }, 'components', {

@@ -48,16 +48,6 @@ export function MinVersionBadge({ field }: { field: Field }) {
   );
 }
 
-/** Field label with its YAML key as tooltip, for controls that carry their own label (checkboxes). */
-export function FieldName({ field }: { field: Field }) {
-  const label = useFieldLabel(field);
-  return (
-    <Tip label={fieldYamlKey(field)}>
-      <span className="min-w-0 truncate">{label}</span>
-    </Tip>
-  );
-}
-
 interface FieldShellProps {
   field: Field;
   /** The label is omitted (the context already names the field); help then shows below the control. */

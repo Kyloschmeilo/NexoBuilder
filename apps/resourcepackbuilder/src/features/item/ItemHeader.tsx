@@ -1,16 +1,16 @@
+/** The header of the item editor: name, check result, facts and actions of the open item. */
 import { useTranslations } from 'next-intl';
 import { Box, ClipboardCopy, ClipboardPaste, Copy, FolderInput, Gift, Trash2 } from 'lucide-react';
 import { getFolderPathLabel, type Item, itemMaterial } from '@resourcepackbuilder/core/project';
 import type { Issue } from '@resourcepackbuilder/utils';
 import { PLAYER_NAME_PATTERN } from '@resourcepackbuilder/test-server';
 import { canCopyItemConfig, canPasteItemConfig, clipboardLabel } from '@resourcepackbuilder/core/nexo';
-import { IconButton, PageHeader, Thumb, Tip } from '@resourcepackbuilder/ui';
-import { Badge } from '@resourcepackbuilder/ui/components/badge';
+import { type MenuEntry, PageHeader, Thumb, Tip } from '@resourcepackbuilder/ui';
 import { Button } from '@resourcepackbuilder/ui/components/button';
 import { useThumbnail } from '../../components/useThumbnail';
 import { IssueCountBadges } from '../../components/IssueCountBadges';
-import { MiniMessageBox } from '../../components/miniMessage/MiniMessageBox';
-import { MiniMessageLine } from '../../components/miniMessage/MiniMessageLine';
+import { MiniMessageTitle } from '../../components/miniMessage/MiniMessageLine';
+import { TargetDot } from '../../components/TargetDot';
 import { useBusyAction } from '../../hooks/useBusyAction';
 import { useServices } from '../../services/bootstrap';
 import { useClipboardStore } from '../../store/clipboard';
@@ -56,82 +56,100 @@ function GiveButton({ item }: { item: Item }) {
   );
 }
 
-/** The item's state badges: id, folder, material and the result of the checks. */
-function ItemBadges({ item, issues }: { item: Item; issues: Issue[] }) {
+/** The meta line below the name: item id, folder, material and the project's target, each a separate fact. */
+function ItemMeta({ item }: { item: Item }) {
   const t = useTranslations('item');
+  const tTargets = useTranslations('layout.projectForm.targets');
   const project = useOpenProject();
   return (
     <>
       <Tip label={t('editor.itemId')}>
-        <Badge variant="outline" className="border-primary font-mono text-primary">
-          {item.itemId}
-        </Badge>
+        <code className="font-mono text-text">{item.itemId}</code>
       </Tip>
+      <Separator />
       <Tip label={t('editor.folder')}>
-        <Badge variant="outline">{getFolderPathLabel(project, item.folderId)}</Badge>
+        <span className="truncate">{getFolderPathLabel(project, item.folderId)}</span>
       </Tip>
-      <Badge variant="outline" className="font-mono">
-        {itemMaterial(item)}
-      </Badge>
-      <IssueCountBadges issues={issues} okLabel={t('editor.ready')} />
+      <Separator />
+      <Tip label={t('general.material')}>
+        <code className="font-mono">{itemMaterial(item)}</code>
+      </Tip>
+      <Separator />
+      <span className="inline-flex items-center gap-1.5">
+        <TargetDot target={project.target} />
+        {tTargets(`${project.target}.name`)}
+      </span>
     </>
   );
 }
 
-function ItemActions({ item }: { item: Item }) {
+function Separator() {
+  return (
+    <span aria-hidden className="text-text-faint">
+      ·
+    </span>
+  );
+}
+
+/** The rarer actions of the `⋯` menu: copy and paste features (Nexo), move to a folder and delete. */
+function useItemMenu(item: Item): MenuEntry[] {
   const t = useTranslations('item');
-  const tCommon = useTranslations('common');
   const clip = useClipboardStore((s) => s.clip);
   const { target } = useOpenProject();
   const actions = useItemActions();
   // Copying works on Nexo's property groups; other targets do not offer it
   const canCopy = canCopyItemConfig(target);
   const canPaste = canPasteItemConfig(clip, target) && clip.sourceId !== item.id;
-  const pasteTip = clip ? t('editor.pasteTooltip', { name: clipboardLabel(clip) }) : t('editor.pasteDisabled');
-  return (
-    <>
-      <GiveButton item={item} />
-      {canCopy && (
-        <>
-          <Tip label={t('editor.copyTooltip')}>
-            <Button variant="outline" size="sm" onClick={() => actions.copyProperties(item.id)}>
-              <ClipboardCopy /> {tCommon('copy')}
-            </Button>
-          </Tip>
-          <Tip label={pasteTip}>
-            <Button variant="outline" size="sm" disabled={!canPaste} onClick={() => actions.pasteProperties([item.id])}>
-              <ClipboardPaste /> {tCommon('paste')}
-            </Button>
-          </Tip>
-        </>
-      )}
-      <Button variant="outline" size="sm" onClick={() => actions.duplicate(item)}>
-        <Copy /> {tCommon('duplicate')}
-      </Button>
-      <IconButton label={t('editor.move')} variant="outline" onClick={() => moveItemDialog.openWithPayload({ itemId: item.id })}>
-        <FolderInput />
-      </IconButton>
-      <IconButton label={tCommon('delete')} variant="destructive" onClick={() => void actions.remove(item)}>
-        <Trash2 />
-      </IconButton>
-    </>
-  );
+  return [
+    ...(canCopy
+      ? ([
+          {
+            icon: <ClipboardCopy />,
+            label: t('header.copy'),
+            description: t('editor.copyTooltip'),
+            onSelect: () => actions.copyProperties(item.id),
+          },
+          {
+            icon: <ClipboardPaste />,
+            label: t('header.paste'),
+            description: clip ? t('editor.pasteTooltip', { name: clipboardLabel(clip) }) : t('editor.pasteDisabled'),
+            disabled: !canPaste,
+            onSelect: () => actions.pasteProperties([item.id]),
+          },
+          'separator',
+        ] satisfies MenuEntry[])
+      : []),
+    { icon: <FolderInput />, label: t('header.moveToFolder'), onSelect: () => moveItemDialog.openWithPayload({ itemId: item.id }) },
+    'separator',
+    { icon: <Trash2 />, label: t('header.delete'), destructive: true, onSelect: () => void actions.remove(item) },
+  ];
 }
 
-/** Thumbnail, name, badges and actions of the item; the actions wrap below when the editor is narrow. */
+/**
+ * The slim header of the item editor: thumbnail, the display name drawn as MiniMessage on the page, the check result
+ * as status pills, one meta line, Give and Duplicate, and the rarer actions in the `⋯` menu.
+ */
 export function ItemHeader({ item, issues }: { item: Item; issues: Issue[] }) {
+  const t = useTranslations('item');
+  const tCommon = useTranslations('common');
   const thumb = useThumbnail(item.model);
+  const actions = useItemActions();
+  const menu = useItemMenu(item);
   return (
     <PageHeader
-      icon={<Thumb src={thumb} size={48} checkered={false} fallback={<Box className="size-6 opacity-60" />} />}
-      title={
-        // Minecraft colours are made for a dark background, so the name sits in a dark box in both themes
-        <MiniMessageBox className="min-w-0 px-3 py-0.5 align-top font-heading text-2xl leading-8">
-          <MiniMessageLine text={item.displayName || item.itemId} />
-        </MiniMessageBox>
+      thumb={<Thumb src={thumb} size={32} checkered={false} fallback={<Box className="size-5 opacity-60" />} />}
+      title={<MiniMessageTitle text={item.displayName || item.itemId} />}
+      status={<IssueCountBadges issues={issues} okLabel={t('editor.ready')} />}
+      meta={<ItemMeta item={item} />}
+      actions={
+        <>
+          <GiveButton item={item} />
+          <Button variant="outline" size="sm" onClick={() => actions.duplicate(item)}>
+            <Copy /> {tCommon('duplicate')}
+          </Button>
+        </>
       }
-      meta={<ItemBadges item={item} issues={issues} />}
-      actions={<ItemActions item={item} />}
+      menu={menu}
     />
   );
 }

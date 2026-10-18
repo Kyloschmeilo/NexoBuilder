@@ -51,9 +51,6 @@ export type DockTab = 'yaml' | 'checks';
 /** A section of the item editor: one of the fixed sections (general, model, recipes, yaml) or a property group of the project's form. */
 export type EditorSection = string;
 
-/** @deprecated Use {@link EditorSection}; the item editor's tabs become sections. */
-export type EditorTab = EditorSection;
-
 /** A width range in pixels, with the width used until the user drags it. */
 export interface WidthRange {
   min: number;
@@ -243,9 +240,6 @@ export function setCommandPaletteOpen(open: boolean): void {
 export function setEditorSection(editorSection: EditorSection): void {
   useUiStore.setState({ editorSection });
 }
-
-/** @deprecated Use {@link setEditorSection}. */
-export const setEditorTab = setEditorSection;
 
 /** Expands or collapses a feature row of an editor; `key` is chosen by the editor. */
 export function setFeatureExpanded(key: string, open: boolean): void {
