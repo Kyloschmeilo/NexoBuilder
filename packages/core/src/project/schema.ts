@@ -6,6 +6,8 @@
  * Migrations (as preprocessing steps):
  *  - armor settings moved from `item.config.$armor` to `item.armor`
  *  - issues stored with imported models: `params` became `args`
+ *  - Nexo item configs move to the keys Nexo 1.30 reads (renamed keys, dropped keys, three-state `cullable`; see
+ *    legacyNexoConfig.ts)
  *
  * The TypeScript types stay in types.ts and the entity modules; the `SchemaChecks` at the end make sure both agree.
  */
