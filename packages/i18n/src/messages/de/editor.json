@@ -8,11 +8,28 @@
     "defaultTooltip": "Nicht gesetzt – {plugin} verwendet den Standardwert",
     "allowedRange": "Erlaubt: {min} bis {max}",
     "selectOrType": "Auswählen oder eingeben",
-    "notSetOption": "– nicht gesetzt –",
-    "placeholderOption": "– {placeholder} –",
     "moveUp": "Nach oben",
     "moveDown": "Nach unten",
-    "pickColor": "Farbe wählen"
+    "pickColor": "Farbe wählen",
+    "axis": "{axis}-Wert",
+    "defaultIs": "Standard: {value}",
+    "noMatches": "Keine Option passt.",
+    "noResources": "Keine Ressource passt.",
+    "notSet": "Nicht gesetzt",
+    "notSetHint": "Lässt den Schlüssel weg; das Plugin nimmt seinen Standardwert",
+    "off": "aus",
+    "on": "an",
+    "pickResource": "Aus dem Projekt wählen",
+    "resourceGroups": {
+      "items": "Items",
+      "models": "Modelle",
+      "sounds": "Sounds",
+      "textures": "Texturen"
+    },
+    "searchOptions": "{placeholder} – zum Suchen tippen",
+    "searchResources": "Items, Modelle, Texturen und Sounds durchsuchen",
+    "unset": "Zurücksetzen",
+    "unsetWithDefault": "Zurücksetzen (Standard: {value})"
   },
   "field": {
     "minVersion": "ab {version}",
@@ -26,7 +43,10 @@
     "noTexture": "Noch keine Textur",
     "noTextureHint": "Noch keine Textur (empfohlen: {size})",
     "replace": "Ersetzen",
-    "uploadPng": "PNG hochladen"
+    "uploadPng": "PNG hochladen",
+    "entry": "Eintrag {index}",
+    "entryError": "Eintrag {index}: {error}",
+    "listEmpty": "Noch keine Einträge."
   },
   "typed": {
     "entry": "Eintrag",

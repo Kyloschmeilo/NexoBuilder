@@ -66,11 +66,13 @@ interface FieldShellProps {
   wide?: boolean;
   /** Translated validation message. */
   error?: string;
+  /** Id of the control, so the label names it and a click on the label focuses it. */
+  htmlFor?: string;
   children: ReactNode;
 }
 
 /** A schema field as a `FieldRow`. */
-export function FieldShell({ field, hideLabel, wide, error, children }: FieldShellProps) {
+export function FieldShell({ field, hideLabel, wide, error, htmlFor, children }: FieldShellProps) {
   const text = useSchemaText();
   const label = useFieldLabel(field);
   const target = useProjectStore((s) => s.project?.target);
@@ -79,6 +81,7 @@ export function FieldShell({ field, hideLabel, wide, error, children }: FieldShe
   return (
     <FieldRow
       label={hasLabel ? label : undefined}
+      htmlFor={hasLabel ? htmlFor : undefined}
       yamlKey={hasLabel ? fieldYamlKey(field) : undefined}
       docs={hasLabel && field.docs && target ? { url: field.docs, target, label } : undefined}
       badges={hasLabel && <MinVersionBadge field={field} />}
