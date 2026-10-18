@@ -174,7 +174,9 @@
     "gridUneven": "Das Bild ({width}×{height}) lässt sich nicht gleichmäßig in {rows} Zeile(n) × {columns} Spalte(n) teilen.",
     "cellTooLarge": "Ein Glyph-Feld ist {width}×{height} groß (maximal {max}×{max}). Bild verkleinern oder in Zeilen/Spalten aufteilen.",
     "fontInvalid": "Die Schriftart muss wie namespace:name aussehen.",
-    "animatedShaders": "Animierte Glyphen nutzen Core-Shader und können bei Minecraft-Updates kaputtgehen."
+    "animatedShaders": "Animierte Glyphen nutzen Core-Shader und können bei Minecraft-Updates kaputtgehen.",
+    "charInvalid": "Das Zeichen muss genau ein Zeichen sein.",
+    "shadowInvalid": "Die Schattenfarbe muss wie #AARRGGBB oder #RRGGBB aussehen."
   },
   "sound": {
     "idInvalid": "Der Name darf nur Kleinbuchstaben, Zahlen sowie _ . - enthalten (z.B. block.rubin.place).",
@@ -184,7 +186,10 @@
     "volumeRange": "Die Lautstärke sollte zwischen 0 und 1 liegen (größer als 1 erhöht nur die Reichweite).",
     "jukeboxDurationMissing": "Bei der Musik-CD fehlt die Länge des Liedes (z.B. 2m 30s oder 150s).",
     "comparatorRange": "Das Komparator-Signal muss zwischen 0 und 15 liegen.",
-    "streamLongSongs": "Lange Lieder besser „streamen“ – dann lädt Minecraft sie nicht komplett in den Speicher."
+    "streamLongSongs": "Lange Lieder besser „streamen“ – dann lädt Minecraft sie nicht komplett in den Speicher.",
+    "weightInvalid": "Die Gewichtung muss eine ganze Zahl ab 1 sein.",
+    "referenceInvalid": "Das verwiesene Sound-Event muss wie namespace:name aussehen (z. B. minecraft:block.stone.break).",
+    "referenceIgnoresFiles": "Nexo spielt nur das verwiesene Sound-Event ab, die hochgeladenen Dateien dieses Sounds werden also nicht genutzt."
   },
   "painting": {
     "datapackNeedsVersion": "Nexo erzeugt das Datapack für eigene Gemälde erst ab Minecraft 1.21.5 – für ältere Versionen musst du es selbst anlegen.",
@@ -288,7 +293,9 @@
     "equipmentSetPiecesMissing": "Das Ausrüstungsset hat keine Stufen (pieces), deshalb lehnt CraftEngine es ab.",
     "equipmentSetTierInvalid": "Die Stufe „{tier}“ muss eine ganze Anzahl Teile ab 1 sein, deshalb lehnt CraftEngine das Set ab.",
     "damageRuleTypeMissing": "Die Schadensregel hat keinen Schadenstyp und wird deshalb weggelassen.",
-    "damageRuleEmpty": "Die Schadensregel hat weder eine Formel noch Effekte, deshalb lehnt CraftEngine sie ab."
+    "damageRuleEmpty": "Die Schadensregel hat weder eine Formel noch Effekte, deshalb lehnt CraftEngine sie ab.",
+    "armorLayerUnsupported": "CraftEngine kennt keine Ausrüstungsebene „{layer}“, sie fehlt daher in equipments.yml.",
+    "armorTrimLayers": "Trim-basierte Ausrüstung nutzt nur die Texturen der Spielerrüstung (Ebene 1 und 2), die anderen Ebenen und die Ebenen-Optionen des Sets „{set}“ fallen daher weg."
   },
   "issueList": {
     "openItem": "Zum Item",

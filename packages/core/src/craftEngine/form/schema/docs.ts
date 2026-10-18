@@ -4,6 +4,7 @@
  * are the slugged heading texts); a type without a heading of its own links to its catalog's page.
  */
 import type { LogicCatalogName } from '../../logic/catalog';
+import type { MediaKind } from '../../../project/media/kinds';
 
 /** The wiki's base URL; every CraftEngine docs link starts with it. */
 export const CE_WIKI_URL = 'https://xiao-momi.github.io/craft-engine-wiki/';
@@ -19,6 +20,8 @@ export const CE_DOCS = {
   blockBehaviors: `${WIKI}/configuration/block/behaviors`,
   loot: `${WIKI}/reference/loot_table`,
   equipment: `${WIKI}/configuration/equipment`,
+  equipmentComponent: `${WIKI}/configuration/equipment#component-based`,
+  equipmentTrim: `${WIKI}/configuration/equipment#trim-based`,
   lang: `${WIKI}/configuration/translations`,
   events: `${WIKI}/reference/events`,
   conditions: `${WIKI}/reference/conditions`,
@@ -32,6 +35,20 @@ export const CE_DOCS = {
   attributeModifiers: `${WIKI}/configuration/attribute/modifier`,
   equipmentSets: `${WIKI}/configuration/attribute/equipment-set`,
   damageFormulas: `${WIKI}/configuration/attribute/damage-formula`,
+};
+
+/** The wiki pages of the media sections: images (with emoji), sounds and paintings */
+export const CE_MEDIA_DOCS: Record<MediaKind, string> = {
+  glyph: `${WIKI}/configuration/image`,
+  sound: `${WIKI}/configuration/sound`,
+  painting: `${WIKI}/configuration/painting`,
+};
+
+/** The wiki pages of emoji (a glyph's chat shortcuts) and of jukebox songs (a sound's music disc) */
+export const CE_MEDIA_EXTRA_DOCS = {
+  emoji: `${WIKI}/configuration/emoji`,
+  emojiOverrides: `${WIKI}/configuration/emoji#context-specific-overrides`,
+  jukeboxSongs: `${WIKI}/configuration/jukebox_song`,
 };
 
 /** The wiki page of a block behavior (`configuration/block/behaviors/<type>`). */

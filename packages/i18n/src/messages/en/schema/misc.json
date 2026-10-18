@@ -3,6 +3,7 @@
     "layers": {
       "layer1": "Layer 1",
       "layer2": "Layer 2",
+      "humanoidBaby": "Baby Layer",
       "elytra": "Elytra",
       "wolfArmor": "Wolf Armor",
       "horseArmor": "Horse Armor",

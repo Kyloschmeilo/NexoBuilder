@@ -1,4 +1,4 @@
-import { ARMOR_PROPERTY } from '../../../form/armor';
+import { armorProperty } from '../../../form/armor';
 import { field, properties } from '../../../form/build';
 import { withDocs } from '../../../form/docs';
 import { NEXO_DOCS } from './docs';
@@ -22,6 +22,6 @@ export const APPEARANCE_PROPERTIES = properties(
       defaultValue: () => 1000,
       docs: NEXO_DOCS.items.customModelData,
     },
-    armor: { ...ARMOR_PROPERTY, docs: NEXO_DOCS.armor.page },
+    armor: armorProperty({ page: NEXO_DOCS.armor.page, options: NEXO_DOCS.armor.equipmentModels }),
   }),
 );

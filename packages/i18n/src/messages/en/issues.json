@@ -174,7 +174,9 @@
     "gridUneven": "The image ({width}×{height}) cannot be split evenly into {rows} row(s) × {columns} column(s).",
     "cellTooLarge": "A glyph cell is {width}×{height} (at most {max}×{max}). Scale the image down or split it into rows/columns.",
     "fontInvalid": "The font must look like namespace:name.",
-    "animatedShaders": "Animated glyphs use core shaders and may break with Minecraft updates."
+    "animatedShaders": "Animated glyphs use core shaders and may break with Minecraft updates.",
+    "charInvalid": "The character must be exactly one character.",
+    "shadowInvalid": "The shadow color must look like #AARRGGBB or #RRGGBB."
   },
   "sound": {
     "idInvalid": "The name may only contain lowercase letters, digits and _ . - (e.g. block.ruby.place).",
@@ -184,7 +186,10 @@
     "volumeRange": "The volume should be between 0 and 1 (more than 1 only increases the range).",
     "jukeboxDurationMissing": "The music disc is missing the length of the song (e.g. 2m 30s or 150s).",
     "comparatorRange": "The comparator signal must be between 0 and 15.",
-    "streamLongSongs": "Better “stream” long songs – then Minecraft does not load them into memory completely."
+    "streamLongSongs": "Better “stream” long songs – then Minecraft does not load them into memory completely.",
+    "weightInvalid": "The weight must be a whole number of at least 1.",
+    "referenceInvalid": "The referenced sound event must look like namespace:name (e.g. minecraft:block.stone.break).",
+    "referenceIgnoresFiles": "Nexo plays only the referenced sound event, so the uploaded files of this sound are not used."
   },
   "painting": {
     "datapackNeedsVersion": "Nexo only creates the datapack for custom paintings from Minecraft 1.21.5 on – for older versions you have to create it yourself.",
@@ -288,7 +293,9 @@
     "equipmentSetPiecesMissing": "The equipment set has no tiers (pieces), so CraftEngine rejects it.",
     "equipmentSetTierInvalid": "The tier “{tier}” must be a whole number of pieces from 1 up, so CraftEngine rejects the set.",
     "damageRuleTypeMissing": "The damage rule has no damage type, so it is left out.",
-    "damageRuleEmpty": "The damage rule has neither a formula nor effects, so CraftEngine rejects it."
+    "damageRuleEmpty": "The damage rule has neither a formula nor effects, so CraftEngine rejects it.",
+    "armorLayerUnsupported": "CraftEngine has no equipment layer “{layer}”, so it is left out of equipments.yml.",
+    "armorTrimLayers": "Trim-based equipment only uses the player armor textures (layer 1 and 2), so the other layers and the layer options of the set “{set}” are left out."
   },
   "issueList": {
     "openItem": "Go to item",
