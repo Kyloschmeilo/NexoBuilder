@@ -83,8 +83,21 @@ export const CE_MEDIA_EXTRA_DOCS = {
   jukeboxSongs: `${WIKI}/configuration/jukebox_song`,
 };
 
-/** The wiki page of a block behavior (`configuration/block/behaviors/<type>`). */
-export const ceBlockBehaviorDocs = (type: string): string => `${CE_DOCS.blockBehaviors}/${type}`;
+/** Block behaviors whose wiki page is not named after the type (null: no page of their own yet) */
+const BEHAVIOR_PAGES: Record<string, string | null> = {
+  drop_exp_block: 'drop_experience_block',
+  vine_crop_head_block: null,
+  vine_crop_body_block: null,
+};
+
+/**
+ * The wiki page of a block behavior (`configuration/block/behaviors/<page>`); the behaviors page for a behavior the
+ * wiki does not document yet.
+ */
+export function ceBlockBehaviorDocs(type: string): string {
+  const page = Object.hasOwn(BEHAVIOR_PAGES, type) ? BEHAVIOR_PAGES[type] : type;
+  return page ? `${CE_DOCS.blockBehaviors}/${page}` : CE_DOCS.blockBehaviors;
+}
 
 /** The wiki page of an item behavior (`configuration/item/behaviors/<type>`). */
 export const ceItemBehaviorDocs = (type: string): string => `${CE_DOCS.itemBehaviors}/${type}`;
@@ -258,6 +271,8 @@ const LOGIC_DOCS: Record<LogicCatalogName, { page: string; anchors: Record<strin
   damageEffects: { page: CE_DOCS.damageFormulas, anchors: same('life_steal', 'potion_effect', 'function') },
   categorySources: { page: CE_DOCS.categories, anchors: same('list', 'regex', 'all_items') },
   atlasSources: { page: CE_DOCS.atlases, anchors: same('directory', 'single', 'filter', 'unstitch', 'paletted_permutations') },
+  // Each block behavior has a page of its own (ceBlockBehaviorDocs)
+  blockBehaviors: { page: CE_DOCS.blockBehaviors, anchors: {} },
   // Each item behavior has a page of its own (ceItemBehaviorDocs); one without links to the behaviors page
   itemBehaviors: { page: CE_DOCS.itemBehaviors, anchors: {} },
   // Each behavior has a page of its own (the catalog links it)

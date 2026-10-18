@@ -35,7 +35,7 @@ export function DropZone({ onFiles, accept, title, subtitle, formats, multiple =
       {...props}
       className={cn(
         'flex cursor-pointer flex-col items-center rounded-lg border border-dashed border-input text-center text-muted-foreground transition-colors outline-none',
-        'hover:border-primary hover:bg-accent hover:text-foreground focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/50',
+        'hover:border-primary hover:bg-accent hover:text-foreground focus-visible:border-ring focus-visible:ring-2 focus-visible:ring-ring',
         isDragging && 'border-primary bg-accent text-foreground',
         compact ? 'px-3.5 py-4' : 'px-5 py-8',
         className,
@@ -68,9 +68,7 @@ export function DropZone({ onFiles, accept, title, subtitle, formats, multiple =
       }}
     >
       <Upload className={cn('text-primary', compact ? 'size-5' : 'size-7')} />
-      <strong className="mt-2 mb-1 block font-heading text-base leading-5 font-semibold tracking-[0.06em] text-foreground uppercase">
-        {title}
-      </strong>
+      <strong className="mt-2 mb-1 block text-title font-semibold text-foreground">{title}</strong>
       {subtitle && <div className="text-[13px] leading-[18px]">{subtitle}</div>}
       {formats && (
         <div className="mt-3 flex flex-wrap justify-center gap-1.5">

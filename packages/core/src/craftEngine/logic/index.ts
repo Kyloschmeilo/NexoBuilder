@@ -1,10 +1,11 @@
 /**
  * The CraftEngine logic catalogs: conditions, functions, number providers, event triggers, loot sources, loot tables,
  * the typed values of the attribute system, the extra item behaviors, the furniture behaviors, the item updater types,
- * the sources of item browser categories and the sprite sources of atlases.
+ * the block behaviors, the sources of item browser categories and the sprite sources of atlases.
  */
 import { CE_ATLAS_SOURCES } from './atlasSources';
 import { CE_ATTRIBUTE_BASES, CE_ATTRIBUTE_SYNC_VALUES, CE_DAMAGE_EFFECTS, CE_DAMAGE_FORMULAS } from './attributes';
+import { CE_BLOCK_BEHAVIORS } from './blockBehaviors';
 import type { LogicCatalogName, LogicType } from './catalog';
 import { CE_CATEGORY_SOURCES } from './categorySources';
 import { CE_CONDITIONS } from './conditions';
@@ -19,6 +20,7 @@ import { CE_TRIGGERS } from './triggers';
 
 export { CE_ATLAS_SOURCES } from './atlasSources';
 export { CE_ATTRIBUTE_BASES, CE_ATTRIBUTE_SYNC_VALUES, CE_DAMAGE_EFFECTS, CE_DAMAGE_FORMULAS } from './attributes';
+export { CE_BLOCK_BEHAVIORS } from './blockBehaviors';
 export * from './catalog';
 export { CE_CATEGORY_SOURCES } from './categorySources';
 export { CE_CONDITIONS } from './conditions';
@@ -30,6 +32,7 @@ export { CE_LOOT_ENTRIES, CE_LOOT_FUNCTIONS } from './loot';
 export { CE_LOOT_SOURCES } from './lootSources';
 export { lootTable } from './shared';
 export { CE_NUMBERS } from './numbers';
+export { CE_PARTICLE_TYPES, particleFields } from './particles';
 export { CE_TRIGGERS, resolveTrigger, triggersFor } from './triggers';
 
 /** Every catalog by name */
@@ -47,6 +50,7 @@ export const CE_LOGIC: Record<LogicCatalogName, readonly LogicType[]> = {
   damageEffects: CE_DAMAGE_EFFECTS,
   categorySources: CE_CATEGORY_SOURCES,
   atlasSources: CE_ATLAS_SOURCES,
+  blockBehaviors: CE_BLOCK_BEHAVIORS,
   itemBehaviors: CE_ITEM_BEHAVIORS,
   furnitureBehaviors: CE_FURNITURE_BEHAVIORS,
   itemUpdaters: CE_ITEM_UPDATERS,

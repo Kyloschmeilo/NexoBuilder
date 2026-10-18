@@ -26,10 +26,12 @@ import { propertyById, type PropertyDef, setPropertyValue } from '@resourcepackb
 import { formFor } from '@resourcepackbuilder/core/targets';
 import {
   applyBlockBehavior,
+  type ApplyBlockBehaviorOptions,
   CE_DEFAULT_AUTO_STATE,
   craftEngineItemKey,
   newCraftEngineBlock,
   newCraftEngineFurniture,
+  setStorageOpenLook,
 } from '@resourcepackbuilder/core/craftEngine';
 import { getProject, mutate } from '../store/project';
 import { select, setExpanded } from '../store/ui';
@@ -238,14 +240,22 @@ export function updateCraftEngineFurniture(itemId: string, next: (furniture: Con
   );
 }
 
-/** Gives the item's block the behavior of a form with the states it needs, or none (`null`). */
-export function setBlockBehavior(itemId: string, type: string | null): void {
+/**
+ * Gives the item's block the behavior of a form with the states it needs, or none (`null`). The user's further
+ * behaviors and own states stay; `replaceStates` replaces own states the form cannot merge (after asking).
+ */
+export function setBlockBehavior(itemId: string, type: string | null, options?: ApplyBlockBehaviorOptions): void {
   const project = getProject();
   const item = project?.items[itemId];
   if (!project || !item) return;
   updateCraftEngineBlock(itemId, (block) =>
-    applyBlockBehavior(block, type, craftEngineItemKey(project, item), { auto_state: CE_DEFAULT_AUTO_STATE }),
+    applyBlockBehavior(block, type, craftEngineItemKey(project, item), { auto_state: CE_DEFAULT_AUTO_STATE }, options),
   );
+}
+
+/** Gives the item's storage block a closed and an open look (the `open` property), or takes them away. */
+export function setBlockStorageOpenLook(itemId: string, open: boolean): void {
+  updateCraftEngineBlock(itemId, (block) => setStorageOpenLook(block, open));
 }
 
 // --- Recipes -----------------------------------------------------------------------------------------

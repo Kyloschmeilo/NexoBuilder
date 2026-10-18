@@ -31,6 +31,7 @@
   "typed": {
     "entry": "Entry",
     "typePlaceholder": "Choose or type a type",
+    "docs": "Open the docs of this type",
     "chooseType": "Choose a type to see its keys.",
     "unknownType": "The form has no fields for “{type}”. Edit this entry as YAML.",
     "invert": "Invert",
@@ -42,5 +43,70 @@
     "objectHint": "A typed number provider, such as uniform",
     "premium": "Premium",
     "premiumHint": "Only CraftEngine Premium reads this type."
+  },
+  "devPrimitives": {
+    "actions": {
+      "addBehavior": "Add behavior",
+      "addRecipe": "Add recipe",
+      "copyFeatures": "Copy features",
+      "delete": "Delete item",
+      "duplicate": "Duplicate"
+    },
+    "choices": {
+      "block": "Block",
+      "furniture": "Furniture",
+      "nothing": "Nothing"
+    },
+    "colorTheme": "Color theme",
+    "empty": {
+      "behaviors": "No behaviors yet.",
+      "recipes": "No recipes yet."
+    },
+    "fields": {
+      "delay": "Delay",
+      "delayHelp": "Ticks before the behavior runs again. 20 ticks are one second.",
+      "displayName": "Display name",
+      "displayNameHelp": "MiniMessage tags such as '<'gold> or '<'bold> style the name.",
+      "glint": "Enchantment glint",
+      "hardness": "Hardness",
+      "hardnessHelp": "Time to mine the block. Stone is 1.5, obsidian is 50.",
+      "lore": "Lore",
+      "loreValue": "Burns whatever it touches",
+      "material": "Material",
+      "materialWarning": "Inherited from the template.",
+      "places": "Places",
+      "saturation": "Saturation",
+      "saturationError": "Saturation must be 0 or more.",
+      "type": "Type",
+      "unbreakable": "Unbreakable",
+      "variable": "Variable",
+      "variableValue": "Value"
+    },
+    "meta": {
+      "folder": "Weapons"
+    },
+    "panel": "A panel holds lists and previews.",
+    "pills": {
+      "draft": "Draft",
+      "errors": "{count, plural, one {# error} other {# errors}}",
+      "info": "Info",
+      "valid": "Valid",
+      "warnings": "{count, plural, one {# warning} other {# warnings}}"
+    },
+    "sections": {
+      "choices": "Choices",
+      "empty": "Empty states",
+      "feedback": "Feedback",
+      "fields": "Fields",
+      "fieldsDescription": "Field rows with label, control and YAML key, docs links beside the label and help in a popover.",
+      "food": "Food",
+      "foodDescription": "A sub-section with three short fields side by side.",
+      "lists": "Lists",
+      "listsDescription": "Rows expand in place or open in a dialog; drag the handle or use the arrow keys to reorder.",
+      "maps": "Maps",
+      "mapsDescription": "Keys rename when the input loses focus."
+    },
+    "title": "Editor primitives",
+    "toggleMode": "Light or dark"
   }
 }

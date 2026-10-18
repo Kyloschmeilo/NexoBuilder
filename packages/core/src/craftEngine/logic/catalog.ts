@@ -26,6 +26,7 @@ export type LogicCatalogName =
   | 'damageEffects'
   | 'categorySources'
   | 'atlasSources'
+  | 'blockBehaviors'
   | 'itemBehaviors'
   | 'furnitureBehaviors'
   | 'itemUpdaters';

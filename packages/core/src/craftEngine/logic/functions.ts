@@ -7,6 +7,7 @@
 import { field, type FieldSpecs } from '../../form/build';
 import { plainOptions } from '../../form/options';
 import { logicCatalog, type LogicTypeSpec } from './catalog';
+import { particleFields } from './particles';
 import { equipmentSlot, functionList, gate, hand, lootTable, numberProvider, placement, playerTarget, position, resource } from './shared';
 
 const text = () => field.text({ format: 'minimessage' });
@@ -48,15 +49,7 @@ export const CE_FUNCTIONS = logicCatalog('functions', [
     },
     true,
   ),
-  fn('particle', {
-    particle: resource(),
-    ...position(),
-    count: numberProvider(),
-    offset_x: numberProvider(),
-    offset_y: numberProvider(),
-    offset_z: numberProvider(),
-    speed: numberProvider(),
-  }),
+  fn('particle', particleFields()),
   fn(
     'potion_effect',
     {

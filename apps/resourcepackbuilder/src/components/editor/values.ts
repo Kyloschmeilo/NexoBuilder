@@ -21,6 +21,15 @@ export function isWideField(field: Field): boolean {
   return (field.type === 'text' && !!field.multiline) || WIDE_TYPES.has(field.type);
 }
 
+/**
+ * The fields of an object in display order: the common ones first (simple fields, then wide ones), and apart from them
+ * the fields the schema marks `advanced`, which the editor tucks into "More options".
+ */
+export function arrangeObjectFields(fields: readonly Field[]): { common: Field[]; advanced: Field[] } {
+  const byWidth = (list: Field[]) => [...list.filter((f) => !isWideField(f)), ...list.filter(isWideField)];
+  return { common: byWidth(fields.filter((f) => !f.advanced)), advanced: byWidth(fields.filter((f) => f.advanced)) };
+}
+
 /** Applies `showIf`: a field is hidden unless the sibling it depends on has one of the listed values. */
 export function isFieldVisible(field: Field, siblings: Record<string, unknown> | undefined): boolean {
   if (!field.showIf || !siblings) return true;

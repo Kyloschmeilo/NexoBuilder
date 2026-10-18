@@ -52,6 +52,12 @@ describe('palettePages', () => {
       { kind: 'view', view: 'templates' },
       { kind: 'view', view: 'globalVariables' },
       { kind: 'view', view: 'attributes' },
+      { kind: 'view', view: 'translations' },
+      { kind: 'view', view: 'categories' },
+      { kind: 'view', view: 'worldgen' },
+      { kind: 'view', view: 'atlases' },
+      { kind: 'view', view: 'pack' },
+      { kind: 'view', view: 'scripts' },
       { kind: 'view', view: 'testServer' },
       { kind: 'settings' },
     ]);
