@@ -260,9 +260,36 @@ export function setBlockStorageOpenLook(itemId: string, open: boolean): void {
 
 // --- Recipes -----------------------------------------------------------------------------------------
 
-export function addRecipe(itemId: string, type: RecipeType): void {
+/** Appends a new recipe of the type to the item; returns the new recipe's id. */
+export function addRecipe(itemId: string, type: RecipeType): string {
+  const id = uid('r_');
   updateItem(itemId, (item) => {
-    item.recipes.push(createRecipe(type, uid('r_')));
+    item.recipes.push(createRecipe(type, id));
+  });
+  return id;
+}
+
+/** Inserts a copy of the recipe right below it; returns the copy's id, or null when there is no such recipe. */
+export function duplicateRecipe(itemId: string, recipeId: string): string | null {
+  const id = uid('r_');
+  let copied = false;
+  updateItem(itemId, (item) => {
+    const index = item.recipes.findIndex((recipe) => recipe.id === recipeId);
+    if (index < 0) return;
+    item.recipes.splice(index + 1, 0, { ...current(item.recipes[index]), id });
+    copied = true;
+  });
+  return copied ? id : null;
+}
+
+/** Moves the recipe `delta` places up (negative) or down in the item's list; nothing happens at the ends. */
+export function moveRecipe(itemId: string, recipeId: string, delta: number): void {
+  updateItem(itemId, (item) => {
+    const from = item.recipes.findIndex((recipe) => recipe.id === recipeId);
+    const to = from + delta;
+    if (from < 0 || to < 0 || to >= item.recipes.length) return;
+    const [recipe] = item.recipes.splice(from, 1);
+    item.recipes.splice(to, 0, recipe);
   });
 }
 

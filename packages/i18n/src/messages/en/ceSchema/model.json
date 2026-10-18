@@ -29,7 +29,7 @@
     },
     "itemModel": {
       "label": "Item Model",
-      "description": "The items model definition the item points to (assets/<namespace>/items/<id>.json). CraftEngine sets it from the item ID by itself.",
+      "description": "The items model definition the item points to (assets/'<'namespace>/items/'<'id>.json). CraftEngine sets it from the item ID by itself.",
       "hint": "Only set it when another plugin or pack needs a fixed id; the item model tree on this tab is written to the item’s own definition.",
       "field": {
         "label": "Item model",

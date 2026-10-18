@@ -24,6 +24,10 @@ export interface PromptOptions {
   confirmLabel: string;
   /** Error text for an invalid value, or null when it is fine. Empty values are always rejected. */
   validate?: (value: string) => string | null;
+  /** Shown in the empty input */
+  placeholder?: string;
+  /** Values offered while typing, each with an optional description */
+  suggestions?: readonly { value: string; text?: string }[];
 }
 
 export type Question =

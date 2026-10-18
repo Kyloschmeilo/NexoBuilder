@@ -68,18 +68,16 @@ export function ModelPreview({ model, height = 340, showToolbar = true }: ModelP
       : null;
 
   return (
-    <div className="relative overflow-hidden rounded-lg border border-border bg-background" style={{ height }}>
+    <div data-slot="model-preview" className="relative overflow-hidden rounded-lg border border-line bg-surface-sunken" style={{ height }}>
       <div ref={attachStage} className="absolute inset-0 [&>canvas]:block [&>canvas]:size-full" />
       {note && (
-        <div className="absolute inset-0 grid place-items-center bg-background p-5 text-center text-[13px] text-muted-foreground">
-          {note}
-        </div>
+        <div className="absolute inset-0 grid place-items-center bg-surface-sunken p-5 text-center text-label text-text-muted">{note}</div>
       )}
       {showToolbar && !note && (
         <div className="pointer-events-none absolute inset-x-2 top-2 flex items-center gap-1.5 [&>*]:pointer-events-auto">
           <NativeSelect
             size="sm"
-            className="max-w-[220px] bg-card [&_select]:text-xs"
+            className="max-w-[220px] bg-surface [&_select]:text-meta"
             value={display}
             onChange={(e) => {
               if (isDisplayOption(e.target.value)) setDisplay(e.target.value);
@@ -94,7 +92,7 @@ export function ModelPreview({ model, height = 340, showToolbar = true }: ModelP
             ))}
           </NativeSelect>
           <span className="flex-1" />
-          <IconButton label={t('resetView')} variant="outline" className="bg-card" onClick={() => setResetCounter((c) => c + 1)}>
+          <IconButton label={t('resetView')} variant="outline" className="bg-surface" onClick={() => setResetCounter((c) => c + 1)}>
             <RotateCcw />
           </IconButton>
         </div>

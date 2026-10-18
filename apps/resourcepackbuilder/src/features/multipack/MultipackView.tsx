@@ -7,39 +7,36 @@ import { Layers } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 import { MULTIPACK_FILE, multipackTemplateIds, NEXO_DOCS, NEXO_MULTIPACK_FIELD } from '@resourcepackbuilder/core/nexo';
 import { NEXO_PLUGIN_DIR } from '@resourcepackbuilder/export';
-import { PageHeader, PageShell } from '@resourcepackbuilder/ui';
-import { Alert, AlertDescription } from '@resourcepackbuilder/ui/components/alert';
-import { Badge } from '@resourcepackbuilder/ui/components/badge';
+import { DocsLink, Page, PageHeader, StatusPill } from '@resourcepackbuilder/ui';
 import { setMultipack } from '../../commands/nexo';
 import { useOpenProject } from '../../store/project';
 import { NexoFieldContext } from '../dialogs/NexoFieldContext';
 import { ObjectFieldRows } from '../dialogs/ObjectFieldRows';
-import { DocsLinkButton } from '../media/DocsLinkButton';
+import { FilePath, PageHint } from '../media/RegistryPageParts';
 
 export function MultipackView() {
   const t = useTranslations('media.multipack');
   const project = useOpenProject();
   return (
     <NexoFieldContext>
-      <PageShell>
-        <PageHeader
-          icon={<Layers className="size-7" />}
-          title={t('title')}
-          meta={
-            <>
-              <Badge variant="secondary">{t('count', { count: multipackTemplateIds(project).length })}</Badge>
-              <Badge variant="outline" className="max-w-full truncate font-mono">
-                {`${NEXO_PLUGIN_DIR}/${MULTIPACK_FILE}`}
-              </Badge>
-            </>
-          }
-          actions={<DocsLinkButton href={NEXO_DOCS.multipack.page} label={t('docs')} />}
-        />
-        <Alert variant="info">
-          <AlertDescription>{t('hint')}</AlertDescription>
-        </Alert>
+      <Page
+        header={
+          <PageHeader
+            thumb={<Layers />}
+            title={t('title')}
+            meta={
+              <>
+                <StatusPill tone="muted" label={t('count', { count: multipackTemplateIds(project).length })} />
+                <FilePath path={`${NEXO_PLUGIN_DIR}/${MULTIPACK_FILE}`} />
+              </>
+            }
+            actions={<DocsLink url={NEXO_DOCS.multipack.page} target="nexo" label={t('title')} />}
+          />
+        }
+      >
+        <PageHint>{t('hint')}</PageHint>
         <ObjectFieldRows field={NEXO_MULTIPACK_FIELD} value={project.settings.multipack} onChange={setMultipack} />
-      </PageShell>
+      </Page>
     </NexoFieldContext>
   );
 }
