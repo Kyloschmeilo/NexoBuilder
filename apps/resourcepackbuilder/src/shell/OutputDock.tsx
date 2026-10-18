@@ -3,6 +3,7 @@
  * followed by the whole project's checks. Wide windows show it as a resizable column, narrow ones as an overlay.
  * What it shows comes from the output providers in `output.ts`.
  */
+import { type RefObject, useEffect, useRef } from 'react';
 import { ChevronRight, X } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 import { cn } from 'cn';
@@ -21,6 +22,7 @@ import { DOCK_WIDTH, type DockTab, selectTarget, setDockOpen, setDockTab, setDoc
 import type { Output } from './output';
 import { usePlan } from './PlanProvider';
 import { ResizeHandle } from './ResizeHandle';
+import { isModalDialogOpen } from './useShortcuts';
 
 const DOCK_TABS = ['yaml', 'checks'] as const satisfies readonly DockTab[];
 
@@ -94,24 +96,52 @@ interface OutputDockProps {
   isColumn: boolean;
 }
 
+/**
+ * Keyboard behaviour of the overlay dock (narrow windows) while `isOverlay`: focus moves into the dock when it opens
+ * and back to where it was (the toggle, a field) when it closes, and Escape closes it from anywhere, unless something
+ * else already handled the key or a modal dialog is open over it.
+ */
+export function useOverlayFocus(dock: RefObject<HTMLElement | null>, isOverlay: boolean): void {
+  useEffect(() => {
+    const element = dock.current;
+    if (!isOverlay || !element) return;
+    const previous = document.activeElement instanceof HTMLElement ? document.activeElement : null;
+    if (!element.contains(document.activeElement)) element.focus({ preventScroll: true });
+    const closeOnEscape = (e: KeyboardEvent) => {
+      if (e.key === 'Escape' && !e.defaultPrevented && !isModalDialogOpen()) {
+        e.preventDefault();
+        setDockOpen(false, false);
+      }
+    };
+    window.addEventListener('keydown', closeOnEscape);
+    return () => {
+      window.removeEventListener('keydown', closeOnEscape);
+      // Give the focus back only when it was in the dock (or got lost with it), never steal it from elsewhere
+      const active = document.activeElement;
+      const isLost = !active || active === document.body || element.contains(active);
+      if (isLost && previous?.isConnected) previous.focus({ preventScroll: true });
+    };
+  }, [dock, isOverlay]);
+}
+
 /** The dock with its YAML and Checks tabs, a close button and a resize handle on its left edge. */
 export function OutputDock({ output, isColumn }: OutputDockProps) {
   const t = useTranslations('layout.dock');
   const dockTab = useUiStore((s) => s.dockTab);
   const width = useUiStore((s) => s.dockWidth);
+  const dock = useRef<HTMLElement>(null);
+  useOverlayFocus(dock, !isColumn);
 
   return (
     <aside
+      ref={dock}
       aria-label={t('label')}
+      tabIndex={isColumn ? undefined : -1}
       style={{ width }}
       className={cn(
-        'flex min-h-0 max-w-full shrink-0 flex-col border-l border-line bg-surface',
+        'flex min-h-0 max-w-full shrink-0 flex-col border-l border-line bg-surface outline-none',
         isColumn ? 'relative' : 'absolute inset-y-0 right-0 z-30 shadow-(--shadow-overlay)',
       )}
-      onKeyDown={(e) => {
-        // The overlay closes with Escape, like other overlays
-        if (e.key === 'Escape' && !isColumn && !e.defaultPrevented) setDockOpen(false, false);
-      }}
     >
       <Tabs
         value={dockTab}

@@ -1,6 +1,8 @@
 /**
  * The app's keyboard shortcuts: Ctrl+Z / Ctrl+Y (Ctrl+Shift+Z) undo and redo project changes (text fields keep their
  * own undo), Ctrl+K opens the command palette and Ctrl+J shows or hides the output dock, also from inside a field.
+ * While a modal dialog (the palette included) is open, Ctrl+K and Ctrl+J do nothing: the key press is swallowed, so
+ * neither the browser nor the page behind the dialog reacts to it.
  */
 import { useEffect, useRef } from 'react';
 import { redo, undo } from '../store/project';
@@ -18,6 +20,14 @@ function isTextField(target: EventTarget | null): boolean {
   return target instanceof HTMLElement && (target.tagName === 'INPUT' || target.tagName === 'TEXTAREA' || target.isContentEditable);
 }
 
+/** Popups of modal dialogs (feature dialogs, confirm and prompt, the command palette) while they are open. */
+const OPEN_MODAL_SELECTOR = ':is([data-slot="dialog-content"], [data-slot="alert-dialog-content"]):not([data-closed])';
+
+/** Whether a modal dialog is open in `doc`; the page behind it must not react to the global shortcuts then. */
+export function isModalDialogOpen(doc: Document = document): boolean {
+  return doc.querySelector(OPEN_MODAL_SELECTOR) !== null;
+}
+
 /** Listens for the app's shortcuts while the shell is mounted. */
 export function useShortcuts(actions: ShortcutActions = {}): void {
   // The listener is registered once and always calls the latest actions
@@ -31,6 +41,10 @@ export function useShortcuts(actions: ShortcutActions = {}): void {
       if (!(e.ctrlKey || e.metaKey) || e.altKey) return;
       const key = e.key.toLowerCase();
       const { openCommandPalette, toggleDock } = latest.current;
+      if ((key === 'k' || key === 'j') && !e.shiftKey && isModalDialogOpen()) {
+        e.preventDefault();
+        return;
+      }
       if (key === 'k' && !e.shiftKey && openCommandPalette) {
         e.preventDefault();
         openCommandPalette();
