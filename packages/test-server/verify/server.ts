@@ -16,6 +16,7 @@ import {
   craftEngineVersionsUrl,
   DEFAULT_SERVER_PROPERTIES,
   EULA_TEXT,
+  INSTALLED_PLUGIN_JAR_PATTERNS,
   modrinthVersionsSchema,
   parseServerLogLine,
   patchPaperGlobal,
@@ -117,7 +118,14 @@ export function prepareServerDir(setup: ServerSetup): void {
   ];
   for (const [key, value] of overrides) properties = setProperty(properties, key, value);
   fs.writeFileSync(path.join(setup.dir, 'server.properties'), properties);
-  fs.copyFileSync(setup.pluginJar, path.join(setup.dir, 'plugins', path.basename(setup.pluginJar)));
+  // Other JARs of the same plugin (an older version, another file name) would make the plugin ambiguous
+  const pluginsDir = path.join(setup.dir, 'plugins');
+  for (const file of fs.readdirSync(pluginsDir)) {
+    if (INSTALLED_PLUGIN_JAR_PATTERNS[setup.target].test(file) && file !== path.basename(setup.pluginJar)) {
+      fs.rmSync(path.join(pluginsDir, file), { force: true });
+    }
+  }
+  fs.copyFileSync(setup.pluginJar, path.join(pluginsDir, path.basename(setup.pluginJar)));
 }
 
 export interface ExportedProject {
@@ -210,6 +218,7 @@ export class RunningServer {
   readonly lines: string[] = [];
   private readonly listeners = new Set<(line: string, event: ServerLogEvent | null) => void>();
   private readonly exited: Promise<number | null>;
+  private hasExited = false;
 
   private constructor(
     private readonly process: ChildProcessWithoutNullStreams,
@@ -232,7 +241,22 @@ export class RunningServer {
     };
     process.stdout.on('data', onData);
     process.stderr.on('data', onData);
-    this.exited = new Promise((resolve) => process.on('exit', (code) => (log.end(), resolve(code))));
+    this.exited = new Promise((resolve) => {
+      const done = (code: number | null) => {
+        if (this.hasExited) return;
+        this.hasExited = true;
+        log.end();
+        resolve(code);
+      };
+      process.on('exit', done);
+      // No java on the PATH (ENOENT): the process never starts and emits no 'exit'
+      process.on('error', (error) => {
+        console.error(`Could not run java: ${error.message}`);
+        done(null);
+      });
+    });
+    // A command sent after the server exited would fail with EPIPE; there is nothing left to tell
+    process.stdin.on('error', () => {});
   }
 
   /** Starts Paper in `dir` with `ramGb` of memory, without its GUI. */
@@ -270,11 +294,12 @@ export class RunningServer {
 
   /** Sends a console command. */
   command(command: string): void {
-    this.process.stdin.write(command + '\n');
+    if (!this.hasExited && this.process.stdin.writable) this.process.stdin.write(command + '\n');
   }
 
   /** Stops the server ("stop", then a kill after `timeoutMs`) and resolves with its exit code. */
   async stop(timeoutMs = 90_000): Promise<number | null> {
+    if (this.hasExited) return this.exited;
     this.command('stop');
     const timer = setTimeout(() => this.process.kill('SIGKILL'), timeoutMs);
     const code = await this.exited;

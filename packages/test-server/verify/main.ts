@@ -18,9 +18,9 @@
 import fs from 'node:fs';
 import path from 'node:path';
 import { PACK_TARGETS, type PackTargetId, type Project } from '@resourcepackbuilder/core/project';
-import { DEFAULT_MC_VERSION, getMcVersion } from '@resourcepackbuilder/minecraft';
+import { compareVersions, DEFAULT_MC_VERSION, getMcVersion } from '@resourcepackbuilder/minecraft';
 import { craftEngineUsesAttributes, craftEngineUsesScripts } from '@resourcepackbuilder/core/craftEngine';
-import { serverAdapterFor } from '../src';
+import { PAPER_VERSION_PATTERN, serverAdapterFor } from '../src';
 import { formatFindings, scanLog, type LogRules } from './logScan';
 import { craftEngineSample } from './samples/craftEngine';
 import { nexoSample } from './samples/nexo';
@@ -70,6 +70,7 @@ const RULES: Record<PackTargetId, LogRules> = {
       {
         // Nexo 1.30 calls BlocksAttacks.Builder#bypassedBy(RegistryKeySet), which Paper 1.21.11 does not have
         pattern: /BlocksAttacks\$Builder\.bypassedBy|ERROR BUILDING ITEM "verify_shield"/,
+        below: '26.1',
         reason: 'Nexo 1.30 bug on Paper 1.21.11: blocks_attacks calls a Paper API method that only newer Paper has',
       },
     ],
@@ -104,11 +105,14 @@ function parseArgs(argv: string[]): Options {
   const target = value('--target') ?? 'all';
   if (target !== 'all' && !(PACK_TARGETS as readonly string[]).includes(target)) throw new Error(`Unknown --target ${target}`);
   const targets: PackTargetId[] = target === 'all' ? [...PACK_TARGETS] : [target as PackTargetId];
+  // The version names folders that are deleted and recreated, so it must be a plain version
+  const paper = value('--paper') ?? DEFAULT_MC_VERSION;
+  if (!PAPER_VERSION_PATTERN.test(paper) || paper.includes('..')) throw new Error(`Not a Minecraft version: --paper ${paper}`);
   return {
     out: path.resolve(out),
     targets,
     nexoJar: value('--nexo-jar') ?? null,
-    paper: value('--paper') ?? DEFAULT_MC_VERSION,
+    paper,
     fresh: argv.includes('--fresh'),
     exportOnly: argv.includes('--export-only'),
   };
@@ -167,8 +171,11 @@ async function verifyTarget(target: PackTargetId, options: Options): Promise<num
     // The first start writes Paper's and the plugin's default files, which the install then patches
     console.log('First start (default files) …');
     const server = RunningServer.start(dir, paper.jar, target, path.join(options.out, `${name}-first.log`));
-    await server.waitFor((_line, event) => event?.type === 'started', STARTUP_TIMEOUT_MS, 'the first start');
-    await server.stop();
+    try {
+      await server.waitFor((_line, event) => event?.type === 'started', STARTUP_TIMEOUT_MS, 'the first start');
+    } finally {
+      await server.stop();
+    }
   }
 
   const install = installProject(setup, exported, {
@@ -197,7 +204,10 @@ async function verifyTarget(target: PackTargetId, options: Options): Promise<num
     console.log(`Stopped (exit code ${code})`);
   }
 
-  const findings = scanLog(server.lines, RULES[target]);
+  // A known problem of older versions counts again on a version that should not have it
+  const rules = RULES[target];
+  const known = rules.known.filter((rule) => !rule.below || compareVersions(options.paper, rule.below) < 0);
+  const findings = scanLog(server.lines, { ...rules, known });
   const counted = findings.filter((finding) => !finding.known);
   const report = formatFindings(findings);
   fs.writeFileSync(path.join(options.out, `${name}-findings.txt`), report + '\n');

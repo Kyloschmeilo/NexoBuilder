@@ -17,8 +17,8 @@ export interface LogRules {
   ordinary: readonly RegExp[];
   /** Lines that never concern the exported configs (Paper's offline-mode warning …) */
   noise: readonly RegExp[];
-  /** Problems the check knows and accepts, each with the reason (they are listed, not counted) */
-  known: ReadonlyArray<{ pattern: RegExp; reason: string }>;
+  /** Problems the check knows and accepts, each with the reason (listed, not counted); `below`: only on older versions */
+  known: ReadonlyArray<{ pattern: RegExp; reason: string; below?: string }>;
 }
 
 export interface LogFinding {
