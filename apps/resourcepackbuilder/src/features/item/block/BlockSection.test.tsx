@@ -7,7 +7,7 @@ import { act } from 'react';
 import { afterEach, describe, expect, it } from 'vitest';
 import { createFolder, createProject, insertFolder, insertNewItem, type Item, type PackTargetId } from '@resourcepackbuilder/core/project';
 import { addBlockBehaviors, setItemPlaces } from '../../../commands/items';
-import { cleanup, click, render } from '../../../components/catalog/testRender';
+import { cleanup, click, press, render, type } from '../../../components/catalog/testRender';
 import { getProject, setProject, useOpenProject } from '../../../store/project';
 import { BlockSection } from './BlockSection';
 
@@ -99,6 +99,19 @@ describe('BlockSection', () => {
     click(cards(host)[3]?.querySelector('[data-slot=behavior-open]'));
     click([...document.querySelectorAll('button')].find((button) => button.textContent?.trim() === 'Remove behavior'));
     expect(cards(host).map((card) => card.getAttribute('data-type'))).toEqual(['crop_block', 'liquid_flowable_block', 'bush_block']);
+  });
+
+  it('opens a behavior added from the catalog in its dialog right away', () => {
+    const id = openItem('craftengine');
+    setItemPlaces(id, 'block');
+    render(<Live id={id} />);
+    click(document.querySelector('[data-testid=block-add-behavior]'));
+    const search = document.querySelector<HTMLInputElement>('[role=combobox]');
+    if (!search) throw new Error('no search box');
+    type(search, 'bouncing');
+    press(search, 'Enter');
+    expect(document.querySelector('[data-slot=behavior-dialog-title]')?.textContent).toContain('Bouncing block behavior');
+    expect(dialog()?.querySelectorAll('[data-slot=field-row]').length).toBeGreaterThan(0);
   });
 
   it('edits a Nexo custom block: its type and plain keys, and its parts as features', () => {

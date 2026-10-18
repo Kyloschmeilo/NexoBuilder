@@ -5,7 +5,7 @@
  * "Done"; focus returns to the card when the dialog closes. "Add behavior" opens the catalog of all behaviors by
  * category, and a behavior added there opens its dialog right away.
  */
-import { useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { useTranslations } from 'next-intl';
 import { CircleAlert, Ellipsis, FileCode2, Plus, Trash2, TriangleAlert, Wand2 } from 'lucide-react';
 import {
@@ -202,6 +202,13 @@ function BehaviorDialog({
   const tTyped = useTranslations('editor.typedEntry');
   const { type, field, label, description } = useBehaviorInfo(entry, presetName);
   const issues = useProblemTexts(behaviorProblems(block, entry.entry));
+  // The dialog's body takes the focus, not the docs link in the title: a focused link or field opens its tooltip, which
+  // would take the first Escape. Tab moves on to the first key.
+  const body = useRef<HTMLDivElement>(null);
+  useEffect(() => {
+    const timer = setTimeout(() => body.current?.focus(), 50);
+    return () => clearTimeout(timer);
+  }, []);
   const change = (next: unknown) =>
     updateBlockBehavior(item.id, entry.ref, (toConfigValue(next) ?? {}) as ConfigValue, `behavior-${refKey(entry)}`);
   return (
@@ -233,7 +240,7 @@ function BehaviorDialog({
         </Button>
       }
     >
-      <div className="flex flex-col gap-3" data-slot="behavior-dialog">
+      <div ref={body} tabIndex={-1} className="flex flex-col gap-3 outline-none" data-slot="behavior-dialog">
         {issues.map((issue) => (
           <p key={issue.message} className={cn('m-0 text-meta', issue.tone === 'error' ? 'text-danger' : 'text-warning')}>
             {issue.message}
