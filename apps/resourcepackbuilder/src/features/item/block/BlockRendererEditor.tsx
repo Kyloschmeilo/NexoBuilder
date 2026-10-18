@@ -20,8 +20,8 @@ import { NativeSelect, NativeSelectOption } from '@resourcepackbuilder/ui/compon
 import { CheckboxField } from '../../../components/CheckboxField';
 import { useOpenProject } from '../../../store/project';
 import { updateCraftEngineBlock } from '../../../commands/items';
-import { DisplayElementList, KeyedFields, withKey } from './DisplayElementsEditor';
-import { BlockRendererPreview } from './FurniturePreview';
+import { DisplayElementList, KeyedFields, withKey } from '../furniture/DisplayElementsEditor';
+import { BlockRendererPreview } from '../furniture/FurniturePreview';
 
 type StateEdit = (next: (state: ConfigObject) => ConfigObject, historyKey?: string) => void;
 
@@ -52,7 +52,7 @@ function BlockRendererEditor({
       {elements.length > 0 && (
         <div className="flex flex-col gap-1.5">
           <BlockRendererPreview project={project} item={item} stateName={stateName} state={state} />
-          <p className="text-xs text-muted-foreground">{t('ceBlock.renderer.previewHelp')}</p>
+          <p className="m-0 text-meta text-text-muted">{t('ceBlock.renderer.previewHelp')}</p>
         </div>
       )}
       <DisplayElementList
@@ -73,7 +73,7 @@ function BlockRendererEditor({
 
 /**
  * The entity renderer of the block's single state, or of one of its appearances (picked in a select); `edit` changes
- * the state or appearance of the name.
+ * the state or appearance of the name. The Block section shows it in a dialog titled with the renderer's name.
  */
 export function BlockRendererSection({
   item,
@@ -97,13 +97,9 @@ export function BlockRendererSection({
   const hasRenderer = looks.some(([, l]) => rendererElements(l).length > 0);
   return (
     <div className="flex flex-col gap-3">
-      <div className="flex flex-col gap-1">
-        <span className="text-sm font-medium">{t('ceBlock.renderer.title')}</span>
-        <p className="text-xs text-muted-foreground">{t('ceBlock.renderer.help')}</p>
-      </div>
       {looks.length > 1 && (
         <label htmlFor={selectId} className="flex flex-col gap-1">
-          <span className="text-xs text-muted-foreground">{t('ceBlock.renderer.look')}</span>
+          <span className="text-meta text-text-muted">{t('ceBlock.renderer.look')}</span>
           <NativeSelect
             id={selectId}
             className="w-full"

@@ -790,12 +790,14 @@
     },
     "categories": {
       "blockBehaviors": {
-        "shapes": "Shapes and building blocks",
-        "redstone": "Redstone and light",
-        "blockEntities": "Storage and displays",
+        "plants": "Plants and growth",
+        "building": "Building blocks",
+        "interaction": "Doors and seats",
+        "redstone": "Redstone",
+        "light": "Light and particles",
+        "storage": "Storage and displays",
         "physics": "Physics",
-        "placement": "Placement rules",
-        "plants": "Plants and growth"
+        "placement": "Placement rules"
       }
     }
   }

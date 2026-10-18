@@ -282,17 +282,9 @@
     "disabledSummary": "For the whole project: Nexo disables these vanilla recipes. Exported to {path}."
   },
   "ceBlock": {
-    "title": "Block",
-    "description": "CraftEngine places the item as a block of its own.",
-    "toggle": "Place as a block",
-    "toggleHelp": "The item places a custom block with the same ID.",
-    "toggleBlocked": "The item places furniture. Turn off “Place as furniture” to make it a block.",
     "autoState": "Block state group",
     "autoStateHelp": "CraftEngine shows the block through a free state of these vanilla blocks. The group decides the collision box: solid for full blocks, leaves for see-through blocks, tripwire for thin plants.",
     "model": "The block shows the item’s model. A flat item model becomes a cube from its textures: 1 texture on all sides, 2 as end and side (like a log), 3 as bottom, side and top, 4 as bottom, front, side and top (like a furnace), 5 one per face (down, up, north, south, west; east repeats west).",
-    "behavior": "Behavior",
-    "behaviorHelp": "What the block does. A behavior sets up the states it needs; its keys show below. Add more behaviors (any behavior of the CraftEngine wiki) under More behaviors.",
-    "behaviorKeys": "The keys of the behavior. Unset keys take the plugin’s default.",
     "replaceStates": {
       "title": "Replace the block’s states?",
       "message": "This behavior brings states from a template, which cannot be combined with the states you set up. Replacing them removes your properties, appearances and variants.",
@@ -301,8 +293,6 @@
     "storageOpenLook": "Look open while in use",
     "storageOpenLookHelp": "Adds the open property: the block shows its open appearance while a player has the container open.",
     "behaviors": {
-      "none": "None",
-      "other": "Other (from the additional YAML)",
       "slab_block": "Slab",
       "stairs_block": "Stairs",
       "door_block": "Door",
@@ -368,7 +358,6 @@
       "variantAppearance": "Appearance",
       "noAppearance": "No appearance",
       "addFacing": "Face the player",
-      "details": "More options",
       "source": "Vanilla state",
       "sourceAuto": "A free state of a group",
       "sourceAutoHelp": "CraftEngine picks a free state of the block state group.",
@@ -382,7 +371,6 @@
       "fixedId": "Fixed internal id",
       "fixedIdPlaceholder": "Automatic",
       "fixedIdHelp": "Usually left empty. A fixed id keeps the block’s internal ids the same, for example for data packs; several states take the ids from this one on. The ids must be unique across all blocks.",
-      "variantSettings": "Settings of this variant",
       "variantSettingsHelp": "Block settings that apply only to the states this variant matches, for example more light while lit or water while waterlogged. They are merged over the block’s settings.",
       "nameHints": {
         "axis": "CraftEngine sets axis from the clicked face on placement. Use the type axis.",
@@ -593,5 +581,97 @@
     "beds": "Beds",
     "light": "Light",
     "removeOption": "Remove {name}"
+  },
+  "block": {
+    "title": "Block",
+    "description": {
+      "nexo": "Places the item as a Nexo custom block: its type, model, hardness and what else it does.",
+      "craftengine": "Places the item as a block of its own: what it does, how it looks and its settings."
+    },
+    "places": "Places",
+    "placesHelp": "What the item puts into the world when a player uses it. An item places a block or furniture, never both.",
+    "placesOptions": {
+      "nothing": "Nothing",
+      "block": "Block",
+      "furniture": "Furniture"
+    },
+    "placesNote": {
+      "nothing": "The item places nothing. Choose Block or Furniture to place it in the world.",
+      "furniture": "The item places furniture. Its models, hitboxes and seats are in the Furniture section."
+    },
+    "leave": {
+      "block": {
+        "title": "Remove the block?",
+        "message": "The block’s behaviors, states and settings are removed. Undo brings them back.",
+        "confirm": "Remove block"
+      },
+      "furniture": {
+        "title": "Remove the furniture?",
+        "message": "The furniture’s variants, elements and hitboxes are removed. Undo brings them back.",
+        "confirm": "Remove furniture"
+      },
+      "both": {
+        "title": "Remove the block and the furniture?",
+        "message": "The item has both a block and furniture. Both are removed. Undo brings them back.",
+        "confirm": "Remove both"
+      }
+    },
+    "behaviors": {
+      "title": "Behaviors",
+      "description": "What the block does: grow, fall, open like a door. Each behavior has its own settings.",
+      "add": "Add behavior",
+      "dialogTitle": "Add a block behavior",
+      "dialogDescription": "Pick what the block should do. You can add more later and change each one.",
+      "search": "Search behaviors, e.g. door, grow, fall",
+      "empty": "No behaviors yet.",
+      "main": "Main",
+      "setUp": "Set up its states",
+      "presetNote": "The block has no main behavior yet, so this one becomes it: adding it also sets up the states it needs, its helper behaviors and its drops.",
+      "missingKeys": "Needs {keys}",
+      "missingProperties": "Needs the property {names}",
+      "editTitle": "{name} behavior",
+      "remove": "Remove behavior"
+    },
+    "states": {
+      "title": "States",
+      "single": "One state",
+      "templateSummary": "Template {template}",
+      "multiSummary": "{count, plural, one {# state} other {# states}}",
+      "multiUnknown": "Several states",
+      "rendererElements": "{count, plural, one {# element} other {# elements}}",
+      "rendererNone": "None",
+      "editRenderer": "Edit renderer",
+      "addProperty": "Add property",
+      "addAppearance": "Add appearance",
+      "addVariant": "Add variant",
+      "propertyValuesColumn": "Values or range",
+      "rotationXColumn": "x",
+      "rotationYColumn": "y",
+      "settingsColumn": "Settings",
+      "settingsCount": "{count, plural, one {# setting} other {# settings}}",
+      "noSettings": "Add settings",
+      "variantSettingsOf": "Settings of {variant}",
+      "variantSettingsEmpty": "No settings of its own. The variant uses the block’s settings.",
+      "appearanceDetails": "More options of {name}",
+      "noVariants": "No variants yet. Every state shows the first appearance."
+    },
+    "settings": {
+      "title": "Block settings",
+      "description": "Hardness, sounds, light, tool rules and the other settings of the block.",
+      "add": "Add setting",
+      "dialogTitle": "Add a block setting",
+      "search": "Search settings, e.g. hardness, light, sound",
+      "empty": "No settings yet. CraftEngine’s defaults apply."
+    },
+    "nexo": {
+      "featuresTitle": "Block features",
+      "featuresDescription": "The larger parts of the custom block: directional faces, growth, sounds, drops, storage and more.",
+      "addFeature": "Add feature",
+      "dialogTitle": "Add a block feature",
+      "search": "Search features, e.g. drop, sound, sapling",
+      "featuresEmpty": "No features yet.",
+      "advancedNote": "Rarely needed. Nexo reads it, but most blocks do without it.",
+      "modelsDescription": "The extra models the block’s type uses: its stack stages or one model per face."
+    }
   }
 }

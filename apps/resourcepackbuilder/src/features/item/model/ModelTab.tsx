@@ -6,8 +6,7 @@
 import type { Item } from '@resourcepackbuilder/core/project';
 import { PropertiesPanel } from '../properties/PropertiesPanel';
 import { useProjectForm } from '../properties/useProjectForm';
-import { BlockModelsSection } from './BlockModelsSection';
-import { CraftEngineBlockSection, hasBlockSettings } from './CraftEngineBlockSection';
+import { BlockSection, hasBlockSettings } from '../block';
 import { CraftEngineFurnitureSection } from './CraftEngineFurnitureSection';
 import { FurnitureModelsSection } from './FurnitureModelsSection';
 import { ModelSection } from './ModelSection';
@@ -31,9 +30,8 @@ export function ModelTab({ item }: { item: Item }) {
       <ModelSection item={item} />
       {item.model && <TexturesSection item={item} />}
       {item.model && <FurnitureModelsSection item={item} />}
-      {item.model && <BlockModelsSection item={item} />}
       {hasModelGroup && <PropertiesPanel item={item} group={MODEL_GROUP} />}
-      {hasBlockSettings(groups) && <CraftEngineBlockSection item={item} />}
+      <BlockSection item={item} />
       {hasBlockSettings(groups) && <CraftEngineFurnitureSection item={item} />}
       {hasAppearance && <PropertiesPanel item={item} group={APPEARANCE_GROUP} />}
     </div>

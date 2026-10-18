@@ -790,12 +790,14 @@
     },
     "categories": {
       "blockBehaviors": {
-        "shapes": "Formen und Bausteine",
-        "redstone": "Redstone und Licht",
-        "blockEntities": "Lager und Anzeigen",
+        "plants": "Pflanzen und Wachstum",
+        "building": "Baublöcke",
+        "interaction": "Türen und Sitze",
+        "redstone": "Redstone",
+        "light": "Licht und Partikel",
+        "storage": "Lager und Anzeigen",
         "physics": "Physik",
-        "placement": "Platzierungsregeln",
-        "plants": "Pflanzen und Wachstum"
+        "placement": "Platzierungsregeln"
       }
     }
   }
