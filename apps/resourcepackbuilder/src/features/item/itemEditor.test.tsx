@@ -48,9 +48,9 @@ beforeEach(() => useUiStore.setState({ expandedFeatures: {}, editorSection: 'gen
 afterEach(cleanup);
 
 describe('item sections', () => {
-  it('offers the CraftEngine-only sections in CraftEngine projects only, and textures only with a model', () => {
+  it('offers the CraftEngine-only sections in CraftEngine projects only, Block for both, and textures only with a model', () => {
     const item = openItem('nexo', {});
-    expect(itemSections('nexo', item).map((s) => s.id)).toEqual(['basics', 'model', 'features', 'recipes', 'advanced']);
+    expect(itemSections('nexo', item).map((s) => s.id)).toEqual(['basics', 'model', 'features', 'block', 'recipes', 'advanced']);
     expect(itemSections('craftengine', item).map((s) => s.id)).toEqual([
       'basics',
       'model',
@@ -121,6 +121,9 @@ describe('settings search of the command palette', () => {
     expect(stack).toMatchObject({ navId: 'features/components', added: true, yamlKey: 'Components.max_stack_size' });
     expect(stack?.def.aliases).toContain('stack size');
     expect(settings.find((setting) => setting.def.id === 'lore')?.navId).toBe('basics');
+    // The Block and Furniture sections edit these mechanics
+    expect(settings.map((setting) => setting.def.id)).not.toContain('Mechanics.custom_block');
+    expect(settings.map((setting) => setting.def.id)).not.toContain('Mechanics.furniture');
   });
 
   it('offers block settings only on an item that places a block', () => {
@@ -128,7 +131,12 @@ describe('settings search of the command palette', () => {
     const hasHardness = (item: Item) => paletteSettings(schema, item, '1.21.8').some((s) => s.def.id === 'block.settings.hardness');
     expect(hasHardness(openItem('craftengine', {}))).toBe(false);
     const block = openItem('craftengine', { block: { settings: {} } });
-    expect(paletteSettings(schema, block, '1.21.8').find((s) => s.def.id === 'block.settings.hardness')?.navId).toBe('block');
+    const hardness = paletteSettings(schema, block, '1.21.8').find((s) => s.def.id === 'block.settings.hardness');
+    expect(hardness).toMatchObject({ navId: 'block', expansionScope: 'block' });
+    if (!hardness) return;
+    // The Block section keys its settings rows under <item id>/block
+    openPaletteSetting(block.id, hardness);
+    expect(useUiStore.getState().expandedFeatures[featureExpansionKey(`${block.id}/block`, 'block.settings.hardness')]).toBe(true);
   });
 
   it('leaves out settings that conflict with one in use and reports version support', () => {

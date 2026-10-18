@@ -9,15 +9,14 @@ import type { ComponentType } from 'react';
 import { activeProperties, type FormSchema, type PropertyGroup } from '@resourcepackbuilder/core/form';
 import type { Item, PackTargetId } from '@resourcepackbuilder/core/project';
 import type { SectionNavItem } from '@resourcepackbuilder/ui';
-import { CraftEngineBlockSection } from './model/CraftEngineBlockSection';
+import { BlockSection } from './block';
 import { FurnitureSection, placesFurniture } from './furniture';
-import { TexturesSection } from './model';
+import { ModelSection, TexturesSection } from './model';
 import { RecipesSection } from './recipes';
 import { AdvancedSection } from './sections/AdvancedSection';
 import { BasicsSection } from './sections/BasicsSection';
 import { FEATURE_EXCLUDE, FEATURE_GROUPS } from './sections/featureGroups';
 import { EventsSection, ItemFeaturesSection, LootSection } from './sections/GroupSections';
-import { ItemModelSection } from './sections/ModelSection';
 
 /** Id of a section of the item editor (also its `editorSection` value in the ui store). */
 export type ItemSectionId =
@@ -62,14 +61,14 @@ function limitedGroupCount(group: PropertyGroup) {
 /** Every section, in nav order. */
 export const ITEM_SECTIONS: readonly ItemSectionDef[] = [
   { id: 'basics', Component: BasicsSection },
-  { id: 'model', Component: ItemModelSection },
+  { id: 'model', Component: ModelSection },
   { id: 'textures', available: (item) => !!item.model, count: (item) => item.model?.textures.length ?? 0, Component: TexturesSection },
   {
     id: 'features',
     count: (item, schema) => FEATURE_GROUPS[schema.target].reduce((sum, group) => sum + groupCount(schema, item, group), 0),
     Component: ItemFeaturesSection,
   },
-  { id: 'block', targets: ['craftengine'], Component: CraftEngineBlockSection },
+  { id: 'block', Component: BlockSection },
   { id: 'furniture', available: placesFurniture, Component: FurnitureSection },
   { id: 'events', targets: ['craftengine'], count: limitedGroupCount('events'), Component: EventsSection },
   { id: 'loot', targets: ['craftengine'], count: limitedGroupCount('loot'), Component: LootSection },

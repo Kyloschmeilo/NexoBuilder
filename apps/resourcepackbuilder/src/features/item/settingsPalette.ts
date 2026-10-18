@@ -29,12 +29,19 @@ export interface PaletteSetting {
   yamlKey: string;
   /** Whether the item already uses it (then picking it jumps there). */
   added: boolean;
+  /**
+   * The part of the item its row's expansion is kept under (`block` for block settings, whose rows are keyed
+   * `<item id>/block/<property id>`); the item itself when left out.
+   */
+  expansionScope?: string;
   /** How the project's Minecraft version supports it (`tooOld`: too new for it, `removed`: gone in it). */
   support: VersionSupport;
 }
 
 /** CraftEngine's block settings, edited in the Block section. */
 const BLOCK_SETTINGS_GROUP = 'blockSettings';
+/** The scope the Block section keys its settings rows under. */
+const BLOCK_SETTINGS_SCOPE = 'block';
 
 /** The sections outside Features that edit a property group of the item. */
 const OTHER_GROUP_SECTIONS: Readonly<Record<PropertyGroup, string>> = {
@@ -60,7 +67,17 @@ export function paletteSettings(schema: FormSchema, item: Item, version: string)
     if (def.group === BLOCK_SETTINGS_GROUP && !isPlainObject(item.config.block)) return [];
     const added = isPropertyActive(item, def);
     if (!added && propertyConflict(schema, item, def)) return [];
-    return [{ def, group: def.group, navId, yamlKey: propertyYamlPath(def) ?? def.id, added, support: versionSupport(version, def) }];
+    return [
+      {
+        def,
+        group: def.group,
+        navId,
+        yamlKey: propertyYamlPath(def) ?? def.id,
+        added,
+        support: versionSupport(version, def),
+        ...(def.group === BLOCK_SETTINGS_GROUP && { expansionScope: BLOCK_SETTINGS_SCOPE }),
+      },
+    ];
   });
 }
 
@@ -68,6 +85,6 @@ export function paletteSettings(schema: FormSchema, item: Item, version: string)
 export function openPaletteSetting(itemId: string, setting: PaletteSetting): void {
   if (!setting.added) addProperty(itemId, setting.def.id);
   setEditorSection(setting.navId);
-  setFeatureOpen(itemId, setting.def.id, true);
+  setFeatureOpen(setting.expansionScope ? `${itemId}/${setting.expansionScope}` : itemId, setting.def.id, true);
   scrollToFeature(setting.def.id);
 }
