@@ -3,7 +3,8 @@
  * the ⓘ help and badges; the key rail shows the field's YAML key in mono. Errors and warnings sit below the control.
  * The row is its own size container: below 36 rem (or with `layout="stacked"`) the label sits above the control; from
  * 36 rem label and control share a line, and from 42 rem the key moves from beside the label into its own rail, so the
- * control column never gets squeezed by the rail.
+ * control column never gets squeezed by the rail. A label that already is the YAML key (a plugin key name without a
+ * human name) shows no key, so the row does not repeat it.
  */
 import { useId, type ReactNode } from 'react';
 import { RotateCcw } from 'lucide-react';
@@ -25,7 +26,7 @@ export interface FieldRowProps {
   help?: ReactNode;
   /** Prints the help below the control. Keep it for the few fields where the hint is essential (MiniMessage syntax). */
   helpInline?: boolean;
-  /** The plugin's YAML key of the field, shown in the key rail. */
+  /** The plugin's YAML key of the field, shown in the key rail unless the label is the same text. */
   yamlKey?: string;
   /** Link to the field's docs page; the icon is tinted by the target. The topic defaults to a string label. */
   docs?: DocsRef & { label?: string };
@@ -63,7 +64,7 @@ export function FieldRow({
   htmlFor,
   help,
   helpInline,
-  yamlKey,
+  yamlKey: ownYamlKey,
   docs,
   badges,
   state = 'default',
@@ -83,6 +84,7 @@ export function FieldRow({
       .join(' ') || undefined;
   const isSide = layout === 'side';
   const hasLabel = label !== undefined && label !== null && label !== '';
+  const yamlKey = ownYamlKey !== undefined && label !== ownYamlKey ? ownYamlKey : undefined;
   const LabelTag = htmlFor ? 'label' : 'span';
   const isGroup = hasLabel && !htmlFor;
   return (

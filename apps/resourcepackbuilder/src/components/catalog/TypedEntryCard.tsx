@@ -172,7 +172,8 @@ export function TypedEntryCard({
           </Tip>
         )}
         {type?.premium && <StatusPill tone="info" label={tCatalog('premium')} />}
-        {name && (
+        {/* The key, unless the label already is it (a type without a human name) */}
+        {name && label !== name && (
           <code data-slot="yaml-key" className="hidden max-w-56 flex-none truncate font-mono text-micro text-text-faint @lg/entry:block">
             {inverted ? `!${name}` : name}
           </code>

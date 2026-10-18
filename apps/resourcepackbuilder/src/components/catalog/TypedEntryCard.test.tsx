@@ -53,6 +53,16 @@ describe('TypedEntryCard', () => {
     expect(onChange).toHaveBeenCalledWith({ type: 'has_player' });
   });
 
+  it('shows a YAML key only where the label is not already that key', () => {
+    const host = render(<TypedEntryCard source={behaviors} entry={{ type: 'crop_block', grow_speed: 0.5 }} onChange={() => {}} />);
+    const rows = [...card(host).querySelectorAll('[data-slot=field-row]')];
+    const growSpeed = rows.find((row) => row.querySelector('label, span')?.textContent === 'grow_speed');
+    expect(growSpeed).toBeDefined();
+    expect(growSpeed?.querySelector('[data-slot=yaml-key]')).toBeNull();
+    const unknown = render(<TypedEntryCard source={behaviors} entry={{ type: 'future_block' }} onChange={() => {}} />);
+    expect(card(unknown).querySelector(':scope > div:first-child [data-slot=yaml-key]')).toBeNull();
+  });
+
   it('collapses to a summary of the set keys', () => {
     const host = render(
       <TypedEntryCard
