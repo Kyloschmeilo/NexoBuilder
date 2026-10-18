@@ -29,7 +29,17 @@
     "searchOptions": "{placeholder} – type to search",
     "searchResources": "Search items, models, textures and sounds",
     "unset": "Unset",
-    "unsetWithDefault": "Unset (default: {value})"
+    "unsetWithDefault": "Unset (default: {value})",
+    "vector": {
+      "axis": "{label} {axis}"
+    },
+    "switch": {
+      "on": "On",
+      "off": "Off",
+      "defaultState": "Default: {state}",
+      "unset": "Unset",
+      "unsetHint": "Use the plugin default ({state})"
+    }
   },
   "field": {
     "minVersion": "from {version}",
@@ -63,6 +73,55 @@
     "objectHint": "A typed number provider, such as uniform",
     "premium": "Premium",
     "premiumHint": "Only CraftEngine Premium reads this type."
+  },
+  "catalog": {
+    "searchPlaceholder": "Search names, keys and descriptions",
+    "facets": "Categories",
+    "all": "All",
+    "common": "Common",
+    "added": "Added",
+    "other": "Other",
+    "addedPill": "Added",
+    "jumpTo": "Jump to",
+    "adds": "Adds",
+    "premium": "Premium",
+    "fromVersion": "from {version}",
+    "untilVersion": "until {version}",
+    "noMatch": "Nothing matches “{query}”.",
+    "noMatchHint": "Try the YAML key or another word.",
+    "empty": "Nothing to add here.",
+    "checkedCount": "{count} checked",
+    "addCount": "{count, plural, one {Add # entry} other {Add # entries}}",
+    "conflict": "Not possible together with “{name}”.",
+    "keys": {
+      "move": "move",
+      "add": "add",
+      "check": "check",
+      "addKeepOpen": "add and keep open",
+      "addChecked": "add the checked ones"
+    }
+  },
+  "feature": {
+    "actions": "Actions for {name}",
+    "on": "On",
+    "off": "Off",
+    "notSet": "Not set",
+    "entries": "{count, plural, one {# entry} other {# entries}}",
+    "reset": "Reset to default",
+    "copyYaml": "Copy YAML",
+    "remove": "Remove",
+    "tooOld": "Needs Minecraft {min} or newer; the project is set to {version}.",
+    "removed": "Only exists up to Minecraft {max}.",
+    "premium": "Only CraftEngine Premium reads this."
+  },
+  "typedEntry": {
+    "noType": "No type yet",
+    "noSettings": "No settings",
+    "unknownSummary": "Edited as YAML",
+    "negate": "Negate",
+    "negateHint": "Writes a leading ! before the type, which inverts the condition.",
+    "noFields": "This type has no settings. Adding it is enough.",
+    "unknown": "No form for this type yet; edit it as YAML."
   },
   "devPrimitives": {
     "actions": {
@@ -124,9 +183,27 @@
       "lists": "Lists",
       "listsDescription": "Rows expand in place or open in a dialog; drag the handle or use the arrow keys to reorder.",
       "maps": "Maps",
-      "mapsDescription": "Keys rename when the input loses focus."
+      "mapsDescription": "Keys rename when the input loses focus.",
+      "catalog": "Catalog and typed entries",
+      "catalogDescription": "CraftEngine block behaviors: the picker and one card per behavior, an unknown type included.",
+      "features": "Feature list",
+      "featuresDescription": "Nexo components as feature rows, with the picker over the components group.",
+      "controls": "Controls"
     },
     "title": "Editor primitives",
-    "toggleMode": "Light or dark"
+    "toggleMode": "Light or dark",
+    "catalog": {
+      "addBehavior": "Add behavior",
+      "behaviorsTitle": "Add a block behavior",
+      "behaviorsDescription": "Pick what the block should do. You can add several and change them later.",
+      "behaviorsSearch": "Search behaviors, e.g. door, grow, fall",
+      "addComponent": "Add component",
+      "componentsTitle": "Add a component",
+      "componentsSearch": "Search components, keys and descriptions",
+      "stackWarning": "Tools usually stack to 1.",
+      "translation": "Translation",
+      "glint": "Enchantment glint",
+      "unbreakable": "Unbreakable"
+    }
   }
 }

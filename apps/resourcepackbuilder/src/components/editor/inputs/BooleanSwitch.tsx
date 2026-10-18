@@ -21,11 +21,12 @@ interface BooleanSwitchProps {
   defaultHint?: boolean;
   /** Accessible name when no label points at the switch. */
   'aria-label'?: string;
+  disabled?: boolean;
   className?: string;
 }
 
 /** A switch, optionally with the "not set" state of a plugin default. */
-export function BooleanSwitch({ id, value, onChange, allowUnset = true, defaultHint, className, ...props }: BooleanSwitchProps) {
+export function BooleanSwitch({ id, value, onChange, allowUnset = true, defaultHint, disabled, className, ...props }: BooleanSwitchProps) {
   const t = useTranslations('editor');
   const plugin = serverAdapterFor(useProjectStore((s) => s.project?.target ?? DEFAULT_PACK_TARGET)).pluginName;
   const isUnset = value === undefined;
@@ -37,6 +38,7 @@ export function BooleanSwitch({ id, value, onChange, allowUnset = true, defaultH
         id={id}
         aria-label={props['aria-label']}
         checked={shown}
+        disabled={disabled}
         // An unset switch shows the plugin default dimmed, so a set value stands out
         className={cn(isUnset && allowUnset && 'opacity-60')}
         onCheckedChange={(checked) => onChange(checked)}
@@ -52,7 +54,8 @@ export function BooleanSwitch({ id, value, onChange, allowUnset = true, defaultH
           <Tip label={t('inputs.defaultTooltip', { plugin })}>
             <button
               type="button"
-              className="cursor-pointer rounded-sm text-meta text-text-muted underline-offset-2 outline-none hover:text-text hover:underline focus-visible:ring-2 focus-visible:ring-ring"
+              disabled={disabled}
+              className="cursor-pointer rounded-sm text-meta text-text-muted underline-offset-2 outline-none hover:text-text hover:underline focus-visible:ring-2 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50"
               onClick={() => onChange(undefined)}
             >
               {defaultHint === undefined ? t('inputs.unset') : t('inputs.unsetWithDefault', { value: onOff(defaultHint) })}
