@@ -1,0 +1,44 @@
+{
+  "groups": {
+    "general": {
+      "categories": {
+        "text": "Name und Lore",
+        "item": "Item",
+        "nexo": "Nexo-Optionen"
+      }
+    },
+    "appearance": {
+      "categories": {
+        "model": "Modell",
+        "colors": "Farben und Verzierungen",
+        "armor": "Rüstung"
+      }
+    },
+    "attributes": {
+      "categories": {
+        "modifiers": "Attribute",
+        "enchantments": "Verzauberungen",
+        "effects": "Trankeffekte"
+      }
+    },
+    "components": {
+      "categories": {
+        "foodUse": "Nahrung und Benutzung",
+        "combat": "Werkzeuge und Kampf",
+        "tooltip": "Tooltip",
+        "equipment": "Ausrüstung",
+        "appearance": "Aussehen",
+        "behavior": "Verhalten"
+      }
+    },
+    "mechanics": {
+      "categories": {
+        "placement": "Blöcke und Möbel",
+        "actions": "Aktionen",
+        "tools": "Werkzeuge und Landwirtschaft",
+        "wearables": "Rüstung und Effekte",
+        "misc": "Sonstiges"
+      }
+    }
+  }
+}

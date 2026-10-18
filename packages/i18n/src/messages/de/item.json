@@ -31,28 +31,28 @@
   "properties": {
     "emptyHint": "{text} Über <b>„Hinzufügen“</b> kannst du Eigenschaften auswählen.",
     "titles": {
-      "general": "General",
-      "appearance": "Pack & Appearance",
-      "attributes": "AttributeModifiers & Enchantments",
-      "components": "Components",
-      "mechanics": "Mechanics",
-      "data": "Data",
-      "settings": "Settings",
+      "general": "Allgemein",
+      "appearance": "Aussehen",
+      "attributes": "Attribute",
+      "components": "Komponenten",
+      "mechanics": "Mechaniken",
+      "data": "Daten",
+      "settings": "Einstellungen",
       "itemBehavior": "Verhalten",
-      "blockSettings": "Block Settings",
+      "blockSettings": "Blockeinstellungen",
       "blockBehavior": "Verhalten",
-      "events": "Events",
-      "loot": "Loot",
-      "model": "Item Model"
+      "events": "Ereignisse",
+      "loot": "Beute",
+      "model": "Item-Modell"
     },
     "empty": {
       "general": "Noch nichts hinzugefügt (z.B. Lore).",
-      "appearance": "Noch keine Pack-Optionen (z.B. CustomArmor, Color).",
-      "attributes": "Noch keine AttributeModifiers oder Enchantments.",
+      "appearance": "Noch keine Optionen fürs Aussehen (z. B. Farbe, eigene Rüstung).",
+      "attributes": "Noch keine Attribute oder Verzauberungen.",
       "components": "Noch keine Components.",
       "mechanics": "Noch keine Mechanics.",
       "data": "Noch keine Item-Daten (z.B. Food, Equippable).",
-      "settings": "Noch keine Settings (z.B. Tags, Fuel Time).",
+      "settings": "Noch keine Einstellungen (z. B. Tags, Brenndauer).",
       "itemBehavior": "Noch keine Verhalten (z. B. Platzierung an Wänden, Bereichsabbau).",
       "blockSettings": "Noch keine Block-Einstellungen (z. B. Hardness, Sounds).",
       "blockBehavior": "Noch keine Optionen des Verhaltens (z. B. Sounds, weitere Verhalten).",
@@ -91,7 +91,11 @@
     "materialHelp": "Basis-Item in Minecraft. Standard ist PAPER; für Werkzeuge/Rüstung das passende Material.",
     "folder": "Ordner",
     "tooltipPreview": "Tooltip-Vorschau",
-    "tooltipHelp": "Ohne eigene Farbe zeigt Minecraft die Lore lila und kursiv an."
+    "tooltipHelp": "Ohne eigene Farbe zeigt Minecraft die Lore lila und kursiv an.",
+    "nameLabel": "Anzeigename",
+    "idLabel": "Item-ID",
+    "idHelp": "Der Schlüssel des Items im YAML und in {target, select, nexo {/nexo give} other {/ce item give}}. Nur Kleinbuchstaben, Zahlen und _.",
+    "nameHelp": "MiniMessage-Text. Farben: {colors} · Formatierung: {formatting}"
   },
   "yaml": {
     "notObject": "Erwartet Schlüssel-Wert-Paare (z.B. \"Mechanics:\").",
@@ -328,7 +332,9 @@
       "simple_particle_block": "Partikel",
       "wall_torch_particle_block": "Wandfackel",
       "directional_attached_block": "An der Wand haftend",
-      "on_liquid_block": "Auf dem Wasser (Seerose)"
+      "on_liquid_block": "Auf dem Wasser (Seerose)",
+      "none": "Keins",
+      "other": "Anderes (aus dem zusätzlichen YAML)"
     },
     "states": {
       "toMulti": "Mehrere Zustände nutzen",
@@ -378,7 +384,9 @@
         "facing_clockwise": "Wie facing, aber beim Platzieren um 90° im Uhrzeigersinn gedreht. Nutze den Typ horizontal_direction.",
         "rotation": "CraftEngine setzt beim Platzieren eine feine Drehung. Nutze den Typ int mit dem Bereich 0~7 oder 0~15.",
         "waterlogged": "CraftEngine setzt waterlogged, wenn der Block im Wasser platziert wird. Nutze den Typ boolean und ein geflutetes Aussehen."
-      }
+      },
+      "details": "Weitere Optionen",
+      "variantSettings": "Einstellungen dieser Variante"
     },
     "renderer": {
       "title": "Entity-Renderer",
@@ -389,7 +397,15 @@
       "elements": "Elemente",
       "elementsHelp": "Was der Block zeigt. Ein Item-Display ohne Item zeigt das Modell dieses Items. Positionen sind in Blöcken ab der Ecke des Blocks; ohne Position steht ein Element in der Mitte des Blocks (ein Block-Display an der Ecke).",
       "previewHelp": "Der Umriss des Blocks ist gelb. Andere Blöcke und Texte erscheinen als graue Blöcke."
-    }
+    },
+    "title": "Block",
+    "description": "CraftEngine platziert das Item als eigenen Block.",
+    "toggle": "Als Block platzieren",
+    "toggleHelp": "Das Item platziert einen eigenen Block mit derselben ID.",
+    "toggleBlocked": "Das Item platziert ein Möbel. Schalte „Als Möbel platzieren“ aus, um es zum Block zu machen.",
+    "behavior": "Verhalten",
+    "behaviorHelp": "Was der Block tut. Ein Verhalten legt die Zustände an, die es braucht; seine Schlüssel stehen darunter. Weitere Verhalten (jedes aus dem CraftEngine-Wiki) fügst du unter Weitere Verhalten hinzu.",
+    "behaviorKeys": "Die Schlüssel des Verhaltens. Leere Schlüssel nehmen den Standard des Plugins."
   },
   "ceFurniture": {
     "title": "Möbel",
@@ -673,5 +689,41 @@
       "advancedNote": "Selten nötig. Nexo liest es, die meisten Blöcke kommen ohne aus.",
       "modelsDescription": "Die zusätzlichen Modelle, die der Blocktyp nutzt: seine Stapelstufen oder ein Modell pro Seite."
     }
+  },
+  "sections": {
+    "nav": "Bereiche des Items",
+    "basics": "Grundlagen",
+    "model": "Modell",
+    "textures": "Texturen",
+    "features": "Eigenschaften",
+    "block": "Block",
+    "furniture": "Möbel",
+    "events": "Ereignisse",
+    "loot": "Beute",
+    "recipes": "Rezepte",
+    "advanced": "Erweitert"
+  },
+  "features": {
+    "add": "Eigenschaft hinzufügen",
+    "addTitle": "Zu {group} hinzufügen",
+    "addDescription": "Wähle, was dieses Item haben soll. Die Suche findet Namen, YAML-Schlüssel und Beschreibungen.",
+    "count": "{count, plural, one {# Eigenschaft} other {# Eigenschaften}}"
+  },
+  "header": {
+    "copy": "Eigenschaften kopieren",
+    "paste": "Eigenschaften einfügen",
+    "moveToFolder": "In Ordner verschieben",
+    "delete": "Item löschen"
+  },
+  "advanced": {
+    "title": "Roh-YAML",
+    "showYaml": "Fertiges YAML zeigen"
+  },
+  "palette": {
+    "group": "Einstellungen dieses Items",
+    "added": "In {group}",
+    "available": "Zu {group} hinzufügen",
+    "tooOld": "Zu {group} hinzufügen (braucht Minecraft {version} oder neuer)",
+    "removed": "Zu {group} hinzufügen (nur bis Minecraft {version})"
   }
 }

@@ -15,6 +15,8 @@ import {
 } from '@resourcepackbuilder/core/craftEngine';
 import { formFor } from '@resourcepackbuilder/core/targets';
 import { MESSAGES_BY_LOCALE } from '@resourcepackbuilder/i18n';
+import { keySegment } from '@resourcepackbuilder/utils';
+import { ITEM_SECTIONS } from './sections';
 
 function lookup(tree: unknown, key: string): unknown {
   return key.split('.').reduce<unknown>((node, part) => (node as Record<string, unknown> | undefined)?.[part], tree);
@@ -31,6 +33,24 @@ describe('item editor messages', () => {
           ...form.groups.flatMap((group) => [`${form.messages}.${group.label}`, `${form.messages}.${group.description}`]),
           `item.properties.docs.${target}`,
         ];
+        expect(keys.filter((key) => typeof lookup(messages, key) !== 'string')).toEqual([]);
+      });
+    }
+    it(`has the ${locale} name of every item editor section`, () => {
+      const keys = ITEM_SECTIONS.map((section) => `item.sections.${section.id}`);
+      expect(keys.filter((key) => typeof lookup(messages, key) !== 'string')).toEqual([]);
+    });
+    for (const target of PACK_TARGETS) {
+      it(`has the ${locale} name of every feature category of the ${target} form`, () => {
+        const form = formFor(target);
+        const keys = [
+          ...new Set(
+            form.properties.flatMap((def) =>
+              def.category ? [`${form.messages}.groups.${keySegment(def.group)}.categories.${keySegment(def.category)}`] : [],
+            ),
+          ),
+        ];
+        expect(keys.length).toBeGreaterThan(0);
         expect(keys.filter((key) => typeof lookup(messages, key) !== 'string')).toEqual([]);
       });
     }

@@ -5,6 +5,7 @@
 import { mergeCatalogue } from '../../../mergeCatalogue';
 import appearance from './appearance.json' with { type: 'json' };
 import attributes from './attributes.json' with { type: 'json' };
+import categories from './categories.json' with { type: 'json' };
 import components from './components.json' with { type: 'json' };
 import customBlock from './customBlock.json' with { type: 'json' };
 import dialogs from './dialogs.json' with { type: 'json' };
@@ -24,6 +25,7 @@ import variants from './variants.json' with { type: 'json' };
 export default mergeCatalogue(
   appearance,
   attributes,
+  categories,
   components,
   customBlock,
   dialogs,

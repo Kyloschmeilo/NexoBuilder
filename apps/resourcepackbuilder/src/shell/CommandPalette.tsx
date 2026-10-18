@@ -2,8 +2,21 @@
  * The command palette (Ctrl+K or the search field in the top bar): finds actions, pages, folders and items by name
  * or id and runs or opens the chosen one.
  */
-import type { ReactNode } from 'react';
-import { Box, Download, Folder, FolderOpen, FolderPlus, PanelRight, Plus, Save, Server, Settings, Users } from 'lucide-react';
+import { type ReactNode, useState } from 'react';
+import {
+  Box,
+  Download,
+  SlidersHorizontal,
+  Folder,
+  FolderOpen,
+  FolderPlus,
+  PanelRight,
+  Plus,
+  Save,
+  Server,
+  Settings,
+  Users,
+} from 'lucide-react';
 import { useTranslations } from 'next-intl';
 import {
   Command,
@@ -17,6 +30,7 @@ import {
 } from '@resourcepackbuilder/ui/components/command';
 import { exportDialog } from '../features/export/ExportDialog';
 import { useFolderActions } from '../features/folder/useFolderActions';
+import { useItemSettingEntries } from '../features/item/useItemSettingEntries';
 import { newItemDialog } from '../features/newItem/NewItemDialog';
 import { projectsDialog } from '../features/projects/ProjectsDialog';
 import { useProjectActions } from '../features/projects/useProjectActions';
@@ -91,8 +105,13 @@ export function CommandPalette() {
   const projectActions = useProjectActions();
   const dock = useDockState();
   const pageLabel = usePageLabel();
+  const [search, setSearch] = useState('');
+  const settings = useItemSettingEntries(selection?.kind === 'item' ? selection.id : null);
 
-  const close = () => setCommandPaletteOpen(false);
+  const close = () => {
+    setCommandPaletteOpen(false);
+    setSearch('');
+  };
   const run = (entry: Entry) => {
     close();
     entry.run();
@@ -194,15 +213,28 @@ export function CommandPalette() {
   }));
 
   return (
-    <CommandDialog open={isOpen} onOpenChange={setCommandPaletteOpen} title={t('title')} description={t('description')}>
+    <CommandDialog
+      open={isOpen}
+      onOpenChange={(open) => (open ? setCommandPaletteOpen(true) : close())}
+      title={t('title')}
+      description={t('description')}
+    >
       <CommandWithFilter>
-        <CommandInput placeholder={t('placeholder')} />
+        <CommandInput placeholder={t('placeholder')} value={search} onValueChange={setSearch} />
         <CommandList className="max-h-[min(60vh,420px)]">
           <CommandEmpty>{t('empty')}</CommandEmpty>
           <EntryGroup heading={t('groups.actions')} entries={actions} onRun={run} />
           <EntryGroup heading={t('groups.pages')} entries={pages} onRun={run} />
           <EntryGroup heading={t('groups.folders')} entries={folderEntries} onRun={run} />
           <EntryGroup heading={t('groups.items')} entries={itemEntries} onRun={run} />
+          {/* The open item's settings only while searching: there are too many to list them all */}
+          {search.trim() && settings && (
+            <EntryGroup
+              heading={settings.heading}
+              entries={settings.entries.map((entry) => ({ ...entry, icon: <SlidersHorizontal /> }))}
+              onRun={run}
+            />
+          )}
         </CommandList>
       </CommandWithFilter>
     </CommandDialog>

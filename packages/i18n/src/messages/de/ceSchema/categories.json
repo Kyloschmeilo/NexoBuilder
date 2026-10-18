@@ -1,0 +1,53 @@
+{
+  "groups": {
+    "general": {
+      "categories": {
+        "text": "Name und Lore",
+        "item": "Item",
+        "templates": "Vorlagen"
+      }
+    },
+    "data": {
+      "categories": {
+        "text": "Name und Tooltip",
+        "appearance": "Aussehen",
+        "foodUse": "Nahrung und Benutzung",
+        "combat": "Kampf und Ausrüstung",
+        "components": "Komponenten und Daten"
+      }
+    },
+    "settings": {
+      "categories": {
+        "behavior": "Verhalten",
+        "crafting": "Brennstoff und Herstellung",
+        "repair": "Haltbarkeit und Reparatur",
+        "equipment": "Ausrüstung",
+        "appearance": "Aussehen"
+      }
+    },
+    "blockSettings": {
+      "categories": {
+        "breaking": "Abbauen und Werkzeuge",
+        "sounds": "Geräusche",
+        "light": "Licht",
+        "physics": "Physik und Kollision",
+        "fireFluids": "Feuer und Flüssigkeiten",
+        "redstone": "Redstone",
+        "appearance": "Aussehen",
+        "templates": "Vorlagen und Tags"
+      }
+    },
+    "model": {
+      "categories": {
+        "model": "Modell",
+        "display": "Anzeige"
+      }
+    },
+    "itemBehavior": {
+      "categories": {
+        "placement": "Platzieren",
+        "extra": "Weitere Verhalten"
+      }
+    }
+  }
+}
