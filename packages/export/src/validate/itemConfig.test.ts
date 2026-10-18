@@ -84,12 +84,17 @@ describe('furniture hitboxes', () => {
 
   it('reports entries Nexo cannot read, also as a single string', () => {
     const project = projectWith({
-      Mechanics: { furniture: { hitbox: { barriers: '0,0', interactions: ['0,0,0 wide'], shulkers: ['0,0,0'], ghasts: ['a,b,c 1'] } } },
+      Mechanics: {
+        furniture: {
+          hitbox: { barriers: '0,0', interactions: ['0,0,0 wide', '0,0,0 1,1 extra'], shulkers: ['0,0,0'], ghasts: ['a,b,c 1'] },
+        },
+      },
     });
     const issues = issuesOf(project, 'plan.hitboxEntryInvalid');
     expect(issues.map((issue) => [issue.args?.kind, issue.args?.entry])).toEqual([
       ['barriers', '0,0'],
       ['interactions', '0,0,0 wide'],
+      ['interactions', '0,0,0 1,1 extra'],
       ['shulkers', '0,0,0'],
       ['ghasts', 'a,b,c 1'],
     ]);

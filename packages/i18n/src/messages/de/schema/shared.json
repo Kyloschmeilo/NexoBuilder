@@ -358,12 +358,10 @@
                 "label": "Animation erzwingen"
               },
               "properties": {
-                "label": "Darstellung in diesem Zustand",
-                "placeholder": "translation: 0,0.5,0"
+                "label": "Darstellung in diesem Zustand"
               },
               "hitbox": {
-                "label": "Hitbox in diesem Zustand",
-                "placeholder": "barriers:\n  - 0,0,0"
+                "label": "Hitbox in diesem Zustand"
               },
               "nextAfter": {
                 "label": "Automatisch weiter nach"
@@ -510,6 +508,95 @@
         },
         "pitch": {
           "label": "Tonhöhe"
+        }
+      }
+    },
+    "furnitureProperties": {
+      "fields": {
+        "displayTransform": {
+          "label": "Display-Transform",
+          "placeholder": "NONE"
+        },
+        "trackingRotation": {
+          "label": "Ausrichtung zum Spieler"
+        },
+        "translation": {
+          "label": "Verschiebung (x,y,z)",
+          "placeholder": "0,0,0"
+        },
+        "scale": {
+          "label": "Skalierung (x,y,z)",
+          "placeholder": "1,1,1"
+        },
+        "leftRotation": {
+          "label": "Rotation links (Grad oder x,y,z,w)",
+          "placeholder": "45"
+        },
+        "rightRotation": {
+          "label": "Rotation rechts (Grad oder x,y,z,w)",
+          "placeholder": "0"
+        },
+        "brightness": {
+          "label": "Helligkeit überschreiben",
+          "fields": {
+            "blockLight": {
+              "label": "Blocklicht"
+            },
+            "skyLight": {
+              "label": "Himmelslicht"
+            }
+          }
+        },
+        "viewRange": {
+          "label": "Sichtweite"
+        },
+        "shadowRadius": {
+          "label": "Schattenradius"
+        },
+        "shadowStrength": {
+          "label": "Schattenstärke"
+        },
+        "glowColor": {
+          "label": "Leuchtfarbe",
+          "placeholder": "z.B. #FF0000"
+        },
+        "offsetAgainstBlocks": {
+          "label": "Auf Stufen/Teppichen anheben"
+        },
+        "cullable": {
+          "label": "Culling erlauben"
+        },
+        "displayWidth": {
+          "label": "Culling-Breite"
+        },
+        "displayHeight": {
+          "label": "Culling-Höhe"
+        },
+        "delay": {
+          "label": "Animationsdauer",
+          "help": "Wie lange eine animierte Änderung dieser Eigenschaften dauert, z. B. das Öffnen einer Tür.",
+          "placeholder": "z. B. 4t"
+        }
+      }
+    },
+    "furnitureHitbox": {
+      "help": "Barrieren sind feste 1×1-Blöcke, Interaktionen sind frei skalierbar aber ohne Kollision.",
+      "fields": {
+        "barriers": {
+          "label": "Barrieren",
+          "placeholder": "0,0,0  oder Bereich 0..1,0,0"
+        },
+        "interactions": {
+          "label": "Interaktionen",
+          "placeholder": "0,0,0 1,1"
+        },
+        "shulkers": {
+          "label": "Shulker",
+          "placeholder": "0,0,0 1.0 1.0"
+        },
+        "ghasts": {
+          "label": "Glückliche Ghasts",
+          "placeholder": "0,0,0 0.25"
         }
       }
     }

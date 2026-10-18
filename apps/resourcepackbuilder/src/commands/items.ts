@@ -35,6 +35,7 @@ import {
 } from '@resourcepackbuilder/core/craftEngine';
 import { getProject, mutate } from '../store/project';
 import { select, setExpanded } from '../store/ui';
+import { NEXO_FURNITURE_PATH, withoutVariant, withVariant } from '../features/item/furniture/model';
 
 /** Creates items (one undo step) and selects the last one. */
 export function addItems(inputs: NewItemInput[]): void {
@@ -332,4 +333,32 @@ export function duplicateItem(itemId: string, displayName: string): string | nul
   if (!copy) return null;
   select({ kind: 'item', id: copy.id });
   return copy.id;
+}
+
+// --- Furniture: variants and the Nexo furniture mechanic ------------------------------------------------
+
+/** Adds the variant `name` (one element and one hitbox) to the item's CraftEngine furniture. */
+export function addCraftEngineFurnitureVariant(itemId: string, name: string): void {
+  updateCraftEngineFurniture(itemId, (furniture) => withVariant(furniture, name));
+}
+
+/** Removes the variant `name` and its placement rule from the item's CraftEngine furniture. */
+export function removeCraftEngineFurnitureVariant(itemId: string, name: string): void {
+  updateCraftEngineFurniture(itemId, (furniture) => withoutVariant(furniture, name));
+}
+
+/**
+ * Replaces the item's Nexo furniture mechanic (`Mechanics.furniture`) with what `next` makes of it; nothing happens
+ * while the item has none. Equal `historyKey`s in quick succession form one undo step.
+ */
+export function updateNexoFurniture(itemId: string, next: (furniture: ConfigObject) => ConfigObject, historyKey?: string): void {
+  updateItem(
+    itemId,
+    (item) => {
+      const furniture = operations.getPath(item.config, NEXO_FURNITURE_PATH);
+      if (!isPlainObject(furniture)) return;
+      setPath(item.config, NEXO_FURNITURE_PATH, next(isDraft(furniture) ? current(furniture) : furniture));
+    },
+    historyKey,
+  );
 }
