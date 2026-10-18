@@ -202,8 +202,9 @@ function buildBlock(source: Record<string, unknown>, context: CraftEngineBuildCo
   // A state's look: its model (the item's when it sets none) and its entity renderer, which shows the item by default
   const itemKey = craftEngineItemKey(context.project, context.item);
   // A model CraftEngine builds from an appearance's textures is saved next to the main model, named after the appearance
+  // (an appearance named "block" would take the path of the model generated from the item's textures)
   const look = (state: Record<string, unknown>, name: string) =>
-    buildRenderer(withModel(state, model, context.modelKey && `${context.modelKey}-${name}`), itemKey);
+    buildRenderer(withModel(state, model, context.modelKey && `${context.modelKey}-${name === 'block' ? 'look_block' : name}`), itemKey);
 
   const states = blockStates(merged);
   const template = states && statesTemplate(states);

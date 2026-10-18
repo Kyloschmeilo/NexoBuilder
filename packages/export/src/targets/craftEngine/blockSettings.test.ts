@@ -44,9 +44,20 @@ const blockOf = (project: Project) => {
 
 describe('CraftEngine block settings', () => {
   it('points the block at its item for the creative pick', () => {
-    const block = planExport(blockProject(() => {})).items[0];
+    const plan = planExport(blockProject(() => {}));
+    expect(plan.items[0].sections?.blocks?.['bloecke:block_0']?.settings).toEqual({ item: 'bloecke:block_0' });
     expect(blockOf(blockProject(() => {}))).toContain('    settings:\n      item: bloecke:block_0\n');
-    expect(block).toBeDefined();
+  });
+
+  it('reports an exact vanilla state left blank as a missing state', () => {
+    const codes = (block: ConfigObject) => planExport(blockProject((item) => (item.config.block = block))).issues.map((i) => i.code);
+    expect(codes({ state: { state: '  ' } })).toContain('ce.blockStateMissing');
+    expect(codes({ state: { state: 'minecraft:stone' } })).not.toContain('ce.blockStateMissing');
+    const states = (state: string): ConfigObject => ({
+      states: { properties: { lit: { type: 'boolean', default: false } }, appearances: { dim: { state, model: { path: 'a:block/dim' } } } },
+    });
+    expect(codes(states(' '))).toContain('ce.blockAppearanceStateMissing');
+    expect(codes(states('minecraft:stone'))).not.toContain('ce.blockAppearanceStateMissing');
   });
 
   it('keeps an item the settings name, and the other settings after it', () => {
@@ -151,6 +162,32 @@ describe('CraftEngine block models', () => {
       ),
     );
     expect(yaml).not.toContain('generation');
+  });
+
+  it('keeps the path of an appearance named block apart from the generated model', () => {
+    const project = blockProject(
+      (item) =>
+        (item.config.block = {
+          states: {
+            properties: { lit: { type: 'boolean', default: false } },
+            appearances: { base: { auto_state: 'solid' }, block: { auto_state: 'solid', model: { textures: ['a:block/x', 'a:block/y'] } } },
+          },
+        }),
+    );
+    const yaml = blockOf(project);
+    expect(yaml).toContain('            path: bloecke:block/steine/block_0-look_block\n');
+    expect(yaml).toContain('            path: bloecke:block/steine/block_0-block\n');
+  });
+
+  it('reports a model built from several textures that has no path to be saved at', () => {
+    const look = { auto_state: 'solid', model: { textures: ['a:block/x', 'a:block/y'] } };
+    const withoutModel = blockProject((item) => {
+      item.model = null;
+      item.config.block = { state: look };
+    });
+    expect(planExport(withoutModel).issues.find((i) => i.code === 'ce.blockModelPathMissing')?.args).toEqual({ look: 'state' });
+    const withModel = blockProject((item) => (item.config.block = { state: look }));
+    expect(planExport(withModel).issues.map((i) => i.code)).not.toContain('ce.blockModelPathMissing');
   });
 
   it('keeps a weighted list of models as it is', () => {

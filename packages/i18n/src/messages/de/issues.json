@@ -225,6 +225,7 @@
     "blockExtraTextures": "Ein Block aus Texturen nutzt höchstens {max} davon. {count, plural, one {Die andere Textur fehlt} other {Die anderen # Texturen fehlen}} im Block.",
     "autoStateBudget": "Die Blöcke des Projekts brauchen {used} Blockzustände der Gruppe „{group}“, CraftEngine hat aber nur {capacity}. Verschiebe einige Blöcke in eine andere Gruppe.",
     "blockAppearanceStateMissing": "Das Aussehen „{appearance}“ hat keinen Blockzustand. Wähle im Bereich Block des Modell-Tabs eine Blockzustandsgruppe dafür.",
+    "blockModelPathMissing": "Das Modell von „{look}“ wird aus mehreren Texturen gebaut und braucht einen Pfad, unter dem es gespeichert wird. Gib ihm einen Modellpfad oder dem Item ein Modell.",
     "blockPropertyInvalid": "Die Blockeigenschaft „{property}“ ist unvollständig: Sie braucht einen bekannten Typ, ein int einen Bereich und ein string seine Werte.",
     "blockNoAppearance": "Die Zustände des Blocks haben kein Aussehen. Füge im Bereich Block des Modell-Tabs eines hinzu.",
     "blockVariantInvalid": "Die Variante „{variant}“ nennt eine Eigenschaft oder einen Wert, die der Block nicht hat. Schreibe sie als Paare eigenschaft=wert, durch Kommas getrennt.",
