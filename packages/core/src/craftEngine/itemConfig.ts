@@ -46,9 +46,9 @@ import { craftEngineItemKey, ordered } from './yaml';
 const TOP_LEVEL_ORDER = ['material', 'client_bound_material', 'data', 'model', 'models', 'settings', 'behavior', 'behaviors', 'events'];
 /** Order of the keys of a block, of its states, of a state (or appearance) and of its model */
 const BLOCK_ORDER = ['state', 'states', 'settings', 'behavior', 'behaviors', 'loot', 'events'];
-const STATES_ORDER = ['template', 'arguments', 'merges', 'properties', 'appearances', 'variants'];
-const STATE_ORDER = ['auto_state', 'state', 'model', 'models', 'transparent', 'entity_renderer'];
-const MODEL_ORDER = ['path', 'x', 'y', 'uvlock', 'weight', 'generation'];
+const STATES_ORDER = ['id', 'template', 'arguments', 'merges', 'properties', 'appearances', 'variants'];
+const STATE_ORDER = ['id', 'auto_state', 'state', 'model', 'models', 'transparent', 'entity_renderer'];
+const MODEL_ORDER = ['path', 'x', 'y', 'z', 'uvlock', 'weight', 'generation'];
 /** Keys of a state that give it its look (block/states.mdx, appearance keys); the generated model is added only without them */
 const STATE_APPEARANCE_KEYS = ['model', 'models', 'texture', 'textures', 'blueprint', 'transparent'];
 
@@ -105,14 +105,29 @@ export function craftEngineMaterial(item: Item): string {
 
 const asList = (value: unknown): unknown[] => (value === undefined ? [] : Array.isArray(value) ? value : [value]);
 
+/** The textures of a model's `textures`/`texture` shorthand (a list or one texture), null without one. */
+function modelTextures(model: Record<string, unknown>): unknown[] | null {
+  const value = model.textures ?? model.texture;
+  return value === undefined ? null : asList(value);
+}
+
 /**
  * A state or appearance with the item's model when it sets no look itself. A `model` with only a rotation
- * (`{ y: 90 }`, as a block facing the player has) gets the item's model path too. An entity renderer on a fixed
- * vanilla `state` is its look (the jar's sofa draws on a barrier); on an `auto_state` the block keeps the model below.
+ * (`{ y: 90 }`, as a block facing the player has) gets the item's model path too. A `model` that names its textures
+ * (CraftEngine builds the model from them) keeps them: one texture is its own model, several get the path `texturesPath`
+ * to save the built model at. An entity renderer on a fixed vanilla `state` is its look (the jar's sofa draws on a
+ * barrier); on an `auto_state` the block keeps the model below.
  */
-function withModel(state: Record<string, unknown>, model: () => Record<string, unknown> | null): Record<string, unknown> {
+function withModel(
+  state: Record<string, unknown>,
+  model: () => Record<string, unknown> | null,
+  texturesPath: string | null,
+): Record<string, unknown> {
   const result = { ...state };
-  if (result.auto_state === undefined && rendererElements(result).length > 0) {
+  const textures = isPlainObject(result.model) && result.model.path === undefined ? modelTextures(result.model) : null;
+  if (textures && isPlainObject(result.model)) {
+    if (textures.length > 1 && texturesPath) result.model = ordered({ path: texturesPath, ...result.model }, MODEL_ORDER);
+  } else if (result.auto_state === undefined && rendererElements(result).length > 0) {
     // A model with only a rotation (from an older "face the player") would re-skin the vanilla state: left out
     if (isPlainObject(result.model) && result.model.path === undefined) delete result.model;
   } else if (STATE_APPEARANCE_KEYS.every((key) => result[key] === undefined)) {
@@ -193,7 +208,10 @@ function buildBlock(source: Record<string, unknown>, context: CraftEngineBuildCo
 
   // A state's look: its model (the item's when it sets none) and its entity renderer, which shows the item by default
   const itemKey = craftEngineItemKey(context.project, context.item);
-  const look = (state: Record<string, unknown>) => buildRenderer(withModel(state, model), itemKey);
+  // A model CraftEngine builds from an appearance's textures is saved next to the main model, named after the appearance
+  // (an appearance named "block" would take the path of the model generated from the item's textures)
+  const look = (state: Record<string, unknown>, name: string) =>
+    buildRenderer(withModel(state, model, context.modelKey && `${context.modelKey}-${name === 'block' ? 'look_block' : name}`), itemKey);
 
   const states = blockStates(merged);
   const template = states && statesTemplate(states);
@@ -221,12 +239,15 @@ function buildBlock(source: Record<string, unknown>, context: CraftEngineBuildCo
   } else if (states) {
     const appearances = isPlainObject(states.appearances) ? states.appearances : {};
     const filled = Object.fromEntries(
-      Object.entries(appearances).map(([name, value]) => [name, isPlainObject(value) ? look(value) : value]),
+      Object.entries(appearances).map(([name, value]) => [name, isPlainObject(value) ? look(value, name) : value]),
     );
     merged.states = ordered({ ...states, appearances: filled }, STATES_ORDER);
   } else {
-    merged.state = look(isPlainObject(merged.state) ? merged.state : {});
+    merged.state = look(isPlainObject(merged.state) ? merged.state : {}, 'state');
   }
+  // The block's item, which the creative pick (middle click) gives; an item the settings name wins
+  const settings = isPlainObject(merged.settings) ? merged.settings : {};
+  merged.settings = { item: itemKey, ...settings };
 
   // CraftEngine reads one of `behavior` and `behaviors`: the form's behavior goes after the other ones
   // A behavior's type comes first (the form's keys may sit before it in the config)

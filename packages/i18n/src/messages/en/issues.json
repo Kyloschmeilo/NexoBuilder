@@ -235,6 +235,7 @@
     "blockExtraTextures": "A block made from textures uses at most {max} of them, so {count, plural, one {one more texture is} other {# more textures are}} left out of the block.",
     "autoStateBudget": "The project’s blocks need {used} block states of the group “{group}”, but CraftEngine has only {capacity}. Move some blocks to another group.",
     "blockAppearanceStateMissing": "The appearance “{appearance}” has no block state. Choose a block state group for it in the Block section of the model tab.",
+    "blockModelPathMissing": "The model of “{look}” is built from several textures and needs a path to be saved at. Give it a model path, or give the item a model.",
     "blockPropertyInvalid": "The block property “{property}” is incomplete: it needs a known type, an int a range and a string its values.",
     "blockNoAppearance": "The block’s states have no appearance. Add one in the Block section of the model tab.",
     "blockVariantInvalid": "The variant “{variant}” names a property or value the block does not have. Write it as property=value pairs, separated by commas.",

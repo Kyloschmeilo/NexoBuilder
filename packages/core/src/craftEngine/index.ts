@@ -4,6 +4,7 @@ export * from './block';
 export * from './blockBehaviors';
 export * from './blockRenderer';
 export * from './blockStates';
+export * from './blockVariants';
 export * from './categories';
 export * from './defaultTemplates';
 export * from './events';

@@ -306,7 +306,9 @@ export function templateProjectIssues(project: Project): Issue[] {
 function validateState(itemExport: ItemExport, state: Record<string, unknown>, appearance: string | null): void {
   const { report } = itemExport;
   const auto = stateAutoState(state);
-  if (state.auto_state === undefined && state.state === undefined) {
+  // An exact state left blank (the editor starts one empty) names no vanilla state
+  const exact = typeof state.state === 'string' ? state.state.trim() !== '' : state.state !== undefined;
+  if (state.auto_state === undefined && !exact) {
     if (appearance === null) report('error', 'ce.blockStateMissing');
     else report('error', 'ce.blockAppearanceStateMissing', { appearance });
   } else if (state.auto_state !== undefined && !(auto && autoStateGroupOf(auto.group))) {
@@ -314,6 +316,12 @@ function validateState(itemExport: ItemExport, state: Record<string, unknown>, a
   }
   // The single state is named by its key in the YAML
   const where = { look: appearance ?? 'state' };
+  // CraftEngine needs a path to save a model it builds from several textures (the export names one from the item's model)
+  const model = isPlainObject(state.model) ? state.model : null;
+  const textures = model && (model.textures ?? model.texture);
+  if (model && model.path === undefined && Array.isArray(textures) && textures.length > 1) {
+    report('error', 'ce.blockModelPathMissing', where);
+  }
   const elements = rendererElements(state);
   for (const element of elements) validateDisplayElement(itemExport, element, RENDERER_ELEMENT_CODES, where);
   if (isTransparentState(state) && elements.length === 0) report('warning', 'ce.blockTransparentInvisible', where);
