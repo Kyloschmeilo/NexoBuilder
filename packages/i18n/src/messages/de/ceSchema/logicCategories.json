@@ -1,0 +1,54 @@
+{
+  "logic": {
+    "categories": {
+      "conditions": {
+        "logic": "Logik und Werte",
+        "player": "Spieler",
+        "item": "Item",
+        "block": "Block und Möbel",
+        "world": "Welt und Entitys"
+      },
+      "functions": {
+        "messages": "Nachrichten und Menüs",
+        "player": "Spieler",
+        "effects": "Sounds und Partikel",
+        "item": "Item",
+        "world": "Blöcke und Entitys",
+        "furniture": "Möbel",
+        "flow": "Ablauf und Befehle",
+        "plugins": "Andere Plugins"
+      },
+      "triggers": {
+        "clicks": "Klicks",
+        "use": "Item benutzen",
+        "breaking": "Abbauen",
+        "world": "Platzieren und Betreten"
+      },
+      "numbers": {
+        "fixed": "Feste Werte",
+        "ranges": "Bereiche",
+        "distributions": "Verteilungen"
+      },
+      "lootEntries": {
+        "drops": "Drops",
+        "flow": "Verzweigungen und Funktionen"
+      },
+      "lootFunctions": {
+        "count": "Anzahl",
+        "data": "Daten und Erfahrung"
+      },
+      "itemBehaviors": {
+        "tools": "Werkzeuge",
+        "farming": "Landwirtschaft"
+      },
+      "itemUpdaters": {
+        "change": "Item ändern",
+        "reset": "Zurücksetzen"
+      },
+      "furnitureBehaviors": {
+        "storage": "Lager und Anzeigen",
+        "light": "Licht"
+      }
+    }
+  }
+}
