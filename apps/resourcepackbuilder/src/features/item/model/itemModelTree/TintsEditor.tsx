@@ -13,11 +13,12 @@ import {
   withTintType,
 } from '@resourcepackbuilder/core/project';
 import { isPlainObject } from '@resourcepackbuilder/utils';
-import { IconButton } from '@resourcepackbuilder/ui';
+import { FieldGroup, FieldRow, IconButton } from '@resourcepackbuilder/ui';
 import { Button } from '@resourcepackbuilder/ui/components/button';
 import { NativeSelect, NativeSelectOption } from '@resourcepackbuilder/ui/components/native-select';
 import { useSchemaText } from '../../../../components/useSchemaText';
 import type { NodeChange } from './NodeEditor';
+import { NodeBlock } from './NodeBlock';
 import { ParamList } from './ParamField';
 
 /** The tint source a new tint starts with (the dyed color, as leather armor has). */
@@ -34,8 +35,19 @@ export function TintsEditor({ node, onChange, pathKey }: { node: ItemModelNode; 
     onChange(next.length > 0 ? { ...rest, tints: next } : rest, key);
   };
   return (
-    <div className="flex flex-col gap-2">
-      <span className="text-xs font-medium text-muted-foreground">{t('itemModel.ui.tints')}</span>
+    <NodeBlock
+      title={t('itemModel.ui.tints')}
+      actions={
+        <Button
+          variant="ghost"
+          size="sm"
+          className="text-primary hover:text-primary"
+          onClick={() => setTints([...tints, newTint(FIRST_TINT)])}
+        >
+          <Plus /> {t('itemModel.ui.addTint')}
+        </Button>
+      }
+    >
       {tints.map((entry, i) => {
         const tint: ConfigObject = isPlainObject(entry) ? (entry as ConfigObject) : {};
         const id = typeof tint.type === 'string' ? fullId(tint.type) : '';
@@ -46,32 +58,34 @@ export function TintsEditor({ node, onChange, pathKey }: { node: ItemModelNode; 
             key,
           );
         return (
-          <div key={i} className="flex flex-col gap-2 border-l-2 pl-3">
-            <div className="flex items-center gap-2">
-              <span className="font-mono text-xs">#{i}</span>
-              <NativeSelect
-                size="sm"
-                aria-label={t('itemModel.ui.type')}
-                value={def ? def.id : ''}
-                onChange={(e) => setTint(id ? withTintType(tint, e.target.value) : newTint(e.target.value))}
-              >
-                {!def && <NativeSelectOption value="">{id || t('itemModel.ui.unset')}</NativeSelectOption>}
-                {ITEM_MODEL_TINT_TYPES.map((option) => (
-                  <NativeSelectOption key={option.id} value={option.id}>
-                    {option.id}
-                  </NativeSelectOption>
-                ))}
-              </NativeSelect>
-              <IconButton
-                className="ml-auto"
-                label={t('itemModel.ui.removeEntry')}
-                variant="ghost-destructive"
-                onClick={() => setTints(tints.filter((_, j) => j !== i))}
-              >
-                <Trash2 />
-              </IconButton>
-            </div>
-            {def && <p className="text-xs text-muted-foreground">{text(itemModelMessages.tint(def.id))}</p>}
+          <div key={i} data-slot="tint" className="flex min-w-0 flex-col gap-2 border-l-2 border-line pl-3">
+            <FieldGroup>
+              <FieldRow label={`#${i}`} yamlKey="tintindex" help={def ? text(itemModelMessages.tint(def.id)) : undefined}>
+                <div className="flex min-w-0 items-center gap-1">
+                  <NativeSelect
+                    size="sm"
+                    className="min-w-0 flex-1"
+                    aria-label={t('itemModel.ui.type')}
+                    value={def ? def.id : ''}
+                    onChange={(e) => setTint(id ? withTintType(tint, e.target.value) : newTint(e.target.value))}
+                  >
+                    {!def && <NativeSelectOption value="">{id || t('itemModel.ui.unset')}</NativeSelectOption>}
+                    {ITEM_MODEL_TINT_TYPES.map((option) => (
+                      <NativeSelectOption key={option.id} value={option.id}>
+                        {option.id}
+                      </NativeSelectOption>
+                    ))}
+                  </NativeSelect>
+                  <IconButton
+                    label={t('itemModel.ui.removeEntry')}
+                    variant="ghost-destructive"
+                    onClick={() => setTints(tints.filter((_, j) => j !== i))}
+                  >
+                    <Trash2 />
+                  </IconButton>
+                </div>
+              </FieldRow>
+            </FieldGroup>
             {def && (
               <ParamList
                 params={def.params}
@@ -87,9 +101,6 @@ export function TintsEditor({ node, onChange, pathKey }: { node: ItemModelNode; 
           </div>
         );
       })}
-      <Button variant="outline" size="sm" className="self-start" onClick={() => setTints([...tints, newTint(FIRST_TINT)])}>
-        <Plus /> {t('itemModel.ui.addTint')}
-      </Button>
-    </div>
+    </NodeBlock>
   );
 }

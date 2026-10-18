@@ -13,12 +13,13 @@ import {
   itemModelMessages,
 } from '@resourcepackbuilder/core/project';
 import { isPlainObject } from '@resourcepackbuilder/utils';
-import { IconButton } from '@resourcepackbuilder/ui';
-import { Badge } from '@resourcepackbuilder/ui/components/badge';
+import { FieldGroup, FieldRow, Help, IconButton, StatusPill } from '@resourcepackbuilder/ui';
 import { Button } from '@resourcepackbuilder/ui/components/button';
+import { humanizeKey } from '../../../../components/catalog';
 import { TextInput } from '../../../../components/editor/inputs/TextInput';
 import { useSchemaText } from '../../../../components/useSchemaText';
 import type { NodeChange } from './NodeEditor';
+import { NodeBlock } from './NodeBlock';
 import { YamlValue } from './ParamField';
 
 /** A list of numbers as `a, b, c` (other values as they are written). */
@@ -39,16 +40,29 @@ export function TransformationEditor({ node, onChange, pathKey }: { node: ItemMo
   const t = useTranslations('schema');
   const text = useSchemaText();
   const value = node.transformation;
-  const badge = <Badge variant="outline">{t('itemModel.ui.fromVersion', { version: ITEM_MODEL_TRANSFORMATION_VERSION })}</Badge>;
+  const meta = (
+    <>
+      <Help>{t('itemModel.ui.transformationHelp')}</Help>
+      <StatusPill tone="info" label={t('itemModel.ui.fromVersion', { version: ITEM_MODEL_TRANSFORMATION_VERSION })} />
+    </>
+  );
   if (value === undefined) {
     const identity = Object.fromEntries(ITEM_MODEL_TRANSFORMATION_KEYS.map(({ key, identity: start }) => [key, [...start]]));
     return (
-      <div className="flex flex-wrap items-center gap-2">
-        <Button variant="outline" size="sm" onClick={() => onChange({ ...node, transformation: identity })}>
-          <Plus /> {t('itemModel.ui.addTransformation')}
-        </Button>
-        {badge}
-      </div>
+      <NodeBlock
+        title={t('itemModel.ui.transformation')}
+        meta={meta}
+        actions={
+          <Button
+            variant="ghost"
+            size="sm"
+            className="text-primary hover:text-primary"
+            onClick={() => onChange({ ...node, transformation: identity })}
+          >
+            <Plus /> {t('itemModel.ui.addTransformation')}
+          </Button>
+        }
+      />
     );
   }
   const remove = () => {
@@ -56,41 +70,35 @@ export function TransformationEditor({ node, onChange, pathKey }: { node: ItemMo
     delete rest.transformation;
     onChange(rest);
   };
-  const header = (
-    <div className="flex flex-wrap items-center gap-2">
-      <span className="text-xs font-medium text-muted-foreground">{t('itemModel.ui.transformation')}</span>
-      {badge}
-      <IconButton className="ml-auto" label={t('itemModel.ui.removeEntry')} variant="ghost-destructive" onClick={remove}>
-        <Trash2 />
-      </IconButton>
-    </div>
+  const removeButton = (
+    <IconButton label={t('itemModel.ui.removeEntry')} variant="ghost-destructive" onClick={remove}>
+      <Trash2 />
+    </IconButton>
   );
   if (!isPlainObject(value)) {
     // A matrix: edited as YAML
     return (
-      <div className="flex flex-col gap-2 border-l-2 pl-3">
-        {header}
+      <NodeBlock title={t('itemModel.ui.transformation')} meta={meta} actions={removeButton}>
         <YamlValue
           id={`${pathKey}.transformation`}
           value={value}
           onChange={(next) => onChange({ ...node, transformation: next ?? [] }, `${pathKey}.transformation`)}
         />
-      </div>
+      </NodeBlock>
     );
   }
   const object = value as ConfigObject;
   return (
-    <div className="flex flex-col gap-2 border-l-2 pl-3">
-      {header}
-      <p className="text-xs text-muted-foreground">{t('itemModel.ui.transformationHelp')}</p>
-      <div className="grid gap-3 sm:grid-cols-2">
+    <NodeBlock title={t('itemModel.ui.transformation')} meta={meta} actions={removeButton}>
+      <FieldGroup>
         {ITEM_MODEL_TRANSFORMATION_KEYS.map(({ key, size }) => {
           const current = object[key];
           const invalid = current !== undefined && !(Array.isArray(current) && current.length === size);
+          const id = `${pathKey}.transformation.${key}`;
           return (
-            <label key={key} className="flex flex-col gap-1">
-              <span className="font-mono text-xs font-medium">{key}</span>
+            <FieldRow key={key} label={humanizeKey(key)} htmlFor={id} yamlKey={key} help={text(itemModelMessages.transformation(key))}>
               <TextInput
+                id={id}
                 mono
                 invalid={invalid}
                 value={formatVector(current)}
@@ -104,11 +112,10 @@ export function TransformationEditor({ node, onChange, pathKey }: { node: ItemMo
                   onChange({ ...node, transformation: updated }, `${pathKey}.transformation.${key}`);
                 }}
               />
-              <span className="text-xs text-muted-foreground">{text(itemModelMessages.transformation(key))}</span>
-            </label>
+            </FieldRow>
           );
         })}
-      </div>
-    </div>
+      </FieldGroup>
+    </NodeBlock>
   );
 }
