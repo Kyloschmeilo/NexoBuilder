@@ -3,6 +3,7 @@ export * from './atlas';
 export * from './attributes';
 export * from './block';
 export * from './blockBehaviors';
+export * from './blockBehaviorList';
 export * from './blockRenderer';
 export * from './blockStates';
 export * from './blockVariants';

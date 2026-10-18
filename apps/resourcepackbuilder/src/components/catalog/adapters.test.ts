@@ -109,7 +109,7 @@ describe('catalogFromTypedSource', () => {
     expect(slab).toMatchObject({
       label: 'Slab block',
       yamlKey: 'slab_block',
-      category: 'shapes',
+      category: 'building',
       description: lookup('ceSchema', 'logic.blockBehaviors.slabBlock.help'),
       docs: { target: 'craftengine', url: expect.stringMatching(/^https:\/\/xiao-momi\.github\.io\/craft-engine-wiki\//) },
       preview: 'type: slab_block\n',
@@ -119,8 +119,17 @@ describe('catalogFromTypedSource', () => {
 
   it('names the categories from their messages, in catalog order', () => {
     const { categories } = catalogFromTypedSource(source, { text, target: 'craftengine' });
-    expect(categories.map((category) => category.id)).toEqual(['shapes', 'redstone', 'blockEntities', 'physics', 'placement', 'plants']);
-    expect(categories[0].label).toBe(lookup('ceSchema', 'logic.categories.blockBehaviors.shapes'));
+    expect(categories.map((category) => category.id)).toEqual([
+      'building',
+      'interaction',
+      'redstone',
+      'light',
+      'storage',
+      'physics',
+      'placement',
+      'plants',
+    ]);
+    expect(categories[0].label).toBe(lookup('ceSchema', 'logic.categories.blockBehaviors.building'));
   });
 
   it('marks the types in the list as added, puts uncategorised types under Other and shows Premium', () => {

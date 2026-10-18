@@ -286,17 +286,9 @@
     "disabledSummary": "Für das ganze Projekt: Nexo schaltet diese Vanilla-Rezepte ab. Exportiert nach {path}."
   },
   "ceBlock": {
-    "title": "Block",
-    "description": "CraftEngine platziert das Item als eigenen Block.",
-    "toggle": "Als Block platzieren",
-    "toggleHelp": "Das Item platziert einen eigenen Block mit derselben ID.",
-    "toggleBlocked": "Das Item platziert ein Möbel. Schalte „Als Möbel platzieren“ aus, um es zum Block zu machen.",
     "autoState": "Blockzustand-Gruppe",
     "autoStateHelp": "CraftEngine zeigt den Block über einen freien Zustand dieser Vanilla-Blöcke. Die Gruppe bestimmt die Kollisionsbox: solid für volle Blöcke, leaves für durchsichtige Blöcke, tripwire für flache Pflanzen.",
     "model": "Der Block zeigt das Modell des Items. Ein flaches Item-Modell wird zu einem Würfel aus seinen Texturen: 1 Textur auf allen Seiten, 2 als Enden und Seite (wie ein Stamm), 3 als unten, Seite und oben, 4 als unten, vorne, Seite und oben (wie ein Ofen), 5 eine pro Seite (unten, oben, Norden, Süden, Westen; Osten wiederholt Westen).",
-    "behavior": "Verhalten",
-    "behaviorHelp": "Was der Block tut. Ein Verhalten legt die Zustände an, die es braucht; seine Schlüssel stehen darunter. Weitere Verhalten (jedes aus dem CraftEngine-Wiki) fügst du unter Weitere Verhalten hinzu.",
-    "behaviorKeys": "Die Schlüssel des Verhaltens. Leere Schlüssel nehmen den Standard des Plugins.",
     "replaceStates": {
       "title": "Zustände des Blocks ersetzen?",
       "message": "Dieses Verhalten bringt Zustände aus einer Vorlage mit, die sich nicht mit deinen eingerichteten Zuständen kombinieren lassen. Beim Ersetzen gehen deine Eigenschaften, Aussehen und Varianten verloren.",
@@ -305,8 +297,6 @@
     "storageOpenLook": "Offen aussehen, solange es benutzt wird",
     "storageOpenLookHelp": "Fügt die Eigenschaft open hinzu: Der Block zeigt sein offenes Aussehen, solange ein Spieler den Behälter geöffnet hat.",
     "behaviors": {
-      "none": "Keins",
-      "other": "Anderes (aus dem zusätzlichen YAML)",
       "slab_block": "Stufe",
       "stairs_block": "Treppe",
       "door_block": "Tür",
@@ -342,7 +332,9 @@
       "simple_particle_block": "Partikel",
       "wall_torch_particle_block": "Wandfackel",
       "directional_attached_block": "An der Wand haftend",
-      "on_liquid_block": "Auf dem Wasser (Seerose)"
+      "on_liquid_block": "Auf dem Wasser (Seerose)",
+      "none": "Keins",
+      "other": "Anderes (aus dem zusätzlichen YAML)"
     },
     "states": {
       "toMulti": "Mehrere Zustände nutzen",
@@ -372,7 +364,6 @@
       "variantAppearance": "Aussehen",
       "noAppearance": "Kein Aussehen",
       "addFacing": "Zum Spieler drehen",
-      "details": "Weitere Optionen",
       "source": "Vanilla-Zustand",
       "sourceAuto": "Ein freier Zustand einer Gruppe",
       "sourceAutoHelp": "CraftEngine wählt einen freien Zustand der Blockzustandsgruppe.",
@@ -386,7 +377,6 @@
       "fixedId": "Feste interne ID",
       "fixedIdPlaceholder": "Automatisch",
       "fixedIdHelp": "Meist leer lassen. Eine feste ID hält die internen IDs des Blocks gleich, etwa für Datenpakete; mehrere Zustände belegen die IDs ab dieser. Die IDs müssen über alle Blöcke eindeutig sein.",
-      "variantSettings": "Einstellungen dieser Variante",
       "variantSettingsHelp": "Block-Einstellungen, die nur für die Zustände dieser Variante gelten, etwa mehr Licht im eingeschalteten Zustand oder Wasser im gefluteten. Sie werden über die Einstellungen des Blocks gelegt.",
       "nameHints": {
         "axis": "CraftEngine setzt axis beim Platzieren nach der angeklickten Seite. Nutze den Typ axis.",
@@ -394,7 +384,9 @@
         "facing_clockwise": "Wie facing, aber beim Platzieren um 90° im Uhrzeigersinn gedreht. Nutze den Typ horizontal_direction.",
         "rotation": "CraftEngine setzt beim Platzieren eine feine Drehung. Nutze den Typ int mit dem Bereich 0~7 oder 0~15.",
         "waterlogged": "CraftEngine setzt waterlogged, wenn der Block im Wasser platziert wird. Nutze den Typ boolean und ein geflutetes Aussehen."
-      }
+      },
+      "details": "Weitere Optionen",
+      "variantSettings": "Einstellungen dieser Variante"
     },
     "renderer": {
       "title": "Entity-Renderer",
@@ -405,7 +397,15 @@
       "elements": "Elemente",
       "elementsHelp": "Was der Block zeigt. Ein Item-Display ohne Item zeigt das Modell dieses Items. Positionen sind in Blöcken ab der Ecke des Blocks; ohne Position steht ein Element in der Mitte des Blocks (ein Block-Display an der Ecke).",
       "previewHelp": "Der Umriss des Blocks ist gelb. Andere Blöcke und Texte erscheinen als graue Blöcke."
-    }
+    },
+    "title": "Block",
+    "description": "CraftEngine platziert das Item als eigenen Block.",
+    "toggle": "Als Block platzieren",
+    "toggleHelp": "Das Item platziert einen eigenen Block mit derselben ID.",
+    "toggleBlocked": "Das Item platziert ein Möbel. Schalte „Als Möbel platzieren“ aus, um es zum Block zu machen.",
+    "behavior": "Verhalten",
+    "behaviorHelp": "Was der Block tut. Ein Verhalten legt die Zustände an, die es braucht; seine Schlüssel stehen darunter. Weitere Verhalten (jedes aus dem CraftEngine-Wiki) fügst du unter Weitere Verhalten hinzu.",
+    "behaviorKeys": "Die Schlüssel des Verhaltens. Leere Schlüssel nehmen den Standard des Plugins."
   },
   "ceFurniture": {
     "title": "Möbel",
@@ -597,6 +597,98 @@
     "beds": "Betten",
     "light": "Licht",
     "removeOption": "{name} entfernen"
+  },
+  "block": {
+    "title": "Block",
+    "description": {
+      "nexo": "Platziert das Item als Nexo-Custom-Block: sein Typ, Modell, seine Härte und was er sonst tut.",
+      "craftengine": "Platziert das Item als eigenen Block: was er tut, wie er aussieht und seine Einstellungen."
+    },
+    "places": "Platziert",
+    "placesHelp": "Was das Item in die Welt setzt, wenn ein Spieler es benutzt. Ein Item platziert einen Block oder ein Möbelstück, nie beides.",
+    "placesOptions": {
+      "nothing": "Nichts",
+      "block": "Block",
+      "furniture": "Möbel"
+    },
+    "placesNote": {
+      "nothing": "Das Item platziert nichts. Wähle Block oder Möbel, um es in die Welt zu setzen.",
+      "furniture": "Das Item platziert ein Möbelstück. Seine Modelle, Hitboxen und Sitze stehen im Abschnitt Möbel."
+    },
+    "leave": {
+      "block": {
+        "title": "Block entfernen?",
+        "message": "Die Verhalten, Zustände und Einstellungen des Blocks werden entfernt. Rückgängig holt sie zurück.",
+        "confirm": "Block entfernen"
+      },
+      "furniture": {
+        "title": "Möbelstück entfernen?",
+        "message": "Die Varianten, Elemente und Hitboxen des Möbelstücks werden entfernt. Rückgängig holt sie zurück.",
+        "confirm": "Möbelstück entfernen"
+      },
+      "both": {
+        "title": "Block und Möbelstück entfernen?",
+        "message": "Das Item hat einen Block und ein Möbelstück. Beide werden entfernt. Rückgängig holt sie zurück.",
+        "confirm": "Beide entfernen"
+      }
+    },
+    "behaviors": {
+      "title": "Verhalten",
+      "description": "Was der Block tut: wachsen, fallen, sich wie eine Tür öffnen. Jedes Verhalten hat eigene Einstellungen.",
+      "add": "Verhalten hinzufügen",
+      "dialogTitle": "Block-Verhalten hinzufügen",
+      "dialogDescription": "Wähle, was der Block tun soll. Du kannst später weitere hinzufügen und jedes ändern.",
+      "search": "Verhalten suchen, z. B. Tür, wachsen, fallen",
+      "empty": "Noch keine Verhalten.",
+      "main": "Haupt",
+      "setUp": "Zustände dafür einrichten",
+      "presetNote": "Der Block hat noch kein Hauptverhalten, also wird es dieses: Beim Hinzufügen richtet es auch die nötigen Zustände, seine Hilfsverhalten und die Drops ein.",
+      "missingKeys": "Braucht {keys}",
+      "missingProperties": "Braucht die Eigenschaft {names}",
+      "editTitle": "Verhalten: {name}",
+      "remove": "Verhalten entfernen"
+    },
+    "states": {
+      "title": "Zustände",
+      "single": "Ein Zustand",
+      "templateSummary": "Vorlage {template}",
+      "multiSummary": "{count, plural, one {# Zustand} other {# Zustände}}",
+      "multiUnknown": "Mehrere Zustände",
+      "rendererElements": "{count, plural, one {# Element} other {# Elemente}}",
+      "rendererNone": "Keiner",
+      "editRenderer": "Renderer bearbeiten",
+      "addProperty": "Eigenschaft hinzufügen",
+      "addAppearance": "Aussehen hinzufügen",
+      "addVariant": "Variante hinzufügen",
+      "propertyValuesColumn": "Werte oder Bereich",
+      "rotationXColumn": "x",
+      "rotationYColumn": "y",
+      "settingsColumn": "Einstellungen",
+      "settingsCount": "{count, plural, one {# Einstellung} other {# Einstellungen}}",
+      "noSettings": "Einstellungen hinzufügen",
+      "variantSettingsOf": "Einstellungen von {variant}",
+      "variantSettingsEmpty": "Keine eigenen Einstellungen. Die Variante nutzt die Einstellungen des Blocks.",
+      "appearanceDetails": "Weitere Optionen von {name}",
+      "noVariants": "Noch keine Varianten. Jeder Zustand zeigt das erste Aussehen."
+    },
+    "settings": {
+      "title": "Block-Einstellungen",
+      "description": "Härte, Sounds, Licht, Werkzeugregeln und die übrigen Einstellungen des Blocks.",
+      "add": "Einstellung hinzufügen",
+      "dialogTitle": "Block-Einstellung hinzufügen",
+      "search": "Einstellungen suchen, z. B. Härte, Licht, Sound",
+      "empty": "Noch keine Einstellungen. Es gelten die Standardwerte von CraftEngine."
+    },
+    "nexo": {
+      "featuresTitle": "Block-Funktionen",
+      "featuresDescription": "Die größeren Teile des Custom-Blocks: Richtungsseiten, Wachstum, Sounds, Drops, Lager und mehr.",
+      "addFeature": "Funktion hinzufügen",
+      "dialogTitle": "Block-Funktion hinzufügen",
+      "search": "Funktionen suchen, z. B. Drop, Sound, Setzling",
+      "featuresEmpty": "Noch keine Funktionen.",
+      "advancedNote": "Selten nötig. Nexo liest es, die meisten Blöcke kommen ohne aus.",
+      "modelsDescription": "Die zusätzlichen Modelle, die der Blocktyp nutzt: seine Stapelstufen oder ein Modell pro Seite."
+    }
   },
   "sections": {
     "nav": "Bereiche des Items",

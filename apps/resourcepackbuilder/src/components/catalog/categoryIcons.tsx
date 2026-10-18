@@ -5,6 +5,7 @@ import {
   ArrowDownToLine,
   Binary,
   Box,
+  BrickWall,
   Brush,
   ChartSpline,
   Cpu,
@@ -32,6 +33,7 @@ import {
   Star,
   Sword,
   User,
+  Zap,
   UtensilsCrossed,
   Wand,
   Workflow,
@@ -40,7 +42,10 @@ import {
 const ICONS: Record<string, ReactNode> = {
   common: <Star />,
   shapes: <Box />,
-  redstone: <Lightbulb />,
+  redstone: <Zap />,
+  building: <BrickWall />,
+  light: <Lightbulb />,
+  storage: <Archive />,
   blockEntities: <Archive />,
   physics: <ArrowDownToLine />,
   placement: <Footprints />,
@@ -77,8 +82,6 @@ const ICONS: Record<string, ReactNode> = {
   farming: <Sprout />,
   change: <Wand />,
   reset: <RotateCcw />,
-  storage: <Archive />,
-  light: <Lightbulb />,
 };
 
 /** The icon of a category id, a puzzle piece for unknown ones. */
