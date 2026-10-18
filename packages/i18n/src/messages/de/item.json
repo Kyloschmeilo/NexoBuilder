@@ -190,16 +190,9 @@
   },
   "recipes": {
     "title": "Rezepte",
-    "empty": "Noch keine Rezepte. Über <b>„Hinzufügen“</b> legst du fest, wie dieses Item hergestellt werden kann.",
-    "key": "Schlüssel des Rezepts",
-    "file": "Datei:",
     "remove": "Rezept entfernen",
-    "input": "Eingabe",
     "source": "Quelle der Zutat",
-    "cookingTime": "Garzeit in Ticks ({seconds, number} s)",
     "experience": "Erfahrung",
-    "result": "Ergebnis:",
-    "exportHint": "Rezepte werden nach <code>{path}</code> exportiert und mit <code>{command}</code> geladen.",
     "typePlaceholder": "typ",
     "grid": "Raster",
     "emptySlot": "leer",
@@ -230,7 +223,33 @@
     },
     "noResult": "Dieses Rezept verändert das Basis-Item und hat kein eigenes Ergebnis.",
     "disabledTitle": "Abgeschaltete Vanilla-Rezepte",
-    "disabledDescription": "Für das ganze Projekt: Nexo schaltet diese Vanilla-Rezepte ab. Exportiert nach <code>{path}</code>."
+    "addRecipe": "Rezept hinzufügen",
+    "catalogTitle": "Rezept hinzufügen",
+    "catalogDescription": "Wähle, wie Spieler dieses Item bekommen.",
+    "catalogSearch": "Rezepttypen, Schlüssel und Beschreibungen durchsuchen",
+    "categories": {
+      "crafting": "Herstellen",
+      "cooking": "Garen und Schmelzen",
+      "smithing": "Schmieden",
+      "stations": "Andere Stationen"
+    },
+    "writtenTo": "Wird nach {path} geschrieben",
+    "emptyHint": "Noch keine Rezepte.",
+    "sectionDescription": "Wird nach {path} exportiert und mit {command} geladen.",
+    "summary": {
+      "empty": "leer",
+      "noIngredients": "Noch keine Zutaten",
+      "seconds": "{seconds, number} s",
+      "makes": "ergibt {amount, number}"
+    },
+    "resultLabel": "Ergebnis",
+    "resultAmount": "Hergestellte Menge",
+    "duplicate": "Duplizieren",
+    "moveUp": "Nach oben",
+    "moveDown": "Nach unten",
+    "cookingTimeLabel": "Garzeit",
+    "cookingTimeHelp": "In Ticks; 20 Ticks sind eine Sekunde.",
+    "disabledSummary": "Für das ganze Projekt: Nexo schaltet diese Vanilla-Rezepte ab. Exportiert nach {path}."
   },
   "ceBlock": {
     "title": "Block",

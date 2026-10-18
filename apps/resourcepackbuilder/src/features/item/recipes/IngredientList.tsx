@@ -1,13 +1,16 @@
+/**
+ * The ingredients of a crafting recipe: one row per ingredient (its grid letter for shaped recipes, source, id,
+ * amount and further options), its problems as short lines, and a button for one more, up to nine.
+ */
 import { useTranslations } from 'next-intl';
 import { Plus, Trash2 } from 'lucide-react';
 import type { Issue } from '@resourcepackbuilder/utils';
 import { addIngredient, ingredientLetters, nextIngredientLetter, type Recipe, removeIngredient } from '@resourcepackbuilder/core/project';
 import { IconButton } from '@resourcepackbuilder/ui';
-import { Badge } from '@resourcepackbuilder/ui/components/badge';
 import { Button } from '@resourcepackbuilder/ui/components/button';
-import { IssueList } from '../../../components/IssueList';
 import { IngredientRow } from './IngredientRow';
-import type { RecipeUpdater } from './RecipeCard';
+import { IssueLines } from './IssueLines';
+import type { RecipeUpdater } from './RecipeEditor';
 
 interface IngredientListProps {
   recipe: Recipe;
@@ -21,14 +24,17 @@ interface IngredientListProps {
 export function IngredientList({ recipe, update, isShaped, issues }: IngredientListProps) {
   const t = useTranslations('item');
   return (
-    <div className="flex flex-col gap-2">
+    <div data-slot="ingredient-list" className="flex min-w-0 flex-col gap-3">
       {ingredientLetters(recipe).map((letter) => (
-        <div key={letter} className="flex flex-col gap-1.5">
+        <div key={letter} className="flex min-w-0 flex-col gap-1.5">
           <div className="flex items-start gap-2">
             {isShaped && (
-              <Badge variant="outline" className="h-8 w-7 shrink-0 border-primary bg-primary/10 font-mono text-primary">
+              <span
+                aria-hidden
+                className="grid h-7.5 w-7 flex-none place-items-center rounded-lg border border-primary/40 bg-primary/10 font-mono text-label font-semibold text-primary"
+              >
                 {letter}
-              </Badge>
+              </span>
             )}
             <div className="min-w-0 flex-1">
               <IngredientRow
@@ -49,11 +55,16 @@ export function IngredientList({ recipe, update, isShaped, issues }: IngredientL
               <Trash2 />
             </IconButton>
           </div>
-          <IssueList issues={issues.get(letter) ?? []} />
+          <IssueLines issues={issues.get(letter) ?? []} className={isShaped ? 'pl-9' : undefined} />
         </div>
       ))}
       {nextIngredientLetter(recipe) && (
-        <Button variant="outline" size="sm" className="self-start" onClick={() => update((r) => void addIngredient(r))}>
+        <Button
+          variant="ghost"
+          size="sm"
+          className="self-start text-primary hover:text-primary"
+          onClick={() => update((r) => void addIngredient(r))}
+        >
           <Plus /> {t('recipes.addIngredient')}
         </Button>
       )}
