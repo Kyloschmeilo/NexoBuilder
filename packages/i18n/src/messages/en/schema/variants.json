@@ -1,47 +1,47 @@
 {
   "variants": {
     "pullingModels": {
-      "label": "Pulling Models",
+      "label": "Pulling",
       "description": "Bow/crossbow: models while drawing – usually 3 stages."
     },
     "chargedModel": {
-      "label": "Charged Model",
+      "label": "Charged",
       "description": "Crossbow: loaded with an arrow."
     },
     "fireworkModel": {
-      "label": "Firework Model",
+      "label": "Charged with a firework",
       "description": "Crossbow: loaded with a firework rocket (optional)."
     },
     "blockingModel": {
-      "label": "Blocking Model",
+      "label": "Blocking",
       "description": "Shield: while blocking.",
       "hint": "Instead of the SHIELD material, the “Blocks Attacks” component can be used from 1.21.5 on."
     },
     "castModel": {
-      "label": "Cast Model",
+      "label": "Cast",
       "description": "Fishing rod: line cast."
     },
     "throwingModel": {
-      "label": "Throwing Model",
+      "label": "Throwing",
       "description": "Trident: while winding up to throw – usually the rotated main model.",
       "hint": "Set the look in flight, damage and sounds under “Mechanics → Trident”."
     },
     "damagedModels": {
-      "label": "Damaged Models",
+      "label": "Damaged",
       "description": "Models shown one after another as durability decreases.",
       "hint": "The item needs durability (a material with durability or the “Max Damage” component)."
     },
     "dyeableModel": {
-      "label": "Dyeable Model",
+      "label": "Dyed",
       "description": "Model shown when the item has been dyed (/nexo dye).",
       "hint": "For dyeing, the faces in the model must have “Tint” enabled (Blockbench: Paint tab → Tint)."
     },
     "compositeModels": {
-      "label": "Composite Models",
+      "label": "Layered models",
       "description": "Several models drawn on top of each other (e.g. background, item, overlay)."
     },
     "guiModel": {
-      "label": "GUI Model",
+      "label": "Inventory icon",
       "description": "A different model in the inventory (e.g. a flat 2D image), while the main model is shown in hand, on the head or as furniture.",
       "hint": "ResourcepackBuilder generates its own ItemModel for this (Minecraft 1.21.4+). Pulling, Blocking and the like then no longer apply."
     },
@@ -90,7 +90,7 @@
       "description": "Model in state “{name}”"
     },
     "brokenModel": {
-      "label": "Broken Model",
+      "label": "Broken",
       "description": "Model shown while the item is broken (one durability point left).",
       "hint": "The item needs durability. Nexo builds a condition item model on the broken property from it. Read by Nexo 1.30, not listed in the docs."
     },
