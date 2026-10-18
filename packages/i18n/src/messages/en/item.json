@@ -217,7 +217,7 @@
     "toggleBlocked": "The item places furniture. Turn off “Place as furniture” to make it a block.",
     "autoState": "Block state group",
     "autoStateHelp": "CraftEngine shows the block through a free state of these vanilla blocks. The group decides the collision box: solid for full blocks, leaves for see-through blocks, tripwire for thin plants.",
-    "model": "The block shows the item’s model. A flat item model becomes a cube from its textures: 1 texture on all sides, 2 as end and side (like a log), 3 as bottom, side and top.",
+    "model": "The block shows the item’s model. A flat item model becomes a cube from its textures: 1 texture on all sides, 2 as end and side (like a log), 3 as bottom, side and top, 4 as bottom, front, side and top (like a furnace), 5 one per face (down, up, north, south, west; east repeats west).",
     "behavior": "Behavior",
     "behaviorHelp": "What the block does. A behavior sets up the states it needs. For any other behavior, write it in the additional YAML under block: (for example block: behavior: type: falling_block).",
     "behaviors": {
@@ -264,8 +264,30 @@
       "variantKey": "Property values",
       "variantAppearance": "Appearance",
       "noAppearance": "No appearance",
-      "withSettings": "+ settings",
-      "addFacing": "Face the player"
+      "addFacing": "Face the player",
+      "details": "More options",
+      "source": "Vanilla state",
+      "sourceAuto": "A free state of a group",
+      "sourceAutoHelp": "CraftEngine picks a free state of the block state group.",
+      "sourceState": "An exact vanilla state",
+      "exactState": "Vanilla state",
+      "exactStatePlaceholder": "minecraft:note_block[instrument=hat,note=0,powered=false]",
+      "exactStateHelp": "The block always shows this vanilla state, written in full or as a mapped short form like note_block:0. One vanilla state can show only one model.",
+      "sharedId": "Shared state id",
+      "sharedIdPlaceholder": "e.g. transparent",
+      "sharedIdHelp": "Appearances with the same group and id share one vanilla state. Hidden models (entity renderer only) can all use the id transparent.",
+      "fixedId": "Fixed internal id",
+      "fixedIdPlaceholder": "Automatic",
+      "fixedIdHelp": "Usually left empty. A fixed id keeps the block’s internal ids the same, for example for data packs; several states take the ids from this one on. The ids must be unique across all blocks.",
+      "variantSettings": "Settings of this variant",
+      "variantSettingsHelp": "Block settings that apply only to the states this variant matches, for example more light while lit or water while waterlogged. They are merged over the block’s settings.",
+      "nameHints": {
+        "axis": "CraftEngine sets axis from the clicked face on placement. Use the type axis.",
+        "facing": "CraftEngine turns the block towards the player on placement. Use the type direction or horizontal_direction.",
+        "facing_clockwise": "Like facing, but turned 90° clockwise on placement. Use the type horizontal_direction.",
+        "rotation": "CraftEngine sets a fine rotation on placement. Use the type int with the range 0~7 or 0~15.",
+        "waterlogged": "CraftEngine sets waterlogged when the block is placed in water. Use the type boolean and a waterlogged look."
+      }
     },
     "renderer": {
       "title": "Entity renderer",

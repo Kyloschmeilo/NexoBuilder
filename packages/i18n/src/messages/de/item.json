@@ -217,7 +217,7 @@
     "toggleBlocked": "Das Item platziert ein Möbel. Schalte „Als Möbel platzieren“ aus, um es zum Block zu machen.",
     "autoState": "Blockzustand-Gruppe",
     "autoStateHelp": "CraftEngine zeigt den Block über einen freien Zustand dieser Vanilla-Blöcke. Die Gruppe bestimmt die Kollisionsbox: solid für volle Blöcke, leaves für durchsichtige Blöcke, tripwire für flache Pflanzen.",
-    "model": "Der Block zeigt das Modell des Items. Ein flaches Item-Modell wird zu einem Würfel aus seinen Texturen: 1 Textur auf allen Seiten, 2 als Stirn- und Seitenfläche (wie ein Stamm), 3 als Unterseite, Seite und Oberseite.",
+    "model": "Der Block zeigt das Modell des Items. Ein flaches Item-Modell wird zu einem Würfel aus seinen Texturen: 1 Textur auf allen Seiten, 2 als Enden und Seite (wie ein Stamm), 3 als unten, Seite und oben, 4 als unten, vorne, Seite und oben (wie ein Ofen), 5 eine pro Seite (unten, oben, Norden, Süden, Westen; Osten wiederholt Westen).",
     "behavior": "Verhalten",
     "behaviorHelp": "Was der Block tut. Ein Verhalten legt die Zustände an, die es braucht. Jedes andere Verhalten schreibst du im zusätzlichen YAML unter block: (zum Beispiel block: behavior: type: falling_block).",
     "behaviors": {
@@ -264,8 +264,30 @@
       "variantKey": "Werte der Eigenschaften",
       "variantAppearance": "Aussehen",
       "noAppearance": "Kein Aussehen",
-      "withSettings": "+ Einstellungen",
-      "addFacing": "Zum Spieler drehen"
+      "addFacing": "Zum Spieler drehen",
+      "details": "Weitere Optionen",
+      "source": "Vanilla-Zustand",
+      "sourceAuto": "Ein freier Zustand einer Gruppe",
+      "sourceAutoHelp": "CraftEngine wählt einen freien Zustand der Blockzustandsgruppe.",
+      "sourceState": "Ein genauer Vanilla-Zustand",
+      "exactState": "Vanilla-Zustand",
+      "exactStatePlaceholder": "minecraft:note_block[instrument=hat,note=0,powered=false]",
+      "exactStateHelp": "Der Block zeigt immer diesen Vanilla-Zustand, ausgeschrieben oder in einer zugeordneten Kurzform wie note_block:0. Ein Vanilla-Zustand kann nur ein Modell zeigen.",
+      "sharedId": "ID des geteilten Zustands",
+      "sharedIdPlaceholder": "z. B. transparent",
+      "sharedIdHelp": "Erscheinungsbilder mit derselben Gruppe und ID teilen sich einen Vanilla-Zustand. Ausgeblendete Modelle (nur Entity-Renderer) können alle die ID transparent nutzen.",
+      "fixedId": "Feste interne ID",
+      "fixedIdPlaceholder": "Automatisch",
+      "fixedIdHelp": "Meist leer lassen. Eine feste ID hält die internen IDs des Blocks gleich, etwa für Datenpakete; mehrere Zustände belegen die IDs ab dieser. Die IDs müssen über alle Blöcke eindeutig sein.",
+      "variantSettings": "Einstellungen dieser Variante",
+      "variantSettingsHelp": "Block-Einstellungen, die nur für die Zustände dieser Variante gelten, etwa mehr Licht im eingeschalteten Zustand oder Wasser im gefluteten. Sie werden über die Einstellungen des Blocks gelegt.",
+      "nameHints": {
+        "axis": "CraftEngine setzt axis beim Platzieren nach der angeklickten Seite. Nutze den Typ axis.",
+        "facing": "CraftEngine dreht den Block beim Platzieren zum Spieler. Nutze den Typ direction oder horizontal_direction.",
+        "facing_clockwise": "Wie facing, aber beim Platzieren um 90° im Uhrzeigersinn gedreht. Nutze den Typ horizontal_direction.",
+        "rotation": "CraftEngine setzt beim Platzieren eine feine Drehung. Nutze den Typ int mit dem Bereich 0~7 oder 0~15.",
+        "waterlogged": "CraftEngine setzt waterlogged, wenn der Block im Wasser platziert wird. Nutze den Typ boolean und ein geflutetes Aussehen."
+      }
     },
     "renderer": {
       "title": "Entity-Renderer",
