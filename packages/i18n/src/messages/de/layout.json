@@ -162,10 +162,6 @@
         "hint": "Skripte: JavaScript-Dateien für js-Funktionen und -Bedingungen"
       }
     },
-    "testServer": {
-      "label": "Testserver",
-      "hint": "Lokaler Minecraft-Testserver mit {plugin} – aktualisiert sich automatisch"
-    },
     "folderMenu": {
       "newItem": "Neues Item",
       "newSubfolder": "Neuer Unterordner",

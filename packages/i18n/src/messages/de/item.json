@@ -1,26 +1,11 @@
 {
   "editor": {
-    "tabs": {
-      "general": "General",
-      "model": "Model & Pack",
-      "data": "Data",
-      "settings": "Settings",
-      "behaviors": "Verhalten",
-      "attributes": "Attributes",
-      "components": "Components",
-      "mechanics": "Mechanics",
-      "events": "Events",
-      "recipes": "Recipes",
-      "yaml": "YAML",
-      "loot": "Loot"
-    },
     "itemId": "Item-ID",
     "folder": "Ordner",
     "ready": "Bereit",
     "copyTooltip": "Alle Eigenschaften kopieren – außer Name, Item-ID, Modell und Ordner",
     "pasteTooltip": "Eigenschaften von „{name}“ einfügen",
     "pasteDisabled": "Zuerst bei einem anderen Item „Kopieren“ wählen",
-    "move": "Verschieben",
     "give": "Im Testserver geben",
     "giveTooltip": "Das Item im lokalen Testserver in dein Inventar legen",
     "giveNeedsServer": "Starte zuerst den Testserver (Testserver in der Seitenleiste)",
@@ -99,14 +84,10 @@
   },
   "yaml": {
     "notObject": "Erwartet Schlüssel-Wert-Paare (z.B. \"Mechanics:\").",
-    "extraTitle": "Zusätzliches YAML",
     "extraDescription": "Für alles, was es im Editor (noch) nicht gibt. Wird zum Schluss über die Einstellungen gelegt und überschreibt gleiche Schlüssel.",
     "example": "# Beispiel:",
     "error": "YAML-Fehler: {error}",
-    "keyHint": "Nicht den Item-Schlüssel ({id}) angeben – nur den Inhalt darunter.",
-    "finalTitle": "Fertiges YAML",
-    "finalDescription": "So landet das Item in {file}",
-    "computing": "# wird berechnet …"
+    "keyHint": "Nicht den Item-Schlüssel ({id}) angeben – nur den Inhalt darunter."
   },
   "model": {
     "parents": {
@@ -195,8 +176,6 @@
     "caseNoValue": "Fall ohne Wert",
     "entrySlot": "Ab {threshold}",
     "modelSlot": "Modell {index}",
-    "caseHeading": "Fall",
-    "entryHeading": "Eintrag",
     "branches": "Zweige",
     "property": "Eigenschaft",
     "open": "{name} öffnen",
@@ -384,9 +363,7 @@
         "facing_clockwise": "Wie facing, aber beim Platzieren um 90° im Uhrzeigersinn gedreht. Nutze den Typ horizontal_direction.",
         "rotation": "CraftEngine setzt beim Platzieren eine feine Drehung. Nutze den Typ int mit dem Bereich 0~7 oder 0~15.",
         "waterlogged": "CraftEngine setzt waterlogged, wenn der Block im Wasser platziert wird. Nutze den Typ boolean und ein geflutetes Aussehen."
-      },
-      "details": "Weitere Optionen",
-      "variantSettings": "Einstellungen dieser Variante"
+      }
     },
     "renderer": {
       "title": "Entity-Renderer",
@@ -399,34 +376,20 @@
       "previewHelp": "Der Umriss des Blocks ist gelb. Andere Blöcke und Texte erscheinen als graue Blöcke."
     },
     "title": "Block",
-    "description": "CraftEngine platziert das Item als eigenen Block.",
-    "toggle": "Als Block platzieren",
-    "toggleHelp": "Das Item platziert einen eigenen Block mit derselben ID.",
-    "toggleBlocked": "Das Item platziert ein Möbel. Schalte „Als Möbel platzieren“ aus, um es zum Block zu machen.",
-    "behavior": "Verhalten",
-    "behaviorHelp": "Was der Block tut. Ein Verhalten legt die Zustände an, die es braucht; seine Schlüssel stehen darunter. Weitere Verhalten (jedes aus dem CraftEngine-Wiki) fügst du unter Weitere Verhalten hinzu.",
-    "behaviorKeys": "Die Schlüssel des Verhaltens. Leere Schlüssel nehmen den Standard des Plugins."
+    "description": "CraftEngine platziert das Item als eigenen Block."
   },
   "ceFurniture": {
     "title": "Möbel",
     "description": "CraftEngine platziert das Item als Möbel aus Display-Entities, das frei auf einem Block stehen kann.",
-    "toggle": "Als Möbel platzieren",
-    "toggleHelp": "Das Item platziert ein Möbel mit derselben ID.",
-    "toggleBlocked": "Das Item platziert einen Block. Schalte „Als Block platzieren“ aus, um es zum Möbel zu machen.",
     "variant": "Variante",
-    "variantHelp": "Jede Variante zeigt, wie das Möbel aussieht, wenn ein Spieler es auf einen Block, an seine Seite oder darunter setzt.",
     "anchors": {
       "ground": "Boden",
       "wall": "Wand",
       "ceiling": "Decke"
     },
-    "variantMissing": "Das Möbel hat hier keine Variante, daher lässt sich das Item so nicht platzieren.",
-    "addVariant": "Variante hinzufügen",
     "removeVariant": "Variante entfernen",
-    "previewHelp": "Die Variante, wie sie vor dem Spieler steht. Hitboxen sind gelb, Sitze blau. Andere Blöcke und Texte erscheinen als graue Blöcke.",
     "rotation": "Drehung",
     "alignment": "Ausrichtung",
-    "rulesHelp": "Wie das Möbel einrastet, wenn ein Spieler es platziert.",
     "rotations": {
       "any": "Beliebiger Winkel",
       "four": "In 90°-Schritten",
@@ -495,11 +458,9 @@
     "settings": "Einstellungen",
     "hitTimes": "Schläge bis zum Abbau",
     "settingsHelp": "Andere Schlüssel gehören ins zusätzliche YAML unter furniture:.",
-    "moreKeys": "Weitere Schlüssel ({count})",
     "behaviors": "Verhalten",
     "behaviorsHelp": "Lager, Anzeigeplätze für Items und Licht. Jedes Verhalten kann eigene Hitboxen pro Variante setzen.",
     "loot": "Lässt beim Abbau das Item fallen",
-    "lootHelp": "Nutzt CraftEngines Möbel-Loot. Anderen Loot schreibst du ins zusätzliche YAML unter furniture: loot:.",
     "seat": "Sitz",
     "seatYawValue": "Yaw {yaw}",
     "seatCount": "{count, plural, one {# Sitz} other {# Sitze}}"

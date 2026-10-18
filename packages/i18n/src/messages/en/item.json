@@ -1,26 +1,11 @@
 {
   "editor": {
-    "tabs": {
-      "general": "General",
-      "model": "Model & Pack",
-      "data": "Data",
-      "settings": "Settings",
-      "behaviors": "Behaviors",
-      "attributes": "Attributes",
-      "components": "Components",
-      "mechanics": "Mechanics",
-      "events": "Events",
-      "recipes": "Recipes",
-      "yaml": "YAML",
-      "loot": "Loot"
-    },
     "itemId": "Item ID",
     "folder": "Folder",
     "ready": "Ready",
     "copyTooltip": "Copy all properties – except name, item ID, model and folder",
     "pasteTooltip": "Paste properties from “{name}”",
     "pasteDisabled": "Choose “Copy” on another item first",
-    "move": "Move",
     "give": "Give in test server",
     "giveTooltip": "Put the item into your inventory on the local test server",
     "giveNeedsServer": "Start the test server first (Test server in the sidebar)",
@@ -99,14 +84,10 @@
   },
   "yaml": {
     "notObject": "Expected key-value pairs (e.g. \"Mechanics:\").",
-    "extraTitle": "Additional YAML",
     "extraDescription": "For everything the editor doesn’t offer (yet). Applied last on top of the settings and overrides identical keys.",
     "example": "# Example:",
     "error": "YAML error: {error}",
-    "keyHint": "Don’t include the item key ({id}) – only the content below it.",
-    "finalTitle": "Final YAML",
-    "finalDescription": "This is how the item ends up in {file}",
-    "computing": "# computing …"
+    "keyHint": "Don’t include the item key ({id}) – only the content below it."
   },
   "model": {
     "parents": {
@@ -195,8 +176,6 @@
     "caseNoValue": "Case without value",
     "entrySlot": "From {threshold}",
     "modelSlot": "Model {index}",
-    "caseHeading": "Case",
-    "entryHeading": "Entry",
     "branches": "Branches",
     "property": "Property",
     "open": "Open {name}",
@@ -384,9 +363,7 @@
         "facing_clockwise": "Like facing, but turned 90° clockwise on placement. Use the type horizontal_direction.",
         "rotation": "CraftEngine sets a fine rotation on placement. Use the type int with the range 0~7 or 0~15.",
         "waterlogged": "CraftEngine sets waterlogged when the block is placed in water. Use the type boolean and a waterlogged look."
-      },
-      "details": "More options",
-      "variantSettings": "Settings of this variant"
+      }
     },
     "renderer": {
       "title": "Entity renderer",
@@ -399,34 +376,20 @@
       "previewHelp": "The block’s outline is yellow. Other blocks and texts show as grey blocks."
     },
     "title": "Block",
-    "description": "CraftEngine places the item as a block of its own.",
-    "toggle": "Place as a block",
-    "toggleHelp": "The item places a custom block with the same ID.",
-    "toggleBlocked": "The item places furniture. Turn off “Place as furniture” to make it a block.",
-    "behavior": "Behavior",
-    "behaviorHelp": "What the block does. A behavior sets up the states it needs; its keys show below. Add more behaviors (any behavior of the CraftEngine wiki) under More behaviors.",
-    "behaviorKeys": "The keys of the behavior. Unset keys take the plugin’s default."
+    "description": "CraftEngine places the item as a block of its own."
   },
   "ceFurniture": {
     "title": "Furniture",
     "description": "CraftEngine places the item as furniture made of display entities, which can sit anywhere on a block.",
-    "toggle": "Place as furniture",
-    "toggleHelp": "The item places furniture with the same ID.",
-    "toggleBlocked": "The item places a block. Turn off “Place as a block” to make it furniture.",
     "variant": "Variant",
-    "variantHelp": "Each variant is how the furniture looks when a player places it on top of a block, on its side or below it.",
     "anchors": {
       "ground": "Ground",
       "wall": "Wall",
       "ceiling": "Ceiling"
     },
-    "variantMissing": "The furniture has no variant here, so the item cannot be placed this way.",
-    "addVariant": "Add this variant",
     "removeVariant": "Remove variant",
-    "previewHelp": "The variant as placed in front of the player. Hitboxes are yellow, seats blue. Other blocks and texts show as grey blocks.",
     "rotation": "Rotation",
     "alignment": "Alignment",
-    "rulesHelp": "How the furniture snaps when a player places it.",
     "rotations": {
       "any": "Any angle",
       "four": "In 90° steps",
@@ -495,11 +458,9 @@
     "settings": "Settings",
     "hitTimes": "Hits to break",
     "settingsHelp": "Other keys go in the additional YAML under furniture:.",
-    "moreKeys": "More keys ({count})",
     "behaviors": "Behaviors",
     "behaviorsHelp": "Storage, item display slots and lights. Each behavior can set its own hitboxes per variant.",
     "loot": "Drops the item when broken",
-    "lootHelp": "Uses CraftEngine’s furniture loot. Other loot goes in the additional YAML under furniture: loot:.",
     "seat": "Seat",
     "seatYawValue": "yaw {yaw}",
     "seatCount": "{count, plural, one {# seat} other {# seats}}"

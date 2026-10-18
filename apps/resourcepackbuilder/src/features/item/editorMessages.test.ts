@@ -25,10 +25,9 @@ function lookup(tree: unknown, key: string): unknown {
 describe('item editor messages', () => {
   for (const [locale, messages] of Object.entries(MESSAGES_BY_LOCALE)) {
     for (const target of PACK_TARGETS) {
-      it(`has the ${locale} tab and group texts of the ${target} form`, () => {
+      it(`has the ${locale} group texts of the ${target} form`, () => {
         const form = formFor(target);
         const keys = [
-          ...form.tabs.map((tab) => `item.editor.tabs.${tab.id}`),
           ...form.groups.flatMap((group) => [`item.properties.titles.${group.id}`, `item.properties.empty.${group.id}`]),
           ...form.groups.flatMap((group) => [`${form.messages}.${group.label}`, `${form.messages}.${group.description}`]),
           `item.properties.docs.${target}`,
