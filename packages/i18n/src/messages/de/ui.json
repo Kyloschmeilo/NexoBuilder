@@ -5,6 +5,23 @@
   "labels": {
     "close": "Schließen",
     "closeToast": "Meldung schließen",
-    "loading": "Wird geladen"
+    "loading": "Wird geladen",
+    "addEntry": "Eintrag hinzufügen",
+    "docsCraftEngine": "CraftEngine-Wiki öffnen",
+    "docsNexo": "Nexo-Doku öffnen",
+    "done": "Fertig",
+    "dragToReorder": "Ziehen zum Umsortieren (oder Pfeiltasten)",
+    "duplicate": "Duplizieren",
+    "key": "Schlüssel",
+    "keyTaken": "Diesen Schlüssel gibt es schon.",
+    "moreActions": "Weitere Aktionen",
+    "moreInfo": "Mehr Informationen",
+    "moreOptions": "Weitere Optionen",
+    "moveDown": "Nach unten",
+    "moveUp": "Nach oben",
+    "remove": "Entfernen",
+    "resetToDefault": "Auf Standard zurücksetzen",
+    "sections": "Abschnitte",
+    "value": "Wert"
   }
 }
