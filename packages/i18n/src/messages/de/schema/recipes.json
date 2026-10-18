@@ -6,11 +6,11 @@
         "description": "Nur im Crafter-Block: wie ein geformtes Rezept, aber nicht in Werkbank oder Inventar."
       },
       "shapedTransform": {
-        "label": "Shaped Transform",
+        "label": "Shaped transform",
         "description": "Werkbank im Muster: eine Zutat ist das Quell-Item, dessen Daten das Ergebnis übernimmt."
       },
       "shapelessTransform": {
-        "label": "Shapeless Transform",
+        "label": "Shapeless transform",
         "description": "Werkbank in beliebiger Anordnung: eine Zutat ist das Quell-Item, dessen Daten das Ergebnis übernimmt."
       },
       "brewing": {
@@ -18,11 +18,11 @@
         "description": "Braustand: eine Zutat verwandelt das Item im Flaschenplatz in dieses Item."
       },
       "smithingTransform": {
-        "label": "Smithing Upgrade",
+        "label": "Smithing upgrade",
         "description": "Schmiedetisch: wertet das Basis-Item zu diesem Item auf, wie Netherit-Ausrüstung."
       },
       "smithingTrim": {
-        "label": "Smithing Trim",
+        "label": "Smithing trim",
         "description": "Schmiedetisch: setzt ein Besatz-Muster auf das Basis-Item; das Rezept hat kein eigenes Ergebnis."
       },
       "transmute": {

@@ -190,16 +190,9 @@
   },
   "recipes": {
     "title": "Recipes",
-    "empty": "No recipes yet. Use <b>Add</b> to define how this item can be crafted.",
-    "key": "Recipe key",
-    "file": "File:",
     "remove": "Remove recipe",
-    "input": "Input",
     "source": "Ingredient source",
-    "cookingTime": "Cooking time in ticks ({seconds, number} s)",
     "experience": "Experience",
-    "result": "Result:",
-    "exportHint": "Recipes are exported to <code>{path}</code> and loaded with <code>{command}</code>.",
     "typePlaceholder": "type",
     "grid": "Grid",
     "emptySlot": "empty",
@@ -230,7 +223,33 @@
     },
     "noResult": "This recipe changes the base item and has no result of its own.",
     "disabledTitle": "Disabled vanilla recipes",
-    "disabledDescription": "For the whole project: Nexo disables these vanilla recipes. Exported to <code>{path}</code>."
+    "addRecipe": "Add recipe",
+    "catalogTitle": "Add a recipe",
+    "catalogDescription": "Pick how players get this item.",
+    "catalogSearch": "Search recipe types, keys and descriptions",
+    "categories": {
+      "crafting": "Crafting",
+      "cooking": "Cooking",
+      "smithing": "Smithing",
+      "stations": "Other stations"
+    },
+    "writtenTo": "Written to {path}",
+    "emptyHint": "No recipes yet.",
+    "sectionDescription": "Exported to {path} and loaded with {command}.",
+    "summary": {
+      "empty": "empty",
+      "noIngredients": "No ingredients yet",
+      "seconds": "{seconds, number} s",
+      "makes": "makes {amount, number}"
+    },
+    "resultLabel": "Result",
+    "resultAmount": "Amount made",
+    "duplicate": "Duplicate",
+    "moveUp": "Move up",
+    "moveDown": "Move down",
+    "cookingTimeLabel": "Cooking time",
+    "cookingTimeHelp": "In ticks; 20 ticks are one second.",
+    "disabledSummary": "For the whole project: Nexo disables these vanilla recipes. Exported to {path}."
   },
   "ceBlock": {
     "title": "Block",
