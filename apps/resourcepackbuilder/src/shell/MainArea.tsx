@@ -8,9 +8,15 @@ import { FolderView } from '../features/folder/FolderView';
 import { folderDirPath } from '../features/folder/folderDir';
 import { useFolderActions } from '../features/folder/useFolderActions';
 import { ItemEditor } from '../features/item/ItemEditor';
+import { AtlasesView } from '../features/craftEngine/AtlasesView';
 import { AttributesView } from '../features/craftEngine/AttributesView';
+import { CategoriesView } from '../features/craftEngine/CategoriesView';
 import { GlobalVariablesView } from '../features/craftEngine/GlobalVariablesView';
+import { PackView } from '../features/craftEngine/PackView';
+import { ScriptsView } from '../features/craftEngine/ScriptsView';
 import { TemplatesView } from '../features/craftEngine/TemplatesView';
+import { TranslationsView } from '../features/craftEngine/TranslationsView';
+import { WorldgenView } from '../features/craftEngine/WorldgenView';
 import { LootSourcesView } from '../features/lootSources/LootSourcesView';
 import { GlyphsView, PaintingsView, SoundsView } from '../features/media/MediaView';
 import { SettingsPage } from '../features/settings/SettingsPage';
@@ -27,6 +33,12 @@ const VIEWS: Record<ViewName, ComponentType> = {
   templates: TemplatesView,
   globalVariables: GlobalVariablesView,
   attributes: AttributesView,
+  translations: TranslationsView,
+  categories: CategoriesView,
+  worldgen: WorldgenView,
+  atlases: AtlasesView,
+  pack: PackView,
+  scripts: ScriptsView,
   testServer: TestServerView,
 };
 

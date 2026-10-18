@@ -1,6 +1,6 @@
 /**
  * CraftEngine's config.yml as the test server needs it: the resource pack served locally (localhost), and the
- * attribute system on for projects that use it.
+ * attribute system and JavaScript scripting on for projects that use them.
  */
 import { patchYamlSettings, type YamlSetting } from '../yamlSettings';
 
@@ -12,6 +12,11 @@ export interface CraftEngineServerConfig {
    * startup only). Otherwise the key is left as it is.
    */
   attributes?: boolean;
+  /**
+   * The open project ships scripts: `scripting.js.enable` is set to true (fully applied after a restart). Otherwise the
+   * key is left as it is.
+   */
+  scripting?: boolean;
 }
 
 /** Values that ResourcepackBuilder sets in plugins/CraftEngine/config.yml */
@@ -28,6 +33,7 @@ function configOverrides(options: CraftEngineServerConfig): YamlSetting[] {
     // A declined pack should not lock the tester out of their own server
     [['resource-pack', 'delivery', 'kick-if-declined'], false],
     ...(options.attributes ? [[['attribute', 'enable'], true] satisfies YamlSetting] : []),
+    ...(options.scripting ? [[['scripting', 'js', 'enable'], true] satisfies YamlSetting] : []),
   ];
 }
 

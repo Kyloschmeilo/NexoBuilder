@@ -28,6 +28,19 @@ const id = () => field.text({ format: 'resource', placeholder: true });
 /** A block id or a full block state (`default:my_block[age=1]`) */
 const blockState = () => field.text({ placeholder: true });
 const vector = () => field.text({ format: 'vector', placeholder: true });
+/** Vanilla features a sapling (configured) or a grass block (placed) can grow; any other id can be typed in */
+const VANILLA_FEATURES = {
+  configuredFeatures: ['oak', 'birch', 'spruce', 'jungle_tree', 'acacia', 'dark_oak', 'cherry', 'mangrove', 'pale_oak'],
+  placedFeatures: ['grass_bonemeal'],
+};
+/** A worldgen feature id, with vanilla ones and the project's configured or placed features as suggestions */
+const featureId = (suggestions: keyof typeof VANILLA_FEATURES) =>
+  field.select(plainOptions(VANILLA_FEATURES[suggestions].map((name) => `minecraft:${name}`)), {
+    allowCustom: true,
+    dynamicSuggestions: suggestions,
+    placeholder: true,
+    help: true,
+  });
 
 /**
  * A sound: its id, or an object with id, volume and pitch (a number or a range like `0.9~1`).
@@ -239,7 +252,7 @@ const SPECS: LogicTypeSpec[] = [
     bone_meal_age_bonus: { ...numberProvider(), help: true },
   }),
   behavior('sapling_block', {
-    feature: { ...id(), help: true },
+    feature: featureId('configuredFeatures'),
     structure: { ...id(), help: true },
     light_requirement: lightRequirement(),
     max_light_requirement: maxLightRequirement(),
@@ -287,7 +300,7 @@ const SPECS: LogicTypeSpec[] = [
     max_light_requirement: maxLightRequirement(),
     base_block: { ...blockState(), help: true },
   }),
-  behavior('grass_block', { feature: { ...id(), help: true } }),
+  behavior('grass_block', { feature: featureId('placedFeatures') }),
   behavior('leaves_block'),
 ];
 

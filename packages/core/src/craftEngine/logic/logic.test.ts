@@ -90,6 +90,8 @@ describe('the logic catalogs', () => {
       attributeSyncValues: 3,
       damageFormulas: 3,
       damageEffects: 3,
+      categorySources: 3,
+      atlasSources: 5,
       blockBehaviors: 54,
       itemBehaviors: 3,
       furnitureBehaviors: 3,

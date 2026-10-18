@@ -7,6 +7,7 @@
 import {
   type ExportPlan,
   craftEngineConfigFile,
+  craftEnginePackDir,
   findItemPlan,
   itemYamlPreview,
   packTargetFor,
@@ -58,6 +59,28 @@ function craftEngineFileOutput(name: string): ViewOutputProvider {
 }
 
 /**
+ * The issues of a CraftEngine project section: those whose code, or the code of one of their frames, starts with one
+ * of `prefixes` (the section checks have no issue target).
+ */
+function sectionIssues(plan: ExportPlan, prefixes: readonly string[]): Issue[] {
+  const matches = (code: string) => prefixes.some((prefix) => code.startsWith(prefix));
+  return plan.issues.filter((issue) => matches(issue.code) || (issue.context ?? []).some((frame) => matches(frame.code)));
+}
+
+/**
+ * A CraftEngine project section: the first of the config files `names` the export writes (the first name while none
+ * is written yet), with the section's issues.
+ */
+function craftEngineSectionOutput(names: readonly string[], issuePrefixes: readonly string[]): ViewOutputProvider {
+  return (project, plan) => {
+    if (project.target !== 'craftengine') return null;
+    const files = names.map((name) => craftEngineConfigFile(project, name));
+    const file = files.find((path) => plan.pluginFiles.has(path)) ?? files[0];
+    return { file, text: pluginText(plan, file), issues: sectionIssues(plan, issuePrefixes) };
+  };
+}
+
+/**
  * The file each project-wide view writes. A new view that writes a file adds one line here; a view without an
  * entry (the test server) writes nothing, and its page gets the dock's room.
  */
@@ -69,6 +92,24 @@ export const VIEW_OUTPUTS: Partial<Record<ViewName, ViewOutputProvider>> = {
   templates: craftEngineFileOutput('templates'),
   globalVariables: craftEngineFileOutput('global_variables'),
   attributes: craftEngineFileOutput('attributes'),
+  translations: craftEngineSectionOutput(['translations', 'lang/en_us'], ['ce.translationsLocaleInvalid', 'ce.langLocaleInvalid']),
+  categories: craftEngineSectionOutput(['categories'], ['ce.sectionEntryId', 'context.category']),
+  worldgen: craftEngineSectionOutput(
+    ['worldgen'],
+    ['ce.configuredFeature', 'ce.placedFeature', 'context.configuredFeature', 'context.placedFeature'],
+  ),
+  atlases: craftEngineSectionOutput(['atlases'], ['ce.atlas', 'context.atlas']),
+  pack: (project, plan) => {
+    if (project.target !== 'craftengine') return null;
+    const file = packYmlFile(project);
+    return { file, text: pluginText(plan, file), issues: sectionIssues(plan, ['ce.configFactory', 'context.configFactory']) };
+  },
+  scripts: (project, plan) => {
+    if (project.target !== 'craftengine') return null;
+    // The first script file; the issues of all scripts
+    const file = [...plan.pluginFiles.keys()].find((path) => path.startsWith(`${craftEnginePackDir(project)}/script/`)) ?? null;
+    return { file, text: file ? pluginText(plan, file) : '', issues: sectionIssues(plan, ['ce.script', 'context.script']) };
+  },
 };
 
 type SelectionKind = Exclude<Selection, null>['kind'];

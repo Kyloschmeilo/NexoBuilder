@@ -265,5 +265,66 @@
       "title": "Schadensregeln",
       "hint": "Formeln, die den Schaden eines Schadenstyps aus den Attributen von Angreifer und Opfer berechnen."
     }
+  },
+  "translations": {
+    "title": "Übersetzungen",
+    "count": "{count, plural, one {# Schlüssel} other {# Schlüssel}}",
+    "hint": "Itemnamen mit Übersetzungen und die Namen eigener Blöcke landen von selbst in den Sprachdateien. Hier fügst du eigene Schlüssel hinzu: Lang-Schlüssel, die der Client übersetzt (als '<'lang:key>), und Server-Übersetzungen, die CraftEngine selbst einsetzt ('<'l10n:key> in der Sprache jedes Spielers, '<'i18n:key> in der des Servers).",
+    "docs": "Übersetzungen im CraftEngine-Wiki",
+    "lang": {
+      "title": "Lang-Schlüssel (Resource Pack)",
+      "hint": "Werden in die Sprachdateien des Resource Packs geschrieben. Die Sprache all schreibt einen Schlüssel in jede Sprache; block_name:namespace:id benennt einen eigenen Block. Änderungen brauchen ein Neuladen des Resource Packs."
+    },
+    "server": {
+      "title": "Server-Übersetzungen",
+      "hint": "Werden auf dem Server gelesen, Änderungen brauchen also kein Neuladen des Resource Packs. Eine Sprache ohne Land (de) gilt auch für ihre Regionen."
+    }
+  },
+  "categories": {
+    "title": "Kategorien",
+    "count": "{count, plural, one {# Kategorie} other {# Kategorien}}",
+    "hint": "Eine Kategorie gruppiert Items im /ce-Item-Browser von CraftEngine. Sie listet Items und andere Kategorien, findet Item-IDs über einen regulären Ausdruck oder nimmt alle Items. Ein Item kann sich auch selbst über seine Eigenschaft Category hinzufügen.",
+    "fromFoldersOn": "Der Export schreibt außerdem eine Kategorie pro Ordner (Projekteinstellung); eine eigene mit derselben ID ersetzt sie.",
+    "fromFoldersOff": "Die Projekteinstellung für eine Kategorie pro Ordner ist aus, deshalb werden nur diese Kategorien geschrieben.",
+    "docs": "Kategorien im CraftEngine-Wiki"
+  },
+  "worldgen": {
+    "title": "Weltgenerierung",
+    "count": "{count, plural, one {# Feature} other {# Features}}",
+    "hint": "Ein konfiguriertes Feature ist das, was entsteht, z. B. die Form eines Baums; ein platziertes Feature bestimmt, wo und wie oft. Schreib das YAML mit misodes Datapack-Generator (auf die Version deines Servers und YAML-Ausgabe gestellt) und nutze darin die IDs deiner eigenen Blöcke.",
+    "docs": "Weltgenerierung im CraftEngine-Wiki",
+    "configured": {
+      "title": "Konfigurierte Features",
+      "hint": "Setzlinge wachsen zu diesen. Ein platziertes Feature nennt eines oder enthält ein eigenes."
+    },
+    "placed": {
+      "title": "Platzierte Features",
+      "hint": "Diese entstehen in der Welt. Grasblöcke lassen sie mit Knochenmehl wachsen."
+    }
+  },
+  "atlases": {
+    "title": "Atlanten",
+    "count": "{count, plural, one {# Atlas} other {# Atlanten}}",
+    "hint": "Die meisten Packs brauchen keinen Atlas: CraftEngine repariert die üblichen Fälle der Block- und Item-Atlanten selbst. Füge einen hinzu, um Texturen in einen Vanilla-Atlas zu bringen oder einen eigenen Sprite-Atlas zu bauen.",
+    "docs": "Atlanten im CraftEngine-Wiki"
+  },
+  "pack": {
+    "title": "Pack",
+    "docs": "Pack-Aufbau im CraftEngine-Wiki",
+    "hint": "Namespace und Beschreibung kommen aus den Projekteinstellungen; den Rest von pack.yml legst du hier fest.",
+    "packYml": {
+      "title": "pack.yml",
+      "hint": "Autor und Version zeigt CraftEngine an. Subpacks sind Ordner des Packs, die als eigene Packs geladen werden."
+    },
+    "factories": {
+      "title": "Config-Factories",
+      "hint": "Eine Config-Factory schreibt ihren Blueprint einmal pro Instanz, jedes Mal mit deren Argumenten: z. B. ein Sofa-Item mit Rezept für jede Wollfarbe."
+    }
+  },
+  "scripts": {
+    "title": "Skripte",
+    "count": "{count, plural, one {# Skript} other {# Skripte}}",
+    "docs": "Skripte im CraftEngine-Wiki",
+    "hint": "Skripte kommen in den script-Ordner des Packs. js-Funktionen und -Bedingungen rufen ihre Funktionen über die Skript-ID namespace:path auf; Annotationen wie //@Subscribe und //@Task registrieren Event-Handler und Tasks. CraftEngine führt sie nur mit scripting.js.enable: true in seiner config.yml aus; der Testserver schaltet das ein."
   }
 }

@@ -43,6 +43,12 @@ export const CE_DOCS = {
   attributeModifiers: `${WIKI}/configuration/attribute/modifier`,
   equipmentSets: `${WIKI}/configuration/attribute/equipment-set`,
   damageFormulas: `${WIKI}/configuration/attribute/damage-formula`,
+  categories: `${WIKI}/configuration/category`,
+  worldgen: `${WIKI}/configuration/worldgen_feature`,
+  atlases: `${WIKI}/configuration/atlas`,
+  pack: `${WIKI}/getting_start/project_structure`,
+  configFactories: `${WIKI}/reference/template#config-factory`,
+  scripts: `${WIKI}/reference/script`,
   recipes: `${WIKI}/configuration/recipe`,
   itemModels: `${WIKI}/configuration/item/models`,
 };
@@ -267,6 +273,8 @@ const LOGIC_DOCS: Record<LogicCatalogName, { page: string; anchors: Record<strin
     anchors: { expression: 'expression-expression-formulas', composition: 'composition-formula-parts', js: 'js-javascript-formulas' },
   },
   damageEffects: { page: CE_DOCS.damageFormulas, anchors: same('life_steal', 'potion_effect', 'function') },
+  categorySources: { page: CE_DOCS.categories, anchors: same('list', 'regex', 'all_items') },
+  atlasSources: { page: CE_DOCS.atlases, anchors: same('directory', 'single', 'filter', 'unstitch', 'paletted_permutations') },
   // Each block behavior has a page of its own (ceBlockBehaviorDocs)
   blockBehaviors: { page: CE_DOCS.blockBehaviors, anchors: {} },
   // Each item behavior has a page of its own (ceItemBehaviorDocs); one without links to the behaviors page

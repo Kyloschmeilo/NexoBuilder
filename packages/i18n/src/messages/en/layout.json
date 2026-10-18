@@ -128,6 +128,30 @@
       "attributes": {
         "label": "Attributes",
         "hint": "Attributes: custom stats, equipment sets and damage rules"
+      },
+      "translations": {
+        "label": "Translations",
+        "hint": "Translations: lang keys for the resource pack and server translations"
+      },
+      "categories": {
+        "label": "Categories",
+        "hint": "Categories: the groups of the /ce item browser"
+      },
+      "worldgen": {
+        "label": "Worldgen",
+        "hint": "Worldgen: trees, ores and flowers that generate in the world"
+      },
+      "atlases": {
+        "label": "Atlases",
+        "hint": "Atlases: which textures go into a texture atlas"
+      },
+      "pack": {
+        "label": "Pack",
+        "hint": "Pack: pack.yml and config factories"
+      },
+      "scripts": {
+        "label": "Scripts",
+        "hint": "Scripts: JavaScript files for js functions and conditions"
       }
     },
     "testServer": {

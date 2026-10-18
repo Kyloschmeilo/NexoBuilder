@@ -4,7 +4,21 @@
  * registry). Each list is data; the Media and Logic activities show them as panels of entries in the sidebar.
  */
 import type { ReactNode } from 'react';
-import { Braces, Dumbbell, Frame, Gem, LayoutTemplate, Music, Smile } from 'lucide-react';
+import {
+  Braces,
+  Dumbbell,
+  FileCode,
+  Frame,
+  Gem,
+  Images,
+  Languages,
+  LayoutGrid,
+  LayoutTemplate,
+  Music,
+  Package,
+  Smile,
+  Trees,
+} from 'lucide-react';
 import { useTranslations } from 'next-intl';
 import { cn } from 'cn';
 import { projectAttributeData } from '@resourcepackbuilder/core/craftEngine';
@@ -66,6 +80,24 @@ export const CRAFT_ENGINE_VIEWS = [
     icon: <Dumbbell className="size-4" />,
     count: (p: Project) => Object.values(projectAttributeData(p)).reduce((sum, list) => sum + (list?.length ?? 0), 0),
   },
+  {
+    view: 'translations',
+    icon: <Languages className="size-4" />,
+    count: (p: Project) =>
+      [p.craftEngine?.lang, p.craftEngine?.translations].reduce(
+        (sum, texts) => sum + Object.values(texts ?? {}).reduce((keys, entries) => keys + Object.keys(entries).length, 0),
+        0,
+      ),
+  },
+  { view: 'categories', icon: <LayoutGrid className="size-4" />, count: (p: Project) => p.craftEngine?.categories?.length ?? 0 },
+  {
+    view: 'worldgen',
+    icon: <Trees className="size-4" />,
+    count: (p: Project) => (p.craftEngine?.configuredFeatures?.length ?? 0) + (p.craftEngine?.placedFeatures?.length ?? 0),
+  },
+  { view: 'atlases', icon: <Images className="size-4" />, count: (p: Project) => p.craftEngine?.atlases?.length ?? 0 },
+  { view: 'pack', icon: <Package className="size-4" />, count: (p: Project) => p.craftEngine?.configFactories?.length ?? 0 },
+  { view: 'scripts', icon: <FileCode className="size-4" />, count: (p: Project) => p.craftEngine?.scripts?.length ?? 0 },
 ] as const satisfies ReadonlyArray<{ view: ViewName; icon: ReactNode; count: (project: Project) => number }>;
 
 /** The views of the media lists, in panel order. */

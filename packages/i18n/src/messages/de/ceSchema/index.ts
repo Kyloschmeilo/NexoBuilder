@@ -22,6 +22,7 @@ import logicTriggers from './logicTriggers.json' with { type: 'json' };
 import loot from './loot.json' with { type: 'json' };
 import misc from './misc.json' with { type: 'json' };
 import model from './model.json' with { type: 'json' };
+import projectSections from './projectSections.json' with { type: 'json' };
 import settings from './settings.json' with { type: 'json' };
 
 export default mergeCatalogue(
@@ -44,5 +45,6 @@ export default mergeCatalogue(
   loot,
   misc,
   model,
+  projectSections,
   settings,
 );

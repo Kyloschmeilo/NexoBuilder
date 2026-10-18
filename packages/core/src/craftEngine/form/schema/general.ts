@@ -44,10 +44,25 @@ export const CE_GENERAL_PROPERTIES = properties(
       hint: true,
       docs: CE_DOCS.templates,
     },
+    overrides: {
+      field: field.yaml({ advanced: true }),
+      defaultValue: () => ({ key: 'value' }),
+      docs: `${CE_DOCS.templates}#overrides`,
+    },
+    merges: {
+      field: field.yaml({ advanced: true }),
+      defaultValue: () => ({ key: 'value' }),
+      docs: `${CE_DOCS.templates}#merges`,
+    },
     arguments: {
       field: field.map(field.text({ placeholder: true }), { keyPlaceholder: true, newValue: () => '' }),
       defaultValue: () => ({ material: '' }),
       docs: CE_DOCS.templates,
+    },
+    category: {
+      field: field.stringList({ format: 'resource', dynamicSuggestions: 'categories', placeholder: true }),
+      defaultValue: () => [''],
+      docs: `${CE_DOCS.categories}#assigning-categories-from-items`,
     },
     client_bound_material: {
       field: field.text({ placeholder: true }),

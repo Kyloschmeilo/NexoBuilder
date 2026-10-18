@@ -7,12 +7,19 @@ import { describe, expect, it } from 'vitest';
 import { checkFieldValue, fieldToSchema } from '../../form/fieldSchema';
 import { fieldMessageKeys, formMessageKeys } from '../../form/messageKeys';
 import { loadCatalogue, type MessageTree } from '@resourcepackbuilder/test-utils/catalogue';
+import { CE_ATLAS_LIST } from '../atlas';
 import { CE_ATTRIBUTE_LISTS } from '../attributes';
+import { CE_CATEGORY_LIST } from '../categories';
+import { CE_CONFIG_FACTORY_LIST } from '../configFactories';
+import { CE_LANG_MAP, CE_TRANSLATION_MAP } from '../lang';
 import { CE_APPEARANCE_MODEL_FIELD, CE_APPEARANCE_MODELS_FIELD } from '../blockVariants';
 import { CE_FURNITURE_EDITOR_FIELDS } from '../furnitureFields';
 import { CE_LOGIC, logicMessageKeys } from '../logic';
+import { CE_PACK_FIELD } from '../pack';
+import { CE_SCRIPT_LIST } from '../scripts';
 import { CE_LOOT_SOURCE_LIST } from '../loot';
 import { CE_GLOBAL_VARIABLE_MAP, CE_TEMPLATE_LIST } from '../templates';
+import { CE_CONFIGURED_FEATURE_LIST, CE_PLACED_FEATURE_LIST } from '../worldgen';
 import { CRAFT_ENGINE_FORM } from './schema';
 
 function lookup(tree: MessageTree, key: string): unknown {
@@ -91,6 +98,15 @@ describe('ceSchema message keys', () => {
     ...fieldMessageKeys(CE_TEMPLATE_LIST),
     ...fieldMessageKeys(CE_GLOBAL_VARIABLE_MAP),
     ...Object.values(CE_ATTRIBUTE_LISTS).flatMap((list) => fieldMessageKeys(list)),
+    ...fieldMessageKeys(CE_LANG_MAP),
+    ...fieldMessageKeys(CE_TRANSLATION_MAP),
+    ...fieldMessageKeys(CE_CATEGORY_LIST),
+    ...fieldMessageKeys(CE_CONFIGURED_FEATURE_LIST),
+    ...fieldMessageKeys(CE_PLACED_FEATURE_LIST),
+    ...fieldMessageKeys(CE_ATLAS_LIST),
+    ...fieldMessageKeys(CE_PACK_FIELD),
+    ...fieldMessageKeys(CE_CONFIG_FACTORY_LIST),
+    ...fieldMessageKeys(CE_SCRIPT_LIST),
     ...fieldMessageKeys(CE_APPEARANCE_MODEL_FIELD),
     ...fieldMessageKeys(CE_APPEARANCE_MODELS_FIELD),
     ...CE_FURNITURE_EDITOR_FIELDS.flatMap((f) => fieldMessageKeys(f)),

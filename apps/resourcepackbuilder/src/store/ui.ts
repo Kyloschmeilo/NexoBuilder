@@ -10,7 +10,21 @@ import type { Project } from '@resourcepackbuilder/core/project';
 import { useProjectStore } from './project';
 
 /** Project-wide pages that are not tied to a single folder or item. */
-export type ViewName = 'glyphs' | 'sounds' | 'paintings' | 'lootSources' | 'templates' | 'globalVariables' | 'attributes' | 'testServer';
+export type ViewName =
+  | 'glyphs'
+  | 'sounds'
+  | 'paintings'
+  | 'lootSources'
+  | 'templates'
+  | 'globalVariables'
+  | 'attributes'
+  | 'translations'
+  | 'categories'
+  | 'worldgen'
+  | 'atlases'
+  | 'pack'
+  | 'scripts'
+  | 'testServer';
 
 /** What the page shows: an item, a folder, a project-wide view, the settings page, or nothing. */
 export type Selection =

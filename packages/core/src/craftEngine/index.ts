@@ -1,4 +1,5 @@
 /** Public API of @resourcepackbuilder/core/craftEngine. */
+export * from './atlas';
 export * from './attributes';
 export * from './block';
 export * from './blockBehaviors';
@@ -6,6 +7,7 @@ export * from './blockRenderer';
 export * from './blockStates';
 export * from './blockVariants';
 export * from './categories';
+export * from './configFactories';
 export * from './defaultTemplates';
 export * from './events';
 export * from './form/options';
@@ -30,8 +32,12 @@ export * from './logic';
 export * from './loot';
 export * from './media';
 export * from './pack';
+export * from './projectEntries';
+export * from './projectSuggestions';
 export * from './recipeOptions';
 export * from './recipes';
+export * from './scripts';
 export * from './templateArgs';
 export * from './templates';
+export * from './worldgen';
 export * from './yaml';

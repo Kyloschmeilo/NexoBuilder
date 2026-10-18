@@ -79,6 +79,14 @@ export function templateFrame(id: string): IssueContext {
   return { code: 'context.template', args: { id: id || '?' } };
 }
 
+/** An entry of a CraftEngine project section (`context.category`, `context.placedFeature`, …), named by its id. */
+export function projectEntryFrame(
+  kind: 'category' | 'configuredFeature' | 'placedFeature' | 'atlas' | 'configFactory' | 'script',
+  id: string,
+): IssueContext {
+  return { code: `context.${kind}`, args: { id: id || '?' } };
+}
+
 /**
  * An entry of a CraftEngine project's attribute system (`context.attribute`, `context.attributeOperation`,
  * `context.equipmentSet`, `context.damageRule`), named by its id (a damage rule by its damage type) or its position.

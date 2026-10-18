@@ -88,6 +88,24 @@ export interface CraftEngineProjectData {
   globalVariables?: Record<string, string>;
   /** The attribute system (experimental): its definitions, operations, equipment sets and damage rules */
   attributes?: CraftEngineAttributeData;
+  /** Free client lang keys (`lang`): locale (or `all`) → lang key → text (core/craftEngine/lang.ts) */
+  lang?: Record<string, Record<string, string>>;
+  /** Server-side translations (`translations`, read by `<i18n:key>` and `<l10n:key>`): locale → key → text */
+  translations?: Record<string, Record<string, string>>;
+  /** The item browser categories (`categories`), each a config with its `id` (core/craftEngine/categories.ts) */
+  categories?: ConfigObject[];
+  /** Configured worldgen features (`configured_features`), each with its `id` (core/craftEngine/worldgen.ts) */
+  configuredFeatures?: ConfigObject[];
+  /** Placed worldgen features (`placed_features`), each with its `id` */
+  placedFeatures?: ConfigObject[];
+  /** Texture atlases (`atlases`), each with its `id` and `sources` (core/craftEngine/atlas.ts) */
+  atlases?: ConfigObject[];
+  /** The pack.yml values the project sets: `author`, `version`, `enable`, `subpacks` (core/craftEngine/pack.ts) */
+  pack?: ConfigObject;
+  /** Config factories (`config_factory#<id>`), each with its `id`, `blueprint` and `instances` */
+  configFactories?: ConfigObject[];
+  /** JavaScript files of the pack (script/<path>.js), each with its `path` and `source` (core/craftEngine/scripts.ts) */
+  scripts?: ConfigObject[];
 }
 
 /**

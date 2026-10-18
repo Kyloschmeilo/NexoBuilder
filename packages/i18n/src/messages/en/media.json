@@ -265,5 +265,66 @@
       "title": "Damage rules",
       "hint": "Formulas that compute the damage of a damage type from the attributes of attacker and victim."
     }
+  },
+  "translations": {
+    "title": "Translations",
+    "count": "{count, plural, one {# key} other {# keys}}",
+    "hint": "Item names with translations and the names of custom blocks go into the language files by themselves. Here you add your own keys: lang keys the client translates (use them as '<'lang:key>), and server translations CraftEngine fills in itself ('<'l10n:key> in each player's language, '<'i18n:key> in the server's).",
+    "docs": "Translations in the CraftEngine wiki",
+    "lang": {
+      "title": "Lang keys (resource pack)",
+      "hint": "Written into the resource pack's language files. The language all writes a key into every language; block_name:namespace:id names a custom block. Changes need a resource pack reload."
+    },
+    "server": {
+      "title": "Server translations",
+      "hint": "Read on the server, so changes need no resource pack reload. A language without a country (en) also covers its regions."
+    }
+  },
+  "categories": {
+    "title": "Categories",
+    "count": "{count, plural, one {# category} other {# categories}}",
+    "hint": "A category groups items in CraftEngine's /ce item browser. It lists items and other categories, matches item ids by a regular expression or takes all items. An item can also add itself with its Category property.",
+    "fromFoldersOn": "The export also writes a category for each folder (project setting); one of yours with the same id replaces it.",
+    "fromFoldersOff": "The project setting for one category per folder is off, so only these categories are written.",
+    "docs": "Categories in the CraftEngine wiki"
+  },
+  "worldgen": {
+    "title": "Worldgen features",
+    "count": "{count, plural, one {# feature} other {# features}}",
+    "hint": "A configured feature is what generates, e.g. the shape of a tree; a placed feature is where and how often. Write the YAML with misode's datapack generator (set to your server's version and YAML output) and use your custom block ids in it.",
+    "docs": "Worldgen features in the CraftEngine wiki",
+    "configured": {
+      "title": "Configured features",
+      "hint": "Saplings grow these. A placed feature names one or holds its own."
+    },
+    "placed": {
+      "title": "Placed features",
+      "hint": "These generate in the world. Grass blocks grow these with bone meal."
+    }
+  },
+  "atlases": {
+    "title": "Atlases",
+    "count": "{count, plural, one {# atlas} other {# atlases}}",
+    "hint": "Most packs need no atlas: CraftEngine repairs the common block and item atlas cases itself. Add one to put textures into a vanilla atlas or build a custom sprite atlas.",
+    "docs": "Atlases in the CraftEngine wiki"
+  },
+  "pack": {
+    "title": "Pack",
+    "docs": "Pack structure in the CraftEngine wiki",
+    "hint": "The namespace and description come from the project settings; set the rest of pack.yml here.",
+    "packYml": {
+      "title": "pack.yml",
+      "hint": "Author and version show in CraftEngine. Subpacks are folders of the pack that load as packs of their own."
+    },
+    "factories": {
+      "title": "Config factories",
+      "hint": "A config factory writes its blueprint once per instance, each time with that instance's arguments: e.g. a sofa item and recipe for every wool color."
+    }
+  },
+  "scripts": {
+    "title": "Scripts",
+    "count": "{count, plural, one {# script} other {# scripts}}",
+    "docs": "Scripting in the CraftEngine wiki",
+    "hint": "Scripts go into the pack's script folder. js functions and conditions call their functions by the script id namespace:path; annotations like //@Subscribe and //@Task register event handlers and tasks. CraftEngine runs them only with scripting.js.enable: true in its config.yml; the test server switches it on."
   }
 }
