@@ -1,6 +1,6 @@
 /** A vertical stack of field rows, or a grid of short fields side by side (`x / y / z`, `nutrition / saturation`). */
 import type { ReactNode } from 'react';
-import { cn } from 'cn';
+import { cn } from '../lib/cn';
 
 interface FieldGroupProps {
   /** Puts this many short fields side by side once the group is wide enough; one column below. */

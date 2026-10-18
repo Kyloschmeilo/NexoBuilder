@@ -6,7 +6,7 @@
  * own.
  */
 import { useId, type ReactNode } from 'react';
-import { cn } from 'cn';
+import { cn } from '../lib/cn';
 import { Help } from './Help';
 
 interface SectionProps {

@@ -1,7 +1,7 @@
 /** The ⓘ button that shows rich help (explanations, examples, a docs link) in a popover instead of inline text. */
 import type { ReactNode } from 'react';
 import { Info } from 'lucide-react';
-import { cn } from 'cn';
+import { cn } from '../lib/cn';
 import { Popover, PopoverContent, PopoverTrigger } from '../components/popover';
 import { useUiLabels } from '../labels';
 

@@ -5,7 +5,7 @@
  */
 import { ChevronRight, X } from 'lucide-react';
 import { useTranslations } from 'next-intl';
-import { cn } from 'cn';
+import { cn } from '@resourcepackbuilder/ui/cn';
 import { packTargetFor } from '@resourcepackbuilder/export';
 import { countIssues, type Issue } from '@resourcepackbuilder/utils';
 import { IconButton, Tip } from '@resourcepackbuilder/ui';

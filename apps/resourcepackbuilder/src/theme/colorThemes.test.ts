@@ -107,7 +107,8 @@ describe.each(COLOR_THEMES.flatMap((theme) => (['light', 'dark'] as const).map((
     });
 
     it('sets panels apart from the canvas, their borders from the panels and input wells from the panels', () => {
-      expect(contrast(tokens.surface, tokens.canvas), 'surface on canvas').toBeGreaterThanOrEqual(1.15);
+      // Dark contrast ratios compress small luminance steps, so dark variants need a lower ratio for the same visible step
+      expect(contrast(tokens.surface, tokens.canvas), 'surface on canvas').toBeGreaterThanOrEqual(mode === 'light' ? 1.2 : 1.15);
       expect(contrast(tokens.line, tokens.surface), 'line on surface').toBeGreaterThanOrEqual(1.4);
       expect(contrast(tokens['surface-sunken'], tokens.surface), 'sunken in surface').toBeGreaterThanOrEqual(1.1);
     });

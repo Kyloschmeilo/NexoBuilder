@@ -1,5 +1,5 @@
 import type { ReactNode } from 'react';
-import { cn } from 'cn';
+import { cn } from '@resourcepackbuilder/ui/cn';
 
 /**
  * Dark, Minecraft-tooltip-like box for MiniMessage lines. It always uses the dark theme tokens (scoped

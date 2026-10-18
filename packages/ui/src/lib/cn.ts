@@ -1,6 +1,6 @@
 /**
- * The class-name merger every component uses. The app resolves the bare `cn` import to this module (see the app's
- * `next.config.ts` and `vitest.config.ts`), so `import { cn } from 'cn'` gets this configuration everywhere.
+ * The class-name merger every component uses: import `cn` from here (`@resourcepackbuilder/ui/cn` in the app, a
+ * relative path inside this package), not from the `cn` package, whose default merger does not know the type steps.
  *
  * It knows the Workbench type steps (`text-micro`, `text-meta`, `text-label`, `text-body`, `text-title`, `text-page`)
  * as font sizes. The default merger reads an unknown `text-*` class as a colour, so `cn('text-meta', 'text-text-muted')`
@@ -9,7 +9,7 @@
  */
 import { createCn } from 'cn/config';
 
-/** The Workbench type steps, the `--text-*` sizes of styles.css. */
+/** The Workbench type steps, the `--text-*` sizes of styles.css (a test keeps the two in step). */
 export const TYPE_STEPS = ['micro', 'meta', 'label', 'body', 'title', 'page'] as const;
 
 /** `clsx` + tailwind-merge in one call, with the Workbench type steps as font sizes. */

@@ -1,5 +1,5 @@
 /** The small coloured dot that marks a pack target (Nexo or CraftEngine) next to its name. */
-import { cn } from 'cn';
+import { cn } from '@resourcepackbuilder/ui/cn';
 import type { PackTargetId } from '@resourcepackbuilder/core/project';
 
 /** Dot colour of each target: the fixed target marker tokens, readable on every theme. */

@@ -2,7 +2,7 @@
 import { useState, type ReactNode } from 'react';
 import { useTranslations } from 'next-intl';
 import { Folder as FolderIcon, Frame, Music, Smile, type LucideIcon } from 'lucide-react';
-import { cn } from 'cn';
+import { cn } from '@resourcepackbuilder/ui/cn';
 import { glyphTagFor } from '@resourcepackbuilder/core/targets';
 import {
   itemIdsInFolder,

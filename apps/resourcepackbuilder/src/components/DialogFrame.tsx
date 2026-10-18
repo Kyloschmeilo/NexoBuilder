@@ -1,5 +1,5 @@
 import { createContext, useContext, useEffect, useRef, useState, type ReactNode, type RefObject } from 'react';
-import { cn } from 'cn';
+import { cn } from '@resourcepackbuilder/ui/cn';
 import {
   Dialog,
   DialogContent,

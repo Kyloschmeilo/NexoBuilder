@@ -1,5 +1,5 @@
 import type { ComponentProps, ReactNode } from 'react';
-import { cn } from 'cn';
+import { cn } from './lib/cn';
 import { Card, CardAction, CardContent, CardDescription, CardHeader, CardTitle } from './components/card';
 
 interface SectionCardProps extends Pick<ComponentProps<typeof Card>, 'size' | 'variant'> {

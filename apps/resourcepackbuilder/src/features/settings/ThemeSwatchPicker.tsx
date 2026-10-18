@@ -1,7 +1,7 @@
 /** A radio list of the colour themes, each with its name, a short description and four colour chips of its palette. */
 import { useId } from 'react';
 import { useTranslations } from 'next-intl';
-import { cn } from 'cn';
+import { cn } from '@resourcepackbuilder/ui/cn';
 import { COLOR_THEMES, type ColorTheme } from '../../theme/colorThemes';
 
 /** The chips of a swatch: canvas, raised surface, accent and text of the theme. */

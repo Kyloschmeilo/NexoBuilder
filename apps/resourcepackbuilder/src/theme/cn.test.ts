@@ -1,15 +1,21 @@
 /**
- * The class-name merger keeps the Workbench type steps as font sizes: a text colour after a step no longer drops it,
- * and a later size still replaces an earlier one. The test imports the bare `cn`, so it also checks that the app
- * resolves it to the configured merger.
+ * The shared class-name merger keeps the Workbench type steps as font sizes: a text colour after a step no longer drops
+ * it, and a later size still replaces an earlier one. Its list of steps matches the `--text-*` sizes of styles.css.
  */
+import { readFileSync } from 'node:fs';
+import { fileURLToPath } from 'node:url';
 import { describe, expect, it } from 'vitest';
-import { cn } from 'cn';
+import { cn, TYPE_STEPS } from '@resourcepackbuilder/ui/cn';
 
-/** The type steps of styles.css (`--text-micro` … `--text-page`). */
-const TYPE_STEPS = ['micro', 'meta', 'label', 'body', 'title', 'page'];
+const STYLES = readFileSync(fileURLToPath(new URL('../../../../packages/ui/src/styles.css', import.meta.url)), 'utf8');
 
 describe('cn with the Workbench type steps', () => {
+  it('knows every type step of styles.css', () => {
+    // The steps are the `--text-<name>: <n>px` sizes; `--text-sm` only resizes Tailwind's own step for shadcn
+    const steps = [...STYLES.matchAll(/--text-([a-z]+):\s*\d+px;/g)].map((m) => m[1]).filter((name) => name !== 'sm');
+    expect([...TYPE_STEPS].sort()).toEqual([...new Set(steps)].sort());
+  });
+
   it('keeps a type step next to a text colour', () => {
     expect(cn('text-meta', 'text-muted-foreground')).toBe('text-meta text-muted-foreground');
     for (const step of TYPE_STEPS) {

@@ -6,7 +6,7 @@
  */
 import { useState } from 'react';
 import { useTranslations } from 'next-intl';
-import { cn } from 'cn';
+import { cn } from '@resourcepackbuilder/ui/cn';
 import { formatVector, parseNumber, parseVector, type VectorParts } from '../values';
 import { TextInput } from './TextInput';
 

@@ -1,6 +1,6 @@
 /** A vertical drag handle on the edge of a side panel that changes the panel's width by mouse, touch or keyboard. */
 import { useRef, type KeyboardEvent, type PointerEvent } from 'react';
-import { cn } from 'cn';
+import { cn } from '@resourcepackbuilder/ui/cn';
 import type { WidthRange } from '../store/ui';
 
 /** Pixels per arrow key press (Shift: four times as much). */

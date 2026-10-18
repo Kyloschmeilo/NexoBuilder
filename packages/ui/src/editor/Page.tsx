@@ -4,7 +4,7 @@
  * navigation sits in a sticky 180 px column from `@3xl` and turns into a select above the content below that.
  */
 import type { ReactNode } from 'react';
-import { cn } from 'cn';
+import { cn } from '../lib/cn';
 
 interface PageProps {
   /** Usually a `PageHeader`. */

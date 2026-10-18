@@ -1,7 +1,7 @@
 "use client"
 
 import { Toast as ToastPrimitive } from "@base-ui/react/toast"
-import { cn } from "cn"
+import { cn } from "../lib/cn"
 
 import { Button } from "./button"
 import { XIcon } from "lucide-react"

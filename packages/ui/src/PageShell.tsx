@@ -1,6 +1,6 @@
 /** The padded body of pages that do not use the editor `Page` frame yet. */
 import type { ReactNode } from 'react';
-import { cn } from 'cn';
+import { cn } from './lib/cn';
 
 /**
  * Centred, padded body of a main-area page. It is a size container (`@container/page`), so content can

@@ -3,7 +3,7 @@
  * Furniture, Normal / Destroy / Block).
  */
 import type { ReactNode } from 'react';
-import { cn } from 'cn';
+import { cn } from '../lib/cn';
 import { ToggleGroup, ToggleGroupItem } from '../components/toggle-group';
 import { Tip } from '../Tip';
 

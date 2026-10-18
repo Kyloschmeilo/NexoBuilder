@@ -1,5 +1,5 @@
 import { useTranslations } from 'next-intl';
-import { cn } from 'cn';
+import { cn } from '@resourcepackbuilder/ui/cn';
 import { ingredientLetters, type Project, type Recipe, type RecipeIngredient } from '@resourcepackbuilder/core/project';
 import { Tip } from '@resourcepackbuilder/ui';
 import { NativeSelect, NativeSelectOption } from '@resourcepackbuilder/ui/components/native-select';
