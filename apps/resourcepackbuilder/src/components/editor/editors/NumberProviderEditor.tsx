@@ -93,6 +93,8 @@ export function NumberProviderEditor({ field, value, onChange, hideLabel }: Edit
     const label = known ? typedTypeLabel(known, { schema: text }) : name || t('typedList.number.title');
     const help = known?.help ? text(known.help) : undefined;
     const fields: ObjectField | undefined = known && { type: 'object', key: '', label: '', fields: known.fields };
+    // Types without a plain form (a distribution) keep their value: the button is off then
+    const plain = toPlainNumber(value);
     body = (
       <div data-slot="number-provider" data-type={name || undefined} className="flex min-w-0 flex-col gap-2">
         <div className="flex min-w-0 items-center gap-1.5">
@@ -107,11 +109,16 @@ export function NumberProviderEditor({ field, value, onChange, hideLabel }: Edit
           {name && <code className="hidden truncate font-mono text-micro text-text-faint @md/field:block">{name}</code>}
           <span className="flex-1" />
           {known?.docs && <DocsLink url={known.docs} target={target} label={label} />}
-          <IconButton label={t('typedList.number.useValue')} size="icon-sm" onClick={() => onChange(toPlainNumber(value))}>
+          <IconButton
+            label={plain === undefined ? t('typedList.number.noPlainValue') : t('typedList.number.useValue')}
+            size="icon-sm"
+            disabled={plain === undefined}
+            onClick={() => onChange(plain)}
+          >
             <Undo2 />
           </IconButton>
         </div>
-        {(help || fields || !known) && (
+        {(help || (fields && fields.fields.length > 0) || (!known && name)) && (
           <div className="flex min-w-0 flex-col gap-2 border-l-2 border-line pl-3">
             {help && <p className="text-meta text-text-muted">{help}</p>}
             {fields && fields.fields.length > 0 && <ObjectFields field={fields} value={value} onChange={onChange} />}

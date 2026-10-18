@@ -191,6 +191,22 @@ export function TypedEntryList({
     return type ? typedTypeLabel(type, { schema: text }) : entryTypeName(entry, source.invertible) || copy.noun;
   };
   const crumbOf = (entry: unknown) => t('crumb', { noun: copy.noun, label: labelOf(entry) });
+  /**
+   * "2 conditions · 3 functions" for an entry whose set keys are all typed lists (an event); undefined (the card's
+   * own summary) otherwise.
+   */
+  const summaryOf = (entry: unknown): string | undefined => {
+    const type = findTypedType(source, entry);
+    if (!type || !isPlainObject(entry)) return undefined;
+    const set = Object.entries(entry).filter(([key, value]) => key !== 'type' && value !== undefined);
+    const parts: string[] = [];
+    for (const [key, value] of set) {
+      const list = type.fields.find((f) => f.key === key);
+      if (list?.type !== 'typedList' || !Array.isArray(value) || !t.has(`catalogs.${list.catalog}.count` as never)) return undefined;
+      if (value.length > 0) parts.push(t(`catalogs.${list.catalog}.count` as never, { count: value.length } as never));
+    }
+    return parts.length > 0 ? parts.join(' · ') : undefined;
+  };
 
   const replace = (index: number, next: unknown) => onChange(items.map((entry, i) => (i === index ? next : entry)));
   const remove = (index: number) => {
@@ -248,7 +264,8 @@ export function TypedEntryList({
       label: catalog === 'triggers' ? t('changeTrigger') : t('changeType'),
       onSelect: () => setRetypeKey(rows.keys[index]),
     },
-    { icon: <Copy />, label: labels.duplicate, onSelect: () => duplicate(index) },
+    // A type is in a unique list once, so a copy would repeat it
+    ...(unique ? [] : [{ icon: <Copy />, label: labels.duplicate, onSelect: () => duplicate(index) }]),
     ...(items.length > 1
       ? [
           { icon: <ArrowUp />, label: labels.moveUp, disabled: index === 0, onSelect: () => move(index, index - 1) },
@@ -272,6 +289,7 @@ export function TypedEntryList({
           source={source}
           entry={entry}
           yamlEntry={items[index]}
+          summary={summaryOf(entry)}
           onChange={(next) => replace(index, fromCardEntry(next, typeKey))}
           onRemove={() => {
             if (mode === 'dialog') setDialogKey(null);

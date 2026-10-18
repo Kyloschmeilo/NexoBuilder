@@ -51,6 +51,8 @@ export interface TypedEntryCardProps {
   opensDialog?: boolean;
   /** Whether the header collapses the body; a card that is always open (e.g. alone in a dialog) has a plain header. */
   collapsible?: boolean;
+  /** The one-line summary of the collapsed card; a summary of the set keys by default. */
+  summary?: string;
   /** What "Copy YAML" copies (as a one-entry list), when the YAML entry differs from `entry`; `entry` by default. */
   yamlEntry?: unknown;
   /** Content after the fields, such as the nested lists of an event (two `SubSection`s). */
@@ -73,6 +75,7 @@ export function TypedEntryCard({
   opensDialog = false,
   collapsible = true,
   yamlEntry = entry,
+  summary: ownSummary,
   children,
   className,
 }: TypedEntryCardProps) {
@@ -91,15 +94,17 @@ export function TypedEntryCard({
   const description = type?.help ? text(type.help) : undefined;
   const settings = Object.fromEntries(Object.entries(record).filter(([key]) => key !== 'type'));
   const objectField: ObjectField | undefined = type && { type: 'object', key: '', label: '', fields: type.fields };
-  const summary = objectField
-    ? featureSummary(objectField, settings, {
-        on: tFeature('on'),
-        off: tFeature('off'),
-        notSet: t('noSettings'),
-        entries: (count) => tFeature('entries', { count }),
-        option: (key) => text(key),
-      })
-    : t('unknownSummary');
+  const summary =
+    ownSummary ??
+    (objectField
+      ? featureSummary(objectField, settings, {
+          on: tFeature('on'),
+          off: tFeature('off'),
+          notSet: t('noSettings'),
+          entries: (count) => tFeature('entries', { count }),
+          option: (key) => text(key),
+        })
+      : t('unknownSummary'));
 
   const toggle = () => {
     if (opensDialog) {

@@ -6,7 +6,15 @@
  */
 import { act, useState } from 'react';
 import { afterEach, describe, expect, it } from 'vitest';
-import { CE_EVENT_PROPERTIES, CE_EVENT_PROPERTY_IDS, CE_FUNCTIONS, CE_NUMBERS, CE_TRIGGERS } from '@resourcepackbuilder/core/craftEngine';
+import {
+  CE_CONDITIONS,
+  CE_EVENT_PROPERTIES,
+  CE_EVENT_PROPERTY_IDS,
+  CE_FUNCTIONS,
+  CE_ITEM_BEHAVIORS,
+  CE_NUMBERS,
+  CE_TRIGGERS,
+} from '@resourcepackbuilder/core/craftEngine';
 import type { Field, NumberProviderField, TypedListField } from '@resourcepackbuilder/core/form';
 import { cleanup, click, press, render, type } from '../../catalog/testRender';
 import { FieldRenderer } from '../FieldRenderer';
@@ -14,6 +22,21 @@ import { toPlainNumber, toTypedNumber } from './NumberProviderEditor';
 import { fromCardEntry, toCardEntry, typedByTypes } from './TypedListEditor';
 
 const FUNCTIONS: TypedListField = { type: 'typedList', key: 'functions', label: '', catalog: 'functions', types: () => CE_FUNCTIONS };
+const CONDITIONS: TypedListField = {
+  type: 'typedList',
+  key: 'conditions',
+  label: '',
+  catalog: 'conditions',
+  types: () => CE_CONDITIONS,
+  invertible: true,
+};
+const ITEM_BEHAVIORS: TypedListField = {
+  type: 'typedList',
+  key: 'behaviors',
+  label: '',
+  catalog: 'itemBehaviors',
+  types: () => CE_ITEM_BEHAVIORS,
+};
 const NUMBER: NumberProviderField = { type: 'numberProvider', key: 'amount', label: '', catalog: 'numbers', types: () => CE_NUMBERS };
 const EVENTS = CE_EVENT_PROPERTIES.find((def) => def.id === CE_EVENT_PROPERTY_IDS.item)!.field;
 
@@ -41,6 +64,11 @@ function editor(field: Field, initial: unknown) {
 const cards = (root: ParentNode = document) => [...root.querySelectorAll<HTMLElement>('[data-slot=typed-entry-card]')];
 const toggle = (card: HTMLElement) => card.querySelector<HTMLElement>(':scope > div > [data-slot=entry-toggle]');
 const searchBox = () => document.querySelector<HTMLInputElement>('input[role=combobox]') as HTMLInputElement;
+const menuItems = () => [...document.querySelectorAll('[role=menuitem]')].map((item) => item.textContent);
+const openMenu = async (card: HTMLElement) => {
+  click(card.querySelector('[aria-label^="Actions for"]'));
+  await settle();
+};
 const settle = () => act(async () => new Promise((resolve) => setTimeout(resolve, 50)));
 
 afterEach(cleanup);
@@ -128,12 +156,54 @@ describe('TypedListEditor', () => {
   });
 });
 
+describe('TypedListEditor entries', () => {
+  it('offers Duplicate in lists that may repeat a type, and not in lists that hold a type once', async () => {
+    const { latest } = editor(FUNCTIONS, [{ type: 'heal', amount: 2 }]);
+    await openMenu(cards()[0]);
+    expect(menuItems()).toContain('Duplicate');
+    click([...document.querySelectorAll('[role=menuitem]')].find((item) => item.textContent === 'Duplicate'));
+    await settle();
+    expect(latest.value).toEqual([
+      { type: 'heal', amount: 2 },
+      { type: 'heal', amount: 2 },
+    ]);
+    cleanup();
+    editor(ITEM_BEHAVIORS, [{ type: 'compostable_item', chance: 0.5 }]);
+    await openMenu(cards()[0]);
+    expect(menuItems()).toContain('Change type');
+    expect(menuItems()).not.toContain('Duplicate');
+  });
+
+  it('negates a condition with a leading ! and back', () => {
+    const { latest } = editor(CONDITIONS, [{ type: '!has_player' }, { type: 'permission', permission: 'a.b' }]);
+    const negate = () => cards()[0].querySelector<HTMLElement>('[role=switch]') as HTMLElement;
+    expect(negate().getAttribute('aria-checked')).toBe('true');
+    expect(cards()[0].getAttribute('data-type')).toBe('has_player');
+    click(negate());
+    expect(latest.value).toEqual([{ type: 'has_player' }, { type: 'permission', permission: 'a.b' }]);
+    click(negate());
+    expect(latest.value).toEqual([{ type: '!has_player' }, { type: 'permission', permission: 'a.b' }]);
+  });
+
+  it('edits an entry of an unknown type as YAML and keeps it in the list', () => {
+    const { latest } = editor(FUNCTIONS, [{ type: 'future_fn', speed: 3 }, { type: 'heal' }]);
+    const unknown = cards()[0];
+    expect(unknown.hasAttribute('data-known')).toBe(false);
+    click(toggle(unknown));
+    const yaml = cards()[0].querySelector('textarea') as HTMLTextAreaElement;
+    expect(yaml.value).toContain('speed: 3');
+    type(yaml, 'type: future_fn\nspeed: 5\n');
+    expect(latest.value).toEqual([{ type: 'future_fn', speed: 5 }, { type: 'heal' }]);
+  });
+});
+
 describe('events', () => {
   it('shows each event as a card of its trigger and adds events by trigger', async () => {
     const { latest } = editor(EVENTS, [{ on: 'right_click', functions: [{ type: 'command', command: 'say hi' }] }, { on: 'use' }]);
     const [click1, alias] = cards();
     expect(click1.getAttribute('data-type')).toBe('right_click');
     expect(click1.textContent).toContain('Right click');
+    expect(click1.textContent).toContain('1 function');
     // An alias keeps its card and fields
     expect(alias.getAttribute('data-known')).toBe('true');
     click(document.querySelectorAll<HTMLElement>('[data-slot=typed-list-add]')[0]);
@@ -172,7 +242,38 @@ describe('events', () => {
   });
 });
 
+describe('deep nesting dialog', () => {
+  it('writes an edit in the dialog to the nested entry, closes on Escape and gives the focus back', async () => {
+    const { latest } = editor(EVENTS, [
+      { on: 'right_click', conditions: [{ type: 'permission' }], functions: [{ type: 'run', functions: [{ type: 'heal' }] }] },
+    ]);
+    expect(cards()[0].textContent).toContain('1 condition · 1 function');
+    click(toggle(cards()[0]));
+    click(toggle(cards().find((card) => card.getAttribute('data-type') === 'run') as HTMLElement));
+    const row = toggle(cards().find((card) => card.getAttribute('data-type') === 'heal') as HTMLElement) as HTMLElement;
+    row.focus();
+    click(row);
+    await settle();
+    const dialog = document.querySelector('[role=dialog]') as HTMLElement;
+    type(dialog.querySelector('input:not([type=checkbox])') as HTMLInputElement, '4');
+    expect(latest.value).toEqual([
+      { on: 'right_click', conditions: [{ type: 'permission' }], functions: [{ type: 'run', functions: [{ type: 'heal', amount: '4' }] }] },
+    ]);
+    press(dialog, 'Escape');
+    await settle();
+    expect(document.querySelector('[role=dialog]')).toBeNull();
+    const heal = cards().find((card) => card.getAttribute('data-type') === 'heal') as HTMLElement;
+    expect(document.activeElement).toBe(toggle(heal));
+  });
+});
+
 describe('NumberProviderEditor', () => {
+  it('keeps a number type without a plain form: its plain value button is off', () => {
+    const { host } = editor(NUMBER, { type: 'normal', mean: 1 });
+    const button = host.querySelector<HTMLButtonElement>('[aria-label="This type has no plain value"]');
+    expect(button?.disabled).toBe(true);
+  });
+
   it('turns a range into a uniform number type and back', async () => {
     const { host, latest } = editor(NUMBER, '1~3');
     click(host.querySelector('[aria-label="Use a number type"]'));
