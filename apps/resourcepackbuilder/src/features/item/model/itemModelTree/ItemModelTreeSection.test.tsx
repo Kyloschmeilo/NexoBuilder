@@ -57,6 +57,7 @@ describe('item model tree editor', () => {
         const project = createProject('Tree', 'tree', '26.3', target);
         useProjectStore.setState({ project });
         const item = createItem({ displayName: 'Item', itemId: 'item', folderId: 'f', model: null });
+        /** Renders the section, then selects every node of the outline in turn; returns the HTML of every state. */
         const render = (withTree: boolean) => {
           const container = document.createElement('div');
           const root = createRoot(container);
@@ -73,15 +74,26 @@ describe('item model tree editor', () => {
               </NextIntlClientProvider>,
             ),
           );
-          const html = container.innerHTML;
+          const html = [container.innerHTML];
+          const rowCount = container.querySelectorAll('[role=treeitem]').length;
+          for (let i = 0; i < rowCount; i++) {
+            act(() => container.querySelectorAll<HTMLElement>('[role=treeitem]')[i].click());
+            expect(container.querySelector('[role=treeitem][aria-selected=true]')).toBe(container.querySelectorAll('[role=treeitem]')[i]);
+            html.push(container.querySelector('[data-slot=item-model-node]')!.innerHTML);
+          }
           act(() => root.unmount());
-          return html;
+          return { html: html.join('\n'), rowCount };
         };
-        expect(render(false)).toContain(messages.schema.itemModel.ui.create);
-        const html = render(true);
+        expect(render(false).html).toContain(messages.schema.itemModel.ui.create);
+        const { html, rowCount } = render(true);
+        // The composite root, its children and the children of the select, condition and range dispatch nodes
+        expect(rowCount).toBeGreaterThan((everything().models as unknown[]).length);
         expect(html).toContain('minecraft:copper_golem_statue');
+        expect(html).toContain(messages.schema.itemModel.ui.addTint);
+        expect(html).toContain(messages.schema.itemModel.ui.addTransformation);
         expect(html.includes('oversized_in_gui')).toBe(target === 'nexo');
-      });
+        // Selecting each of the many nodes re-renders the whole section, which takes a few seconds in jsdom
+      }, 60_000);
     }
   }
 });
@@ -121,6 +133,9 @@ describe('select case values in the editor', () => {
         </NextIntlClientProvider>,
       ),
     );
+    // The case's value is edited in the card of its model, which the outline opens
+    expect(container.querySelector(`input[placeholder="${messages.schema.itemModel.ui.whenPlaceholder}"]`)).toBeNull();
+    act(() => container.querySelector<HTMLElement>('[role=treeitem][data-path="model.cases.0.model"]')!.click());
     const input = container.querySelector<HTMLInputElement>(`input[placeholder="${messages.schema.itemModel.ui.whenPlaceholder}"]`)!;
     expect(input.value).toBe('minecraft:zombie');
     const stored = () => useProjectStore.getState().project!.items[item.id].itemModel!.model.cases;
