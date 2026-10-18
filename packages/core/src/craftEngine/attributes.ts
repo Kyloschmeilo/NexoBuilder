@@ -149,6 +149,36 @@ export const equipmentSetPartList = () =>
     { newItem: () => ({ slots: ['head'], sets: [''] }) },
   );
 
+/**
+ * The keys of a potion effect that lasts while equipment is worn (SetPotionEffect): an equipment set tier's
+ * `potion_effects` and, with a `slot`, an item's `settings.equipment_potion_effects`. `update_interval` (default 20
+ * ticks) is how often the conditions are checked; without conditions the effect simply lasts.
+ */
+export function potionEffectSpecs(): FieldSpecs {
+  return {
+    type: field.select(plainOptions(POTION_EFFECT_NAMES.map((name) => `minecraft:${name}`)), { allowCustom: true }),
+    amplifier: field.number({ integer: true, min: 0 }),
+    ambient: field.boolean({ defaultHint: false }),
+    particles: field.boolean({ defaultHint: true }),
+    show_icon: field.boolean({ defaultHint: true }),
+    conditions: gate(),
+    update_interval: field.number({ integer: true, min: 1 }),
+  };
+}
+
+/** A new potion effect: night vision */
+const newPotionEffect = (): ConfigObject => ({ type: 'minecraft:night_vision' });
+
+/**
+ * The potion effects an item gives while it is in a slot or slot group (`settings.equipment_potion_effects`); custom
+ * slots registered through CraftEngine's API can be typed in.
+ */
+export const equipmentPotionEffectList = () =>
+  field.objectList(
+    { slot: field.select(CE_ATTRIBUTE_SLOTS, { allowCustom: true, help: true }), ...potionEffectSpecs() },
+    { titleKey: 'type', newItem: () => ({ slot: 'head', ...newPotionEffect() }) },
+  );
+
 const [definitionList, operationList, equipmentSetList, damageRuleList] = resolveFields(
   {
     attributes: field.objectList(
@@ -187,18 +217,7 @@ const [definitionList, operationList, equipmentSetList, damageRuleList] = resolv
         pieces: field.map(
           field.object({
             attribute: field.objectList(modifierSpecs(false), { titleKey: 'type', newItem: () => newAttributeModifier(false) }),
-            potion_effects: field.objectList(
-              {
-                type: field.select(plainOptions(POTION_EFFECT_NAMES.map((name) => `minecraft:${name}`)), { allowCustom: true }),
-                amplifier: field.number({ integer: true, min: 0 }),
-                ambient: field.boolean(),
-                particles: field.boolean(),
-                show_icon: field.boolean(),
-                conditions: gate(),
-                update_interval: field.number({ integer: true, min: 1 }),
-              },
-              { titleKey: 'type', newItem: () => ({ type: 'minecraft:night_vision' }) },
-            ),
+            potion_effects: field.objectList(potionEffectSpecs(), { titleKey: 'type', newItem: () => newPotionEffect() }),
             events: field.object({ activate: functionList(), deactivate: functionList() }, { help: true }),
           }),
           { keyPlaceholder: true, help: true, newValue: () => ({ attribute: [newAttributeModifier(false)] }) },

@@ -32,6 +32,7 @@ import {
   CE_LOOT_SOURCE_LIST,
   CE_LOOT_SOURCES,
   CE_MODEL_KEYS,
+  CE_PLACEMENT_BEHAVIORS,
   CE_PROPERTIES,
   CE_STATE_TEMPLATES,
   CE_TEMPLATE_ID,
@@ -96,6 +97,12 @@ export function validateCraftEngineItem(itemExport: ItemExport, config: Record<s
   );
   if (!CE_MODEL_KEYS.some((key) => config[key] !== undefined)) report('warning', 'ce.missingModel');
   validateCraftEngineEvents(itemExport, 'item', config);
+  // A placement behavior needs the block or furniture it places (the item's own one is filled in by the export)
+  for (const behavior of [...asList(config.behavior), ...asList(config.behaviors)]) {
+    if (!isPlainObject(behavior) || typeof behavior.type !== 'string' || !CE_PLACEMENT_BEHAVIORS.includes(behavior.type)) continue;
+    const target = behavior.type.includes('furniture') ? behavior.furniture : behavior.block;
+    if (target === undefined || target === null || target === '') report('error', 'ce.behaviorTargetMissing', { type: behavior.type });
+  }
 }
 
 /** The issue CraftEngine's objects report for a trigger they never fire, by object kind. */

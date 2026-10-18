@@ -10,6 +10,8 @@
  * A furniture definition in `furniture` works the same way: it is returned as the furniture of the same key, the item
  * gets the `furniture_item` behavior (with the definition's placement rules), and the additional YAML's `furniture:`
  * is merged over it. An item is either a block or furniture: with both, the block is built and the furniture left out.
+ * The config's `behavior` picks the kind of placement (and its keys) for the item's block or furniture, its
+ * `behaviors` adds further behaviors after the placement (itemBehaviors.ts).
  * An item of an armor set gets `settings.equipment` (the set's equipment, see export/equipment); what the config sets
  * there wins, as Nexo's `Components.equippable` does.
  * The events of the item, its block and its furniture are written in the list form (events.ts), whatever form the
@@ -36,11 +38,12 @@ import { blockStates, CE_STATE_TEMPLATES, statesTemplate, templateArguments } fr
 import { buildRenderer, rendererElements } from './blockRenderer';
 import { withEventList } from './events';
 import { buildCraftEngineFurniture, craftEngineFurniture } from './furniture';
+import { extraBehaviors, type OwnPlacement, placementBehavior, writeBehaviors } from './itemBehaviors';
 import { craftEngineItemName } from './lang';
 import { craftEngineItemKey, ordered } from './yaml';
 
 /** Order of the keys in the YAML (as in the CraftEngine docs); other keys follow in their own order. */
-const TOP_LEVEL_ORDER = ['material', 'client_bound_material', 'data', 'model', 'models', 'settings', 'behavior', 'events'];
+const TOP_LEVEL_ORDER = ['material', 'client_bound_material', 'data', 'model', 'models', 'settings', 'behavior', 'behaviors', 'events'];
 /** Order of the keys of a block, of its states, of a state (or appearance) and of its model */
 const BLOCK_ORDER = ['state', 'states', 'settings', 'behavior', 'behaviors', 'loot', 'events'];
 const STATES_ORDER = ['template', 'arguments', 'merges', 'properties', 'appearances', 'variants'];
@@ -86,6 +89,10 @@ export interface CraftEngineBuildResult {
   furnitureIgnored: boolean;
   /** The additional YAML has a `furniture:` but the item is no furniture (it is left out) */
   rawFurnitureIgnored: boolean;
+  /** The placement type the config's `behavior` picks, when it does not fit the item's block or furniture (left out) */
+  placementTypeIgnored: string | null;
+  /** The additional YAML lists the item's behaviors itself (written in place of the form's extra behaviors) */
+  rawBehaviorsOverride: boolean;
 }
 
 /**
@@ -253,6 +260,27 @@ function addArmor(resolved: Record<string, unknown>, data: Record<string, unknow
   }
 }
 
+/** A craft remainder with its `type` first, in the remainders of its recipe terms and its fallback too. */
+function remainderTypeFirst(value: unknown): unknown {
+  if (!isPlainObject(value)) return value;
+  const result = ordered(value, ['type']);
+  if (Array.isArray(result.terms)) {
+    result.terms = result.terms.map((term) =>
+      isPlainObject(term) && term.craft_remainder !== undefined
+        ? { ...term, craft_remainder: remainderTypeFirst(term.craft_remainder) }
+        : term,
+    );
+  }
+  if (result.fallback !== undefined) result.fallback = remainderTypeFirst(result.fallback);
+  return result;
+}
+
+/** Placement keys the furniture definition adds to the item's furniture behavior (`placementExtras`, when built). */
+function furniturePlacementExtras(furniture: object): Record<string, unknown> | null {
+  const extras = 'placementExtras' in furniture ? furniture.placementExtras : undefined;
+  return isPlainObject(extras) ? extras : null;
+}
+
 /** The config with the events of the item, its block and its furniture in the list form (pruning keeps only lists). */
 function withEventLists<T extends Record<string, unknown>>(config: T): T {
   const result: Record<string, unknown> = withEventList(config);
@@ -263,6 +291,10 @@ function withEventLists<T extends Record<string, unknown>>(config: T): T {
 export function buildCraftEngineItem(context: CraftEngineBuildContext): CraftEngineBuildResult {
   const { project, item, modelKey, models } = context;
   const resolved: Record<string, unknown> = cleanConfig(CRAFT_ENGINE_FORM, withEventLists(deepClone(item.config)));
+
+  if (isPlainObject(resolved.settings) && resolved.settings.craft_remainder !== undefined) {
+    resolved.settings.craft_remainder = remainderTypeFirst(resolved.settings.craft_remainder);
+  }
 
   const raw = parseRawYaml(item.rawYaml);
   const rawItem = raw.value ? { ...raw.value } : null;
@@ -280,15 +312,23 @@ export function buildCraftEngineItem(context: CraftEngineBuildContext): CraftEng
   const built = isBlock ? buildBlock(isPlainObject(resolved.block) ? resolved.block : {}, context, rawBlock) : null;
   delete resolved.block;
   const itemKey = craftEngineItemKey(project, item);
-  if (built) resolved.behavior = { type: built.form?.itemBehavior ?? 'block_item', block: itemKey };
 
   const isFurniture = craftEngineFurniture(item.config) !== null;
   const furnitureSource = isPlainObject(resolved.furniture) ? resolved.furniture : {};
   const furniture = isFurniture && !isBlock ? buildCraftEngineFurniture(furnitureSource, rawFurniture, itemKey) : null;
   delete resolved.furniture;
-  if (furniture) {
-    resolved.behavior = { type: 'furniture_item', furniture: itemKey, ...(furniture.rules ? { rules: furniture.rules } : {}) };
-  }
+
+  // The behavior that places the item's block or furniture, then the extra behaviors
+  const own: OwnPlacement | null = built
+    ? { kind: 'block', key: itemKey, defaultType: built.form?.itemBehavior ?? 'block_item' }
+    : furniture
+      ? { kind: 'furniture', key: itemKey, rules: furniture.rules, extras: furniturePlacementExtras(furniture) }
+      : null;
+  const placement = placementBehavior(resolved.behavior, own);
+  const extras = Array.isArray(resolved.behavior)
+    ? [...resolved.behavior, ...extraBehaviors(resolved.behaviors)]
+    : extraBehaviors(resolved.behaviors);
+  const { raw: rawRest, rawListOverrides } = writeBehaviors(resolved, placement.behavior, extras, rawItem);
 
   // The managed paths are set below, whatever the config holds there
   delete resolved.material;
@@ -300,7 +340,7 @@ export function buildCraftEngineItem(context: CraftEngineBuildContext): CraftEng
   if (Object.keys(withName).length > 0) resolved.data = withName;
   else delete resolved.data;
 
-  const rawSetsModel = rawItem !== null && CE_MODEL_KEYS.some((key) => rawItem[key] !== undefined);
+  const rawSetsModel = rawRest !== null && CE_MODEL_KEYS.some((key) => rawRest[key] !== undefined);
   if (rawSetsModel) {
     delete resolved.model;
     delete resolved.models;
@@ -309,7 +349,7 @@ export function buildCraftEngineItem(context: CraftEngineBuildContext): CraftEng
   const config = { material: itemMaterial(item).toLowerCase(), ...ordered(resolved, TOP_LEVEL_ORDER) };
 
   return {
-    config: withEventList(rawItem ? deepMerge(config, rawItem) : config),
+    config: withEventList(rawRest ? deepMerge(config, rawRest) : config),
     block: built?.block ?? null,
     blockModel: built?.blockModel ?? null,
     rawYamlError: raw.error,
@@ -318,5 +358,7 @@ export function buildCraftEngineItem(context: CraftEngineBuildContext): CraftEng
     furniture: furniture ? withEventList(furniture.furniture) : null,
     furnitureIgnored: isFurniture && isBlock,
     rawFurnitureIgnored: rawFurniture !== null && !isFurniture,
+    placementTypeIgnored: placement.ignoredType,
+    rawBehaviorsOverride: rawListOverrides,
   };
 }

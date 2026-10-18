@@ -15,6 +15,7 @@ const WIKI = CE_WIKI_URL.slice(0, -1);
 export const CE_DOCS = {
   data: `${WIKI}/configuration/item/data`,
   settings: `${WIKI}/configuration/item/settings`,
+  itemBehaviors: `${WIKI}/configuration/item/behaviors`,
   updater: `${WIKI}/configuration/item/updater`,
   blockSettings: `${WIKI}/configuration/block/settings`,
   blockStates: `${WIKI}/configuration/block/states`,
@@ -54,6 +55,12 @@ export const CE_MEDIA_EXTRA_DOCS = {
 
 /** The wiki page of a block behavior (`configuration/block/behaviors/<type>`). */
 export const ceBlockBehaviorDocs = (type: string): string => `${CE_DOCS.blockBehaviors}/${type}`;
+
+/** The wiki page of an item behavior (`configuration/item/behaviors/<type>`). */
+export const ceItemBehaviorDocs = (type: string): string => `${CE_DOCS.itemBehaviors}/${type}`;
+
+/** The section of an item setting on the settings page (`configuration/item/settings#<heading>`). */
+export const ceItemSettingDocs = (heading: string): string => `${CE_DOCS.settings}#${heading}`;
 
 /** Types whose heading on the catalog's page is the type itself */
 const same = (...types: string[]): Record<string, string> => Object.fromEntries(types.map((type) => [type, type]));
@@ -219,6 +226,8 @@ const LOGIC_DOCS: Record<LogicCatalogName, { page: string; anchors: Record<strin
     anchors: { expression: 'expression-expression-formulas', composition: 'composition-formula-parts', js: 'js-javascript-formulas' },
   },
   damageEffects: { page: CE_DOCS.damageFormulas, anchors: same('life_steal', 'potion_effect', 'function') },
+  // Each item behavior has a page of its own (ceItemBehaviorDocs); one without links to the behaviors page
+  itemBehaviors: { page: CE_DOCS.itemBehaviors, anchors: {} },
   itemUpdaters: { page: CE_DOCS.updater, anchors: same('apply_data', 'transmute', 'reset') },
 };
 

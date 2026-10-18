@@ -24,6 +24,7 @@ export type LogicCatalogName =
   | 'attributeSyncValues'
   | 'damageFormulas'
   | 'damageEffects'
+  | 'itemBehaviors'
   | 'itemUpdaters';
 
 /** The objects that fire events (and so have event triggers) */
