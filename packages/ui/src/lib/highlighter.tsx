@@ -1,5 +1,9 @@
+/**
+ * Lazily loaded shiki highlighter. Tokens are coloured with the `--yaml-*` design tokens (and `--text`), so the code
+ * follows the active colour theme and light/dark mode without highlighting it again.
+ */
 import * as React from 'react';
-import { createHighlighterCore, type GrammarState, type HighlighterCore } from 'shiki/core';
+import { createHighlighterCore, type GrammarState, type HighlighterCore, type ThemeRegistration } from 'shiki/core';
 import { createJavaScriptRegexEngine } from 'shiki/engine/javascript';
 
 // Add the languages you need. Each one loads the first time it is used.
@@ -31,16 +35,44 @@ const aliases: Record<string, keyof typeof languages> = {
   zsh: 'bash',
 };
 
+const TOKEN_THEME_NAME = 'design-tokens';
+
+// Maps TextMate scopes onto the design tokens; the CSS variables resolve per theme at render time.
+const TOKEN_THEME: ThemeRegistration = {
+  name: TOKEN_THEME_NAME,
+  type: 'dark',
+  colors: { 'editor.foreground': 'var(--text)', 'editor.background': 'transparent' },
+  tokenColors: [
+    { scope: ['comment', 'punctuation.definition.comment'], settings: { foreground: 'var(--yaml-comment)', fontStyle: 'italic' } },
+    {
+      scope: ['entity.name.tag', 'support.type.property-name', 'meta.object-literal.key', 'variable.other.property'],
+      settings: { foreground: 'var(--yaml-key)' },
+    },
+    { scope: ['string', 'punctuation.definition.string'], settings: { foreground: 'var(--yaml-string)' } },
+    { scope: ['constant.numeric'], settings: { foreground: 'var(--yaml-number)' } },
+    { scope: ['constant.language'], settings: { foreground: 'var(--yaml-bool)' } },
+    {
+      scope: ['entity.name.type.anchor', 'variable.other.alias', 'punctuation.definition.anchor', 'punctuation.definition.alias'],
+      settings: { foreground: 'var(--text-muted)' },
+    },
+  ],
+};
+
 let highlighter: Promise<HighlighterCore> | undefined;
 
 function getHighlighter() {
   highlighter ??= createHighlighterCore({
-    themes: [import('shiki/themes/github-light.mjs'), import('shiki/themes/github-dark.mjs')],
+    themes: [TOKEN_THEME],
     langs: [],
     engine: createJavaScriptRegexEngine({ forgiving: true }),
   });
 
   return highlighter;
+}
+
+// Inline style of one token: its colour and, for comments, italics (shiki's italic font-style flag).
+function tokenStyle(token: { color?: string; fontStyle?: number }): React.CSSProperties {
+  return { color: token.color, fontStyle: token.fontStyle !== undefined && token.fontStyle & 1 ? 'italic' : undefined };
 }
 
 function getLanguage(language: string) {
@@ -79,8 +111,7 @@ export async function loadHighlighter(language: string) {
       const tokenize = (text: string) =>
         shiki.codeToTokens(text, {
           lang,
-          themes: { light: 'github-light', dark: 'github-dark' },
-          defaultColor: false,
+          theme: TOKEN_THEME_NAME,
           grammarState: state,
         }).tokens;
 
@@ -91,7 +122,7 @@ export async function loadHighlighter(language: string) {
       return {
         lines: tokens.map((line) =>
           line.map((token, index) => (
-            <span key={index} style={token.htmlStyle as React.CSSProperties} className="text-(--shiki-light) dark:text-(--shiki-dark)">
+            <span key={index} style={tokenStyle(token)}>
               {token.content}
             </span>
           )),
