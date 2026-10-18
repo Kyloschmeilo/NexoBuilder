@@ -7,6 +7,7 @@ import { CRAFT_ENGINE_REGISTRIES } from './registries';
 import {
   CRAFT_ENGINE_SOURCES,
   entryKey,
+  followListEntry,
   type ListSource,
   mapKeyProblem,
   type MapSource,
@@ -152,5 +153,24 @@ describe('the CraftEngine registries', () => {
     expect(useProjectStore.getState().project?.craftEngine?.lootSources).toEqual([{ type: 'block' }]);
     globals.write(withRenamedKey(globals.read(useProjectStore.getState().project!), 'prefix', 'head'));
     expect(Object.keys(useProjectStore.getState().project?.craftEngine?.globalVariables ?? {})).toEqual(['head', 'footer']);
+  });
+});
+
+describe('followListEntry', () => {
+  const a = { id: 'a' };
+  const b = { id: 'b' };
+  const c = { id: 'c' };
+
+  it('keeps an entry that stayed or was edited in place', () => {
+    expect(followListEntry([a, b, c], [a, b, c], 1)).toBe(1);
+    expect(followListEntry([a, b, c], [a, { id: 'b2' }, c], 1)).toBe(1);
+  });
+
+  it('follows an entry that moved (undo of a move)', () => {
+    expect(followListEntry([a, b, c], [b, a, c], 1)).toBe(0);
+  });
+
+  it('gives up when the slot now holds a neighbour (undo of an add or duplicate)', () => {
+    expect(followListEntry([a, { id: 'new' }, b], [a, b], 1)).toBeNull();
   });
 });

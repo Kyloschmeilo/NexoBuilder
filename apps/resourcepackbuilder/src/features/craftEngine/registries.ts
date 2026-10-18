@@ -4,6 +4,8 @@
  */
 import { useTranslations } from 'next-intl';
 import type { Project } from '@resourcepackbuilder/core/project';
+import { useChoiceText } from '../../components/editor/inputs/choices';
+import { useSchemaText } from '../../components/useSchemaText';
 import { prompt } from '../../store/dialogs';
 import { useProjectStore } from '../../store/project';
 import type { Registry, RegistryAdd, RegistryTable } from '../../shell/sidebar/panels/registry';
@@ -28,6 +30,8 @@ function currentProject(): Project | null {
 export function useAddEntry(): (source: EntrySource) => Promise<string | null> {
   const t = useTranslations('media.registry');
   const tCommon = useTranslations('common');
+  const schemaText = useSchemaText();
+  const choiceText = useChoiceText();
   return async (source) => {
     const project = currentProject();
     if (!project) return null;
@@ -36,11 +40,17 @@ export function useAddEntry(): (source: EntrySource) => Promise<string | null> {
       source.write([...entries, newListEntry(source)]);
       return entryKey(source, entries.length);
     }
+    const taken = source.read(project);
     const name = await prompt({
       title: t(`groups.${source.id as RegistryMapGroupId}.add`),
       label: t(`groups.${source.id as RegistryMapGroupId}.keyLabel`),
       initial: '',
       confirmLabel: tCommon('create'),
+      placeholder: schemaText(source.field.keyPlaceholder),
+      // The schema's key options (e.g. the locales CraftEngine reads), without the ones already used
+      suggestions: source.field.keyOptions
+        ?.filter((option) => !Object.hasOwn(taken, option.value))
+        .map((option) => ({ value: option.value, text: choiceText(option) })),
       validate: (value) => (mapKeyProblem(source.read(currentProject() ?? project), value) === 'taken' ? t('keyTaken') : null),
     });
     if (name === null) return null;

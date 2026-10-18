@@ -4,7 +4,7 @@
  * with its name and value. Otherwise it is the view's overview: what the section is for, its entries per group with
  * "New …" buttons, and any page-wide settings of the view (`extras`).
  */
-import { type ComponentType, type ReactNode, useId } from 'react';
+import { type ComponentType, type ReactNode, useEffect, useId, useRef } from 'react';
 import { ArrowDown, ArrowUp, Copy, Plus, Trash2 } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 import type { MessageKey } from '@resourcepackbuilder/i18n';
@@ -16,6 +16,8 @@ import { DocsLink, FieldRow, type MenuEntry, Page, PageHeader, Section, StatusPi
 import { Button } from '@resourcepackbuilder/ui/components/button';
 import { Input } from '@resourcepackbuilder/ui/components/input';
 import { FieldRenderer } from '../../components/editor';
+import { Datalist } from '../../components/editor/inputs/TextInput';
+import { useSchemaText } from '../../components/useSchemaText';
 import { ObjectFields } from '../../components/editor/editors/ObjectEditor';
 import { TypedEntryBody, TypeInput } from '../../components/editor/editors/TypedListEditor';
 import type { RegistryMapGroupId } from '../../shell/sidebar/panels/registryTexts';
@@ -30,6 +32,7 @@ import {
   type CraftEngineRegistryView,
   entryKey,
   type EntrySource,
+  followListEntry,
   listEntryLabel,
   type ListSource,
   mapKeyProblem,
@@ -149,7 +152,9 @@ function Overview({ view, icon: Icon, docs, file, hint, before, after }: Registr
 /** The name of a map entry; a rename is applied when the input loses focus (or on Enter) and refused when taken. */
 function MapKeyField({ view, source, mapKey }: { view: CraftEngineRegistryView; source: MapSource; mapKey: string }) {
   const tRegistry = useTranslations('media.registry');
+  const schemaText = useSchemaText();
   const id = useId();
+  const listId = useId();
   const project = useOpenProject();
   const map = source.read(project);
   const { draft, setDraft, reset } = useDraft(
@@ -176,6 +181,8 @@ function MapKeyField({ view, source, mapKey }: { view: CraftEngineRegistryView; 
         id={id}
         className="font-mono"
         value={draft}
+        placeholder={schemaText(source.field.keyPlaceholder)}
+        list={source.field.keyOptions?.length ? listId : undefined}
         spellCheck={false}
         onChange={(e) => setDraft(e.target.value)}
         onBlur={commit}
@@ -183,6 +190,11 @@ function MapKeyField({ view, source, mapKey }: { view: CraftEngineRegistryView; 
           if (e.key === 'Enter') e.currentTarget.blur();
           if (e.key === 'Escape') reset();
         }}
+      />
+      {/* The schema's key options (e.g. the locales CraftEngine reads), without the ones other entries use */}
+      <Datalist
+        id={listId}
+        choices={source.field.keyOptions?.filter((option) => option.value === mapKey || !Object.hasOwn(map, option.value))}
       />
     </FieldRow>
   );
@@ -336,7 +348,34 @@ function EntryPage({ view, icon: Icon, docs, file, resolved }: RegistryPageProps
 /** A CraftEngine registry view: the selected entry's editor, or the overview. */
 export function RegistryPage(props: RegistryPageProps) {
   const project = useOpenProject();
-  const selected = useSelectedEntry(props.view);
-  const resolved = resolveEntry(CRAFT_ENGINE_SOURCES[props.view], project, selected);
+  const { view } = props;
+  const selected = useSelectedEntry(view);
+  const resolved = resolveEntry(CRAFT_ENGINE_SOURCES[view], project, selected);
+  // The list as it was when the selected entry was last shown
+  const shown = useRef<{ key: string; list: readonly unknown[] } | null>(null);
+  // Keeps the selection on its entry when the project changes from elsewhere (undo, redo): a gone entry shows the
+  // overview, a moved one is followed, and a slot that now holds a neighbour is not shown as if it were the entry
+  useEffect(() => {
+    if (selected === undefined || !resolved) {
+      shown.current = null;
+      if (selected !== undefined) selectEntry(view);
+      return;
+    }
+    if (resolved.kind === 'map') {
+      shown.current = null;
+      return;
+    }
+    const list = resolved.source.read(project);
+    const previous = shown.current;
+    if (previous && previous.key === selected && previous.list !== list) {
+      const index = followListEntry(previous.list, list, resolved.index);
+      if (index !== resolved.index) {
+        shown.current = null;
+        selectEntry(view, index === null ? undefined : entryKey(resolved.source, index));
+        return;
+      }
+    }
+    shown.current = { key: selected, list };
+  });
   return <ProjectFieldContext>{resolved ? <EntryPage {...props} resolved={resolved} /> : <Overview {...props} />}</ProjectFieldContext>;
 }

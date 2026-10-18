@@ -84,6 +84,17 @@ describe('outputFor', () => {
     expect(one?.file).toBe(all?.file);
   });
 
+  it('shows the lang file of a selected lang locale and translations.yml for a server locale', () => {
+    const { project } = sampleProject('craftengine');
+    project.craftEngine = { lang: { de_de: { greeting: 'Hallo' } }, translations: { en: { hi: 'Hi' } } };
+    const plan = planExport(project, { includeBinaries: false });
+    const lang = outputFor(project, plan, { kind: 'view', view: 'translations', entry: 'lang/de_de' });
+    expect(lang?.file).toMatch(/configuration\/lang\/de_de\.yml$/);
+    expect(lang?.text).toContain('Hallo');
+    const server = outputFor(project, plan, { kind: 'view', view: 'translations', entry: 'server/en' });
+    expect(server?.file).toMatch(/configuration\/translations\.yml$/);
+  });
+
   it('has a provider for every registry view', () => {
     expect([...MEDIA_VIEW_NAMES, ...CRAFT_ENGINE_VIEW_NAMES].filter((view) => !VIEW_OUTPUTS[view])).toEqual([]);
   });

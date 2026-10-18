@@ -7,7 +7,7 @@ import { Disc3 } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 import type { Sound } from '@resourcepackbuilder/core/project';
 import { jukeboxDocsFor } from '@resourcepackbuilder/core/targets';
-import { DocsLink, FieldGroup, Section } from '@resourcepackbuilder/ui';
+import { DocsLink, FieldGroup, Help, Section } from '@resourcepackbuilder/ui';
 import { Button } from '@resourcepackbuilder/ui/components/button';
 import { Input } from '@resourcepackbuilder/ui/components/input';
 import { setSoundJukebox, updateJukeboxSong } from '../../commands/media';
@@ -93,7 +93,7 @@ export function JukeboxSection({ sound }: { sound: Sound }) {
           <Button variant="outline" size="sm" onClick={() => media.createMusicDisc(sound)}>
             <Disc3 /> {t('createDisc')}
           </Button>
-          <span className="text-meta text-text-muted">{t('createDiscHint')}</span>
+          <Help>{t('createDiscHint')}</Help>
         </div>
       )}
     </Section>

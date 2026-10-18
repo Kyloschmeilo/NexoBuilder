@@ -127,6 +127,7 @@ export function PaintingPage({ painting, plan }: { painting: Painting; plan: Exp
           />
           <SwitchField
             label={tField('animated')}
+            yamlKey="animation"
             help={t('animatedHint')}
             checked={painting.animated}
             onChange={(checked) => update((p) => (p.animated = checked))}

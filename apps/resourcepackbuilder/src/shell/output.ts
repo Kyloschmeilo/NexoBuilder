@@ -96,7 +96,12 @@ export const VIEW_OUTPUTS: Partial<Record<ViewName, ViewOutputProvider>> = {
   templates: craftEngineFileOutput('templates'),
   globalVariables: craftEngineFileOutput('global_variables'),
   attributes: craftEngineFileOutput('attributes'),
-  translations: craftEngineSectionOutput(['translations', 'lang/en_us'], ['ce.translationsLocaleInvalid', 'ce.langLocaleInvalid']),
+  // A selected lang locale (`lang/<locale>`) shows its own lang file, a server locale translations.yml
+  translations: (project, plan, entry) =>
+    craftEngineSectionOutput(
+      entry?.startsWith('lang/') ? [entry] : entry?.startsWith('server/') ? ['translations'] : ['translations', 'lang/en_us'],
+      ['ce.translationsLocaleInvalid', 'ce.langLocaleInvalid'],
+    )(project, plan),
   categories: craftEngineSectionOutput(['categories'], ['ce.sectionEntryId', 'context.category']),
   worldgen: craftEngineSectionOutput(
     ['worldgen'],

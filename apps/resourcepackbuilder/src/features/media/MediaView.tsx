@@ -3,6 +3,7 @@
  * that entry's editor; otherwise it is the kind's overview: what the kind is for, a drop zone for new files and the
  * table of entries.
  */
+import { useEffect } from 'react';
 import { Link2, Upload } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 import { packTargetFor } from '@resourcepackbuilder/export';
@@ -121,7 +122,13 @@ function MediaEntryPage<K extends MediaKind>({ kind, entry }: { kind: K; entry: 
 function MediaView<K extends MediaKind>({ kind }: { kind: K }) {
   const project = useOpenProject();
   const selected = useSelectedEntry(MEDIA_KIND_INFO[kind].view);
+  const { view } = MEDIA_KIND_INFO[kind];
   const entry = selected === undefined ? undefined : mediaList(project, kind).find((candidate) => candidate.id === selected);
+  const isGone = selected !== undefined && !entry;
+  // A gone entry (deleted, undone) leaves the selection on the overview, so the panel marks the right row
+  useEffect(() => {
+    if (isGone) selectEntry(view);
+  }, [isGone, view]);
   // Keyed: the entry page's local state belongs to one entry
   return entry ? <MediaEntryPage key={entry.id} kind={kind} entry={entry} /> : <MediaOverview kind={kind} />;
 }

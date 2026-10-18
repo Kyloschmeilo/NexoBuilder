@@ -110,7 +110,7 @@ function AddButton({ label, onAdd }: { label: string; onAdd: () => void }) {
 function SubGroupRow({ group, onAdd }: { group: RegistryGroup; onAdd: () => void }) {
   const text = useRegistryGroupText();
   return (
-    <div className={treeRow()} role="presentation">
+    <div className={treeRow()} role="none">
       <span
         className="flex min-w-0 flex-1 items-center gap-1.5 pr-1 text-meta font-semibold text-muted-foreground"
         style={{ paddingLeft: 8 + TREE_INDENT_PX }}
@@ -157,18 +157,16 @@ function RegistryNode({ registry, icon, query }: { registry: Registry; icon: Rea
   };
 
   return (
+    // The tree item owns its heading row and the group of its entries
     <div
-      role="group"
+      role="treeitem"
+      aria-expanded={isExpanded}
+      aria-selected={selected.isView}
+      aria-label={label}
       className={cn('rounded-sm', drop.isOver && 'bg-primary/10 outline-1 -outline-offset-1 outline-primary outline-dashed')}
       {...drop.handlers}
     >
-      <div
-        role="treeitem"
-        aria-expanded={isExpanded}
-        aria-selected={selected.isView}
-        className={treeRow({ selected: selected.isView })}
-        data-selected={selected.isView || undefined}
-      >
+      <div className={treeRow({ selected: selected.isView })} data-selected={selected.isView || undefined}>
         <TreeChevron isOpen={isExpanded} onToggle={() => setExpanded(expandedKey(view), !isExpanded)} />
         <Tip label={t(`${view}.hint` as `glyphs.hint`)} side="right">
           <button

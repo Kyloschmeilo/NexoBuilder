@@ -245,3 +245,18 @@ export function withRenamedKey(map: Record<string, unknown>, from: string, to: s
 export function withoutKey(map: Record<string, unknown>, key: string): Record<string, unknown> {
   return Object.fromEntries(Object.entries(map).filter(([current]) => current !== key));
 }
+
+/**
+ * Where the list entry shown at `index` of `previous` is in `next` after a change from elsewhere (undo, redo): its new
+ * index when it moved (entries are compared by content), null when it is gone and the slot now holds a neighbour, or
+ * `index` when it stays (also when it was edited).
+ */
+export function followListEntry(previous: readonly unknown[], next: readonly unknown[], index: number): number | null {
+  const text = (value: unknown) => JSON.stringify(value);
+  const shown = text(previous[index]);
+  if (index < next.length && text(next[index]) === shown) return index;
+  const moved = next.findIndex((entry) => text(entry) === shown);
+  if (moved >= 0) return moved;
+  const previousTexts = new Set(previous.map(text));
+  return index < next.length && previousTexts.has(text(next[index])) ? null : index;
+}

@@ -6,7 +6,7 @@ import type { ReactNode } from 'react';
 import { ChevronRight } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 import { cn } from 'cn';
-import { EmptyHint, Panel, StatusDot } from '@resourcepackbuilder/ui';
+import { EmptyHint, Help, Panel, StatusDot } from '@resourcepackbuilder/ui';
 import type { RegistryGroup } from '../../shell/sidebar/panels/registry';
 import { useRegistryGroupText } from '../../shell/sidebar/panels/useRegistryGroupText';
 import { selectEntry, type ViewName } from '../../store/ui';
@@ -58,7 +58,12 @@ export function FilePath({ path }: { path: string }) {
   );
 }
 
-/** A short explanation of the page below its header: one muted paragraph, no box. */
+/** The explanation of a page below its header: one truncated muted line, with the full text in the ⓘ popover. */
 export function PageHint({ children }: { children: ReactNode }) {
-  return <p className="m-0 mb-3 max-w-[72ch] text-meta text-text-muted">{children}</p>;
+  return (
+    <div className="mb-3 flex min-w-0 items-center gap-1">
+      <p className="m-0 min-w-0 truncate text-meta text-text-muted">{children}</p>
+      <Help>{children}</Help>
+    </div>
+  );
 }
