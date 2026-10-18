@@ -7,7 +7,7 @@ import { useEffect } from 'react';
 import { Link2, Upload } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 import { packTargetFor } from '@resourcepackbuilder/export';
-import { type MediaEntryByKind, type MediaKind, mediaList, type PackTargetId } from '@resourcepackbuilder/core/project';
+import { type MediaEntryByKind, mediaList, type PackTargetId, type UploadMediaKind } from '@resourcepackbuilder/core/project';
 import { mediaDocsFor } from '@resourcepackbuilder/core/targets';
 import { DocsLink, DropZone, Page, PageHeader, pickFiles, Section, StatusPill, Tip } from '@resourcepackbuilder/ui';
 import { Button } from '@resourcepackbuilder/ui/components/button';
@@ -45,7 +45,7 @@ function ReferenceGlyphButton() {
 }
 
 /** The overview of a media kind: header, hint, drop zone and the entries. */
-function MediaOverview<K extends MediaKind>({ kind }: { kind: K }) {
+function MediaOverview<K extends UploadMediaKind>({ kind }: { kind: K }) {
   const t = useTranslations('media');
   const tRegistry = useTranslations('media.registry');
   const project = useOpenProject();
@@ -70,7 +70,7 @@ function MediaOverview<K extends MediaKind>({ kind }: { kind: K }) {
           meta={
             <>
               <StatusPill tone="muted" label={t(`${view}.count`, { count: entries.length })} />
-              <FilePath path={`${layout.pluginDir}/${layout.mediaFile(project, kind)}`} />
+              <FilePath path={`${layout.pluginDir}/${layout.mediaFile(project, kind) ?? ''}`} />
             </>
           }
           actions={
@@ -106,7 +106,7 @@ function MediaOverview<K extends MediaKind>({ kind }: { kind: K }) {
 }
 
 /** The page of one entry of `kind`. */
-function MediaEntryPage<K extends MediaKind>({ kind, entry }: { kind: K; entry: MediaEntryByKind[K] }) {
+function MediaEntryPage<K extends UploadMediaKind>({ kind, entry }: { kind: K; entry: MediaEntryByKind[K] }) {
   const plan = usePlan();
   switch (kind) {
     case 'glyph':
@@ -119,7 +119,7 @@ function MediaEntryPage<K extends MediaKind>({ kind, entry }: { kind: K; entry: 
 }
 
 /** The selected entry's page, or the overview when none (or one that no longer exists) is selected. */
-function MediaView<K extends MediaKind>({ kind }: { kind: K }) {
+function MediaView<K extends UploadMediaKind>({ kind }: { kind: K }) {
   const project = useOpenProject();
   const selected = useSelectedEntry(MEDIA_KIND_INFO[kind].view);
   const { view } = MEDIA_KIND_INFO[kind];

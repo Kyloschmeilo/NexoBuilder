@@ -5,6 +5,7 @@
     "glyph": "Glyph “{glyph}”",
     "sound": "Sound “{sound}”",
     "painting": "Painting “{painting}”",
+    "dialog": "Dialog “{dialog}”",
     "recipe": "Recipe “{recipe}”",
     "recipeIngredient": "Recipe “{recipe}”, ingredient {letter}",
     "recipeInput": "Recipe “{recipe}”, input",
@@ -94,6 +95,8 @@
     "directionalMissing": "Face models are uploaded, but the custom block has no directional type – they are not exported.",
     "directionalFaceUnused": "The directional type of this block has no face “{face}” – its model is not exported.",
     "directionalNeedsNoteblock": "Only NOTEBLOCK blocks can be directional – Nexo ignores “directional” on {type}.",
+    "carpentryNotInstalled": "{type} is a block type of the Carpentry addon. Turn on “Carpentry addon installed” in the project settings once the addon is on the server – without it, Nexo does not know the type.",
+    "carpentryNeedsVersion": "Carpentry’s {type} blocks need a Minecraft {version} server.",
     "hitboxEntryInvalid": "The {kind} hitbox entry “{entry}” does not have the format Nexo reads.",
     "fileUnreadable": "The file “{path}” could not be read and is left out.",
     "unsafePath": "The path “{path}” would leave its folder and is not exported.",
@@ -124,6 +127,7 @@
     "glyphIdClash": "The glyph “{id}” exists in “{first}” and in “{second}”. Glyph IDs must be unique.",
     "soundIdClash": "The sound “{id}” exists in “{first}” and in “{second}”. Sound IDs must be unique.",
     "paintingIdClash": "The painting “{id}” exists in “{first}” and in “{second}”. Painting IDs must be unique.",
+    "dialogIdClash": "The dialog “{id}” exists in “{first}” and in “{second}”. Dialog IDs must be unique, as all Nexo dialogs share the namespace nexo.",
     "pluginFileClash": "“{first}” and “{second}” would both write the file “{path}” (same project name “{slug}”). Rename one of the projects.",
     "assetFileClash": "“{first}” and “{second}” both contain “{path}” – only one file wins in the finished pack. A namespace of its own per project avoids this."
   },
@@ -240,6 +244,20 @@
     "imageMissing": "No image (PNG) has been uploaded yet.",
     "animationFrames": "For an animation, several images with the aspect ratio {width}:{height} must be stacked vertically.",
     "aspectMismatch": "The image ({imageWidth}×{imageHeight}) does not match the aspect ratio of {width}×{height} blocks – it will be distorted."
+  },
+  "dialog": {
+    "needsVersion": "Dialogs need Minecraft 1.21.6 or newer – older clients cannot show them.",
+    "idInvalid": "The ID may only contain lowercase letters, digits and _.",
+    "idDuplicate": "Another dialog already has this ID.",
+    "typeInvalid": "Nexo does not know the dialog type “{type}”. Use NOTICE, CONFIRM, LIST, MULTI or LINK.",
+    "actionsMissing": "A MULTI dialog needs at least one action.",
+    "numberRange": "The input “{input}” needs a start below its end.",
+    "optionsMissing": "The input “{input}” has no options – Nexo skips it.",
+    "unknownDialog": "The project has no dialog “{dialog}”. Nexo ignores a link to a dialog it does not know."
+  },
+  "multipack": {
+    "unknownTemplate": "multipack.yml names the template “{template}”, which is not defined under templates.",
+    "slotOutside": "The menu slot “{slot}” lies outside the menu (columns 1–9, rows 1–{rows})."
   },
   "project": {
     "invalid": "Invalid project",
@@ -373,6 +391,7 @@
     },
     "openFolder": "Go to folder",
     "openSounds": "Open sounds",
-    "openPaintings": "Open paintings"
+    "openPaintings": "Open paintings",
+    "openDialogs": "Open dialogs"
   }
 }

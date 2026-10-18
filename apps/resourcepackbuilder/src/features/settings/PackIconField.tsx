@@ -1,10 +1,11 @@
 /** The optional pack icon (pack.png) of the open project: preview, upload and remove. */
 import { useTranslations } from 'next-intl';
-import { Field, FieldTitle } from '@resourcepackbuilder/ui/components/field';
+import { FieldRow } from '@resourcepackbuilder/ui';
 import { updateProjectSettings } from '../../commands/settings';
 import { ImageUploadField } from '../../components/ImageUploadField';
 import { usePngPicker } from '../../hooks/useFileReaders';
 
+/** The pack icon row of the settings page. */
 export function PackIconField({ packIcon }: { packIcon: string | null }) {
   const t = useTranslations('dialogs.settings');
   const pickPng = usePngPicker();
@@ -15,8 +16,7 @@ export function PackIconField({ packIcon }: { packIcon: string | null }) {
   };
 
   return (
-    <Field>
-      <FieldTitle>{t('packIcon')}</FieldTitle>
+    <FieldRow label={t('packIcon')}>
       <ImageUploadField
         className="max-w-md"
         src={packIcon}
@@ -27,6 +27,6 @@ export function PackIconField({ packIcon }: { packIcon: string | null }) {
         onUpload={() => void upload()}
         onRemove={() => updateProjectSettings((p) => (p.settings.packIcon = null))}
       />
-    </Field>
+    </FieldRow>
   );
 }

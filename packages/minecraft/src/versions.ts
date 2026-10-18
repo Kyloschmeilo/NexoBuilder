@@ -99,4 +99,6 @@ export const FEATURE_VERSIONS = {
   shadeDirectionOverride: '26.3',
   /** Nexo generates the datapack that registers custom paintings */
   paintingDatapack: '1.21.5',
+  /** Dialog screens (Nexo's plugins/Nexo/dialogs) */
+  dialogs: '1.21.6',
 } as const;

@@ -8,6 +8,7 @@ export const REGISTRY_GROUP_IDS = [
   'glyphs',
   'sounds',
   'paintings',
+  'dialogs',
   'lootSources',
   'templates',
   'globalVariables',

@@ -58,7 +58,8 @@ export const MECHANIC_PROPERTIES = properties(
       keepEmpty: true,
       docs: BLOCK.page,
       field: field.object({
-        type: field.select(CUSTOM_BLOCK_TYPES),
+        // The Carpentry addon's types join the list when the project has the addon
+        type: field.select(CUSTOM_BLOCK_TYPES, { dynamicSuggestions: 'carpentryBlockTypes', help: true }),
         custom_variation: field.number({ integer: true, min: 1, help: true, docs: BLOCK.configuration }),
         model: field.text({ format: 'resource', help: true, docs: BLOCK.configuration }),
         hardness: field.number({ min: 0, step: 0.5, docs: BLOCK.hardness }),

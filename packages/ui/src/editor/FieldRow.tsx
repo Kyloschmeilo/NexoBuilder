@@ -7,7 +7,7 @@
  */
 import { useId, type ReactNode } from 'react';
 import { RotateCcw } from 'lucide-react';
-import { cn } from 'cn';
+import { cn } from '../lib/cn';
 import { IconButton } from '../IconButton';
 import { useUiLabels } from '../labels';
 import { DocsLink, type DocsRef } from './DocsLink';

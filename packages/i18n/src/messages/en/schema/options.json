@@ -86,6 +86,30 @@
       },
       "chorusblock": {
         "label": "CHORUSBLOCK – transparent blocks (up to 63)"
+      },
+      "stair": {
+        "label": "STAIR – stairs (Carpentry, up to 4)"
+      },
+      "slab": {
+        "label": "SLAB – slabs (Carpentry, up to 4)"
+      },
+      "door": {
+        "label": "DOOR – doors (Carpentry, up to 4)"
+      },
+      "trapdoor": {
+        "label": "TRAPDOOR – trapdoors (Carpentry, up to 4)"
+      },
+      "grate": {
+        "label": "GRATE – transparent blocks such as leaves (Carpentry, up to 4)"
+      },
+      "chain": {
+        "label": "CHAIN – chains (Carpentry, 1.21.10+)"
+      },
+      "lantern": {
+        "label": "LANTERN – lanterns (Carpentry, 1.21.10+)"
+      },
+      "bars": {
+        "label": "BARS – bars like iron bars (Carpentry, 1.21.10+)"
       }
     },
     "cullableStates": {

@@ -1,4 +1,5 @@
-import { Box, ClipboardCopy, ClipboardPaste, Copy, FolderInput, Trash2 } from 'lucide-react';
+/** An item row of the sidebar tree. */
+import { ClipboardCopy, ClipboardPaste, Copy, FolderInput, Trash2 } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 import { itemLabel } from '@resourcepackbuilder/core/project';
 import { canCopyItemConfig, canPasteItemConfig, clipboardLabel } from '@resourcepackbuilder/core/nexo';
@@ -9,11 +10,16 @@ import { useItemActions } from '../../features/item/useItemActions';
 import { useClipboardStore } from '../../store/clipboard';
 import { moveItemDialog } from '../../features/moveItem/MoveItemDialog';
 import { select, useUiStore } from '../../store/ui';
-import { ITEM_PADDING_PX } from './rowStyles';
-import type { SidebarTree } from './treeIndex';
+import { ITEM_PADDING_PX, ITEM_THUMB_PX } from './rowStyles';
+import { ITEM_KIND_ICONS } from './itemKindIcons';
+import { itemKindOf, type SidebarTree } from './treeIndex';
 import { activateOnKey, TreeRow } from './TreeRow';
 import { DRAG_ITEM, useDropTarget } from './useDropTarget';
 
+/**
+ * One item of the tree: its thumbnail (or the glyph of its kind), its name as plain text and a dot for its worst issue.
+ * Click or Enter opens it; the context menu and the "more" button offer duplicate, move, copy and paste, and delete.
+ */
 export function ItemNode({ itemId, depth, tree }: { itemId: string; depth: number; tree: SidebarTree }) {
   const t = useTranslations('layout.sidebar');
   const tCommon = useTranslations('common');
@@ -29,6 +35,7 @@ export function ItemNode({ itemId, depth, tree }: { itemId: string; depth: numbe
   });
   if (!item) return null;
   const level = tree.itemLevels.get(itemId);
+  const KindIcon = ITEM_KIND_ICONS[itemKindOf(item, tree.project.target)];
   const canCopy = canCopyItemConfig(tree.project.target);
   const show = () => select({ kind: 'item', id: itemId });
 
@@ -74,7 +81,7 @@ export function ItemNode({ itemId, depth, tree }: { itemId: string; depth: numbe
       onClick={show}
       onKeyDown={activateOnKey(show)}
     >
-      <Thumb size={20} src={thumb} checkered={false} fallback={<Box className="size-3.75" />} />
+      <Thumb size={ITEM_THUMB_PX} src={thumb} checkered={false} fallback={<KindIcon className="size-3.5 text-muted-foreground" />} />
       <span className={treeRowSlots.label}>{itemLabel(item)}</span>
       {level && <StatusDot tone={level} label={level === 'error' ? t('status.error') : t('status.warning')} />}
     </TreeRow>

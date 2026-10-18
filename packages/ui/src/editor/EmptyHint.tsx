@@ -1,7 +1,7 @@
 /** One muted line that says a list or section is empty, with an optional ghost action ("No recipes yet. Add recipe"). */
 import type { ReactNode } from 'react';
 import { Plus } from 'lucide-react';
-import { cn } from 'cn';
+import { cn } from '../lib/cn';
 import { Button } from '../components/button';
 
 interface EmptyHintProps {

@@ -1,8 +1,10 @@
-/** The Media activity's panel: the glyphs, sounds and paintings (and every later media kind) with their entries. */
+/** The Media activity's panel: the media lists the project's target has (glyphs, sounds, paintings; Nexo dialogs and multipack) with their entries. */
 import { MEDIA_REGISTRIES } from '../../../features/media/mediaKinds';
-import { RESOURCES } from '../ViewEntries';
+import { useOpenProject } from '../../../store/project';
+import { isOffered, RESOURCES } from '../ViewEntries';
 import { RegistryPanel } from './RegistryPanel';
 
 export function MediaPanel() {
-  return <RegistryPanel activity="media" views={RESOURCES} registries={MEDIA_REGISTRIES} />;
+  const { target } = useOpenProject();
+  return <RegistryPanel activity="media" views={RESOURCES.filter((entry) => isOffered(entry, target))} registries={MEDIA_REGISTRIES} />;
 }

@@ -4,7 +4,6 @@ import { Input } from '@resourcepackbuilder/ui/components/input';
 import { parseNumber } from '../values';
 
 interface NumberInputProps {
-  /** Id of the input, for a label outside it */
   id?: string;
   /** A string is shown as is (e.g. a number written as text in the YAML); null and undefined mean empty. */
   value: number | string | null | undefined;
@@ -16,6 +15,8 @@ interface NumberInputProps {
   integer?: boolean;
   min?: number;
   max?: number;
+  /** ArrowUp and ArrowDown change the value by this much (1 by default), within `min` and `max`. */
+  step?: number;
   invalid?: boolean;
   className?: string;
 }
@@ -24,8 +25,15 @@ type NumberValue = number | string | null | undefined;
 
 const formatNumber = (value: NumberValue) => (value === undefined || value === null ? '' : String(value));
 
-/** Number field that keeps intermediate states like "-" or "1." while typing. */
-export function NumberInput({ id, value, onChange, placeholder, label, integer, min, max, invalid, className }: NumberInputProps) {
+/** The value one arrow key press away from `current`, rounded to the step's precision and kept in range. */
+export function steppedNumber(current: number, direction: 1 | -1, step = 1, min?: number, max?: number): number {
+  const decimals = (String(step).split('.')[1] ?? '').length;
+  const next = Number((current + direction * step).toFixed(decimals));
+  return Math.min(max ?? Infinity, Math.max(min ?? -Infinity, next));
+}
+
+/** Number field that keeps intermediate states like "-" or "1." while typing; the arrow keys step the value. */
+export function NumberInput({ id, value, onChange, placeholder, label, integer, min, max, step, invalid, className }: NumberInputProps) {
   const t = useTranslations('editor');
   const parse = (text: string): { value: number | undefined } | undefined => {
     if (text.trim() === '') return { value: undefined };
@@ -52,6 +60,15 @@ export function NumberInput({ id, value, onChange, placeholder, label, integer, 
           if (parsed) onChange(parsed.value);
         }}
         onBlur={reset}
+        onKeyDown={(e) => {
+          if (e.key !== 'ArrowUp' && e.key !== 'ArrowDown') return;
+          const current = parse(draft);
+          if (!current) return;
+          e.preventDefault();
+          const next = steppedNumber(current.value ?? min ?? 0, e.key === 'ArrowUp' ? 1 : -1, step ?? 1, min, max);
+          setDraft(String(next));
+          onChange(next);
+        }}
       />
     </Tip>
   );

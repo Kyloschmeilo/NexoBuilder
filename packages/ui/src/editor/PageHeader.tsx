@@ -4,7 +4,7 @@
  */
 import type { ReactNode } from 'react';
 import { Ellipsis } from 'lucide-react';
-import { cn } from 'cn';
+import { cn } from '../lib/cn';
 import { Button } from '../components/button';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuTrigger } from '../components/dropdown-menu';
 import { useUiLabels } from '../labels';

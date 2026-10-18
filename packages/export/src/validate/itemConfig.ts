@@ -1,6 +1,6 @@
 /** Checks of an item's configuration (properties, field formats, custom block, furniture hitbox, stack size). */
 import { getPath, isPlainObject, labelArg, MODEL_TOKEN, schemaKey } from '@resourcepackbuilder/utils';
-import { versionSupport } from '@resourcepackbuilder/minecraft';
+import { compareVersions, versionSupport } from '@resourcepackbuilder/minecraft';
 import {
   DIRECTIONAL_FACES,
   type Item,
@@ -10,11 +10,26 @@ import {
   slotForMaterial,
 } from '@resourcepackbuilder/core/project';
 import { checkFieldValue, getPropertyValue, type PropertyDef } from '@resourcepackbuilder/core/form';
-import { PROPERTIES } from '@resourcepackbuilder/core/nexo';
+import {
+  CARPENTRY_BLOCK_TYPES,
+  CARPENTRY_LATE_MIN_LISTED_VERSION,
+  CARPENTRY_LATE_TYPES,
+  CARPENTRY_LATE_VERSION,
+  CARPENTRY_VARIATION_LIMIT,
+  isCarpentryBlockType,
+  PROPERTIES,
+} from '@resourcepackbuilder/core/nexo';
 import type { ItemExport } from '../types';
 
-/** Highest custom_variation per block type (Nexo limits) */
-const BLOCK_VARIATION_LIMITS: Record<string, number> = { NOTEBLOCK: 1149, STRINGBLOCK: 127, CHORUSBLOCK: 63 };
+/** Highest custom_variation per block type (Nexo limits; the Carpentry types with variations have four) */
+const BLOCK_VARIATION_LIMITS: Record<string, number> = {
+  NOTEBLOCK: 1149,
+  STRINGBLOCK: 127,
+  CHORUSBLOCK: 63,
+  ...Object.fromEntries(
+    CARPENTRY_BLOCK_TYPES.filter((type) => !CARPENTRY_LATE_TYPES.includes(type)).map((type) => [type, CARPENTRY_VARIATION_LIMIT]),
+  ),
+};
 
 const NUMBER = String.raw`-?\d+(?:\.\d+)?`;
 const OFFSET = String.raw`${NUMBER}\s*,\s*${NUMBER}\s*,\s*${NUMBER}`;
@@ -57,6 +72,13 @@ export function validateItemConfig(itemExport: ItemExport, { config, usedVariati
     if (!type) report('error', 'plan.blockTypeMissing');
     const directional = isPlainObject(block.directional) ? block.directional : null;
     if (directional && type && type !== 'NOTEBLOCK') report('warning', 'plan.directionalNeedsNoteblock', { type });
+    if (isCarpentryBlockType(type)) {
+      const { settings } = itemExport.project;
+      if (!settings.carpentryAddon) report('warning', 'plan.carpentryNotInstalled', { type });
+      if (CARPENTRY_LATE_TYPES.includes(type) && compareVersions(settings.minecraftVersion, CARPENTRY_LATE_MIN_LISTED_VERSION) < 0) {
+        report('warning', 'plan.carpentryNeedsVersion', { type, version: CARPENTRY_LATE_VERSION });
+      }
+    }
     if (type in BLOCK_VARIATION_LIMITS) {
       // The block's own variation and those of its directional faces (a face may reuse the block's own one)
       const faceVariations = directional ? DIRECTIONAL_FACES.map((face) => directional[`${face}_variation`]) : [];

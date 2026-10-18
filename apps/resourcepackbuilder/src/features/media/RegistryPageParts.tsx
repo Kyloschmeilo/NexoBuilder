@@ -5,7 +5,7 @@
 import type { ReactNode } from 'react';
 import { ChevronRight } from 'lucide-react';
 import { useTranslations } from 'next-intl';
-import { cn } from 'cn';
+import { cn } from '@resourcepackbuilder/ui/cn';
 import { EmptyHint, Help, Panel, StatusDot } from '@resourcepackbuilder/ui';
 import type { RegistryGroup } from '../../shell/sidebar/panels/registry';
 import { useRegistryGroupText } from '../../shell/sidebar/panels/useRegistryGroupText';

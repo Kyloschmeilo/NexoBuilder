@@ -113,6 +113,14 @@
         "label": "Paintings",
         "hint": "Paintings: eigene Gemälde zum Aufhängen"
       },
+      "dialogs": {
+        "label": "Dialoge",
+        "hint": "Dialoge: Dialogfenster mit Schaltflächen und Eingaben (Minecraft 1.21.6+)"
+      },
+      "multipack": {
+        "label": "Multipack",
+        "hint": "Multipack: zusätzliche Ressourcenpakete, die Spieler ein- und ausschalten"
+      },
       "lootSources": {
         "label": "Loot-Quellen",
         "hint": "Loot-Quellen: zusätzlicher Loot für Vanilla-Blöcke, Mobs, Truhen und Angeln"
@@ -173,6 +181,14 @@
       "fromItem": "von „{name}“",
       "fromItemIntoFolder": "von „{name}“ in alle Items des Ordners",
       "needsCopy": "Zuerst bei einem Item kopieren"
+    },
+    "filters": {
+      "label": "Items filtern",
+      "all": "Alle",
+      "items": "Items",
+      "blocks": "Blöcke",
+      "furniture": "Möbel",
+      "issues": "Mit Problemen"
     }
   },
   "folder": {
@@ -200,14 +216,28 @@
   },
   "folderView": {
     "targetHint": "Ziel im Plugin-Ordner",
-    "itemCount": "{count, plural, one {# Item} other {# Items}}",
     "newItem": "Neues Item",
     "newSubfolder": "Unterordner anlegen",
     "delete": "Ordner löschen",
     "dropTitle": "Modelle hier ablegen, um Items zu erstellen",
     "dropSubtitle": "Mehrere .bbmodel-Dateien ergeben mehrere Items",
-    "itemsHeading": "Items in diesem Ordner",
-    "subfoldersHeading": "Unterordner"
+    "itemsHeading": "Items",
+    "subfoldersHeading": "Unterordner",
+    "addItem": "Item hinzufügen",
+    "noItems": "Noch keine Items in diesem Ordner.",
+    "table": {
+      "thumbnail": "Vorschaubild",
+      "name": "Name",
+      "id": "ID",
+      "kind": "Art",
+      "issues": "Prüfungen",
+      "noIssues": "Keine Probleme",
+      "kinds": {
+        "item": "Item",
+        "block": "Block",
+        "furniture": "Möbel"
+      }
+    }
   },
   "dock": {
     "label": "Ausgabe",
@@ -247,7 +277,9 @@
         "title": "Exportieren",
         "text": "ZIP in den Plugin-Ordner entpacken und das Plugin neu laden – wie genau, steht in der beigelegten INSTALL.txt."
       }
-    }
+    },
+    "stepsLabel": "So funktioniert’s",
+    "stepsHelp": "So funktioniert’s im Detail"
   },
   "projectForm": {
     "name": "Projektname",
@@ -259,10 +291,13 @@
     "target": "Server-Plugin",
     "targetHint": "Wähle das zuerst – es lässt sich später nicht mehr ändern, weil das ganze Projekt für dieses Plugin gebaut wird.",
     "targets": {
-      "nexo": { "name": "Nexo", "description": "Items, Blöcke und Möbel für Nexo. Der Testserver braucht deine gekaufte Nexo-JAR." },
+      "nexo": {
+        "name": "Nexo",
+        "description": "Items, Blöcke und Möbel. Der Testserver braucht deine gekaufte Nexo-JAR."
+      },
       "craftengine": {
         "name": "CraftEngine",
-        "description": "Items, Blöcke und Möbel für CraftEngine, dazu Loot-Quellen, Vorlagen, globale Variablen und Attribute. Kostenlos – der Testserver lädt es von Modrinth herunter."
+        "description": "Items, Blöcke und Möbel, dazu Loot, Vorlagen und mehr. Kostenlos auf Modrinth."
       }
     }
   },

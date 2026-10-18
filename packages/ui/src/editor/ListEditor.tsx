@@ -6,7 +6,7 @@
 import { useState, type ReactNode } from 'react';
 import { flushSync } from 'react-dom';
 import { ArrowDown, ArrowUp, ChevronRight, Copy, GripVertical, Plus, Trash2 } from 'lucide-react';
-import { cn } from 'cn';
+import { cn } from '../lib/cn';
 import { Button } from '../components/button';
 import { Dialog, DialogClose, DialogContent, DialogFooter, DialogHeader, DialogTitle } from '../components/dialog';
 import { IconButton } from '../IconButton';

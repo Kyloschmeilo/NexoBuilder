@@ -3,7 +3,8 @@ import { useTranslations } from 'next-intl';
 import { Box, Image as ImageIcon, Trash2, TriangleAlert } from 'lucide-react';
 import { getTextureTemplate, type ImportDraft, isPngDataUrl } from '@resourcepackbuilder/minecraft';
 import type { ItemIdError, ItemMeta, MetaPatch } from '@resourcepackbuilder/core/project';
-import { AutoGrid, IconButton, SectionCard } from '@resourcepackbuilder/ui';
+import { AutoGrid, IconButton } from '@resourcepackbuilder/ui';
+import { DraftPanel } from './DraftPanel';
 import { Alert, AlertDescription } from '@resourcepackbuilder/ui/components/alert';
 import { ModelPreview } from '../../components/ModelPreview';
 import { IssueCountBadges } from '../../components/IssueCountBadges';
@@ -47,11 +48,9 @@ export function DraftCard({ draft, meta, idError, isSingle, onMetaChange, onDraf
   const template = draft.template ? getTextureTemplate(draft.template) : null;
   const Icon = draft.kind === 'png' ? ImageIcon : Box;
   return (
-    <SectionCard
-      size="sm"
-      icon={<Icon className="size-4.5 shrink-0" />}
+    <DraftPanel
+      icon={<Icon />}
       title={draft.model?.fileName ?? draft.files[0]?.name}
-      titleClassName="truncate font-sans tracking-normal normal-case"
       description={description}
       actions={
         <>
@@ -89,6 +88,6 @@ export function DraftCard({ draft, meta, idError, isSingle, onMetaChange, onDraf
           </div>
         </div>
       )}
-    </SectionCard>
+    </DraftPanel>
   );
 }

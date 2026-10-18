@@ -108,6 +108,18 @@ export const STORAGE_TYPES = labeled('storageTypes', ['STORAGE', 'PERSONAL', 'EN
 
 export const CUSTOM_BLOCK_TYPES = labeled('customBlockTypes', ['NOTEBLOCK', 'STRINGBLOCK', 'CHORUSBLOCK']);
 
+/** The custom block types of the Carpentry addon, offered when the project has it (see ../carpentry.ts). */
+export const CARPENTRY_BLOCK_TYPE_OPTIONS = labeled('customBlockTypes', [
+  'STAIR',
+  'SLAB',
+  'DOOR',
+  'TRAPDOOR',
+  'GRATE',
+  'CHAIN',
+  'LANTERN',
+  'BARS',
+]);
+
 /** Furniture `properties.cullable`: whether the client may cull the furniture (NOT_SET leaves it to Nexo). */
 export const CULLABLE_STATES = labeled('cullableStates', ['TRUE', 'FALSE', 'NOT_SET']);
 

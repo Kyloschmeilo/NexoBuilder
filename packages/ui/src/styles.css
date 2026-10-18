@@ -77,16 +77,19 @@
  * ---- The five palettes ----
  * Each sets canvas (app background), surface (panels), surface-raised (popovers, dialogs), surface-sunken (inputs, code),
  * line, text, text-muted (at least 4.5:1 on surface, surface-raised and canvas), accent and the text colour on the accent.
+ * Content sits on panels, so the surface stands clearly apart from the canvas (at least 1.15:1), the line from the
+ * surface (at least 1.4:1) and the sunken input wells from the surface (at least 1.1:1); the dark variants darken the
+ * canvas and lift the surfaces to get there.
  */
 :root,
 [data-color-theme='deepslate'] {
-  --canvas: #eceff3;
+  --canvas: #e4e7eb;
   --surface: #ffffff;
   --surface-raised: #f5f7fa;
-  --surface-sunken: #f3f5f8;
-  --line: #d3d9e1;
+  --surface-sunken: #eff1f4;
+  --line: #c6ccd4;
   --text: #17202b;
-  --text-muted: #5a6676;
+  --text-muted: #546070;
   --accent: #1d6aa3;
   --accent-contrast: #ffffff;
 }
@@ -94,51 +97,51 @@
 .dark[data-color-theme='deepslate'],
 .dark [data-color-theme='deepslate'],
 [data-color-theme='deepslate'] .dark {
-  --canvas: #111519;
-  --surface: #171c22;
-  --surface-raised: #1f252d;
-  --surface-sunken: #0d1014;
-  --line: #2a323c;
+  --canvas: #0c0f13;
+  --surface: #1e2329;
+  --surface-raised: #272e36;
+  --surface-sunken: #0b0e12;
+  --line: #353e48;
   --text: #e3e8ee;
-  --text-muted: #8693a3;
+  --text-muted: #8f9cac;
   --accent: #58a6dc;
   --accent-contrast: #06141f;
 }
 
 [data-color-theme='amethyst'] {
-  --canvas: #f1eef6;
+  --canvas: #e9e6ee;
   --surface: #ffffff;
   --surface-raised: #f8f6fb;
-  --surface-sunken: #f6f3fa;
-  --line: #dcd4e8;
+  --surface-sunken: #f2eff6;
+  --line: #cfc7db;
   --text: #211a2c;
-  --text-muted: #695e7b;
+  --text-muted: #635875;
   --accent: #7144c6;
   --accent-contrast: #ffffff;
 }
 .dark[data-color-theme='amethyst'],
 .dark [data-color-theme='amethyst'],
 [data-color-theme='amethyst'] .dark {
-  --canvas: #15121b;
-  --surface: #1c1824;
-  --surface-raised: #251f2f;
-  --surface-sunken: #110e16;
-  --line: #342b42;
+  --canvas: #100d15;
+  --surface: #231f2b;
+  --surface-raised: #2e2738;
+  --surface-sunken: #0f0c14;
+  --line: #40364e;
   --text: #ece6f5;
-  --text-muted: #9a8fae;
+  --text-muted: #a398b7;
   --accent: #b48ef2;
   --accent-contrast: #1a0f2c;
 }
 
 /* Copper: a verdigris CraftEngine marker, set apart from the copper accent. */
 [data-color-theme='copper'] {
-  --canvas: #ecebe8;
+  --canvas: #e4e3e0;
   --surface: #ffffff;
   --surface-raised: #f6f5f3;
-  --surface-sunken: #f5f3f0;
-  --line: #dad5cf;
+  --surface-sunken: #f1efec;
+  --line: #cdc8c2;
   --text: #231d18;
-  --text-muted: #6c6156;
+  --text-muted: #665b50;
   --accent: #a95a26;
   --accent-contrast: #ffffff;
   --target-ce: #2d7d6b;
@@ -146,13 +149,13 @@
 .dark[data-color-theme='copper'],
 .dark [data-color-theme='copper'],
 [data-color-theme='copper'] .dark {
-  --canvas: #151312;
-  --surface: #1c1917;
-  --surface-raised: #25211e;
-  --surface-sunken: #110f0e;
-  --line: #35302b;
+  --canvas: #0f0e0d;
+  --surface: #23201e;
+  --surface-raised: #2e2926;
+  --surface-sunken: #0f0d0c;
+  --line: #413b36;
   --text: #eee8e1;
-  --text-muted: #a29789;
+  --text-muted: #aba092;
   --accent: #dc8c55;
   --accent-contrast: #25120a;
   --target-ce: #5fae9c;
@@ -160,13 +163,13 @@
 
 /* Prismarine: a blue CraftEngine marker, because the teal one would clash with the accent. */
 [data-color-theme='prismarine'] {
-  --canvas: #eaf0ef;
+  --canvas: #e2e8e7;
   --surface: #ffffff;
   --surface-raised: #f4f8f7;
-  --surface-sunken: #f2f6f5;
-  --line: #cfdcd9;
+  --surface-sunken: #eef2f1;
+  --line: #c2cfcc;
   --text: #14211f;
-  --text-muted: #566c68;
+  --text-muted: #506662;
   --accent: #137a6c;
   --accent-contrast: #ffffff;
   --target-ce: #2a64a0;
@@ -174,13 +177,13 @@
 .dark[data-color-theme='prismarine'],
 .dark [data-color-theme='prismarine'],
 [data-color-theme='prismarine'] .dark {
-  --canvas: #0f1716;
-  --surface: #141e1d;
-  --surface-raised: #1b2624;
-  --surface-sunken: #0b1211;
-  --line: #273634;
+  --canvas: #0a1110;
+  --surface: #1b2524;
+  --surface-raised: #232f2d;
+  --surface-sunken: #09100f;
+  --line: #324240;
   --text: #e1ece9;
-  --text-muted: #86a09b;
+  --text-muted: #8fa9a4;
   --accent: #4cc2b0;
   --accent-contrast: #04201b;
   --target-ce: #7fb0e0;
@@ -188,13 +191,13 @@
 
 /* Crimson: an orange-red danger colour, so errors don't look like the crimson accent. */
 [data-color-theme='crimson'] {
-  --canvas: #f1ecec;
+  --canvas: #e9e4e4;
   --surface: #ffffff;
   --surface-raised: #f8f4f4;
-  --surface-sunken: #f7f2f2;
-  --line: #e0d3d4;
+  --surface-sunken: #f3eeee;
+  --line: #d3c6c7;
   --text: #261719;
-  --text-muted: #74585c;
+  --text-muted: #6e5256;
   --accent: #b3263c;
   --accent-contrast: #ffffff;
   --danger: #b4521a;
@@ -202,14 +205,14 @@
 .dark[data-color-theme='crimson'],
 .dark [data-color-theme='crimson'],
 [data-color-theme='crimson'] .dark {
-  --canvas: #161112;
-  --surface: #1d1618;
-  --surface-raised: #271d1f;
-  --surface-sunken: #120d0e;
-  --line: #3a2a2d;
+  --canvas: #100c0d;
+  --surface: #241d1f;
+  --surface-raised: #302527;
+  --surface-sunken: #100b0c;
+  --line: #463538;
   --text: #f0e5e6;
-  --text-muted: #a8898d;
-  --accent: #e0566a;
+  --text-muted: #b19296;
+  --accent: #e75c70;
   --accent-contrast: #2a0910;
   --danger: #f08a4b;
 }

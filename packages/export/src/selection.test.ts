@@ -45,7 +45,7 @@ describe('Export selection within a project', () => {
     expect(Object.values(subset.items).map((i) => i.itemId)).toEqual(['ruby_sword']);
     expect(Object.values(subset.folders).map((f) => f.name)).toEqual(['Waffen']);
     expect(subset.glyphs).toEqual([]);
-    expect(countSelected(p, selection)).toEqual({ items: 1, glyphs: 0, sounds: 0, paintings: 0 });
+    expect(countSelected(p, selection)).toEqual({ items: 1, glyphs: 0, sounds: 0, paintings: 0, dialogs: 0 });
 
     const plan = planExport(subset);
     const paths = listMultiExportPaths(singleExport(subset, plan), 'full');
@@ -75,7 +75,7 @@ describe('Export selection within a project', () => {
 
   it('selects nothing', () => {
     const p = project('A', 'a', { weapons: ['x'], furniture: ['chair'] });
-    expect(countSelected(p, selectNothing(p))).toEqual({ items: 0, glyphs: 0, sounds: 0, paintings: 0 });
+    expect(countSelected(p, selectNothing(p))).toEqual({ items: 0, glyphs: 0, sounds: 0, paintings: 0, dialogs: 0 });
   });
 });
 

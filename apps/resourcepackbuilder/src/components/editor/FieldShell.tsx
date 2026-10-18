@@ -5,12 +5,12 @@
  */
 import type { ReactNode } from 'react';
 import { useTranslations } from 'next-intl';
-import { cn } from 'cn';
+import { cn } from '@resourcepackbuilder/ui/cn';
 import { type Field, fieldName } from '@resourcepackbuilder/core/form';
 import { compareVersions } from '@resourcepackbuilder/minecraft';
 import { FieldRow, Tip } from '@resourcepackbuilder/ui';
 import { Badge } from '@resourcepackbuilder/ui/components/badge';
-import { useProjectStore } from '../../store/project';
+import { useFormTarget } from '../formTarget';
 import { useSchemaText } from '../useSchemaText';
 import { useFieldContext } from './fieldContext';
 
@@ -66,19 +66,22 @@ interface FieldShellProps {
   wide?: boolean;
   /** Translated validation message. */
   error?: string;
+  /** Id of the control, so the label names it and a click on the label focuses it. */
+  htmlFor?: string;
   children: ReactNode;
 }
 
 /** A schema field as a `FieldRow`. */
-export function FieldShell({ field, hideLabel, wide, error, children }: FieldShellProps) {
+export function FieldShell({ field, hideLabel, wide, error, htmlFor, children }: FieldShellProps) {
   const text = useSchemaText();
   const label = useFieldLabel(field);
-  const target = useProjectStore((s) => s.project?.target);
+  const target = useFormTarget();
   const help = text(field.help);
   const hasLabel = !hideLabel && !!field.label;
   return (
     <FieldRow
       label={hasLabel ? label : undefined}
+      htmlFor={hasLabel ? htmlFor : undefined}
       yamlKey={hasLabel ? fieldYamlKey(field) : undefined}
       docs={hasLabel && field.docs && target ? { url: field.docs, target, label } : undefined}
       badges={hasLabel && <MinVersionBadge field={field} />}

@@ -96,3 +96,31 @@ describe('furniture hitboxes', () => {
     expect(issues.every((issue) => issue.level === 'warning')).toBe(true);
   });
 });
+
+describe('Carpentry blocks', () => {
+  const stair = (variation: number) => ({
+    Mechanics: { custom_block: { type: 'STAIR', custom_variation: variation, model: 'pruefung:stair' } },
+  });
+
+  it('warns while the project does not have the addon', () => {
+    const project = projectWith(stair(1));
+    expect(issuesOf(project, 'plan.carpentryNotInstalled').map((issue) => [issue.level, issue.args?.type])).toEqual([['warning', 'STAIR']]);
+    project.settings.carpentryAddon = true;
+    expect(issuesOf(project, 'plan.carpentryNotInstalled')).toEqual([]);
+  });
+
+  it('allows four variations per type and reports duplicates', () => {
+    const project = projectWith(stair(4), stair(5), stair(4));
+    project.settings.carpentryAddon = true;
+    expect(issuesOf(project, 'plan.blockVariationRange').map((issue) => issue.args)).toEqual([{ variation: 5, max: 4, type: 'STAIR' }]);
+    expect(issuesOf(project, 'plan.blockVariationDuplicate')).toHaveLength(1);
+  });
+
+  it('needs Minecraft 1.21.10 for chains, lanterns and bars', () => {
+    const project = projectWith({ Mechanics: { custom_block: { type: 'CHAIN', model: 'pruefung:chain' } } });
+    project.settings.carpentryAddon = true;
+    expect(issuesOf(project, 'plan.carpentryNeedsVersion')).toEqual([]);
+    project.settings.minecraftVersion = '1.21.6';
+    expect(issuesOf(project, 'plan.carpentryNeedsVersion').map((issue) => issue.args)).toEqual([{ type: 'CHAIN', version: '1.21.10' }]);
+  });
+});

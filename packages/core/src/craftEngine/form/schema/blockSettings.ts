@@ -164,7 +164,7 @@ const SETTINGS: Record<string, PropertySpec> = {
   'block.settings.is_view_blocking': { field: field.boolean(), defaultValue: () => true, docs: section('is_view_blocking') },
   // Read by the plugin (BlockSettingsModifiers); the wiki has no section for it, so it links to the page
   'block.settings.is_randomly_ticking': {
-    field: field.boolean({ defaultHint: false }),
+    field: field.boolean({ defaultHint: false, advanced: true }),
     defaultValue: () => true,
     aliases: ['random tick'],
   },

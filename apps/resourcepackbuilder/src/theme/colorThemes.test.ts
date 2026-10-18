@@ -106,6 +106,13 @@ describe.each(COLOR_THEMES.flatMap((theme) => (['light', 'dark'] as const).map((
       }
     });
 
+    it('sets panels apart from the canvas, their borders from the panels and input wells from the panels', () => {
+      // Dark contrast ratios compress small luminance steps, so dark variants need a lower ratio for the same visible step
+      expect(contrast(tokens.surface, tokens.canvas), 'surface on canvas').toBeGreaterThanOrEqual(mode === 'light' ? 1.2 : 1.15);
+      expect(contrast(tokens.line, tokens.surface), 'line on surface').toBeGreaterThanOrEqual(1.4);
+      expect(contrast(tokens['surface-sunken'], tokens.surface), 'sunken in surface').toBeGreaterThanOrEqual(1.1);
+    });
+
     it('keeps the accent readable (at least 4.5:1) on the surface and its contrast colour on the accent', () => {
       expect(contrast(tokens.accent, tokens.surface)).toBeGreaterThanOrEqual(4.5);
       expect(contrast(tokens['accent-contrast'], tokens.accent)).toBeGreaterThanOrEqual(4.5);

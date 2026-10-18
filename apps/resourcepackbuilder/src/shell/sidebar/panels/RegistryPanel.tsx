@@ -7,7 +7,7 @@
 import { useMemo, useState, type ReactNode } from 'react';
 import { Plus, Search } from 'lucide-react';
 import { useTranslations } from 'next-intl';
-import { cn } from 'cn';
+import { cn } from '@resourcepackbuilder/ui/cn';
 import {
   FILES_DRAG_TYPE,
   filesFromDataTransfer,

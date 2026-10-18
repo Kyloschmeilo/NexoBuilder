@@ -30,9 +30,12 @@ export function glyphTagFor(project: Pick<Project, 'namespace' | 'target'>, glyp
   return project.target === 'craftengine' ? craftEngineImageTag(project, glyph) : glyphTag(glyph);
 }
 
-/** The plugin docs page of a media kind's page: Nexo's glyphs/sounds/paintings, CraftEngine's images/sounds/paintings. */
+/**
+ * The plugin docs page of a media kind's page: Nexo's glyphs/sounds/paintings/dialogs, CraftEngine's
+ * images/sounds/paintings. A kind only Nexo reads (dialogs) links to Nexo's page.
+ */
 export function mediaDocsFor(target: PackTargetId, kind: MediaKind): string {
-  return (target === 'craftengine' ? CE_MEDIA_DOCS : NEXO_MEDIA_DOCS)[kind];
+  return (target === 'craftengine' ? CE_MEDIA_DOCS[kind] : undefined) ?? NEXO_MEDIA_DOCS[kind];
 }
 
 /** The plugin docs page of music discs (a sound's jukebox song). */

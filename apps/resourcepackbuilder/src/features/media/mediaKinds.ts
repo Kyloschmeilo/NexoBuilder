@@ -1,20 +1,37 @@
 /**
- * The media kinds (glyphs, sounds, paintings) as registries: one descriptor per kind with its view, icon, message
- * section and how an uploaded file becomes an entry. The Media panel lists their entries; another media kind (with
- * its own data and pages) only needs its own {@link Registry} in {@link MEDIA_REGISTRIES}.
+ * The media kinds as registries. Glyphs, sounds and paintings start from uploaded files (one descriptor per kind with
+ * its view, icon and how a file becomes an entry); a Nexo project's dialogs start from a template. The Media panel
+ * lists their entries; another media kind only needs its own {@link Registry} in {@link MEDIA_REGISTRIES}.
  */
-import { Frame, type LucideIcon, Music, Smile } from 'lucide-react';
+import { Frame, type LucideIcon, MessageSquare, Music, Smile } from 'lucide-react';
+import { useTranslations } from 'next-intl';
 import type { ExportPlan } from '@resourcepackbuilder/export';
-import { glyphKindOf, type MediaEntryByKind, type MediaKind, mediaId, mediaList, type Project } from '@resourcepackbuilder/core/project';
+import {
+  glyphKindOf,
+  type MediaEntryByKind,
+  type MediaKind,
+  mediaId,
+  mediaList,
+  type Project,
+  type UploadMediaKind,
+} from '@resourcepackbuilder/core/project';
 import { pickFiles } from '@resourcepackbuilder/ui';
-import { addGlyph, addPainting, addSound } from '../../commands/media';
+import { addDialog, addGlyph, addPainting, addSound } from '../../commands/media';
 import { useMediaFileReader } from '../../hooks/useFileReaders';
 import { MEDIA_FILES, type MediaFileByKind } from '../../lib/mediaFiles';
 import type { Registry, RegistryEntry, RegistryTable } from '../../shell/sidebar/panels/registry';
 import { levelsByTarget } from '../../shell/sidebar/treeIndex';
 
-/** What the pages and the panel know about one media kind. */
-export interface MediaKindInfo<K extends MediaKind> {
+/** The view of each media kind. */
+export const MEDIA_KIND_VIEWS = {
+  glyph: 'glyphs',
+  sound: 'sounds',
+  painting: 'paintings',
+  dialog: 'dialogs',
+} as const satisfies Record<MediaKind, string>;
+
+/** What the pages and the panel know about one media kind that starts from uploaded files. */
+export interface MediaKindInfo<K extends UploadMediaKind> {
   kind: K;
   view: 'glyphs' | 'sounds' | 'paintings';
   icon: LucideIcon;
@@ -26,7 +43,7 @@ export interface MediaKindInfo<K extends MediaKind> {
   thumb: (entry: MediaEntryByKind[K]) => string | undefined;
 }
 
-export const MEDIA_KIND_INFO: { [K in MediaKind]: MediaKindInfo<K> } = {
+export const MEDIA_KIND_INFO: { [K in UploadMediaKind]: MediaKindInfo<K> } = {
   glyph: {
     kind: 'glyph',
     view: 'glyphs',
@@ -54,21 +71,30 @@ export const MEDIA_KIND_INFO: { [K in MediaKind]: MediaKindInfo<K> } = {
   },
 };
 
-/** The panel entries of a media kind: id, size, thumbnail and the worst issue level of each. */
+/** The fact and image the panel shows for an entry of `kind` (a dialog: its type). */
+function entryFacts<K extends MediaKind>(kind: K, entry: MediaEntryByKind[K]): { detail?: string; thumb?: string } {
+  if (kind === 'dialog') {
+    const { type } = (entry as MediaEntryByKind['dialog']).config;
+    return { detail: typeof type === 'string' ? type : undefined };
+  }
+  const info = MEDIA_KIND_INFO[kind as UploadMediaKind] as MediaKindInfo<UploadMediaKind>;
+  const upload = entry as MediaEntryByKind[UploadMediaKind];
+  return { detail: info.detail(upload), thumb: info.thumb(upload) };
+}
+
+/** The panel entries of a media kind: id, size or type, thumbnail and the worst issue level of each. */
 export function mediaEntries<K extends MediaKind>(kind: K, project: Project, plan: ExportPlan | null): RegistryEntry[] {
-  const info = MEDIA_KIND_INFO[kind] as MediaKindInfo<K>;
   const levels = plan ? levelsByTarget(plan.issues, kind) : null;
   return mediaList(project, kind).map((entry) => ({
     key: entry.id,
     label: mediaId(kind, entry),
-    detail: info.detail(entry),
-    thumb: info.thumb(entry),
+    ...entryFacts(kind, entry),
     level: levels?.get(entry.id) ?? null,
   }));
 }
 
 /** Creates entries of `kind` from files (the picker or a drop); returns the internal id of the first one. */
-export function useAddMediaFiles<K extends MediaKind>(kind: K): (files: File[]) => Promise<string | null> {
+export function useAddMediaFiles<K extends UploadMediaKind>(kind: K): (files: File[]) => Promise<string | null> {
   const readFiles = useMediaFileReader(kind);
   return async (files) => {
     const info = MEDIA_KIND_INFO[kind] as MediaKindInfo<K>;
@@ -81,7 +107,7 @@ export function useAddMediaFiles<K extends MediaKind>(kind: K): (files: File[]) 
   };
 }
 
-function mediaRegistry<K extends MediaKind>(kind: K): Registry {
+function mediaRegistry<K extends UploadMediaKind>(kind: K): Registry {
   const info = MEDIA_KIND_INFO[kind];
   return {
     view: info.view,
@@ -98,9 +124,23 @@ function mediaRegistry<K extends MediaKind>(kind: K): Registry {
   };
 }
 
-/** The registries of the Media panel. */
+/** A Nexo project's dialogs: a new one starts as a notice with one button. */
+const dialogRegistry: Registry = {
+  view: 'dialogs',
+  groups: (project, plan) => [{ id: 'dialogs', entries: mediaEntries('dialog', project, plan) }],
+  useAdd() {
+    const t = useTranslations('media.dialogs');
+    return { add: () => Promise.resolve(addDialog(t('defaultId'))) };
+  },
+};
+
+/** The icon of each media kind. */
+export const MEDIA_KIND_ICONS: Record<MediaKind, LucideIcon> = { glyph: Smile, sound: Music, painting: Frame, dialog: MessageSquare };
+
+/** The registries of the Media panel (the multipack page has no entries and stays a page link). */
 export const MEDIA_REGISTRIES: RegistryTable = {
   glyphs: mediaRegistry('glyph'),
   sounds: mediaRegistry('sound'),
   paintings: mediaRegistry('painting'),
+  dialogs: dialogRegistry,
 };

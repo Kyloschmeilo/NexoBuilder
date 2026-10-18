@@ -1,9 +1,15 @@
 import { cva } from 'class-variance-authority';
-import { cn } from 'cn';
+import { cn } from './lib/cn';
 import { ChevronDown, ChevronRight } from 'lucide-react';
 
 /** Indentation per tree level, in pixels (applied as runtime padding of the rows). */
 export const TREE_INDENT_PX = 16;
+/** Width of the {@link TreeChevron} column, in pixels (`w-4`). */
+export const TREE_CHEVRON_PX = 16;
+/** Gap between the parts of a row, in pixels (`gap-1.5` of {@link treeRowSlots}.button). */
+export const TREE_GAP_PX = 6;
+/** Size of a row's icon, in pixels (`size-4` of {@link treeRowSlots}.icon). */
+export const TREE_ICON_PX = 16;
 
 /**
  * A row of a tree (sidebar or a checkable selection list); `group/row` and `data-selected` style its parts.

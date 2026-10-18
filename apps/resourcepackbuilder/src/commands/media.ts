@@ -1,6 +1,8 @@
-/** Glyphs, sounds and paintings, and the items that use sounds and paintings. */
+/** Glyphs, sounds, paintings and dialogs, and the items that use sounds and paintings. */
 import {
   addMediaEntry,
+  type ConfigObject,
+  createDialog,
   createGlyph,
   createPainting,
   createSound,
@@ -53,6 +55,7 @@ export const MEDIA_COMMANDS = {
   glyph: mediaCommands('glyph'),
   sound: mediaCommands('sound'),
   painting: mediaCommands('painting'),
+  dialog: mediaCommands('dialog'),
 };
 
 /* ------------------------------------------------------------------ glyphs */
@@ -107,6 +110,20 @@ export function addPainting(name: string, file: MediaFile | null): string | null
 }
 
 export const updatePainting = MEDIA_COMMANDS.painting.update;
+
+/* ------------------------------------------------------------------ dialogs */
+
+/** Adds a dialog (a notice with one button) whose ID is derived from `name`. Returns its internal ID. */
+export function addDialog(name: string): string | null {
+  return MEDIA_COMMANDS.dialog.add(name, createDialog);
+}
+
+export const updateDialog = MEDIA_COMMANDS.dialog.update;
+
+/** Replaces the content of a dialog's file; quick edits of the same dialog form one undo step. */
+export function setDialogConfig(id: string, config: ConfigObject): void {
+  updateDialog(id, (dialog) => (dialog.config = config), 'config');
+}
 
 /* ------------------------------------------------------------------ items for media */
 

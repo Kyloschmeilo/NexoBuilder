@@ -4,7 +4,7 @@
  */
 import { Autocomplete } from '@base-ui/react';
 import type { KeyboardEvent } from 'react';
-import { cn } from 'cn';
+import { cn } from './lib/cn';
 import { ComboboxContent, ComboboxInput, ComboboxList } from './components/combobox';
 
 /** Most suggestions shown at once; typing narrows them down. */

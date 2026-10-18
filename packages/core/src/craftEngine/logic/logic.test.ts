@@ -106,6 +106,17 @@ describe('the logic catalogs', () => {
     });
   }
 
+  it('sorts every block behavior into a catalog category with a name', () => {
+    expect(CE_LOGIC.blockBehaviors.filter((t) => !t.category).map((t) => t.type)).toEqual([]);
+    expect(new Set(CE_LOGIC.blockBehaviors.map((t) => t.category))).toEqual(
+      new Set(['shapes', 'redstone', 'blockEntities', 'physics', 'placement', 'plants']),
+    );
+    const slab = CE_LOGIC.blockBehaviors.find((t) => t.type === 'slab_block');
+    expect(slab?.categoryLabel).toBe('logic.categories.blockBehaviors.shapes');
+    // The second name of drop_exp_block keeps its category
+    expect(CE_LOGIC.blockBehaviors.find((t) => t.type === 'drop_experience_block')?.category).toBe('physics');
+  });
+
   it('lists the triggers each object kind fires', () => {
     expect(triggersFor('furniture').map((t) => t.type)).toEqual(['right_click', 'left_click', 'place', 'furniture_break']);
     expect(triggersFor('block').map((t) => t.type)).toEqual(['right_click', 'left_click', 'block_break', 'place', 'step']);

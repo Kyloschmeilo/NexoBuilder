@@ -1,6 +1,6 @@
 /** What the sidebar derives from the project and its plan once per change, instead of once per row. */
-import type { Issue, IssueTarget } from '@resourcepackbuilder/utils';
-import { itemLabel, type Project } from '@resourcepackbuilder/core/project';
+import { hasPath, isPlainObject, type Issue, type IssueTarget } from '@resourcepackbuilder/utils';
+import { isBlockItem, type Item, itemLabel, type PackTargetId, type Project } from '@resourcepackbuilder/core/project';
 
 /** Issue levels the sidebar marks; hints (`info`) are not shown there. */
 export type MarkedLevel = 'error' | 'warning';
@@ -10,8 +10,43 @@ export interface SidebarTree {
   project: Project;
   itemCounts: Map<string, number>;
   itemLevels: Map<string, MarkedLevel>;
-  /** While searching: the matching items and the folders holding them; null otherwise */
+  /** While searching or filtering: the matching items and the folders holding them; null otherwise */
   search: { items: Set<string>; folders: Set<string> } | null;
+}
+
+/** What an item places in the world: nothing (a plain item), a custom block or furniture. */
+export type ItemKind = 'item' | 'block' | 'furniture';
+
+/**
+ * The kind of `item`. A block wins over furniture, as in the CraftEngine export. Nexo: the custom_block or furniture
+ * mechanic; CraftEngine: a block or furniture definition (an object) in `block` or `furniture`.
+ */
+export function itemKindOf(item: Item, target: PackTargetId): ItemKind {
+  if (isBlockItem(item, target)) return 'block';
+  const isFurniture = target === 'craftengine' ? isPlainObject(item.config.furniture) : hasPath(item.config, ['Mechanics', 'furniture']);
+  return isFurniture ? 'furniture' : 'item';
+}
+
+/** The filter chips of the items panel: everything, one kind, or the items with errors or warnings. */
+export const TREE_FILTERS = ['all', 'items', 'blocks', 'furniture', 'issues'] as const;
+export type TreeFilter = (typeof TREE_FILTERS)[number];
+
+const FILTER_KINDS: Partial<Record<TreeFilter, ItemKind>> = { items: 'item', blocks: 'block', furniture: 'furniture' };
+
+/**
+ * Ids of the items matching the search `query` (see {@link searchItems}) and the chip `filter`; null while neither
+ * narrows anything. `levels` are the marked issue levels by item id, for the "with issues" chip.
+ */
+export function filterItems(project: Project, query: string, filter: TreeFilter, levels: Map<string, MarkedLevel>): Set<string> | null {
+  const hits = searchItems(project, query);
+  if (filter === 'all') return hits;
+  const kind = FILTER_KINDS[filter];
+  const matches = (item: Item) => (kind ? itemKindOf(item, project.target) === kind : levels.has(item.id));
+  const result = new Set<string>();
+  for (const item of Object.values(project.items)) {
+    if ((!hits || hits.has(item.id)) && matches(item)) result.add(item.id);
+  }
+  return result;
 }
 
 /** Number of items in each folder, subfolders included. */

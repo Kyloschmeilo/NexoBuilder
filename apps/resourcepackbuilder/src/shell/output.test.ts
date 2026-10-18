@@ -1,6 +1,8 @@
 /** The output providers of the dock: the file and checks each page kind shows, and pages that write no file. */
 import { describe, expect, it } from 'vitest';
 import {
+  addMediaEntry,
+  createDialog,
   createFolder,
   createItem,
   createProject,
@@ -93,6 +95,29 @@ describe('outputFor', () => {
     expect(lang?.text).toContain('Hallo');
     const server = outputFor(project, plan, { kind: 'view', view: 'translations', entry: 'server/en' });
     expect(server?.file).toMatch(/configuration\/translations\.yml$/);
+  });
+
+  it('shows the dialog files of a Nexo project and nothing for CraftEngine', () => {
+    const { project } = sampleProject('nexo');
+    addMediaEntry(project, 'dialog', 'Welcome', createDialog);
+    addMediaEntry(project, 'dialog', 'Rules', createDialog);
+    project.dialogs[1].config = { type: 'MULTI' };
+    const output = outputFor(project, planExport(project, { includeBinaries: false }), { kind: 'view', view: 'dialogs' });
+    expect(output?.file).toBe('dialogs/');
+    expect(output?.text).toContain(['# dialogs/welcome.yml', 'type: NOTICE'].join('\n'));
+    expect(output?.text).toContain(['# dialogs/rules.yml', 'type: MULTI'].join('\n'));
+    expect(output?.issues.map((issue) => issue.code)).toEqual(['dialog.actionsMissing']);
+    const ce = sampleProject('craftengine').project;
+    expect(outputFor(ce, planExport(ce, { includeBinaries: false }), { kind: 'view', view: 'dialogs' })).toBeNull();
+  });
+
+  it('shows multipack.yml of a Nexo project with its checks', () => {
+    const { project } = sampleProject('nexo');
+    project.settings.multipack = { templates: { music: { conflicts_with: 'loud' } } };
+    const output = outputFor(project, planExport(project, { includeBinaries: false }), { kind: 'view', view: 'multipack' });
+    expect(output?.file).toBe('multipack.yml');
+    expect(output?.text).toContain('conflicts_with: loud');
+    expect(output?.issues.map((issue) => issue.code)).toEqual(['multipack.unknownTemplate']);
   });
 
   it('has a provider for every registry view', () => {

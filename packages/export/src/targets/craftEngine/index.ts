@@ -66,7 +66,8 @@ export const CRAFT_ENGINE_TARGET: PackTarget<CraftEngineWrittenModels> = {
     packLocation: (project) => craftEnginePackLocation(project),
     installGuide: craftEngineInstallGuide,
     reloadCommand: CRAFT_ENGINE_RELOAD_COMMAND,
-    mediaFile: (project, kind) => craftEngineMediaFile(project, CRAFT_ENGINE_MEDIA_FILES[kind]),
+    // CraftEngine has no dialogs
+    mediaFile: (project, kind) => (kind === 'dialog' ? null : craftEngineMediaFile(project, CRAFT_ENGINE_MEDIA_FILES[kind])),
   },
 };
 

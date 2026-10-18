@@ -1,5 +1,5 @@
 /**
- * The page of one glyph, sound or painting: the header (image tile, id, facts, usage with a copy button, actions and
+ * The page of one glyph, sound, painting or dialog: the header (image tile, id, facts, usage with a copy button, actions and
  * the `⋯` menu with Delete), the editor's sections, and the entry's checks at the end.
  */
 import type { ReactNode } from 'react';
@@ -11,6 +11,7 @@ import type { Issue } from '@resourcepackbuilder/utils';
 import { CopyButton, DocsLink, type MenuEntry, Page, PageHeader, Section, Thumb } from '@resourcepackbuilder/ui';
 import { IssueList } from '../../components/IssueList';
 import { useOpenProject } from '../../store/project';
+import { MEDIA_KIND_VIEWS } from './mediaKinds';
 import { useMediaActions } from './useMediaActions';
 
 interface MediaEntryFrameProps<K extends MediaKind> {
@@ -93,7 +94,7 @@ export function MediaEntryFrame<K extends MediaKind>({
 }
 
 /** The message section of each media kind. */
-const SECTIONS = { glyph: 'glyphs', sound: 'sounds', painting: 'paintings' } as const satisfies Record<MediaKind, string>;
+const SECTIONS = MEDIA_KIND_VIEWS;
 
 type MediaSection = (typeof SECTIONS)[MediaKind];
 

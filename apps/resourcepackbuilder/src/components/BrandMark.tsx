@@ -1,4 +1,4 @@
-import { cn } from 'cn';
+import { cn } from '@resourcepackbuilder/ui/cn';
 
 const SIZES = {
   sm: 'size-7 text-lg',

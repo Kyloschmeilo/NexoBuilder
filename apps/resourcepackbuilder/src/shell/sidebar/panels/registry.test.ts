@@ -1,6 +1,6 @@
 /** The registry model of the Media and Logic panels: search, counts, issue levels, the media entries and the texts. */
 import { describe, expect, it } from 'vitest';
-import { createGlyph, createProject, createSound, type Project } from '@resourcepackbuilder/core/project';
+import { addMediaEntry, createDialog, createGlyph, createProject, createSound, type Project } from '@resourcepackbuilder/core/project';
 import { MESSAGES_BY_LOCALE } from '@resourcepackbuilder/i18n';
 import { planExport } from '@resourcepackbuilder/export';
 import { CRAFT_ENGINE_REGISTRIES } from '../../../features/craftEngine/registries';
@@ -57,8 +57,16 @@ describe('media registries', () => {
     return project;
   }
 
-  it('cover every view of the Media panel', () => {
-    for (const view of MEDIA_VIEW_NAMES) expect(MEDIA_REGISTRIES[view]?.view).toBe(view);
+  it('cover every view of the Media panel that lists entries (multipack is one page)', () => {
+    for (const view of MEDIA_VIEW_NAMES.filter((name) => name !== 'multipack')) expect(MEDIA_REGISTRIES[view]?.view).toBe(view);
+    expect(MEDIA_REGISTRIES.multipack).toBeUndefined();
+  });
+
+  it('list dialogs with their type', () => {
+    const project = createProject('Demo', 'demo', undefined, 'nexo');
+    const id = addMediaEntry(project, 'dialog', 'Welcome', createDialog).id;
+    project.dialogs[0]!.config = { type: 'MULTI' };
+    expect(mediaEntries('dialog', project, null)).toEqual([{ key: id, label: 'welcome', detail: 'MULTI', level: null }]);
   });
 
   it('list entries by their internal id with the media id, size and thumbnail', () => {
@@ -83,7 +91,7 @@ describe('registry texts', () => {
       registry!.groups(project, null).map((group) => group.id),
     );
     for (const id of ids) expect(registryGroupId(id), id).toBe(id);
-    expect(registryGroupId('dialogs')).toBeNull();
+    expect(registryGroupId('unknown')).toBeNull();
   });
 
   for (const [locale, messages] of Object.entries(MESSAGES_BY_LOCALE)) {
