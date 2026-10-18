@@ -285,5 +285,18 @@
     "count": "{count, plural, one {# atlas} other {# atlases}}",
     "hint": "Most packs need no atlas: CraftEngine repairs the common block and item atlas cases itself. Add one to put textures into a vanilla atlas or build a custom sprite atlas.",
     "docs": "Atlases in the CraftEngine wiki"
+  },
+  "pack": {
+    "title": "Pack",
+    "docs": "Pack structure in the CraftEngine wiki",
+    "hint": "The namespace and description come from the project settings; set the rest of pack.yml here.",
+    "packYml": {
+      "title": "pack.yml",
+      "hint": "Author and version show in CraftEngine. Subpacks are folders of the pack that load as packs of their own."
+    },
+    "factories": {
+      "title": "Config factories",
+      "hint": "A config factory writes its blueprint once per instance, each time with that instance's arguments: e.g. a sofa item and recipe for every wool color."
+    }
   }
 }

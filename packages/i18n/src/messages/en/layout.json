@@ -104,6 +104,10 @@
       "atlases": {
         "label": "Atlases",
         "hint": "Atlases: which textures go into a texture atlas"
+      },
+      "pack": {
+        "label": "Pack",
+        "hint": "Pack: pack.yml and config factories"
       }
     },
     "testServer": {

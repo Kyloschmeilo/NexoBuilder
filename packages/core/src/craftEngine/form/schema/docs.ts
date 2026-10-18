@@ -35,6 +35,9 @@ export const CE_DOCS = {
   categories: `${WIKI}/configuration/category`,
   worldgen: `${WIKI}/configuration/worldgen_feature`,
   atlases: `${WIKI}/configuration/atlas`,
+  pack: `${WIKI}/getting_start/project_structure`,
+  configFactories: `${WIKI}/reference/template#config-factory`,
+  scripts: `${WIKI}/reference/script`,
 };
 
 /** The wiki page of a block behavior (`configuration/block/behaviors/<type>`). */

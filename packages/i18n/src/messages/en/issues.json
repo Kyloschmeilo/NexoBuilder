@@ -304,7 +304,10 @@
     "placedFeatureFeatureMissing": "The placed feature has no feature to place, so CraftEngine rejects it.",
     "placedFeatureUnknown": "There is no configured feature “{feature}” in this project. Unless another pack defines it, CraftEngine rejects the placed feature.",
     "placedFeatureBiomeWithoutModifier": "The biome filter only works with the minecraft:biome modifier in the placement. Add it, or the feature generates in every biome.",
-    "atlasSourcesMissing": "The atlas has no sources, so it adds nothing."
+    "atlasSourcesMissing": "The atlas has no sources, so it adds nothing.",
+    "configFactoryIdInvalid": "The config factory id “{id}” may only contain letters, digits and _ . -, so it is left out.",
+    "configFactoryBlueprintMissing": "The config factory has no blueprint, so it is left out.",
+    "configFactoryInstancesMissing": "The config factory has no instances, so it is left out."
   },
   "issueList": {
     "openItem": "Go to item",

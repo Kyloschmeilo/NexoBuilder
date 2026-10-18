@@ -6,6 +6,7 @@ export * from './blockBehaviors';
 export * from './blockRenderer';
 export * from './blockStates';
 export * from './categories';
+export * from './configFactories';
 export * from './defaultTemplates';
 export * from './events';
 export * from './form/options';

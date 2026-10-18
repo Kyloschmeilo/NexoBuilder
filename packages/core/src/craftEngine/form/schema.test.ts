@@ -10,8 +10,10 @@ import { loadCatalogue, type MessageTree } from '@resourcepackbuilder/test-utils
 import { CE_ATLAS_LIST } from '../atlas';
 import { CE_ATTRIBUTE_LISTS } from '../attributes';
 import { CE_CATEGORY_LIST } from '../categories';
+import { CE_CONFIG_FACTORY_LIST } from '../configFactories';
 import { CE_LANG_MAP, CE_TRANSLATION_MAP } from '../lang';
 import { CE_LOGIC, logicMessageKeys } from '../logic';
+import { CE_PACK_FIELD } from '../pack';
 import { CE_LOOT_SOURCE_LIST } from '../loot';
 import { CE_GLOBAL_VARIABLE_MAP, CE_TEMPLATE_LIST } from '../templates';
 import { CE_CONFIGURED_FEATURE_LIST, CE_PLACED_FEATURE_LIST } from '../worldgen';
@@ -99,6 +101,8 @@ describe('ceSchema message keys', () => {
     ...fieldMessageKeys(CE_CONFIGURED_FEATURE_LIST),
     ...fieldMessageKeys(CE_PLACED_FEATURE_LIST),
     ...fieldMessageKeys(CE_ATLAS_LIST),
+    ...fieldMessageKeys(CE_PACK_FIELD),
+    ...fieldMessageKeys(CE_CONFIG_FACTORY_LIST),
   ]);
 
   it('references only keys that are well-formed', () => {

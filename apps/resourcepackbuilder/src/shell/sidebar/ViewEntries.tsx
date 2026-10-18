@@ -1,10 +1,24 @@
 /**
  * The entries below the tree that open project-wide views: glyphs, sounds, paintings, a CraftEngine project's loot
- * sources, templates, global variables, attributes, translations, categories, worldgen features and atlases, and the
- * test server.
+ * sources, templates, global variables, attributes, translations, categories, worldgen features, atlases and pack
+ * settings, and the test server.
  */
 import type { ReactNode } from 'react';
-import { Braces, Dumbbell, Frame, Gem, Images, Languages, LayoutGrid, LayoutTemplate, Music, Server, Smile, Trees } from 'lucide-react';
+import {
+  Braces,
+  Dumbbell,
+  Frame,
+  Gem,
+  Images,
+  Languages,
+  LayoutGrid,
+  LayoutTemplate,
+  Music,
+  Package,
+  Server,
+  Smile,
+  Trees,
+} from 'lucide-react';
 import { useTranslations } from 'next-intl';
 import { cn } from 'cn';
 import { projectAttributeData } from '@resourcepackbuilder/core/craftEngine';
@@ -76,6 +90,7 @@ const CRAFT_ENGINE_VIEWS = [
     count: (p: Project) => (p.craftEngine?.configuredFeatures?.length ?? 0) + (p.craftEngine?.placedFeatures?.length ?? 0),
   },
   { view: 'atlases', icon: <Images className="size-4" />, count: (p: Project) => p.craftEngine?.atlases?.length ?? 0 },
+  { view: 'pack', icon: <Package className="size-4" />, count: (p: Project) => p.craftEngine?.configFactories?.length ?? 0 },
 ] as const satisfies ReadonlyArray<{ view: ViewName; icon: ReactNode; count: (project: Project) => number }>;
 
 /** Project-wide lists below the tree, each with its size and the worst issue level of its entries (the CraftEngine lists only in CraftEngine projects). */

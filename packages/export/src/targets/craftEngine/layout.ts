@@ -7,7 +7,8 @@
  *   resources/<pack>/configuration/lang/<locale>.yml (item and block names, the project's own lang keys)
  *   resources/<pack>/configuration/{loot_sources,templates,global_variables}.yml (the project-wide configuration)
  *   resources/<pack>/configuration/attributes.yml (the attribute system)
- *   resources/<pack>/configuration/{translations,worldgen,atlases}.yml (server translations, worldgen features, atlases)
+ *   resources/<pack>/configuration/{translations,worldgen,atlases,config_factories}.yml (server translations,
+ *     worldgen features, atlases, config factories)
  *   resources/<pack>/resourcepack/ (the resource pack: pack.mcmeta, pack.png, assets/…)
  * The test server's CraftEngine adapter accepts these paths: pack.yml, configuration/… and resourcepack/….
  */

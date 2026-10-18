@@ -285,5 +285,18 @@
     "count": "{count, plural, one {# Atlas} other {# Atlanten}}",
     "hint": "Die meisten Packs brauchen keinen Atlas: CraftEngine repariert die üblichen Fälle der Block- und Item-Atlanten selbst. Füge einen hinzu, um Texturen in einen Vanilla-Atlas zu bringen oder einen eigenen Sprite-Atlas zu bauen.",
     "docs": "Atlanten im CraftEngine-Wiki"
+  },
+  "pack": {
+    "title": "Pack",
+    "docs": "Pack-Aufbau im CraftEngine-Wiki",
+    "hint": "Namespace und Beschreibung kommen aus den Projekteinstellungen; den Rest von pack.yml legst du hier fest.",
+    "packYml": {
+      "title": "pack.yml",
+      "hint": "Autor und Version zeigt CraftEngine an. Subpacks sind Ordner des Packs, die als eigene Packs geladen werden."
+    },
+    "factories": {
+      "title": "Config-Factories",
+      "hint": "Eine Config-Factory schreibt ihren Blueprint einmal pro Instanz, jedes Mal mit deren Argumenten: z. B. ein Sofa-Item mit Rezept für jede Wollfarbe."
+    }
   }
 }

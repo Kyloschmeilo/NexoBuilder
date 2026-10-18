@@ -153,6 +153,49 @@
             "help": "Woher die Sprites des Atlas kommen."
           }
         }
+      },
+      "pack": {
+        "label": "pack",
+        "fields": {
+          "author": {
+            "label": "author",
+            "placeholder": "ResourcepackBuilder"
+          },
+          "version": {
+            "label": "version",
+            "placeholder": "1.0"
+          },
+          "enable": {
+            "label": "enable",
+            "help": "Aus: CraftEngine überspringt das ganze Pack."
+          },
+          "subpacks": {
+            "label": "subpacks",
+            "help": "Ordner des Packs, die bei true als eigene Packs geladen werden. Ein Schlüssel wie $$>=1.21.4 schaltet eine Gruppe nur für diese Serverversionen ein.",
+            "placeholder": "my_subpack: true"
+          }
+        }
+      },
+      "configFactories": {
+        "label": "config_factories",
+        "itemLabel": "Config-Factory",
+        "fields": {
+          "id": {
+            "label": "id",
+            "help": "Benennt den Abschnitt config_factory#id; Buchstaben, Ziffern und _ . -.",
+            "placeholder": "z. B. sofas"
+          },
+          "blueprint": {
+            "label": "blueprint",
+            "help": "Config-Abschnitte (items, recipes, …) mit Platzhaltern $'{'argument'}', einmal pro Instanz gelesen.",
+            "placeholder": "items: …"
+          },
+          "instances": {
+            "label": "instances",
+            "help": "Eine YAML-Liste von Argument-Maps, eine pro Kopie, z. B. - color: white. Ein Argument kann ein typisiertes Template-Argument sein.",
+            "placeholder": "- color: white"
+          }
+        }
       }
     }
   },
@@ -315,6 +358,20 @@
       "field": {
         "label": "Kategorien",
         "placeholder": "z. B. namespace:swords"
+      }
+    },
+    "overrides": {
+      "label": "Overrides",
+      "description": "Schlüssel, die die Schlüssel des Templates als Ganzes ersetzen (ohne Zusammenführen), z. B. eine Liste, die das Template setzt.",
+      "field": {
+        "label": "YAML"
+      }
+    },
+    "merges": {
+      "label": "Merges",
+      "description": "Schlüssel, die tief in das Ergebnis des Templates eingefügt werden, nachdem seine Argumente eingesetzt sind.",
+      "field": {
+        "label": "YAML"
       }
     }
   }

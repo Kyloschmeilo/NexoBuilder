@@ -277,3 +277,62 @@ describe('CraftEngine section entry ids', () => {
     );
   });
 });
+
+describe('CraftEngine pack.yml', () => {
+  it('writes the project author, version, enable and subpacks', () => {
+    const { project } = ceProject({
+      pack: { author: 'Kylo', version: '2.1', enable: false, subpacks: { '$$>=1.21.4': { modern: true }, legacy: false } },
+    });
+    expect(pluginText(planExport(project), `${PACK}/pack.yml`)).toBe(
+      [
+        '# Created with ResourcepackBuilder – pack of project "Welt"',
+        'namespace: welt',
+        'author: Kylo',
+        'version: "2.1"',
+        'description: Welt – made with ResourcepackBuilder',
+        'enable: false',
+        'subpacks:',
+        '  $$>=1.21.4:',
+        '    modern: true',
+        '  legacy: false',
+        '',
+      ].join('\n'),
+    );
+  });
+
+  it('keeps the defaults without project values', () => {
+    const { project } = ceProject();
+    expect(pluginText(planExport(project), `${PACK}/pack.yml`)).toContain('author: ResourcepackBuilder\nversion: "1.0"\n');
+  });
+});
+
+describe('CraftEngine config factories', () => {
+  it('writes each factory as its own config_factory section', () => {
+    const { project } = ceProject({
+      configFactories: [
+        {
+          id: 'sofa',
+          blueprint: { items: { 'welt:${color}_sofa': { material: 'paper' } } },
+          instances: [{ color: 'white' }, { color: 'red' }],
+        },
+        { id: 'empty', blueprint: { items: {} } },
+      ],
+    });
+    const plan = planExport(project);
+    expect(pluginText(plan, `${CONFIG}/config_factories.yml`)).toBe(
+      [
+        '# Created with ResourcepackBuilder – config factories of "Welt"',
+        'config_factory#sofa:',
+        '  blueprint:',
+        '    items:',
+        '      welt:${color}_sofa:',
+        '        material: paper',
+        '  instances:',
+        '    - color: white',
+        '    - color: red',
+        '',
+      ].join('\n'),
+    );
+    expect(codes(project)).toContain('ce.configFactoryInstancesMissing');
+  });
+});

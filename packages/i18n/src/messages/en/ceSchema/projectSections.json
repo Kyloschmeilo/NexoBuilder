@@ -153,6 +153,49 @@
             "help": "Where the atlas's sprites come from."
           }
         }
+      },
+      "pack": {
+        "label": "pack",
+        "fields": {
+          "author": {
+            "label": "author",
+            "placeholder": "ResourcepackBuilder"
+          },
+          "version": {
+            "label": "version",
+            "placeholder": "1.0"
+          },
+          "enable": {
+            "label": "enable",
+            "help": "Off: CraftEngine skips the whole pack."
+          },
+          "subpacks": {
+            "label": "subpacks",
+            "help": "Folders of the pack loaded as packs of their own when true. A key like $$>=1.21.4 turns a group on only for those server versions.",
+            "placeholder": "my_subpack: true"
+          }
+        }
+      },
+      "configFactories": {
+        "label": "config_factories",
+        "itemLabel": "Config factory",
+        "fields": {
+          "id": {
+            "label": "id",
+            "help": "Names the section config_factory#id; letters, digits and _ . -.",
+            "placeholder": "e.g. sofas"
+          },
+          "blueprint": {
+            "label": "blueprint",
+            "help": "Config sections (items, recipes, …) with $'{'argument'}' placeholders, read once per instance.",
+            "placeholder": "items: …"
+          },
+          "instances": {
+            "label": "instances",
+            "help": "A YAML list of argument maps, one per copy, e.g. - color: white. An argument can be a typed template argument.",
+            "placeholder": "- color: white"
+          }
+        }
       }
     }
   },
@@ -315,6 +358,20 @@
       "field": {
         "label": "Categories",
         "placeholder": "e.g. namespace:swords"
+      }
+    },
+    "overrides": {
+      "label": "Overrides",
+      "description": "Keys that replace the template's keys as a whole (no merging), e.g. a list the template sets.",
+      "field": {
+        "label": "YAML"
+      }
+    },
+    "merges": {
+      "label": "Merges",
+      "description": "Keys deep-merged into the template's result, after its arguments are filled in.",
+      "field": {
+        "label": "YAML"
       }
     }
   }

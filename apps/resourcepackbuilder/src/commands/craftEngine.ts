@@ -86,10 +86,16 @@ export function setServerTranslations(value: unknown): void {
 }
 
 /** The parts of the CraftEngine data that are plain lists of entries */
-export type CraftEngineListKey = 'categories' | 'configuredFeatures' | 'placedFeatures' | 'atlases';
+export type CraftEngineListKey = 'categories' | 'configuredFeatures' | 'placedFeatures' | 'atlases' | 'configFactories';
 
-/** Replaces one list of entries (categories, worldgen features, atlases); without any, the key is removed. */
+/** Replaces one list of entries (categories, worldgen features, atlases, config factories); without any, the key is removed. */
 export function setCraftEngineList(key: CraftEngineListKey, value: unknown): void {
   const entries = objectList(value);
   setCraftEngineData(key, entries.length > 0 ? entries : undefined);
+}
+
+/** Replaces the pack.yml values (author, version, enable, subpacks); without any, the key is removed. */
+export function setCraftEnginePack(value: unknown): void {
+  const pack = toConfigValue(value);
+  setCraftEngineData('pack', isPlainObject(pack) && Object.keys(pack).length > 0 ? (pack as ConfigObject) : undefined);
 }

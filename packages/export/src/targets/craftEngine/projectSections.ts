@@ -1,16 +1,21 @@
 /**
  * The project-level sections of a CraftEngine pack that have no item behind them: the server translations
- * (configuration/translations.yml), the worldgen features (worldgen.yml) and the atlases (atlases.yml), and the checks
- * of these sections, of the project's own lang keys and of its categories.
+ * (configuration/translations.yml), the worldgen features (worldgen.yml), the atlases (atlases.yml) and the config
+ * factories (config_factories.yml), and the checks of these sections, of the project's own lang keys and of its
+ * categories.
  */
-import { createIssue, type Issue, issueCode, issueReporter } from '@resourcepackbuilder/utils';
+import { createIssue, type Issue, isPlainObject, issueCode, issueReporter } from '@resourcepackbuilder/utils';
 import {
   CE_ATLAS_LIST,
   CE_CATEGORY_LIST,
+  CE_CONFIG_FACTORY_ID,
+  CE_CONFIG_FACTORY_LIST,
   CE_CONFIGURED_FEATURE_LIST,
   CE_ENTRY_ID,
   CE_PLACED_FEATURE_LIST,
+  configFactoryId,
   craftEngineAtlases,
+  craftEngineConfigFactories,
   craftEngineServerTranslations,
   craftEngineWorldgen,
   hasBiomeModifier,
@@ -18,6 +23,7 @@ import {
   keyedEntries,
   projectAtlases,
   projectCategories,
+  projectConfigFactories,
   projectConfiguredFeatures,
   projectEntryId,
   projectEntryKey,
@@ -28,6 +34,7 @@ import {
 } from '@resourcepackbuilder/core/craftEngine';
 import { checkFieldValue, type ObjectListField } from '@resourcepackbuilder/core/form';
 import { type ConfigObject, listEntryFrame, type Project, projectEntryFrame } from '@resourcepackbuilder/core/project';
+import { toYaml, yamlHeader } from '@resourcepackbuilder/core/yaml';
 import { craftEngineConfigFile } from './layout';
 
 /** The config files of the project-level sections, by their path relative to plugins/CraftEngine. */
@@ -44,6 +51,10 @@ export function planProjectSections(project: Project): Map<string, string> {
   const atlases = craftEngineAtlases(project);
   if (Object.keys(atlases).length > 0) {
     out.set(craftEngineConfigFile(project, 'atlases'), sectionsToYaml({ atlases }, `atlases of "${project.name}"`));
+  }
+  const factories = craftEngineConfigFactories(project);
+  if (Object.keys(factories).length > 0) {
+    out.set(craftEngineConfigFile(project, 'config_factories'), yamlHeader(`config factories of "${project.name}"`) + toYaml(factories));
   }
   return out;
 }
@@ -63,7 +74,35 @@ export function projectSectionIssues(project: Project): Issue[] {
     ...entryIssues(project, 'atlas', projectAtlases(project), CE_ATLAS_LIST, (entry, report) => {
       if (!Array.isArray(entry.sources) || entry.sources.length === 0) report('warning', 'ce.atlasSourcesMissing');
     }),
+    ...configFactoryIssues(project),
   ];
+}
+
+/**
+ * A config factory needs an id that can name its section (`config_factory#<id>`, unique in the project), a blueprint
+ * of config sections and at least one instance; otherwise it is left out.
+ */
+function configFactoryIssues(project: Project): Issue[] {
+  const issues: Issue[] = [];
+  const ids = new Set<string>();
+  projectConfigFactories(project).forEach((entry, i) => {
+    const id = configFactoryId(entry);
+    const report = issueReporter(issues, { context: [id ? projectEntryFrame('configFactory', id) : listEntryFrame(i + 1)] });
+    if (!id) report('error', 'ce.sectionEntryIdMissing');
+    else if (!CE_CONFIG_FACTORY_ID.test(id)) report('error', 'ce.configFactoryIdInvalid', { id });
+    else {
+      if (ids.has(id)) report('error', 'ce.sectionEntryIdDuplicate', { id });
+      ids.add(id);
+    }
+    if (!isPlainObject(entry.blueprint) || Object.keys(entry.blueprint).length === 0) report('error', 'ce.configFactoryBlueprintMissing');
+    if (!Array.isArray(entry.instances) || !entry.instances.some((instance) => isPlainObject(instance))) {
+      report('error', 'ce.configFactoryInstancesMissing');
+    }
+    for (const found of checkFieldValue([entry], CE_CONFIG_FACTORY_LIST)) {
+      report('warning', issueCode(found.code), found.args, found.context.slice(1));
+    }
+  });
+  return issues;
 }
 
 type Report = ReturnType<typeof issueReporter>;

@@ -17,6 +17,7 @@ export type ViewName =
   | 'categories'
   | 'worldgen'
   | 'atlases'
+  | 'pack'
   | 'testServer';
 
 export type Selection = { kind: 'item'; id: string } | { kind: 'folder'; id: string } | { kind: 'view'; view: ViewName } | null;

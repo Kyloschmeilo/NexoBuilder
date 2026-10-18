@@ -104,6 +104,10 @@
       "atlases": {
         "label": "Atlanten",
         "hint": "Atlanten: welche Texturen in einen Textur-Atlas kommen"
+      },
+      "pack": {
+        "label": "Pack",
+        "hint": "Pack: pack.yml und Config-Factories"
       }
     },
     "testServer": {

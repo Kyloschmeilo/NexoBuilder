@@ -304,7 +304,10 @@
     "placedFeatureFeatureMissing": "Das platzierte Feature hat kein Feature zum Platzieren, deshalb lehnt CraftEngine es ab.",
     "placedFeatureUnknown": "Es gibt kein konfiguriertes Feature „{feature}“ in diesem Projekt. Wenn kein anderes Pack es definiert, lehnt CraftEngine das platzierte Feature ab.",
     "placedFeatureBiomeWithoutModifier": "Der Biom-Filter wirkt nur mit dem Modifier minecraft:biome im Placement. Füge ihn hinzu, sonst entsteht das Feature in jedem Biom.",
-    "atlasSourcesMissing": "Der Atlas hat keine Quellen und fügt deshalb nichts hinzu."
+    "atlasSourcesMissing": "Der Atlas hat keine Quellen und fügt deshalb nichts hinzu.",
+    "configFactoryIdInvalid": "Die ID „{id}“ der Config-Factory darf nur Buchstaben, Ziffern und _ . - enthalten, deshalb wird sie weggelassen.",
+    "configFactoryBlueprintMissing": "Die Config-Factory hat keinen Blueprint und wird deshalb weggelassen.",
+    "configFactoryInstancesMissing": "Die Config-Factory hat keine Instanzen und wird deshalb weggelassen."
   },
   "issueList": {
     "openItem": "Zum Item",

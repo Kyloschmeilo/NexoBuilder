@@ -95,6 +95,10 @@ export interface CraftEngineProjectData {
   placedFeatures?: ConfigObject[];
   /** Texture atlases (`atlases`), each with its `id` and `sources` (core/craftEngine/atlas.ts) */
   atlases?: ConfigObject[];
+  /** The pack.yml values the project sets: `author`, `version`, `enable`, `subpacks` (core/craftEngine/pack.ts) */
+  pack?: ConfigObject;
+  /** Config factories (`config_factory#<id>`), each with its `id`, `blueprint` and `instances` */
+  configFactories?: ConfigObject[];
 }
 
 /**

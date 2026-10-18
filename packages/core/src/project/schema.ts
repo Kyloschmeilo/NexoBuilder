@@ -305,6 +305,8 @@ export const CraftEngineProjectSchema = z
     configuredFeatures: optional(lenientList(ConfigObjectSchema)),
     placedFeatures: optional(lenientList(ConfigObjectSchema)),
     atlases: optional(lenientList(ConfigObjectSchema)),
+    pack: optional(ConfigObjectSchema),
+    configFactories: optional(lenientList(ConfigObjectSchema)),
   })
   .transform((data) => withoutUndefined(data))
   .transform((data) => (Object.keys(data).length > 0 ? data : undefined));
