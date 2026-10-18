@@ -1,8 +1,8 @@
 /** The furniture mechanic (Mechanics.furniture) – the largest property, hence its own module. */
-import { CULLABLE_STATES, DISPLAY_TRANSFORMS, TRACKING_ROTATIONS } from '../options';
 import { isPlainObject } from '@resourcepackbuilder/utils';
 import { field, type PropertySpec } from '../../../form/build';
 import { NEXO_DOCS } from './docs';
+import { FURNITURE_FIELDS_SCOPE, furnitureHitboxSpec, furniturePropertiesSpec, NEXO_FURNITURE_EDITORS } from './furnitureParts';
 import {
   blockLockerField,
   blockSoundsField,
@@ -24,42 +24,8 @@ export const FURNITURE: PropertySpec = {
   keepEmpty: true,
   docs: DOCS.page,
   field: field.object({
-    hitbox: field.object(
-      {
-        barriers: field.stringList({ placeholder: true, docs: DOCS.barriers }),
-        interactions: field.stringList({ placeholder: true, docs: DOCS.interactions }),
-        shulkers: field.stringList({ placeholder: true, docs: DOCS.shulkers }),
-        ghasts: field.stringList({ placeholder: true, minVersion: '1.21.6', docs: DOCS.ghasts }),
-      },
-      { help: true, docs: DOCS.hitbox },
-    ),
-    properties: field.object(
-      {
-        display_transform: field.select(DISPLAY_TRANSFORMS, { placeholder: true, docs: DOCS.displayTransform }),
-        tracking_rotation: field.select(TRACKING_ROTATIONS, { docs: DOCS.trackingRotation }),
-        translation: field.text({ format: 'vector', placeholder: true, docs: DOCS.translation }),
-        scale: field.text({ format: 'vector', placeholder: true, docs: DOCS.scale }),
-        left_rotation: field.text({ placeholder: true, docs: DOCS.rotation }),
-        right_rotation: field.text({ placeholder: true, docs: DOCS.rotation }),
-        brightness: field.object(
-          {
-            block_light: field.number({ integer: true, min: 0, max: 15 }),
-            sky_light: field.number({ integer: true, min: 0, max: 15 }),
-          },
-          { docs: DOCS.brightness },
-        ),
-        view_range: field.number({ min: 0, step: 0.1, docs: DOCS.otherProperties }),
-        shadow_radius: field.number({ min: 0, step: 0.1, docs: DOCS.otherProperties }),
-        shadow_strength: field.number({ min: 0, step: 0.1, docs: DOCS.otherProperties }),
-        glow_color: field.text({ placeholder: true, docs: DOCS.otherProperties }),
-        offset_against_blocks: field.boolean({ defaultHint: true, docs: DOCS.offsetAgainstBlocks }),
-        cullable: field.select(CULLABLE_STATES, { docs: DOCS.culling }),
-        display_width: field.number({ min: 0, step: 0.1, docs: DOCS.culling }),
-        display_height: field.number({ min: 0, step: 0.1, docs: DOCS.culling }),
-        delay: field.text({ format: 'duration', placeholder: true, help: true, advanced: true, docs: DOCS.otherProperties }),
-      },
-      { docs: DOCS.properties },
-    ),
+    hitbox: furnitureHitboxSpec(`${FURNITURE_FIELDS_SCOPE}.hitbox.label`),
+    properties: furniturePropertiesSpec(`${FURNITURE_FIELDS_SCOPE}.properties.label`),
     rotatable: field.choice(
       {
         simple: { field: field.boolean(), matches: (value) => typeof value === 'boolean', newValue: () => true },
@@ -74,11 +40,11 @@ export const FURNITURE: PropertySpec = {
     ),
     restricted_rotation: field.select(['NONE', 'STRICT', 'VERY_STRICT'], { docs: DOCS.restrictedRotation }),
     waterloggable: field.boolean({ docs: DOCS.waterloggable }),
-    seats: field.stringList({ placeholder: true, docs: DOCS.seats }),
-    beds: field.stringList({ placeholder: true, docs: DOCS.beds }),
+    seats: field.stringList({ placeholder: true, docs: DOCS.seats, editor: NEXO_FURNITURE_EDITORS.seats }),
+    beds: field.stringList({ placeholder: true, docs: DOCS.beds, editor: NEXO_FURNITURE_EDITORS.beds }),
     lights: field.object(
       {
-        lights: field.stringList({ placeholder: true }),
+        lights: field.stringList({ placeholder: true, editor: NEXO_FURNITURE_EDITORS.lights }),
         toggleable: field.boolean(),
         toggled_model: field.text({ placeholder: true }),
         toggled_item_model: field.text({ format: 'resource' }),
@@ -119,7 +85,8 @@ export const FURNITURE: PropertySpec = {
         toggle_hitbox_on_open: field.boolean(),
         delay_hitbox_toggle: field.boolean(),
         automatic_close_delay: field.text({ format: 'duration' }),
-        open_properties: field.yaml({ placeholder: true }),
+        // A door shows these display properties while it is open
+        open_properties: furniturePropertiesSpec(`${FURNITURE_FIELDS_SCOPE}.door.fields.openProperties.label`),
       },
       { docs: DOCS.door },
     ),

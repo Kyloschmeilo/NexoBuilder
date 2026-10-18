@@ -7,95 +7,10 @@
         "label": "Furniture",
         "fields": {
           "hitbox": {
-            "label": "Hitbox",
-            "help": "Barriers are solid 1×1 blocks; interactions scale freely but have no collision.",
-            "fields": {
-              "barriers": {
-                "label": "Barriers (x,y,z)",
-                "placeholder": "0,0,0  or range 0..1,0,0"
-              },
-              "interactions": {
-                "label": "Interactions (x,y,z width,height)",
-                "placeholder": "0,0,0 1,1"
-              },
-              "shulkers": {
-                "label": "Shulkers (x,y,z size length [direction])",
-                "placeholder": "0,0,0 1.0 1.0"
-              },
-              "ghasts": {
-                "label": "Ghasts (x,y,z size [rotation])",
-                "placeholder": "0,0,0 0.25"
-              }
-            }
+            "label": "Hitbox"
           },
           "properties": {
-            "label": "Display",
-            "fields": {
-              "displayTransform": {
-                "label": "Display transform",
-                "placeholder": "NONE"
-              },
-              "trackingRotation": {
-                "label": "Orientation to the player"
-              },
-              "translation": {
-                "label": "Translation (x,y,z)",
-                "placeholder": "0,0,0"
-              },
-              "scale": {
-                "label": "Scale (x,y,z)",
-                "placeholder": "1,1,1"
-              },
-              "leftRotation": {
-                "label": "Left rotation (degrees or x,y,z,w)",
-                "placeholder": "45"
-              },
-              "rightRotation": {
-                "label": "Right rotation (degrees or x,y,z,w)",
-                "placeholder": "0"
-              },
-              "brightness": {
-                "label": "Override brightness",
-                "fields": {
-                  "blockLight": {
-                    "label": "Block light"
-                  },
-                  "skyLight": {
-                    "label": "Sky light"
-                  }
-                }
-              },
-              "viewRange": {
-                "label": "View range"
-              },
-              "shadowRadius": {
-                "label": "Shadow radius"
-              },
-              "shadowStrength": {
-                "label": "Shadow strength"
-              },
-              "glowColor": {
-                "label": "Glow color",
-                "placeholder": "e.g. #FF0000"
-              },
-              "offsetAgainstBlocks": {
-                "label": "Raise on slabs/carpets"
-              },
-              "cullable": {
-                "label": "Allow culling"
-              },
-              "displayWidth": {
-                "label": "Culling width"
-              },
-              "displayHeight": {
-                "label": "Culling height"
-              },
-              "delay": {
-                "label": "Animation time",
-                "help": "How long an animated change of these properties takes, e.g. a door opening.",
-                "placeholder": "e.g. 4t"
-              }
-            }
+            "label": "Display"
           },
           "rotatable": {
             "label": "Rotatable",
@@ -236,8 +151,7 @@
                 "label": "Close automatically after"
               },
               "openProperties": {
-                "label": "Display when open",
-                "placeholder": "translation: -0.85,1,0"
+                "label": "Display when open"
               }
             }
           },
