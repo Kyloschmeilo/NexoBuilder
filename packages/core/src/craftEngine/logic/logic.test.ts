@@ -117,6 +117,26 @@ describe('the logic catalogs', () => {
     expect(CE_LOGIC.blockBehaviors.find((t) => t.type === 'drop_experience_block')?.category).toBe('physics');
   });
 
+  const CATEGORIES: Partial<Record<keyof typeof CE_LOGIC, string[]>> = {
+    conditions: ['logic', 'player', 'item', 'block', 'world'],
+    functions: ['messages', 'player', 'effects', 'item', 'world', 'furniture', 'flow', 'plugins'],
+    triggers: ['clicks', 'use', 'breaking', 'world'],
+    numbers: ['fixed', 'ranges', 'distributions'],
+    lootEntries: ['drops', 'flow'],
+    lootFunctions: ['count', 'data'],
+    itemBehaviors: ['tools', 'farming'],
+    itemUpdaters: ['change', 'reset'],
+    furnitureBehaviors: ['storage', 'light'],
+  };
+  for (const [name, categories] of Object.entries(CATEGORIES)) {
+    it(`sorts every ${name} type into one of its catalog categories`, () => {
+      const types = CE_LOGIC[name as keyof typeof CE_LOGIC];
+      expect(types.filter((t) => !t.category).map((t) => t.type)).toEqual([]);
+      expect([...new Set(types.map((t) => t.category))].sort()).toEqual([...categories].sort());
+      for (const type of types) expect(type.categoryLabel).toBe(`logic.categories.${name}.${type.category}`);
+    });
+  }
+
   it('lists the triggers each object kind fires', () => {
     expect(triggersFor('furniture').map((t) => t.type)).toEqual(['right_click', 'left_click', 'place', 'furniture_break']);
     expect(triggersFor('block').map((t) => t.type)).toEqual(['right_click', 'left_click', 'block_break', 'place', 'step']);

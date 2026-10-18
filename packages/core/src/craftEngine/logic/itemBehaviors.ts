@@ -19,12 +19,14 @@ export const CE_ITEM_BEHAVIORS = logicCatalog('itemBehaviors', [
       range: field.stringList({ format: 'vector', placeholder: true, help: true }),
     },
     docs: ceItemBehaviorDocs('range_mining_item'),
+    category: 'tools',
   },
   {
     type: 'compostable_item',
     fields: { chance: field.number({ min: 0, max: 1, step: 0.05, help: true }) },
     docs: ceItemBehaviorDocs('compostable_item'),
+    category: 'farming',
   },
   // Lights fires as flint and steel does; registered in the plugin, not documented on the wiki
-  { type: 'flint_and_steel_item', docs: CE_DOCS.itemBehaviors },
+  { type: 'flint_and_steel_item', docs: CE_DOCS.itemBehaviors, category: 'tools' },
 ]);

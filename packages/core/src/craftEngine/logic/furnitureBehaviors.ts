@@ -91,6 +91,7 @@ export const CE_FURNITURE_BEHAVIORS = logicCatalog('furnitureBehaviors', [
   {
     type: 'simple_storage_furniture',
     docs: behaviorDocs('simple_storage_furniture'),
+    category: 'storage',
     fields: {
       title: field.text({ format: 'minimessage', placeholder: true }),
       rows: field.number({ integer: true, min: 1, max: 6 }),
@@ -102,6 +103,7 @@ export const CE_FURNITURE_BEHAVIORS = logicCatalog('furnitureBehaviors', [
   {
     type: 'display_item_furniture',
     docs: behaviorDocs('display_item_furniture'),
+    category: 'storage',
     fields: {
       data_key: field.text({ placeholder: true, help: true }),
       sounds: field.object({ put: soundFieldSpec(), take: soundFieldSpec() }),
@@ -111,6 +113,7 @@ export const CE_FURNITURE_BEHAVIORS = logicCatalog('furnitureBehaviors', [
   {
     type: 'glowing_furniture',
     docs: behaviorDocs('glowing_furniture'),
+    category: 'light',
     fields: {
       lights: lightList(),
       variants: field.map(lightList(), { keyOptions: VARIANT_NAMES, newValue: () => [] }),
