@@ -257,3 +257,31 @@ export const isChildKey = (key: string): boolean => CHILD_KEYS.includes(key);
 
 /** Whether the type is one the catalog knows. */
 export const isKnownItemModelType = (type: string): boolean => itemModelTypeDef(type) !== undefined;
+
+const isScalar = (value: unknown): value is string | number | boolean =>
+  typeof value === 'string' || typeof value === 'number' || typeof value === 'boolean';
+
+/** Whether a case's `when` is a value or a list of values the comma-separated text field can show. */
+export function isSimpleWhen(when: ConfigValue | undefined): boolean {
+  return when === undefined || isScalar(when) || (Array.isArray(when) && when.every(isScalar));
+}
+
+/** A case's `when` as comma-separated text (`left, right`). */
+export function formatWhen(when: ConfigValue | undefined): string {
+  if (when === undefined || when === null) return '';
+  return Array.isArray(when) ? when.map(String).join(', ') : String(when);
+}
+
+/**
+ * Comma-separated text back as a case's `when`: one value, or a list for several. A value written as before keeps
+ * its type (a number or boolean of a component select stays one); new values are strings.
+ */
+export function parseWhen(text: string, previous: ConfigValue | undefined): ConfigValue {
+  const before = (Array.isArray(previous) ? previous : previous === undefined ? [] : [previous]).filter(isScalar);
+  const values = text
+    .split(',')
+    .map((part) => part.trim())
+    .filter(Boolean)
+    .map((part) => before.find((value) => String(value) === part) ?? part);
+  return values.length > 1 ? values : (values[0] ?? '');
+}

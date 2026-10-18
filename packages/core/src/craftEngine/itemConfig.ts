@@ -94,6 +94,8 @@ export interface CraftEngineBuildResult {
   rawFurnitureIgnored: boolean;
   /** The item has an item model tree, but the additional YAML sets the model itself (the tree is left out) */
   itemModelTreeIgnored: boolean;
+  /** The item model tree is written in place of the generated slot models (`models:` of a bow, shield …) */
+  itemModelTreeReplacesModels: boolean;
   /** The placement type the config's `behavior` picks, when it does not fit the item's block or furniture (left out) */
   placementTypeIgnored: string | null;
   /** The additional YAML lists the item's behaviors itself (written in place of the form's extra behaviors) */
@@ -389,6 +391,7 @@ export function buildCraftEngineItem(context: CraftEngineBuildContext): CraftEng
     furnitureIgnored: isFurniture && isBlock,
     rawFurnitureIgnored: rawFurniture !== null && !isFurniture,
     itemModelTreeIgnored: tree !== null && rawSetsModel,
+    itemModelTreeReplacesModels: tree !== null && !rawSetsModel && (models?.length ?? 0) > 0,
     placementTypeIgnored: placement.ignoredType,
     rawBehaviorsOverride: rawListOverrides,
   };

@@ -37,6 +37,7 @@ export interface ItemModelIssue {
   context: IssueContext[];
 }
 
+/** What the validation needs to know about the item and its project. */
 export interface ItemModelValidationContext {
   /** The project's Minecraft version */
   minecraftVersion: string;
@@ -44,7 +45,7 @@ export interface ItemModelValidationContext {
   hasMainModel: boolean;
 }
 
-/** A path as the issue shows it: `cases[1] › model` (`root` for the root node). */
+/** A path as the issue shows it: `model › cases[1] › model` (`model` for the root node). */
 export function formatItemModelPath(path: ItemModelPath): string {
   if (path.length === 0) return 'model';
   const parts: string[] = [];

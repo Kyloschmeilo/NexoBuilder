@@ -2,7 +2,10 @@
 import { describe, expect, it } from 'vitest';
 import { ITEM_MODEL_TYPES, type ItemModelNode } from './types';
 import {
+  formatWhen,
+  isSimpleWhen,
   itemModelChildren,
+  parseWhen,
   itemModelNodeAt,
   newItemModelNode,
   newSpecialModel,
@@ -191,5 +194,30 @@ describe('item model validation', () => {
       feature: 'oversized_in_gui',
       version: '1.21.6',
     });
+  });
+});
+
+describe('select case values', () => {
+  it('shows a value or a list as comma-separated text', () => {
+    expect(formatWhen('gui')).toBe('gui');
+    expect(formatWhen(['left', 'right'])).toBe('left, right');
+    expect(formatWhen(3)).toBe('3');
+    expect(formatWhen(undefined)).toBe('');
+  });
+
+  it('reads the text back, keeping the type of values that did not change', () => {
+    expect(parseWhen('left, right', 'left')).toEqual(['left', 'right']);
+    expect(parseWhen(' 12 ', '')).toBe('12');
+    expect(parseWhen('3, x', [3, true])).toEqual([3, 'x']);
+    expect(parseWhen('true', true)).toBe(true);
+    expect(parseWhen('a,, b ,', undefined)).toEqual(['a', 'b']);
+    expect(parseWhen('', 'x')).toBe('');
+  });
+
+  it('knows which values the text field can show', () => {
+    expect(isSimpleWhen('a')).toBe(true);
+    expect(isSimpleWhen([1, 'b'])).toBe(true);
+    expect(isSimpleWhen({ a: 1 })).toBe(false);
+    expect(isSimpleWhen([{ a: 1 }])).toBe(false);
   });
 });

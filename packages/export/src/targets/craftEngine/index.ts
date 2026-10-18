@@ -6,7 +6,7 @@ import {
   craftEngineTranslations,
   sectionsToYaml,
 } from '@resourcepackbuilder/core/craftEngine';
-import { recipeFrame } from '@resourcepackbuilder/core/project';
+import { recipeFrame, VARIANTS } from '@resourcepackbuilder/core/project';
 import type { JavaModelJson } from '@resourcepackbuilder/minecraft';
 import type { ItemExport, ItemSections } from '../../types';
 import { validateItemModelTree } from '../../validate/itemModelTree';
@@ -89,6 +89,10 @@ function buildItem(itemExport: ItemExport, written: CraftEngineWrittenModels, sh
   if (built.furnitureIgnored) itemExport.report('error', 'ce.furnitureWithBlock');
   if (built.itemModelTreeIgnored) itemExport.report('warning', 'plan.itemModelTreeOverriddenByRawYaml');
   else validateItemModelTree(itemExport, written.mainKey !== null);
+  if (built.itemModelTreeReplacesModels) {
+    const slots = VARIANTS.filter((def) => def.kind === 'pack' && (item.variants?.[def.slot]?.length ?? 0) > 0).map((def) => def.slot);
+    itemExport.report('warning', 'plan.itemModelTreeReplacesGenerated', { slots: slots.join(', ') });
+  }
   if (built.rawBehaviorsOverride) itemExport.report('warning', 'ce.rawBehaviorsOverride');
   if (built.placementTypeIgnored) itemExport.report('warning', 'ce.placementTypeIgnored', { type: built.placementTypeIgnored });
   for (const locale of craftEngineTranslations(item).invalidLocales)

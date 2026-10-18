@@ -71,7 +71,8 @@ describe('CraftEngine item model tree', () => {
     });
     // The root keys of CraftEngine are item keys of the model group, not of the tree
     expect(config.oversized_in_gui).toBeUndefined();
-    expect(result.issues.filter((i) => i.level !== 'info')).toEqual([]);
+    // Only the replaced pulling models are reported (see below)
+    expect(result.issues.filter((i) => i.level !== 'info').map((i) => i.code)).toEqual(['plan.itemModelTreeReplacesGenerated']);
   });
 
   it('lets the additional YAML win and says so', () => {
@@ -89,5 +90,13 @@ describe('CraftEngine item model tree', () => {
     const issue = result.issues.find((i) => i.code === 'plan.itemModelMainModelMissing');
     expect(issue?.level).toBe('error');
     expect(issue?.context?.map((frame) => frame.code)).toEqual(['context.item', 'context.itemModelNode']);
+  });
+
+  it('says which generated slot models the tree replaces', () => {
+    const result = plan((item) => (item.itemModel = { model: { type: 'minecraft:model', model: '@model' } }));
+    expect(result.issues.find((i) => i.code === 'plan.itemModelTreeReplacesGenerated')).toMatchObject({
+      level: 'warning',
+      args: { slots: 'pulling_models' },
+    });
   });
 });

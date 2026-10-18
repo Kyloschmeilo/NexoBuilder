@@ -9,7 +9,9 @@ import { ArrowDown, ArrowUp, ExternalLink, Plus, Trash2 } from 'lucide-react';
 import {
   type ConfigObject,
   type ConfigValue,
+  formatWhen,
   fullId,
+  isSimpleWhen,
   ITEM_MODEL_PROPERTIES,
   ITEM_MODEL_SPECIAL_TYPES,
   ITEM_MODEL_TYPES,
@@ -23,6 +25,7 @@ import {
   type ItemModelType,
   modelNode,
   newSpecialModel,
+  parseWhen,
   updateItemModelAt,
   withNodeType,
   withProperty,
@@ -36,7 +39,7 @@ import { NativeSelect, NativeSelectOption } from '@resourcepackbuilder/ui/compon
 import { NumberInput } from '../../../../components/editor/inputs/NumberInput';
 import { TextInput } from '../../../../components/editor/inputs/TextInput';
 import { useSchemaText } from '../../../../components/useSchemaText';
-import { ParamField, ParamList } from './ParamField';
+import { ParamField, ParamList, YamlValue } from './ParamField';
 import { TintsEditor } from './TintsEditor';
 import { TransformationEditor } from './TransformationEditor';
 import { useItemModelDocs } from './useItemModelDocs';
@@ -176,28 +179,29 @@ function SelectCases({ node, onChange, pathKey }: { node: ItemModelNode; onChang
       {cases.map((entry, i) => {
         const value = isPlainObject(entry) ? (entry as ConfigObject) : {};
         const when = value.when;
-        const text = Array.isArray(when) ? when.join(', ') : when === undefined ? '' : String(when);
+        const setWhen = (next: ConfigValue | undefined) =>
+          setCases(
+            cases.map((c, j) => (j === i ? withKey(value, 'when', next) : c)),
+            `${pathKey}.cases.${i}.when`,
+          );
         return (
           <div key={i} className="flex flex-col gap-2 border-l-2 pl-3">
             <label className="flex flex-col gap-1">
               <span className="text-xs font-medium">{t('itemModel.ui.when')}</span>
-              <TextInput
-                mono
-                value={text}
-                placeholder={t('itemModel.ui.whenPlaceholder')}
-                suggestions={def?.values?.map((v) => ({ value: v, text: v }))}
-                onChange={(next) => {
-                  const values = (next ?? '')
-                    .split(',')
-                    .map((v) => v.trim())
-                    .filter(Boolean);
-                  const nextWhen = values.length > 1 ? values : (values[0] ?? '');
-                  setCases(
-                    cases.map((c, j) => (j === i ? withKey(value, 'when', nextWhen) : c)),
-                    `${pathKey}.cases.${i}.when`,
-                  );
-                }}
-              />
+              {isSimpleWhen(when) ? (
+                // Committed on Enter or blur, so commas and spaces can be typed; unchanged values keep their type
+                <TextInput
+                  mono
+                  commitOnBlur
+                  value={formatWhen(when)}
+                  placeholder={t('itemModel.ui.whenPlaceholder')}
+                  suggestions={def?.values?.map((v) => ({ value: v, text: v }))}
+                  onChange={(next) => setWhen(parseWhen(next ?? '', when))}
+                />
+              ) : (
+                // Values a text field cannot show (component values that are objects) are edited as YAML
+                <YamlValue id={`${pathKey}.cases.${i}.when`} value={when} onChange={setWhen} />
+              )}
             </label>
             <ChildSlot
               node={node}

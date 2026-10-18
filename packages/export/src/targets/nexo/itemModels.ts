@@ -246,20 +246,35 @@ function mainDefinitionSlots(has: (slot: VariantSlot) => boolean, furniture: boo
   return (['gui_model', ...connect] as VariantSlot[]).filter(has);
 }
 
+/** The key Nexo serves an item's `ItemModel` under (what `Components.item_model` must name for the tree to show). */
+export const nexoTreeItemModel = (itemId: string): string => `nexo:${itemId}`;
+
 /**
- * The item's own item model tree as its `ItemModel` (with `@model` resolved to the main model and the definition's
- * root keys next to the root node), after checking it. Null when the item has no tree, or when the additional YAML
- * sets `ItemModel` itself (which then wins).
+ * The item's own item model tree as its `ItemModel`, after checking it: the definition's shape (the root node under
+ * `model`, its root keys next to it, which Nexo's ItemModelBuilder moves to the definition's root) with `@model`
+ * resolved to the main model, and `Components.item_model` pointing at it unless the config names another one. Null
+ * when the item has no tree, or when the additional YAML sets `ItemModel` itself (which then wins).
+ * @param packVariants variant slots that Nexo builds in via Pack.<slot> (they stop working with an own item model)
  */
-export function writeItemModelTree(itemExport: ItemExport, modelKey: string | null): ConfigAddition[] | null {
-  const { item, report } = itemExport;
+export function writeItemModelTree(
+  itemExport: ItemExport,
+  modelKey: string | null,
+  packVariants: VariantSlot[] = [],
+): ConfigAddition[] | null {
+  const { project, item, report } = itemExport;
   const definition = item.itemModel;
   if (!definition) return null;
   if (parseRawYaml(item.rawYaml).value?.ItemModel !== undefined) {
     report('warning', 'plan.itemModelTreeOverriddenByRawYaml');
     return null;
   }
+  if (compareVersions(project.settings.minecraftVersion, FEATURE_VERSIONS.itemModelDefinitions) < 0)
+    report('error', 'plan.itemModelTreeNeedsVersion', { version: FEATURE_VERSIONS.itemModelDefinitions });
+  if (packVariants.length > 0) report('warning', 'plan.itemModelTreeDisablesVariants', { variants: packVariants.join(', ') });
   validateItemModelTree(itemExport, modelKey !== null);
-  const value = { ...resolveItemModelTokens(definition.model, modelKey), ...itemModelRootValues(definition) };
-  return [{ path: ['ItemModel'], value }];
+  const value = { model: resolveItemModelTokens(definition.model, modelKey), ...itemModelRootValues(definition) };
+  return [
+    { path: ['ItemModel'], value },
+    { path: ['Components', 'item_model'], value: nexoTreeItemModel(item.itemId), ifMissing: true },
+  ];
 }

@@ -105,7 +105,11 @@
     "itemModelNotANumber": "“{key}” must be a number.",
     "itemModelTreeReplacesGenerated": "The item model tree replaces the item model ResourcepackBuilder would generate for: {slots}.",
     "itemModelTreeOverriddenByRawYaml": "The additional YAML sets the item’s model itself, so the item model tree is not written.",
-    "itemModelOverridesGenerated": "The item model {itemModel} replaces the model definition the export generated ({generated}), so the inventory icon and furniture models of that definition are not used."
+    "itemModelOverridesGenerated": "The item model {itemModel} replaces the model definition the export generated ({generated}), so the inventory icon and furniture models of that definition are not used.",
+    "itemModelTreeNeedsVersion": "An item model tree needs at least Minecraft {version} (item model definitions).",
+    "itemModelTreeDisablesVariants": "The item model tree replaces the definition Nexo builds from Pack, so these variants no longer show: {variants}. Add them to the tree instead.",
+    "itemModelTreeUnused": "The item model tree is written, but the item shows the item model {itemModel}. Remove that item_model to use the tree.",
+    "itemModelTreeRootKeyConflict": "{packKey} differs from the tree’s {key}. The tree’s value is the one the client gets."
   },
   "selection": {
     "packNameClash": "“{first}” and “{second}” use the same pack name “{pack}”. Rename it in the settings of one of the projects.",
