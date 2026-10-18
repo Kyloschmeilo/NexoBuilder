@@ -2,6 +2,100 @@
 
 ## Unreleased
 
+ResourcepackBuilder gets a new Workbench look with five themes, a calmer item editor, and editors for every feature
+the CraftEngine wiki and Nexo 1.30 describe. Every feature links to its section of the plugin docs.
+
+### Added
+
+- **Five color themes**: Deepslate (default), Amethyst, Copper, Prismarine and Crimson, each in light and dark, in a
+  denser Workbench look with IBM Plex fonts. Pick one under _Settings → Appearance_ or in the welcome screen's
+  appearance menu.
+- **Workbench layout**: an activity bar (items, media, CraftEngine logic, test server, settings), a resizable sidebar,
+  an output dock with the YAML and checks of every page (Ctrl+J), and a command palette (Ctrl+K) that also finds, adds
+  and opens the settings of the open item. The item tree has filter chips (items, blocks, furniture, with issues).
+- **Docs links on every feature**: every Nexo and CraftEngine property, furniture and block option, block behavior,
+  recipe type, media page and CraftEngine condition, function, event, loot and number type links to its section of the
+  plugin docs, tinted by plugin.
+- **Every CraftEngine block behavior**: all 54 behavior types (including the undocumented vine crops) with all their
+  keys, added from a searchable catalog in eight groups. 22 more presets set up the block states, the particle options
+  are complete, and the export reports missing behavior keys.
+- **All other CraftEngine wiki features**:
+  - Blocks: every block setting (fluid state, destroy stages, tool component, sound volume and pitch), per-variant
+    settings, exact or shared vanilla states, fixed ids, texture-built, rotated and weighted models; the block names its
+    item for the creative pick.
+  - Furniture: behaviors (storage, item display, glowing), seat rotation options, hitbox flags, variant extras, sound
+    volume and pitch, and every display parameter of furniture and block renderer elements.
+  - Items: a Behaviors section (placement type with its options for blocks and furniture, range mining, composting,
+    flint and steel) and every item setting (equipment LOD, equipment potion effects, food, drop display, projectile,
+    sounds, per-place repairable, typed craft remainders, plugin-only keys).
+  - Item data: advanced lore, `insert_lore` fallback, enchantment merge, profile, `block_state`, written books, random
+    values, build functions, NBT tags, data-level `custom_model_data` and `item_model`, client-bound data with
+    conditional entries, and a per-version item updater (apply data, transmute, reset).
+  - Project pages for translations and lang keys (with automatic client block names), item browser categories (plus a
+    per-item category), worldgen features, atlases, `pack.yml` settings with config factories, and JavaScript scripts.
+- **Nexo 1.30 coverage**:
+  - **Dialogs** (`plugins/Nexo/dialogs`), **multipack** templates and menu (`multipack.yml`), and the **Carpentry**
+    addon's block types once "Carpentry addon installed" is on in the project settings.
+  - Furniture, custom block and mechanic options cover everything Nexo 1.30 reads: rotation on sneak, farming boosts,
+    shulker storage, long-form block and trident sounds, directional faces with their own models, random block
+    variants, backpack whitelists and more. The export checks block variations and hitbox entries.
+  - Items: structured editors for `blocks_attacks`, `kinetic_weapon` and `custom_model_data`, plus rarity, instrument,
+    `item_model` (`nexo:empty`), trims, stored enchantments, potion effects, custom name, `injectId`, `no_auto_update`,
+    template lists, broken model and hand-swap options.
+- **Item model trees** for Nexo (`ItemModel`) and CraftEngine (`model`): model, composite, condition, select, range
+  dispatch, special, empty, bundle, tints and transformation, plus CraftEngine's root model keys (`oversized_in_gui`,
+  `hand_animation_on_swap`, `swap_animation_scale`, `item_model`, `custom_model_data`, `legacy_model`).
+- **Recipes**: every Nexo and CraftEngine recipe type (crafter, transform, brewing, smithing upgrade and trim,
+  transmute, anvil, dye), the recipe and ingredient keys of each plugin (categories, groups, permissions, unlocks,
+  processors, predicates, replacements, Premium conditions and functions) and Nexo's disabled vanilla recipes.
+- **Media**: fixed glyph characters, Nexo glyph shadows, templates and sprite GIFs, CraftEngine emoji per chat context,
+  sound weight, preload, subtitles, sound references and vanilla sound replacement, a baby armor layer, overlay
+  textures, dyeable armor, player-texture wings and CraftEngine trim equipment.
+
+### Changed
+
+- **Item editor**: a section nav beside one section at a time (Basics, Model, Textures, Features, Block, Furniture,
+  Events, Loot, Recipes, Advanced), a slim header with the name in its colors, and raw YAML under Advanced. Features are
+  collapsed rows with one open at a time (unsaved drafts are kept).
+- **Add dialog** for features, behaviors and other typed entries: search over names, keys, aliases and descriptions
+  with highlighted matches, categories with common entries, an "Added" state with "Jump to", adding several at once and
+  full keyboard use. Entry cards edit unknown types as YAML.
+- **Field rows** show the translated label, the YAML key and a docs link, with help in a popover. Controls follow the
+  value: switches for on/off settings (with an unset state for plugin defaults), segments, a select or a searchable
+  list by the number of options, x/y/z inputs for vectors, a picker for the project's resource ids, a MiniMessage
+  preview chip, and lists and maps as compact rows and key/value tables.
+- **Typed lists**: conditions, functions, events, loot entries, behaviors and updater steps are cards you add from a
+  catalog, change the type of, duplicate and reorder. Lists nested deeper than two levels open in a dialog with a
+  breadcrumb, and number values switch between a plain value and a number type such as uniform without losing input.
+- **Blocks**: one "Places" choice (nothing, block, furniture) for both plugins. CraftEngine block behaviors are cards
+  with all their settings, states are compact tables with details and per-variant settings in dialogs, and block
+  settings and Nexo custom block features are collapsed rows added from a catalog.
+- **Furniture**: CraftEngine variants show a preview beside the element, and the hitbox list and the selected entry's
+  editor in a side pane (seats nested in hitboxes, custom variants, behaviors from a catalog). Nexo furniture gets a
+  preview, structured hitbox, seat, bed and light editors instead of text lines, options from a catalog and nested
+  forms for door and state display.
+- **Model section**: a flat/tool/rod switch and shading switches, special appearances as a compact list with a catalog
+  of what the plugin exports, and the item model tree as an outline next to a card for the selected node, with
+  per-node problems, keyboard navigation and Copy YAML.
+- **Recipes** are compact rows with a one-line summary, laid out like their station (crafting grid, smithing, brewing
+  and anvil slots → result). "Add recipe" opens a catalog of the plugin's recipe types, rarely used keys wait under
+  "More options", and recipes can be duplicated and reordered.
+- **Media and CraftEngine registries** are master/detail: the Media and Logic panels list every glyph, sound,
+  painting, loot source, template, variable, attribute, locale, category, worldgen feature, atlas, config factory and
+  script with search and "New"; templates get a searchable reference of the default templates.
+- **Pages**: folder pages list their items in a table, settings are a sectioned page, dialogs share one frame, the
+  welcome screen has plugin cards with docs links, and the test server page uses the Workbench sections, field rows and
+  status pills.
+- **Easier to read**: content groups sit on their own panels, inputs on clear wells, every theme has stronger contrast
+  between page, panels and borders, and editor text sizes follow the design.
+- CraftEngine wiki links point to the wiki's new home (`xiao-momi.github.io/craft-engine-wiki`).
+
+### Fixed
+
+- **Nexo keys**: the block support toggle, fireproof items, furniture culling, `can_place_on`/`can_break` and
+  `custom_model_data` now use the keys Nexo 1.30 reads. Saved projects are migrated automatically.
+- Ctrl+K and Ctrl+J no longer act behind open dialogs, and the narrow output dock handles focus and Escape.
+
 ## 2.0.0
 
 ### Fixed
