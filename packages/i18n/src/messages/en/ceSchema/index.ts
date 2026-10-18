@@ -14,6 +14,7 @@ import furniture from './furniture.json' with { type: 'json' };
 import general from './general.json' with { type: 'json' };
 import itemBehavior from './itemBehavior.json' with { type: 'json' };
 import logicBlockBehaviors from './logicBlockBehaviors.json' with { type: 'json' };
+import logicCategories from './logicCategories.json' with { type: 'json' };
 import logicConditions from './logicConditions.json' with { type: 'json' };
 import logicFunctions from './logicFunctions.json' with { type: 'json' };
 import logicLoot from './logicLoot.json' with { type: 'json' };
@@ -38,6 +39,7 @@ export default mergeCatalogue(
   general,
   itemBehavior,
   logicBlockBehaviors,
+  logicCategories,
   logicConditions,
   logicFunctions,
   logicLoot,

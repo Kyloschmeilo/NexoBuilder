@@ -91,6 +91,12 @@ export interface ObjectListField extends BaseField {
   /** Field whose value is shown as the title of an entry */
   titleKey?: string;
   newItem?: () => Record<string, unknown>;
+  /**
+   * The entries are told apart by the value of the field `key`, which names a type of `types` (e.g. a CraftEngine
+   * event by its trigger in `on`). Editors may show each entry as a card of that type and add entries by picking one.
+   * Checking and pruning go by `fields` as for any object list.
+   */
+  typedBy?: { key: string; catalog: string; types: () => readonly TypedType[] };
 }
 
 export interface MapField extends BaseField {

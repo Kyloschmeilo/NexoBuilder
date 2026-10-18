@@ -9,10 +9,11 @@ import { logicCatalog } from './catalog';
 import { resource } from './shared';
 
 export const CE_ITEM_UPDATERS = logicCatalog('itemUpdaters', [
-  { type: 'apply_data', fields: { data: field.yaml({ help: true }) } },
-  { type: 'transmute', fields: { material: { ...resource(), placeholder: true } } },
+  { type: 'apply_data', category: 'change', fields: { data: field.yaml({ help: true }) } },
+  { type: 'transmute', category: 'change', fields: { material: { ...resource(), placeholder: true } } },
   {
     type: 'reset',
+    category: 'reset',
     fields: {
       keep_components: field.stringList({ suggestions: CE_COMPONENTS, minVersion: '1.20.5', help: true }),
       keep_tags: field.stringList({ placeholder: true, help: true, advanced: true }),
