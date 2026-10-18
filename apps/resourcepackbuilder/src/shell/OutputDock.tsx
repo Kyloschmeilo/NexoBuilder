@@ -48,7 +48,7 @@ function YamlPane({ output }: { output: Output | null }) {
           </p>
         </Tip>
       )}
-      <ScrollArea className="min-h-0 flex-1">
+      <ScrollArea className={cn('min-h-0 flex-1', output?.text && 'bg-surface-sunken')}>
         {output?.text ? (
           // The code block brings its own copy button
           <YamlCode text={output.text} className="rounded-none border-0" />

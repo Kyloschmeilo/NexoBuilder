@@ -26,7 +26,7 @@ const ICON = path.join(APP_DIR, 'build', 'icon.png');
  * `--canvas` of the default colour theme (Deepslate) in packages/ui/src/styles.css, light and dark, shown until the UI
  * has painted. A test keeps it in line with the stylesheet.
  */
-const BACKGROUND = { light: '#eceff3', dark: '#111519' };
+const BACKGROUND = { light: '#e4e7eb', dark: '#0c0f13' };
 /** Web permissions the UI needs: copy buttons write to the clipboard. Everything else is denied. */
 const ALLOWED_PERMISSIONS = new Set(['clipboard-sanitized-write']);
 

@@ -1,6 +1,6 @@
 /**
  * The settings page (Settings activity): the open project's settings, then this device's language and appearance
- * (colour theme and light/dark mode). Sections are separated by a top rule with a small title.
+ * (colour theme and light/dark mode). Each group sits on its own panel with a title row above its fields.
  */
 import type { ReactNode } from 'react';
 import { useTranslations } from 'next-intl';
@@ -16,18 +16,18 @@ interface SettingsSectionProps {
   children: ReactNode;
 }
 
-/** One group of settings: a top rule, a title with a short description, and the fields. */
+/** One group of settings: a panel with a title and short description above the fields. */
 function SettingsSection({ id, title, description, children }: SettingsSectionProps) {
   const headingId = `settings-${id}`;
   return (
-    <section aria-labelledby={headingId} className="@container/settings flex flex-col gap-4 border-t border-line pt-3">
-      <div>
-        <h2 id={headingId} className="text-label font-semibold text-foreground">
+    <section aria-labelledby={headingId} className="@container/settings min-w-0 rounded-xl border border-line bg-surface">
+      <div className="border-b border-line px-3 py-2 @xl/settings:px-4">
+        <h2 id={headingId} className="text-title font-semibold text-foreground">
           {title}
         </h2>
         <p className="text-meta text-muted-foreground">{description}</p>
       </div>
-      {children}
+      <div className="flex flex-col gap-4 p-3 @xl/settings:p-4">{children}</div>
     </section>
   );
 }
@@ -37,7 +37,7 @@ export function SettingsPage() {
   const t = useTranslations('dialogs.settings');
   const tCommon = useTranslations('common');
   return (
-    <PageShell className="max-w-[880px] gap-6">
+    <PageShell className="max-w-[880px] gap-3">
       <header>
         <h1 className="text-page font-semibold text-foreground">{tCommon('settings')}</h1>
         <p className="text-meta text-muted-foreground">{t('pageDescription')}</p>

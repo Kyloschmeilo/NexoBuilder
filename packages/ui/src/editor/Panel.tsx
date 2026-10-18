@@ -1,4 +1,7 @@
-/** A bordered surface for lists and previews. Sections and fields sit on the page itself, not in panels. */
+/**
+ * A bordered surface for lists, consoles and previews. Page content is grouped in `Section` panels; a `Panel` is the
+ * plain box without a header, on the canvas or inside a section.
+ */
 import type { ComponentProps } from 'react';
 import { cn } from 'cn';
 
