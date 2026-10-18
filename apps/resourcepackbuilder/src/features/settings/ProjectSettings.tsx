@@ -1,119 +1,150 @@
-/** Settings saved in the open project. */
+/**
+ * Settings saved in the open project, as the field groups of the settings page: General (name, plugin, namespace,
+ * Minecraft version), Resource pack (pack name, description, icon) and the plugin's own item option (Nexo's
+ * ItemModel component, CraftEngine's categories from folders).
+ */
 import { useId } from 'react';
 import { useTranslations } from 'next-intl';
 import { MC_VERSIONS, PACK_NAME_PATTERN } from '@resourcepackbuilder/minecraft';
 import { packTargetFor } from '@resourcepackbuilder/export';
-import { Field, FieldDescription, FieldError, FieldLabel, FieldTitle } from '@resourcepackbuilder/ui/components/field';
+import { FieldGroup, FieldRow } from '@resourcepackbuilder/ui';
 import { Input } from '@resourcepackbuilder/ui/components/input';
 import { NativeSelect, NativeSelectOption } from '@resourcepackbuilder/ui/components/native-select';
-import { CheckboxField } from '../../components/CheckboxField';
+import { Switch } from '@resourcepackbuilder/ui/components/switch';
 import { TargetDot } from '../../components/TargetDot';
 import { updateProjectSettings } from '../../commands/settings';
 import { richTags } from '../../i18n/richTags';
 import { useOpenProject } from '../../store/project';
-import { NamespaceProblemText, useNamespaceProblem } from '../../components/NamespaceProblem';
+import { useNamespaceProblem } from '../../components/NamespaceProblem';
 import { PackIconField } from './PackIconField';
 
-/** The settings stored in the open project: name, target, Minecraft version, namespace, pack and target options. */
-export function ProjectSettings() {
+/** Name, plugin (a fact), namespace and Minecraft version of the open project. */
+export function GeneralSettings() {
   const t = useTranslations('dialogs.settings');
-  const id = useId();
   const tTargets = useTranslations('layout.projectForm.targets');
+  const id = useId();
   const project = useOpenProject();
   const checkNamespace = useNamespaceProblem();
   const namespaceProblem = checkNamespace(project.namespace, project.target);
   const { settings } = project;
+  return (
+    <FieldGroup>
+      <FieldRow label={t('projectName')} htmlFor={`${id}-name`}>
+        <Input id={`${id}-name`} value={project.name} onChange={(e) => updateProjectSettings((p) => (p.name = e.target.value))} />
+      </FieldRow>
+      <FieldRow label={t('target')} help={t('targetHelp')}>
+        {/* A fact of the project, not a choice: shown as text with the target's colour */}
+        <p data-testid="settings-target" className="m-0 flex min-h-7.5 items-center gap-2 text-body">
+          <TargetDot target={project.target} className="size-2" />
+          {tTargets(`${project.target}.name`)}
+        </p>
+      </FieldRow>
+      <FieldRow
+        label={t('namespace')}
+        htmlFor={`${id}-namespace`}
+        help={t('namespaceHelp', { namespace: project.namespace })}
+        error={namespaceProblem?.isError ? namespaceProblem.message : undefined}
+        warning={namespaceProblem && !namespaceProblem.isError ? namespaceProblem.message : undefined}
+      >
+        <Input
+          id={`${id}-namespace`}
+          className="font-mono"
+          aria-invalid={namespaceProblem?.isError}
+          value={project.namespace}
+          onChange={(e) => updateProjectSettings((p) => (p.namespace = e.target.value.toLowerCase()))}
+        />
+      </FieldRow>
+      <FieldRow label={t('minecraftVersion')} htmlFor={`${id}-version`} help={t('minecraftVersionHelp')}>
+        <NativeSelect
+          id={`${id}-version`}
+          className="w-full"
+          value={settings.minecraftVersion}
+          onChange={(e) => updateProjectSettings((p) => (p.settings.minecraftVersion = e.target.value))}
+        >
+          {MC_VERSIONS.map((v) => (
+            <NativeSelectOption key={v.id} value={v.id}>
+              {v.label}
+            </NativeSelectOption>
+          ))}
+        </NativeSelect>
+      </FieldRow>
+    </FieldGroup>
+  );
+}
+
+/** External pack name (with the folder it ends up in), pack description and pack icon. */
+export function PackSettings() {
+  const t = useTranslations('dialogs.settings');
+  const id = useId();
+  const project = useOpenProject();
+  const { settings } = project;
   const isPackNameValid = PACK_NAME_PATTERN.test(settings.packName);
   const { layout } = packTargetFor(project);
-
   return (
-    <div className="flex flex-col gap-5">
-      <div className="grid gap-4 @xl/settings:grid-cols-2">
-        <Field>
-          <FieldLabel htmlFor={`${id}-name`}>{t('projectName')}</FieldLabel>
-          <Input id={`${id}-name`} value={project.name} onChange={(e) => updateProjectSettings((p) => (p.name = e.target.value))} />
-        </Field>
-        <Field>
-          <FieldTitle>{t('target')}</FieldTitle>
-          {/* A fact of the project, not a choice: shown as text with the target's colour */}
-          <p className="flex h-7.5 items-center gap-2 text-body">
-            <TargetDot target={project.target} className="size-2" />
-            {tTargets(`${project.target}.name`)}
-          </p>
-          <FieldDescription>{t('targetHelp')}</FieldDescription>
-        </Field>
-        <Field>
-          <FieldLabel htmlFor={`${id}-version`}>{t('minecraftVersion')}</FieldLabel>
-          <NativeSelect
-            id={`${id}-version`}
-            className="w-full"
-            value={settings.minecraftVersion}
-            onChange={(e) => updateProjectSettings((p) => (p.settings.minecraftVersion = e.target.value))}
-          >
-            {MC_VERSIONS.map((v) => (
-              <NativeSelectOption key={v.id} value={v.id}>
-                {v.label}
-              </NativeSelectOption>
-            ))}
-          </NativeSelect>
-          <FieldDescription>{t('minecraftVersionHelp')}</FieldDescription>
-        </Field>
-        <Field data-invalid={namespaceProblem?.isError}>
-          <FieldLabel htmlFor={`${id}-namespace`}>{t('namespace')}</FieldLabel>
-          <Input
-            id={`${id}-namespace`}
-            className="font-mono"
-            aria-invalid={namespaceProblem?.isError}
-            value={project.namespace}
-            onChange={(e) => updateProjectSettings((p) => (p.namespace = e.target.value.toLowerCase()))}
-          />
-          <NamespaceProblemText problem={namespaceProblem} fallback={t('namespaceHelp', { namespace: project.namespace })} />
-        </Field>
-        <Field data-invalid={!isPackNameValid}>
-          <FieldLabel htmlFor={`${id}-pack-name`}>{t('packName')}</FieldLabel>
-          <Input
-            id={`${id}-pack-name`}
-            className="font-mono"
-            aria-invalid={!isPackNameValid}
-            value={settings.packName}
-            onChange={(e) => updateProjectSettings((p) => (p.settings.packName = e.target.value))}
-          />
-          {isPackNameValid ? (
-            <FieldDescription className="font-mono text-xs break-all">{`${layout.pluginDir}/${layout.packLocation(project, false)}`}</FieldDescription>
-          ) : (
-            <FieldError>{t('packNameInvalid')}</FieldError>
-          )}
-        </Field>
-        <Field className="@xl/settings:col-span-2">
-          <FieldLabel htmlFor={`${id}-description`}>{t('packDescription')}</FieldLabel>
-          <Input
-            id={`${id}-description`}
-            value={settings.packDescription}
-            onChange={(e) => updateProjectSettings((p) => (p.settings.packDescription = e.target.value))}
-          />
-        </Field>
-      </div>
-
+    <FieldGroup>
+      <FieldRow
+        label={t('packName')}
+        htmlFor={`${id}-pack-name`}
+        error={isPackNameValid ? undefined : t('packNameInvalid')}
+        // The folder the pack is written to: a fact that follows the name, so it stays visible
+        help={
+          isPackNameValid ? (
+            <span className="font-mono break-all">{`${layout.pluginDir}/${layout.packLocation(project, false)}`}</span>
+          ) : undefined
+        }
+        helpInline
+      >
+        <Input
+          id={`${id}-pack-name`}
+          className="font-mono"
+          aria-invalid={!isPackNameValid}
+          value={settings.packName}
+          onChange={(e) => updateProjectSettings((p) => (p.settings.packName = e.target.value))}
+        />
+      </FieldRow>
+      <FieldRow label={t('packDescription')} htmlFor={`${id}-description`}>
+        <Input
+          id={`${id}-description`}
+          value={settings.packDescription}
+          onChange={(e) => updateProjectSettings((p) => (p.settings.packDescription = e.target.value))}
+        />
+      </FieldRow>
       <PackIconField packIcon={settings.packIcon} />
+    </FieldGroup>
+  );
+}
 
-      {/* A Nexo setting: the CraftEngine export does not read it */}
-      {project.target === 'nexo' && (
-        <CheckboxField
+/**
+ * The item option of the project's plugin: Nexo's ItemModel component, or CraftEngine's categories built from the
+ * folders. Each plugin's export ignores the other one's option, so only the matching one is shown.
+ */
+export function TargetItemSettings() {
+  const t = useTranslations('dialogs.settings');
+  const project = useOpenProject();
+  const { settings } = project;
+  if (project.target === 'nexo') {
+    return (
+      <FieldRow
+        label={t('useItemModel')}
+        help={t.rich('useItemModelHelp', { ...richTags, component: 'Components.item_model: nexo:<item_id>' })}
+      >
+        <Switch
+          aria-label={t('useItemModel')}
+          className="mt-1.5"
           checked={settings.useItemModel}
-          onChange={(checked) => updateProjectSettings((p) => (p.settings.useItemModel = checked))}
-          label={t('useItemModel')}
-          description={t.rich('useItemModelHelp', { ...richTags, component: 'Components.item_model: nexo:<item_id>' })}
+          onCheckedChange={(checked) => updateProjectSettings((p) => (p.settings.useItemModel = checked))}
         />
-      )}
-      {/* A CraftEngine setting: Nexo has no item browser categories */}
-      {project.target === 'craftengine' && (
-        <CheckboxField
-          checked={settings.ceCategoriesFromFolders}
-          onChange={(checked) => updateProjectSettings((p) => (p.settings.ceCategoriesFromFolders = checked))}
-          label={t('ceCategoriesFromFolders')}
-          description={t.rich('ceCategoriesFromFoldersHelp', richTags)}
-        />
-      )}
-    </div>
+      </FieldRow>
+    );
+  }
+  return (
+    <FieldRow label={t('ceCategoriesFromFolders')} help={t.rich('ceCategoriesFromFoldersHelp', richTags)}>
+      <Switch
+        aria-label={t('ceCategoriesFromFolders')}
+        className="mt-1.5"
+        checked={settings.ceCategoriesFromFolders}
+        onCheckedChange={(checked) => updateProjectSettings((p) => (p.settings.ceCategoriesFromFolders = checked))}
+      />
+    </FieldRow>
   );
 }
