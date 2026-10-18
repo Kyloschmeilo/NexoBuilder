@@ -151,6 +151,89 @@ UX §2.2 and Phase 0c, adapted to Workbench:
 (UX §3.4). `TypedEntryCard` (UX §3.5) with the YAML fallback for unknown types. `Vector3Input`, `BooleanSwitch`. Unit
 tests for the adapters and the catalog search ordering.
 
+## Wave 1b: feature coverage, data first (after Tasks 2 and 3 merge; runs in parallel with Wave 2)
+
+Rules for every feature task:
+- Data first. The schema in `packages/core/src/{nexo,craftEngine}/form/schema/*`, the core model and migration, the
+  exporter, validation, i18n (en + de in the split group files) and tests. Every new property and typed type carries
+  `docs` (`withDocs`) with a verified URL, plus `category`, `common` and `aliases` where they help the catalog.
+  Optional or rarely used fields get `advanced: true`.
+- A plain schema field shows up through the generic renderer automatically. Where a feature needs a hand-written
+  editor (block states, furniture variants, display elements, recipes, media cards), extend the existing component
+  minimally and functionally. Wave 3 migrates those screens to the new design and keeps every field you add.
+- A key that is only in the jar or source and not in the docs gets `advanced: true`, and its help text says which
+  plugin version reads it.
+- Golden snapshots are regenerated and the change in the snapshot is explained in the report.
+- Research references: `nexo-features.md` §15 chunk letters, `craftengine-features.md` §13 chunk numbers. The
+  research sections cited by each chunk hold the exact keys, types, enums and defaults.
+
+### Task 4 (moved here): Nexo correctness fixes. Runs after Task 3 merges.
+
+### Task 8: CraftEngine block behaviors, all types (CE chunks 2 and 3, plus 18 particle options)
+Every behavior type in `craftengine-features.md` §3.4 and §12 (the vine crop pair included) becomes a `TypedType` in a
+`blockBehaviors` logic catalog with its params. `block.behaviors` becomes `typedList('blockBehaviors')`, rendered by
+the existing typed-list editor. The preset forms of chunk 3 also generate their states and item behavior. Required
+state properties are checked in `ce/blockBehaviors.ts`. The shared `particleFields()` (chunk 18) is used by the
+particle behaviors and the `particle` function. Owns: the `craftEngine/logic/*` catalog files for behaviors and
+particles, `schema/blockBehavior.ts`, `ce/blockBehaviors.ts`, `ce/blockStates.ts` (state builders only),
+`ceSchema/blockBehavior.json`, and a minimal change to `CraftEngineBlockSection.tsx`.
+
+### Task 9: CraftEngine block settings and states/model completion (CE chunks 4 and 5)
+Owns `schema/blockSettings.ts`, `ce/block.ts`, the variant-settings helpers in `ce/blockStates.ts`,
+`CraftEngineStatesEditor.tsx`, the `ceSchema/blockSettings.json` slice, and the auto `settings.item` for blocks in
+`ce/itemConfig.ts` `buildBlock`. If it touches the state builders, coordinate with Task 8 by limiting its own edits to
+model and variant helpers.
+
+### Task 10: CraftEngine furniture and display elements (CE chunks 6 and 7)
+Shared display-element params, furniture settings, hitboxes, seats, variant extras, and a `furnitureBehaviors`
+catalog of 3 types. Owns `ce/furniture.ts`, `ce/blockRenderer.ts`, the new `logic/furnitureBehaviors.ts`, and
+`DisplayElementsEditor.tsx`, `BlockRendererEditor.tsx`, `CraftEngineFurnitureSection.tsx`,
+`FurnitureVariantEditor.tsx`, `FurniturePreview.tsx`.
+
+### Task 11: CraftEngine item behaviors and item settings (CE chunks 8 and 11)
+Owns the new `schema/itemBehavior.ts` group, `schema/settings.ts`, `ce/attributes.ts` (shared specs only), and the
+behaviors assembly in `ce/itemConfig.ts`. It touches `ce/furniture.ts` only through a small `BuiltFurniture` extension
+agreed by name (`placementExtras`).
+
+### Task 12: CraftEngine item data and item updater (CE chunks 10 and 13)
+Owns `schema/data.ts`, `schema/general.ts`, the new `logic/itemUpdaters.ts`, and the `ceSchema/{data,general}.json`
+slices.
+
+### Task 13: Item model definition trees for both targets (CE chunk 12, Nexo chunk I)
+One shared tree model (model, composite, condition, select, range_dispatch, special, empty, bundle/selected_item,
+tints), a CE writer and a Nexo writer (`export/src/targets/nexo/itemModels.ts`), and the root model fields. The user's
+tree takes precedence over the auto-generated paths. A structured tree editor in the item Model area, built as a
+self-contained component (`features/item/model/itemModelTree/*`).
+
+### Task 14: Recipes for both targets (CE chunk 9, Nexo chunk G)
+New types per target (gated by target), ingredient extensions, recipe-level keys, CE processors and transforms, and
+Nexo `disabled_recipes.yml` if the app already writes plugin files. Owns `core/src/project/recipes/*`,
+`ce/recipes.ts`, `nexo/recipes/*`, the recipes part of `export/src/targets/*/pluginFiles.ts`, and
+`features/item/recipes/*`.
+
+### Task 15: Media for both targets (CE chunk 14, Nexo chunk H)
+Glyph, emoji, sound, jukebox and equipment completeness. Owns `core/src/project/media/*`, `ce/media.ts`,
+`nexo/{glyphs,sounds}/*`, `export/src/equipment.ts`, `features/{media,glyphs,sounds,paintings}/*`, and `media.json`.
+
+### Task 16: CraftEngine project-level sections (CE chunks 15, 16, 17, 19, 20, done in that order)
+Translations and lang, the categories editor, worldgen features and atlases, pack.yml and template power features, and
+script files. One agent, because they all extend the shared lists (`ViewName`, `VIEWS`, `CRAFT_ENGINE_VIEWS`,
+`CraftEngineProjectData`, `pluginFiles.ts`, `SECTION_ORDER`). New views follow the existing CE views' structure;
+Wave 3 restyles them.
+
+### Task 17: Nexo furniture, custom blocks and mechanics (Nexo chunks C, E, and the mechanics part of F)
+Owns `nexo/form/schema/{furniture,mechanics,shared}.ts`, `nexo/form/options.ts`, `project/variants.ts` (directional
+faces), `export/src/targets/nexo/itemModels.ts` (only the variant slots; coordinate with Task 13 by adding new slots in
+a separate function), and `export/src/validate/itemConfig.ts`.
+
+### Task 18: Nexo components and item root keys (Nexo chunk D, plus F's root, Pack and drop keys)
+Owns `nexo/form/schema/{components,general,appearance,attributes}.ts` and `nexo/itemConfig.ts` (`TOP_LEVEL_ORDER`,
+item_model precedence).
+
+### Task 19: Nexo new content kinds (Nexo chunk J)
+Dialogs as a media kind, Carpentry block types behind an "addon installed" project setting, and multipack templates.
+Runs after Tasks 15 and 17 merge, because it touches their files.
+
 ## Wave 3: screen migrations and feature coverage
 
 Written after Wave 2 lands, from UX §6 Phase 1 (M1–M15) and the gap chunks of `nexo-features.md` §15 (B–J) and
