@@ -269,7 +269,9 @@
         "title": "Export",
         "text": "Unzip the ZIP into the plugin folder and reload the plugin – the included INSTALL.txt explains how."
       }
-    }
+    },
+    "stepsLabel": "How it works",
+    "stepsHelp": "How it works in detail"
   },
   "projectForm": {
     "name": "Project name",
@@ -283,11 +285,11 @@
     "targets": {
       "nexo": {
         "name": "Nexo",
-        "description": "Items, blocks and furniture for Nexo. The test server needs your purchased Nexo JAR."
+        "description": "Items, blocks and furniture. The test server needs your purchased Nexo JAR."
       },
       "craftengine": {
         "name": "CraftEngine",
-        "description": "Items, blocks and furniture for CraftEngine, plus loot sources, templates, global variables and attributes. Free – the test server downloads it from Modrinth."
+        "description": "Items, blocks and furniture, plus loot, templates and more. Free on Modrinth."
       }
     }
   },

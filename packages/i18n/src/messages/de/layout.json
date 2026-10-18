@@ -269,7 +269,9 @@
         "title": "Exportieren",
         "text": "ZIP in den Plugin-Ordner entpacken und das Plugin neu laden – wie genau, steht in der beigelegten INSTALL.txt."
       }
-    }
+    },
+    "stepsLabel": "So funktioniert’s",
+    "stepsHelp": "So funktioniert’s im Detail"
   },
   "projectForm": {
     "name": "Projektname",
@@ -283,11 +285,11 @@
     "targets": {
       "nexo": {
         "name": "Nexo",
-        "description": "Items, Blöcke und Möbel für Nexo. Der Testserver braucht deine gekaufte Nexo-JAR."
+        "description": "Items, Blöcke und Möbel. Der Testserver braucht deine gekaufte Nexo-JAR."
       },
       "craftengine": {
         "name": "CraftEngine",
-        "description": "Items, Blöcke und Möbel für CraftEngine, dazu Loot-Quellen, Vorlagen, globale Variablen und Attribute. Kostenlos – der Testserver lädt es von Modrinth herunter."
+        "description": "Items, Blöcke und Möbel, dazu Loot, Vorlagen und mehr. Kostenlos auf Modrinth."
       }
     }
   },
