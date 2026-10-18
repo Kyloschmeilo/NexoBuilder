@@ -1,0 +1,185 @@
+{
+  "logic": {
+    "lootSources": {
+      "blockBreak": {
+        "label": "block_break",
+        "help": "Ein Block wird abgebaut. Ziel: Block-IDs."
+      },
+      "entityDeath": {
+        "label": "entity_death",
+        "help": "Ein Wesen stirbt. Ziel: Wesen-IDs."
+      },
+      "fishing": {
+        "label": "fishing",
+        "help": "Ein Schwimmer fängt etwas. Kein Ziel."
+      },
+      "piglinBarter": {
+        "label": "piglin_barter",
+        "help": "Ein Piglin beendet einen Tausch. Kein Ziel."
+      },
+      "container": {
+        "label": "container",
+        "help": "Ein Beutebehälter wird gefüllt. Ziel: Beutetabellen-IDs."
+      },
+      "archaeology": {
+        "label": "archaeology",
+        "help": "Seltsamer Sand oder Kies wird abgepinselt. Ziel: Beutetabellen-IDs."
+      },
+      "entityDrop": {
+        "label": "entity_drop",
+        "help": "Ein Wesen lässt ein Item fallen (z. B. ein Huhn legt ein Ei). Ziel: Wesen-IDs."
+      },
+      "harvest": {
+        "label": "harvest",
+        "help": "Ein Spieler erntet einen Block. Ziel: Block-IDs."
+      },
+      "blockShear": {
+        "label": "block_shear",
+        "help": "Ein Spieler schert einen Block. Ziel: Block-IDs."
+      },
+      "entityShear": {
+        "label": "entity_shear",
+        "help": "Ein Spieler schert ein Wesen. Ziel: Wesen-IDs."
+      },
+      "vault": {
+        "label": "vault",
+        "help": "Ein Tresor gibt seine Belohnung. Ziel: Beutetabellen-IDs."
+      },
+      "advancement": {
+        "label": "advancement",
+        "help": "Ein Spieler schließt einen Fortschritt ab; die Beute geht ins Inventar. Ziel: Fortschritts-IDs."
+      }
+    },
+    "lootEntries": {
+      "item": {
+        "label": "item",
+        "help": "Lässt ein Item fallen.",
+        "fields": {
+          "item": {
+            "label": "item"
+          }
+        }
+      },
+      "furnitureItem": {
+        "label": "furniture_item",
+        "help": "Lässt das Item fallen, mit dem das Möbelstück platziert wurde.",
+        "fields": {
+          "item": {
+            "label": "item",
+            "help": "Das Item, das fällt, wenn das Möbelstück kein eigenes Item hat."
+          }
+        }
+      },
+      "exp": {
+        "label": "exp",
+        "help": "Lässt Erfahrung fallen.",
+        "fields": {
+          "count": {
+            "label": "count"
+          }
+        }
+      },
+      "empty": {
+        "label": "empty",
+        "help": "Lässt nichts fallen. Damit können die anderen Einträge auch leer ausgehen."
+      },
+      "function": {
+        "label": "function",
+        "help": "Führt Funktionen aus, statt ein Item fallen zu lassen.",
+        "fields": {
+          "run": {
+            "label": "run"
+          }
+        }
+      },
+      "lootTable": {
+        "label": "loot_table",
+        "help": "Lässt den Loot einer anderen Loot-Tabelle fallen.",
+        "fields": {
+          "id": {
+            "label": "id"
+          }
+        }
+      },
+      "alternatives": {
+        "label": "alternatives",
+        "help": "Lässt das erste Kind fallen, dessen Bedingungen erfüllt sind."
+      },
+      "ifElse": {
+        "label": "if_else",
+        "help": "Lässt das erste Kind fallen, dessen Bedingungen erfüllt sind (ein zweiter Name von alternatives)."
+      }
+    },
+    "lootFunctions": {
+      "setCount": {
+        "label": "set_count",
+        "help": "Setzt die Anzahl der Items.",
+        "fields": {
+          "count": {
+            "label": "count"
+          }
+        }
+      },
+      "applyBonus": {
+        "label": "apply_bonus",
+        "help": "Fügt pro Stufe einer Verzauberung wie Glück Items hinzu.",
+        "fields": {
+          "enchantment": {
+            "label": "enchantment"
+          },
+          "formula": {
+            "label": "formula",
+            "help": "Wie die Stufe zu zusätzlichen Items wird.",
+            "fields": {
+              "type": {
+                "label": "type",
+                "help": "ore_drops: wie bei Vanilla-Erzen. binomial_with_bonus_count: wie bei Vanilla-Pflanzen."
+              },
+              "extra": {
+                "label": "extra"
+              },
+              "probability": {
+                "label": "probability"
+              }
+            }
+          }
+        }
+      },
+      "explosionDecay": {
+        "label": "explosion_decay",
+        "help": "Lässt eine Explosion einen Teil der Items zerstören."
+      },
+      "limitCount": {
+        "label": "limit_count",
+        "help": "Hält die Anzahl der Items zwischen min und max.",
+        "fields": {
+          "min": {
+            "label": "min"
+          },
+          "max": {
+            "label": "max"
+          }
+        }
+      },
+      "dropExp": {
+        "label": "drop_exp",
+        "help": "Lässt zusätzlich Erfahrung fallen.",
+        "fields": {
+          "count": {
+            "label": "count"
+          }
+        }
+      },
+      "applyData": {
+        "label": "apply_data",
+        "help": "Ändert die Daten der Items.",
+        "fields": {
+          "data": {
+            "label": "data",
+            "help": "Item-Daten als YAML, wie die Daten eines Items."
+          }
+        }
+      }
+    }
+  }
+}

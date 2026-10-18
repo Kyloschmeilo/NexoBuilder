@@ -1,0 +1,205 @@
+{
+  "logic": {
+    "numbers": {
+      "constant": {
+        "label": "constant",
+        "help": "A fixed number.",
+        "fields": {
+          "value": {
+            "label": "value"
+          }
+        }
+      },
+      "fixed": {
+        "label": "fixed",
+        "help": "A fixed number.",
+        "fields": {
+          "value": {
+            "label": "value"
+          }
+        }
+      },
+      "uniform": {
+        "label": "uniform",
+        "help": "A random number between min and max.",
+        "fields": {
+          "min": {
+            "label": "min"
+          },
+          "max": {
+            "label": "max"
+          }
+        }
+      },
+      "expression": {
+        "label": "expression",
+        "help": "The result of an expression.",
+        "fields": {
+          "expression": {
+            "label": "expression",
+            "placeholder": "'<'arg:player.level> * 2"
+          }
+        }
+      },
+      "normal": {
+        "label": "normal",
+        "help": "A normally distributed number.",
+        "fields": {
+          "min": {
+            "label": "min"
+          },
+          "max": {
+            "label": "max"
+          },
+          "mean": {
+            "label": "mean"
+          },
+          "stdDev": {
+            "label": "std_dev"
+          }
+        }
+      },
+      "gaussian": {
+        "label": "gaussian",
+        "help": "A normally distributed number (same as normal).",
+        "fields": {
+          "min": {
+            "label": "min"
+          },
+          "max": {
+            "label": "max"
+          },
+          "mean": {
+            "label": "mean"
+          },
+          "stdDev": {
+            "label": "std_dev"
+          }
+        }
+      },
+      "logNormal": {
+        "label": "log_normal",
+        "help": "A log-normally distributed number.",
+        "fields": {
+          "min": {
+            "label": "min"
+          },
+          "max": {
+            "label": "max"
+          },
+          "mean": {
+            "label": "mean"
+          },
+          "stdDev": {
+            "label": "std_dev"
+          },
+          "location": {
+            "label": "location"
+          },
+          "scale": {
+            "label": "scale"
+          }
+        }
+      },
+      "skewNormal": {
+        "label": "skew_normal",
+        "help": "A skew-normally distributed number.",
+        "fields": {
+          "min": {
+            "label": "min"
+          },
+          "max": {
+            "label": "max"
+          },
+          "mean": {
+            "label": "mean"
+          },
+          "stdDev": {
+            "label": "std_dev"
+          },
+          "skewness": {
+            "label": "skewness"
+          }
+        }
+      },
+      "binomial": {
+        "label": "binomial",
+        "help": "The number of successes in extra tries.",
+        "fields": {
+          "extra": {
+            "label": "extra"
+          },
+          "probability": {
+            "label": "probability"
+          }
+        }
+      },
+      "weighted": {
+        "label": "weighted",
+        "help": "One of the numbers, chosen by weight.",
+        "fields": {
+          "weights": {
+            "label": "weights",
+            "help": "Number to weight.",
+            "keyLabel": "Number",
+            "keyPlaceholder": "1.0",
+            "value": {
+              "label": "Weight"
+            }
+          }
+        }
+      },
+      "triangle": {
+        "label": "triangle",
+        "help": "A triangularly distributed number.",
+        "fields": {
+          "min": {
+            "label": "min"
+          },
+          "max": {
+            "label": "max"
+          },
+          "mode": {
+            "label": "mode"
+          }
+        }
+      },
+      "exponential": {
+        "label": "exponential",
+        "help": "An exponentially distributed number.",
+        "fields": {
+          "min": {
+            "label": "min"
+          },
+          "max": {
+            "label": "max"
+          },
+          "mean": {
+            "label": "mean"
+          },
+          "lambda": {
+            "label": "lambda"
+          }
+        }
+      },
+      "beta": {
+        "label": "beta",
+        "help": "A beta-distributed number between min and max.",
+        "fields": {
+          "min": {
+            "label": "min"
+          },
+          "max": {
+            "label": "max"
+          },
+          "alpha": {
+            "label": "alpha"
+          },
+          "beta": {
+            "label": "beta"
+          }
+        }
+      }
+    }
+  }
+}

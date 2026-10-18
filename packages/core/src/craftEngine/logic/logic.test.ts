@@ -2,8 +2,8 @@
  * The logic catalogs: unique types, every message key in both catalogues, and typed lists whose entries pass the
  * checks and pruning unchanged (sample entries, unknown types, nested lists).
  */
-import { readFileSync } from 'node:fs';
 import { describe, expect, it } from 'vitest';
+import { loadCatalogue, type MessageTree } from '@resourcepackbuilder/test-utils/catalogue';
 import type { Field, TypedListField } from '../../form/fields';
 import { checkFieldValue, fieldToSchema } from '../../form/fieldSchema';
 import { cleanConfig } from '../../form/prune';
@@ -12,19 +12,8 @@ import { CE_FURNITURE_LOOT_TEMPLATE } from '../furniture';
 import { CE_LOGIC, type LogicType, logicMessageKeys, triggersFor } from './index';
 import { lootTemplates } from './shared';
 
-type MessageTree = { [key: string]: string | MessageTree };
-
-// Each catalogue is read and parsed once – parsing it per key made the key check slow enough to time out on CI
-const catalogues = new Map<'en' | 'de', MessageTree>();
-
 function lookup(locale: 'en' | 'de', key: string): unknown {
-  let catalogue = catalogues.get(locale);
-  if (!catalogue) {
-    const url = new URL(`../../../../i18n/src/messages/${locale}/ceSchema.json`, import.meta.url);
-    catalogue = JSON.parse(readFileSync(url, 'utf8')) as MessageTree;
-    catalogues.set(locale, catalogue);
-  }
-  let node: unknown = catalogue;
+  let node: unknown = loadCatalogue(locale, 'ceSchema');
   for (const part of key.split('.')) node = typeof node === 'object' && node !== null ? (node as MessageTree)[part] : undefined;
   return node;
 }

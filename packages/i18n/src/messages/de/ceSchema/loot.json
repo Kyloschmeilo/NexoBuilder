@@ -1,0 +1,21 @@
+{
+  "groups": {
+    "loot": {
+      "label": "Loot",
+      "description": "Was der Block oder das Möbelstück beim Abbauen fallen lässt"
+    }
+  },
+  "properties": {
+    "blockLoot": {
+      "label": "Loot",
+      "description": "Was der Block beim Abbauen fallen lässt. default:loot_table/self lässt den Block selbst fallen. Ohne Loot lässt der Block nichts fallen."
+    },
+    "furnitureLoot": {
+      "label": "Loot",
+      "description": "Was das Möbelstück beim Abbauen fallen lässt. default:loot_table/furniture lässt das Item fallen, mit dem es platziert wurde. Ohne Loot lässt es nichts fallen."
+    }
+  },
+  "lootSources": {
+    "label": "loot_sources"
+  }
+}

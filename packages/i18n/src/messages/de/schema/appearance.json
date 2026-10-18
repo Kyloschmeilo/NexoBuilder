@@ -1,0 +1,117 @@
+{
+  "groups": {
+    "appearance": {
+      "label": "Pack & Appearance",
+      "description": "Pack-Optionen, CustomArmor und Color"
+    }
+  },
+  "properties": {
+    "color": {
+      "label": "Color",
+      "description": "Färbt einfärbbare Items (z.B. Lederrüstung) bzw. Flächen mit „Tint“ im Modell.",
+      "field": {
+        "label": "Farbe (R, G, B)",
+        "placeholder": "255, 128, 0"
+      }
+    },
+    "packOversizedInGui": {
+      "label": "Oversized In GUI",
+      "description": "Erlaubt Modellen, im Inventar über das 16×16-Feld hinauszuragen.",
+      "field": {
+        "label": "Übergroß im Inventar"
+      }
+    },
+    "packCustomModelData": {
+      "label": "Custom Model Data (Pack)",
+      "description": "Nur nötig, wenn andere Plugins das Item über CustomModelData erkennen müssen. Sonst vergibt Nexo sie selbst.",
+      "field": {
+        "label": "CustomModelData"
+      }
+    },
+    "armor": {
+      "label": "CustomArmor (Armor, Elytra, Mob Armor, Harness, Saddles)",
+      "description": "Textur, die beim Tragen angezeigt wird: Spieler-Rüstung, Elytra-Flügel, Rüstung für Wolf/Pferd/Lama/Nautilus, Geschirr für den Glücklichen Ghast oder Sättel. ResourcepackBuilder erzeugt daraus ein Equipment-Modell im Pack und setzt Components.equippable (Slot, asset_id, erlaubte Tiere).",
+      "hint": "Alle Teile eines Sets bekommen dieselbe Set-ID, die Texturen müssen nur bei einem Teil hochgeladen werden. Elytren, Tier-Rüstungen und Sättel brauchen jeweils eine eigene Set-ID.",
+      "field": {
+        "label": "Rüstung",
+        "fields": {
+          "set": {
+            "label": "Set-ID",
+            "placeholder": "z.B. ruby"
+          },
+          "layer1": {
+            "label": "Spieler: Layer 1 (Helm, Brust, Schuhe)",
+            "help": "Entspricht z.B. diamond_layer_1.png"
+          },
+          "layer2": {
+            "label": "Spieler: Layer 2 (Hose)",
+            "help": "Entspricht z.B. diamond_layer_2.png"
+          },
+          "elytra": {
+            "label": "Elytra-Flügel",
+            "help": "Wie elytra.png. Ohne Material ELYTRA setzt ResourcepackBuilder die Gleiter-Komponente automatisch."
+          },
+          "mob": {
+            "label": "Tier-Rüstung & Geschirr",
+            "fields": {
+              "wolfArmor": {
+                "label": "Wolfspanzer",
+                "help": "Wie wolf_armor.png"
+              },
+              "horseArmor": {
+                "label": "Pferderüstung",
+                "help": "Wie horse_armor_diamond.png"
+              },
+              "llamaArmor": {
+                "label": "Lama-Teppich",
+                "help": "Wie llama/decor/*.png"
+              },
+              "nautilusArmor": {
+                "label": "Nautilus-Rüstung"
+              },
+              "harness": {
+                "label": "Geschirr (Glücklicher Ghast)"
+              }
+            }
+          },
+          "saddles": {
+            "label": "Sättel (ab 1.21.5)",
+            "help": "Ein Sattel kann für mehrere Tiere Texturen haben.",
+            "fields": {
+              "horseSaddle": {
+                "label": "Pferd"
+              },
+              "pigSaddle": {
+                "label": "Schwein"
+              },
+              "striderSaddle": {
+                "label": "Schreiter"
+              },
+              "donkeySaddle": {
+                "label": "Esel"
+              },
+              "muleSaddle": {
+                "label": "Maultier"
+              },
+              "camelSaddle": {
+                "label": "Kamel"
+              },
+              "skeletonHorseSaddle": {
+                "label": "Skelettpferd"
+              },
+              "zombieHorseSaddle": {
+                "label": "Zombiepferd"
+              },
+              "nautilusSaddle": {
+                "label": "Nautilus"
+              },
+              "camelHuskSaddle": {
+                "label": "Wüstenkamel"
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}

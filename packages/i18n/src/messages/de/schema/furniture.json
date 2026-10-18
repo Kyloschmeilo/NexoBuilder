@@ -1,0 +1,261 @@
+{
+  "properties": {
+    "mechanicsFurniture": {
+      "label": "Furniture",
+      "description": "Das Item wird als Möbelstück (Item-Display) platziert – mit Hitbox, Sitzen, Licht usw.",
+      "field": {
+        "label": "Möbel",
+        "fields": {
+          "hitbox": {
+            "label": "Hitbox",
+            "help": "Barrieren sind feste 1×1-Blöcke, Interaktionen sind frei skalierbar aber ohne Kollision.",
+            "fields": {
+              "barriers": {
+                "label": "Barrieren (x,y,z)",
+                "placeholder": "0,0,0  oder Bereich 0..1,0,0"
+              },
+              "interactions": {
+                "label": "Interaktionen (x,y,z breite,höhe)",
+                "placeholder": "0,0,0 1,1"
+              },
+              "shulkers": {
+                "label": "Shulker (x,y,z größe länge [richtung])",
+                "placeholder": "0,0,0 1.0 1.0"
+              },
+              "ghasts": {
+                "label": "Ghasts (x,y,z größe [rotation])",
+                "placeholder": "0,0,0 0.25"
+              }
+            }
+          },
+          "properties": {
+            "label": "Darstellung",
+            "fields": {
+              "displayTransform": {
+                "label": "Display-Transform",
+                "placeholder": "NONE"
+              },
+              "trackingRotation": {
+                "label": "Ausrichtung zum Spieler"
+              },
+              "translation": {
+                "label": "Verschiebung (x,y,z)",
+                "placeholder": "0,0,0"
+              },
+              "scale": {
+                "label": "Skalierung (x,y,z)",
+                "placeholder": "1,1,1"
+              },
+              "leftRotation": {
+                "label": "Rotation links (Grad oder x,y,z,w)",
+                "placeholder": "45"
+              },
+              "rightRotation": {
+                "label": "Rotation rechts (Grad oder x,y,z,w)",
+                "placeholder": "0"
+              },
+              "brightness": {
+                "label": "Helligkeit überschreiben",
+                "fields": {
+                  "blockLight": {
+                    "label": "Blocklicht"
+                  },
+                  "skyLight": {
+                    "label": "Himmelslicht"
+                  }
+                }
+              },
+              "viewRange": {
+                "label": "Sichtweite"
+              },
+              "shadowRadius": {
+                "label": "Schattenradius"
+              },
+              "shadowStrength": {
+                "label": "Schattenstärke"
+              },
+              "glowColor": {
+                "label": "Leuchtfarbe",
+                "placeholder": "z.B. #FF0000"
+              },
+              "offsetAgainstBlocks": {
+                "label": "Auf Stufen/Teppichen anheben"
+              },
+              "cullable": {
+                "label": "Culling erlauben"
+              },
+              "displayWidth": {
+                "label": "Culling-Breite"
+              },
+              "displayHeight": {
+                "label": "Culling-Höhe"
+              }
+            }
+          },
+          "rotatable": {
+            "label": "Drehbar"
+          },
+          "restrictedRotation": {
+            "label": "Eingeschränkte Drehung",
+            "options": {
+              "strict": {
+                "label": "STRICT – 8 Richtungen"
+              },
+              "veryStrict": {
+                "label": "VERY_STRICT – 4 Richtungen"
+              }
+            }
+          },
+          "waterloggable": {
+            "label": "Kann unter Wasser stehen"
+          },
+          "seats": {
+            "label": "Sitze (x,y,z)",
+            "placeholder": "0,0.5,0"
+          },
+          "beds": {
+            "label": "Betten (x,y,z nacht_überspringen phantome_zurücksetzen)",
+            "placeholder": "0,0,0 true true"
+          },
+          "lights": {
+            "label": "Licht",
+            "fields": {
+              "lights": {
+                "label": "Lichtquellen (x,y,z stufe)",
+                "placeholder": "0,0,0 15"
+              },
+              "toggleable": {
+                "label": "Per Rechtsklick schaltbar"
+              },
+              "toggledModel": {
+                "label": "Nexo-Item im eingeschalteten Zustand",
+                "placeholder": "Item-ID"
+              },
+              "toggledItemModel": {
+                "label": "ItemModel im eingeschalteten Zustand (leer = hochgeladenes „Toggled“-Modell)"
+              }
+            }
+          },
+          "connectable": {
+            "label": "Verbindbar (Connectable)",
+            "help": "Gleiche Möbel nebeneinander verbinden sich, z.B. Stühle zu einem Sofa. Die Modelle (Straight, Left, Right, Inner, Outer) lädst du im Tab „Model & Pack“ hoch – dann wird das hier automatisch gesetzt.",
+            "fields": {
+              "type": {
+                "label": "Art",
+                "options": {
+                  "itemModel": {
+                    "label": "ITEM_MODEL (empfohlen)"
+                  },
+                  "item": {
+                    "label": "ITEM – je Verbindung ein eigenes Nexo-Item"
+                  }
+                }
+              },
+              "default": {
+                "label": "Standard (nur bei eigenen Item-IDs/ItemModels)"
+              },
+              "straight": {
+                "label": "Gerade"
+              },
+              "left": {
+                "label": "Links"
+              },
+              "right": {
+                "label": "Rechts"
+              },
+              "inner": {
+                "label": "Innenecke"
+              },
+              "outer": {
+                "label": "Außenecke"
+              }
+            }
+          },
+          "jukebox": {
+            "label": "Jukebox",
+            "fields": {
+              "volume": {
+                "label": "Lautstärke"
+              },
+              "pitch": {
+                "label": "Tonhöhe"
+              },
+              "permission": {
+                "label": "Permission"
+              }
+            }
+          },
+          "door": {
+            "label": "Tür",
+            "fields": {
+              "isSliding": {
+                "label": "Schiebetür"
+              },
+              "openSound": {
+                "label": "Sound beim Öffnen"
+              },
+              "closeSound": {
+                "label": "Sound beim Schließen"
+              },
+              "toggleHitboxOnOpen": {
+                "label": "Hitbox beim Öffnen durchlässig machen"
+              },
+              "delayHitboxToggle": {
+                "label": "Hitbox erst nach dem Öffnen wechseln"
+              },
+              "automaticCloseDelay": {
+                "label": "Automatisch schließen nach"
+              },
+              "openProperties": {
+                "label": "Darstellung im offenen Zustand",
+                "placeholder": "translation: -0.85,1,0"
+              }
+            }
+          },
+          "evolution": {
+            "label": "Wachstum (Farming)",
+            "fields": {
+              "delay": {
+                "label": "Wachstumszeit",
+                "placeholder": "10s"
+              },
+              "probability": {
+                "label": "Wachstums-Wahrscheinlichkeit"
+              },
+              "lightBoost": {
+                "label": "Wächst mit Licht schneller"
+              },
+              "boneMealChance": {
+                "label": "Knochenmehl-Chance"
+              },
+              "nextStage": {
+                "label": "Nächste Stufe (Item-ID)"
+              }
+            }
+          },
+          "previewPlacement": {
+            "label": "Platzier-Vorschau",
+            "help": "Leer lassen für die Standardwerte.",
+            "fields": {
+              "opacity": {
+                "label": "Deckkraft"
+              },
+              "requirePermission": {
+                "label": "Permission erforderlich"
+              }
+            }
+          },
+          "modelengineId": {
+            "label": "ModelEngine-Modell",
+            "placeholder": "name_der_bbmodel"
+          },
+          "placements": {
+            "label": "Platzierungs-Varianten (floor/wall/roof)",
+            "help": "Eigene Modelle für Floor, Wall und Roof lädst du im Tab „Model & Pack“ hoch. Hier kannst du je Variante weitere Werte überschreiben.",
+            "placeholder": "wall:\n  properties:\n    translation: 0,0.3,-0.3"
+          }
+        }
+      }
+    }
+  }
+}

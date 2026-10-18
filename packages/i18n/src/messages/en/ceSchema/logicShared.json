@@ -1,0 +1,115 @@
+{
+  "logic": {
+    "shared": {
+      "add": {
+        "label": "add",
+        "help": "Adds the value to the current one instead of replacing it."
+      },
+      "target": {
+        "label": "target",
+        "help": "The players it acts on: self, all, or a selector object. Unset: the player of the event."
+      },
+      "conditions": {
+        "label": "conditions"
+      },
+      "maxAttempts": {
+        "label": "max_attempts",
+        "help": "How often a value outside min and max is rolled again."
+      },
+      "lootTarget": {
+        "label": "target",
+        "help": "The ids it applies to. Unset: all of this type. Block states are not allowed here."
+      },
+      "overwrite": {
+        "label": "overwrite",
+        "help": "What to remove from the vanilla result: items, experience, all or none (default: add your loot)."
+      },
+      "lootTable": {
+        "label": "loot",
+        "help": "A loot template with its arguments, a loot table of your own, or the id of another loot table.",
+        "choices": {
+          "template": {
+            "label": "Template",
+            "field": {
+              "fields": {
+                "template": {
+                  "label": "template",
+                  "help": "A loot template of CraftEngine or of another pack. default:loot_table/self drops the block itself."
+                },
+                "arguments": {
+                  "label": "arguments",
+                  "help": "The values the template fills in, such as item or count.",
+                  "keyLabel": "Argument",
+                  "keyPlaceholder": "item",
+                  "value": {
+                    "label": "Value"
+                  }
+                }
+              }
+            }
+          },
+          "table": {
+            "label": "Loot table",
+            "field": {
+              "fields": {
+                "pools": {
+                  "label": "pools",
+                  "itemLabel": "pool",
+                  "fields": {
+                    "rolls": {
+                      "label": "rolls"
+                    },
+                    "bonusRolls": {
+                      "label": "bonus_rolls",
+                      "help": "Extra rolls per point of luck."
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "reference": {
+            "label": "Id",
+            "field": {
+              "label": "Loot table id",
+              "placeholder": "minecraft:chests/simple_dungeon"
+            }
+          }
+        }
+      },
+      "lootEntries": {
+        "label": "entries"
+      },
+      "lootFunctions": {
+        "label": "functions",
+        "help": "Change the dropped items, in this order."
+      },
+      "lootSourceId": {
+        "label": "id",
+        "help": "The id of the loot source. Without a namespace it gets the project namespace.",
+        "placeholder": "example:extra_drops"
+      },
+      "weight": {
+        "label": "weight",
+        "help": "How often this entry is picked among the others of its pool (default 1)."
+      },
+      "quality": {
+        "label": "quality",
+        "help": "How much each point of luck adds to the weight."
+      },
+      "vanillaAttribute": {
+        "label": "attribute",
+        "placeholder": "e.g. minecraft:armor"
+      },
+      "fallback": {
+        "label": "fallback",
+        "help": "The value when the entity lacks the vanilla attribute. Default: 0."
+      },
+      "transform": {
+        "label": "transform",
+        "help": "An expression applied to the value read, with value as its variable.",
+        "placeholder": "e.g. value * 0.5"
+      }
+    }
+  }
+}

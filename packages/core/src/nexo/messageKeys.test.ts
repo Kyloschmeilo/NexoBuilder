@@ -3,8 +3,8 @@
  * This test walks all that data and checks that each key exists in the English and German
  * catalogue – and that the catalogue holds no keys nobody references any more.
  */
-import { readFileSync } from 'node:fs';
 import { describe, expect, it } from 'vitest';
+import { loadCatalogue, type MessageTree } from '@resourcepackbuilder/test-utils/catalogue';
 import { TEXTURE_TEMPLATES } from '@resourcepackbuilder/minecraft';
 import { ARMOR_LAYERS } from '../project/armor';
 import { COPY_CATEGORIES, summarizeClipboard, type ItemConfigClipboard } from './copyConfig';
@@ -16,13 +16,6 @@ import { INGREDIENT_SOURCES, RECIPE_TYPES } from '../project/recipes/model';
 import { NEXO_FORM, PROPERTIES } from './form/schema';
 import { formMessageKeys, optionMessageKeys } from '../form/messageKeys';
 import { FURNITURE_MODEL_SLOTS, STACK_MODELS, stateDef, VARIANTS } from '../project/variants';
-
-type MessageTree = { [key: string]: string | MessageTree };
-
-function loadCatalogue(locale: 'en' | 'de'): MessageTree {
-  const url = new URL(`../../../i18n/src/messages/${locale}/schema.json`, import.meta.url);
-  return JSON.parse(readFileSync(url, 'utf8')) as MessageTree;
-}
 
 function lookup(tree: MessageTree, key: string): unknown {
   let node: unknown = tree;
@@ -93,14 +86,14 @@ describe('schema message keys', () => {
 
   for (const locale of ['en', 'de'] as const) {
     it(`finds every referenced key in the ${locale} catalogue`, () => {
-      const catalogue = loadCatalogue(locale);
+      const catalogue = loadCatalogue(locale, 'schema');
       const missing = [...keys].filter((k) => typeof lookup(catalogue, k) !== 'string');
       expect(missing).toEqual([]);
     });
   }
 
   it('has no unreferenced keys in the catalogue', () => {
-    const unused = leafKeys(loadCatalogue('en')).filter((k) => !keys.has(k));
+    const unused = leafKeys(loadCatalogue('en', 'schema')).filter((k) => !keys.has(k));
     expect(unused).toEqual([]);
   });
 });

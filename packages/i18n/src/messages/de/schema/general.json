@@ -1,0 +1,74 @@
+{
+  "groups": {
+    "general": {
+      "label": "General",
+      "description": "Lore, Unbreakable, ItemFlags und mehr"
+    }
+  },
+  "properties": {
+    "lore": {
+      "label": "Lore",
+      "description": "Textzeilen unter dem Item-Namen (MiniMessage, z.B. '<'gray>).",
+      "field": {
+        "label": "Zeilen",
+        "placeholder": "'<'gray>Eine Zeile"
+      }
+    },
+    "unbreakable": {
+      "label": "Unbreakable",
+      "description": "Das Item verliert keine Haltbarkeit.",
+      "field": {
+        "label": "Unzerstörbar"
+      }
+    },
+    "excludeFromInventory": {
+      "label": "Exclude From Inventory",
+      "description": "Das Item erscheint nicht in /nexo inventory, kann aber per /nexo give vergeben werden.",
+      "field": {
+        "label": "Verstecken"
+      }
+    },
+    "excludeFromCommands": {
+      "label": "Exclude From Commands",
+      "description": "Das Item taucht nicht in der Befehls-Vervollständigung auf (z.B. für Hilfs-Items).",
+      "field": {
+        "label": "Aus Befehlen ausblenden"
+      }
+    },
+    "template": {
+      "label": "Template",
+      "description": "Übernimmt alle Eigenschaften eines anderen Nexo-Items.",
+      "field": {
+        "label": "Item-ID der Vorlage",
+        "placeholder": "z.B. template_item"
+      }
+    },
+    "itemFlags": {
+      "label": "ItemFlags",
+      "description": "Blendet Teile des Tooltips aus. Ab 1.21.5 besser die Component „Tooltip Display“ verwenden.",
+      "field": {
+        "label": "Flags"
+      }
+    },
+    "persistentData": {
+      "label": "PersistentData",
+      "description": "Eigene Daten im PersistentDataContainer (PublicBukkitValues) des Items.",
+      "field": {
+        "label": "Einträge",
+        "itemLabel": "Eintrag",
+        "fields": {
+          "type": {
+            "label": "Typ"
+          },
+          "key": {
+            "label": "Schlüssel",
+            "placeholder": "namespace:schluessel"
+          },
+          "value": {
+            "label": "Wert"
+          }
+        }
+      }
+    }
+  }
+}

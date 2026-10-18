@@ -1,0 +1,66 @@
+{
+  "groups": {
+    "attributes": {
+      "label": "AttributeModifiers & Enchantments",
+      "description": "Attribute und Verzauberungen"
+    }
+  },
+  "properties": {
+    "attributeModifiers": {
+      "label": "AttributeModifiers",
+      "description": "Ändert Werte wie Angriffsschaden, Geschwindigkeit oder Leben.",
+      "field": {
+        "label": "Attribute",
+        "itemLabel": "Attribut",
+        "fields": {
+          "attribute": {
+            "label": "Attribut"
+          },
+          "amount": {
+            "label": "Wert"
+          },
+          "operation": {
+            "label": "Operation"
+          },
+          "slot": {
+            "label": "Slot"
+          },
+          "display": {
+            "label": "Anzeige im Tooltip (1.21.6+)",
+            "fields": {
+              "type": {
+                "label": "Typ",
+                "options": {
+                  "default": {
+                    "label": "default – normal"
+                  },
+                  "hidden": {
+                    "label": "hidden – ausblenden"
+                  },
+                  "override": {
+                    "label": "override – eigener Text"
+                  }
+                }
+              },
+              "text": {
+                "label": "Text"
+              }
+            }
+          }
+        }
+      }
+    },
+    "enchantments": {
+      "label": "Enchantments",
+      "description": "Feste Verzauberungen – auch über dem Vanilla-Maximum (z.B. Schärfe 15).",
+      "field": {
+        "label": "Verzauberungen",
+        "keyLabel": "Verzauberung",
+        "keyPlaceholder": "z.B. sharpness",
+        "value": {
+          "label": "Stufe"
+        }
+      }
+    }
+  }
+}

@@ -1,0 +1,202 @@
+{
+  "craftEngine": {
+    "fields": {
+      "templates": {
+        "label": "templates",
+        "itemLabel": "Template",
+        "fields": {
+          "id": {
+            "label": "id",
+            "help": "Uses name the template by this id. Without a namespace it gets the project's.",
+            "placeholder": "e.g. ore_settings"
+          },
+          "arguments": {
+            "label": "arguments",
+            "help": "The arguments the template takes. One without a default must be passed by every use.",
+            "itemLabel": "Argument",
+            "fields": {
+              "name": {
+                "label": "name",
+                "placeholder": "e.g. hardness"
+              },
+              "default": {
+                "label": "default",
+                "placeholder": "empty: the argument is required"
+              }
+            }
+          },
+          "body": {
+            "label": "body",
+            "help": "The config the template stands for, as YAML. $'{'name'}' puts in an argument, $'{'name:-value'}' an argument with a default.",
+            "placeholder": "hardness: $'{'hardness'}'"
+          }
+        }
+      },
+      "globalVariables": {
+        "label": "global_variables",
+        "keyLabel": "Name",
+        "keyPlaceholder": "e.g. rare_tag",
+        "value": {
+          "label": "Text",
+          "placeholder": "e.g. '<'gold>[Rare]"
+        }
+      },
+      "attributes": {
+        "label": "attributes",
+        "itemLabel": "Attribute",
+        "fields": {
+          "id": {
+            "label": "id",
+            "help": "Modifiers and formulas name the attribute by this id. Without a namespace it gets the project's.",
+            "placeholder": "e.g. might"
+          },
+          "base": {
+            "label": "base",
+            "help": "The starting value: a number, or read from a vanilla attribute of the entity."
+          },
+          "derived": {
+            "label": "derived",
+            "help": "Makes the attribute a derived one, computed from others, e.g. demo:might * 2. It then needs no base, operations or sync.",
+            "placeholder": "e.g. namespace:might * (1 + namespace:critical_chance)"
+          },
+          "operations": {
+            "label": "operations",
+            "help": "The operations applied to the modifiers, in this order. Unset: add_value, add_multiplied_base, add_multiplied_total."
+          },
+          "constraint": {
+            "label": "constraint",
+            "help": "Limits the final value. Set both min and max: CraftEngine takes a missing min as just above 0.",
+            "fields": {
+              "min": {
+                "label": "min"
+              },
+              "max": {
+                "label": "max"
+              }
+            }
+          },
+          "entities": {
+            "label": "entities",
+            "help": "The entity types (or #tags) that have the attribute. Unset: all.",
+            "placeholder": "e.g. minecraft:player"
+          },
+          "sync": {
+            "label": "sync",
+            "help": "Writes the value into vanilla attributes, e.g. max health.",
+            "itemLabel": "Sync target",
+            "fields": {
+              "target": {
+                "label": "target"
+              },
+              "operation": {
+                "label": "operation"
+              },
+              "value": {
+                "label": "value",
+                "help": "The amount written: an expression over value and base, delta (value - base) or ratio (value / base). Default: value."
+              }
+            }
+          }
+        }
+      },
+      "attributeOperations": {
+        "label": "attribute_operations",
+        "itemLabel": "Operation",
+        "fields": {
+          "id": {
+            "label": "id",
+            "placeholder": "e.g. add_capped"
+          },
+          "expression": {
+            "label": "expression",
+            "help": "Runs once for each modifier with this operation. base is the value at the start of the stage, current the value so far, amount the modifier's amount.",
+            "placeholder": "e.g. MIN(current + amount, base * 2)"
+          }
+        }
+      },
+      "equipmentSets": {
+        "label": "equipment_sets",
+        "itemLabel": "Equipment set",
+        "fields": {
+          "id": {
+            "label": "id",
+            "placeholder": "e.g. guardian"
+          },
+          "pieces": {
+            "label": "pieces",
+            "help": "The bonus tiers by the number of pieces worn. Tiers do not add up: the highest one reached applies, so give it all its bonuses.",
+            "keyLabel": "Pieces",
+            "keyPlaceholder": "e.g. 2",
+            "value": {
+              "fields": {
+                "attribute": {
+                  "label": "attribute",
+                  "itemLabel": "Modifier"
+                },
+                "potionEffects": {
+                  "label": "potion_effects",
+                  "itemLabel": "Potion effect",
+                  "fields": {
+                    "type": {
+                      "label": "type"
+                    },
+                    "amplifier": {
+                      "label": "amplifier"
+                    },
+                    "ambient": {
+                      "label": "ambient"
+                    },
+                    "particles": {
+                      "label": "particles"
+                    },
+                    "showIcon": {
+                      "label": "show_icon"
+                    },
+                    "updateInterval": {
+                      "label": "update_interval"
+                    }
+                  }
+                },
+                "events": {
+                  "label": "events",
+                  "help": "Functions that run once when the tier is reached and when it is left.",
+                  "fields": {
+                    "activate": {
+                      "label": "activate"
+                    },
+                    "deactivate": {
+                      "label": "deactivate"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "damageRules": {
+        "label": "damage_rules",
+        "itemLabel": "Damage rule",
+        "fields": {
+          "damageType": {
+            "label": "damage_type",
+            "help": "The vanilla damage type the rule changes, e.g. minecraft:player_attack."
+          },
+          "target": {
+            "label": "target",
+            "help": "The victims it applies to: entity ids or #tags. Unset: the default rule for every other victim.",
+            "placeholder": "e.g. minecraft:zombie"
+          },
+          "formula": {
+            "label": "formula",
+            "help": "The new damage: an expression such as damage + '<'attacker_attr:namespace:might>, or a composition or script."
+          },
+          "effects": {
+            "label": "effects",
+            "help": "Effects after the damage: life steal, potion effects or functions."
+          }
+        }
+      }
+    }
+  }
+}

@@ -1,0 +1,202 @@
+{
+  "craftEngine": {
+    "fields": {
+      "templates": {
+        "label": "templates",
+        "itemLabel": "Vorlage",
+        "fields": {
+          "id": {
+            "label": "id",
+            "help": "Verwendungen nennen die Vorlage mit dieser ID. Ohne Namespace bekommt sie den des Projekts.",
+            "placeholder": "z.B. ore_settings"
+          },
+          "arguments": {
+            "label": "arguments",
+            "help": "Die Argumente der Vorlage. Eines ohne Standardwert muss jede Verwendung übergeben.",
+            "itemLabel": "Argument",
+            "fields": {
+              "name": {
+                "label": "name",
+                "placeholder": "z.B. hardness"
+              },
+              "default": {
+                "label": "default",
+                "placeholder": "leer: das Argument ist Pflicht"
+              }
+            }
+          },
+          "body": {
+            "label": "body",
+            "help": "Die Konfiguration, für die die Vorlage steht, als YAML. $'{'name'}' setzt ein Argument ein, $'{'name:-wert'}' ein Argument mit Standardwert.",
+            "placeholder": "hardness: $'{'hardness'}'"
+          }
+        }
+      },
+      "globalVariables": {
+        "label": "global_variables",
+        "keyLabel": "Name",
+        "keyPlaceholder": "z.B. rare_tag",
+        "value": {
+          "label": "Text",
+          "placeholder": "z.B. '<'gold>[Selten]"
+        }
+      },
+      "attributes": {
+        "label": "attributes",
+        "itemLabel": "Attribut",
+        "fields": {
+          "id": {
+            "label": "id",
+            "help": "Modifikatoren und Formeln nennen das Attribut mit dieser ID. Ohne Namespace bekommt es den des Projekts.",
+            "placeholder": "z.B. might"
+          },
+          "base": {
+            "label": "base",
+            "help": "Der Startwert: eine Zahl oder aus einem Vanilla-Attribut des Wesens gelesen."
+          },
+          "derived": {
+            "label": "derived",
+            "help": "Macht das Attribut zu einem abgeleiteten, aus anderen berechnet, z.B. demo:might * 2. Es braucht dann keine base, operations oder sync.",
+            "placeholder": "z.B. namespace:might * (1 + namespace:critical_chance)"
+          },
+          "operations": {
+            "label": "operations",
+            "help": "Die Operationen, die auf die Modifikatoren angewendet werden, in dieser Reihenfolge. Leer: add_value, add_multiplied_base, add_multiplied_total."
+          },
+          "constraint": {
+            "label": "constraint",
+            "help": "Begrenzt den Endwert. Setze min und max: Ein fehlendes min nimmt CraftEngine als knapp über 0.",
+            "fields": {
+              "min": {
+                "label": "min"
+              },
+              "max": {
+                "label": "max"
+              }
+            }
+          },
+          "entities": {
+            "label": "entities",
+            "help": "Die Wesenstypen (oder #Tags), die das Attribut haben. Leer: alle.",
+            "placeholder": "z.B. minecraft:player"
+          },
+          "sync": {
+            "label": "sync",
+            "help": "Schreibt den Wert in Vanilla-Attribute, z.B. die maximale Gesundheit.",
+            "itemLabel": "Sync-Ziel",
+            "fields": {
+              "target": {
+                "label": "target"
+              },
+              "operation": {
+                "label": "operation"
+              },
+              "value": {
+                "label": "value",
+                "help": "Der geschriebene Wert: ein Ausdruck über value und base, delta (value - base) oder ratio (value / base). Standard: value."
+              }
+            }
+          }
+        }
+      },
+      "attributeOperations": {
+        "label": "attribute_operations",
+        "itemLabel": "Operation",
+        "fields": {
+          "id": {
+            "label": "id",
+            "placeholder": "z.B. add_capped"
+          },
+          "expression": {
+            "label": "expression",
+            "help": "Läuft einmal für jeden Modifikator mit dieser Operation. base ist der Wert zu Beginn der Stufe, current der bisherige Wert, amount der Wert des Modifikators.",
+            "placeholder": "z.B. MIN(current + amount, base * 2)"
+          }
+        }
+      },
+      "equipmentSets": {
+        "label": "equipment_sets",
+        "itemLabel": "Ausrüstungsset",
+        "fields": {
+          "id": {
+            "label": "id",
+            "placeholder": "z.B. guardian"
+          },
+          "pieces": {
+            "label": "pieces",
+            "help": "Die Bonusstufen nach Anzahl getragener Teile. Stufen addieren sich nicht: Es gilt die höchste erreichte, gib ihr also alle ihre Boni.",
+            "keyLabel": "Teile",
+            "keyPlaceholder": "z.B. 2",
+            "value": {
+              "fields": {
+                "attribute": {
+                  "label": "attribute",
+                  "itemLabel": "Modifikator"
+                },
+                "potionEffects": {
+                  "label": "potion_effects",
+                  "itemLabel": "Trankeffekt",
+                  "fields": {
+                    "type": {
+                      "label": "type"
+                    },
+                    "amplifier": {
+                      "label": "amplifier"
+                    },
+                    "ambient": {
+                      "label": "ambient"
+                    },
+                    "particles": {
+                      "label": "particles"
+                    },
+                    "showIcon": {
+                      "label": "show_icon"
+                    },
+                    "updateInterval": {
+                      "label": "update_interval"
+                    }
+                  }
+                },
+                "events": {
+                  "label": "events",
+                  "help": "Funktionen, die einmal laufen, wenn die Stufe erreicht und wenn sie verlassen wird.",
+                  "fields": {
+                    "activate": {
+                      "label": "activate"
+                    },
+                    "deactivate": {
+                      "label": "deactivate"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "damageRules": {
+        "label": "damage_rules",
+        "itemLabel": "Schadensregel",
+        "fields": {
+          "damageType": {
+            "label": "damage_type",
+            "help": "Der Vanilla-Schadenstyp, den die Regel ändert, z.B. minecraft:player_attack."
+          },
+          "target": {
+            "label": "target",
+            "help": "Die Opfer, für die sie gilt: Wesens-IDs oder #Tags. Leer: die Standardregel für alle anderen Opfer.",
+            "placeholder": "z.B. minecraft:zombie"
+          },
+          "formula": {
+            "label": "formula",
+            "help": "Der neue Schaden: ein Ausdruck wie damage + '<'attacker_attr:namespace:might>, eine Zusammensetzung oder ein Skript."
+          },
+          "effects": {
+            "label": "effects",
+            "help": "Effekte nach dem Schaden: Lebensraub, Trankeffekte oder Funktionen."
+          }
+        }
+      }
+    }
+  }
+}
