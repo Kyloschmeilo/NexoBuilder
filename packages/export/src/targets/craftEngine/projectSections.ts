@@ -39,7 +39,13 @@ import {
   sectionsToYaml,
 } from '@resourcepackbuilder/core/craftEngine';
 import { checkFieldValue, type ObjectListField } from '@resourcepackbuilder/core/form';
-import { type ConfigObject, listEntryFrame, type Project, projectEntryFrame } from '@resourcepackbuilder/core/project';
+import {
+  type ConfigObject,
+  type Project,
+  type ProjectEntryKind,
+  projectEntryFrame,
+  projectListEntryFrame,
+} from '@resourcepackbuilder/core/project';
 import { toYaml, yamlHeader } from '@resourcepackbuilder/core/yaml';
 import { craftEngineConfigFile, craftEnginePackDir } from './layout';
 
@@ -94,7 +100,7 @@ function scriptIssues(project: Project): Issue[] {
   const scripts = projectScripts(project);
   scripts.forEach((entry, i) => {
     const path = scriptPath(entry);
-    const report = issueReporter(issues, { context: [path ? projectEntryFrame('script', path) : listEntryFrame(i + 1)] });
+    const report = issueReporter(issues, { context: [path ? projectEntryFrame('script', path) : projectListEntryFrame('script', i + 1)] });
     if (!path) report('error', 'ce.scriptPathMissing');
     else if (!CE_SCRIPT_PATH.test(path)) report('error', 'ce.scriptPathInvalid', { path });
     else {
@@ -116,7 +122,9 @@ function configFactoryIssues(project: Project): Issue[] {
   const ids = new Set<string>();
   projectConfigFactories(project).forEach((entry, i) => {
     const id = configFactoryId(entry);
-    const report = issueReporter(issues, { context: [id ? projectEntryFrame('configFactory', id) : listEntryFrame(i + 1)] });
+    const report = issueReporter(issues, {
+      context: [id ? projectEntryFrame('configFactory', id) : projectListEntryFrame('configFactory', i + 1)],
+    });
     if (!id) report('error', 'ce.sectionEntryIdMissing');
     else if (!CE_CONFIG_FACTORY_ID.test(id)) report('error', 'ce.configFactoryIdInvalid', { id });
     else {
@@ -142,7 +150,7 @@ type Report = ReturnType<typeof issueReporter>;
  */
 function entryIssues(
   project: Project,
-  kind: Parameters<typeof projectEntryFrame>[0],
+  kind: ProjectEntryKind,
   entries: readonly ConfigObject[],
   list: ObjectListField,
   check?: (entry: ConfigObject, report: Report) => void,
@@ -151,7 +159,7 @@ function entryIssues(
   const keys = new Set<string>();
   entries.forEach((entry, i) => {
     const id = projectEntryId(entry);
-    const report = issueReporter(issues, { context: [id ? projectEntryFrame(kind, id) : listEntryFrame(i + 1)] });
+    const report = issueReporter(issues, { context: [id ? projectEntryFrame(kind, id) : projectListEntryFrame(kind, i + 1)] });
     if (!id) report('error', 'ce.sectionEntryIdMissing');
     else if (!CE_ENTRY_ID.test(id)) report('error', 'ce.sectionEntryIdInvalid', { id });
     else {
