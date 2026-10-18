@@ -7,8 +7,9 @@ import { validateEntries } from './entry';
 /**
  * Checks all dialogs of the project; each issue targets its dialog and carries a `context.dialog` frame. Besides the
  * ID it checks what makes Nexo skip a dialog or a part of it: an unknown type, a multi action dialog without actions,
- * a number input whose range is empty, a single option input without options, and links to `nexo:` dialogs the
- * project does not have.
+ * a number input whose range is empty, a single option input without options, links to `nexo:` dialogs the
+ * project does not have, and `SHOW_DIALOG` buttons that open a `nexo:` dialog (Nexo 1.30 builds the dialogs before it
+ * registers them, finds no such dialog and drops the action: "Invalid Dialog specified in …").
  */
 export function validateDialogs(project: Project): Issue[] {
   const issues: Issue[] = [];
@@ -27,8 +28,11 @@ export function validateDialogs(project: Project): Issue[] {
     }
     if (type === 'MULTI' && (!Array.isArray(config.actions) || config.actions.length === 0)) add('error', 'dialog.actionsMissing');
     checkInputs(config.base, add);
-    for (const link of dialogLinks(config)) {
-      if (link.startsWith('nexo:') && !known.has(link)) add('warning', 'dialog.unknownDialog', { dialog: link });
+    for (const { link, button } of dialogLinks(config)) {
+      if (!link.startsWith('nexo:')) continue;
+      if (!known.has(link)) add('warning', 'dialog.unknownDialog', { dialog: link });
+      // Nexo 1.30 builds every dialog before it registers any, so a button finds no nexo: dialog and is dropped
+      else if (button) add('warning', 'dialog.showDialogNexo', { dialog: link });
     }
   });
   return [...issues, ...checked];
@@ -49,16 +53,19 @@ function checkInputs(base: ConfigValue | undefined, add: ReportIssue): void {
   }
 }
 
-/** The dialogs a dialog links to: a list dialog's `dialogs` and every `SHOW_DIALOG` action's `dialog`, in file order. */
-function dialogLinks(config: ConfigValue): string[] {
-  const links: string[] = [];
+/**
+ * The dialogs a dialog links to, in file order: a list dialog's `dialogs` and every `SHOW_DIALOG` action's `dialog`
+ * (`button`).
+ */
+function dialogLinks(config: ConfigValue): Array<{ link: string; button: boolean }> {
+  const links: Array<{ link: string; button: boolean }> = [];
   const walk = (node: ConfigValue): void => {
     if (Array.isArray(node)) node.forEach(walk);
     if (!isPlainObject(node)) return;
-    if (node.type === 'SHOW_DIALOG' && typeof node.dialog === 'string') links.push(node.dialog.trim());
+    if (node.type === 'SHOW_DIALOG' && typeof node.dialog === 'string') links.push({ link: node.dialog.trim(), button: true });
     for (const [key, value] of Object.entries(node)) {
       if (key === 'dialogs' && Array.isArray(value)) {
-        for (const entry of value) if (typeof entry === 'string') links.push(entry.trim());
+        for (const entry of value) if (typeof entry === 'string') links.push({ link: entry.trim(), button: false });
       } else walk(value);
     }
   };

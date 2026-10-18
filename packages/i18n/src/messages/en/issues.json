@@ -254,6 +254,7 @@
     "actionsMissing": "A MULTI dialog needs at least one action.",
     "numberRange": "The input “{input}” needs a start below its end.",
     "optionsMissing": "The input “{input}” has no options – Nexo skips it.",
+    "showDialogNexo": "A button cannot open the Nexo dialog “{dialog}”: Nexo 1.30 builds all dialogs before it registers them, so it drops the action. Open it with a RUN_COMMAND action “dialog show @s {dialog}” or from a list dialog instead.",
     "unknownDialog": "The project has no dialog “{dialog}”. Nexo ignores a link to a dialog it does not know."
   },
   "multipack": {
