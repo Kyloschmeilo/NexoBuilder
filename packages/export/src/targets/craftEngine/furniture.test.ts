@@ -235,7 +235,7 @@ describe('CraftEngine furniture', () => {
 });
 
 describe('furniture behaviors and extras from the editor', () => {
-  it('writes the double drawer of the wiki: settings, variant extras and two behaviors', () => {
+  it('writes the double drawer of the wiki: settings, variant extras, culling and two behaviors', () => {
     const project = furnitureProject([
       'double_drawer',
       (item) => {
@@ -248,12 +248,12 @@ describe('furniture behaviors and extras from the editor', () => {
           },
           variants: {
             ground: {
-              entity_culling: { aabb_expansion: 0.25, view_distance: 64, ray_tracing: true },
               hitboxes: [],
               elements: [{ item: 'moebel:double_drawer', glow_color: '255,200,0', brightness: { block_light: 15 } }],
               loot_spawn_offset: '0,0.5,0',
             },
           },
+          entity_culling: { aabb_expansion: 0.25, view_distance: 64, ray_tracing: true },
           behaviors: [
             {
               type: 'simple_storage_furniture',
@@ -279,9 +279,9 @@ describe('furniture behaviors and extras from the editor', () => {
         ground: {
           loot_spawn_offset: '0,0.5,0',
           elements: [{ type: 'item_display', item: 'moebel:double_drawer', glow_color: '255,200,0', brightness: { block_light: 15 } }],
-          entity_culling: { aabb_expansion: 0.25, view_distance: 64, ray_tracing: true },
         },
       },
+      entity_culling: { aabb_expansion: 0.25, view_distance: 64, ray_tracing: true },
       behaviors: [
         {
           type: 'simple_storage_furniture',

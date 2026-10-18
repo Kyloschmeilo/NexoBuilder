@@ -14,6 +14,7 @@ import {
   parseCeVector,
   parseFurnitureSeat,
   rotationAngles,
+  withLightObjects,
   type FurnitureSeat,
   type Vec3,
 } from './furniture';
@@ -264,5 +265,41 @@ describe('furniture preview geometry', () => {
     const shulker = furnitureHitboxBox({ type: 'shulker', position: '0,0,0', direction: 'east', peek: 100 });
     close(shulker.min, [-0.5, 0, -0.5]);
     close(shulker.max, [1.5, 1, 0.5]);
+  });
+});
+
+describe('furniture entity culling', () => {
+  // CraftEngine 26.9 (AbstractFurnitureManager) reads entity_culling from the furniture itself, for every variant
+  it('writes the culling set on the furniture next to its variants', () => {
+    const built = buildCraftEngineFurniture({ entity_culling: false, variants: { ground: {} } }, null, 'm:x');
+    expect(Object.keys(built.furniture)).toEqual(['settings', 'variants', 'entity_culling']);
+    expect(built.furniture.entity_culling).toBe(false);
+  });
+
+  it('also writes on the furniture the first culling a variant sets, and keeps it in the variant', () => {
+    const built = buildCraftEngineFurniture({ variants: { ground: {}, wall: { entity_culling: { view_distance: 64 } } } }, null, 'm:x');
+    expect(built.furniture.entity_culling).toEqual({ view_distance: 64 });
+    expect((built.furniture.variants as Record<string, Record<string, unknown>>).wall.entity_culling).toEqual({ view_distance: 64 });
+    const own = buildCraftEngineFurniture({ entity_culling: true, variants: { wall: { entity_culling: false } } }, null, 'm:x');
+    expect(own.furniture.entity_culling).toBe(true);
+  });
+});
+
+describe('glowing furniture lights', () => {
+  it('reads lights written as text in the form the editor shows', () => {
+    const behaviors = [
+      { type: 'glowing_furniture', lights: ['0,0.5,0 12', '1,0,0', { position: '0,1,0' }, 'bad'], variants: { wall: ['0,0,0.2 7'] } },
+      { type: 'simple_storage_furniture', variants: { ground: { hitboxes: [] } } },
+    ];
+    expect(withLightObjects(behaviors)).toEqual([
+      {
+        type: 'glowing_furniture',
+        lights: [{ position: '0,0.5,0', level: 12 }, { position: '1,0,0' }, { position: '0,1,0' }, 'bad'],
+        variants: { wall: [{ position: '0,0,0.2', level: 7 }] },
+      },
+      behaviors[1],
+    ]);
+    expect(withLightObjects(behaviors[0]).lights).toHaveLength(4);
+    expect(withLightObjects(undefined)).toBeUndefined();
   });
 });

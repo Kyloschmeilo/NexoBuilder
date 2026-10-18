@@ -9,6 +9,7 @@ import {
   CE_DOCS,
   CE_FURNITURE_ALIGNMENTS,
   CE_FURNITURE_BEHAVIOR_LIST,
+  CE_FURNITURE_FIELDS,
   CE_FURNITURE_ANCHORS,
   CE_FURNITURE_LOOT_TEMPLATE,
   CE_FURNITURE_ROTATIONS,
@@ -18,6 +19,7 @@ import {
   furnitureVariants,
   furnitureVariantsKey,
   newFurnitureVariant,
+  withLightObjects,
 } from '@resourcepackbuilder/core/craftEngine';
 import type { ConfigObject, ConfigValue, Item } from '@resourcepackbuilder/core/project';
 import { SegmentedControl } from '@resourcepackbuilder/ui';
@@ -207,6 +209,14 @@ function FurnitureEditor({ item, furniture }: { item: Item; furniture: Record<st
         <p className="text-xs text-muted-foreground">{t('ceFurniture.settingsHelp')}</p>
       </div>
 
+      <KeyedFields
+        fields={CE_FURNITURE_FIELDS}
+        object={furniture}
+        siblings={furniture}
+        set={(key, value, historyKey) => edit((f) => withKey(f, key, value), historyKey)}
+        historyKey="furniture"
+      />
+
       <div className="flex flex-col gap-2">
         <span className="flex items-center gap-1 text-sm font-medium">
           {t('ceFurniture.behaviors')}
@@ -215,7 +225,8 @@ function FurnitureEditor({ item, furniture }: { item: Item; furniture: Record<st
         <p className="text-xs text-muted-foreground">{t('ceFurniture.behaviorsHelp')}</p>
         <FieldRenderer
           field={CE_FURNITURE_BEHAVIOR_LIST}
-          value={furniture[behaviors]}
+          // Lights written as text show as their position and level
+          value={withLightObjects(furniture[behaviors])}
           hideLabel
           onChange={(value) => edit((f) => withKey(f, behaviors, value as ConfigValue | undefined), 'behaviors')}
         />

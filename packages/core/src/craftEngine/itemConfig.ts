@@ -33,7 +33,7 @@ import {
 } from './block';
 import { blockBehaviorForm, blockBehaviorType } from './blockBehaviors';
 import { blockStates, CE_STATE_TEMPLATES, statesTemplate, templateArguments } from './blockStates';
-import { buildRenderer, rendererElements } from './blockRenderer';
+import { buildRenderer, rendererElements, stateEntityCulling } from './blockRenderer';
 import { withEventList } from './events';
 import { buildCraftEngineFurniture, craftEngineFurniture } from './furniture';
 import { craftEngineItemName } from './lang';
@@ -219,6 +219,12 @@ function buildBlock(source: Record<string, unknown>, context: CraftEngineBuildCo
     merged.states = ordered({ ...states, appearances: filled }, STATES_ORDER);
   } else {
     merged.state = look(isPlainObject(merged.state) ? merged.state : {});
+  }
+
+  // Entity culling is read from the block itself (blockRenderer.ts)
+  if (merged.entity_culling === undefined) {
+    const culling = stateEntityCulling(merged);
+    if (culling !== undefined) merged.entity_culling = deepClone(culling);
   }
 
   // CraftEngine reads one of `behavior` and `behaviors`: the form's behavior goes after the other ones

@@ -82,7 +82,7 @@ const REQUIRED_ELEMENT_KEY: Record<string, string> = {
 export const CE_FURNITURE_EXTERNAL_MODEL_KEYS = ['blueprint', 'better_model', 'model_engine'] as const;
 
 /** Order of the keys of a furniture, of a variant, of an element and of a hitbox (as in the jar's examples). */
-const FURNITURE_ORDER = ['settings', 'variants', 'variant', 'placement', 'behavior', 'behaviors', 'events', 'loot'];
+const FURNITURE_ORDER = ['settings', 'variants', 'variant', 'placement', 'entity_culling', 'behavior', 'behaviors', 'events', 'loot'];
 /** The keys CraftEngine reads a furniture's variants from, in the order it tries them (`variant(s)|placement`) */
 const VARIANTS_KEYS = ['variant', 'variants', 'placement'];
 /** The keys CraftEngine reads a furniture's behaviors from (`behavior(s)`) */
@@ -402,6 +402,34 @@ const builtHitbox = (hitbox: unknown) =>
 /** A list of hitboxes as the export writes them (other values stay). */
 const builtHitboxes = (list: unknown) => (Array.isArray(list) ? list.map(builtHitbox) : list);
 
+/** A light of a glowing furniture written as text (`x,y,z level`) in its map form; other values stay. */
+function lightObject(light: unknown): unknown {
+  if (typeof light !== 'string') return light;
+  const [vector, levelText, ...rest] = light.trim().split(/\s+/);
+  const level = levelText === undefined ? null : toNumber(levelText);
+  if (numberList(vector)?.length !== 3 || rest.length > 0 || (levelText !== undefined && level === null)) return light;
+  return level === null ? { position: vector } : { position: vector, level };
+}
+
+const lightObjects = (list: unknown) => (Array.isArray(list) ? list.map(lightObject) : list);
+
+/**
+ * The furniture's behaviors (one or a list) with the lights of glowing furniture written as text (`"0,0.5,0 15"`, the
+ * wiki's form) in the map form `{ position, level }` the editor shows; CraftEngine reads both alike.
+ */
+export function withLightObjects<T>(behaviors: T): T {
+  const convert = (behavior: unknown) => {
+    if (!isPlainObject(behavior) || behavior.type !== 'glowing_furniture') return behavior;
+    const result: Record<string, unknown> = { ...behavior };
+    if (result.lights !== undefined) result.lights = lightObjects(result.lights);
+    if (isPlainObject(result.variants)) {
+      result.variants = Object.fromEntries(Object.entries(result.variants).map(([name, lights]) => [name, lightObjects(lights)]));
+    }
+    return result;
+  };
+  return (Array.isArray(behaviors) ? behaviors.map(convert) : convert(behaviors)) as T;
+}
+
 /** A furniture behavior with the hitboxes it sets per variant built like the variants' own. */
 function builtBehavior(behavior: unknown): unknown {
   if (!isPlainObject(behavior) || !isPlainObject(behavior.variants)) return behavior;
@@ -445,6 +473,13 @@ export function buildCraftEngineFurniture(
         return [name, ordered(variant, VARIANT_ORDER)];
       }),
     );
+  }
+
+  // CraftEngine 26.9 reads entity_culling next to the variants (for all of them); the wiki sets it per variant, so a
+  // variant's culling is also written there when the furniture sets none
+  if (merged.entity_culling === undefined) {
+    const culling = Object.values(furnitureVariants(merged)).find((v) => v.entity_culling !== undefined)?.entity_culling;
+    if (culling !== undefined) merged.entity_culling = deepClone(culling);
   }
 
   for (const key of BEHAVIORS_KEYS) {

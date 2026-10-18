@@ -207,10 +207,14 @@
           "label": "Ein BetterModel- oder ModelEngine-Modell, das an das eigene Entity der Möbel gebunden ist.",
           "help": "Eines pro Variante. Für mehr Modelle BetterModel- oder ModelEngine-Elemente hinzufügen.",
           "placeholder": "blueprint_id"
-        },
+        }
+      }
+    },
+    "root": {
+      "fields": {
         "entityCulling": {
           "label": "Blendet die Möbel für Spieler aus, die sie nicht sehen können (CraftEngine Premium).",
-          "help": "Standardmäßig an. Pro Variante gesetzt, wie im Wiki; CraftEngine 26.9 selbst liest es nur neben den Varianten, für alle zugleich (dort im zusätzlichen YAML unter furniture: eintragen).",
+          "help": "Standardmäßig an. Gilt für alle Varianten der Möbel.",
           "choices": {
             "toggle": {
               "label": "An oder aus",
@@ -242,11 +246,11 @@
         }
       }
     },
-    "state": {
+    "block": {
       "fields": {
         "entityCulling": {
           "label": "Blendet den Renderer für Spieler aus, die ihn nicht sehen können (CraftEngine Premium).",
-          "help": "Standardmäßig an; die Box umfasst den Block, solange du keine angibst.",
+          "help": "Standardmäßig an. Gilt für alle Erscheinungsbilder des Blocks; die Box umfasst den Block, solange du keine angibst.",
           "choices": {
             "toggle": {
               "label": "An oder aus",

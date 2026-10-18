@@ -207,10 +207,14 @@
           "label": "A BetterModel or ModelEngine model bound to the furniture’s own entity.",
           "help": "One per variant. For more models, add BetterModel or ModelEngine elements.",
           "placeholder": "blueprint_id"
-        },
+        }
+      }
+    },
+    "root": {
+      "fields": {
         "entityCulling": {
           "label": "Hides the furniture from players who cannot see it (CraftEngine Premium).",
-          "help": "On by default. Set per variant, as the wiki shows; CraftEngine 26.9 itself reads it only next to the variants, for all of them (add it there in the additional YAML under furniture:).",
+          "help": "On by default. Applies to all variants of the furniture.",
           "choices": {
             "toggle": {
               "label": "On or off",
@@ -242,11 +246,11 @@
         }
       }
     },
-    "state": {
+    "block": {
       "fields": {
         "entityCulling": {
           "label": "Hides the renderer from players who cannot see it (CraftEngine Premium).",
-          "help": "On by default; the box covers the block unless you set one.",
+          "help": "On by default. Applies to all appearances of the block; the box covers the block unless you set one.",
           "choices": {
             "toggle": {
               "label": "On or off",

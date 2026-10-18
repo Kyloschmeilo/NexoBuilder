@@ -167,8 +167,9 @@ export const CE_HITBOX_FLAG_FIELDS: Field[] = named(hitboxFieldSpecs(), 'furnitu
   .map((f) => ({ ...f, docs: `${CE_DOCS.furnitureVariants}#hitboxes` }));
 
 /**
- * Entity culling (CraftEngine Premium): `false` turns it off, a map tunes it. Furniture variants and block states
- * (next to their entity renderer) read it.
+ * Entity culling (CraftEngine Premium): `false` turns it off, a map tunes it. CraftEngine 26.9 reads it from the
+ * furniture or block itself, for all its variants or appearances (the wiki shows it per variant or state; the export
+ * also writes a variant's or state's culling on the furniture or block).
  */
 function entityCulling(docs: string): FieldSpec {
   return field.choice(
@@ -194,9 +195,14 @@ export const CE_FURNITURE_VARIANT_FIELDS: Field[] = named(
   {
     loot_spawn_offset: field.text({ format: 'vector', placeholder: true, help: true, docs: `${CE_DOCS.furnitureVariants}#introduction` }),
     blueprint: field.text({ placeholder: true, help: true, advanced: true, docs: `${CE_DOCS.furnitureVariants}#external-models` }),
-    entity_culling: entityCulling(`${CE_DOCS.furnitureVariants}#entity-culling`),
   },
   'furniture.variant',
+);
+
+/** The keys of the furniture itself the furniture section shows besides its settings, variants and behaviors. */
+export const CE_FURNITURE_FIELDS: Field[] = named(
+  { entity_culling: entityCulling(`${CE_DOCS.furnitureVariants}#entity-culling`) },
+  'furniture.root',
 );
 
 const settingDocs = (anchor: string) => ({ docs: `${CE_DOCS.furnitureSettings}#${anchor}` });
@@ -227,10 +233,10 @@ export const CE_FURNITURE_BEHAVIOR_LIST: TypedListField = {
   docs: CE_DOCS.furnitureBehaviors,
 };
 
-/** The keys of a block state (or appearance) with an entity renderer besides the renderer itself. */
-export const CE_RENDERER_STATE_FIELDS: Field[] = named(
+/** The keys of a block with an entity renderer the renderer section shows: they apply to all its appearances. */
+export const CE_BLOCK_RENDERER_FIELDS: Field[] = named(
   { entity_culling: entityCulling(`${CE_DOCS.entityRenderer}#entity-culling`) },
-  'furniture.state',
+  'furniture.block',
 );
 
 /** Every field of the furniture and renderer editors (for the message and docs checks). */
@@ -239,7 +245,8 @@ export const CE_FURNITURE_EDITOR_FIELDS: Field[] = [
   ...CE_RENDERER_ELEMENT_FIELDS,
   ...CE_HITBOX_FLAG_FIELDS,
   ...CE_FURNITURE_VARIANT_FIELDS,
-  ...CE_RENDERER_STATE_FIELDS,
+  ...CE_FURNITURE_FIELDS,
+  ...CE_BLOCK_RENDERER_FIELDS,
   ...CE_FURNITURE_SETTINGS_FIELDS,
   CE_FURNITURE_BEHAVIOR_LIST,
 ];

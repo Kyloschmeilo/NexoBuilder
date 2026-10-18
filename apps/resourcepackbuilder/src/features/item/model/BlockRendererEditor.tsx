@@ -5,9 +5,10 @@
 import { useId, useState } from 'react';
 import { useTranslations } from 'next-intl';
 import {
+  CE_BLOCK_RENDERER_FIELDS,
   CE_DOCS,
+  craftEngineBlock,
   CE_RENDERER_ELEMENT_FIELDS,
-  CE_RENDERER_STATE_FIELDS,
   isTransparentState,
   newRendererElement,
   rendererDefaultPosition,
@@ -18,6 +19,7 @@ import type { ConfigObject, ConfigValue, Item } from '@resourcepackbuilder/core/
 import { NativeSelect, NativeSelectOption } from '@resourcepackbuilder/ui/components/native-select';
 import { CheckboxField } from '../../../components/CheckboxField';
 import { useOpenProject } from '../../../store/project';
+import { updateCraftEngineBlock } from '../../../commands/items';
 import { DisplayElementList, KeyedFields, withKey } from './DisplayElementsEditor';
 import { BlockRendererPreview } from './FurniturePreview';
 
@@ -65,15 +67,6 @@ function BlockRendererEditor({
         help={t('ceBlock.renderer.elementsHelp')}
         docs={CE_DOCS.entityRenderer}
       />
-      {elements.length > 0 && (
-        <KeyedFields
-          fields={CE_RENDERER_STATE_FIELDS}
-          object={state}
-          siblings={state}
-          set={(key, value, historyKey) => edit((s) => withKey(s, key, value), historyKey)}
-          historyKey="state"
-        />
-      )}
     </div>
   );
 }
@@ -99,6 +92,9 @@ export function BlockRendererSection({
   const selected = picked?.itemId === item.id ? picked.name : null;
   const [name, look] = looks.find(([n]) => n === selected) ?? looks[0] ?? [];
   if (name === undefined || look === undefined) return null;
+  // Entity culling belongs to the block (CraftEngine reads it there for all appearances)
+  const block = craftEngineBlock(item.config) ?? {};
+  const hasRenderer = looks.some(([, l]) => rendererElements(l).length > 0);
   return (
     <div className="flex flex-col gap-3">
       <div className="flex flex-col gap-1">
@@ -129,6 +125,15 @@ export function BlockRendererSection({
         state={look}
         edit={(next, historyKey) => edit(name, next, historyKey && `renderer-${name}-${historyKey}`)}
       />
+      {hasRenderer && (
+        <KeyedFields
+          fields={CE_BLOCK_RENDERER_FIELDS}
+          object={block}
+          siblings={block}
+          set={(key, value, historyKey) => updateCraftEngineBlock(item.id, (b) => withKey(b, key, value), historyKey)}
+          historyKey="renderer-block"
+        />
+      )}
     </div>
   );
 }
