@@ -71,6 +71,10 @@
             "diameter": {
               "label": "Diameter",
               "placeholder": "16.0"
+            },
+            "directionalParticles": {
+              "label": "Directional particles",
+              "help": "Minecraft 26.3+. Read by Nexo 1.30, not listed in the docs."
             }
           }
         },
@@ -120,6 +124,28 @@
             },
             "inExplosion": {
               "label": "Also drop on explosion"
+            },
+            "minecraftItem": {
+              "label": "Minecraft item stack",
+              "help": "An item stack as Nexo's in-game builders save it (YAML). Read by Nexo 1.30, not listed in the docs."
+            },
+            "crucibleItem": {
+              "label": "MythicCrucible item",
+              "placeholder": "Item ID"
+            },
+            "mmoitemsType": {
+              "label": "MMOItems type",
+              "placeholder": "e.g. SWORD"
+            },
+            "mmoitemsId": {
+              "label": "MMOItems ID",
+              "placeholder": "e.g. FALCON_BLADE"
+            },
+            "minAmount": {
+              "label": "Min amount"
+            },
+            "maxAmount": {
+              "label": "Max amount"
             }
           }
         }

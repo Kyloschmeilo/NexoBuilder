@@ -67,6 +67,23 @@ describe('migrateProject', () => {
       });
     });
 
+    it('renames the plural custom_model_data keys of the docs to the keys Nexo 1.30 reads', () => {
+      expect(migrate({ Components: { custom_model_data: { floats: [1.5], colors: ['#ff0000'], strings: ['a'], flags: [true] } } })).toEqual(
+        {
+          Components: { custom_model_data: { float: [1.5], color: ['#ff0000'], string: ['a'], flag: [true] } },
+        },
+      );
+      expect(migrate({ Components: { custom_model_data: { floats: [2], float: [1] } } })).toEqual({
+        Components: { custom_model_data: { float: [1] } },
+      });
+    });
+
+    it('renames blocks of can_place_on and can_break to block', () => {
+      expect(migrate({ Components: { can_place_on: { blocks: ['stone'] }, can_break: { blocks: ['dirt'], block: 'sand' } } })).toEqual({
+        Components: { can_place_on: { block: ['stone'] }, can_break: { block: 'sand' } },
+      });
+    });
+
     it('leaves current configs untouched', () => {
       const config = { Mechanics: { custom_block: { require_supporting: true }, misc: { prevent_renaming: true } } };
       expect(migrate(config)).toEqual(config);

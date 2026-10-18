@@ -88,6 +88,11 @@
     "state": {
       "label": "{name}",
       "description": "Model in state “{name}”"
+    },
+    "brokenModel": {
+      "label": "Broken Model",
+      "description": "Model shown while the item is broken (one durability point left).",
+      "hint": "The item needs durability. Read by Nexo 1.30, not listed in the docs."
     }
   }
 }

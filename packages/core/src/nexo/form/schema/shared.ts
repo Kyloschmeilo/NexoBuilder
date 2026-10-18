@@ -52,7 +52,11 @@ export const consumeEffectsField = (label: string) =>
       }),
       REMOVE_EFFECTS: field.stringList({ suggestions: POTION_EFFECTS, placeholder: true }),
       CLEAR_ALL_EFFECTS: field.presence(),
-      TELEPORT_RANDOMLY: field.object({ diameter: field.number({ min: 0, step: 1, placeholder: true }) }),
+      TELEPORT_RANDOMLY: field.object({
+        diameter: field.number({ min: 0, step: 1, placeholder: true }),
+        // Read by Nexo 1.30 on Minecraft 26.3+ only (not in the docs)
+        directional_particles: field.boolean({ minVersion: '26.3', help: true, advanced: true }),
+      }),
       PLAY_SOUND: field.object({ sound: soundField() }),
     },
     { scope: 'shared.consumeEffects', label },
@@ -72,6 +76,13 @@ export const dropField = () =>
           amount: field.text({ format: 'range', placeholder: true }),
           probability: field.number({ min: 0, max: 1, step: 0.05 }),
           in_explosion: field.boolean(),
+          // Other sources and amount bounds Nexo 1.30's Loot reads (mmoitems_* is spelled mmoitem_* in the docs)
+          minecraft_item: field.yaml({ help: true, advanced: true }),
+          crucible_item: field.text({ placeholder: true, advanced: true }),
+          mmoitems_type: field.text({ placeholder: true, advanced: true }),
+          mmoitems_id: field.text({ placeholder: true, advanced: true }),
+          min_amount: field.number({ integer: true, min: 0, advanced: true }),
+          max_amount: field.number({ integer: true, min: 0, advanced: true }),
         },
         { titleKey: 'nexo_item', newItem: () => ({ nexo_item: '', probability: 1.0 }) },
       ),

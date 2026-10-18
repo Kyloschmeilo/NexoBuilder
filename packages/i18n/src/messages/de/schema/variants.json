@@ -88,6 +88,11 @@
     "state": {
       "label": "{name}",
       "description": "Modell im Zustand „{name}“"
+    },
+    "brokenModel": {
+      "label": "Broken Model",
+      "description": "Modell, das angezeigt wird, solange das Item kaputt ist (ein Haltbarkeitspunkt übrig).",
+      "hint": "Das Item braucht Haltbarkeit. Von Nexo 1.30 gelesen, nicht in der Doku aufgeführt."
     }
   }
 }

@@ -61,6 +61,49 @@
           "label": "Level"
         }
       }
+    },
+    "storedEnchantments": {
+      "label": "Stored Enchantments",
+      "description": "Enchantments an enchanted book stores and passes on in an anvil.",
+      "field": {
+        "label": "Stored enchantments",
+        "help": "Use with material ENCHANTED_BOOK. Read by Nexo 1.30, not listed in the docs.",
+        "keyLabel": "Enchantment",
+        "keyPlaceholder": "e.g. mending",
+        "value": {
+          "label": "Level"
+        }
+      }
+    },
+    "potionEffects": {
+      "label": "Potion Effects",
+      "description": "Effects of a potion or tipped arrow.",
+      "field": {
+        "label": "Effects",
+        "help": "Use with POTION, SPLASH_POTION, LINGERING_POTION or TIPPED_ARROW. Read by Nexo 1.30, not listed in the docs.",
+        "itemLabel": "Effect",
+        "fields": {
+          "type": {
+            "label": "Effect"
+          },
+          "duration": {
+            "label": "Duration",
+            "placeholder": "e.g. 30s"
+          },
+          "amplifier": {
+            "label": "Level (0 = I)"
+          },
+          "ambient": {
+            "label": "Ambient (subtle particles)"
+          },
+          "particles": {
+            "label": "Show particles"
+          },
+          "icon": {
+            "label": "Show icon"
+          }
+        }
+      }
     }
   }
 }

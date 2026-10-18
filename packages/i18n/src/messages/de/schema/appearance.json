@@ -112,6 +112,47 @@
           }
         }
       }
+    },
+    "componentsItemModel": {
+      "label": "Item Model",
+      "description": "Das Item-Modell, das das Item zeigt; nexo:empty macht es unsichtbar.",
+      "field": {
+        "label": "Item-Modell",
+        "placeholder": "z.B. nexo:empty",
+        "help": "Ersetzt das Item-Modell, das der Export setzt (nexo:'<'Item-ID> oder das erzeugte für Inventar-Icon und Möbel). Nur das zusätzliche YAML überschreibt es."
+      }
+    },
+    "packHandSwapAnimation": {
+      "label": "Hand Swap Animation",
+      "description": "Spielt die Hand-Animation, wenn zum Item gewechselt wird.",
+      "field": {
+        "label": "Wechsel animieren",
+        "help": "Von Nexo 1.30 gelesen, nicht in der Doku aufgeführt."
+      }
+    },
+    "packSwapAnimationScale": {
+      "label": "Swap Animation Scale",
+      "description": "Geschwindigkeit der Animation beim Wechsel zum Item.",
+      "field": {
+        "label": "Faktor",
+        "help": "Von Nexo 1.30 gelesen, nicht in der Doku aufgeführt."
+      }
+    },
+    "trimPattern": {
+      "label": "Trim Pattern",
+      "description": "Rüstungsbesatz-Muster auf dem Item (nur Vanilla-Rüstung).",
+      "field": {
+        "label": "Muster",
+        "help": "Auch das Besatz-Material setzen. Von Nexo 1.30 gelesen, nicht in der Doku aufgeführt."
+      }
+    },
+    "trimMaterial": {
+      "label": "Trim Material",
+      "description": "Material (Farbe) des Rüstungsbesatzes.",
+      "field": {
+        "label": "Material",
+        "help": "Auch das Besatz-Muster setzen. Von Nexo 1.30 gelesen, nicht in der Doku aufgeführt."
+      }
     }
   }
 }

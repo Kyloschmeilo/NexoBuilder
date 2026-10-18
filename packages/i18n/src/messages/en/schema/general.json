@@ -37,10 +37,11 @@
     },
     "template": {
       "label": "Template",
-      "description": "Inherits all properties of another Nexo item.",
+      "description": "Inherits all properties of other Nexo items.",
       "field": {
-        "label": "Template item ID",
-        "placeholder": "e.g. template_item"
+        "label": "Template item IDs",
+        "placeholder": "e.g. template_item",
+        "help": "Several templates are merged in order. Nexo 1.30 reads them all from template (the docs call the list templates)."
       }
     },
     "itemFlags": {
@@ -68,6 +69,31 @@
             "label": "Value"
           }
         }
+      }
+    },
+    "customname": {
+      "label": "Custom Name",
+      "description": "A name shown like a rename on an anvil (italic unless formatted).",
+      "field": {
+        "label": "Name",
+        "placeholder": "e.g. '<'red>Ruby",
+        "help": "Read by Nexo 1.30, not listed in the docs."
+      }
+    },
+    "injectId": {
+      "label": "Inject ID",
+      "description": "Off: the item is not registered as a Nexo item (for helper items such as Carpentry door halves).",
+      "field": {
+        "label": "Register as Nexo item",
+        "help": "Read by Nexo 1.30, not listed in the docs."
+      }
+    },
+    "noAutoUpdate": {
+      "label": "No Auto Update",
+      "description": "Nexo does not update existing copies of the item after a config change.",
+      "field": {
+        "label": "Skip automatic updates",
+        "help": "Read by Nexo 1.30, not listed in the docs."
       }
     }
   }

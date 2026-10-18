@@ -18,7 +18,8 @@ export type PackVariantSlot =
   | 'throwing_model'
   | 'damaged_models'
   | 'dyeable_model'
-  | 'composite_models';
+  | 'composite_models'
+  | 'broken_model';
 
 const CONNECT_STATES = ['straight', 'left', 'right', 'inner', 'outer'] as const;
 const PLACEMENTS = ['floor', 'wall', 'roof'] as const;
@@ -100,6 +101,8 @@ export const VARIANTS: VariantDef[] = [
   variant('dyeable_model', 'pack', 'dyeable', { hint: true }),
   variant('composite_models', 'pack', 'composite', { multiple: true, firstIndex: 1 }),
   variant('gui_model', 'definition', 'gui', { hint: true }),
+  // Read by Nexo 1.30 (NexoMeta), not in the docs: shown while the item is broken (one durability point left)
+  variant('broken_model', 'pack', 'broken', { hint: true }),
 ];
 
 /** Connectable furniture: one model per connection state */
