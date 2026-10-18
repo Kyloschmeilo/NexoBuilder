@@ -89,11 +89,37 @@
               },
               "displayHeight": {
                 "label": "Culling-Höhe"
+              },
+              "delay": {
+                "label": "Animationsdauer",
+                "help": "Wie lange eine animierte Änderung dieser Eigenschaften dauert, z. B. das Öffnen einer Tür.",
+                "placeholder": "z. B. 4t"
               }
             }
           },
           "rotatable": {
-            "label": "Drehbar"
+            "label": "Drehbar",
+            "choices": {
+              "simple": {
+                "label": "An oder aus",
+                "field": {
+                  "label": "Lässt sich drehen"
+                }
+              },
+              "section": {
+                "label": "Mit Optionen",
+                "field": {
+                  "fields": {
+                    "rotatable": {
+                      "label": "Lässt sich drehen"
+                    },
+                    "onSneak": {
+                      "label": "Nur beim Schleichen"
+                    }
+                  }
+                }
+              }
+            }
           },
           "restrictedRotation": {
             "label": "Eingeschränkte Drehung",
@@ -103,6 +129,9 @@
               },
               "veryStrict": {
                 "label": "VERY_STRICT – 4 Richtungen"
+              },
+              "none": {
+                "label": "NONE – beliebiger Winkel"
               }
             }
           },
@@ -230,6 +259,18 @@
               },
               "nextStage": {
                 "label": "Nächste Stufe (Item-ID)"
+              },
+              "minimumLightLevel": {
+                "label": "Minimale Lichtstufe",
+                "help": "Nexo 1.30 liest diesen Schlüssel; die Nexo-Doku führt ihn noch nicht auf."
+              },
+              "boostTick": {
+                "label": "Licht-Bonus (Ticks)",
+                "help": "Zusätzliches Wachstum pro Prüfung, wenn Licht in der Nähe ist. Nexo 1.30 liest diesen Schlüssel; die Nexo-Doku führt ihn noch nicht auf."
+              },
+              "rainBoostTick": {
+                "label": "Regen-Bonus (Ticks)",
+                "help": "Zusätzliches Wachstum pro Prüfung, während es regnet. Nexo 1.30 liest diesen Schlüssel; die Nexo-Doku führt ihn noch nicht auf."
               }
             }
           },
@@ -242,6 +283,9 @@
               },
               "requirePermission": {
                 "label": "Permission erforderlich"
+              },
+              "enabled": {
+                "label": "Vorschau aktiv"
               }
             }
           },
@@ -253,6 +297,27 @@
             "label": "Platzierungs-Varianten (floor/wall/roof)",
             "help": "Eigene Modelle für Floor, Wall und Roof lädst du im Tab „Model & Pack“ hoch. Hier kannst du je Variante weitere Werte überschreiben.",
             "placeholder": "wall:\n  properties:\n    translation: 0,0.3,-0.3"
+          },
+          "item": {
+            "label": "Platziertes Item (Item-ID)",
+            "help": "Das Möbelstück zeigt dieses Nexo-Item statt sich selbst, z. B. ein Samen, der seine erste Pflanzenstufe setzt.",
+            "placeholder": "z. B. rose_plant_stage1"
+          },
+          "farmlandRequired": {
+            "label": "Nur auf Ackerboden",
+            "help": "Nexo 1.30 liest diesen Schlüssel; die Nexo-Doku führt ihn noch nicht auf."
+          },
+          "itemModel": {
+            "label": "ItemModel der Möbel-Entity",
+            "help": "Zeigt auf dem platzierten Möbelstück ein anderes ItemModel als im Inventar."
+          },
+          "hardness": {
+            "label": "Härte",
+            "help": "Abbauzeit des Möbelstücks. Nexo 1.30 liest diesen Schlüssel; die Nexo-Doku führt ihn noch nicht auf."
+          },
+          "blastResistance": {
+            "label": "Explosionsfestigkeit",
+            "help": "Nexo 1.30 liest diesen Schlüssel; die Nexo-Doku führt ihn noch nicht auf."
           }
         }
       }

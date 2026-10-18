@@ -72,6 +72,9 @@
       },
       "disposal": {
         "label": "DISPOSAL (Mülleimer)"
+      },
+      "shulker": {
+        "label": "SHULKER (wie eine Shulkerkiste)"
       }
     },
     "customBlockTypes": {
@@ -144,6 +147,18 @@
       },
       "dropAll": {
         "label": "Letztes Exemplar fallengelassen"
+      },
+      "invClickRightAll": {
+        "label": "Rechtsklick im Inventar"
+      },
+      "invClickLeftAll": {
+        "label": "Linksklick im Inventar"
+      },
+      "invClickLeftShift": {
+        "label": "Shift-Linksklick im Inventar"
+      },
+      "invClickMiddleAll": {
+        "label": "Mittelklick im Inventar"
       }
     }
   }
