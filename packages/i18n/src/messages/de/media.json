@@ -19,7 +19,7 @@
     "volumeHelp": "Lautstärke, Standard 1",
     "pitchHelp": "Tonhöhe, Standard 1",
     "distanceHelp": "Reichweite in Blöcken, Standard 16",
-    "files": "Sounds",
+    "files": "Dateien",
     "filesRandom": "(eine Datei wird zufällig abgespielt)",
     "removeFile": "Datei entfernen",
     "addFile": "Datei hinzufügen",
@@ -41,7 +41,9 @@
     "referencePlaceholder": "z. B. minecraft:block.bell.use",
     "preloadHint": "(mit dem Pack laden, nicht erst beim ersten Abspielen)",
     "replaceHint": "(ersetzt den Vanilla-Sound mit diesem Namen; ohne Dateien wird er stumm)",
-    "jukeboxDocs": "{target, select, craftengine {Jukebox-Songs im CraftEngine-Wiki} other {Musikplatten in der Nexo-Doku}}"
+    "jukeboxDocs": "{target, select, craftengine {Jukebox-Songs im CraftEngine-Wiki} other {Musikplatten in der Nexo-Doku}}",
+    "noFiles": "Noch keine Dateien. Ein Sound ohne Dateien ersetzt oder verweist auf einen anderen Sound.",
+    "durationMissing": "Gib an, wie lange das Lied läuft, z.B. 2m 30s."
   },
   "paintings": {
     "title": "Paintings",
@@ -252,7 +254,12 @@
     "hint": "Eine Vorlage ist ein Stück Konfiguration mit Platzhaltern für Argumente. Blöcke nutzen sie in ihren Einstellungen, Items für das ganze Item, dazu Loot-Tabellen und Events. Die Standardvorlagen von CraftEngine (default:…) gibt es immer.",
     "docs": "Vorlagen im CraftEngine-Wiki",
     "defaults": "Standardvorlagen von CraftEngine",
-    "defaultsHint": "Jeder Block, jedes Item und jedes Möbelstück kann sie nutzen. Pflichtargumente sind mit * markiert."
+    "defaultsHint": "Jeder Block, jedes Item und jedes Möbelstück kann sie nutzen. Pflichtargumente sind mit * markiert.",
+    "argumentRequired": "Pflicht-Argument",
+    "argumentOptional": "Optionales Argument",
+    "copyId": "ID kopieren",
+    "searchDefaults": "Standardvorlagen durchsuchen…",
+    "noDefaults": "Keine Standardvorlage passt."
   },
   "globalVariables": {
     "title": "Globale Variablen",
@@ -342,5 +349,198 @@
     "count": "{count, plural, one {# Skript} other {# Skripte}}",
     "docs": "Skripte im CraftEngine-Wiki",
     "hint": "Skripte kommen in den script-Ordner des Packs. js-Funktionen und -Bedingungen rufen ihre Funktionen über die Skript-ID namespace:path auf; Annotationen wie //@Subscribe und //@Task registrieren Event-Handler und Tasks. CraftEngine führt sie nur mit scripting.js.enable: true in seiner config.yml aus; der Testserver schaltet das ein."
+  },
+  "registry": {
+    "search": "Einträge durchsuchen…",
+    "noMatches": "Keine passenden Einträge",
+    "entries": "Einträge",
+    "entryCount": "{count, plural, one {# Eintrag} other {# Einträge}}",
+    "keyTaken": "Dieser Name ist schon vergeben.",
+    "keyEmpty": "Gib einen Namen ein.",
+    "type": "Typ",
+    "value": "Wert",
+    "moveUp": "Nach oben",
+    "moveDown": "Nach unten",
+    "generic": {
+      "title": "Einträge",
+      "add": "Neuer Eintrag",
+      "empty": "Noch keine Einträge.",
+      "untitled": "Unbenannter Eintrag"
+    },
+    "groups": {
+      "glyphs": {
+        "title": "Glyphen",
+        "add": "Glyphen hochladen",
+        "empty": "Noch keine Glyphen.",
+        "untitled": "Unbenannte Glyphe"
+      },
+      "sounds": {
+        "title": "Sounds",
+        "add": "Sounds hochladen",
+        "empty": "Noch keine Sounds.",
+        "untitled": "Unbenannter Sound"
+      },
+      "paintings": {
+        "title": "Gemälde",
+        "add": "Gemälde hochladen",
+        "empty": "Noch keine Gemälde.",
+        "untitled": "Unbenanntes Gemälde"
+      },
+      "dialogs": {
+        "title": "Dialoge",
+        "add": "Neuer Dialog",
+        "empty": "Noch keine Dialoge.",
+        "untitled": "Unbenannter Dialog"
+      },
+      "lootSources": {
+        "title": "Loot-Quellen",
+        "add": "Neue Loot-Quelle",
+        "empty": "Noch keine Loot-Quellen.",
+        "untitled": "Unbenannte Loot-Quelle"
+      },
+      "templates": {
+        "title": "Vorlagen",
+        "add": "Neue Vorlage",
+        "empty": "Noch keine Vorlagen.",
+        "untitled": "Unbenannte Vorlage"
+      },
+      "globalVariables": {
+        "title": "Globale Variablen",
+        "add": "Neue globale Variable",
+        "empty": "Noch keine globalen Variablen.",
+        "untitled": "Unbenannte Variable",
+        "keyLabel": "Name"
+      },
+      "definitions": {
+        "title": "Attribute",
+        "add": "Neues Attribut",
+        "empty": "Noch keine Attribute.",
+        "untitled": "Unbenanntes Attribut"
+      },
+      "operations": {
+        "title": "Operationen",
+        "add": "Neue Operation",
+        "empty": "Noch keine Operationen.",
+        "untitled": "Unbenannte Operation"
+      },
+      "equipmentSets": {
+        "title": "Ausrüstungssets",
+        "add": "Neues Ausrüstungsset",
+        "empty": "Noch keine Ausrüstungssets.",
+        "untitled": "Unbenanntes Ausrüstungsset"
+      },
+      "damageRules": {
+        "title": "Schadensregeln",
+        "add": "Neue Schadensregel",
+        "empty": "Noch keine Schadensregeln.",
+        "untitled": "Unbenannte Schadensregel"
+      },
+      "lang": {
+        "title": "Lang-Schlüssel",
+        "add": "Neue Lang-Sprache",
+        "empty": "Noch keine Lang-Schlüssel.",
+        "untitled": "Unbenannte Sprache",
+        "keyLabel": "Sprache"
+      },
+      "server": {
+        "title": "Server-Übersetzungen",
+        "add": "Neue Übersetzungssprache",
+        "empty": "Noch keine Server-Übersetzungen.",
+        "untitled": "Unbenannte Sprache",
+        "keyLabel": "Sprache"
+      },
+      "categories": {
+        "title": "Kategorien",
+        "add": "Neue Kategorie",
+        "empty": "Noch keine Kategorien.",
+        "untitled": "Unbenannte Kategorie"
+      },
+      "configuredFeatures": {
+        "title": "Konfigurierte Features",
+        "add": "Neues konfiguriertes Feature",
+        "empty": "Noch keine konfigurierten Features.",
+        "untitled": "Unbenanntes Feature"
+      },
+      "placedFeatures": {
+        "title": "Platzierte Features",
+        "add": "Neues platziertes Feature",
+        "empty": "Noch keine platzierten Features.",
+        "untitled": "Unbenanntes Feature"
+      },
+      "atlases": {
+        "title": "Atlanten",
+        "add": "Neuer Atlas",
+        "empty": "Noch keine Atlanten.",
+        "untitled": "Unbenannter Atlas"
+      },
+      "configFactories": {
+        "title": "Config-Fabriken",
+        "add": "Neue Config-Fabrik",
+        "empty": "Noch keine Config-Fabriken.",
+        "untitled": "Unbenannte Config-Fabrik"
+      },
+      "scripts": {
+        "title": "Skripte",
+        "add": "Neues Skript",
+        "empty": "Noch keine Skripte.",
+        "untitled": "Unbenanntes Skript"
+      }
+    }
+  },
+  "sections": {
+    "preview": "Vorschau",
+    "basics": "Grundlagen",
+    "chat": "Chat",
+    "advanced": "Erweitert",
+    "emoji": "Emoji-Inhalt",
+    "playback": "Wiedergabe",
+    "jukebox": "Jukebox",
+    "placement": "Platzierung",
+    "item": "Item",
+    "checks": "Prüfungen",
+    "content": "Inhalt"
+  },
+  "fields": {
+    "id": "ID",
+    "reference": "Referenz",
+    "index": "Zelle",
+    "height": "Höhe",
+    "ascent": "Ascent",
+    "rows": "Zeilen",
+    "columns": "Spalten",
+    "font": "Schriftart",
+    "frameCount": "Anzahl Frames",
+    "offset": "Versatz",
+    "permission": "Berechtigung",
+    "placeholders": "Chat-Kürzel",
+    "isEmoji": "Emoji-Liste",
+    "tabComplete": "Tab-Vervollständigung",
+    "char": "Zeichen",
+    "shadow": "Standardschatten",
+    "template": "Vorlage",
+    "gifType": "Animationstyp",
+    "interpolate": "Interpolieren",
+    "emojiContent": "Inhalt",
+    "emojiOverride": "Inhalt in {context}",
+    "volume": "Lautstärke",
+    "pitch": "Tonhöhe",
+    "distance": "Reichweite",
+    "weight": "Gewichtung",
+    "subtitle": "Untertitel",
+    "stream": "Streamen",
+    "preload": "Vorladen",
+    "replace": "Vanilla-Sound ersetzen",
+    "jukebox": "Jukebox-Song",
+    "duration": "Dauer",
+    "description": "Beschreibung",
+    "comparatorOutput": "Komparator-Signal",
+    "range": "Reichweite",
+    "title": "Titel",
+    "author": "Autor",
+    "width": "Breite (Blöcke)",
+    "paintingHeight": "Höhe (Blöcke)",
+    "randomPlace": "Zufällig platzieren",
+    "animated": "Animiert",
+    "frametime": "Frame-Dauer"
   }
 }

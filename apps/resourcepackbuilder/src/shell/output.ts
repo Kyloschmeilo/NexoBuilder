@@ -13,7 +13,7 @@ import {
   packTargetFor,
   packYmlFile,
 } from '@resourcepackbuilder/export';
-import { buildDialogFiles, MULTIPACK_FILE, multipackFile } from '@resourcepackbuilder/core/nexo';
+import { buildDialogFiles, dialogFilePath, MULTIPACK_FILE, multipackFile } from '@resourcepackbuilder/core/nexo';
 import type { MediaKind, Project } from '@resourcepackbuilder/core/project';
 import { issuesFor, type Issue, type IssueTarget } from '@resourcepackbuilder/utils';
 import type { Selection, ViewName } from '../store/ui';
@@ -28,8 +28,11 @@ export interface Output {
   issues: Issue[];
 }
 
-/** The output of a project-wide view; null when the view writes no file. */
-export type ViewOutputProvider = (project: Project, plan: ExportPlan) => Output | null;
+/**
+ * The output of a project-wide view; null when the view writes no file. `entry` is the selected entry of a registry
+ * view (see `Selection`), which may narrow the checks to that entry.
+ */
+export type ViewOutputProvider = (project: Project, plan: ExportPlan, entry?: string) => Output | null;
 
 /** A text file of the plan's plugin folder ('' when there is none). */
 export function pluginText(plan: ExportPlan, path: string): string {
@@ -42,19 +45,33 @@ function issuesOfKind(plan: ExportPlan, kind: IssueTarget['kind']): Issue[] {
   return plan.issues.filter((issue) => issue.target?.kind === kind);
 }
 
-/** The project's config file of a media kind, with the issues of its entries; null when the target has no such kind. */
+/**
+ * The project's config file of a media kind, with the issues of its entries (of the selected entry, if any); null
+ * when the target has no such kind.
+ */
 function mediaOutput(kind: MediaKind, target: IssueTarget['kind']): ViewOutputProvider {
-  return (project, plan) => {
+  return (project, plan, entry) => {
     const file = packTargetFor(project).layout.mediaFile(project, kind);
-    return file === null ? null : { file, text: pluginText(plan, file), issues: issuesOfKind(plan, target) };
+    if (file === null) return null;
+    const issues = entry === undefined ? issuesOfKind(plan, target) : issuesFor(plan.issues, { kind: target, id: entry });
+    return { file, text: pluginText(plan, file), issues };
   };
 }
 
-/** A Nexo project's dialog files, one after the other, each headed by its path; with the dialogs' issues. */
-const dialogsOutput: ViewOutputProvider = (project, plan) => {
+/**
+ * A Nexo project's dialog files, one after the other, each headed by its path, with the dialogs' issues; for a
+ * selected dialog only its own file and issues.
+ */
+const dialogsOutput: ViewOutputProvider = (project, plan, entry) => {
   const folder = packTargetFor(project).layout.mediaFile(project, 'dialog');
   if (folder === null) return null;
-  const text = [...buildDialogFiles(project)].map(([path, yaml]) => `# ${path}\n${yaml}`).join('\n');
+  const files = buildDialogFiles(project);
+  const dialog = entry === undefined ? undefined : project.dialogs.find((candidate) => candidate.id === entry);
+  if (dialog) {
+    const file = dialogFilePath(dialog);
+    return { file, text: files.get(file) ?? '', issues: issuesFor(plan.issues, { kind: 'dialog', id: dialog.id }) };
+  }
+  const text = [...files].map(([path, yaml]) => `# ${path}\n${yaml}`).join('\n');
   return { file: folder, text, issues: issuesOfKind(plan, 'dialog') };
 };
 
@@ -110,7 +127,12 @@ export const VIEW_OUTPUTS: Partial<Record<ViewName, ViewOutputProvider>> = {
   templates: craftEngineFileOutput('templates'),
   globalVariables: craftEngineFileOutput('global_variables'),
   attributes: craftEngineFileOutput('attributes'),
-  translations: craftEngineSectionOutput(['translations', 'lang/en_us'], ['ce.translationsLocaleInvalid', 'ce.langLocaleInvalid']),
+  // A selected lang locale (`lang/<locale>`) shows its own lang file, a server locale translations.yml
+  translations: (project, plan, entry) =>
+    craftEngineSectionOutput(
+      entry?.startsWith('lang/') ? [entry] : entry?.startsWith('server/') ? ['translations'] : ['translations', 'lang/en_us'],
+      ['ce.translationsLocaleInvalid', 'ce.langLocaleInvalid'],
+    )(project, plan),
   categories: craftEngineSectionOutput(['categories'], ['ce.sectionEntryId', 'context.category']),
   worldgen: craftEngineSectionOutput(
     ['worldgen'],
@@ -156,7 +178,7 @@ export const SELECTION_OUTPUTS: { [K in SelectionKind]: (project: Project, plan:
       );
       return { file: entry?.yamlFile ?? null, text: entry ? pluginText(plan, entry.yamlFile) : '', issues };
     },
-    view: (project, plan, { view }) => VIEW_OUTPUTS[view]?.(project, plan) ?? null,
+    view: (project, plan, { view, entry }) => VIEW_OUTPUTS[view]?.(project, plan, entry) ?? null,
     // CraftEngine writes the pack settings into pack.yml; Nexo keeps them in its own config
     settings: (project, plan) => {
       if (project.target !== 'craftengine') return null;
