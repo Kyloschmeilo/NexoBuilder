@@ -265,5 +265,25 @@
     "fromFoldersOn": "The export also writes a category for each folder (project setting); one of yours with the same id replaces it.",
     "fromFoldersOff": "The project setting for one category per folder is off, so only these categories are written.",
     "docs": "Categories in the CraftEngine wiki"
+  },
+  "worldgen": {
+    "title": "Worldgen features",
+    "count": "{count, plural, one {# feature} other {# features}}",
+    "hint": "A configured feature is what generates, e.g. the shape of a tree; a placed feature is where and how often. Write the YAML with misode's datapack generator (set to your server's version and YAML output) and use your custom block ids in it.",
+    "docs": "Worldgen features in the CraftEngine wiki",
+    "configured": {
+      "title": "Configured features",
+      "hint": "Saplings grow these. A placed feature names one or holds its own."
+    },
+    "placed": {
+      "title": "Placed features",
+      "hint": "These generate in the world. Grass blocks grow these with bone meal."
+    }
+  },
+  "atlases": {
+    "title": "Atlases",
+    "count": "{count, plural, one {# atlas} other {# atlases}}",
+    "hint": "Most packs need no atlas: CraftEngine repairs the common block and item atlas cases itself. Add one to put textures into a vanilla atlas or build a custom sprite atlas.",
+    "docs": "Atlases in the CraftEngine wiki"
   }
 }

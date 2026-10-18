@@ -147,16 +147,133 @@ describe('CraftEngine categories', () => {
     // The folder's category comes first
     expect(text.indexOf('welt:teile:')).toBeLessThan(text.indexOf('welt:swords:'));
     expect(pluginText(plan, `${CONFIG}/items/teile/teile.yml`)).toContain('    category:\n      - welt:swords\n');
-    expect(codes(project)).toContain('ce.categoryIdMissing');
-  });
-
-  it('reports bad and taken category ids', () => {
-    const { project } = ceProject({ categories: [{ id: 'Bad Id' }, { id: 'a' }, { id: 'welt:a' }] });
-    expect(codes(project)).toEqual(expect.arrayContaining(['ce.categoryIdInvalid', 'ce.categoryIdDuplicate']));
+    expect(codes(project)).toContain('ce.sectionEntryIdMissing');
   });
 
   it('writes no categories.yml without categories', () => {
     const { project } = ceProject();
     expect(planExport(project).pluginFiles.has(`${CONFIG}/categories.yml`)).toBe(false);
+  });
+});
+
+describe('CraftEngine worldgen features', () => {
+  const tree = { id: 'palm_tree', type: 'minecraft:tree', config: { trunk_provider: { type: 'craftengine:simple_state_provider' } } };
+
+  it('writes configured and placed features to worldgen.yml', () => {
+    const { project } = ceProject({
+      configuredFeatures: [tree],
+      placedFeatures: [
+        {
+          id: 'palm_tree_beach',
+          feature: 'welt:palm_tree',
+          placement: [{ type: 'minecraft:rarity_filter', chance: 7 }, { type: 'minecraft:biome' }],
+          dimension_type: ['minecraft:overworld'],
+          biome: ['minecraft:beach'],
+        },
+      ],
+    });
+    const plan = planExport(project);
+    expect(pluginText(plan, `${CONFIG}/worldgen.yml`)).toBe(
+      [
+        '# Created with ResourcepackBuilder – worldgen features of "Welt"',
+        'configured_features:',
+        '  welt:palm_tree:',
+        '    type: minecraft:tree',
+        '    config:',
+        '      trunk_provider:',
+        '        type: craftengine:simple_state_provider',
+        '',
+        'placed_features:',
+        '  welt:palm_tree_beach:',
+        '    feature: welt:palm_tree',
+        '    placement:',
+        '      - type: minecraft:rarity_filter',
+        '        chance: 7',
+        '      - type: minecraft:biome',
+        '    dimension_type:',
+        '      - minecraft:overworld',
+        '    biome:',
+        '      - minecraft:beach',
+        '',
+      ].join('\n'),
+    );
+    expect(codes(project).filter((code) => code.startsWith('ce.'))).toEqual([]);
+  });
+
+  it('reports a biome filter without the biome modifier, a missing feature and an unknown one', () => {
+    const { project } = ceProject({
+      configuredFeatures: [{ id: 'no_type', config: {} }],
+      placedFeatures: [
+        { id: 'a', feature: 'welt:missing', placement: [], biome: ['minecraft:beach'] },
+        { id: 'b', placement: [] },
+        { id: 'c', feature: 'minecraft:oak' },
+      ],
+    });
+    expect(codes(project)).toEqual(
+      expect.arrayContaining([
+        'ce.configuredFeatureTypeMissing',
+        'ce.placedFeatureBiomeWithoutModifier',
+        'ce.placedFeatureFeatureMissing',
+        'ce.placedFeatureUnknown',
+      ]),
+    );
+    expect(codes(project).filter((code) => code === 'ce.placedFeatureUnknown')).toHaveLength(1);
+  });
+});
+
+describe('CraftEngine atlases', () => {
+  it('writes the atlases to atlases.yml', () => {
+    const { project } = ceProject({
+      atlases: [
+        {
+          id: 'minecraft:blocks',
+          sources: [
+            { type: 'directory', source: 'machines', prefix: 'machines/' },
+            {
+              type: 'unstitch',
+              resource: 'welt:gui/sprites',
+              divisor_x: 256,
+              regions: [{ sprite: 'welt:gui/button', x: 0, y: 0, width: 20, height: 20 }],
+            },
+          ],
+        },
+        { id: 'empty', sources: [] },
+      ],
+    });
+    const plan = planExport(project);
+    expect(pluginText(plan, `${CONFIG}/atlases.yml`)).toContain(
+      [
+        'atlases:',
+        '  minecraft:blocks:',
+        '    sources:',
+        '      - type: directory',
+        '        source: machines',
+        '        prefix: machines/',
+        '      - type: unstitch',
+        '        resource: welt:gui/sprites',
+        '        divisor_x: 256',
+        '        regions:',
+        '          - sprite: welt:gui/button',
+        '            x: 0',
+        '            "y": 0',
+        '            width: 20',
+        '            height: 20',
+        '',
+      ].join('\n'),
+    );
+    expect(pluginText(plan, `${CONFIG}/atlases.yml`)).not.toContain('welt:empty');
+    expect(codes(project)).toContain('ce.atlasSourcesMissing');
+  });
+});
+
+describe('CraftEngine section entry ids', () => {
+  it('reports missing, bad and taken ids of every list', () => {
+    const { project } = ceProject({
+      categories: [{ id: 'Bad Id' }, { id: 'a' }, { id: 'welt:a' }],
+      atlases: [{ sources: [{ type: 'single', resource: 'x' }] }],
+    });
+    expect(codes(project)).toEqual(
+      expect.arrayContaining(['ce.sectionEntryIdInvalid', 'ce.sectionEntryIdDuplicate', 'ce.sectionEntryIdMissing']),
+    );
   });
 });

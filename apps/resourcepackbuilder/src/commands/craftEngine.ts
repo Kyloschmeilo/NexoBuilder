@@ -85,8 +85,11 @@ export function setServerTranslations(value: unknown): void {
   setCraftEngineData('translations', localeTexts(value));
 }
 
-/** Replaces the item browser categories; without any, the key is removed. */
-export function setCategories(value: unknown): void {
-  const categories = objectList(value);
-  setCraftEngineData('categories', categories.length > 0 ? categories : undefined);
+/** The parts of the CraftEngine data that are plain lists of entries */
+export type CraftEngineListKey = 'categories' | 'configuredFeatures' | 'placedFeatures' | 'atlases';
+
+/** Replaces one list of entries (categories, worldgen features, atlases); without any, the key is removed. */
+export function setCraftEngineList(key: CraftEngineListKey, value: unknown): void {
+  const entries = objectList(value);
+  setCraftEngineData(key, entries.length > 0 ? entries : undefined);
 }

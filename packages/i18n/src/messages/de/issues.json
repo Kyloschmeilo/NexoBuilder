@@ -297,9 +297,14 @@
     "damageRuleEmpty": "Die Schadensregel hat weder eine Formel noch Effekte, deshalb lehnt CraftEngine sie ab.",
     "langLocaleInvalid": "Die Lang-Sprache „{locale}“ ist kein Minecraft-Sprachcode (wie en_us oder all), deshalb werden ihre Schlüssel weggelassen.",
     "translationsLocaleInvalid": "Die Übersetzungssprache „{locale}“ ist keine Sprache, die CraftEngine liest (wie en oder zh_cn), deshalb werden ihre Schlüssel weggelassen.",
-    "categoryIdMissing": "Die Kategorie hat keine ID und wird deshalb weggelassen.",
-    "categoryIdInvalid": "Die Kategorie-ID „{id}“ darf nur Kleinbuchstaben, Ziffern und _ . - / enthalten (und einen : nach dem Namespace).",
-    "categoryIdDuplicate": "Eine andere Kategorie nutzt schon die ID „{id}“, deshalb wird diese weggelassen."
+    "sectionEntryIdMissing": "Der Eintrag hat keine ID und wird deshalb weggelassen.",
+    "sectionEntryIdInvalid": "Die ID „{id}“ darf nur Kleinbuchstaben, Ziffern und _ . - / enthalten (und einen : nach dem Namespace).",
+    "sectionEntryIdDuplicate": "Ein anderer Eintrag nutzt schon die ID „{id}“, deshalb wird dieser weggelassen.",
+    "configuredFeatureTypeMissing": "Das konfigurierte Feature hat keinen Typ, deshalb lehnt CraftEngine es ab.",
+    "placedFeatureFeatureMissing": "Das platzierte Feature hat kein Feature zum Platzieren, deshalb lehnt CraftEngine es ab.",
+    "placedFeatureUnknown": "Es gibt kein konfiguriertes Feature „{feature}“ in diesem Projekt. Wenn kein anderes Pack es definiert, lehnt CraftEngine das platzierte Feature ab.",
+    "placedFeatureBiomeWithoutModifier": "Der Biom-Filter wirkt nur mit dem Modifier minecraft:biome im Placement. Füge ihn hinzu, sonst entsteht das Feature in jedem Biom.",
+    "atlasSourcesMissing": "Der Atlas hat keine Quellen und fügt deshalb nichts hinzu."
   },
   "issueList": {
     "openItem": "Zum Item",

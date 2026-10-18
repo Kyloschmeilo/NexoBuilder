@@ -11,16 +11,14 @@
  * and folders without items (in them or below) get no category. The id is `<namespace>:<folder slugs joined by />`;
  * a folder whose slug a sibling before it already has gets `-2`, `-3`, … appended, so every category id is unique.
  */
-import { formatResourceLocation } from '@resourcepackbuilder/minecraft';
-import { isPlainObject } from '@resourcepackbuilder/utils';
 import { field, resolveFields } from '../form/build';
 import type { ObjectListField } from '../form/fields';
 import { type Option, plainOptions } from '../form/options';
-import { pruneValue } from '../form/prune';
 import { folderSlug } from '../project/tree';
 import type { ConfigObject, Folder, Item, Project } from '../project/types';
 import { CE_CATEGORY_SOURCES } from './logic';
 import { gate } from './logic/shared';
+import { entrySection, keyedEntries } from './projectEntries';
 import { craftEngineItemKey } from './yaml';
 
 /** Builds the categories of the folders that hold any of `items` (the exported items of the project). */
@@ -82,18 +80,6 @@ export function craftEngineCategories(project: Project, items: Item[]): Record<s
 /** The project's own categories (an empty list for a project without any). */
 export const projectCategories = (project: Pick<Project, 'craftEngine'>): ConfigObject[] => project.craftEngine?.categories ?? [];
 
-/** Ids a category can have: a resource location, its namespace optional */
-export const CE_CATEGORY_ID = /^([a-z0-9_.-]+:)?[a-z0-9_./-]+$/;
-
-/** The id of a category entry ('' without one). */
-export const categoryEntryId = (entry: ConfigObject): string => (typeof entry.id === 'string' ? entry.id.trim() : '');
-
-/** The key a category is written under: its id as written, in the project's namespace when it names none. */
-export function categoryKey(project: Pick<Project, 'namespace'>, id: string): string {
-  const trimmed = id.trim();
-  return trimmed.includes(':') ? trimmed : formatResourceLocation(project.namespace, trimmed);
-}
-
 /** A new category: an id to fill in and a list source */
 export const newCategory = (): ConfigObject => ({ id: '', name: '', icon: 'minecraft:stone', source: [{ type: 'list', list: [] }] });
 
@@ -119,42 +105,21 @@ const [categoryList] = resolveFields(
 /** The project's categories as the editor edits them (messages at `craftEngine.fields.categories` of ceSchema). */
 export const CE_CATEGORY_LIST = categoryList as ObjectListField;
 
-/** The entries with an id, each under its key (a later entry with a taken key is left out). */
-function writtenCategories(project: Project): Map<string, ConfigObject> {
-  const result = new Map<string, ConfigObject>();
-  for (const entry of projectCategories(project)) {
-    const id = categoryEntryId(entry);
-    if (!id) continue;
-    const key = categoryKey(project, id);
-    if (!result.has(key)) result.set(key, entry);
-  }
-  return result;
-}
-
-/**
- * The project's own categories by key: pruned by the editor's fields, without their `id`, a single source written
- * as that source.
- */
+/** The project's own categories by key, pruned by the editor's fields, a single source written as that source. */
 export function craftEngineProjectCategories(project: Project): Record<string, ConfigObject> {
-  const section: Record<string, ConfigObject> = {};
-  for (const [key, entry] of writtenCategories(project)) {
-    const pruned = pruneValue([entry], CE_CATEGORY_LIST);
-    if (!Array.isArray(pruned) || !isPlainObject(pruned[0])) continue;
-    const category = { ...(pruned[0] as ConfigObject) };
-    delete category.id;
-    if (Array.isArray(category.source) && category.source.length === 1) category.source = category.source[0];
-    section[key] = category;
-  }
-  return section;
+  return entrySection(project, projectCategories(project), CE_CATEGORY_LIST, (category) =>
+    Array.isArray(category.source) && category.source.length === 1 ? { ...category, source: category.source[0] } : category,
+  );
 }
 
 /** The project's categories as suggestions (by key) for an item's `category`. */
 export function projectCategoryOptions(project: Project): Option[] {
-  return plainOptions([...writtenCategories(project).keys()]);
+  return plainOptions([...keyedEntries(project, projectCategories(project)).keys()]);
 }
 
 /** What a list source can name: the project's items by key, then its categories as `#<key>`. */
 export function projectCategoryMemberOptions(project: Project): Option[] {
   const items = Object.values(project.items).map((item) => craftEngineItemKey(project, item));
-  return plainOptions([...items, ...[...writtenCategories(project).keys()].map((key) => `#${key}`)]);
+  const categories = [...keyedEntries(project, projectCategories(project)).keys()].map((key) => `#${key}`);
+  return plainOptions([...items, ...categories]);
 }

@@ -265,5 +265,25 @@
     "fromFoldersOn": "Der Export schreibt außerdem eine Kategorie pro Ordner (Projekteinstellung); eine eigene mit derselben ID ersetzt sie.",
     "fromFoldersOff": "Die Projekteinstellung für eine Kategorie pro Ordner ist aus, deshalb werden nur diese Kategorien geschrieben.",
     "docs": "Kategorien im CraftEngine-Wiki"
+  },
+  "worldgen": {
+    "title": "Weltgenerierung",
+    "count": "{count, plural, one {# Feature} other {# Features}}",
+    "hint": "Ein konfiguriertes Feature ist das, was entsteht, z. B. die Form eines Baums; ein platziertes Feature bestimmt, wo und wie oft. Schreib das YAML mit misodes Datapack-Generator (auf die Version deines Servers und YAML-Ausgabe gestellt) und nutze darin die IDs deiner eigenen Blöcke.",
+    "docs": "Weltgenerierung im CraftEngine-Wiki",
+    "configured": {
+      "title": "Konfigurierte Features",
+      "hint": "Setzlinge wachsen zu diesen. Ein platziertes Feature nennt eines oder enthält ein eigenes."
+    },
+    "placed": {
+      "title": "Platzierte Features",
+      "hint": "Diese entstehen in der Welt. Grasblöcke lassen sie mit Knochenmehl wachsen."
+    }
+  },
+  "atlases": {
+    "title": "Atlanten",
+    "count": "{count, plural, one {# Atlas} other {# Atlanten}}",
+    "hint": "Die meisten Packs brauchen keinen Atlas: CraftEngine repariert die üblichen Fälle der Block- und Item-Atlanten selbst. Füge einen hinzu, um Texturen in einen Vanilla-Atlas zu bringen oder einen eigenen Sprite-Atlas zu bauen.",
+    "docs": "Atlanten im CraftEngine-Wiki"
   }
 }

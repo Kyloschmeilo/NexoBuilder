@@ -4,7 +4,7 @@
  * own categories and, with the project setting on, its folders as categories (categories.yml), its lang files (item
  * and block names and the project's own lang keys), its loot sources (loot_sources.yml), its templates
  * (templates.yml), its global variables (global_variables.yml), its attribute system (attributes.yml) and its other
- * project-level sections (projectSections.ts).
+ * project-level sections (projectSections.ts: translations, worldgen features, atlases).
  */
 import { createIssue, groupBy, type Issue, type IssueCode, type IssueLevel, type MessageArgs } from '@resourcepackbuilder/utils';
 import { formatResourceLocation } from '@resourcepackbuilder/minecraft';

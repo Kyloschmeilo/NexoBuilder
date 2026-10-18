@@ -96,6 +96,14 @@
       "categories": {
         "label": "Kategorien",
         "hint": "Kategorien: die Gruppen des /ce-Item-Browsers"
+      },
+      "worldgen": {
+        "label": "Weltgenerierung",
+        "hint": "Weltgenerierung: Bäume, Erze und Blumen, die in der Welt entstehen"
+      },
+      "atlases": {
+        "label": "Atlanten",
+        "hint": "Atlanten: welche Texturen in einen Textur-Atlas kommen"
       }
     },
     "testServer": {

@@ -65,6 +65,94 @@
             "help": "Woher die Einträge kommen. Mehrere Quellen werden der Reihe nach angehängt."
           }
         }
+      },
+      "configuredFeatures": {
+        "label": "configured_features",
+        "itemLabel": "Konfiguriertes Feature",
+        "fields": {
+          "id": {
+            "label": "id",
+            "help": "Setzlinge und platzierte Features nennen das Feature bei dieser ID. Ohne Namespace bekommt es den des Projekts.",
+            "placeholder": "z. B. palm_tree"
+          },
+          "type": {
+            "label": "type",
+            "help": "Der Vanilla-Feature-Typ oder craftengine:simple_block für einen eigenen Block."
+          },
+          "config": {
+            "label": "config",
+            "help": "Die Einstellungen des Features als YAML, z. B. aus misodes Generator für konfigurierte Features. Eigene Block-IDs gehen überall, wo Vanilla-IDs gehen; craftengine:simple_state_provider und die anderen craftengine:-Provider helfen, wo die Vanilla-Provider es nicht tun.",
+            "placeholder": "to_place: …"
+          }
+        }
+      },
+      "placedFeatures": {
+        "label": "placed_features",
+        "itemLabel": "Platziertes Feature",
+        "fields": {
+          "id": {
+            "label": "id",
+            "help": "Grasblöcke nennen das Feature bei dieser ID. Ohne Namespace bekommt es den des Projekts.",
+            "placeholder": "z. B. palm_tree_beach"
+          },
+          "feature": {
+            "label": "feature",
+            "help": "Das konfigurierte Feature, das platziert wird: seine ID oder eines, das hier steht.",
+            "choices": {
+              "reference": {
+                "label": "ID",
+                "field": {
+                  "label": "Konfiguriertes Feature",
+                  "placeholder": "z. B. namespace:palm_tree"
+                }
+              },
+              "inline": {
+                "label": "Direkt",
+                "field": {
+                  "label": "Konfiguriertes Feature",
+                  "placeholder": "type: minecraft:simple_block"
+                }
+              }
+            }
+          },
+          "placement": {
+            "label": "placement",
+            "help": "Die Placement-Modifier als YAML-Liste, z. B. rarity_filter, in_square, heightmap. Ein Biom-Filter braucht hier - type: minecraft:biome.",
+            "placeholder": "- type: minecraft:rarity_filter"
+          },
+          "world": {
+            "label": "world",
+            "help": "Nur diese Welten, mit ihrem genauen Namen. Ohne Angabe: alle.",
+            "placeholder": "z. B. world"
+          },
+          "dimension": {
+            "label": "dimension",
+            "help": "Nur diese Dimensionen. Ohne Angabe: alle."
+          },
+          "dimensionType": {
+            "label": "dimension_type",
+            "help": "Nur Dimensionen dieser Typen. Ohne Angabe: alle."
+          },
+          "biome": {
+            "label": "biome",
+            "help": "Nur diese Biome. Braucht den Modifier minecraft:biome im Placement."
+          }
+        }
+      },
+      "atlases": {
+        "label": "atlases",
+        "itemLabel": "Atlas",
+        "fields": {
+          "id": {
+            "label": "id",
+            "help": "Der Atlas, in den die Quellen kommen, z. B. minecraft:blocks. Einträge mit derselben ID werden zusammengeführt.",
+            "placeholder": "z. B. minecraft:blocks"
+          },
+          "sources": {
+            "label": "sources",
+            "help": "Woher die Sprites des Atlas kommen."
+          }
+        }
       }
     }
   },
@@ -101,6 +189,122 @@
             "help": "Behält nur eigene Items. Standard: an."
           }
         }
+      }
+    },
+    "atlasSources": {
+      "directory": {
+        "label": "directory",
+        "help": "Jede Textur in einem Ordner und seinen Unterordnern.",
+        "fields": {
+          "source": {
+            "label": "source",
+            "help": "Der Ordner unter assets/<Atlas-Namespace>/textures/.",
+            "placeholder": "z. B. block"
+          },
+          "prefix": {
+            "label": "prefix",
+            "help": "Wird vor jede Sprite-ID gesetzt.",
+            "placeholder": "z. B. block/"
+          }
+        }
+      },
+      "single": {
+        "label": "single",
+        "help": "Eine Textur.",
+        "fields": {
+          "sprite": {
+            "label": "sprite",
+            "help": "Die Sprite-ID. Ohne Angabe: die Textur-ID.",
+            "placeholder": "z. B. namespace:machine"
+          }
+        }
+      },
+      "filter": {
+        "label": "filter",
+        "help": "Entfernt die Sprites, deren Namespace oder Pfad passt.",
+        "fields": {
+          "pattern": {
+            "label": "pattern",
+            "help": "Reguläre Ausdrücke; gib mindestens einen an.",
+            "fields": {
+              "namespace": {
+                "label": "namespace",
+                "placeholder": "z. B. my_pack"
+              },
+              "path": {
+                "label": "path",
+                "placeholder": "z. B. gui/.*"
+              }
+            }
+          }
+        }
+      },
+      "unstitch": {
+        "label": "unstitch",
+        "help": "Schneidet Bereiche einer Textur in eigene Sprites.",
+        "fields": {
+          "divisorX": {
+            "label": "divisor_x",
+            "help": "Die Breite, auf die sich die Koordinaten beziehen. Standard: 1."
+          },
+          "divisorY": {
+            "label": "divisor_y",
+            "help": "Die Höhe, auf die sich die Koordinaten beziehen. Standard: 1."
+          },
+          "regions": {
+            "label": "regions",
+            "itemLabel": "Bereich",
+            "fields": {
+              "sprite": {
+                "label": "sprite",
+                "placeholder": "z. B. namespace:gui/button"
+              },
+              "x": {
+                "label": "x"
+              },
+              "y": {
+                "label": "y"
+              },
+              "width": {
+                "label": "width"
+              },
+              "height": {
+                "label": "height"
+              }
+            }
+          }
+        }
+      },
+      "palettedPermutations": {
+        "label": "paletted_permutations",
+        "help": "Umgefärbte Kopien von Texturen, eine pro Palette.",
+        "fields": {
+          "textures": {
+            "label": "textures",
+            "placeholder": "z. B. namespace:trims/items/helmet_trim"
+          },
+          "separator": {
+            "label": "separator",
+            "help": "Verbindet Texturname und Suffix. Standard: _.",
+            "placeholder": "_"
+          },
+          "permutations": {
+            "label": "permutations",
+            "help": "Suffix zu Paletten-Textur.",
+            "keyLabel": "Suffix",
+            "keyPlaceholder": "z. B. ruby",
+            "value": {
+              "label": "Palette",
+              "placeholder": "z. B. namespace:trims/color_palettes/ruby"
+            }
+          }
+        }
+      }
+    },
+    "shared": {
+      "atlasTexture": {
+        "label": "Textur",
+        "placeholder": "z. B. namespace:block/machine"
       }
     }
   },

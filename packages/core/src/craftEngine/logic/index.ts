@@ -1,7 +1,8 @@
 /**
  * The CraftEngine logic catalogs: conditions, functions, number providers, event triggers, loot sources, loot tables,
- * the typed values of the attribute system and the sources of item browser categories.
+ * the typed values of the attribute system, the sources of item browser categories and the sprite sources of atlases.
  */
+import { CE_ATLAS_SOURCES } from './atlasSources';
 import { CE_ATTRIBUTE_BASES, CE_ATTRIBUTE_SYNC_VALUES, CE_DAMAGE_EFFECTS, CE_DAMAGE_FORMULAS } from './attributes';
 import type { LogicCatalogName, LogicType } from './catalog';
 import { CE_CATEGORY_SOURCES } from './categorySources';
@@ -12,6 +13,7 @@ import { CE_LOOT_SOURCES } from './lootSources';
 import { CE_NUMBERS } from './numbers';
 import { CE_TRIGGERS } from './triggers';
 
+export { CE_ATLAS_SOURCES } from './atlasSources';
 export { CE_ATTRIBUTE_BASES, CE_ATTRIBUTE_SYNC_VALUES, CE_DAMAGE_EFFECTS, CE_DAMAGE_FORMULAS } from './attributes';
 export * from './catalog';
 export { CE_CATEGORY_SOURCES } from './categorySources';
@@ -37,4 +39,5 @@ export const CE_LOGIC: Record<LogicCatalogName, readonly LogicType[]> = {
   damageFormulas: CE_DAMAGE_FORMULAS,
   damageEffects: CE_DAMAGE_EFFECTS,
   categorySources: CE_CATEGORY_SOURCES,
+  atlasSources: CE_ATLAS_SOURCES,
 };

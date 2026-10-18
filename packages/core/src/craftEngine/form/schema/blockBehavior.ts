@@ -47,7 +47,7 @@ const BEHAVIOR: Record<string, PropertySpec> = {
     docs: ceBlockBehaviorDocs('leaves_block'),
   },
   'block.behavior.feature': {
-    field: field.text({ format: 'resource', placeholder: true }),
+    field: field.select([], { allowCustom: true, dynamicSuggestions: 'configuredFeatures', placeholder: true }),
     defaultValue: () => 'minecraft:oak',
     docs: ceBlockBehaviorDocs('sapling_block'),
   },

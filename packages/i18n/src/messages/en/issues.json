@@ -297,9 +297,14 @@
     "damageRuleEmpty": "The damage rule has neither a formula nor effects, so CraftEngine rejects it.",
     "langLocaleInvalid": "The lang language “{locale}” is not a Minecraft language code (like en_us, or all), so its keys are left out.",
     "translationsLocaleInvalid": "The translation language “{locale}” is not a locale CraftEngine reads (like en or zh_cn), so its keys are left out.",
-    "categoryIdMissing": "The category has no id, so it is left out.",
-    "categoryIdInvalid": "The category id “{id}” may only contain lowercase letters, digits and _ . - / (and one : after the namespace).",
-    "categoryIdDuplicate": "Another category already uses the id “{id}”, so this one is left out."
+    "sectionEntryIdMissing": "The entry has no id, so it is left out.",
+    "sectionEntryIdInvalid": "The id “{id}” may only contain lowercase letters, digits and _ . - / (and one : after the namespace).",
+    "sectionEntryIdDuplicate": "Another entry already uses the id “{id}”, so this one is left out.",
+    "configuredFeatureTypeMissing": "The configured feature has no type, so CraftEngine rejects it.",
+    "placedFeatureFeatureMissing": "The placed feature has no feature to place, so CraftEngine rejects it.",
+    "placedFeatureUnknown": "There is no configured feature “{feature}” in this project. Unless another pack defines it, CraftEngine rejects the placed feature.",
+    "placedFeatureBiomeWithoutModifier": "The biome filter only works with the minecraft:biome modifier in the placement. Add it, or the feature generates in every biome.",
+    "atlasSourcesMissing": "The atlas has no sources, so it adds nothing."
   },
   "issueList": {
     "openItem": "Go to item",

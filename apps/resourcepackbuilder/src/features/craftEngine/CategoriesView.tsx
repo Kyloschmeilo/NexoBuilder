@@ -10,7 +10,7 @@ import { CRAFT_ENGINE_PLUGIN_DIR, craftEngineConfigFile } from '@resourcepackbui
 import { IconButton, PageHeader, PageShell } from '@resourcepackbuilder/ui';
 import { Alert, AlertDescription } from '@resourcepackbuilder/ui/components/alert';
 import { Badge } from '@resourcepackbuilder/ui/components/badge';
-import { setCategories } from '../../commands/craftEngine';
+import { setCraftEngineList } from '../../commands/craftEngine';
 import { FieldRenderer } from '../../components/editor';
 import { useOpenProject } from '../../store/project';
 import { ProjectFieldContext } from './ProjectFieldContext';
@@ -44,7 +44,12 @@ export function CategoriesView() {
             {t('hint')} {project.settings.ceCategoriesFromFolders ? t('fromFoldersOn') : t('fromFoldersOff')}
           </AlertDescription>
         </Alert>
-        <FieldRenderer field={CE_CATEGORY_LIST} value={categories} hideLabel onChange={setCategories} />
+        <FieldRenderer
+          field={CE_CATEGORY_LIST}
+          value={categories}
+          hideLabel
+          onChange={(value) => setCraftEngineList('categories', value)}
+        />
       </PageShell>
     </ProjectFieldContext>
   );

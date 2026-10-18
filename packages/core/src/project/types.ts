@@ -89,6 +89,12 @@ export interface CraftEngineProjectData {
   translations?: Record<string, Record<string, string>>;
   /** The item browser categories (`categories`), each a config with its `id` (core/craftEngine/categories.ts) */
   categories?: ConfigObject[];
+  /** Configured worldgen features (`configured_features`), each with its `id` (core/craftEngine/worldgen.ts) */
+  configuredFeatures?: ConfigObject[];
+  /** Placed worldgen features (`placed_features`), each with its `id` */
+  placedFeatures?: ConfigObject[];
+  /** Texture atlases (`atlases`), each with its `id` and `sources` (core/craftEngine/atlas.ts) */
+  atlases?: ConfigObject[];
 }
 
 /**

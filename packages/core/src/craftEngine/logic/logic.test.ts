@@ -90,6 +90,7 @@ describe('the logic catalogs', () => {
       damageFormulas: 3,
       damageEffects: 3,
       categorySources: 3,
+      atlasSources: 5,
     });
   });
 

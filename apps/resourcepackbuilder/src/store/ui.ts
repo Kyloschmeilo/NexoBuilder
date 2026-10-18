@@ -15,6 +15,8 @@ export type ViewName =
   | 'attributes'
   | 'translations'
   | 'categories'
+  | 'worldgen'
+  | 'atlases'
   | 'testServer';
 
 export type Selection = { kind: 'item'; id: string } | { kind: 'folder'; id: string } | { kind: 'view'; view: ViewName } | null;

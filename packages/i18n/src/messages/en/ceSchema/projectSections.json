@@ -65,6 +65,94 @@
             "help": "Where the members come from. Several sources are appended in order."
           }
         }
+      },
+      "configuredFeatures": {
+        "label": "configured_features",
+        "itemLabel": "Configured feature",
+        "fields": {
+          "id": {
+            "label": "id",
+            "help": "Saplings and placed features name the feature by this id. Without a namespace it gets the project's.",
+            "placeholder": "e.g. palm_tree"
+          },
+          "type": {
+            "label": "type",
+            "help": "The vanilla feature type, or craftengine:simple_block for a custom block."
+          },
+          "config": {
+            "label": "config",
+            "help": "The feature's settings as YAML, e.g. from misode's configured feature generator. Custom block ids work wherever vanilla ones do; craftengine:simple_state_provider and the other craftengine: providers help where vanilla ones do not.",
+            "placeholder": "to_place: …"
+          }
+        }
+      },
+      "placedFeatures": {
+        "label": "placed_features",
+        "itemLabel": "Placed feature",
+        "fields": {
+          "id": {
+            "label": "id",
+            "help": "Grass blocks name the feature by this id. Without a namespace it gets the project's.",
+            "placeholder": "e.g. palm_tree_beach"
+          },
+          "feature": {
+            "label": "feature",
+            "help": "The configured feature to place: its id, or one written here.",
+            "choices": {
+              "reference": {
+                "label": "Id",
+                "field": {
+                  "label": "Configured feature",
+                  "placeholder": "e.g. namespace:palm_tree"
+                }
+              },
+              "inline": {
+                "label": "Inline",
+                "field": {
+                  "label": "Configured feature",
+                  "placeholder": "type: minecraft:simple_block"
+                }
+              }
+            }
+          },
+          "placement": {
+            "label": "placement",
+            "help": "The placement modifiers as a YAML list, e.g. rarity_filter, in_square, heightmap. A biome filter needs - type: minecraft:biome here.",
+            "placeholder": "- type: minecraft:rarity_filter"
+          },
+          "world": {
+            "label": "world",
+            "help": "Only these worlds, by their exact name. Unset: all.",
+            "placeholder": "e.g. world"
+          },
+          "dimension": {
+            "label": "dimension",
+            "help": "Only these dimensions. Unset: all."
+          },
+          "dimensionType": {
+            "label": "dimension_type",
+            "help": "Only dimensions of these types. Unset: all."
+          },
+          "biome": {
+            "label": "biome",
+            "help": "Only these biomes. Needs the minecraft:biome modifier in the placement."
+          }
+        }
+      },
+      "atlases": {
+        "label": "atlases",
+        "itemLabel": "Atlas",
+        "fields": {
+          "id": {
+            "label": "id",
+            "help": "The atlas the sources go into, e.g. minecraft:blocks. Entries with the same id are merged.",
+            "placeholder": "e.g. minecraft:blocks"
+          },
+          "sources": {
+            "label": "sources",
+            "help": "Where the atlas's sprites come from."
+          }
+        }
       }
     }
   },
@@ -101,6 +189,122 @@
             "help": "Keeps only custom items. Default: on."
           }
         }
+      }
+    },
+    "atlasSources": {
+      "directory": {
+        "label": "directory",
+        "help": "Every texture in a folder and its subfolders.",
+        "fields": {
+          "source": {
+            "label": "source",
+            "help": "The folder below assets/<atlas namespace>/textures/.",
+            "placeholder": "e.g. block"
+          },
+          "prefix": {
+            "label": "prefix",
+            "help": "Put in front of every sprite id.",
+            "placeholder": "e.g. block/"
+          }
+        }
+      },
+      "single": {
+        "label": "single",
+        "help": "One texture.",
+        "fields": {
+          "sprite": {
+            "label": "sprite",
+            "help": "The sprite id. Unset: the texture id.",
+            "placeholder": "e.g. namespace:machine"
+          }
+        }
+      },
+      "filter": {
+        "label": "filter",
+        "help": "Removes the sprites whose namespace or path matches.",
+        "fields": {
+          "pattern": {
+            "label": "pattern",
+            "help": "Regular expressions; set at least one.",
+            "fields": {
+              "namespace": {
+                "label": "namespace",
+                "placeholder": "e.g. my_pack"
+              },
+              "path": {
+                "label": "path",
+                "placeholder": "e.g. gui/.*"
+              }
+            }
+          }
+        }
+      },
+      "unstitch": {
+        "label": "unstitch",
+        "help": "Cuts regions of one texture into sprites of their own.",
+        "fields": {
+          "divisorX": {
+            "label": "divisor_x",
+            "help": "The width the region coordinates refer to. Default: 1."
+          },
+          "divisorY": {
+            "label": "divisor_y",
+            "help": "The height the region coordinates refer to. Default: 1."
+          },
+          "regions": {
+            "label": "regions",
+            "itemLabel": "Region",
+            "fields": {
+              "sprite": {
+                "label": "sprite",
+                "placeholder": "e.g. namespace:gui/button"
+              },
+              "x": {
+                "label": "x"
+              },
+              "y": {
+                "label": "y"
+              },
+              "width": {
+                "label": "width"
+              },
+              "height": {
+                "label": "height"
+              }
+            }
+          }
+        }
+      },
+      "palettedPermutations": {
+        "label": "paletted_permutations",
+        "help": "Recoloured copies of textures, one per palette.",
+        "fields": {
+          "textures": {
+            "label": "textures",
+            "placeholder": "e.g. namespace:trims/items/helmet_trim"
+          },
+          "separator": {
+            "label": "separator",
+            "help": "Joins texture name and suffix. Default: _.",
+            "placeholder": "_"
+          },
+          "permutations": {
+            "label": "permutations",
+            "help": "Suffix to palette texture.",
+            "keyLabel": "Suffix",
+            "keyPlaceholder": "e.g. ruby",
+            "value": {
+              "label": "Palette",
+              "placeholder": "e.g. namespace:trims/color_palettes/ruby"
+            }
+          }
+        }
+      }
+    },
+    "shared": {
+      "atlasTexture": {
+        "label": "Texture",
+        "placeholder": "e.g. namespace:block/machine"
       }
     }
   },

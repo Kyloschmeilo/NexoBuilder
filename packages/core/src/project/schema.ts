@@ -302,6 +302,9 @@ export const CraftEngineProjectSchema = z
     lang: optional(lenientRecord(recordOf(z.string()))),
     translations: optional(lenientRecord(recordOf(z.string()))),
     categories: optional(lenientList(ConfigObjectSchema)),
+    configuredFeatures: optional(lenientList(ConfigObjectSchema)),
+    placedFeatures: optional(lenientList(ConfigObjectSchema)),
+    atlases: optional(lenientList(ConfigObjectSchema)),
   })
   .transform((data) => withoutUndefined(data))
   .transform((data) => (Object.keys(data).length > 0 ? data : undefined));

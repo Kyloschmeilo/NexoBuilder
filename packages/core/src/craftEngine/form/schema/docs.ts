@@ -33,6 +33,8 @@ export const CE_DOCS = {
   equipmentSets: `${WIKI}/configuration/attribute/equipment-set`,
   damageFormulas: `${WIKI}/configuration/attribute/damage-formula`,
   categories: `${WIKI}/configuration/category`,
+  worldgen: `${WIKI}/configuration/worldgen_feature`,
+  atlases: `${WIKI}/configuration/atlas`,
 };
 
 /** The wiki page of a block behavior (`configuration/block/behaviors/<type>`). */
@@ -203,6 +205,7 @@ const LOGIC_DOCS: Record<LogicCatalogName, { page: string; anchors: Record<strin
   },
   damageEffects: { page: CE_DOCS.damageFormulas, anchors: same('life_steal', 'potion_effect', 'function') },
   categorySources: { page: CE_DOCS.categories, anchors: same('list', 'regex', 'all_items') },
+  atlasSources: { page: CE_DOCS.atlases, anchors: same('directory', 'single', 'filter', 'unstitch', 'paletted_permutations') },
 };
 
 /** The wiki section of a logic type: its heading on the catalog's page, or the page when it has none. */

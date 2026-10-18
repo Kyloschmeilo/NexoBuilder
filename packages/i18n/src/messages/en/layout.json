@@ -96,6 +96,14 @@
       "categories": {
         "label": "Categories",
         "hint": "Categories: the groups of the /ce item browser"
+      },
+      "worldgen": {
+        "label": "Worldgen",
+        "hint": "Worldgen: trees, ores and flowers that generate in the world"
+      },
+      "atlases": {
+        "label": "Atlases",
+        "hint": "Atlases: which textures go into a texture atlas"
       }
     },
     "testServer": {
