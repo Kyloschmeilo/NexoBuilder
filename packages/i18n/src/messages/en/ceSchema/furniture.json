@@ -1,0 +1,372 @@
+{
+  "furniture": {
+    "armorStand": {
+      "fields": {
+        "scale": {
+          "label": "How big the armor stand is (one number).",
+          "placeholder": "1"
+        },
+        "glowColor": {
+          "label": "The color of the armor stand’s glow outline, as a color name."
+        }
+      }
+    },
+    "element": {
+      "fields": {
+        "yaw": {
+          "label": "Turns the element around the vertical axis, in degrees. Prefer rotation, which needs no position updates."
+        },
+        "pitch": {
+          "label": "Tilts the element up or down, in degrees."
+        },
+        "glowColor": {
+          "label": "The color of the glow outline, as r,g,b. The element glows only while it has the glowing effect.",
+          "placeholder": "255,255,255"
+        },
+        "brightness": {
+          "label": "Fixed light levels for the element instead of the light where it stands.",
+          "fields": {
+            "blockLight": {
+              "label": "Block light, 0 to 15."
+            },
+            "skyLight": {
+              "label": "Sky light, 0 to 15."
+            }
+          }
+        },
+        "viewRange": {
+          "label": "How far away players still see the element, as a factor of the normal distance.",
+          "placeholder": "1"
+        },
+        "shadowRadius": {
+          "label": "The radius of the shadow below the element, in blocks.",
+          "placeholder": "0"
+        },
+        "shadowStrength": {
+          "label": "How dark the shadow is.",
+          "placeholder": "1"
+        },
+        "lineWidth": {
+          "label": "The width at which the text wraps, in pixels.",
+          "placeholder": "200"
+        },
+        "backgroundColor": {
+          "label": "The color of the box behind the text.",
+          "help": "As a,r,g,b: the first value is the opacity.",
+          "placeholder": "64,0,0,0"
+        },
+        "textOpacity": {
+          "label": "How opaque the text is, from 0 to 255; -1 is fully opaque.",
+          "placeholder": "-1"
+        },
+        "hasShadow": {
+          "label": "The text casts a shadow."
+        },
+        "isSeeThrough": {
+          "label": "The text shows through blocks."
+        },
+        "useDefaultBackgroundColor": {
+          "label": "The text uses the chat’s background color."
+        },
+        "alignment": {
+          "label": "How the lines of the text line up."
+        },
+        "small": {
+          "label": "The armor stand is the small kind."
+        },
+        "sightTrace": {
+          "label": "The model counts for ray tracing (players can look at and hit it)."
+        },
+        "tints": {
+          "label": "Tints bones of the model with a color from the furniture’s item.",
+          "itemLabel": "Tint",
+          "fields": {
+            "source": {
+              "label": "The component of the furniture’s item the color comes from.",
+              "placeholder": "minecraft:dyed_color"
+            },
+            "bones": {
+              "label": "The bones to tint; none tints all of them."
+            },
+            "children": {
+              "label": "Also tints the children of these bones."
+            }
+          }
+        },
+        "copyData": {
+          "label": "Components the shown item copies from the item the furniture was placed with.",
+          "help": "For example minecraft:dyed_color, so dyed furniture shows its color. tint_source is the old name."
+        },
+        "conditions": {
+          "label": "Players see the element only while all these conditions hold for them.",
+          "help": "Each player is checked on their own, so the element can show for some players and not for others."
+        },
+        "tintSource": {
+          "label": "Tints the shown item with a color the block keeps (from a tint or display behavior).",
+          "help": "The components get the color, for example minecraft:dyed_color.",
+          "choices": {
+            "components": {
+              "label": "Components",
+              "field": {
+                "label": "The components that get the color."
+              }
+            },
+            "detailed": {
+              "label": "With index",
+              "field": {
+                "fields": {
+                  "components": {
+                    "label": "The components that get the color."
+                  },
+                  "index": {
+                    "label": "Which of the block’s colors to use, from 0."
+                  }
+                }
+              }
+            }
+          }
+        },
+        "offset": {
+          "label": "Moves the element a little by the block’s coordinates, like vanilla flowers and grass.",
+          "help": "Read by CraftEngine versions newer than 26.9.",
+          "fields": {
+            "type": {
+              "label": "xz moves the element sideways only, xyz also up and down."
+            },
+            "horizontal": {
+              "label": "The largest sideways shift, in blocks."
+            },
+            "vertical": {
+              "label": "The largest shift up or down, in blocks."
+            }
+          }
+        }
+      }
+    },
+    "hitbox": {
+      "fields": {
+        "canUseItemOn": {
+          "label": "Items in hand work on the hitbox, for example to place a block against it."
+        },
+        "canBeHitByProjectile": {
+          "label": "Arrows and other projectiles hit the hitbox."
+        },
+        "invisible": {
+          "label": "The hitbox has no outline when players look at it."
+        },
+        "interactionEntity": {
+          "label": "The shulker gets an interaction entity, so players can click it."
+        },
+        "hardCollision": {
+          "label": "Players can stand on the happy ghast and cannot walk through it."
+        },
+        "type": {
+          "label": "The kind of entity the hitbox is."
+        },
+        "position": {
+          "label": "Where the hitbox stands, in blocks from the furniture’s origin.",
+          "placeholder": "0,0,0"
+        },
+        "width": {
+          "label": "The width of the interaction, in blocks."
+        },
+        "height": {
+          "label": "The height of the interaction, in blocks."
+        },
+        "scale": {
+          "label": "The size of the entity, as a factor."
+        },
+        "peek": {
+          "label": "How far the shulker is open, 0 to 100."
+        },
+        "direction": {
+          "label": "The side the shulker opens to."
+        },
+        "entityType": {
+          "label": "The vanilla entity the hitbox is, which brings its size.",
+          "placeholder": "minecraft:slime"
+        },
+        "interactive": {
+          "label": "Players can right-click the hitbox."
+        },
+        "blocksBuilding": {
+          "label": "Players cannot place blocks inside the hitbox."
+        }
+      },
+      "label": "Interaction hitboxes the behavior owns in this variant.",
+      "itemLabel": "Hitbox"
+    },
+    "variant": {
+      "fields": {
+        "lootSpawnOffset": {
+          "label": "Where the drops appear, in blocks from the furniture’s origin.",
+          "help": "Useful for wall and ceiling furniture, whose drops would land inside the block.",
+          "placeholder": "0,0.5,0"
+        },
+        "blueprint": {
+          "label": "A BetterModel or ModelEngine model bound to the furniture’s own entity.",
+          "help": "One per variant. For more models, add BetterModel or ModelEngine elements.",
+          "placeholder": "blueprint_id"
+        },
+        "entityCulling": {
+          "label": "Hides the furniture from players who cannot see it (CraftEngine Premium).",
+          "help": "On by default. Set per variant, as the wiki shows; CraftEngine 26.9 itself reads it only next to the variants, for all of them (add it there in the additional YAML under furniture:).",
+          "choices": {
+            "toggle": {
+              "label": "On or off",
+              "field": {
+                "label": "Off turns culling off; on keeps the defaults."
+              }
+            },
+            "custom": {
+              "label": "Custom",
+              "field": {
+                "fields": {
+                  "aabb": {
+                    "label": "The box that is checked, as x1,y1,z1,x2,y2,z2; without one CraftEngine works it out.",
+                    "placeholder": "-0.5,0,-0.5,0.5,2,0.5"
+                  },
+                  "viewDistance": {
+                    "label": "The distance in blocks beyond which the furniture is hidden; -1 for no limit."
+                  },
+                  "aabbExpansion": {
+                    "label": "Extra space around the box, in blocks.",
+                    "placeholder": "0.25"
+                  },
+                  "rayTracing": {
+                    "label": "Hides the furniture when blocks are in the way."
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "settings": {
+      "fields": {
+        "sounds": {
+          "label": "The sounds when a player breaks, places or hits the furniture."
+        },
+        "adventureModeBreaking": {
+          "label": "Players in adventure mode can break the furniture."
+        },
+        "correctTools": {
+          "label": "Only these tools break the furniture.",
+          "help": "Item ids or tags such as #minecraft:axes."
+        }
+      }
+    },
+    "sound": {
+      "label": "A sound id, or an id with volume and pitch.",
+      "choices": {
+        "id": {
+          "label": "Sound id",
+          "field": {
+            "label": "The sound to play.",
+            "placeholder": "minecraft:block.wood.break"
+          }
+        },
+        "detailed": {
+          "label": "With volume and pitch",
+          "field": {
+            "fields": {
+              "id": {
+                "label": "The sound to play.",
+                "placeholder": "minecraft:block.wood.break"
+              },
+              "volume": {
+                "label": "How loud the sound is."
+              },
+              "pitch": {
+                "label": "How high the sound is."
+              }
+            }
+          }
+        }
+      }
+    },
+    "behaviors": {
+      "label": "What the furniture does besides being placed: store items, show an item, give off light.",
+      "help": "A furniture can have several behaviors, for example two storages, each with its own hitboxes."
+    },
+    "light": {
+      "label": "The light sources, the same in every variant.",
+      "itemLabel": "Light",
+      "fields": {
+        "position": {
+          "label": "Where the light is, in blocks from the furniture’s origin.",
+          "placeholder": "0,0.5,0"
+        },
+        "level": {
+          "label": "How bright the light is, 1 to 15."
+        }
+      }
+    }
+  },
+  "logic": {
+    "furnitureBehaviors": {
+      "simpleStorageFurniture": {
+        "label": "simple_storage_furniture",
+        "help": "A chest-like storage players open with a right-click.",
+        "fields": {
+          "title": {
+            "label": "The title of the storage window.",
+            "placeholder": "<lang:container.chest>"
+          },
+          "rows": {
+            "label": "The rows of the storage, 1 to 6."
+          },
+          "dataKey": {
+            "label": "The key the contents are saved under.",
+            "help": "Give each storage of a furniture its own key.",
+            "placeholder": "craftengine:simple_storage_contents"
+          },
+          "sounds": {
+            "label": "The sounds when the storage opens and closes."
+          },
+          "variants": {
+            "label": "The hitboxes that open this storage, per variant. Without any, any hitbox opens it.",
+            "keyLabel": "Variant"
+          }
+        }
+      },
+      "displayItemFurniture": {
+        "label": "display_item_furniture",
+        "help": "Shows an item players put on the furniture. Add the behavior once per slot.",
+        "fields": {
+          "dataKey": {
+            "label": "The key the item is saved under.",
+            "help": "Give each slot of a furniture its own key.",
+            "placeholder": "craftengine:display_item"
+          },
+          "sounds": {
+            "label": "The sounds when a player puts an item on or takes it off."
+          },
+          "variants": {
+            "label": "Where the item shows and which hitboxes hold it, per variant.",
+            "keyLabel": "Variant",
+            "value": {
+              "fields": {
+                "itemPosition": {
+                  "label": "Where the item shows, in blocks from the furniture’s origin.",
+                  "placeholder": "0,1,0"
+                }
+              }
+            }
+          }
+        }
+      },
+      "glowingFurniture": {
+        "label": "glowing_furniture",
+        "help": "Gives off light. Needs furniture.light-system.enable in CraftEngine’s config.yml.",
+        "fields": {
+          "variants": {
+            "label": "Light sources per variant, instead of the same in every variant.",
+            "keyLabel": "Variant"
+          }
+        }
+      }
+    }
+  }
+}

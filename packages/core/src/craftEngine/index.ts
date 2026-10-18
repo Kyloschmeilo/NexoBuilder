@@ -18,6 +18,7 @@ export * from './form/schema/general';
 export * from './form/schema/loot';
 export * from './form/schema/settings';
 export * from './furniture';
+export * from './furnitureFields';
 export * from './itemConfig';
 export * from './lang';
 export * from './logic';

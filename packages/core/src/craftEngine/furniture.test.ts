@@ -14,6 +14,8 @@ import {
   parseCeVector,
   parseFurnitureSeat,
   rotationAngles,
+  type FurnitureSeat,
+  type Vec3,
 } from './furniture';
 
 const close = (actual: number[] | null, expected: number[]) => {
@@ -46,11 +48,37 @@ describe('furniture values', () => {
   });
 
   it('reads and writes seats', () => {
-    expect(parseFurnitureSeat('0,0,-0.1 0 true')).toEqual({ position: [0, 0, -0.1], yaw: 0 });
-    expect(parseFurnitureSeat('1,0.2,0')).toEqual({ position: [1, 0.2, 0], yaw: null });
-    expect(parseFurnitureSeat({ position: '0,1,0', yaw: 90 })).toEqual({ position: [0, 1, 0], yaw: 90 });
+    const seat = (position: Vec3, yaw: number | null, more: Partial<FurnitureSeat> = {}): FurnitureSeat => ({
+      position,
+      yaw,
+      forcePlayerRotation: null,
+      limitPlayerRotation: null,
+      ...more,
+    });
+    expect(parseFurnitureSeat('0,0,-0.1 0 true')).toEqual(seat([0, 0, -0.1], 0, { forcePlayerRotation: true }));
+    expect(parseFurnitureSeat('0,0,-0.1 90 45.5')).toEqual(seat([0, 0, -0.1], 90, { forcePlayerRotation: 45.5 }));
+    expect(parseFurnitureSeat('0,0,-0.1 90 false')).toEqual(seat([0, 0, -0.1], 90));
+    expect(parseFurnitureSeat('0,0,-0.1 90 up')).toBeNull();
+    expect(parseFurnitureSeat('1,0.2,0')).toEqual(seat([1, 0.2, 0], null));
+    expect(parseFurnitureSeat({ position: '0,1,0', yaw: 90 })).toEqual(seat([0, 1, 0], 90));
+    expect(parseFurnitureSeat({ position: '0,1,0', yaw: 90, limit_player_rotation: false, force_player_rotation: true })).toEqual(
+      seat([0, 1, 0], 90, { limitPlayerRotation: false, forcePlayerRotation: true }),
+    );
     expect(parseFurnitureSeat('a,b')).toBeNull();
-    expect(formatFurnitureSeat({ position: [0, 0, -0.1], yaw: 0 })).toBe('0,0,-0.1 0');
+    expect(formatFurnitureSeat(seat([0, 0, -0.1], 0))).toBe('0,0,-0.1 0');
+    expect(formatFurnitureSeat(seat([0, 0, -0.1], 90, { forcePlayerRotation: true }))).toBe('0,0,-0.1 90 true');
+    expect(formatFurnitureSeat(seat([0, 0, -0.1], 90, { forcePlayerRotation: 45.5, limitPlayerRotation: true }))).toBe('0,0,-0.1 90 45.5');
+    // The text form limits the body's rotation whenever it has a yaw, and has no turn without one
+    expect(formatFurnitureSeat(seat([0, 0, 0], 90, { limitPlayerRotation: false, forcePlayerRotation: true }))).toEqual({
+      position: '0,0,0',
+      yaw: 90,
+      limit_player_rotation: false,
+      force_player_rotation: true,
+    });
+    expect(formatFurnitureSeat(seat([0, 0, 0], null, { limitPlayerRotation: true }))).toEqual({
+      position: '0,0,0',
+      limit_player_rotation: true,
+    });
   });
 });
 
@@ -68,6 +96,62 @@ describe('buildCraftEngineFurniture', () => {
         ground: { elements: [{ type: 'item_display', item: 'm:chair', position: '0,0.5,0' }], hitboxes: [{ type: 'interaction' }] },
       },
     });
+  });
+});
+
+describe('furniture extras', () => {
+  it('writes the display keys of elements after their transform, and leaves the placement extras empty', () => {
+    const built = buildCraftEngineFurniture(
+      {
+        variants: {
+          ground: {
+            entity_culling: false,
+            hitboxes: [{ invisible: true, can_use_item_on: false, position: '0,0,0', seats: ['0,0,0'] }],
+            elements: [{ conditions: [{ type: 'permission' }], glow_color: '255,0,0', scale: 2, text: 'Hi', alignment: 'left' }],
+            loot_spawn_offset: '0,0.5,0',
+          },
+        },
+      },
+      null,
+      'm:sign',
+    );
+    const ground = (built.furniture.variants as Record<string, Record<string, unknown>>).ground;
+    expect(Object.keys(ground)).toEqual(['loot_spawn_offset', 'elements', 'hitboxes', 'entity_culling']);
+    expect(Object.keys((ground.elements as object[])[0])).toEqual(['type', 'text', 'scale', 'glow_color', 'alignment', 'conditions']);
+    expect(Object.keys((ground.hitboxes as object[])[0])).toEqual(['type', 'position', 'can_use_item_on', 'invisible', 'seats']);
+    expect(built.placementExtras).toEqual({});
+  });
+
+  it('writes the type of the hitboxes of behaviors, and leaves their other keys', () => {
+    const built = buildCraftEngineFurniture(
+      {
+        variants: { ground: {} },
+        behaviors: [
+          {
+            type: 'simple_storage_furniture',
+            rows: 2,
+            variants: { ground: { hitboxes: [{ width: 0.5, position: '0,0.5,0', peek: 3 }] } },
+          },
+          { type: 'glowing_furniture', lights: ['0,0.5,0 15'] },
+        ],
+      },
+      null,
+      'm:drawer',
+    );
+    expect(built.furniture.behaviors).toEqual([
+      {
+        type: 'simple_storage_furniture',
+        rows: 2,
+        variants: { ground: { hitboxes: [{ type: 'interaction', position: '0,0.5,0', width: 0.5 }] } },
+      },
+      { type: 'glowing_furniture', lights: ['0,0.5,0 15'] },
+    ]);
+    expect(Object.keys(built.furniture)).toEqual(['settings', 'variants', 'behaviors']);
+  });
+
+  it('shows a small armor stand at half its scale', () => {
+    expect(furnitureElementPose({ type: 'armor_stand', small: true, scale: 2 }).scale).toEqual([1, 1, 1]);
+    expect(furnitureElementPose({ type: 'armor_stand' }).scale).toEqual([1, 1, 1]);
   });
 });
 

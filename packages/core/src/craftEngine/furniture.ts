@@ -85,7 +85,10 @@ export const CE_FURNITURE_EXTERNAL_MODEL_KEYS = ['blueprint', 'better_model', 'm
 const FURNITURE_ORDER = ['settings', 'variants', 'variant', 'placement', 'behavior', 'behaviors', 'events', 'loot'];
 /** The keys CraftEngine reads a furniture's variants from, in the order it tries them (`variant(s)|placement`) */
 const VARIANTS_KEYS = ['variant', 'variants', 'placement'];
-const VARIANT_ORDER = ['loot_spawn_offset', ...CE_FURNITURE_EXTERNAL_MODEL_KEYS, 'elements', 'hitboxes'];
+/** The keys CraftEngine reads a furniture's behaviors from (`behavior(s)`) */
+const BEHAVIORS_KEYS = ['behavior', 'behaviors'];
+const VARIANT_ORDER = ['loot_spawn_offset', ...CE_FURNITURE_EXTERNAL_MODEL_KEYS, 'elements', 'hitboxes', 'entity_culling'];
+/** Element keys: what it shows, its transform, then its display parameters and the viewers it shows to. */
 const ELEMENT_ORDER = [
   'type',
   'item',
@@ -97,9 +100,47 @@ const ELEMENT_ORDER = [
   'position',
   'translation',
   'rotation',
+  'yaw',
+  'pitch',
   'scale',
+  'small',
+  'glow_color',
+  'brightness',
+  'view_range',
+  'shadow_radius',
+  'shadow_strength',
+  'line_width',
+  'background_color',
+  'text_opacity',
+  'has_shadow',
+  'is_see_through',
+  'use_default_background_color',
+  'alignment',
+  'sight_trace',
+  'tints',
+  'copy_data',
+  'tint_source',
+  'offset',
+  'conditions',
 ];
-const HITBOX_ORDER = ['type', 'position', 'width', 'height', 'scale', 'peek', 'direction', 'entity_type'];
+const HITBOX_ORDER = [
+  'type',
+  'position',
+  'width',
+  'height',
+  'scale',
+  'peek',
+  'direction',
+  'entity_type',
+  'interactive',
+  'interaction_entity',
+  'blocks_building',
+  'can_use_item_on',
+  'can_be_hit_by_projectile',
+  'invisible',
+  'hard_collision',
+  'seats',
+];
 
 export type Vec3 = [number, number, number];
 /** A quaternion as x, y, z, w (JOML order). */
@@ -272,29 +313,63 @@ export function rotationAngles(value: unknown): Vec3 | null {
 
 export interface FurnitureSeat {
   position: Vec3;
-  /** The yaw the player sits with (null = free) */
+  /** The yaw the seat faces, relative to the furniture (null = none set, CraftEngine takes 0) */
   yaw: number | null;
+  /**
+   * Whether the player's view turns once on sitting down: `true` to the seat's yaw, a number to that angle, null not
+   * at all (SeatConfig `force_player_rotation`)
+   */
+  forcePlayerRotation: number | true | null;
+  /** Whether the player's body keeps to the seat's yaw (null = CraftEngine's default: when the seat sets a yaw) */
+  limitPlayerRotation: boolean | null;
 }
 
-/** A seat: `x,y,z`, `x,y,z yaw` (and more words CraftEngine reads) or `{ position, yaw }`; null if invalid. */
+/** A seat's `force_player_rotation` as SeatConfig reads it: `true`, `false` (= null) or an angle; undefined if invalid. */
+function forceRotation(value: unknown): number | true | null | undefined {
+  if (value === true || (typeof value === 'string' && value.toLowerCase() === 'true')) return true;
+  if (value === false || (typeof value === 'string' && value.toLowerCase() === 'false')) return null;
+  return toNumber(value) ?? undefined;
+}
+
+/**
+ * A seat as SeatConfig reads it: `x,y,z [yaw] [force_player_rotation]` or
+ * `{ position, yaw, limit_player_rotation, force_player_rotation }`; null if invalid.
+ */
 export function parseFurnitureSeat(value: unknown): FurnitureSeat | null {
   if (isPlainObject(value)) {
     const position = parseCeVector(value.position);
     const yaw = value.yaw === undefined ? null : toNumber(value.yaw);
-    return position && (value.yaw === undefined || yaw !== null) ? { position, yaw } : null;
+    const force = value.force_player_rotation === undefined ? null : forceRotation(value.force_player_rotation);
+    const limit = value.limit_player_rotation;
+    if (!position || (value.yaw !== undefined && yaw === null) || force === undefined) return null;
+    if (limit !== undefined && typeof limit !== 'boolean') return null;
+    return { position, yaw, forcePlayerRotation: force, limitPlayerRotation: limit ?? null };
   }
   if (typeof value !== 'string') return null;
-  const [vector, yawText] = value.trim().split(/\s+/);
+  const [vector, yawText, forceText] = value.trim().split(/\s+/);
   const numbers = numberList(vector);
   if (numbers?.length !== 3) return null;
   const yaw = yawText === undefined ? null : toNumber(yawText);
-  return yawText !== undefined && yaw === null ? null : { position: numbers as Vec3, yaw };
+  const force = forceText === undefined ? null : forceRotation(forceText);
+  if ((yawText !== undefined && yaw === null) || force === undefined) return null;
+  return { position: numbers as Vec3, yaw, forcePlayerRotation: force, limitPlayerRotation: null };
 }
 
-/** A seat as the editor writes it (`0,0,-0.1 0`, like the jar's examples). */
-export function formatFurnitureSeat(seat: FurnitureSeat): string {
+/**
+ * A seat as the editor writes it: the text form (`0,0,-0.1 0`, like the jar's examples) where it says the same, else
+ * the map form. The text form limits the body's rotation exactly when it has a yaw, and turns the view only with one.
+ */
+export function formatFurnitureSeat(seat: FurnitureSeat): string | ConfigObject {
   const position = formatCeVector(seat.position);
-  return seat.yaw === null ? position : `${position} ${seat.yaw}`;
+  const { yaw, forcePlayerRotation: force, limitPlayerRotation: limit } = seat;
+  const asText = yaw === null ? force === null && limit !== true : limit !== false;
+  if (asText) return [position, ...(yaw === null ? [] : [yaw]), ...(force === null ? [] : [force])].join(' ');
+  return {
+    position,
+    ...(yaw !== null && { yaw }),
+    ...(limit !== null && { limit_player_rotation: limit }),
+    ...(force !== null && { force_player_rotation: force }),
+  };
 }
 
 /**
@@ -313,6 +388,29 @@ export interface BuiltFurniture {
   furniture: Record<string, unknown>;
   /** The placement rules per variant for the item's `furniture_item` behavior (null = CraftEngine's defaults) */
   rules: Record<string, unknown> | null;
+  /**
+   * Further keys of the item's `furniture_item` behavior besides its type, furniture and rules (such as
+   * `ignore_placer`), written next to them; empty when the definition sets none.
+   */
+  placementExtras?: Record<string, unknown>;
+}
+
+/** A hitbox with its type written out, without the keys only other types read, in the jar's key order. */
+const builtHitbox = (hitbox: unknown) =>
+  isPlainObject(hitbox) ? ordered(furnitureHitboxWithType(hitbox, furnitureHitboxType(hitbox)), HITBOX_ORDER) : hitbox;
+
+/** A list of hitboxes as the export writes them (other values stay). */
+const builtHitboxes = (list: unknown) => (Array.isArray(list) ? list.map(builtHitbox) : list);
+
+/** A furniture behavior with the hitboxes it sets per variant built like the variants' own. */
+function builtBehavior(behavior: unknown): unknown {
+  if (!isPlainObject(behavior) || !isPlainObject(behavior.variants)) return behavior;
+  const variants = Object.fromEntries(
+    Object.entries(behavior.variants).map(([name, value]) =>
+      isPlainObject(value) && value.hitboxes !== undefined ? [name, { ...value, hitboxes: builtHitboxes(value.hitboxes) }] : [name, value],
+    ),
+  );
+  return { ...behavior, variants };
 }
 
 /**
@@ -343,14 +441,15 @@ export function buildCraftEngineFurniture(
         if (Array.isArray(variant.elements)) {
           variant.elements = variant.elements.map((e) => (isPlainObject(e) ? builtDisplayElement(e, itemKey) : e));
         }
-        if (Array.isArray(variant.hitboxes)) {
-          variant.hitboxes = variant.hitboxes.map((h) =>
-            isPlainObject(h) ? ordered(furnitureHitboxWithType(h, furnitureHitboxType(h)), HITBOX_ORDER) : h,
-          );
-        }
+        if (Array.isArray(variant.hitboxes)) variant.hitboxes = builtHitboxes(variant.hitboxes);
         return [name, ordered(variant, VARIANT_ORDER)];
       }),
     );
+  }
+
+  for (const key of BEHAVIORS_KEYS) {
+    const behaviors = merged[key];
+    if (behaviors !== undefined) merged[key] = Array.isArray(behaviors) ? behaviors.map(builtBehavior) : builtBehavior(behaviors);
   }
 
   const loot = merged.loot;
@@ -358,7 +457,7 @@ export function buildCraftEngineFurniture(
     const args = isPlainObject(loot.arguments) ? loot.arguments : {};
     if (args.item === undefined) merged.loot = { ...loot, arguments: { ...args, item: itemKey } };
   }
-  return { furniture: ordered(merged, FURNITURE_ORDER), rules };
+  return { furniture: ordered(merged, FURNITURE_ORDER), rules, placementExtras: {} };
 }
 
 // --- Preview geometry ---------------------------------------------------------------------------------------------
@@ -385,7 +484,8 @@ export interface FurnitureElementPose {
 export function furnitureElementPose(element: Record<string, unknown>, defaultPosition: Vec3 = [0, 0, 0]): FurnitureElementPose {
   const type = furnitureElementType(element) ?? 'item_display';
   const item = typeof element.item === 'string' && element.item.trim() ? element.item.trim() : null;
-  const scale = typeof element.scale === 'number' && type === 'armor_stand' ? element.scale : null;
+  // An armor stand's scale is one number; a small armor stand is half as big
+  const scale = type === 'armor_stand' ? (toNumber(element.scale) ?? 1) * (element.small === true ? 0.5 : 1) : null;
   return {
     type,
     item,

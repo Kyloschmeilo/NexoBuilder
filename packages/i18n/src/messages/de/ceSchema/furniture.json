@@ -1,0 +1,372 @@
+{
+  "furniture": {
+    "armorStand": {
+      "fields": {
+        "scale": {
+          "label": "Wie groß der Rüstungsständer ist (eine Zahl).",
+          "placeholder": "1"
+        },
+        "glowColor": {
+          "label": "Die Farbe des Leuchtumrisses des Rüstungsständers, als Farbname."
+        }
+      }
+    },
+    "element": {
+      "fields": {
+        "yaw": {
+          "label": "Dreht das Element um die senkrechte Achse, in Grad. Besser ist rotation, das keine Positionsupdates braucht."
+        },
+        "pitch": {
+          "label": "Neigt das Element nach oben oder unten, in Grad."
+        },
+        "glowColor": {
+          "label": "Die Farbe des Leuchtumrisses, als r,g,b. Das Element leuchtet nur mit dem Leuchteffekt.",
+          "placeholder": "255,255,255"
+        },
+        "brightness": {
+          "label": "Feste Lichtstufen für das Element statt des Lichts an seinem Platz.",
+          "fields": {
+            "blockLight": {
+              "label": "Blocklicht, 0 bis 15."
+            },
+            "skyLight": {
+              "label": "Himmelslicht, 0 bis 15."
+            }
+          }
+        },
+        "viewRange": {
+          "label": "Wie weit entfernt Spieler das Element noch sehen, als Faktor der normalen Entfernung.",
+          "placeholder": "1"
+        },
+        "shadowRadius": {
+          "label": "Der Radius des Schattens unter dem Element, in Blöcken.",
+          "placeholder": "0"
+        },
+        "shadowStrength": {
+          "label": "Wie dunkel der Schatten ist.",
+          "placeholder": "1"
+        },
+        "lineWidth": {
+          "label": "Die Breite, ab der der Text umbricht, in Pixeln.",
+          "placeholder": "200"
+        },
+        "backgroundColor": {
+          "label": "Die Farbe des Kastens hinter dem Text.",
+          "help": "Als a,r,g,b: der erste Wert ist die Deckkraft.",
+          "placeholder": "64,0,0,0"
+        },
+        "textOpacity": {
+          "label": "Wie deckend der Text ist, von 0 bis 255; -1 ist voll deckend.",
+          "placeholder": "-1"
+        },
+        "hasShadow": {
+          "label": "Der Text wirft einen Schatten."
+        },
+        "isSeeThrough": {
+          "label": "Der Text ist durch Blöcke hindurch sichtbar."
+        },
+        "useDefaultBackgroundColor": {
+          "label": "Der Text nutzt die Hintergrundfarbe des Chats."
+        },
+        "alignment": {
+          "label": "Wie die Zeilen des Texts ausgerichtet sind."
+        },
+        "small": {
+          "label": "Der Rüstungsständer ist die kleine Variante."
+        },
+        "sightTrace": {
+          "label": "Das Modell zählt beim Raytracing (Spieler können es anvisieren und treffen)."
+        },
+        "tints": {
+          "label": "Färbt Knochen des Modells mit einer Farbe aus dem Item der Möbel.",
+          "itemLabel": "Färbung",
+          "fields": {
+            "source": {
+              "label": "Die Komponente des Möbel-Items, aus der die Farbe kommt.",
+              "placeholder": "minecraft:dyed_color"
+            },
+            "bones": {
+              "label": "Die zu färbenden Knochen; ohne Angabe alle."
+            },
+            "children": {
+              "label": "Färbt auch die Kinder dieser Knochen."
+            }
+          }
+        },
+        "copyData": {
+          "label": "Komponenten, die das gezeigte Item vom Item übernimmt, mit dem die Möbel platziert wurden.",
+          "help": "Zum Beispiel minecraft:dyed_color, damit gefärbte Möbel ihre Farbe zeigen. tint_source ist der alte Name."
+        },
+        "conditions": {
+          "label": "Spieler sehen das Element nur, solange alle diese Bedingungen für sie gelten.",
+          "help": "Jeder Spieler wird einzeln geprüft, das Element kann also für manche Spieler sichtbar sein und für andere nicht."
+        },
+        "tintSource": {
+          "label": "Färbt das gezeigte Item mit einer Farbe, die der Block speichert (aus einem Färbe- oder Anzeigeverhalten).",
+          "help": "Die Komponenten erhalten die Farbe, zum Beispiel minecraft:dyed_color.",
+          "choices": {
+            "components": {
+              "label": "Komponenten",
+              "field": {
+                "label": "Die Komponenten, die die Farbe erhalten."
+              }
+            },
+            "detailed": {
+              "label": "Mit Index",
+              "field": {
+                "fields": {
+                  "components": {
+                    "label": "Die Komponenten, die die Farbe erhalten."
+                  },
+                  "index": {
+                    "label": "Welche Farbe des Blocks genutzt wird, ab 0."
+                  }
+                }
+              }
+            }
+          }
+        },
+        "offset": {
+          "label": "Verschiebt das Element leicht abhängig von den Koordinaten des Blocks, wie Blumen und Gras in Vanilla.",
+          "help": "Wird von CraftEngine-Versionen nach 26.9 gelesen.",
+          "fields": {
+            "type": {
+              "label": "xz verschiebt das Element nur seitlich, xyz auch nach oben und unten."
+            },
+            "horizontal": {
+              "label": "Die größte seitliche Verschiebung, in Blöcken."
+            },
+            "vertical": {
+              "label": "Die größte Verschiebung nach oben oder unten, in Blöcken."
+            }
+          }
+        }
+      }
+    },
+    "hitbox": {
+      "fields": {
+        "canUseItemOn": {
+          "label": "Items in der Hand wirken auf die Hitbox, zum Beispiel um einen Block daran zu setzen."
+        },
+        "canBeHitByProjectile": {
+          "label": "Pfeile und andere Geschosse treffen die Hitbox."
+        },
+        "invisible": {
+          "label": "Die Hitbox zeigt keinen Umriss, wenn Spieler sie anschauen."
+        },
+        "interactionEntity": {
+          "label": "Der Shulker erhält ein Interaktions-Entity, damit Spieler ihn anklicken können."
+        },
+        "hardCollision": {
+          "label": "Spieler können auf dem Glücklichen Ghast stehen und nicht hindurchgehen."
+        },
+        "type": {
+          "label": "Die Art von Entity, die die Hitbox ist."
+        },
+        "position": {
+          "label": "Wo die Hitbox steht, in Blöcken vom Ursprung der Möbel.",
+          "placeholder": "0,0,0"
+        },
+        "width": {
+          "label": "Die Breite der Interaktion, in Blöcken."
+        },
+        "height": {
+          "label": "Die Höhe der Interaktion, in Blöcken."
+        },
+        "scale": {
+          "label": "Die Größe des Entitys, als Faktor."
+        },
+        "peek": {
+          "label": "Wie weit der Shulker geöffnet ist, 0 bis 100."
+        },
+        "direction": {
+          "label": "Die Seite, zu der sich der Shulker öffnet."
+        },
+        "entityType": {
+          "label": "Das Vanilla-Entity der Hitbox, das seine Größe mitbringt.",
+          "placeholder": "minecraft:slime"
+        },
+        "interactive": {
+          "label": "Spieler können die Hitbox rechtsklicken."
+        },
+        "blocksBuilding": {
+          "label": "Spieler können keine Blöcke in der Hitbox platzieren."
+        }
+      },
+      "label": "Interaktions-Hitboxen, die das Verhalten in dieser Variante besitzt.",
+      "itemLabel": "Hitbox"
+    },
+    "variant": {
+      "fields": {
+        "lootSpawnOffset": {
+          "label": "Wo die Drops erscheinen, in Blöcken vom Ursprung der Möbel.",
+          "help": "Nützlich für Wand- und Deckenmöbel, deren Drops sonst im Block landen.",
+          "placeholder": "0,0.5,0"
+        },
+        "blueprint": {
+          "label": "Ein BetterModel- oder ModelEngine-Modell, das an das eigene Entity der Möbel gebunden ist.",
+          "help": "Eines pro Variante. Für mehr Modelle BetterModel- oder ModelEngine-Elemente hinzufügen.",
+          "placeholder": "blueprint_id"
+        },
+        "entityCulling": {
+          "label": "Blendet die Möbel für Spieler aus, die sie nicht sehen können (CraftEngine Premium).",
+          "help": "Standardmäßig an. Pro Variante gesetzt, wie im Wiki; CraftEngine 26.9 selbst liest es nur neben den Varianten, für alle zugleich (dort im zusätzlichen YAML unter furniture: eintragen).",
+          "choices": {
+            "toggle": {
+              "label": "An oder aus",
+              "field": {
+                "label": "Aus schaltet das Ausblenden ab; an behält die Standardwerte."
+              }
+            },
+            "custom": {
+              "label": "Angepasst",
+              "field": {
+                "fields": {
+                  "aabb": {
+                    "label": "Die geprüfte Box, als x1,y1,z1,x2,y2,z2; ohne Angabe berechnet CraftEngine sie.",
+                    "placeholder": "-0.5,0,-0.5,0.5,2,0.5"
+                  },
+                  "viewDistance": {
+                    "label": "Die Entfernung in Blöcken, ab der die Möbel ausgeblendet werden; -1 ohne Grenze."
+                  },
+                  "aabbExpansion": {
+                    "label": "Zusätzlicher Platz um die Box, in Blöcken.",
+                    "placeholder": "0.25"
+                  },
+                  "rayTracing": {
+                    "label": "Blendet die Möbel aus, wenn Blöcke im Weg sind."
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "settings": {
+      "fields": {
+        "sounds": {
+          "label": "Die Geräusche, wenn ein Spieler die Möbel abbaut, platziert oder schlägt."
+        },
+        "adventureModeBreaking": {
+          "label": "Spieler im Abenteuermodus können die Möbel abbauen."
+        },
+        "correctTools": {
+          "label": "Nur diese Werkzeuge bauen die Möbel ab.",
+          "help": "Item-IDs oder Tags wie #minecraft:axes."
+        }
+      }
+    },
+    "sound": {
+      "label": "Eine Geräusch-ID, oder eine ID mit Lautstärke und Tonhöhe.",
+      "choices": {
+        "id": {
+          "label": "Geräusch-ID",
+          "field": {
+            "label": "Das abzuspielende Geräusch.",
+            "placeholder": "minecraft:block.wood.break"
+          }
+        },
+        "detailed": {
+          "label": "Mit Lautstärke und Tonhöhe",
+          "field": {
+            "fields": {
+              "id": {
+                "label": "Das abzuspielende Geräusch.",
+                "placeholder": "minecraft:block.wood.break"
+              },
+              "volume": {
+                "label": "Wie laut das Geräusch ist."
+              },
+              "pitch": {
+                "label": "Wie hoch das Geräusch ist."
+              }
+            }
+          }
+        }
+      }
+    },
+    "behaviors": {
+      "label": "Was die Möbel außer dem Platzieren tun: Items lagern, ein Item zeigen, Licht abgeben.",
+      "help": "Möbel können mehrere Verhalten haben, zum Beispiel zwei Lager mit je eigenen Hitboxen."
+    },
+    "light": {
+      "label": "Die Lichtquellen, in jeder Variante gleich.",
+      "itemLabel": "Licht",
+      "fields": {
+        "position": {
+          "label": "Wo das Licht ist, in Blöcken vom Ursprung der Möbel.",
+          "placeholder": "0,0.5,0"
+        },
+        "level": {
+          "label": "Wie hell das Licht ist, 1 bis 15."
+        }
+      }
+    }
+  },
+  "logic": {
+    "furnitureBehaviors": {
+      "simpleStorageFurniture": {
+        "label": "simple_storage_furniture",
+        "help": "Ein truhenartiges Lager, das Spieler per Rechtsklick öffnen.",
+        "fields": {
+          "title": {
+            "label": "Der Titel des Lagerfensters.",
+            "placeholder": "<lang:container.chest>"
+          },
+          "rows": {
+            "label": "Die Reihen des Lagers, 1 bis 6."
+          },
+          "dataKey": {
+            "label": "Der Schlüssel, unter dem der Inhalt gespeichert wird.",
+            "help": "Jedes Lager einer Möbel braucht einen eigenen Schlüssel.",
+            "placeholder": "craftengine:simple_storage_contents"
+          },
+          "sounds": {
+            "label": "Die Geräusche beim Öffnen und Schließen des Lagers."
+          },
+          "variants": {
+            "label": "Die Hitboxen, die dieses Lager öffnen, pro Variante. Ohne Angabe öffnet es jede Hitbox.",
+            "keyLabel": "Variante"
+          }
+        }
+      },
+      "displayItemFurniture": {
+        "label": "display_item_furniture",
+        "help": "Zeigt ein Item, das Spieler auf die Möbel legen. Das Verhalten einmal pro Platz hinzufügen.",
+        "fields": {
+          "dataKey": {
+            "label": "Der Schlüssel, unter dem das Item gespeichert wird.",
+            "help": "Jeder Platz einer Möbel braucht einen eigenen Schlüssel.",
+            "placeholder": "craftengine:display_item"
+          },
+          "sounds": {
+            "label": "Die Geräusche, wenn ein Spieler ein Item ablegt oder nimmt."
+          },
+          "variants": {
+            "label": "Wo das Item erscheint und welche Hitboxen es halten, pro Variante.",
+            "keyLabel": "Variante",
+            "value": {
+              "fields": {
+                "itemPosition": {
+                  "label": "Wo das Item erscheint, in Blöcken vom Ursprung der Möbel.",
+                  "placeholder": "0,1,0"
+                }
+              }
+            }
+          }
+        }
+      },
+      "glowingFurniture": {
+        "label": "glowing_furniture",
+        "help": "Gibt Licht ab. Braucht furniture.light-system.enable in der config.yml von CraftEngine.",
+        "fields": {
+          "variants": {
+            "label": "Lichtquellen pro Variante, statt in jeder Variante gleich.",
+            "keyLabel": "Variante"
+          }
+        }
+      }
+    }
+  }
+}

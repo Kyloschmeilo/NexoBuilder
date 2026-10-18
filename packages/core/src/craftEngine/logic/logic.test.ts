@@ -89,6 +89,7 @@ describe('the logic catalogs', () => {
       attributeSyncValues: 3,
       damageFormulas: 3,
       damageEffects: 3,
+      furnitureBehaviors: 3,
     });
   });
 

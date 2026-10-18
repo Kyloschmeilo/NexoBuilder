@@ -19,6 +19,11 @@ export const CE_DOCS = {
   blockBehaviors: `${WIKI}/configuration/block/behaviors`,
   loot: `${WIKI}/reference/loot_table`,
   equipment: `${WIKI}/configuration/equipment`,
+  entityRenderer: `${WIKI}/configuration/block/states/entity_renderer`,
+  furniture: `${WIKI}/configuration/furniture`,
+  furnitureBehaviors: `${WIKI}/configuration/furniture/behaviors`,
+  furnitureSettings: `${WIKI}/configuration/furniture/settings`,
+  furnitureVariants: `${WIKI}/configuration/furniture/variants`,
   lang: `${WIKI}/configuration/translations`,
   events: `${WIKI}/reference/events`,
   conditions: `${WIKI}/reference/conditions`,
@@ -201,6 +206,8 @@ const LOGIC_DOCS: Record<LogicCatalogName, { page: string; anchors: Record<strin
     anchors: { expression: 'expression-expression-formulas', composition: 'composition-formula-parts', js: 'js-javascript-formulas' },
   },
   damageEffects: { page: CE_DOCS.damageFormulas, anchors: same('life_steal', 'potion_effect', 'function') },
+  // Each behavior has a page of its own (the catalog links it)
+  furnitureBehaviors: { page: CE_DOCS.furnitureBehaviors, anchors: {} },
 };
 
 /** The wiki section of a logic type: its heading on the catalog's page, or the page when it has none. */
