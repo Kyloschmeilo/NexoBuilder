@@ -40,7 +40,8 @@
       "blockSettings": "Block Settings",
       "blockBehavior": "Behavior",
       "events": "Events",
-      "loot": "Loot"
+      "loot": "Loot",
+      "model": "Item Model"
     },
     "empty": {
       "general": "Nothing added yet (e.g. Lore).",
@@ -53,7 +54,8 @@
       "blockSettings": "No block settings yet (e.g. Hardness, Sounds).",
       "blockBehavior": "No behavior options yet (e.g. sounds, extra behaviors).",
       "events": "No events yet (e.g. a command on right click).",
-      "loot": "No loot yet. Without loot the block or the furniture drops nothing."
+      "loot": "No loot yet. Without loot the block or the furniture drops nothing.",
+      "model": "No model options yet (e.g. Oversized In GUI)."
     },
     "fromVersion": "from {version}",
     "untilVersion": "until {version}",

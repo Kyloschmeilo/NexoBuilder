@@ -32,7 +32,11 @@ export const CE_DOCS = {
   attributeModifiers: `${WIKI}/configuration/attribute/modifier`,
   equipmentSets: `${WIKI}/configuration/attribute/equipment-set`,
   damageFormulas: `${WIKI}/configuration/attribute/damage-formula`,
+  itemModels: `${WIKI}/configuration/item/models`,
 };
+
+/** The wiki page of an item model node type (`configuration/item/models/<type>`, e.g. `range_dispatch`). */
+export const ceItemModelDocs = (type: string): string => `${CE_DOCS.itemModels}/${type.replace(/^minecraft:/, '').replace('/', '_')}`;
 
 /** The wiki page of a block behavior (`configuration/block/behaviors/<type>`). */
 export const ceBlockBehaviorDocs = (type: string): string => `${CE_DOCS.blockBehaviors}/${type}`;

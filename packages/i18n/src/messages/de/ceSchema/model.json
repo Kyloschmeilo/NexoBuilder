@@ -1,0 +1,83 @@
+{
+  "groups": {
+    "model": {
+      "label": "Item-Modell",
+      "description": "Item-Schlüssel rund ums Modell: Größe im GUI, Wechselanimation, Modell-IDs und das Legacy-Modell."
+    }
+  },
+  "properties": {
+    "oversizedInGui": {
+      "label": "Oversized In GUI",
+      "description": "Lässt das Modell über seinen Inventarplatz hinaus zeichnen (ab Minecraft 1.21.6). CraftEngine nimmt standardmäßig true.",
+      "field": {
+        "label": "Übergroß"
+      }
+    },
+    "handAnimationOnSwap": {
+      "label": "Hand Animation On Swap",
+      "description": "Ob die Wechselanimation in der Ego-Ansicht abläuft, wenn sich das gehaltene Item ändert. Standard: true.",
+      "field": {
+        "label": "Animation abspielen"
+      }
+    },
+    "swapAnimationScale": {
+      "label": "Swap Animation Scale",
+      "description": "Tempo der Wechselanimation; größer ist schneller. Standard: 1.0.",
+      "field": {
+        "label": "Faktor"
+      }
+    },
+    "itemModel": {
+      "label": "Item Model",
+      "description": "Die Item-Modell-Definition, auf die das Item zeigt (assets/<namespace>/items/<id>.json). CraftEngine setzt sie selbst aus der Item-ID.",
+      "hint": "Nur setzen, wenn ein anderes Plugin oder Pack eine feste ID braucht; der Item-Modell-Baum auf diesem Tab landet in der eigenen Definition des Items.",
+      "field": {
+        "label": "Item-Modell",
+        "placeholder": "namespace:pfad"
+      }
+    },
+    "customModelData": {
+      "label": "Custom Model Data",
+      "description": "Eine feste CustomModelData-Zahl statt der, die CraftEngine vergibt (für Clients vor 1.21.4 oder andere Plugins).",
+      "field": {
+        "label": "Zahl"
+      }
+    },
+    "legacyModel": {
+      "label": "Legacy Model",
+      "description": "Das Modell für Clients vor 1.21.4 mit seinen Overrides. CraftEngine wandelt das moderne Modell selbst um; nur nutzen, wenn diese Umwandlung falsch ist.",
+      "hint": "Nicht nötig, wenn das Pack nur 1.21.4 und neuer bedient.",
+      "field": {
+        "label": "Legacy-Modell",
+        "fields": {
+          "path": {
+            "label": "Pfad",
+            "placeholder": "namespace:item/mein_item"
+          },
+          "generation": {
+            "label": "Generierung",
+            "help": "Optional: parent, textures, display und gui_light eines Modells, das CraftEngine an diesem Pfad erzeugt."
+          },
+          "overrides": {
+            "label": "Overrides",
+            "itemLabel": "Override",
+            "fields": {
+              "path": {
+                "label": "Pfad",
+                "placeholder": "namespace:item/mein_item_cast"
+              },
+              "predicate": {
+                "label": "Prädikat",
+                "keyLabel": "Prädikat",
+                "keyPlaceholder": "cast",
+                "value": {
+                  "label": "Wert"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}

@@ -13,13 +13,14 @@ import { CE_DATA_PROPERTIES } from './schema/data';
 import { CE_EVENT_PROPERTIES } from './schema/events';
 import { CE_GENERAL_PROPERTIES } from './schema/general';
 import { CE_LOOT_PROPERTIES } from './schema/loot';
+import { CE_MODEL_PROPERTIES } from './schema/model';
 import { CE_SETTINGS_PROPERTIES } from './schema/settings';
 
-export type CraftEnginePropertyGroup = 'general' | 'data' | 'settings' | 'blockSettings' | 'blockBehavior' | 'events' | 'loot';
+export type CraftEnginePropertyGroup = 'general' | 'data' | 'settings' | 'blockSettings' | 'blockBehavior' | 'events' | 'loot' | 'model';
 
 /** `label` and `description` are message keys in the `ceSchema` namespace. */
 export const CE_PROPERTY_GROUPS: Array<{ id: CraftEnginePropertyGroup; label: string; description: string }> = (
-  ['general', 'data', 'settings', 'blockSettings', 'blockBehavior', 'events', 'loot'] as const
+  ['general', 'data', 'settings', 'blockSettings', 'blockBehavior', 'events', 'loot', 'model'] as const
 ).map((id) => ({ id, label: `groups.${id}.label`, description: `groups.${id}.description` }));
 
 export const CE_PROPERTIES: PropertyDef[] = [
@@ -30,6 +31,7 @@ export const CE_PROPERTIES: PropertyDef[] = [
   ...CE_BLOCK_BEHAVIOR_PROPERTIES,
   ...CE_EVENT_PROPERTIES,
   ...CE_LOOT_PROPERTIES,
+  ...CE_MODEL_PROPERTIES,
 ];
 
 /** Paths that ResourcepackBuilder sets automatically: the material and the display name. */
@@ -38,7 +40,8 @@ export const CE_MANAGED_PATHS = ['material', 'data.item_name'];
 /**
  * The CraftEngine item editor. The group `general` is shown on the app's General tab, `blockSettings` and
  * `blockBehavior` in the Block section of the model tab (only while the item is a block). The Events tab shows the
- * item's events and those of the block or furniture it places, the Loot tab what that block or furniture drops.
+ * item's events and those of the block or furniture it places, the Loot tab what that block or furniture drops. The
+ * group `model` (the item keys around its model) is shown on the model tab.
  */
 export const CRAFT_ENGINE_FORM: FormSchema = {
   target: 'craftengine',
