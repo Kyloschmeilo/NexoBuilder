@@ -5,63 +5,80 @@
 import { useTranslations } from 'next-intl';
 import { EMOJI_CONTEXTS, GLYPH_GIF_TYPES, type Glyph, type GlyphGifType, isMultiBitmap } from '@resourcepackbuilder/core/project';
 import { emojiDocsFor } from '@resourcepackbuilder/core/targets';
+import { DocsLink, FieldGroup, Section } from '@resourcepackbuilder/ui';
 import { Input } from '@resourcepackbuilder/ui/components/input';
 import { NativeSelect, NativeSelectOption } from '@resourcepackbuilder/ui/components/native-select';
-import { AutoGrid } from '@resourcepackbuilder/ui';
 import { updateGlyph } from '../../commands/media';
 import { TextInput } from '../../components/editor';
-import { CheckboxField } from '../../components/CheckboxField';
-import { FormField } from '../../components/FormField';
-import { DocsLinkButton } from '../media/DocsLinkButton';
-import { NexoKey } from '../media/NexoKey';
 import { useOpenProject } from '../../store/project';
+import { MediaField, SwitchField } from '../media/MediaFields';
 
+type Update = (recipe: (draft: Glyph) => void, historyKey?: string) => void;
+
+/** Whether the glyph has a fixed character for the target: own, single-cell glyphs (CraftEngine: PNG only). */
+const hasChar = (glyph: Glyph, nexo: boolean) => glyph.kind !== 'reference' && !isMultiBitmap(glyph) && (nexo || glyph.kind === 'image');
+
+/** Whether the glyph has any of the advanced options for the target. */
+export function hasGlyphExtraFields(glyph: Glyph, nexo: boolean): boolean {
+  return hasChar(glyph, nexo) || (nexo && glyph.kind !== 'reference');
+}
+
+/** Character, shadow, template, GIF type and interpolation. */
 export function GlyphExtraFields({ glyph, glyphs }: { glyph: Glyph; glyphs: Glyph[] }) {
   const t = useTranslations('media.glyphs');
+  const tField = useTranslations('media.fields');
   const { target } = useOpenProject();
   const nexo = target === 'nexo';
-  const update = (recipe: (draft: Glyph) => void, historyKey?: string) => updateGlyph(glyph.id, recipe, historyKey);
+  const update: Update = (recipe, historyKey) => updateGlyph(glyph.id, recipe, historyKey);
   const own = glyph.kind !== 'reference';
-  // CraftEngine shows PNG images only; a multi-bitmap gets one character per cell
-  const hasChar = own && !isMultiBitmap(glyph) && (nexo || glyph.kind === 'image');
   const others = glyphs.filter((other) => other.id !== glyph.id).map((other) => ({ value: other.glyphId }));
 
   return (
-    <>
-      <AutoGrid>
-        {hasChar && (
-          <FormField label={<NexoKey>Char</NexoKey>} help={t('charHelp')}>
+    <FieldGroup>
+      {hasChar(glyph, nexo) && (
+        <MediaField label={tField('char')} yamlKey="char" help={t('charHelp')}>
+          {(id) => (
             <Input
+              id={id}
               className="font-mono"
               value={glyph.char}
               placeholder={t('charPlaceholder')}
               onChange={(e) => update((g) => (g.char = e.target.value), 'char')}
             />
-          </FormField>
-        )}
-        {nexo && own && (
-          <>
-            <FormField label={<NexoKey>Default Shadow</NexoKey>} help={t('shadowHelp')}>
+          )}
+        </MediaField>
+      )}
+      {nexo && own && (
+        <>
+          <MediaField label={tField('shadow')} yamlKey="default_shadow" help={t('shadowHelp')}>
+            {(id) => (
               <Input
+                id={id}
                 className="font-mono"
                 value={glyph.shadow}
                 placeholder={t('shadowPlaceholder')}
                 onChange={(e) => update((g) => (g.shadow = e.target.value), 'shadow')}
               />
-            </FormField>
-            <FormField label={<NexoKey>Template</NexoKey>} help={t('templateHelp')}>
+            )}
+          </MediaField>
+          <MediaField label={tField('template')} yamlKey="template" help={t('templateHelp')}>
+            {(id) => (
               <TextInput
+                id={id}
                 value={glyph.template}
                 mono
                 suggestions={others}
                 onChange={(v) => update((g) => (g.template = v ?? ''), 'template')}
               />
-            </FormField>
-          </>
-        )}
-        {nexo && glyph.kind === 'gif' && (
-          <FormField label={<NexoKey>Type</NexoKey>} help={t('gifTypeHelp')}>
+            )}
+          </MediaField>
+        </>
+      )}
+      {nexo && glyph.kind === 'gif' && (
+        <MediaField label={tField('gifType')} yamlKey="type" help={t('gifTypeHelp')}>
+          {(id) => (
             <NativeSelect
+              id={id}
               className="w-full"
               value={glyph.gifType}
               onChange={(e) => update((g) => (g.gifType = e.target.value as GlyphGifType))}
@@ -72,63 +89,72 @@ export function GlyphExtraFields({ glyph, glyphs }: { glyph: Glyph; glyphs: Glyp
                 </NativeSelectOption>
               ))}
             </NativeSelect>
-          </FormField>
-        )}
-      </AutoGrid>
+          )}
+        </MediaField>
+      )}
       {nexo && glyph.kind === 'gif' && glyph.gifType === 'SPRITE' && (
-        <CheckboxField
+        <SwitchField
+          label={tField('interpolate')}
+          yamlKey="interpolate"
+          help={t('interpolateHint')}
           checked={glyph.interpolate}
           onChange={(checked) => update((g) => (g.interpolate = checked))}
-          label={<NexoKey>Interpolate</NexoKey>}
-          description={t('interpolateHint')}
         />
       )}
-      {!nexo && own && glyph.kind === 'image' && <EmojiContentFields glyph={glyph} update={update} docs={emojiDocsFor(target)} />}
-    </>
+    </FieldGroup>
   );
 }
 
-/** CraftEngine: what an emoji keyword turns into, in general and per text context. */
-function EmojiContentFields({
-  glyph,
-  update,
-  docs,
-}: {
-  glyph: Glyph;
-  update: (recipe: (draft: Glyph) => void, historyKey?: string) => void;
-  docs: string;
-}) {
+/** CraftEngine: what an emoji keyword turns into, in general and per text context. Only for own PNG glyphs. */
+export function EmojiContentSection({ glyph }: { glyph: Glyph }) {
   const t = useTranslations('media.glyphs');
+  const tField = useTranslations('media.fields');
+  const tSection = useTranslations('media.sections');
+  const { target } = useOpenProject();
+  if (target === 'nexo' || glyph.kind !== 'image') return null;
+  const update: Update = (recipe, historyKey) => updateGlyph(glyph.id, recipe, historyKey);
   return (
-    <div className="flex flex-col gap-2.5 rounded-lg border border-border p-3">
-      <div className="flex items-center justify-between gap-2">
-        <span className="text-xs text-muted-foreground">{t('emojiHint')}</span>
-        <DocsLinkButton href={docs} label={t('emojiDocs')} />
-      </div>
-      <AutoGrid>
-        <FormField label={<NexoKey>Content</NexoKey>} help={t('emojiContentHelp')} wide>
-          <Input
-            className="font-mono"
-            value={glyph.emojiContent}
-            placeholder={t('emojiContentPlaceholder')}
-            onChange={(e) => update((g) => (g.emojiContent = e.target.value), 'emojiContent')}
-          />
-        </FormField>
-        {EMOJI_CONTEXTS.map((context) => (
-          <FormField key={context} label={<NexoKey>{context}</NexoKey>} help={t('emojiOverrideHelp', { context })}>
+    <Section
+      id="emoji"
+      title={tSection('emoji')}
+      description={t('emojiHint')}
+      actions={<DocsLink url={emojiDocsFor(target)} target={target} label={t('emojiDocs')} />}
+    >
+      <FieldGroup>
+        <MediaField label={tField('emojiContent')} yamlKey="content" help={t('emojiContentHelp')}>
+          {(id) => (
             <Input
+              id={id}
               className="font-mono"
-              value={glyph.emojiOverrides[context] ?? ''}
-              onChange={(e) =>
-                update((g) => {
-                  if (e.target.value) g.emojiOverrides[context] = e.target.value;
-                  else delete g.emojiOverrides[context];
-                }, `emoji.${context}`)
-              }
+              value={glyph.emojiContent}
+              placeholder={t('emojiContentPlaceholder')}
+              onChange={(e) => update((g) => (g.emojiContent = e.target.value), 'emojiContent')}
             />
-          </FormField>
+          )}
+        </MediaField>
+        {EMOJI_CONTEXTS.map((context) => (
+          <MediaField
+            key={context}
+            label={tField('emojiOverride', { context })}
+            yamlKey={`content_overrides.${context}`}
+            help={t('emojiOverrideHelp', { context })}
+          >
+            {(id) => (
+              <Input
+                id={id}
+                className="font-mono"
+                value={glyph.emojiOverrides[context] ?? ''}
+                onChange={(e) =>
+                  update((g) => {
+                    if (e.target.value) g.emojiOverrides[context] = e.target.value;
+                    else delete g.emojiOverrides[context];
+                  }, `emoji.${context}`)
+                }
+              />
+            )}
+          </MediaField>
         ))}
-      </AutoGrid>
-    </div>
+      </FieldGroup>
+    </Section>
   );
 }

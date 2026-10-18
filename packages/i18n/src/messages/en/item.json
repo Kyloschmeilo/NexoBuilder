@@ -119,7 +119,6 @@
     "unreadable": "The model could not be read.",
     "fileUnreadable": "“{name}” could not be read.",
     "onlyFirst": "Only the first model was used.",
-    "noneTitle": "No model",
     "noneDescription": "Without a model the item looks like its base material ({material}).",
     "dropTitle": "Drop model here",
     "dropSubtitle": "Blockbench project (.bbmodel), Java model (.json) with PNG textures, or PNG textures",
@@ -136,11 +135,10 @@
     "noProblems": "No problems found.",
     "importNotes": "Import notes ({count})",
     "textures": "Textures",
-    "ambientOcclusion": "Ambient Occlusion",
+    "ambientOcclusion": "Ambient occlusion",
     "ambientOcclusionHelp": "Soft shadows in corners and edges (ambientocclusion). Off for flat or glowing models.",
     "shade": "Shade",
     "shadeOverride": "The model uses shade_direction_override (from Blockbench) – please change it there.",
-    "shadeSome": "Directional shading of the cubes (shade) – off for {off} of {total} cubes.",
     "shadeHelp": "Directional shading of the cubes (shade). Off = all sides equally bright.",
     "texture": {
       "size": "{width}×{height} px",
@@ -154,11 +152,20 @@
       "minecraftTexture": "(Minecraft texture)",
       "notInPack": "(not in pack!)",
       "assignOwnPng": "Assign own PNG"
-    }
+    },
+    "title": "Model",
+    "displayHelp": "How a flat model is held in the hand. It sets the model’s parent.",
+    "holdStyles": {
+      "generated": "Flat item",
+      "handheld": "Tool",
+      "handheldRod": "Rod"
+    },
+    "shadeOff": "Off for {off} of {total} cubes",
+    "texturesEmpty": "No textures yet. Add a model first.",
+    "texturesCount": "{count, plural, one {# texture} other {# textures}}"
   },
   "variants": {
-    "title": "Special Item Appearance",
-    "empty": "Pulling, Charged, Blocking, Cast, Throwing, Damaged, Dyeable, Composite or a custom GUI Model: add more models via <b>Add</b>.",
+    "title": "Special appearance",
     "ownItemModel": "own ItemModel",
     "remove": "Remove variant",
     "wrongMaterial": "Only works with the material {materials} – currently {material}.",
@@ -167,7 +174,30 @@
     "dropManySubtitle": "Multiple files at once – they are sorted by file name (e.g. bow_0, bow_1, bow_2).",
     "dropOneSubtitle": ".bbmodel, .json + .png or .png",
     "moveUp": "Move up",
-    "moveDown": "Move down"
+    "moveDown": "Move down",
+    "description": "Extra models for states such as pulling a bow, blocking with a shield or a damaged tool.",
+    "emptyText": "No special appearance yet.",
+    "add": "Add appearance",
+    "catalogTitle": "Add a special appearance",
+    "modelCount": "{count, plural, =0 {No model yet} one {# model} other {# models}}",
+    "notExported": "Not exported for {plugin}",
+    "needsMaterial": "Needs {materials}"
+  },
+  "modelTree": {
+    "nodes": "Nodes of the item model tree",
+    "emptyText": "No item model tree. The item uses the model ResourcepackBuilder generates.",
+    "rootKeys": "Definition keys",
+    "caseSlot": "Case {value}",
+    "caseNoValue": "Case without value",
+    "entrySlot": "From {threshold}",
+    "modelSlot": "Model {index}",
+    "caseHeading": "Case",
+    "entryHeading": "Entry",
+    "branches": "Branches",
+    "property": "Property",
+    "open": "Open {name}",
+    "removeNode": "Remove node",
+    "noChildren": "No entries yet."
   },
   "slots": {
     "model": "Model",
@@ -190,16 +220,9 @@
   },
   "recipes": {
     "title": "Recipes",
-    "empty": "No recipes yet. Use <b>Add</b> to define how this item can be crafted.",
-    "key": "Recipe key",
-    "file": "File:",
     "remove": "Remove recipe",
-    "input": "Input",
     "source": "Ingredient source",
-    "cookingTime": "Cooking time in ticks ({seconds, number} s)",
     "experience": "Experience",
-    "result": "Result:",
-    "exportHint": "Recipes are exported to <code>{path}</code> and loaded with <code>{command}</code>.",
     "typePlaceholder": "type",
     "grid": "Grid",
     "emptySlot": "empty",
@@ -230,7 +253,33 @@
     },
     "noResult": "This recipe changes the base item and has no result of its own.",
     "disabledTitle": "Disabled vanilla recipes",
-    "disabledDescription": "For the whole project: Nexo disables these vanilla recipes. Exported to <code>{path}</code>."
+    "addRecipe": "Add recipe",
+    "catalogTitle": "Add a recipe",
+    "catalogDescription": "Pick how players get this item.",
+    "catalogSearch": "Search recipe types, keys and descriptions",
+    "categories": {
+      "crafting": "Crafting",
+      "cooking": "Cooking",
+      "smithing": "Smithing",
+      "stations": "Other stations"
+    },
+    "writtenTo": "Written to {path}",
+    "emptyHint": "No recipes yet.",
+    "sectionDescription": "Exported to {path} and loaded with {command}.",
+    "summary": {
+      "empty": "empty",
+      "noIngredients": "No ingredients yet",
+      "seconds": "{seconds, number} s",
+      "makes": "makes {amount, number}"
+    },
+    "resultLabel": "Result",
+    "resultAmount": "Amount made",
+    "duplicate": "Duplicate",
+    "moveUp": "Move up",
+    "moveDown": "Move down",
+    "cookingTimeLabel": "Cooking time",
+    "cookingTimeHelp": "In ticks; 20 ticks are one second.",
+    "disabledSummary": "For the whole project: Nexo disables these vanilla recipes. Exported to {path}."
   },
   "ceBlock": {
     "title": "Block",

@@ -85,6 +85,18 @@ export function logicCatalog(catalog: LogicCatalogName, specs: LogicTypeSpec[]):
   });
 }
 
+/**
+ * Sorts the specs of a catalog into categories: `categories` lists the types under each category id (named at
+ * `logic.categories.<catalog>.<camel(category)>`); a type listed nowhere keeps the category it has, if any.
+ */
+export function categorized(specs: LogicTypeSpec[], categories: Record<string, readonly string[]>): LogicTypeSpec[] {
+  const categoryOf = new Map(Object.entries(categories).flatMap(([category, types]) => types.map((type) => [type, category] as const)));
+  return specs.map((spec) => {
+    const category = categoryOf.get(spec.type);
+    return category ? { ...spec, category } : spec;
+  });
+}
+
 /** All message keys of a catalog's types and their fields. */
 export function logicMessageKeys(types: readonly LogicType[]): string[] {
   return types.flatMap((t) => [

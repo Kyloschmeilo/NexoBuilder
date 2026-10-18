@@ -66,11 +66,7 @@
     "unknownType": "Das Formular hat keine Felder für „{type}“. Bearbeite diesen Eintrag als YAML.",
     "invert": "Umkehren",
     "invertHint": "Schreibt ein ! vor den Typ, das die Bedingung umkehrt.",
-    "value": "Wert",
-    "valueHint": "Eine Zahl, ein Bereich wie 1~3 oder ein Ausdruck",
     "valuePlaceholder": "1, 1~3 oder ein Ausdruck",
-    "object": "Typ",
-    "objectHint": "Ein Zahlengeber mit Typ, etwa uniform",
     "premium": "Premium",
     "premiumHint": "Nur CraftEngine Premium liest diesen Typ."
   },
@@ -122,6 +118,86 @@
     "negateHint": "Schreibt ein ! vor den Typ, das die Bedingung umkehrt.",
     "noFields": "Dieser Typ hat keine Einstellungen. Es reicht, ihn hinzuzufügen.",
     "unknown": "Für diesen Typ gibt es noch kein Formular; bearbeite ihn als YAML."
+  },
+  "typedList": {
+    "default": {
+      "add": "Eintrag hinzufügen",
+      "title": "Einen Eintrag hinzufügen",
+      "noun": "Eintrag"
+    },
+    "catalogs": {
+      "conditions": {
+        "add": "Bedingung hinzufügen",
+        "title": "Eine Bedingung hinzufügen",
+        "noun": "Bedingung",
+        "count": "{count, plural, one {# Bedingung} other {# Bedingungen}}"
+      },
+      "functions": {
+        "add": "Funktion hinzufügen",
+        "title": "Eine Funktion hinzufügen",
+        "noun": "Funktion",
+        "count": "{count, plural, one {# Funktion} other {# Funktionen}}"
+      },
+      "triggers": {
+        "add": "Event hinzufügen",
+        "title": "Ein Event hinzufügen",
+        "noun": "Event",
+        "count": "{count, plural, one {# Event} other {# Events}}"
+      },
+      "lootEntries": {
+        "add": "Loot-Eintrag hinzufügen",
+        "title": "Einen Loot-Eintrag hinzufügen",
+        "noun": "Loot-Eintrag",
+        "count": "{count, plural, one {# Loot-Eintrag} other {# Loot-Einträge}}"
+      },
+      "lootFunctions": {
+        "add": "Loot-Funktion hinzufügen",
+        "title": "Eine Loot-Funktion hinzufügen",
+        "noun": "Loot-Funktion",
+        "count": "{count, plural, one {# Loot-Funktion} other {# Loot-Funktionen}}"
+      },
+      "lootSources": {
+        "add": "Loot-Quelle hinzufügen",
+        "title": "Eine Loot-Quelle hinzufügen",
+        "noun": "Loot-Quelle",
+        "count": "{count, plural, one {# Loot-Quelle} other {# Loot-Quellen}}"
+      },
+      "blockBehaviors": {
+        "add": "Verhalten hinzufügen",
+        "title": "Ein Blockverhalten hinzufügen",
+        "noun": "Verhalten",
+        "count": "{count, plural, one {# Verhalten} other {# Verhalten}}"
+      },
+      "itemBehaviors": {
+        "add": "Verhalten hinzufügen",
+        "title": "Ein Item-Verhalten hinzufügen",
+        "noun": "Verhalten",
+        "count": "{count, plural, one {# Verhalten} other {# Verhalten}}"
+      },
+      "furnitureBehaviors": {
+        "add": "Verhalten hinzufügen",
+        "title": "Ein Möbelverhalten hinzufügen",
+        "noun": "Verhalten",
+        "count": "{count, plural, one {# Verhalten} other {# Verhalten}}"
+      },
+      "itemUpdaters": {
+        "add": "Schritt hinzufügen",
+        "title": "Einen Updater-Schritt hinzufügen",
+        "noun": "Updater-Schritt",
+        "count": "{count, plural, one {# Schritt} other {# Schritte}}"
+      }
+    },
+    "crumb": "{noun}: {label}",
+    "changeType": "Typ ändern",
+    "changeTrigger": "Auslöser ändern",
+    "triggerTitle": "Einen Auslöser wählen",
+    "number": {
+      "useType": "Zahlentyp verwenden",
+      "title": "Einen Zahlentyp wählen",
+      "changeType": "Zahlentyp ändern",
+      "useValue": "Einfachen Wert verwenden",
+      "noPlainValue": "Dieser Typ hat keinen einfachen Wert"
+    }
   },
   "devPrimitives": {
     "actions": {

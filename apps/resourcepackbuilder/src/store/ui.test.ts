@@ -8,6 +8,8 @@ import {
   followOpenProject,
   sanitizePersistedUi,
   select,
+  selectEntry,
+  selectTarget,
   setActivity,
   setDockOpen,
   setDockWidth,
@@ -84,5 +86,25 @@ describe('followOpenProject', () => {
     setFeatureExpanded('item/food', true);
     setProject(createProject('Next'));
     expect(state()).toMatchObject({ activity: 'items', selection: null, expandedFeatures: {} });
+  });
+});
+
+describe('registry entries', () => {
+  afterEach(() => select(null));
+
+  it('selects a registry view with or without one of its entries', () => {
+    selectEntry('lootSources', 'lootSources/2');
+    expect(state().selection).toEqual({ kind: 'view', view: 'lootSources', entry: 'lootSources/2' });
+    selectEntry('lootSources');
+    expect(state().selection).toEqual({ kind: 'view', view: 'lootSources' });
+  });
+
+  it('opens the glyph, sound or painting an issue belongs to', () => {
+    selectTarget({ kind: 'glyph', id: 'g1' });
+    expect(state().selection).toEqual({ kind: 'view', view: 'glyphs', entry: 'g1' });
+    selectTarget({ kind: 'sound', id: 's1' });
+    expect(state().selection).toEqual({ kind: 'view', view: 'sounds', entry: 's1' });
+    selectTarget({ kind: 'painting', id: 'p1' });
+    expect(state().selection).toEqual({ kind: 'view', view: 'paintings', entry: 'p1' });
   });
 });

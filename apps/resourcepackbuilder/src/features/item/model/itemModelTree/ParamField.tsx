@@ -1,18 +1,20 @@
 /**
- * One key of an item model node, property, special model or tint source, edited by its kind (text, number, yes/no,
- * enum, color, YAML), with the key name as label, its help text and a version badge.
+ * One key of an item model node, property, special model or tint source as a field row: a readable label, the control
+ * for its kind (text, number, on/off, enum, color, YAML), the key in the key rail, its help in the ⓘ popover and a
+ * version badge.
  */
-import { useId, useState } from 'react';
+import { type ReactNode, useId, useState } from 'react';
 import { useTranslations } from 'next-intl';
 import { type ConfigValue, type ItemModelParam, itemModelMessages, toConfigValue } from '@resourcepackbuilder/core/project';
 import { parseYaml, toYaml } from '@resourcepackbuilder/core/yaml';
-import { Badge } from '@resourcepackbuilder/ui/components/badge';
+import { FieldGroup, FieldRow, StatusPill } from '@resourcepackbuilder/ui';
 import { Input } from '@resourcepackbuilder/ui/components/input';
 import { NativeSelect, NativeSelectOption } from '@resourcepackbuilder/ui/components/native-select';
 import { Textarea } from '@resourcepackbuilder/ui/components/textarea';
+import { humanizeKey } from '../../../../components/catalog';
+import { BooleanSwitch } from '../../../../components/editor/inputs/BooleanSwitch';
 import { NumberInput } from '../../../../components/editor/inputs/NumberInput';
 import { TextInput } from '../../../../components/editor/inputs/TextInput';
-import { TriState } from '../../../../components/editor/inputs/TriState';
 import { useSchemaText } from '../../../../components/useSchemaText';
 
 type Change = (value: ConfigValue | undefined) => void;
@@ -30,7 +32,7 @@ export function YamlValue({ id, value, onChange }: { id: string; value: ConfigVa
   return (
     <Textarea
       id={id}
-      className="min-h-16 font-mono text-xs"
+      className="min-h-16 font-mono text-meta"
       aria-invalid={parsed.error !== null || undefined}
       value={text}
       onChange={(e) => {
@@ -63,6 +65,8 @@ function ParamInput({
     case 'number':
       return (
         <NumberInput
+          id={id}
+          className="max-w-40"
           value={typeof value === 'number' || typeof value === 'string' ? value : undefined}
           integer={param.kind === 'integer'}
           onChange={onChange}
@@ -70,7 +74,7 @@ function ParamInput({
         />
       );
     case 'boolean':
-      return <TriState value={typeof value === 'boolean' ? value : undefined} onChange={onChange} />;
+      return <BooleanSwitch id={id} value={typeof value === 'boolean' ? value : undefined} onChange={onChange} />;
     case 'enum':
       return (
         <NativeSelect
@@ -98,7 +102,14 @@ function ParamInput({
             value={toHex(value)}
             onChange={(e) => onChange(parseInt(e.target.value.slice(1), 16))}
           />
-          <NumberInput value={typeof value === 'number' ? value : undefined} integer min={0} onChange={onChange} label={param.key} />
+          <NumberInput
+            className="max-w-40"
+            value={typeof value === 'number' ? value : undefined}
+            integer
+            min={0}
+            onChange={onChange}
+            label={param.key}
+          />
         </div>
       );
     case 'json':
@@ -115,24 +126,38 @@ function ParamInput({
   }
 }
 
-/** A key with its name, help text and version badge. */
-export function ParamField({ param, value, onChange }: { param: ItemModelParam; value: ConfigValue | undefined; onChange: Change }) {
+/** A key as a field row: readable label, control, key rail, help and version badge; `children` go below the control. */
+export function ParamField({
+  param,
+  value,
+  onChange,
+  children,
+}: {
+  param: ItemModelParam;
+  value: ConfigValue | undefined;
+  onChange: Change;
+  children?: ReactNode;
+}) {
   const id = useId();
   const t = useTranslations('schema');
   const text = useSchemaText();
   return (
-    <div className="flex min-w-0 flex-col gap-1">
-      <label htmlFor={id} className="flex items-center gap-2 font-mono text-xs font-medium">
-        {param.key}
-        {param.minVersion && <Badge variant="outline">{t('itemModel.ui.fromVersion', { version: param.minVersion })}</Badge>}
-      </label>
+    <FieldRow
+      label={humanizeKey(param.key)}
+      htmlFor={param.kind === 'boolean' || param.kind === 'json' ? undefined : id}
+      yamlKey={param.key}
+      help={text(itemModelMessages.param(param.key))}
+      state={value === undefined ? 'default' : 'set'}
+      badges={param.minVersion && <StatusPill tone="info" label={t('itemModel.ui.fromVersion', { version: param.minVersion })} />}
+      layout={param.kind === 'json' ? 'stacked' : 'side'}
+    >
       <ParamInput id={id} param={param} value={value} onChange={onChange} />
-      <p className="text-xs text-muted-foreground">{text(itemModelMessages.param(param.key))}</p>
-    </div>
+      {children}
+    </FieldRow>
   );
 }
 
-/** The keys of an object (node, special model, tint) in a grid; `update` sets one of them. */
+/** The keys of an object (node, special model, tint) as field rows; `update` sets one of them. */
 export function ParamList({
   params,
   owner,
@@ -144,10 +169,10 @@ export function ParamList({
 }) {
   if (params.length === 0) return null;
   return (
-    <div className="grid gap-3 sm:grid-cols-2">
+    <FieldGroup>
       {params.map((param) => (
         <ParamField key={param.key} param={param} value={owner[param.key]} onChange={(value) => update(param.key, value)} />
       ))}
-    </div>
+    </FieldGroup>
   );
 }

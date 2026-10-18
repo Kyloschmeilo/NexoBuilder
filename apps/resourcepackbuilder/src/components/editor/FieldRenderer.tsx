@@ -5,7 +5,7 @@
  * (`Field.editor`, see `customEditors`) is shown with that one instead.
  */
 import type { ComponentType } from 'react';
-import type { Field } from '@resourcepackbuilder/core/form';
+import type { Field, ObjectListField } from '@resourcepackbuilder/core/form';
 import { renderCustomFieldEditor } from './customEditors';
 // Registers the hand-written editors the form schema names (`Field.editor`)
 import './nexoFurnitureEditors';
@@ -22,12 +22,17 @@ import { SelectEditor } from './editors/SelectEditor';
 import { StringListEditor } from './editors/StringListEditor';
 import { TextEditor } from './editors/TextEditor';
 import { TextureEditor } from './editors/TextureEditor';
-import { TypedListEditor } from './editors/TypedListEditor';
+import { TypedListEditor, TypedObjectListEditor } from './editors/TypedListEditor';
 import { YamlEditor } from './editors/YamlEditor';
 import type { EditorProps } from './types';
 import { isFieldVisible } from './values';
 
 type FieldByType = { [F in Field as F['type']]: F };
+
+/** An object list; one whose entries are told apart by a type key (`typedBy`, e.g. events) as typed cards. */
+function AnyObjectListEditor(props: EditorProps<ObjectListField>) {
+  return props.field.typedBy ? <TypedObjectListEditor {...props} /> : <ObjectListEditor {...props} />;
+}
 
 const EDITORS: { [T in keyof FieldByType]: ComponentType<EditorProps<FieldByType[T]>> } = {
   text: TextEditor,
@@ -37,7 +42,7 @@ const EDITORS: { [T in keyof FieldByType]: ComponentType<EditorProps<FieldByType
   stringList: StringListEditor,
   multiSelect: MultiSelectEditor,
   object: ObjectEditor,
-  objectList: ObjectListEditor,
+  objectList: AnyObjectListEditor,
   map: MapEditor,
   yaml: YamlEditor,
   presence: PresenceEditor,
