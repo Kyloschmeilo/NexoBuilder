@@ -8,11 +8,28 @@
     "defaultTooltip": "Not set – {plugin} uses the default value",
     "allowedRange": "Allowed: {min} to {max}",
     "selectOrType": "Select or type",
-    "notSetOption": "– not set –",
-    "placeholderOption": "– {placeholder} –",
     "moveUp": "Move up",
     "moveDown": "Move down",
-    "pickColor": "Pick colour"
+    "pickColor": "Pick colour",
+    "axis": "{axis} value",
+    "defaultIs": "Default: {value}",
+    "noMatches": "No option matches.",
+    "noResources": "No resource matches.",
+    "notSet": "Not set",
+    "notSetHint": "Leaves the key out; the plugin uses its default",
+    "off": "off",
+    "on": "on",
+    "pickResource": "Pick from the project",
+    "resourceGroups": {
+      "items": "Items",
+      "models": "Models",
+      "sounds": "Sounds",
+      "textures": "Textures"
+    },
+    "searchOptions": "{placeholder} – type to search",
+    "searchResources": "Search items, models, textures and sounds",
+    "unset": "Unset",
+    "unsetWithDefault": "Unset (default: {value})"
   },
   "field": {
     "minVersion": "from {version}",
@@ -26,7 +43,10 @@
     "noTexture": "No texture yet",
     "noTextureHint": "No texture yet (recommended: {size})",
     "replace": "Replace",
-    "uploadPng": "Upload PNG"
+    "uploadPng": "Upload PNG",
+    "entry": "Entry {index}",
+    "entryError": "Entry {index}: {error}",
+    "listEmpty": "No entries yet."
   },
   "typed": {
     "entry": "Entry",

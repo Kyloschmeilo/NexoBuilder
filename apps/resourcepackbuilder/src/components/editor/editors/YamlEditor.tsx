@@ -1,3 +1,4 @@
+import { useId } from 'react';
 import { useTranslations } from 'next-intl';
 import type { YamlField } from '@resourcepackbuilder/core/form';
 import { parseYaml, toYaml } from '@resourcepackbuilder/core/yaml';
@@ -18,6 +19,7 @@ function parseDraft(text: string): { value: unknown } | undefined {
 
 /** Free YAML for values the form has no fields for. Tab indents instead of leaving the field. */
 export function YamlEditor({ field, value, onChange, hideLabel }: EditorProps<YamlField>) {
+  const id = useId();
   const t = useTranslations('editor');
   const text = useSchemaText();
   const { draft, setDraft } = useDraft(value, parseDraft, formatYaml);
@@ -30,8 +32,9 @@ export function YamlEditor({ field, value, onChange, hideLabel }: EditorProps<Ya
   };
 
   return (
-    <FieldShell field={field} hideLabel={hideLabel} wide error={error ? t('field.yamlError', { error }) : undefined}>
+    <FieldShell field={field} hideLabel={hideLabel} wide error={error ? t('field.yamlError', { error }) : undefined} htmlFor={id}>
       <Textarea
+        id={id}
         className="field-sizing-fixed font-mono text-xs leading-5 [tab-size:2]"
         aria-invalid={!!error || undefined}
         rows={6}
