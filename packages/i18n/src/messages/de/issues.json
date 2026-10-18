@@ -79,6 +79,8 @@
     "blockVariationRange": "Die Variation {variation} liegt außerhalb von 1–{max} für {type}.",
     "blockVariationDuplicate": "Die Variation {variation} ({type}) wird bereits von „{other}“ verwendet.",
     "blockWithoutModel": "Der Block hat kein Modell. Bitte ein Modell importieren oder im Feld „Modell“ einen Pfad angeben.",
+    "blocksAttacksNeedsVersion": "Nexo 1.30 kann ein Item mit blocks_attacks auf einem Server unter Minecraft {version} nicht bauen (das ganze Item lädt nicht).",
+    "nexoLegacyArmorName": "Nexo meldet für diese Item-ID „… looks like custom armor from the old naming-scheme“. Die Zeilen sind zu erwarten: Das Item bekommt seine Rüstung aus dem exportierten Ausrüstungsmodell.",
     "damageableStackable": "Items mit Haltbarkeit (max_damage) dürfen nicht stapelbar sein – bitte die Stapelgröße auf 1 setzen.",
     "extraModelsNeedMainModel": "GUI Model, Furniture-Modelle und Stackable brauchen ein Hauptmodell. Bitte zuerst ein Modell importieren.",
     "furnitureMechanicMissing": "Es sind Furniture-Modelle hochgeladen, aber die Mechanic „Furniture“ fehlt – sie werden nicht exportiert.",
@@ -255,7 +257,7 @@
     "actionsMissing": "Ein MULTI-Dialog braucht mindestens eine Aktion.",
     "numberRange": "Die Eingabe „{input}“ braucht einen Start unter ihrem Ende.",
     "optionsMissing": "Die Eingabe „{input}“ hat keine Optionen – Nexo überspringt sie.",
-    "showDialogNexo": "Eine Schaltfläche kann den Nexo-Dialog „{dialog}“ nicht öffnen: Nexo 1.30 baut alle Dialoge, bevor es sie registriert, und verwirft die Aktion. Öffne ihn stattdessen mit einer RUN_COMMAND-Aktion „dialog show @s {dialog}“ oder aus einem Listendialog.",
+    "showDialogNexo": "Eine Schaltfläche kann den Nexo-Dialog „{dialog}“ nicht öffnen: Nexo 1.30 baut alle Dialoge, bevor es sie registriert, und verwirft die Aktion. Öffne ihn stattdessen aus einem Listendialog oder mit einer RUN_COMMAND-Aktion „dialog show @s {dialog}“ (dafür brauchen Spieler Berechtigungsstufe 2).",
     "unknownDialog": "Das Projekt hat keinen Dialog „{dialog}“. Nexo ignoriert einen Link auf einen Dialog, den es nicht kennt."
   },
   "multipack": {

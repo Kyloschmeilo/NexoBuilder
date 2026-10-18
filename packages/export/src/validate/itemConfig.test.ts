@@ -116,6 +116,28 @@ describe('furniture hitboxes', () => {
   });
 });
 
+describe('Nexo 1.30 server quirks', () => {
+  it('warns that blocks_attacks breaks the whole item below Minecraft 26.1', () => {
+    const project = projectWith({ Components: { blocks_attacks: { block_delay: '0.25s' } } }, { Components: { max_damage: 10 } });
+    const issues = issuesOf(project, 'plan.blocksAttacksNeedsVersion');
+    expect(issues.map((issue) => [issue.level, issue.args])).toEqual([['warning', { version: '26.1' }]]);
+    project.settings.minecraftVersion = '26.1';
+    expect(issuesOf(project, 'plan.blocksAttacksNeedsVersion')).toEqual([]);
+  });
+
+  it('explains the console lines Nexo prints for armor ids in its old naming scheme', () => {
+    const project = projectWith({ Components: { equippable: { slot: 'CHEST' } } });
+    const item = Object.values(project.items)[0];
+    item.itemId = 'ruby_chestplate';
+    expect(issuesOf(project, 'plan.nexoLegacyArmorName').map((issue) => issue.level)).toEqual(['info']);
+    item.config.CustomArmor = { id: 'ruby' };
+    expect(issuesOf(project, 'plan.nexoLegacyArmorName')).toEqual([]);
+    delete item.config.CustomArmor;
+    item.itemId = 'ruby_plate';
+    expect(issuesOf(project, 'plan.nexoLegacyArmorName')).toEqual([]);
+  });
+});
+
 describe('Carpentry blocks', () => {
   const stair = (variation: number) => ({
     Mechanics: { custom_block: { type: 'STAIR', custom_variation: variation, model: 'pruefung:stair' } },

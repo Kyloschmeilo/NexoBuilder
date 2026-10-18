@@ -96,8 +96,23 @@ export function validateItemConfig(itemExport: ItemExport, { config, usedVariati
   if (isPlainObject(components)) {
     const stack = components.max_stack_size;
     if (typeof stack === 'number' && components.max_damage !== undefined && stack > 1) report('error', 'plan.damageableStackable');
+    // Nexo 1.30 calls a Paper API method for blocks_attacks that older Paper lacks, and then builds no item at all
+    const version = itemExport.project.settings.minecraftVersion;
+    if (components.blocks_attacks !== undefined && compareVersions(version, NEXO_BLOCKS_ATTACKS_VERSION) < 0) {
+      report('warning', 'plan.blocksAttacksNeedsVersion', { version: NEXO_BLOCKS_ATTACKS_VERSION });
+    }
+    // Nexo's converter takes such ids for armor of its old naming scheme and prints two misleading lines
+    if (isPlainObject(components.equippable) && LEGACY_ARMOR_ID.test(item.itemId) && config.CustomArmor === undefined) {
+      report('info', 'plan.nexoLegacyArmorName');
+    }
   }
 }
+
+/** First Minecraft version on which Nexo 1.30 builds an item with `blocks_attacks` (on Paper 1.21.11 it fails). */
+const NEXO_BLOCKS_ATTACKS_VERSION = '26.1';
+
+/** Item ids Nexo's converter checks for old-style armor textures (`<set>_armor_layer_1.png`) without a CustomArmor section. */
+const LEGACY_ARMOR_ID = /^.+?_(chestplate|leggings|boots|elytra)$/;
 
 /** Warns about furniture hitbox entries whose format Nexo cannot read, and about lights inside a barrier. */
 function validateHitbox(itemExport: ItemExport): void {
