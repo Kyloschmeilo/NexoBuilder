@@ -3,8 +3,8 @@ import { X } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 import type { Field, ObjectField } from '@resourcepackbuilder/core/form';
 import { isPlainObject } from '@resourcepackbuilder/utils';
-import { CollapsibleSection, FieldGroup, IconButton, MoreOptions } from '@resourcepackbuilder/ui';
-import { FieldDescription } from '@resourcepackbuilder/ui/components/field';
+import { CollapsibleSection, DocsLink, FieldGroup, Help, IconButton, MoreOptions } from '@resourcepackbuilder/ui';
+import { useProjectStore } from '../../../store/project';
 import { useSchemaText } from '../../useSchemaText';
 import { FieldRenderer } from '../FieldRenderer';
 import { fieldYamlKey, MinVersionBadge, useFieldLabel } from '../FieldShell';
@@ -52,7 +52,10 @@ export function ObjectFields({
   );
 }
 
-/** A nested object as a collapsible section; it opens by itself when it gets a value (e.g. by paste or undo). */
+/**
+ * A nested object as a collapsible section; it opens by itself when it gets a value (e.g. by paste or undo). The header
+ * carries the YAML key, the version badge and the count of set keys; docs link, help and "Clear" sit on its right.
+ */
 function ObjectSection({ field, value, onChange }: EditorProps<ObjectField>) {
   const t = useTranslations('editor');
   const text = useSchemaText();
@@ -65,6 +68,7 @@ function ObjectSection({ field, value, onChange }: EditorProps<ObjectField>) {
     if (count > 0) setIsOpen(true);
   }
   const help = text(field.help);
+  const target = useProjectStore((s) => s.project?.target);
   return (
     <CollapsibleSection
       className="col-span-full"
@@ -79,14 +83,17 @@ function ObjectSection({ field, value, onChange }: EditorProps<ObjectField>) {
         </>
       }
       actions={
-        count > 0 && (
-          <IconButton label={t('field.clearSection')} size="icon-xs" onClick={() => onChange(undefined)}>
-            <X />
-          </IconButton>
-        )
+        <>
+          {field.docs && target && <DocsLink url={field.docs} target={target} label={title} />}
+          {help && <Help>{help}</Help>}
+          {count > 0 && (
+            <IconButton label={t('field.clearSection')} size="icon-xs" onClick={() => onChange(undefined)}>
+              <X />
+            </IconButton>
+          )}
+        </>
       }
     >
-      {help && <FieldDescription className="mb-2.5 text-xs leading-4">{help}</FieldDescription>}
       <ObjectFields field={field} value={value} onChange={(next) => onChange(objectOrUndefined(next))} />
     </CollapsibleSection>
   );

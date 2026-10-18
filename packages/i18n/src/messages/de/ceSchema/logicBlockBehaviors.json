@@ -787,6 +787,16 @@
           "help": "Der Grundimpuls des Geysir-Ausbruchs."
         }
       }
+    },
+    "categories": {
+      "blockBehaviors": {
+        "shapes": "Formen und Bausteine",
+        "redstone": "Redstone und Licht",
+        "blockEntities": "Lager und Anzeigen",
+        "physics": "Physik",
+        "placement": "Platzierungsregeln",
+        "plants": "Pflanzen und Wachstum"
+      }
     }
   }
 }

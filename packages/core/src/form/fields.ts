@@ -142,6 +142,8 @@ export interface TypedType {
   docs?: string;
   /** Sub-group of the catalog the type is listed under (e.g. `player` for functions acting on players) */
   category?: string;
+  /** Name of the type's `category` – message key in the form's namespace */
+  categoryLabel?: string;
 }
 
 /**
