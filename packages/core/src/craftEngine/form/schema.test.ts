@@ -3,22 +3,15 @@
  * message key in the English and German `ceSchema` catalogue (with no keys nobody references, except overrides of
  * shared `schema` keys).
  */
-import { readFileSync } from 'node:fs';
 import { describe, expect, it } from 'vitest';
 import { checkFieldValue, fieldToSchema } from '../../form/fieldSchema';
 import { fieldMessageKeys, formMessageKeys } from '../../form/messageKeys';
+import { loadCatalogue, type MessageTree } from '@resourcepackbuilder/test-utils/catalogue';
 import { CE_ATTRIBUTE_LISTS } from '../attributes';
 import { CE_LOGIC, logicMessageKeys } from '../logic';
 import { CE_LOOT_SOURCE_LIST } from '../loot';
 import { CE_GLOBAL_VARIABLE_MAP, CE_TEMPLATE_LIST } from '../templates';
 import { CRAFT_ENGINE_FORM } from './schema';
-
-type MessageTree = { [key: string]: string | MessageTree };
-
-function loadCatalogue(locale: 'en' | 'de', namespace = 'ceSchema'): MessageTree {
-  const url = new URL(`../../../../i18n/src/messages/${locale}/${namespace}.json`, import.meta.url);
-  return JSON.parse(readFileSync(url, 'utf8')) as MessageTree;
-}
 
 function lookup(tree: MessageTree, key: string): unknown {
   let node: unknown = tree;
@@ -104,7 +97,7 @@ describe('ceSchema message keys', () => {
 
   for (const locale of ['en', 'de'] as const) {
     it(`finds every referenced key in the ${locale} catalogue`, () => {
-      const catalogue = loadCatalogue(locale);
+      const catalogue = loadCatalogue(locale, 'ceSchema');
       expect([...keys].filter((k) => typeof lookup(catalogue, k) !== 'string')).toEqual([]);
     });
   }
@@ -112,6 +105,6 @@ describe('ceSchema message keys', () => {
   // A key of the shared `schema` catalogue may be given a CraftEngine wording here (the app looks in ceSchema first)
   it('has no unreferenced keys in the catalogue', () => {
     const shared = loadCatalogue('en', 'schema');
-    expect(leafKeys(loadCatalogue('en')).filter((k) => !keys.has(k) && typeof lookup(shared, k) !== 'string')).toEqual([]);
+    expect(leafKeys(loadCatalogue('en', 'ceSchema')).filter((k) => !keys.has(k) && typeof lookup(shared, k) !== 'string')).toEqual([]);
   });
 });

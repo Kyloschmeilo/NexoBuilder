@@ -1,0 +1,185 @@
+{
+  "logic": {
+    "lootSources": {
+      "blockBreak": {
+        "label": "block_break",
+        "help": "A block is broken. Target: block ids."
+      },
+      "entityDeath": {
+        "label": "entity_death",
+        "help": "An entity dies. Target: entity ids."
+      },
+      "fishing": {
+        "label": "fishing",
+        "help": "A bobber catches something. No target."
+      },
+      "piglinBarter": {
+        "label": "piglin_barter",
+        "help": "A piglin finishes bartering. No target."
+      },
+      "container": {
+        "label": "container",
+        "help": "A loot container is filled. Target: loot table ids."
+      },
+      "archaeology": {
+        "label": "archaeology",
+        "help": "Suspicious sand or gravel is brushed. Target: loot table ids."
+      },
+      "entityDrop": {
+        "label": "entity_drop",
+        "help": "An entity drops an item (e.g. a chicken lays an egg). Target: entity ids."
+      },
+      "harvest": {
+        "label": "harvest",
+        "help": "A player harvests a block. Target: block ids."
+      },
+      "blockShear": {
+        "label": "block_shear",
+        "help": "A player shears a block. Target: block ids."
+      },
+      "entityShear": {
+        "label": "entity_shear",
+        "help": "A player shears an entity. Target: entity ids."
+      },
+      "vault": {
+        "label": "vault",
+        "help": "A vault gives its reward. Target: loot table ids."
+      },
+      "advancement": {
+        "label": "advancement",
+        "help": "A player completes an advancement; the loot goes into the inventory. Target: advancement ids."
+      }
+    },
+    "lootEntries": {
+      "item": {
+        "label": "item",
+        "help": "Drops an item.",
+        "fields": {
+          "item": {
+            "label": "item"
+          }
+        }
+      },
+      "furnitureItem": {
+        "label": "furniture_item",
+        "help": "Drops the item the furniture was placed with.",
+        "fields": {
+          "item": {
+            "label": "item",
+            "help": "The item it drops when the furniture has no item of its own."
+          }
+        }
+      },
+      "exp": {
+        "label": "exp",
+        "help": "Drops experience.",
+        "fields": {
+          "count": {
+            "label": "count"
+          }
+        }
+      },
+      "empty": {
+        "label": "empty",
+        "help": "Drops nothing. Use it to give the other entries a chance to miss."
+      },
+      "function": {
+        "label": "function",
+        "help": "Runs functions instead of dropping an item.",
+        "fields": {
+          "run": {
+            "label": "run"
+          }
+        }
+      },
+      "lootTable": {
+        "label": "loot_table",
+        "help": "Drops the loot of another loot table.",
+        "fields": {
+          "id": {
+            "label": "id"
+          }
+        }
+      },
+      "alternatives": {
+        "label": "alternatives",
+        "help": "Drops the first child whose conditions hold."
+      },
+      "ifElse": {
+        "label": "if_else",
+        "help": "Drops the first child whose conditions hold (a second name of alternatives)."
+      }
+    },
+    "lootFunctions": {
+      "setCount": {
+        "label": "set_count",
+        "help": "Sets the number of items.",
+        "fields": {
+          "count": {
+            "label": "count"
+          }
+        }
+      },
+      "applyBonus": {
+        "label": "apply_bonus",
+        "help": "Adds items for each level of an enchantment, such as Fortune.",
+        "fields": {
+          "enchantment": {
+            "label": "enchantment"
+          },
+          "formula": {
+            "label": "formula",
+            "help": "How the level turns into extra items.",
+            "fields": {
+              "type": {
+                "label": "type",
+                "help": "ore_drops: like vanilla ores. binomial_with_bonus_count: like vanilla crops."
+              },
+              "extra": {
+                "label": "extra"
+              },
+              "probability": {
+                "label": "probability"
+              }
+            }
+          }
+        }
+      },
+      "explosionDecay": {
+        "label": "explosion_decay",
+        "help": "Lets an explosion destroy some of the items."
+      },
+      "limitCount": {
+        "label": "limit_count",
+        "help": "Keeps the number of items between min and max.",
+        "fields": {
+          "min": {
+            "label": "min"
+          },
+          "max": {
+            "label": "max"
+          }
+        }
+      },
+      "dropExp": {
+        "label": "drop_exp",
+        "help": "Drops experience as well.",
+        "fields": {
+          "count": {
+            "label": "count"
+          }
+        }
+      },
+      "applyData": {
+        "label": "apply_data",
+        "help": "Changes the data of the items.",
+        "fields": {
+          "data": {
+            "label": "data",
+            "help": "Item data as YAML, like the data of an item."
+          }
+        }
+      }
+    }
+  }
+}

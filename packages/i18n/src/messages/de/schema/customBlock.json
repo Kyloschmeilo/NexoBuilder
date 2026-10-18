@@ -1,0 +1,126 @@
+{
+  "properties": {
+    "mechanicsCustomBlock": {
+      "label": "Custom Block",
+      "description": "Das Item wird als echter Block platziert (NoteBlock, StringBlock oder ChorusBlock).",
+      "hint": "Für Blöcke empfiehlt Nexo ein Nicht-Block-Material wie PAPER. Das Modell dieses Items wird automatisch verwendet.",
+      "field": {
+        "label": "Block",
+        "fields": {
+          "type": {
+            "label": "Block-Typ"
+          },
+          "customVariation": {
+            "label": "Variation (eindeutige Nummer)",
+            "help": "Leer lassen, damit Nexo automatisch eine freie Nummer vergibt. Nicht mehr ändern, sobald Blöcke platziert wurden!"
+          },
+          "model": {
+            "label": "Modell",
+            "help": "„@model“ = Modell dieses Items"
+          },
+          "hardness": {
+            "label": "Härte"
+          },
+          "blastResistant": {
+            "label": "Explosionsfest"
+          },
+          "isFalling": {
+            "label": "Fällt wie Sand"
+          },
+          "beaconBaseBlock": {
+            "label": "Leuchtfeuer-Basis"
+          },
+          "placeableOnWater": {
+            "label": "Auf Wasser platzierbar"
+          },
+          "requiresSupporting": {
+            "label": "Braucht Block darunter"
+          },
+          "isTall": {
+            "label": "Hohe Pflanze (2 Blöcke)"
+          },
+          "randomPlace": {
+            "label": "Zufällig platzieren aus",
+            "placeholder": "Item-ID"
+          },
+          "directional": {
+            "label": "Ausrichtung beim Platzieren (wie Holzstämme)",
+            "help": "Nexo dreht das Modell je nach Richtung und vergibt die nötigen Variationen selbst.",
+            "fields": {
+              "type": {
+                "label": "Art",
+                "options": {
+                  "log": {
+                    "label": "LOG – 3 Achsen wie Holzstämme"
+                  },
+                  "furnace": {
+                    "label": "FURNACE – 4 Richtungen zum Spieler"
+                  },
+                  "dropper": {
+                    "label": "DROPPER – 6 Richtungen zum Spieler"
+                  },
+                  "barrel": {
+                    "label": "BARREL – 6 Richtungen"
+                  }
+                }
+              }
+            }
+          },
+          "logStrip": {
+            "label": "Entrinden mit der Axt",
+            "fields": {
+              "strippedLog": {
+                "label": "Wird zu (Item-ID des entrindeten Blocks)"
+              },
+              "drop": {
+                "label": "Zusätzlicher Drop (Item-ID)",
+                "placeholder": "z.B. rinde"
+              }
+            }
+          },
+          "sapling": {
+            "label": "Setzling (wächst zu einer Schematic)",
+            "help": "Die Schematics müssen im Ordner plugins/Nexo/schematics liegen (WorldEdit/FAWE).",
+            "fields": {
+              "growsNaturally": {
+                "label": "Wächst von selbst"
+              },
+              "naturalGrowthTime": {
+                "label": "Wachstumszeit (Ticks)",
+                "placeholder": "6000"
+              },
+              "growsFromBonemeal": {
+                "label": "Wächst mit Knochenmehl"
+              },
+              "bonemealGrowthSpeedup": {
+                "label": "Beschleunigung durch Knochenmehl (Ticks)"
+              },
+              "growSound": {
+                "label": "Sound beim Wachsen"
+              },
+              "minLightLevel": {
+                "label": "Mindest-Lichtstufe"
+              },
+              "requiresWaterSource": {
+                "label": "Braucht Wasser in der Nähe"
+              },
+              "schematic": {
+                "label": "Schematic",
+                "placeholder": "z.B. palme"
+              },
+              "replaceBlocks": {
+                "label": "Blöcke ersetzen"
+              },
+              "copyBiomes": {
+                "label": "Biome übernehmen"
+              },
+              "copyEntities": {
+                "label": "Entities übernehmen"
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}

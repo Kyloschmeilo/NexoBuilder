@@ -1,0 +1,93 @@
+{
+  "variants": {
+    "pullingModels": {
+      "label": "Pulling Models",
+      "description": "Bow/crossbow: models while drawing – usually 3 stages."
+    },
+    "chargedModel": {
+      "label": "Charged Model",
+      "description": "Crossbow: loaded with an arrow."
+    },
+    "fireworkModel": {
+      "label": "Firework Model",
+      "description": "Crossbow: loaded with a firework rocket (optional)."
+    },
+    "blockingModel": {
+      "label": "Blocking Model",
+      "description": "Shield: while blocking.",
+      "hint": "Instead of the SHIELD material, the “Blocks Attacks” component can be used from 1.21.5 on."
+    },
+    "castModel": {
+      "label": "Cast Model",
+      "description": "Fishing rod: line cast."
+    },
+    "throwingModel": {
+      "label": "Throwing Model",
+      "description": "Trident: while winding up to throw – usually the rotated main model.",
+      "hint": "Set the look in flight, damage and sounds under “Mechanics → Trident”."
+    },
+    "damagedModels": {
+      "label": "Damaged Models",
+      "description": "Models shown one after another as durability decreases.",
+      "hint": "The item needs durability (a material with durability or the “Max Damage” component)."
+    },
+    "dyeableModel": {
+      "label": "Dyeable Model",
+      "description": "Model shown when the item has been dyed (/nexo dye).",
+      "hint": "For dyeing, the faces in the model must have “Tint” enabled (Blockbench: Paint tab → Tint)."
+    },
+    "compositeModels": {
+      "label": "Composite Models",
+      "description": "Several models drawn on top of each other (e.g. background, item, overlay)."
+    },
+    "guiModel": {
+      "label": "GUI Model",
+      "description": "A different model in the inventory (e.g. a flat 2D image), while the main model is shown in hand, on the head or as furniture.",
+      "hint": "ResourcepackBuilder generates its own ItemModel for this (Minecraft 1.21.4+). Pulling, Blocking and the like then no longer apply."
+    },
+    "connectStraight": {
+      "label": "Straight",
+      "description": "Middle piece between the left and right end"
+    },
+    "connectLeft": {
+      "label": "Left",
+      "description": "Left end"
+    },
+    "connectRight": {
+      "label": "Right",
+      "description": "Right end"
+    },
+    "connectInner": {
+      "label": "Inner",
+      "description": "Inner corner"
+    },
+    "connectOuter": {
+      "label": "Outer",
+      "description": "Outer corner"
+    },
+    "placementFloor": {
+      "label": "Floor",
+      "description": "Placed on top of a block"
+    },
+    "placementWall": {
+      "label": "Wall",
+      "description": "Attached to the side of a block"
+    },
+    "placementRoof": {
+      "label": "Roof",
+      "description": "Hung below a block"
+    },
+    "lightOn": {
+      "label": "Toggled (Light On)",
+      "description": "Model when the light is switched on"
+    },
+    "stackModels": {
+      "label": "Stackable",
+      "description": "Additional models when the same block is placed several times in one spot (like pink petals)."
+    },
+    "state": {
+      "label": "{name}",
+      "description": "Model in state “{name}”"
+    }
+  }
+}

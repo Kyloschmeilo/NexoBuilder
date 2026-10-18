@@ -1,0 +1,39 @@
+{
+  "groups": {
+    "events": {
+      "label": "Events",
+      "description": "Was das Item, sein Block oder sein Möbel bei einem Klick, beim Abbauen und mehr tut"
+    }
+  },
+  "properties": {
+    "events": {
+      "label": "Item Events",
+      "description": "Funktionen, die das Item ausführt, wenn man damit klickt, es isst, es zerbricht und mehr."
+    },
+    "blockEvents": {
+      "label": "Block Events",
+      "description": "Funktionen, die der platzierte Block ausführt, wenn man ihn anklickt, abbaut, betritt und mehr."
+    },
+    "furnitureEvents": {
+      "label": "Furniture Events",
+      "description": "Funktionen, die das platzierte Möbel ausführt, wenn man es anklickt, platziert oder abbaut."
+    }
+  },
+  "events": {
+    "label": "Events",
+    "itemLabel": "Event",
+    "fields": {
+      "on": {
+        "label": "Der Auslöser, der das Event startet"
+      },
+      "conditions": {
+        "label": "Bedingungen",
+        "help": "Alle müssen erfüllt sein, sonst laufen die Funktionen nicht."
+      },
+      "functions": {
+        "label": "Funktionen",
+        "help": "Laufen in dieser Reihenfolge, wenn das Event auslöst."
+      }
+    }
+  }
+}

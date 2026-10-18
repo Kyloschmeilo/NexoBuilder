@@ -1,0 +1,370 @@
+{
+  "groups": {
+    "settings": {
+      "label": "Settings",
+      "description": "CraftEngine item settings (Tags, Fuel Time, Repair …)"
+    }
+  },
+  "properties": {
+    "settingsTags": {
+      "label": "Tags",
+      "description": "Item tags the item belongs to, e.g. for recipes.",
+      "field": {
+        "label": "Tags",
+        "placeholder": "namespace:tag"
+      }
+    },
+    "settingsFuelTime": {
+      "label": "Fuel Time",
+      "description": "How long the item burns as furnace fuel, in ticks.",
+      "field": {
+        "label": "Ticks"
+      }
+    },
+    "settingsFuelRemainder": {
+      "label": "Fuel Remainder",
+      "description": "The item left in the furnace after burning. Only for items that do not stack.",
+      "field": {
+        "label": "Item",
+        "placeholder": "minecraft:bucket"
+      }
+    },
+    "settingsBreakPower": {
+      "label": "Break Power",
+      "description": "Mining level of the tool. Blocks with a required break power need at least this value.",
+      "field": {
+        "label": "Break power"
+      }
+    },
+    "settingsRepairable": {
+      "label": "Repairable",
+      "description": "Whether the item can be repaired in a crafting table, anvil or grindstone.",
+      "field": {
+        "label": "Repairable"
+      }
+    },
+    "settingsAnvilRepairItem": {
+      "label": "Anvil Repair Item",
+      "description": "Set on a repair material: the items it repairs in an anvil.",
+      "field": {
+        "label": "Entries",
+        "itemLabel": "Entry",
+        "fields": {
+          "target": {
+            "label": "Items or tags",
+            "placeholder": "#namespace:tools"
+          },
+          "amount": {
+            "label": "Durability restored"
+          },
+          "percent": {
+            "label": "Share of max durability (0–1)"
+          }
+        }
+      }
+    },
+    "settingsDragRepairItem": {
+      "label": "Drag Repair Item",
+      "description": "Set on a repair material: the items it repairs when dropped onto them in the inventory.",
+      "field": {
+        "label": "Entries",
+        "itemLabel": "Entry",
+        "fields": {
+          "target": {
+            "label": "Items or tags",
+            "placeholder": "#namespace:tools"
+          },
+          "amount": {
+            "label": "Durability restored"
+          },
+          "percent": {
+            "label": "Share of max durability (0–1)"
+          },
+          "sound": {
+            "label": "Sound",
+            "placeholder": "minecraft:item.armor.equip_iron"
+          }
+        }
+      }
+    },
+    "settingsRespectRepairableComponent": {
+      "label": "Respect Repairable Component",
+      "description": "The anvil follows the vanilla repairable component of the item.",
+      "field": {
+        "label": "Respect"
+      }
+    },
+    "settingsRenameable": {
+      "label": "Renameable",
+      "description": "Whether the item can be renamed in an anvil.",
+      "field": {
+        "label": "Renameable"
+      }
+    },
+    "settingsEnchantable": {
+      "label": "Enchantable",
+      "description": "Whether the item can be used in an enchanting table.",
+      "field": {
+        "label": "Enchantable"
+      }
+    },
+    "settingsPreventBreak": {
+      "label": "Prevent Break",
+      "description": "The item keeps its last durability point instead of breaking.",
+      "field": {
+        "label": "Prevent break"
+      }
+    },
+    "settingsCanPlace": {
+      "label": "Can Place",
+      "description": "Whether the vanilla block of the material can be placed.",
+      "field": {
+        "label": "Can place"
+      }
+    },
+    "settingsDyeable": {
+      "label": "Dyeable",
+      "description": "Whether the item can be dyed in a crafting table.",
+      "field": {
+        "label": "Dyeable"
+      }
+    },
+    "settingsDyeColor": {
+      "label": "Dye Color",
+      "description": "The color the item adds in dye recipes, as r,g,b.",
+      "field": {
+        "label": "Color",
+        "placeholder": "255,140,0"
+      }
+    },
+    "settingsFireworkColor": {
+      "label": "Firework Color",
+      "description": "The color the item adds to a firework star fade, as r,g,b.",
+      "field": {
+        "label": "Color",
+        "placeholder": "255,140,0"
+      }
+    },
+    "settingsEquipment": {
+      "label": "Equipment",
+      "description": "Applies a CraftEngine equipment definition when the item is worn.",
+      "field": {
+        "label": "Equipment",
+        "fields": {
+          "assetId": {
+            "label": "Equipment ID",
+            "placeholder": "namespace:equipment"
+          },
+          "slot": {
+            "label": "Slot"
+          },
+          "clientBoundModel": {
+            "label": "Client-bound model"
+          },
+          "cameraOverlay": {
+            "label": "Camera overlay",
+            "placeholder": "e.g. minecraft:misc/pumpkinblur"
+          },
+          "swappable": {
+            "label": "Swappable by right-click"
+          },
+          "damageOnHurt": {
+            "label": "Takes damage when the wearer is hit"
+          },
+          "dispensable": {
+            "label": "Equippable by dispenser"
+          },
+          "equipOnInteract": {
+            "label": "Can be put on a mob by using it"
+          }
+        }
+      }
+    },
+    "armor": {
+      "label": "CustomArmor (Armor, Elytra, Mob Armor, Harness, Saddles)",
+      "description": "Texture shown when worn: player armor, elytra wings, armor for wolf/horse/llama/nautilus, harness for the happy ghast, or saddles. ResourcepackBuilder generates an equipment model in the pack and an entry in equipments.yml from it, and sets settings.equipment (equipment ID and, without an armor material, the slot).",
+      "hint": "All parts of a set get the same set ID; the textures only need to be uploaded on one part. Elytras, animal armor and saddles each need their own set ID. CraftEngine has no allowed animals: animal armor fits any animal with that slot.",
+      "field": {
+        "label": "Armor",
+        "fields": {
+          "set": {
+            "label": "Set ID",
+            "placeholder": "e.g. ruby"
+          },
+          "layer1": {
+            "label": "Player: Layer 1 (helmet, chestplate, boots)",
+            "help": "Corresponds to e.g. diamond_layer_1.png"
+          },
+          "layer2": {
+            "label": "Player: Layer 2 (leggings)",
+            "help": "Corresponds to e.g. diamond_layer_2.png"
+          },
+          "elytra": {
+            "label": "Elytra wings",
+            "help": "Like elytra.png. Without material ELYTRA, ResourcepackBuilder adds the glider component automatically."
+          },
+          "mob": {
+            "label": "Animal armor & harness",
+            "fields": {
+              "wolfArmor": {
+                "label": "Wolf armor",
+                "help": "Like wolf_armor.png"
+              },
+              "horseArmor": {
+                "label": "Horse armor",
+                "help": "Like horse_armor_diamond.png"
+              },
+              "llamaArmor": {
+                "label": "Llama carpet",
+                "help": "Like llama/decor/*.png"
+              },
+              "nautilusArmor": {
+                "label": "Nautilus armor"
+              },
+              "harness": {
+                "label": "Harness (happy ghast)"
+              }
+            }
+          },
+          "saddles": {
+            "label": "Saddles (1.21.5+)",
+            "help": "A saddle can have textures for several animals.",
+            "fields": {
+              "horseSaddle": {
+                "label": "Horse"
+              },
+              "pigSaddle": {
+                "label": "Pig"
+              },
+              "striderSaddle": {
+                "label": "Strider"
+              },
+              "donkeySaddle": {
+                "label": "Donkey"
+              },
+              "muleSaddle": {
+                "label": "Mule"
+              },
+              "camelSaddle": {
+                "label": "Camel"
+              },
+              "skeletonHorseSaddle": {
+                "label": "Skeleton horse"
+              },
+              "zombieHorseSaddle": {
+                "label": "Zombie horse"
+              },
+              "nautilusSaddle": {
+                "label": "Nautilus"
+              },
+              "camelHuskSaddle": {
+                "label": "Camel husk"
+              }
+            }
+          }
+        }
+      }
+    },
+    "settingsConsumeReplacement": {
+      "label": "Consume Replacement",
+      "description": "The item a player gets back after consuming this one.",
+      "field": {
+        "label": "Item",
+        "placeholder": "minecraft:bowl"
+      }
+    },
+    "settingsCraftRemainder": {
+      "label": "Craft Remainder",
+      "description": "The item left in the crafting grid after crafting.",
+      "field": {
+        "label": "Item",
+        "placeholder": "minecraft:bucket"
+      }
+    },
+    "settingsAllowedProjectiles": {
+      "label": "Allowed Projectiles",
+      "description": "Items a bow or crossbow can shoot.",
+      "field": {
+        "label": "Items",
+        "placeholder": "minecraft:arrow"
+      }
+    },
+    "settingsIngredientSubstitute": {
+      "label": "Ingredient Substitute",
+      "description": "Vanilla items this item can stand in for in recipes.",
+      "field": {
+        "label": "Items",
+        "placeholder": "minecraft:paper"
+      }
+    },
+    "settingsCompostProbability": {
+      "label": "Compost Probability",
+      "description": "Chance that the item raises the composter level (0–1).",
+      "field": {
+        "label": "Chance"
+      }
+    },
+    "settingsInvulnerable": {
+      "label": "Invulnerable",
+      "description": "Damage causes a dropped item survives.",
+      "field": {
+        "label": "Damage causes"
+      }
+    },
+    "settingsKeepOnDeathChance": {
+      "label": "Keep On Death Chance",
+      "description": "Chance that a player keeps the item on death (0–1).",
+      "field": {
+        "label": "Chance"
+      }
+    },
+    "settingsDestroyOnDeathChance": {
+      "label": "Destroy On Death Chance",
+      "description": "Chance that the item is destroyed on death (0–1).",
+      "field": {
+        "label": "Chance"
+      }
+    },
+    "settingsGlowColor": {
+      "label": "Glow Color",
+      "description": "The glow color of the dropped item.",
+      "field": {
+        "label": "Color"
+      }
+    },
+    "settingsProjectile": {
+      "label": "Projectile",
+      "description": "A custom projectile entity, e.g. for a trident.",
+      "field": {
+        "label": "Projectile (YAML)"
+      }
+    },
+    "settingsAttributeModifiers": {
+      "label": "Custom Attribute Modifiers",
+      "description": "Modifiers of the project's custom attributes (see Attributes) while the item is in a slot. Needs CraftEngine's attribute system.",
+      "field": {
+        "label": "Modifiers",
+        "itemLabel": "Modifier"
+      }
+    },
+    "settingsEquipmentSetPart": {
+      "label": "Equipment Set Piece",
+      "description": "Makes the item a piece of equipment sets (see Attributes) while it is in one of the slots. Needs CraftEngine's attribute system.",
+      "field": {
+        "label": "Entries",
+        "itemLabel": "Entry",
+        "fields": {
+          "slots": {
+            "label": "slots",
+            "help": "The slots in which the item counts as a piece. Slot groups such as armor are not allowed here."
+          },
+          "sets": {
+            "label": "sets",
+            "help": "The equipment sets the item counts for.",
+            "placeholder": "e.g. namespace:guardian"
+          }
+        }
+      }
+    }
+  }
+}

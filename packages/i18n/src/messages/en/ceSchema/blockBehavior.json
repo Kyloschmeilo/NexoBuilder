@@ -1,0 +1,246 @@
+{
+  "groups": {
+    "blockBehavior": {
+      "label": "Block Behavior",
+      "description": "The options of the block’s behavior (sounds, growth, storage …)"
+    }
+  },
+  "properties": {
+    "blockStatesArgumentsSlabBaseBlock": {
+      "label": "Vanilla slab",
+      "description": "The vanilla slab whose unused states the slab borrows (its look is replaced).",
+      "hint": "Each vanilla block can carry only one custom block. CraftEngine’s own default pack uses petrified_oak_slab.",
+      "field": {
+        "label": "Slab"
+      }
+    },
+    "blockStatesArgumentsStairsBaseBlock": {
+      "label": "Vanilla stairs",
+      "description": "The vanilla stairs whose unused states the stairs borrow.",
+      "hint": "Each vanilla block can carry only one custom block. CraftEngine’s own default pack uses cut_copper_stairs.",
+      "field": {
+        "label": "Stairs"
+      }
+    },
+    "blockStatesArgumentsDoorBaseBlock": {
+      "label": "Vanilla door",
+      "description": "The vanilla door whose powered states the door borrows (they look the same as the unpowered ones).",
+      "hint": "Each vanilla block can carry only one custom block. CraftEngine’s own default pack uses oak_door.",
+      "field": {
+        "label": "Door"
+      }
+    },
+    "blockStatesArgumentsTrapdoorBaseBlock": {
+      "label": "Vanilla trapdoor",
+      "description": "The vanilla trapdoor whose powered states the trapdoor borrows.",
+      "hint": "Each vanilla block can carry only one custom block. CraftEngine’s own default pack uses oak_trapdoor.",
+      "field": {
+        "label": "Trapdoor"
+      }
+    },
+    "blockStatesArgumentsFenceGateBaseBlock": {
+      "label": "Vanilla fence gate",
+      "description": "The vanilla fence gate whose powered states the fence gate borrows.",
+      "hint": "Each vanilla block can carry only one custom block. CraftEngine’s own default pack uses oak_fence_gate.",
+      "field": {
+        "label": "Fence gate"
+      }
+    },
+    "blockStatesArgumentsFenceBaseBlock": {
+      "label": "Vanilla fence",
+      "description": "The vanilla fence whose collision the fence uses. Its look comes from the post and side items.",
+      "hint": "Several fences may share one vanilla fence.",
+      "field": {
+        "label": "Fence"
+      }
+    },
+    "blockStatesArgumentsFencePostItem": {
+      "label": "Post item",
+      "description": "The item whose model CraftEngine shows as the fence post.",
+      "hint": "Create two items for the post and the side, each with its model (for example with the parents block/fence_post and block/fence_side).",
+      "field": {
+        "label": "Item ID",
+        "placeholder": "namespace:fence_post"
+      }
+    },
+    "blockStatesArgumentsFenceSideItem": {
+      "label": "Side item",
+      "description": "The item whose model CraftEngine shows for each connected side.",
+      "field": {
+        "label": "Item ID",
+        "placeholder": "namespace:fence_side"
+      }
+    },
+    "blockStatesArgumentsLeavesTintable": {
+      "label": "Biome tint",
+      "description": "The leaves take the biome’s foliage color (the texture should be gray).",
+      "field": {
+        "label": "Tinted"
+      }
+    },
+    "blockStatesArgumentsLeavesMaxDistance": {
+      "label": "Max distance",
+      "description": "How far the leaves may be from a log before they decay (vanilla 7).",
+      "field": {
+        "label": "Distance"
+      }
+    },
+    "blockBehaviorFeature": {
+      "label": "Tree feature",
+      "description": "The configured feature that grows from the sapling, e.g. minecraft:oak.",
+      "field": {
+        "label": "Feature",
+        "placeholder": "minecraft:oak"
+      }
+    },
+    "blockBehaviorStructure": {
+      "label": "Structure",
+      "description": "A structure that grows from the sapling instead of the feature.",
+      "field": {
+        "label": "Structure",
+        "placeholder": "namespace:structure"
+      }
+    },
+    "blockBehaviorGrowSpeed": {
+      "label": "Grow speed",
+      "description": "Growth per random tick: the whole part is added, the fraction is the chance of one more step.",
+      "field": {
+        "label": "Speed"
+      }
+    },
+    "blockBehaviorLightRequirement": {
+      "label": "Light requirement",
+      "description": "The least light level the block needs to grow.",
+      "field": {
+        "label": "Light level"
+      }
+    },
+    "blockBehaviorMaxLightRequirement": {
+      "label": "Max light",
+      "description": "The highest light level the block still grows at.",
+      "field": {
+        "label": "Light level"
+      }
+    },
+    "blockBehaviorIsBoneMealTarget": {
+      "label": "Bone meal",
+      "description": "Bone meal makes the crop grow.",
+      "field": {
+        "label": "Accepts bone meal"
+      }
+    },
+    "blockBehaviorBoneMealAgeBonus": {
+      "label": "Bone meal bonus",
+      "description": "How many stages one bone meal adds.",
+      "field": {
+        "label": "Stages"
+      }
+    },
+    "blockBehaviorBoneMealSuccessChance": {
+      "label": "Bone meal chance",
+      "description": "The chance that bone meal shows its success particles.",
+      "field": {
+        "label": "Chance"
+      }
+    },
+    "blockBehaviorCanOpenWithHand": {
+      "label": "Opens by hand",
+      "description": "A right click opens and closes the block (or switches the light).",
+      "field": {
+        "label": "By hand"
+      }
+    },
+    "blockBehaviorCanOpenByWindCharge": {
+      "label": "Opens by wind charge",
+      "description": "A wind charge opens and closes the block.",
+      "field": {
+        "label": "By wind charge"
+      }
+    },
+    "blockBehaviorSounds": {
+      "label": "Sounds",
+      "description": "The sounds when the block opens and closes.",
+      "field": {
+        "label": "Sounds",
+        "fields": {
+          "open": {
+            "label": "Open",
+            "placeholder": "minecraft:block.wooden_door.open"
+          },
+          "close": {
+            "label": "Close",
+            "placeholder": "minecraft:block.wooden_door.close"
+          }
+        }
+      }
+    },
+    "blockBehaviorConnectableBlockTag": {
+      "label": "Connects to",
+      "description": "The block tag of the fences this fence connects to.",
+      "field": {
+        "label": "Block tag",
+        "placeholder": "minecraft:wooden_fences"
+      }
+    },
+    "blockBehaviorCanLeash": {
+      "label": "Leash",
+      "description": "Leads can be tied to the fence.",
+      "field": {
+        "label": "Leads"
+      }
+    },
+    "blockBehaviorSeats": {
+      "label": "Seats",
+      "description": "Where players sit, as \"x,y,z\" from the block’s center, optionally with a fixed yaw (\"0,0,0 90\").",
+      "hint": "Right-clicking the block seats the player.",
+      "field": {
+        "label": "Seat",
+        "placeholder": "0,0,0"
+      }
+    },
+    "blockBehaviorTitle": {
+      "label": "Title",
+      "description": "The title of the storage window (MiniMessage).",
+      "field": {
+        "label": "Title",
+        "placeholder": "<lang:container.chest>"
+      }
+    },
+    "blockBehaviorRows": {
+      "label": "Rows",
+      "description": "How many rows of slots the storage has (1 to 6).",
+      "field": {
+        "label": "Rows"
+      }
+    },
+    "blockBehaviorHasSignal": {
+      "label": "Comparator signal",
+      "description": "A comparator reads how full the storage is.",
+      "field": {
+        "label": "Signal"
+      }
+    },
+    "blockBehaviorAllowInput": {
+      "label": "Hopper input",
+      "description": "Hoppers can put items in.",
+      "field": {
+        "label": "Input"
+      }
+    },
+    "blockBehaviorAllowOutput": {
+      "label": "Hopper output",
+      "description": "Hoppers can take items out.",
+      "field": {
+        "label": "Output"
+      }
+    },
+    "blockBehaviors": {
+      "label": "More behaviors",
+      "description": "Further behaviors as a YAML list (type plus its keys). The export writes them before the behavior above.",
+      "hint": "Every behavior of the CraftEngine wiki works here, e.g. falling_block or bush_block.",
+      "field": {
+        "label": "Behaviors (YAML)"
+      }
+    }
+  }
+}

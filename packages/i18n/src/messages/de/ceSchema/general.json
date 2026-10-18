@@ -1,0 +1,92 @@
+{
+  "groups": {
+    "general": {
+      "label": "Allgemein",
+      "description": "Lore, Custom Name, Unbreakable und mehr"
+    }
+  },
+  "properties": {
+    "dataLore": {
+      "label": "Lore",
+      "description": "Textzeilen unter dem Item-Namen (MiniMessage, z.B. '<'gray>).",
+      "field": {
+        "label": "Zeilen",
+        "placeholder": "'<'gray>Eine Zeile"
+      }
+    },
+    "dataCustomName": {
+      "label": "Custom Name",
+      "description": "Ein Name, der den Anzeigenamen überschreibt, wie einer aus dem Amboss. Kursiv, wenn du es nicht abschaltest.",
+      "field": {
+        "label": "Name",
+        "placeholder": "'<'!i>'<'gold>Name"
+      }
+    },
+    "dataUnbreakable": {
+      "label": "Unbreakable",
+      "description": "Das Item verliert keine Haltbarkeit.",
+      "field": {
+        "label": "Unzerstörbar"
+      }
+    },
+    "dataHideTooltip": {
+      "label": "Hide Tooltip",
+      "description": "Blendet die Tooltip-Zeilen dieser Komponenten aus.",
+      "field": {
+        "label": "Komponenten",
+        "placeholder": "minecraft:enchantments"
+      }
+    },
+    "dataPdc": {
+      "label": "PDC",
+      "description": "Eigene Daten im PersistentDataContainer des Items, für andere Plugins.",
+      "field": {
+        "label": "Daten (YAML)"
+      }
+    },
+    "translations": {
+      "label": "Translations",
+      "description": "Der Item-Name pro Minecraft-Sprache. ResourcepackBuilder schreibt sie in die Sprachdateien des Packs und setzt data.item_name auf ihren lang-Schlüssel. Der Anzeigename ist der englische Text (en_us), außer du setzt en_us hier.",
+      "hint": "Spieler sehen den Namen in ihrer Minecraft-Sprache. Sprachen ohne Text zeigen den en_us-Text.",
+      "field": {
+        "label": "Übersetzungen",
+        "keyLabel": "Sprache",
+        "keyPlaceholder": "z.B. de_de",
+        "value": {
+          "label": "Name",
+          "placeholder": "z.B. '<'aqua>Rubinschwert"
+        }
+      }
+    },
+    "template": {
+      "label": "Template",
+      "description": "Baut das ganze Item aus Vorlagen des Projekts (siehe Vorlagen). Die hier gesetzten Schlüssel werden über die der Vorlagen gelegt.",
+      "hint": "CraftEngine füllt $'{'__NAMESPACE__'}' und $'{'__ID__'}' mit Namespace und ID des Items.",
+      "field": {
+        "label": "Vorlagen",
+        "placeholder": "z.B. meinpack:armor"
+      }
+    },
+    "arguments": {
+      "label": "Arguments",
+      "description": "Die Werte für die Platzhalter der Vorlagen des Items.",
+      "field": {
+        "label": "Argumente",
+        "keyLabel": "Argument",
+        "keyPlaceholder": "z.B. material",
+        "value": {
+          "label": "Wert",
+          "placeholder": "z.B. topaz"
+        }
+      }
+    },
+    "clientBoundMaterial": {
+      "label": "Client Bound Material",
+      "description": "Das Material, das Spieler sehen. Der Server behält das echte Material.",
+      "field": {
+        "label": "Material",
+        "placeholder": "z.B. mushroom_stem"
+      }
+    }
+  }
+}

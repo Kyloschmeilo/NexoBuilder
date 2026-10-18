@@ -1,0 +1,139 @@
+{
+  "options": {
+    "attributeOperations": {
+      "addNumber": {
+        "label": "ADD_NUMBER (Wert addieren)"
+      },
+      "addScalar": {
+        "label": "ADD_SCALAR (Prozent vom Basiswert)"
+      },
+      "multiplyScalar1": {
+        "label": "MULTIPLY_SCALAR_1 (multiplizieren)"
+      }
+    },
+    "attributeSlots": {
+      "any": {
+        "label": "ANY (überall)"
+      },
+      "mainhand": {
+        "label": "MAINHAND (Haupthand)"
+      },
+      "offhand": {
+        "label": "OFFHAND (Zweithand)"
+      },
+      "hand": {
+        "label": "HAND (beide Hände)"
+      },
+      "head": {
+        "label": "HEAD (Kopf)"
+      },
+      "chest": {
+        "label": "CHEST (Brust)"
+      },
+      "legs": {
+        "label": "LEGS (Beine)"
+      },
+      "feet": {
+        "label": "FEET (Füße)"
+      },
+      "armor": {
+        "label": "ARMOR (beliebiges Rüstungsteil)"
+      },
+      "body": {
+        "label": "BODY (Tierrüstung)"
+      },
+      "saddle": {
+        "label": "SADDLE (Sattel, 1.21.5+)"
+      }
+    },
+    "trackingRotations": {
+      "fixed": {
+        "label": "FIXED (keine Drehung)"
+      },
+      "vertical": {
+        "label": "VERTICAL (um die senkrechte Achse)"
+      },
+      "horizontal": {
+        "label": "HORIZONTAL (um die waagrechte Achse)"
+      },
+      "center": {
+        "label": "CENTER (immer zum Spieler)"
+      }
+    },
+    "storageTypes": {
+      "storage": {
+        "label": "STORAGE (wie eine Truhe)"
+      },
+      "personal": {
+        "label": "PERSONAL (pro Spieler)"
+      },
+      "enderchest": {
+        "label": "ENDERCHEST (Endertruhen-Inventar)"
+      },
+      "disposal": {
+        "label": "DISPOSAL (Mülleimer)"
+      }
+    },
+    "customBlockTypes": {
+      "noteblock": {
+        "label": "NOTEBLOCK – normaler Block (bis 1149)"
+      },
+      "stringblock": {
+        "label": "STRINGBLOCK – Pflanzen/Deko (bis 127)"
+      },
+      "chorusblock": {
+        "label": "CHORUSBLOCK – transparente Blöcke (bis 63)"
+      }
+    },
+    "customEvents": {
+      "clickRightAll": {
+        "label": "Rechtsklick (überall)"
+      },
+      "clickRightBlock": {
+        "label": "Rechtsklick auf Block"
+      },
+      "clickRightAir": {
+        "label": "Rechtsklick in die Luft"
+      },
+      "clickLeftAll": {
+        "label": "Linksklick (überall)"
+      },
+      "clickLeftBlock": {
+        "label": "Linksklick auf Block"
+      },
+      "clickLeftAir": {
+        "label": "Linksklick in die Luft"
+      },
+      "clickAllAll": {
+        "label": "Beliebiger Klick"
+      },
+      "invClickAllAll": {
+        "label": "Klick im Inventar"
+      },
+      "invClickRightShift": {
+        "label": "Shift-Rechtsklick im Inventar"
+      },
+      "drop": {
+        "label": "Fallenlassen"
+      },
+      "pickup": {
+        "label": "Aufheben"
+      },
+      "break": {
+        "label": "Item geht kaputt"
+      },
+      "equip": {
+        "label": "Ausrüsten"
+      },
+      "unequip": {
+        "label": "Ablegen"
+      },
+      "death": {
+        "label": "Tod des Spielers"
+      },
+      "dropAll": {
+        "label": "Letztes Exemplar fallengelassen"
+      }
+    }
+  }
+}

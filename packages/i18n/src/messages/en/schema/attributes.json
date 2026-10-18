@@ -1,0 +1,66 @@
+{
+  "groups": {
+    "attributes": {
+      "label": "AttributeModifiers & Enchantments",
+      "description": "Attributes and enchantments"
+    }
+  },
+  "properties": {
+    "attributeModifiers": {
+      "label": "AttributeModifiers",
+      "description": "Changes values such as attack damage, speed or health.",
+      "field": {
+        "label": "Attributes",
+        "itemLabel": "Attribute",
+        "fields": {
+          "attribute": {
+            "label": "Attribute"
+          },
+          "amount": {
+            "label": "Value"
+          },
+          "operation": {
+            "label": "Operation"
+          },
+          "slot": {
+            "label": "Slot"
+          },
+          "display": {
+            "label": "Tooltip display (1.21.6+)",
+            "fields": {
+              "type": {
+                "label": "Type",
+                "options": {
+                  "default": {
+                    "label": "default – normal"
+                  },
+                  "hidden": {
+                    "label": "hidden – hide"
+                  },
+                  "override": {
+                    "label": "override – custom text"
+                  }
+                }
+              },
+              "text": {
+                "label": "Text"
+              }
+            }
+          }
+        }
+      }
+    },
+    "enchantments": {
+      "label": "Enchantments",
+      "description": "Fixed enchantments – even above the vanilla maximum (e.g. Sharpness 15).",
+      "field": {
+        "label": "Enchantments",
+        "keyLabel": "Enchantment",
+        "keyPlaceholder": "e.g. sharpness",
+        "value": {
+          "label": "Level"
+        }
+      }
+    }
+  }
+}

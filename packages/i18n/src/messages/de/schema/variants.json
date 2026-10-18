@@ -1,0 +1,93 @@
+{
+  "variants": {
+    "pullingModels": {
+      "label": "Pulling Models",
+      "description": "Bogen/Armbrust: Modelle, während gespannt wird – meist 3 Stufen."
+    },
+    "chargedModel": {
+      "label": "Charged Model",
+      "description": "Armbrust: gespannt mit Pfeil."
+    },
+    "fireworkModel": {
+      "label": "Firework Model",
+      "description": "Armbrust: mit Feuerwerksrakete geladen (optional)."
+    },
+    "blockingModel": {
+      "label": "Blocking Model",
+      "description": "Schild: während geblockt wird.",
+      "hint": "Alternativ zum Material SHIELD kann ab 1.21.5 die Component „Blocks Attacks“ verwendet werden."
+    },
+    "castModel": {
+      "label": "Cast Model",
+      "description": "Angel: Schnur ausgeworfen."
+    },
+    "throwingModel": {
+      "label": "Throwing Model",
+      "description": "Dreizack: beim Ausholen zum Werfen – meist das gedrehte Hauptmodell.",
+      "hint": "Flug-Aussehen, Schaden und Sounds stellst du unter „Mechanics → Trident“ ein."
+    },
+    "damagedModels": {
+      "label": "Damaged Models",
+      "description": "Modelle, die mit sinkender Haltbarkeit nacheinander angezeigt werden.",
+      "hint": "Das Item braucht Haltbarkeit (Material mit Haltbarkeit oder die Component „Max Damage“)."
+    },
+    "dyeableModel": {
+      "label": "Dyeable Model",
+      "description": "Modell, das angezeigt wird, wenn das Item eingefärbt wurde (/nexo dye).",
+      "hint": "Für die Färbung müssen die Flächen im Modell „Tint“ aktiviert haben (Blockbench: Paint-Tab → Tint)."
+    },
+    "compositeModels": {
+      "label": "Composite Models",
+      "description": "Mehrere Modelle, die übereinander gezeichnet werden (z.B. Hintergrund, Item, Overlay)."
+    },
+    "guiModel": {
+      "label": "GUI Model",
+      "description": "Anderes Modell im Inventar (z.B. flaches 2D-Bild), während in der Hand, auf dem Kopf oder als Furniture das Hauptmodell zu sehen ist.",
+      "hint": "ResourcepackBuilder erzeugt dafür ein eigenes ItemModel (ab Minecraft 1.21.4). Pulling, Blocking & Co. wirken dann nicht mehr."
+    },
+    "connectStraight": {
+      "label": "Straight",
+      "description": "Mittelstück zwischen linkem und rechtem Ende"
+    },
+    "connectLeft": {
+      "label": "Left",
+      "description": "Linkes Ende"
+    },
+    "connectRight": {
+      "label": "Right",
+      "description": "Rechtes Ende"
+    },
+    "connectInner": {
+      "label": "Inner",
+      "description": "Ecke nach innen"
+    },
+    "connectOuter": {
+      "label": "Outer",
+      "description": "Ecke nach außen"
+    },
+    "placementFloor": {
+      "label": "Floor",
+      "description": "Auf einen Block gestellt"
+    },
+    "placementWall": {
+      "label": "Wall",
+      "description": "An die Seite eines Blocks gesetzt"
+    },
+    "placementRoof": {
+      "label": "Roof",
+      "description": "Unter einen Block gehängt"
+    },
+    "lightOn": {
+      "label": "Toggled (Light On)",
+      "description": "Modell, wenn das Licht eingeschaltet ist"
+    },
+    "stackModels": {
+      "label": "Stackable",
+      "description": "Weitere Modelle, wenn derselbe Block mehrfach auf eine Stelle gesetzt wird (wie Blütenteppich)."
+    },
+    "state": {
+      "label": "{name}",
+      "description": "Modell im Zustand „{name}“"
+    }
+  }
+}

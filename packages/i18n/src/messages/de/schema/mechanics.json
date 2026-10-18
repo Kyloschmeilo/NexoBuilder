@@ -1,0 +1,283 @@
+{
+  "groups": {
+    "mechanics": {
+      "label": "Mechanics",
+      "description": "Nexo-Mechaniken (Furniture, Custom Block, Backpack, Commands …)"
+    }
+  },
+  "properties": {
+    "mechanicsBackpack": {
+      "label": "Backpack",
+      "description": "Rechtsklick öffnet ein eigenes Inventar.",
+      "hint": "Setze zusätzlich „Max Stack Size“ auf 1.",
+      "field": {
+        "label": "Rucksack",
+        "fields": {
+          "rows": {
+            "label": "Reihen"
+          },
+          "title": {
+            "label": "Titel",
+            "placeholder": "Backpack"
+          },
+          "openSound": {
+            "label": "Sound beim Öffnen"
+          },
+          "closeSound": {
+            "label": "Sound beim Schließen"
+          },
+          "blacklist": {
+            "label": "Verbotene Items",
+            "fields": {
+              "nexoItems": {
+                "label": "Nexo-Items",
+                "placeholder": "Item-ID"
+              },
+              "materials": {
+                "label": "Materialien",
+                "placeholder": "DIAMOND"
+              }
+            }
+          }
+        }
+      }
+    },
+    "mechanicsCommands": {
+      "label": "Commands",
+      "description": "Führt beim Benutzen Befehle aus (als Konsole, Spieler oder OP). %p% = Spielername.",
+      "field": {
+        "label": "Befehle",
+        "fields": {
+          "console": {
+            "label": "Als Konsole",
+            "placeholder": "say %p% hat das Item benutzt"
+          },
+          "player": {
+            "label": "Als Spieler",
+            "placeholder": "spawn"
+          },
+          "oppedPlayer": {
+            "label": "Als Spieler mit OP-Rechten",
+            "placeholder": "give diamond 1"
+          },
+          "cooldown": {
+            "label": "Cooldown (Sekunden)"
+          },
+          "permission": {
+            "label": "Benötigte Permission"
+          },
+          "oneUsage": {
+            "label": "Item wird verbraucht"
+          }
+        }
+      }
+    },
+    "mechanicsCustom": {
+      "label": "Custom Mechanic",
+      "description": "Ereignis → Bedingungen → Aktionen, ganz ohne Programmieren.",
+      "hint": "Aktionen: [console] befehl, [player] befehl, [message] text, [actionbar] text, '{'source=AMBIENT volume=1 pitch=1'}' [sound] sound. Platzhalter: '<'player>",
+      "field": {
+        "label": "Aktionen",
+        "keyLabel": "Name",
+        "keyPlaceholder": "z.B. rechtsklick",
+        "value": {
+          "fields": {
+            "event": {
+              "label": "Ereignis"
+            },
+            "oneUsage": {
+              "label": "Item wird verbraucht"
+            },
+            "conditions": {
+              "label": "Bedingungen",
+              "placeholder": "HAS_PERMISSION:meine.permission"
+            },
+            "actions": {
+              "label": "Aktionen",
+              "placeholder": "[console] give '<'player> diamond 1"
+            }
+          }
+        }
+      }
+    },
+    "mechanicsArmorEffects": {
+      "label": "Armor Effects",
+      "description": "Trankeffekte, solange das Item getragen wird.",
+      "field": {
+        "label": "Effekte",
+        "fields": {
+          "set": {
+            "label": "Set-ID für „volles Set“ (optional)",
+            "placeholder": "z.B. forest"
+          },
+          "entries": {
+            "label": "Effekte",
+            "keyLabel": "Effekt"
+          }
+        }
+      }
+    },
+    "mechanicsTrident": {
+      "label": "Trident",
+      "description": "Wurfverhalten eines Items mit Material TRIDENT: Schaden, Sounds und Aussehen des geworfenen Dreizacks.",
+      "hint": "Ein eigenes Modell beim Werfen lädst du im Tab „Model & Pack“ unter „Special Item Appearance → Throwing Model“ hoch.",
+      "field": {
+        "label": "Dreizack",
+        "fields": {
+          "damage": {
+            "label": "Schaden",
+            "placeholder": "8"
+          },
+          "displayTransform": {
+            "label": "Darstellung im Flug"
+          },
+          "rotation": {
+            "label": "Drehung im Flug (yaw,pitch)",
+            "placeholder": "0,0"
+          },
+          "thrownItem": {
+            "label": "Anderes Nexo-Item im Flug (Item-ID)"
+          },
+          "thrownItemModel": {
+            "label": "Anderes ItemModel im Flug"
+          },
+          "sounds": {
+            "label": "Sounds",
+            "fields": {
+              "throw": {
+                "label": "Werfen"
+              },
+              "hit": {
+                "label": "Treffer"
+              },
+              "hitGround": {
+                "label": "Aufprall am Boden"
+              },
+              "return": {
+                "label": "Zurückkehren (Loyalität)"
+              }
+            }
+          }
+        }
+      }
+    },
+    "mechanicsRepair": {
+      "label": "Repair",
+      "description": "Mit diesem Item lassen sich andere Items im Inventar reparieren (Item auf das kaputte Item ziehen).",
+      "field": {
+        "label": "Reparieren",
+        "fields": {
+          "ratio": {
+            "label": "Anteil der Haltbarkeit (0–1)"
+          },
+          "fixedAmount": {
+            "label": "Feste Menge Haltbarkeit"
+          },
+          "nexoDurabilityOnly": {
+            "label": "Nur Nexo-Items reparieren"
+          }
+        }
+      }
+    },
+    "mechanicsMisc": {
+      "label": "Misc",
+      "description": "Kleine Verhaltensänderungen wie Umbenennen verhindern oder Vanilla-Rezepte erlauben.",
+      "field": {
+        "label": "Verschiedenes",
+        "fields": {
+          "breaksFromCactus": {
+            "label": "Wird von Kakteen zerstört"
+          },
+          "burnsInFire": {
+            "label": "Verbrennt in Feuer"
+          },
+          "burnsInLava": {
+            "label": "Verbrennt in Lava"
+          },
+          "disableVanillaInteractions": {
+            "label": "Vanilla-Interaktionen deaktivieren"
+          },
+          "canStripLogs": {
+            "label": "Kann Stämme entrinden"
+          },
+          "piglinsIgnoreWhenEquipped": {
+            "label": "Piglins ignorieren den Träger"
+          },
+          "compostable": {
+            "label": "Kompostierbar"
+          },
+          "allowInVanillaRecipes": {
+            "label": "In Vanilla-Rezepten erlaubt"
+          },
+          "preventBreaking": {
+            "label": "Zerbrechen verhindern"
+          },
+          "preventRenaming": {
+            "label": "Umbenennen verhindern"
+          },
+          "preventItemFrames": {
+            "label": "Nicht in Rahmen legbar"
+          }
+        }
+      }
+    },
+    "mechanicsSoulbound": {
+      "label": "Soulbound",
+      "description": "Das Item bleibt beim Tod im Inventar.",
+      "field": {
+        "label": "Seelengebunden",
+        "fields": {
+          "loseChance": {
+            "label": "Verlustchance (0–1)"
+          }
+        }
+      }
+    },
+    "mechanicsHarvesting": {
+      "label": "Harvesting",
+      "description": "Erntet und pflanzt reife Pflanzen im Umkreis automatisch neu.",
+      "field": {
+        "label": "Ernten",
+        "fields": {
+          "radius": {
+            "label": "Radius"
+          },
+          "height": {
+            "label": "Höhe"
+          },
+          "cooldown": {
+            "label": "Cooldown (Millisekunden)"
+          }
+        }
+      }
+    },
+    "mechanicsSmelting": {
+      "label": "Smelting",
+      "description": "Erze werden beim Abbauen sofort geschmolzen (unterstützt Glück und Behutsamkeit).",
+      "field": {
+        "label": "Schmelzen",
+        "fields": {
+          "enabled": {
+            "label": "Aktiv"
+          },
+          "playSound": {
+            "label": "Sound abspielen"
+          }
+        }
+      }
+    },
+    "mechanicsItemtype": {
+      "label": "ItemType",
+      "description": "Ändert den Werkzeug-Typ für Nexo-Blöcke (Typ muss in mechanics.yml definiert sein).",
+      "field": {
+        "label": "ItemType",
+        "fields": {
+          "value": {
+            "label": "Typ",
+            "placeholder": "SUPER_MATERIAL"
+          }
+        }
+      }
+    }
+  }
+}

@@ -1,0 +1,370 @@
+{
+  "groups": {
+    "settings": {
+      "label": "Settings",
+      "description": "Item-Einstellungen von CraftEngine (Tags, Fuel Time, Reparatur …)"
+    }
+  },
+  "properties": {
+    "settingsTags": {
+      "label": "Tags",
+      "description": "Item-Tags, zu denen das Item gehört, z.B. für Rezepte.",
+      "field": {
+        "label": "Tags",
+        "placeholder": "namespace:tag"
+      }
+    },
+    "settingsFuelTime": {
+      "label": "Fuel Time",
+      "description": "Wie lange das Item als Ofenbrennstoff brennt, in Ticks.",
+      "field": {
+        "label": "Ticks"
+      }
+    },
+    "settingsFuelRemainder": {
+      "label": "Fuel Remainder",
+      "description": "Das Item, das nach dem Verbrennen im Ofen bleibt. Nur für Items, die sich nicht stapeln.",
+      "field": {
+        "label": "Item",
+        "placeholder": "minecraft:bucket"
+      }
+    },
+    "settingsBreakPower": {
+      "label": "Break Power",
+      "description": "Abbaustufe des Werkzeugs. Blöcke mit einer benötigten Abbaustufe brauchen mindestens diesen Wert.",
+      "field": {
+        "label": "Abbaustufe"
+      }
+    },
+    "settingsRepairable": {
+      "label": "Repairable",
+      "description": "Ob das Item in Werkbank, Amboss oder Schleifstein repariert werden kann.",
+      "field": {
+        "label": "Reparierbar"
+      }
+    },
+    "settingsAnvilRepairItem": {
+      "label": "Anvil Repair Item",
+      "description": "Wird beim Reparaturmaterial gesetzt: die Items, die es im Amboss repariert.",
+      "field": {
+        "label": "Einträge",
+        "itemLabel": "Eintrag",
+        "fields": {
+          "target": {
+            "label": "Items oder Tags",
+            "placeholder": "#namespace:werkzeuge"
+          },
+          "amount": {
+            "label": "Wiederhergestellte Haltbarkeit"
+          },
+          "percent": {
+            "label": "Anteil der maximalen Haltbarkeit (0–1)"
+          }
+        }
+      }
+    },
+    "settingsDragRepairItem": {
+      "label": "Drag Repair Item",
+      "description": "Wird beim Reparaturmaterial gesetzt: die Items, die es repariert, wenn man es im Inventar darauf ablegt.",
+      "field": {
+        "label": "Einträge",
+        "itemLabel": "Eintrag",
+        "fields": {
+          "target": {
+            "label": "Items oder Tags",
+            "placeholder": "#namespace:werkzeuge"
+          },
+          "amount": {
+            "label": "Wiederhergestellte Haltbarkeit"
+          },
+          "percent": {
+            "label": "Anteil der maximalen Haltbarkeit (0–1)"
+          },
+          "sound": {
+            "label": "Sound",
+            "placeholder": "minecraft:item.armor.equip_iron"
+          }
+        }
+      }
+    },
+    "settingsRespectRepairableComponent": {
+      "label": "Respect Repairable Component",
+      "description": "Der Amboss beachtet die Vanilla-Komponente repairable des Items.",
+      "field": {
+        "label": "Beachten"
+      }
+    },
+    "settingsRenameable": {
+      "label": "Renameable",
+      "description": "Ob das Item im Amboss umbenannt werden kann.",
+      "field": {
+        "label": "Umbenennbar"
+      }
+    },
+    "settingsEnchantable": {
+      "label": "Enchantable",
+      "description": "Ob das Item im Zaubertisch verwendet werden kann.",
+      "field": {
+        "label": "Verzauberbar"
+      }
+    },
+    "settingsPreventBreak": {
+      "label": "Prevent Break",
+      "description": "Das Item behält seinen letzten Haltbarkeitspunkt, statt zu zerbrechen.",
+      "field": {
+        "label": "Zerbrechen verhindern"
+      }
+    },
+    "settingsCanPlace": {
+      "label": "Can Place",
+      "description": "Ob der Vanilla-Block des Materials platziert werden kann.",
+      "field": {
+        "label": "Platzierbar"
+      }
+    },
+    "settingsDyeable": {
+      "label": "Dyeable",
+      "description": "Ob das Item in der Werkbank gefärbt werden kann.",
+      "field": {
+        "label": "Färbbar"
+      }
+    },
+    "settingsDyeColor": {
+      "label": "Dye Color",
+      "description": "Die Farbe, die das Item in Färberezepten beisteuert, als r,g,b.",
+      "field": {
+        "label": "Farbe",
+        "placeholder": "255,140,0"
+      }
+    },
+    "settingsFireworkColor": {
+      "label": "Firework Color",
+      "description": "Die Farbe, die das Item dem Übergang eines Feuerwerkssterns gibt, als r,g,b.",
+      "field": {
+        "label": "Farbe",
+        "placeholder": "255,140,0"
+      }
+    },
+    "settingsEquipment": {
+      "label": "Equipment",
+      "description": "Wendet eine Equipment-Definition von CraftEngine an, wenn das Item getragen wird.",
+      "field": {
+        "label": "Ausrüstung",
+        "fields": {
+          "assetId": {
+            "label": "Equipment-ID",
+            "placeholder": "namespace:equipment"
+          },
+          "slot": {
+            "label": "Slot"
+          },
+          "clientBoundModel": {
+            "label": "Client-seitiges Modell"
+          },
+          "cameraOverlay": {
+            "label": "Kamera-Overlay",
+            "placeholder": "z.B. minecraft:misc/pumpkinblur"
+          },
+          "swappable": {
+            "label": "Per Rechtsklick tauschbar"
+          },
+          "damageOnHurt": {
+            "label": "Nimmt Schaden, wenn der Träger getroffen wird"
+          },
+          "dispensable": {
+            "label": "Per Werfer anziehbar"
+          },
+          "equipOnInteract": {
+            "label": "Kann einem Mob per Benutzen angezogen werden"
+          }
+        }
+      }
+    },
+    "armor": {
+      "label": "CustomArmor (Armor, Elytra, Mob Armor, Harness, Saddles)",
+      "description": "Textur, die beim Tragen angezeigt wird: Spieler-Rüstung, Elytra-Flügel, Rüstung für Wolf/Pferd/Lama/Nautilus, Geschirr für den Glücklichen Ghast oder Sättel. ResourcepackBuilder erzeugt daraus ein Equipment-Modell im Pack und einen Eintrag in equipments.yml und setzt settings.equipment (Equipment-ID und ohne Rüstungsmaterial den Slot).",
+      "hint": "Alle Teile eines Sets bekommen dieselbe Set-ID, die Texturen müssen nur bei einem Teil hochgeladen werden. Elytren, Tier-Rüstungen und Sättel brauchen jeweils eine eigene Set-ID. CraftEngine kennt keine erlaubten Tiere: Tier-Rüstung passt auf jedes Tier mit diesem Slot.",
+      "field": {
+        "label": "Rüstung",
+        "fields": {
+          "set": {
+            "label": "Set-ID",
+            "placeholder": "z.B. ruby"
+          },
+          "layer1": {
+            "label": "Spieler: Layer 1 (Helm, Brust, Schuhe)",
+            "help": "Entspricht z.B. diamond_layer_1.png"
+          },
+          "layer2": {
+            "label": "Spieler: Layer 2 (Hose)",
+            "help": "Entspricht z.B. diamond_layer_2.png"
+          },
+          "elytra": {
+            "label": "Elytra-Flügel",
+            "help": "Wie elytra.png. Ohne Material ELYTRA setzt ResourcepackBuilder die Gleiter-Komponente automatisch."
+          },
+          "mob": {
+            "label": "Tier-Rüstung & Geschirr",
+            "fields": {
+              "wolfArmor": {
+                "label": "Wolfspanzer",
+                "help": "Wie wolf_armor.png"
+              },
+              "horseArmor": {
+                "label": "Pferderüstung",
+                "help": "Wie horse_armor_diamond.png"
+              },
+              "llamaArmor": {
+                "label": "Lama-Teppich",
+                "help": "Wie llama/decor/*.png"
+              },
+              "nautilusArmor": {
+                "label": "Nautilus-Rüstung"
+              },
+              "harness": {
+                "label": "Geschirr (Glücklicher Ghast)"
+              }
+            }
+          },
+          "saddles": {
+            "label": "Sättel (ab 1.21.5)",
+            "help": "Ein Sattel kann für mehrere Tiere Texturen haben.",
+            "fields": {
+              "horseSaddle": {
+                "label": "Pferd"
+              },
+              "pigSaddle": {
+                "label": "Schwein"
+              },
+              "striderSaddle": {
+                "label": "Schreiter"
+              },
+              "donkeySaddle": {
+                "label": "Esel"
+              },
+              "muleSaddle": {
+                "label": "Maultier"
+              },
+              "camelSaddle": {
+                "label": "Kamel"
+              },
+              "skeletonHorseSaddle": {
+                "label": "Skelettpferd"
+              },
+              "zombieHorseSaddle": {
+                "label": "Zombiepferd"
+              },
+              "nautilusSaddle": {
+                "label": "Nautilus"
+              },
+              "camelHuskSaddle": {
+                "label": "Wüstenkamel"
+              }
+            }
+          }
+        }
+      }
+    },
+    "settingsConsumeReplacement": {
+      "label": "Consume Replacement",
+      "description": "Das Item, das ein Spieler nach dem Verzehr zurückbekommt.",
+      "field": {
+        "label": "Item",
+        "placeholder": "minecraft:bowl"
+      }
+    },
+    "settingsCraftRemainder": {
+      "label": "Craft Remainder",
+      "description": "Das Item, das nach dem Craften im Raster bleibt.",
+      "field": {
+        "label": "Item",
+        "placeholder": "minecraft:bucket"
+      }
+    },
+    "settingsAllowedProjectiles": {
+      "label": "Allowed Projectiles",
+      "description": "Items, die ein Bogen oder eine Armbrust verschießen kann.",
+      "field": {
+        "label": "Items",
+        "placeholder": "minecraft:arrow"
+      }
+    },
+    "settingsIngredientSubstitute": {
+      "label": "Ingredient Substitute",
+      "description": "Vanilla-Items, die dieses Item in Rezepten ersetzen kann.",
+      "field": {
+        "label": "Items",
+        "placeholder": "minecraft:paper"
+      }
+    },
+    "settingsCompostProbability": {
+      "label": "Compost Probability",
+      "description": "Chance, dass das Item den Komposter füllt (0–1).",
+      "field": {
+        "label": "Chance"
+      }
+    },
+    "settingsInvulnerable": {
+      "label": "Invulnerable",
+      "description": "Schadensarten, die ein fallengelassenes Item übersteht.",
+      "field": {
+        "label": "Schadensarten"
+      }
+    },
+    "settingsKeepOnDeathChance": {
+      "label": "Keep On Death Chance",
+      "description": "Chance, dass ein Spieler das Item beim Tod behält (0–1).",
+      "field": {
+        "label": "Chance"
+      }
+    },
+    "settingsDestroyOnDeathChance": {
+      "label": "Destroy On Death Chance",
+      "description": "Chance, dass das Item beim Tod zerstört wird (0–1).",
+      "field": {
+        "label": "Chance"
+      }
+    },
+    "settingsGlowColor": {
+      "label": "Glow Color",
+      "description": "Die Leuchtfarbe des fallengelassenen Items.",
+      "field": {
+        "label": "Farbe"
+      }
+    },
+    "settingsProjectile": {
+      "label": "Projectile",
+      "description": "Eine eigene Projektil-Entity, z.B. für einen Dreizack.",
+      "field": {
+        "label": "Projektil (YAML)"
+      }
+    },
+    "settingsAttributeModifiers": {
+      "label": "Custom Attribute Modifiers",
+      "description": "Modifikatoren der eigenen Attribute des Projekts (siehe Attribute), solange das Item in einem Slot ist. Braucht das Attributsystem von CraftEngine.",
+      "field": {
+        "label": "Modifikatoren",
+        "itemLabel": "Modifikator"
+      }
+    },
+    "settingsEquipmentSetPart": {
+      "label": "Equipment Set Piece",
+      "description": "Macht das Item zu einem Teil von Ausrüstungssets (siehe Attribute), solange es in einem der Slots ist. Braucht das Attributsystem von CraftEngine.",
+      "field": {
+        "label": "Einträge",
+        "itemLabel": "Eintrag",
+        "fields": {
+          "slots": {
+            "label": "slots",
+            "help": "Die Slots, in denen das Item als Teil zählt. Slotgruppen wie armor sind hier nicht erlaubt."
+          },
+          "sets": {
+            "label": "sets",
+            "help": "Die Ausrüstungssets, für die das Item zählt.",
+            "placeholder": "z.B. namespace:guardian"
+          }
+        }
+      }
+    }
+  }
+}

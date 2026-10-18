@@ -1,0 +1,393 @@
+{
+  "shared": {
+    "sound": {
+      "placeholder": "z.B. block.stone.place"
+    },
+    "potionEffect": {
+      "consumable": {
+        "fields": {
+          "duration": {
+            "label": "Dauer",
+            "placeholder": "z.B. 10s oder 200t"
+          },
+          "amplifier": {
+            "label": "Stufe (0 = I)"
+          },
+          "probability": {
+            "label": "Wahrscheinlichkeit",
+            "placeholder": "1.0"
+          },
+          "ambient": {
+            "label": "Ambient (dezente Partikel)"
+          },
+          "showIcon": {
+            "label": "Symbol anzeigen"
+          },
+          "showParticles": {
+            "label": "Partikel anzeigen"
+          }
+        }
+      },
+      "armor": {
+        "fields": {
+          "duration": {
+            "label": "Dauer",
+            "placeholder": "z.B. 10t"
+          },
+          "amplifier": {
+            "label": "Stufe (0 = I)"
+          },
+          "ambient": {
+            "label": "Ambient (dezente Partikel)"
+          },
+          "particles": {
+            "label": "Partikel anzeigen"
+          },
+          "icon": {
+            "label": "Symbol anzeigen"
+          },
+          "requiresFullSet": {
+            "label": "Nur mit vollem Rüstungsset"
+          }
+        }
+      }
+    },
+    "consumeEffects": {
+      "fields": {
+        "applyEffects": {
+          "label": "Effekte geben",
+          "keyLabel": "Effekt"
+        },
+        "removeEffects": {
+          "label": "Effekte entfernen",
+          "placeholder": "z.B. poison"
+        },
+        "clearAllEffects": {
+          "label": "Alle Effekte entfernen (wie Milch)"
+        },
+        "teleportRandomly": {
+          "label": "Zufällig teleportieren (wie Chorusfrucht)",
+          "fields": {
+            "diameter": {
+              "label": "Durchmesser",
+              "placeholder": "16.0"
+            }
+          }
+        },
+        "playSound": {
+          "label": "Sound abspielen",
+          "fields": {
+            "sound": {
+              "label": "Sound"
+            }
+          }
+        }
+      }
+    },
+    "drop": {
+      "label": "Drops",
+      "help": "Ohne „Loot“-Einträge droppt sich das Item selbst.",
+      "fields": {
+        "silktouch": {
+          "label": "Behutsamkeit droppt den Block selbst"
+        },
+        "fortune": {
+          "label": "Glück erhöht die Menge"
+        },
+        "minimalType": {
+          "label": "Mindest-Werkzeugstufe"
+        },
+        "bestTool": {
+          "label": "Bestes Werkzeug"
+        },
+        "loots": {
+          "label": "Loot",
+          "itemLabel": "Loot-Eintrag",
+          "fields": {
+            "nexoItem": {
+              "label": "Nexo-Item",
+              "placeholder": "Item-ID"
+            },
+            "minecraftType": {
+              "label": "oder Minecraft-Item"
+            },
+            "amount": {
+              "label": "Anzahl",
+              "placeholder": "1 oder 1..3"
+            },
+            "probability": {
+              "label": "Wahrscheinlichkeit"
+            },
+            "inExplosion": {
+              "label": "Auch bei Explosion droppen"
+            }
+          }
+        }
+      }
+    },
+    "blockSounds": {
+      "label": "Block-Sounds",
+      "fields": {
+        "placeSound": {
+          "label": "Platzieren"
+        },
+        "breakSound": {
+          "label": "Abbauen"
+        },
+        "hitSound": {
+          "label": "Schlagen"
+        },
+        "stepSound": {
+          "label": "Laufen"
+        },
+        "fallSound": {
+          "label": "Fallen"
+        }
+      }
+    },
+    "storage": {
+      "label": "Speicher (Truhe)",
+      "fields": {
+        "type": {
+          "label": "Typ"
+        },
+        "rows": {
+          "label": "Reihen",
+          "placeholder": "6"
+        },
+        "title": {
+          "label": "Titel",
+          "placeholder": "Storage"
+        },
+        "openSound": {
+          "label": "Sound beim Öffnen"
+        },
+        "closeSound": {
+          "label": "Sound beim Schließen"
+        }
+      }
+    },
+    "limitedPlacing": {
+      "label": "Eingeschränktes Platzieren",
+      "fields": {
+        "floor": {
+          "label": "Auf dem Boden"
+        },
+        "wall": {
+          "label": "An der Wand"
+        },
+        "roof": {
+          "label": "An der Decke"
+        },
+        "type": {
+          "label": "Liste ist",
+          "options": {
+            "allow": {
+              "label": "ALLOW – nur auf diesen Blöcken"
+            },
+            "deny": {
+              "label": "DENY – nicht auf diesen Blöcken"
+            }
+          }
+        },
+        "blockTypes": {
+          "label": "Block-Typen",
+          "placeholder": "z.B. GRASS_BLOCK"
+        },
+        "blockTags": {
+          "label": "Block-Tags",
+          "placeholder": "z.B. base_stone_nether"
+        },
+        "nexoBlocks": {
+          "label": "Nexo-Blöcke/Möbel",
+          "placeholder": "Item-ID"
+        },
+        "radiusLimitation": {
+          "label": "Begrenzung im Umkreis",
+          "fields": {
+            "radius": {
+              "label": "Radius"
+            },
+            "amount": {
+              "label": "Maximale Anzahl"
+            }
+          }
+        }
+      }
+    },
+    "blockLocker": {
+      "label": "BlockLocker-Schutz",
+      "fields": {
+        "canProtect": {
+          "label": "Schützbar"
+        },
+        "protectionType": {
+          "label": "Schutz-Typ"
+        }
+      }
+    },
+    "furnitureStates": {
+      "label": "Zustände (per Klick durchschalten)",
+      "help": "Jeder Klick schaltet zum nächsten Zustand; der normale Zustand ist immer dabei. Modelle für die States lädst du im Tab „Model & Pack“ hoch.",
+      "fields": {
+        "nextAfter": {
+          "label": "Automatisch weiter nach",
+          "placeholder": "z.B. 3s"
+        },
+        "resetAfter": {
+          "label": "Automatisch zurück nach",
+          "placeholder": "z.B. 10s"
+        },
+        "condition": {
+          "label": "Bedingung zum Umschalten",
+          "placeholder": "z.B. hasPermission(''nexo.tv.use'')"
+        },
+        "entries": {
+          "label": "Zustände",
+          "keyLabel": "Name des Zustands",
+          "keyPlaceholder": "z.B. an",
+          "value": {
+            "fields": {
+              "type": {
+                "label": "Art",
+                "placeholder": "ITEM_MODEL (Modell aus dem Modell-Tab)",
+                "options": {
+                  "itemModel": {
+                    "label": "ITEM_MODEL – anderes Modell"
+                  },
+                  "furniture": {
+                    "label": "FURNITURE – Modell + eigene Möbel-Werte"
+                  },
+                  "customModelData": {
+                    "label": "CUSTOM_MODEL_DATA – andere CustomModelData"
+                  },
+                  "modelengine": {
+                    "label": "MODELENGINE – anderes ModelEngine-Modell"
+                  },
+                  "animation": {
+                    "label": "ANIMATION – ModelEngine-Animation abspielen"
+                  },
+                  "modelengineAnim": {
+                    "label": "MODELENGINE_ANIM – Modell + Animation"
+                  },
+                  "default": {
+                    "label": "DEFAULT – nur Zustand merken"
+                  }
+                }
+              },
+              "itemModel": {
+                "label": "ItemModel (leer = hochgeladenes Modell)"
+              },
+              "value": {
+                "label": "CustomModelData-Wert"
+              },
+              "blueprint": {
+                "label": "ModelEngine-Blueprint"
+              },
+              "animation": {
+                "label": "Animation"
+              },
+              "lerpIn": {
+                "label": "Einblenden"
+              },
+              "lerpOut": {
+                "label": "Ausblenden"
+              },
+              "speed": {
+                "label": "Geschwindigkeit"
+              },
+              "properties": {
+                "label": "Darstellung in diesem Zustand",
+                "placeholder": "translation: 0,0.5,0"
+              },
+              "hitbox": {
+                "label": "Hitbox in diesem Zustand",
+                "placeholder": "barriers:\n  - 0,0,0"
+              },
+              "nextAfter": {
+                "label": "Automatisch weiter nach"
+              },
+              "resetAfter": {
+                "label": "Automatisch zurück nach"
+              },
+              "conditions": {
+                "label": "Bedingungen für diesen Zustand",
+                "placeholder": "hasPermission(''nexo.tv.premium'')"
+              }
+            }
+          }
+        }
+      }
+    },
+    "textEntities": {
+      "label": "Text-Anzeigen",
+      "help": "Schwebender Text (auch Glyphen) an der Möbel, z.B. ein Schild oder eine Preis-Anzeige.",
+      "itemLabel": "Text",
+      "fields": {
+        "text": {
+          "label": "Text (Zeilen, MiniMessage)",
+          "placeholder": "'<'gold>Willkommen"
+        },
+        "offset": {
+          "label": "Position relativ zur Möbel (x,y,z)",
+          "placeholder": "0,1,0"
+        },
+        "lineWidth": {
+          "label": "Zeilenbreite",
+          "placeholder": "200"
+        },
+        "textOpacity": {
+          "label": "Deckkraft (-1 = voll)"
+        },
+        "backgroundColor": {
+          "label": "Hintergrundfarbe",
+          "placeholder": "#AARRGGBB oder a,r,g,b"
+        },
+        "alignment": {
+          "label": "Ausrichtung",
+          "options": {
+            "left": {
+              "label": "Links"
+            },
+            "center": {
+              "label": "Mitte"
+            },
+            "right": {
+              "label": "Rechts"
+            }
+          }
+        },
+        "trackingRotation": {
+          "label": "Zum Spieler drehen"
+        },
+        "shadow": {
+          "label": "Schatten"
+        },
+        "seeThrough": {
+          "label": "Durch Blöcke sichtbar"
+        },
+        "translation": {
+          "label": "Verschiebung (x,y,z)"
+        },
+        "scale": {
+          "label": "Skalierung (x,y,z)"
+        }
+      }
+    },
+    "clickActions": {
+      "label": "Klick-Aktionen",
+      "help": "Aktionen: [console] befehl, [player] befehl, [message] text, [actionbar] text, '{'source=AMBIENT volume=1 pitch=1'}' [sound] sound",
+      "itemLabel": "Aktion",
+      "fields": {
+        "conditions": {
+          "label": "Bedingungen",
+          "placeholder": "#player.hasPermission(\"meine.permission\")"
+        },
+        "actions": {
+          "label": "Aktionen",
+          "placeholder": "[console] say hallo '<'player>"
+        }
+      }
+    }
+  }
+}

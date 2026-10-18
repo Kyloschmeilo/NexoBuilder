@@ -1,0 +1,40 @@
+{
+  "textureTemplates": {
+    "generated": {
+      "label": "2D item",
+      "description": "Flat item like paper or gems. Further PNGs are stacked on top as additional layers."
+    },
+    "handheld": {
+      "label": "2D tool / weapon",
+      "description": "Like item/generated, but held at an angle in the hand like a sword or pickaxe."
+    },
+    "handheldRod": {
+      "label": "2D rod / fishing rod",
+      "description": "Held in the hand like a fishing rod or a stick."
+    },
+    "cubeAll": {
+      "label": "Block – one texture",
+      "description": "Cube with the same texture on all sides (e.g. ore, stone)."
+    },
+    "cubeColumn": {
+      "label": "Block – column",
+      "description": "Top/bottom (end) and sides (side), e.g. logs."
+    },
+    "cubeBottomTop": {
+      "label": "Block – top/bottom/side",
+      "description": "Separate textures for top, bottom and the sides (e.g. sandstone)."
+    },
+    "orientable": {
+      "label": "Block – with front",
+      "description": "Front, sides and top (e.g. furnace)."
+    },
+    "cube": {
+      "label": "Block – six sides",
+      "description": "Every side gets its own texture."
+    },
+    "cross": {
+      "label": "Plant (cross)",
+      "description": "Two crossed planes like flowers – ideal for StringBlocks."
+    }
+  }
+}

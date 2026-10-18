@@ -1,0 +1,246 @@
+{
+  "groups": {
+    "blockBehavior": {
+      "label": "Blockverhalten",
+      "description": "Die Optionen des Blockverhaltens (Sounds, Wachstum, Lager …)"
+    }
+  },
+  "properties": {
+    "blockStatesArgumentsSlabBaseBlock": {
+      "label": "Vanilla-Stufe",
+      "description": "Die Vanilla-Stufe, deren ungenutzte Zustände die Stufe nutzt (ihr Aussehen wird ersetzt).",
+      "hint": "Jeder Vanilla-Block kann nur einen eigenen Block tragen. CraftEngines eigenes Standardpaket nutzt petrified_oak_slab.",
+      "field": {
+        "label": "Stufe"
+      }
+    },
+    "blockStatesArgumentsStairsBaseBlock": {
+      "label": "Vanilla-Treppe",
+      "description": "Die Vanilla-Treppe, deren ungenutzte Zustände die Treppe nutzt.",
+      "hint": "Jeder Vanilla-Block kann nur einen eigenen Block tragen. CraftEngines eigenes Standardpaket nutzt cut_copper_stairs.",
+      "field": {
+        "label": "Treppe"
+      }
+    },
+    "blockStatesArgumentsDoorBaseBlock": {
+      "label": "Vanilla-Tür",
+      "description": "Die Vanilla-Tür, deren Zustände mit Strom die Tür nutzt (sie sehen aus wie die ohne Strom).",
+      "hint": "Jeder Vanilla-Block kann nur einen eigenen Block tragen. CraftEngines eigenes Standardpaket nutzt oak_door.",
+      "field": {
+        "label": "Tür"
+      }
+    },
+    "blockStatesArgumentsTrapdoorBaseBlock": {
+      "label": "Vanilla-Falltür",
+      "description": "Die Vanilla-Falltür, deren Zustände mit Strom die Falltür nutzt.",
+      "hint": "Jeder Vanilla-Block kann nur einen eigenen Block tragen. CraftEngines eigenes Standardpaket nutzt oak_trapdoor.",
+      "field": {
+        "label": "Falltür"
+      }
+    },
+    "blockStatesArgumentsFenceGateBaseBlock": {
+      "label": "Vanilla-Zauntor",
+      "description": "Das Vanilla-Zauntor, dessen Zustände mit Strom das Zauntor nutzt.",
+      "hint": "Jeder Vanilla-Block kann nur einen eigenen Block tragen. CraftEngines eigenes Standardpaket nutzt oak_fence_gate.",
+      "field": {
+        "label": "Zauntor"
+      }
+    },
+    "blockStatesArgumentsFenceBaseBlock": {
+      "label": "Vanilla-Zaun",
+      "description": "Der Vanilla-Zaun, dessen Kollision der Zaun nutzt. Sein Aussehen kommt von den Items für Pfosten und Seite.",
+      "hint": "Mehrere Zäune dürfen sich einen Vanilla-Zaun teilen.",
+      "field": {
+        "label": "Zaun"
+      }
+    },
+    "blockStatesArgumentsFencePostItem": {
+      "label": "Item für den Pfosten",
+      "description": "Das Item, dessen Modell CraftEngine als Zaunpfosten zeigt.",
+      "hint": "Lege zwei Items für Pfosten und Seite an, jedes mit seinem Modell (zum Beispiel mit den Parents block/fence_post und block/fence_side).",
+      "field": {
+        "label": "Item-ID",
+        "placeholder": "namespace:zaun_pfosten"
+      }
+    },
+    "blockStatesArgumentsFenceSideItem": {
+      "label": "Item für die Seite",
+      "description": "Das Item, dessen Modell CraftEngine für jede verbundene Seite zeigt.",
+      "field": {
+        "label": "Item-ID",
+        "placeholder": "namespace:zaun_seite"
+      }
+    },
+    "blockStatesArgumentsLeavesTintable": {
+      "label": "Biomfärbung",
+      "description": "Das Laub nimmt die Laubfarbe des Bioms an (die Textur sollte grau sein).",
+      "field": {
+        "label": "Gefärbt"
+      }
+    },
+    "blockStatesArgumentsLeavesMaxDistance": {
+      "label": "Maximale Entfernung",
+      "description": "Wie weit das Laub von einem Stamm entfernt sein darf, bevor es zerfällt (Vanilla 7).",
+      "field": {
+        "label": "Entfernung"
+      }
+    },
+    "blockBehaviorFeature": {
+      "label": "Baum-Feature",
+      "description": "Das konfigurierte Feature, das aus dem Setzling wächst, z. B. minecraft:oak.",
+      "field": {
+        "label": "Feature",
+        "placeholder": "minecraft:oak"
+      }
+    },
+    "blockBehaviorStructure": {
+      "label": "Struktur",
+      "description": "Eine Struktur, die statt des Features aus dem Setzling wächst.",
+      "field": {
+        "label": "Struktur",
+        "placeholder": "namespace:struktur"
+      }
+    },
+    "blockBehaviorGrowSpeed": {
+      "label": "Wachstumstempo",
+      "description": "Wachstum pro Zufallstick: Der ganze Teil wird addiert, der Bruchteil ist die Chance auf einen Schritt mehr.",
+      "field": {
+        "label": "Tempo"
+      }
+    },
+    "blockBehaviorLightRequirement": {
+      "label": "Mindestlicht",
+      "description": "Die kleinste Lichtstufe, bei der der Block wächst.",
+      "field": {
+        "label": "Lichtstufe"
+      }
+    },
+    "blockBehaviorMaxLightRequirement": {
+      "label": "Höchstes Licht",
+      "description": "Die höchste Lichtstufe, bei der der Block noch wächst.",
+      "field": {
+        "label": "Lichtstufe"
+      }
+    },
+    "blockBehaviorIsBoneMealTarget": {
+      "label": "Knochenmehl",
+      "description": "Knochenmehl lässt die Feldfrucht wachsen.",
+      "field": {
+        "label": "Nimmt Knochenmehl an"
+      }
+    },
+    "blockBehaviorBoneMealAgeBonus": {
+      "label": "Knochenmehl-Bonus",
+      "description": "Wie viele Stufen ein Knochenmehl hinzufügt.",
+      "field": {
+        "label": "Stufen"
+      }
+    },
+    "blockBehaviorBoneMealSuccessChance": {
+      "label": "Knochenmehl-Chance",
+      "description": "Die Chance, dass Knochenmehl seine Partikel zeigt.",
+      "field": {
+        "label": "Chance"
+      }
+    },
+    "blockBehaviorCanOpenWithHand": {
+      "label": "Mit der Hand öffnen",
+      "description": "Ein Rechtsklick öffnet und schließt den Block (oder schaltet das Licht).",
+      "field": {
+        "label": "Mit der Hand"
+      }
+    },
+    "blockBehaviorCanOpenByWindCharge": {
+      "label": "Mit Windkugel öffnen",
+      "description": "Eine Windkugel öffnet und schließt den Block.",
+      "field": {
+        "label": "Mit Windkugel"
+      }
+    },
+    "blockBehaviorSounds": {
+      "label": "Sounds",
+      "description": "Die Sounds beim Öffnen und Schließen des Blocks.",
+      "field": {
+        "label": "Sounds",
+        "fields": {
+          "open": {
+            "label": "Öffnen",
+            "placeholder": "minecraft:block.wooden_door.open"
+          },
+          "close": {
+            "label": "Schließen",
+            "placeholder": "minecraft:block.wooden_door.close"
+          }
+        }
+      }
+    },
+    "blockBehaviorConnectableBlockTag": {
+      "label": "Verbindet sich mit",
+      "description": "Das Block-Tag der Zäune, mit denen sich der Zaun verbindet.",
+      "field": {
+        "label": "Block-Tag",
+        "placeholder": "minecraft:wooden_fences"
+      }
+    },
+    "blockBehaviorCanLeash": {
+      "label": "Leine",
+      "description": "Leinen lassen sich am Zaun festbinden.",
+      "field": {
+        "label": "Leinen"
+      }
+    },
+    "blockBehaviorSeats": {
+      "label": "Sitze",
+      "description": "Wo Spieler sitzen, als \"x,y,z\" ab der Mitte des Blocks, optional mit fester Blickrichtung (\"0,0,0 90\").",
+      "hint": "Ein Rechtsklick auf den Block setzt den Spieler hin.",
+      "field": {
+        "label": "Sitz",
+        "placeholder": "0,0,0"
+      }
+    },
+    "blockBehaviorTitle": {
+      "label": "Titel",
+      "description": "Der Titel des Lagerfensters (MiniMessage).",
+      "field": {
+        "label": "Titel",
+        "placeholder": "<lang:container.chest>"
+      }
+    },
+    "blockBehaviorRows": {
+      "label": "Reihen",
+      "description": "Wie viele Reihen Plätze das Lager hat (1 bis 6).",
+      "field": {
+        "label": "Reihen"
+      }
+    },
+    "blockBehaviorHasSignal": {
+      "label": "Komparator-Signal",
+      "description": "Ein Komparator liest ab, wie voll das Lager ist.",
+      "field": {
+        "label": "Signal"
+      }
+    },
+    "blockBehaviorAllowInput": {
+      "label": "Trichter-Eingabe",
+      "description": "Trichter können Items hineinlegen.",
+      "field": {
+        "label": "Eingabe"
+      }
+    },
+    "blockBehaviorAllowOutput": {
+      "label": "Trichter-Ausgabe",
+      "description": "Trichter können Items herausnehmen.",
+      "field": {
+        "label": "Ausgabe"
+      }
+    },
+    "blockBehaviors": {
+      "label": "Weitere Verhalten",
+      "description": "Weitere Verhalten als YAML-Liste (type und seine Schlüssel). Der Export schreibt sie vor das Verhalten oben.",
+      "hint": "Jedes Verhalten aus dem CraftEngine-Wiki funktioniert hier, z. B. falling_block oder bush_block.",
+      "field": {
+        "label": "Verhalten (YAML)"
+      }
+    }
+  }
+}

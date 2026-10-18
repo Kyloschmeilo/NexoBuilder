@@ -1,0 +1,54 @@
+{
+  "logic": {
+    "triggers": {
+      "rightClick": {
+        "label": "right_click",
+        "help": "Rechtsklick (auch use_on, use, use_item_on)."
+      },
+      "leftClick": {
+        "label": "left_click",
+        "help": "Linksklick."
+      },
+      "attack": {
+        "label": "attack",
+        "help": "Das Item trifft ein Wesen (auch hit)."
+      },
+      "consume": {
+        "label": "consume",
+        "help": "Das Item wird gegessen oder getrunken (auch eat, drink)."
+      },
+      "pickUp": {
+        "label": "pick_up",
+        "help": "Das Item wird aufgehoben (auch pick)."
+      },
+      "shoot": {
+        "label": "shoot",
+        "help": "Das Item verschießt ein Projektil."
+      },
+      "itemBreak": {
+        "label": "item_break",
+        "help": "Das Item zerbricht, wenn seine Haltbarkeit aufgebraucht ist."
+      },
+      "blockBreak": {
+        "label": "block_break",
+        "help": "Der Block wird abgebaut oder das Item baut einen Block ab (auch dig)."
+      },
+      "place": {
+        "label": "place",
+        "help": "Der Block oder das Möbel wird platziert (auch build)."
+      },
+      "step": {
+        "label": "step",
+        "help": "Ein Spieler läuft über den Block."
+      },
+      "furnitureBreak": {
+        "label": "furniture_break",
+        "help": "Das Möbel wird abgebaut."
+      },
+      "fall": {
+        "label": "fall",
+        "help": "Registriert, wird aber noch nicht ausgelöst."
+      }
+    }
+  }
+}

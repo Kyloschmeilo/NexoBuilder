@@ -1,0 +1,74 @@
+{
+  "groups": {
+    "general": {
+      "label": "General",
+      "description": "Lore, Unbreakable, ItemFlags and more"
+    }
+  },
+  "properties": {
+    "lore": {
+      "label": "Lore",
+      "description": "Text lines below the item name (MiniMessage, e.g. '<'gray>).",
+      "field": {
+        "label": "Lines",
+        "placeholder": "'<'gray>A line"
+      }
+    },
+    "unbreakable": {
+      "label": "Unbreakable",
+      "description": "The item does not lose durability.",
+      "field": {
+        "label": "Unbreakable"
+      }
+    },
+    "excludeFromInventory": {
+      "label": "Exclude From Inventory",
+      "description": "The item does not appear in /nexo inventory but can still be given with /nexo give.",
+      "field": {
+        "label": "Hide"
+      }
+    },
+    "excludeFromCommands": {
+      "label": "Exclude From Commands",
+      "description": "The item does not show up in command completion (e.g. for helper items).",
+      "field": {
+        "label": "Hide from commands"
+      }
+    },
+    "template": {
+      "label": "Template",
+      "description": "Inherits all properties of another Nexo item.",
+      "field": {
+        "label": "Template item ID",
+        "placeholder": "e.g. template_item"
+      }
+    },
+    "itemFlags": {
+      "label": "ItemFlags",
+      "description": "Hides parts of the tooltip. From 1.21.5 on, prefer the “Tooltip Display” component.",
+      "field": {
+        "label": "Flags"
+      }
+    },
+    "persistentData": {
+      "label": "PersistentData",
+      "description": "Custom data in the item''s PersistentDataContainer (PublicBukkitValues).",
+      "field": {
+        "label": "Entries",
+        "itemLabel": "Entry",
+        "fields": {
+          "type": {
+            "label": "Type"
+          },
+          "key": {
+            "label": "Key",
+            "placeholder": "namespace:key"
+          },
+          "value": {
+            "label": "Value"
+          }
+        }
+      }
+    }
+  }
+}

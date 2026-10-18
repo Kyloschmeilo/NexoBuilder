@@ -1,0 +1,115 @@
+{
+  "logic": {
+    "shared": {
+      "add": {
+        "label": "add",
+        "help": "Addiert den Wert zum aktuellen, statt ihn zu ersetzen."
+      },
+      "target": {
+        "label": "target",
+        "help": "Die Spieler, auf die es wirkt: self, all oder ein Selektor-Objekt. Leer: der Spieler des Events."
+      },
+      "conditions": {
+        "label": "conditions"
+      },
+      "maxAttempts": {
+        "label": "max_attempts",
+        "help": "Wie oft ein Wert außerhalb von min und max neu gewürfelt wird."
+      },
+      "lootTarget": {
+        "label": "target",
+        "help": "Die IDs, für die es gilt. Leer: alle dieses Typs. Blockzustände sind hier nicht erlaubt."
+      },
+      "overwrite": {
+        "label": "overwrite",
+        "help": "Was aus dem Vanilla-Ergebnis entfernt wird: items, experience, all oder none (Standard: deine Beute kommt dazu)."
+      },
+      "lootTable": {
+        "label": "loot",
+        "help": "Eine Loot-Vorlage mit ihren Argumenten, eine eigene Loot-Tabelle oder die ID einer anderen Loot-Tabelle.",
+        "choices": {
+          "template": {
+            "label": "Vorlage",
+            "field": {
+              "fields": {
+                "template": {
+                  "label": "template",
+                  "help": "Eine Loot-Vorlage von CraftEngine oder eines anderen Packs. default:loot_table/self lässt den Block selbst fallen."
+                },
+                "arguments": {
+                  "label": "arguments",
+                  "help": "Die Werte, die die Vorlage einsetzt, etwa item oder count.",
+                  "keyLabel": "Argument",
+                  "keyPlaceholder": "item",
+                  "value": {
+                    "label": "Wert"
+                  }
+                }
+              }
+            }
+          },
+          "table": {
+            "label": "Loot-Tabelle",
+            "field": {
+              "fields": {
+                "pools": {
+                  "label": "pools",
+                  "itemLabel": "Pool",
+                  "fields": {
+                    "rolls": {
+                      "label": "rolls"
+                    },
+                    "bonusRolls": {
+                      "label": "bonus_rolls",
+                      "help": "Zusätzliche Würfe pro Glückspunkt."
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "reference": {
+            "label": "ID",
+            "field": {
+              "label": "ID der Loot-Tabelle",
+              "placeholder": "minecraft:chests/simple_dungeon"
+            }
+          }
+        }
+      },
+      "lootEntries": {
+        "label": "entries"
+      },
+      "lootFunctions": {
+        "label": "functions",
+        "help": "Ändern die fallen gelassenen Items, in dieser Reihenfolge."
+      },
+      "lootSourceId": {
+        "label": "id",
+        "help": "Die ID der Loot-Quelle. Ohne Namespace bekommt sie den Namespace des Projekts.",
+        "placeholder": "example:extra_drops"
+      },
+      "weight": {
+        "label": "weight",
+        "help": "Wie oft dieser Eintrag unter den anderen seines Pools gewählt wird (Standard 1)."
+      },
+      "quality": {
+        "label": "quality",
+        "help": "Wie viel jeder Glückspunkt zum Gewicht addiert."
+      },
+      "vanillaAttribute": {
+        "label": "attribute",
+        "placeholder": "z.B. minecraft:armor"
+      },
+      "fallback": {
+        "label": "fallback",
+        "help": "Der Wert, wenn das Wesen das Vanilla-Attribut nicht hat. Standard: 0."
+      },
+      "transform": {
+        "label": "transform",
+        "help": "Ein Ausdruck, der auf den gelesenen Wert angewendet wird, mit value als Variable.",
+        "placeholder": "z.B. value * 0.5"
+      }
+    }
+  }
+}
