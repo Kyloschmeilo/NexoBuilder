@@ -234,6 +234,70 @@ describe('CraftEngine furniture', () => {
   });
 });
 
+describe('furniture behaviors and extras from the editor', () => {
+  it('writes the double drawer of the wiki: settings, variant extras and two behaviors', () => {
+    const project = furnitureProject([
+      'double_drawer',
+      (item) => {
+        item.config.furniture = {
+          settings: {
+            hit_times: 3,
+            adventure_mode_breaking: true,
+            correct_tools: ['#minecraft:axes'],
+            sounds: { break: { id: 'minecraft:block.deepslate.break', pitch: 0.5, volume: 0.25 } },
+          },
+          variants: {
+            ground: {
+              entity_culling: { aabb_expansion: 0.25, view_distance: 64, ray_tracing: true },
+              hitboxes: [],
+              elements: [{ item: 'moebel:double_drawer', glow_color: '255,200,0', brightness: { block_light: 15 } }],
+              loot_spawn_offset: '0,0.5,0',
+            },
+          },
+          behaviors: [
+            {
+              type: 'simple_storage_furniture',
+              title: '<dark_gray>Left Drawer',
+              data_key: 'left_drawer',
+              rows: 2,
+              variants: { ground: { hitboxes: [{ position: '-0.25,0.5,0', width: 0.5, height: 1, interactive: true }] } },
+            },
+            { type: 'glowing_furniture', lights: [{ position: '0,0.5,0', level: 15 }] },
+          ],
+        };
+      },
+    ]);
+    expect(fileOf(project).furniture['moebel:double_drawer']).toEqual({
+      settings: {
+        item: 'moebel:double_drawer',
+        hit_times: 3,
+        adventure_mode_breaking: true,
+        correct_tools: ['#minecraft:axes'],
+        sounds: { break: { id: 'minecraft:block.deepslate.break', pitch: 0.5, volume: 0.25 } },
+      },
+      variants: {
+        ground: {
+          loot_spawn_offset: '0,0.5,0',
+          elements: [{ type: 'item_display', item: 'moebel:double_drawer', glow_color: '255,200,0', brightness: { block_light: 15 } }],
+          entity_culling: { aabb_expansion: 0.25, view_distance: 64, ray_tracing: true },
+        },
+      },
+      behaviors: [
+        {
+          type: 'simple_storage_furniture',
+          title: '<dark_gray>Left Drawer',
+          data_key: 'left_drawer',
+          rows: 2,
+          variants: {
+            ground: { hitboxes: [{ type: 'interaction', position: '-0.25,0.5,0', width: 0.5, height: 1, interactive: true }] },
+          },
+        },
+        { type: 'glowing_furniture', lights: [{ position: '0,0.5,0', level: 15 }] },
+      ],
+    });
+  });
+});
+
 describe('the furniture in the additional YAML', () => {
   it('merges furniture: into the furniture, so behaviors can be written there', () => {
     const project = furnitureProject([

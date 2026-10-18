@@ -230,11 +230,46 @@
                     "label": "The distance in blocks beyond which the furniture is hidden; -1 for no limit."
                   },
                   "aabbExpansion": {
-                    "label": "Extra space around the box, in blocks.",
-                    "placeholder": "0.25"
+                    "label": "Extra space around the box, in blocks (0.25 by default)."
                   },
                   "rayTracing": {
                     "label": "Hides the furniture when blocks are in the way."
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "state": {
+      "fields": {
+        "entityCulling": {
+          "label": "Hides the renderer from players who cannot see it (CraftEngine Premium).",
+          "help": "On by default; the box covers the block unless you set one.",
+          "choices": {
+            "toggle": {
+              "label": "On or off",
+              "field": {
+                "label": "Off turns culling off; on keeps the defaults."
+              }
+            },
+            "custom": {
+              "label": "Custom",
+              "field": {
+                "fields": {
+                  "aabb": {
+                    "label": "The box that is checked, as x1,y1,z1,x2,y2,z2 from the block’s center; increase it for large models.",
+                    "placeholder": "-0.5,-0.5,-0.5,0.5,1.5,0.5"
+                  },
+                  "viewDistance": {
+                    "label": "The distance in blocks beyond which the renderer is hidden; -1 for no limit."
+                  },
+                  "aabbExpansion": {
+                    "label": "Extra space around the box, in blocks (0.5 by default)."
+                  },
+                  "rayTracing": {
+                    "label": "Hides the renderer when blocks are in the way."
                   }
                 }
               }
@@ -312,7 +347,7 @@
         "fields": {
           "title": {
             "label": "The title of the storage window.",
-            "placeholder": "<lang:container.chest>"
+            "placeholder": "'<'lang:container.chest>"
           },
           "rows": {
             "label": "The rows of the storage, 1 to 6."

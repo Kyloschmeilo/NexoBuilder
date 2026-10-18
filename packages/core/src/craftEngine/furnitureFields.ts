@@ -8,7 +8,7 @@
  * configs, AbstractFurnitureManager, FurnitureSettingsModifiers); the random `offset` of renderer elements only from
  * the wiki (newer than 26.9).
  */
-import { field, type FieldSpecs, resolveFields } from '../form/build';
+import { field, type FieldSpec, type FieldSpecs, resolveFields } from '../form/build';
 import type { Field, TypedListField } from '../form/fields';
 import { plainOptions } from '../form/options';
 import { isPlainObject } from '@resourcepackbuilder/utils';
@@ -166,27 +166,35 @@ export const CE_HITBOX_FLAG_FIELDS: Field[] = named(hitboxFieldSpecs(), 'furnitu
   .filter((f) => HITBOX_FLAG_KEYS.includes(f.key))
   .map((f) => ({ ...f, docs: `${CE_DOCS.furnitureVariants}#hitboxes` }));
 
+/**
+ * Entity culling (CraftEngine Premium): `false` turns it off, a map tunes it. Furniture variants and block states
+ * (next to their entity renderer) read it.
+ */
+function entityCulling(docs: string): FieldSpec {
+  return field.choice(
+    {
+      toggle: { field: field.boolean(), matches: (value) => typeof value === 'boolean', newValue: () => false },
+      custom: {
+        field: field.object({
+          aabb: field.text({ placeholder: true }),
+          view_distance: field.number({ integer: true, min: -1 }),
+          aabb_expansion: field.number({ min: 0 }),
+          ray_tracing: field.boolean({ defaultHint: true }),
+        }),
+        matches: isObject,
+        newValue: () => ({ ray_tracing: true }),
+      },
+    },
+    { help: true, advanced: true, docs },
+  );
+}
+
 /** The keys of a variant besides its elements and hitboxes. */
 export const CE_FURNITURE_VARIANT_FIELDS: Field[] = named(
   {
     loot_spawn_offset: field.text({ format: 'vector', placeholder: true, help: true, docs: `${CE_DOCS.furnitureVariants}#introduction` }),
     blueprint: field.text({ placeholder: true, help: true, advanced: true, docs: `${CE_DOCS.furnitureVariants}#external-models` }),
-    entity_culling: field.choice(
-      {
-        toggle: { field: field.boolean(), matches: (value) => typeof value === 'boolean', newValue: () => false },
-        custom: {
-          field: field.object({
-            aabb: field.text({ placeholder: true }),
-            view_distance: field.number({ integer: true, min: -1 }),
-            aabb_expansion: field.number({ min: 0, placeholder: true }),
-            ray_tracing: field.boolean({ defaultHint: true }),
-          }),
-          matches: isObject,
-          newValue: () => ({ ray_tracing: true }),
-        },
-      },
-      { help: true, advanced: true, docs: `${CE_DOCS.furnitureVariants}#entity-culling` },
-    ),
+    entity_culling: entityCulling(`${CE_DOCS.furnitureVariants}#entity-culling`),
   },
   'furniture.variant',
 );
@@ -219,12 +227,19 @@ export const CE_FURNITURE_BEHAVIOR_LIST: TypedListField = {
   docs: CE_DOCS.furnitureBehaviors,
 };
 
+/** The keys of a block state (or appearance) with an entity renderer besides the renderer itself. */
+export const CE_RENDERER_STATE_FIELDS: Field[] = named(
+  { entity_culling: entityCulling(`${CE_DOCS.entityRenderer}#entity-culling`) },
+  'furniture.state',
+);
+
 /** Every field of the furniture and renderer editors (for the message and docs checks). */
 export const CE_FURNITURE_EDITOR_FIELDS: Field[] = [
   ...CE_FURNITURE_ELEMENT_FIELDS,
   ...CE_RENDERER_ELEMENT_FIELDS,
   ...CE_HITBOX_FLAG_FIELDS,
   ...CE_FURNITURE_VARIANT_FIELDS,
+  ...CE_RENDERER_STATE_FIELDS,
   ...CE_FURNITURE_SETTINGS_FIELDS,
   CE_FURNITURE_BEHAVIOR_LIST,
 ];

@@ -230,11 +230,46 @@
                     "label": "Die Entfernung in Blöcken, ab der die Möbel ausgeblendet werden; -1 ohne Grenze."
                   },
                   "aabbExpansion": {
-                    "label": "Zusätzlicher Platz um die Box, in Blöcken.",
-                    "placeholder": "0.25"
+                    "label": "Zusätzlicher Platz um die Box, in Blöcken (standardmäßig 0.25)."
                   },
                   "rayTracing": {
                     "label": "Blendet die Möbel aus, wenn Blöcke im Weg sind."
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "state": {
+      "fields": {
+        "entityCulling": {
+          "label": "Blendet den Renderer für Spieler aus, die ihn nicht sehen können (CraftEngine Premium).",
+          "help": "Standardmäßig an; die Box umfasst den Block, solange du keine angibst.",
+          "choices": {
+            "toggle": {
+              "label": "An oder aus",
+              "field": {
+                "label": "Aus schaltet das Ausblenden ab; an behält die Standardwerte."
+              }
+            },
+            "custom": {
+              "label": "Angepasst",
+              "field": {
+                "fields": {
+                  "aabb": {
+                    "label": "Die geprüfte Box, als x1,y1,z1,x2,y2,z2 von der Blockmitte aus; für große Modelle vergrößern.",
+                    "placeholder": "-0.5,-0.5,-0.5,0.5,1.5,0.5"
+                  },
+                  "viewDistance": {
+                    "label": "Die Entfernung in Blöcken, ab der der Renderer ausgeblendet wird; -1 ohne Grenze."
+                  },
+                  "aabbExpansion": {
+                    "label": "Zusätzlicher Platz um die Box, in Blöcken (standardmäßig 0.5)."
+                  },
+                  "rayTracing": {
+                    "label": "Blendet den Renderer aus, wenn Blöcke im Weg sind."
                   }
                 }
               }
@@ -312,7 +347,7 @@
         "fields": {
           "title": {
             "label": "Der Titel des Lagerfensters.",
-            "placeholder": "<lang:container.chest>"
+            "placeholder": "'<'lang:container.chest>"
           },
           "rows": {
             "label": "Die Reihen des Lagers, 1 bis 6."

@@ -118,7 +118,7 @@ describe('furniture extras', () => {
     const ground = (built.furniture.variants as Record<string, Record<string, unknown>>).ground;
     expect(Object.keys(ground)).toEqual(['loot_spawn_offset', 'elements', 'hitboxes', 'entity_culling']);
     expect(Object.keys((ground.elements as object[])[0])).toEqual(['type', 'text', 'scale', 'glow_color', 'alignment', 'conditions']);
-    expect(Object.keys((ground.hitboxes as object[])[0])).toEqual(['type', 'position', 'can_use_item_on', 'invisible', 'seats']);
+    expect(Object.keys((ground.hitboxes as object[])[0])).toEqual(['type', 'position', 'invisible', 'can_use_item_on', 'seats']);
     expect(built.placementExtras).toEqual({});
   });
 
