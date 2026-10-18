@@ -107,7 +107,7 @@ export function collectArmorSets(items: Item[], targetVersion: string, issues: I
       if (layer.minVersion && compareVersions(targetVersion, layer.minVersion) < 0) {
         report('error', 'plan.armorLayerNeedsVersion', { version: layer.minVersion, target: targetVersion }, [frame]);
       }
-      if (layer.sizeHint && texture?.width && texture.height && texture.width !== texture.height * 2) {
+      if (layer.group === 'player' && layer.sizeHint && texture?.width && texture.height && texture.width !== texture.height * 2) {
         report('warning', 'plan.armorLayerAspect', { width: texture.width, height: texture.height }, [frame]);
       }
       if (overlay?.dataUrl && !set.overlays.has(layer.equipment)) set.overlays.set(layer.equipment, overlay);
