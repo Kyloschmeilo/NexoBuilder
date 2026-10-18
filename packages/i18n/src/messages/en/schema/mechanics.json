@@ -172,9 +172,6 @@
           },
           "fixedAmount": {
             "label": "Fixed durability amount"
-          },
-          "nexoDurabilityOnly": {
-            "label": "Only repair Nexo items"
           }
         }
       }
@@ -187,12 +184,6 @@
         "fields": {
           "breaksFromCactus": {
             "label": "Destroyed by cacti"
-          },
-          "burnsInFire": {
-            "label": "Burns in fire"
-          },
-          "burnsInLava": {
-            "label": "Burns in lava"
           },
           "disableVanillaInteractions": {
             "label": "Disable vanilla interactions"
@@ -257,9 +248,6 @@
       "field": {
         "label": "Smelting",
         "fields": {
-          "enabled": {
-            "label": "Active"
-          },
           "playSound": {
             "label": "Play sound"
           }

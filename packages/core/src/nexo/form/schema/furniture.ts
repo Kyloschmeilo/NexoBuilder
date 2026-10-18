@@ -1,5 +1,5 @@
 /** The furniture mechanic (Mechanics.furniture) – the largest property, hence its own module. */
-import { DISPLAY_TRANSFORMS, TRACKING_ROTATIONS } from '../options';
+import { CULLABLE_STATES, DISPLAY_TRANSFORMS, TRACKING_ROTATIONS } from '../options';
 import { field, type PropertySpec } from '../../../form/build';
 import {
   blockLockerField,
@@ -43,7 +43,7 @@ export const FURNITURE: PropertySpec = {
       shadow_strength: field.number({ min: 0, step: 0.1 }),
       glow_color: field.text({ placeholder: true }),
       offset_against_blocks: field.boolean({ defaultHint: true }),
-      cullable: field.boolean(),
+      cullable: field.select(CULLABLE_STATES),
       display_width: field.number({ min: 0, step: 0.1 }),
       display_height: field.number({ min: 0, step: 0.1 }),
     }),

@@ -51,6 +51,7 @@ import type { JukeboxSong, Sound, SoundFile } from './media/sound';
 import { itemIdFromName } from './ids';
 import { defaultSettings, DEFAULT_PACK_NAME } from './factory';
 import { DEFAULT_PACK_TARGET, PACK_TARGETS } from './target';
+import { migrateNexoConfig } from './legacyNexoConfig';
 import type {
   ConfigObject,
   ConfigValue,
@@ -201,7 +202,7 @@ export const ConfigObjectSchema: z.ZodType<ConfigObject, unknown> = z.lazy(() =>
 
 const ArmorSchema = z.record(z.string(), z.unknown()).transform((value): ArmorSettings => toArmorSettings(value));
 
-/** Moves the legacy `config.$armor` to `armor` and fills in the id from the map key (`fallbackId`). */
+/** Moves the legacy `config.$armor` to `armor`, brings Nexo keys up to date and fills in the id from the map key (`fallbackId`). */
 function migrateItemInput(raw: unknown, fallbackId: string | undefined): unknown {
   if (!isPlainObject(raw)) return raw;
   const item: Record<string, unknown> = { ...raw };
@@ -211,6 +212,7 @@ function migrateItemInput(raw: unknown, fallbackId: string | undefined): unknown
     item.config = config;
     if (!isPlainObject(item.armor)) item.armor = legacyArmor;
   }
+  if (isPlainObject(item.config)) item.config = migrateNexoConfig(item.config);
   return item;
 }
 

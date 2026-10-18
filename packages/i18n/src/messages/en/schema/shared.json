@@ -296,6 +296,9 @@
               "speed": {
                 "label": "Speed"
               },
+              "force": {
+                "label": "Force the animation"
+              },
               "properties": {
                 "label": "Display in this state",
                 "placeholder": "translation: 0,0.5,0"

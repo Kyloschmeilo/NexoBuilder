@@ -29,10 +29,10 @@ export const MECHANIC_PROPERTIES = properties('mechanics', {
       model: field.text({ format: 'resource', help: true }),
       hardness: field.number({ min: 0, step: 0.5 }),
       blast_resistant: field.boolean(),
-      is_falling: field.boolean(NOTEBLOCK),
+      is_falling: field.boolean(whenType('NOTEBLOCK', 'CHORUSBLOCK')),
       beacon_base_block: field.boolean(NOTEBLOCK),
       placeable_on_water: field.boolean(STRINGBLOCK),
-      requires_supporting: field.boolean(STRINGBLOCK),
+      require_supporting: field.boolean(STRINGBLOCK),
       is_tall: field.boolean(STRINGBLOCK),
       random_place: field.stringList({ placeholder: true, ...STRINGBLOCK }),
       directional: field.object({ type: field.select(['LOG', 'FURNACE', 'DROPPER', 'BARREL']) }, { help: true, ...NOTEBLOCK }),
@@ -149,7 +149,6 @@ export const MECHANIC_PROPERTIES = properties('mechanics', {
     field: field.object({
       ratio: field.number({ min: 0, max: 1, step: 0.05 }),
       fixed_amount: field.number({ integer: true, min: 1 }),
-      nexo_durability_only: field.boolean(),
     }),
     defaultValue: () => ({ ratio: 0.25 }),
   },
@@ -157,8 +156,6 @@ export const MECHANIC_PROPERTIES = properties('mechanics', {
     keepEmpty: true,
     field: field.object({
       breaks_from_cactus: field.boolean(),
-      burns_in_fire: field.boolean(),
-      burns_in_lava: field.boolean(),
       disable_vanilla_interactions: field.boolean(),
       can_strip_logs: field.boolean(),
       piglins_ignore_when_equipped: field.boolean(),
@@ -184,10 +181,9 @@ export const MECHANIC_PROPERTIES = properties('mechanics', {
   },
   'Mechanics.smelting': {
     field: field.object({
-      enabled: field.boolean(),
       play_sound: field.boolean(),
     }),
-    defaultValue: () => ({ enabled: true, play_sound: true }),
+    defaultValue: () => ({ play_sound: true }),
   },
   'Mechanics.itemtype': {
     field: field.object({ value: field.text({ placeholder: true }) }),

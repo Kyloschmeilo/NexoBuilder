@@ -15,6 +15,64 @@ describe('migrateProject', () => {
     expect(item?.config).toEqual({ material: 'IRON_HELMET' });
   });
 
+  describe('Nexo 1.30 keys', () => {
+    const migrate = (config: Record<string, unknown>) => migrateItem({ id: 'i_1', itemId: 'x', config })?.config;
+
+    it('renames requires_supporting to require_supporting', () => {
+      expect(migrate({ Mechanics: { custom_block: { type: 'STRINGBLOCK', requires_supporting: false } } })).toEqual({
+        Mechanics: { custom_block: { type: 'STRINGBLOCK', require_supporting: false } },
+      });
+    });
+
+    it('keeps an existing require_supporting over the old key', () => {
+      expect(migrate({ Mechanics: { custom_block: { requires_supporting: false, require_supporting: true } } })).toEqual({
+        Mechanics: { custom_block: { require_supporting: true } },
+      });
+    });
+
+    it('turns burns_in_fire/lava: false into Components.damage_resistant like the Nexo converter', () => {
+      expect(migrate({ Mechanics: { misc: { burns_in_fire: false, burns_in_lava: true, prevent_renaming: true } } })).toEqual({
+        Mechanics: { misc: { prevent_renaming: true } },
+        Components: { damage_resistant: 'is_fire' },
+      });
+      expect(migrate({ Mechanics: { misc: { burns_in_lava: false } }, Components: { max_stack_size: 1 } })).toEqual({
+        Mechanics: { misc: {} },
+        Components: { max_stack_size: 1, damage_resistant: 'is_fire' },
+      });
+    });
+
+    it('drops burns_in_* = true and keeps an existing damage_resistant', () => {
+      expect(migrate({ Mechanics: { misc: { burns_in_fire: true } } })).toEqual({ Mechanics: { misc: {} } });
+      expect(migrate({ Mechanics: { misc: { burns_in_fire: false } }, Components: { damage_resistant: 'is_explosion' } })).toEqual({
+        Mechanics: { misc: {} },
+        Components: { damage_resistant: 'is_explosion' },
+      });
+    });
+
+    it('drops repair.nexo_durability_only and smelting.enabled', () => {
+      expect(
+        migrate({ Mechanics: { repair: { ratio: 0.5, nexo_durability_only: true }, smelting: { enabled: true, play_sound: false } } }),
+      ).toEqual({ Mechanics: { repair: { ratio: 0.5 }, smelting: { play_sound: false } } });
+    });
+
+    it('turns boolean cullable into TRUE/FALSE and keeps text', () => {
+      expect(migrate({ Mechanics: { furniture: { properties: { cullable: true } } } })).toEqual({
+        Mechanics: { furniture: { properties: { cullable: 'TRUE' } } },
+      });
+      expect(migrate({ Mechanics: { furniture: { properties: { cullable: false } } } })).toEqual({
+        Mechanics: { furniture: { properties: { cullable: 'FALSE' } } },
+      });
+      expect(migrate({ Mechanics: { furniture: { properties: { cullable: 'NOT_SET' } } } })).toEqual({
+        Mechanics: { furniture: { properties: { cullable: 'NOT_SET' } } },
+      });
+    });
+
+    it('leaves current configs untouched', () => {
+      const config = { Mechanics: { custom_block: { require_supporting: true }, misc: { prevent_renaming: true } } };
+      expect(migrate(config)).toEqual(config);
+    });
+  });
+
   it('keeps items without armor free of an armor field', () => {
     expect(migrateItem({ id: 'i_1', itemId: 'sword', config: { material: 'PAPER' } })).not.toHaveProperty('armor');
   });

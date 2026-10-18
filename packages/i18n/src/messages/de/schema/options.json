@@ -85,6 +85,17 @@
         "label": "CHORUSBLOCK – transparente Blöcke (bis 63)"
       }
     },
+    "cullableStates": {
+      "true": {
+        "label": "TRUE – Culling erlauben"
+      },
+      "false": {
+        "label": "FALSE – nie ausblenden"
+      },
+      "notSet": {
+        "label": "NOT_SET – Nexo entscheiden lassen"
+      }
+    },
     "customEvents": {
       "clickRightAll": {
         "label": "Rechtsklick (überall)"
