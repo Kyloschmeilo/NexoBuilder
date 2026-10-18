@@ -5,8 +5,7 @@ import { DropZone, SectionCard } from '@resourcepackbuilder/ui';
 import { setItemModel } from '../../../commands/items';
 import { PropertiesPanel } from '../properties/PropertiesPanel';
 import { useProjectForm } from '../properties/useProjectForm';
-import { BlockModelsSection } from './BlockModelsSection';
-import { CraftEngineBlockSection, hasBlockSettings } from './CraftEngineBlockSection';
+import { BlockSection, hasBlockSettings } from '../block';
 import { CraftEngineFurnitureSection } from './CraftEngineFurnitureSection';
 import { FurnitureModelsSection } from './FurnitureModelsSection';
 import { ItemModelTreeSection } from './itemModelTree';
@@ -61,14 +60,13 @@ export function ModelTab({ item }: { item: Item }) {
           <TexturesSection itemId={item.id} model={model} />
           <VariantsSection item={item} />
           <FurnitureModelsSection item={item} />
-          <BlockModelsSection item={item} />
         </>
       ) : (
         <NoModelCard item={item} />
       )}
       <ItemModelTreeSection item={item} />
       {hasModelGroup && <PropertiesPanel item={item} group={MODEL_GROUP} />}
-      {hasBlockSettings(groups) && <CraftEngineBlockSection item={item} />}
+      <BlockSection item={item} />
       {hasBlockSettings(groups) && <CraftEngineFurnitureSection item={item} />}
       {hasAppearance && <PropertiesPanel item={item} group={APPEARANCE_GROUP} />}
     </div>

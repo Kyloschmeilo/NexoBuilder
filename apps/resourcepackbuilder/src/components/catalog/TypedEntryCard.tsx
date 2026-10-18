@@ -46,6 +46,10 @@ export interface TypedEntryCardProps {
   onOpenChange?: (open: boolean) => void;
   /** Content after the fields, such as the nested lists of an event (two `SubSection`s). */
   children?: ReactNode;
+  /** Small pills in the header after the summary (e.g. "Main", a missing key). */
+  badges?: ReactNode;
+  /** The name in the header instead of the type's own (e.g. the editor's name of a preset). */
+  label?: string;
   className?: string;
 }
 
@@ -62,6 +66,8 @@ export function TypedEntryCard({
   defaultOpen = true,
   onOpenChange,
   children,
+  badges,
+  label: ownLabel,
   className,
 }: TypedEntryCardProps) {
   const t = useTranslations('editor.typedEntry');
@@ -75,7 +81,7 @@ export function TypedEntryCard({
   const record = isPlainObject(entry) ? entry : {};
   const { name, inverted } = typeParts(record.type, source.invertible);
   const type = findTypedType(source, entry);
-  const label = type ? typedTypeLabel(type, { schema: text }) : name || t('noType');
+  const label = ownLabel ?? (type ? typedTypeLabel(type, { schema: text }) : name || t('noType'));
   const description = type?.help ? text(type.help) : undefined;
   const settings = Object.fromEntries(Object.entries(record).filter(([key]) => key !== 'type'));
   const objectField: ObjectField | undefined = type && { type: 'object', key: '', label: '', fields: type.fields };
@@ -131,6 +137,7 @@ export function TypedEntryCard({
           <span className="truncate text-label font-semibold text-text">{label}</span>
           {!isOpen && <span className="min-w-0 flex-1 truncate text-meta text-text-muted">{summary}</span>}
         </button>
+        {badges}
         {source.invertible && name && (
           <Tip label={t('negateHint')}>
             <label className="flex flex-none items-center gap-1.5 text-meta text-text-muted">

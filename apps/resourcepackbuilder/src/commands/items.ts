@@ -22,16 +22,20 @@ import {
 } from '@resourcepackbuilder/minecraft';
 import * as operations from '@resourcepackbuilder/core/project';
 import { assetToken, isPlainObject, texturePlaceholder, uid } from '@resourcepackbuilder/utils';
-import { propertyById, type PropertyDef, setPropertyValue } from '@resourcepackbuilder/core/form';
+import { getPropertyValue, propertyById, type PropertyDef, setPropertyValue } from '@resourcepackbuilder/core/form';
 import { formFor } from '@resourcepackbuilder/core/targets';
 import {
+  addBlockBehavior as withAddedBlockBehavior,
   applyBlockBehavior,
   type ApplyBlockBehaviorOptions,
+  type BlockBehaviorRef,
   CE_DEFAULT_AUTO_STATE,
   craftEngineItemKey,
   newCraftEngineBlock,
   newCraftEngineFurniture,
+  promoteBlockBehavior as withPromotedBlockBehavior,
   setStorageOpenLook,
+  withBlockBehavior,
 } from '@resourcepackbuilder/core/craftEngine';
 import { getProject, mutate } from '../store/project';
 import { select, setExpanded } from '../store/ui';
@@ -256,6 +260,80 @@ export function setBlockBehavior(itemId: string, type: string | null, options?: 
 /** Gives the item's storage block a closed and an open look (the `open` property), or takes them away. */
 export function setBlockStorageOpenLook(itemId: string, open: boolean): void {
   updateCraftEngineBlock(itemId, (block) => setStorageOpenLook(block, open));
+}
+
+/** What an item places when it is used: nothing, a block or furniture (one of them at most). */
+export type ItemPlaces = 'nothing' | 'block' | 'furniture';
+
+/** The Nexo mechanics that make an item a custom block or furniture. */
+export const NEXO_BLOCK_PROPERTY = 'Mechanics.custom_block';
+export const NEXO_FURNITURE_PROPERTY = 'Mechanics.furniture';
+
+/**
+ * Makes the item place nothing, a block or furniture. CraftEngine writes a new `block` or `furniture` definition,
+ * Nexo the custom_block or furniture mechanic with its default; the other one is removed (with the extra textures
+ * only it used). What the item already places stays as it is.
+ */
+export function setItemPlaces(itemId: string, places: ItemPlaces): void {
+  const project = getProject();
+  if (!project) return;
+  if (project.target === 'craftengine') {
+    updateItem(itemId, (item) => {
+      if (places !== 'block') delete item.config.block;
+      else if (!isPlainObject(item.config.block)) item.config.block = newCraftEngineBlock();
+      if (places !== 'furniture') delete item.config.furniture;
+      else if (!isPlainObject(item.config.furniture)) item.config.furniture = newCraftEngineFurniture();
+    });
+    return;
+  }
+  const block = projectProperty(NEXO_BLOCK_PROPERTY);
+  const furniture = projectProperty(NEXO_FURNITURE_PROPERTY);
+  updateItem(itemId, (item) => {
+    for (const [def, wanted] of [
+      [block, places === 'block'],
+      [furniture, places === 'furniture'],
+    ] as const) {
+      if (!def) continue;
+      if (!wanted) setPropertyValue(item, def, undefined);
+      else if (getPropertyValue(item, def) === undefined) setPropertyValue(item, def, def.defaultValue());
+    }
+    pruneUnusedAssets(item);
+  });
+}
+
+/** Runs a block edit that needs the item's key and the plain single state (adding or promoting a preset). */
+function updateBlockWithKey(itemId: string, next: (block: ConfigObject, itemKey: string, singleState: ConfigObject) => ConfigObject): void {
+  const project = getProject();
+  const item = project?.items[itemId];
+  if (!project || !item) return;
+  const itemKey = craftEngineItemKey(project, item);
+  updateCraftEngineBlock(itemId, (block) => next(block, itemKey, { auto_state: CE_DEFAULT_AUTO_STATE }));
+}
+
+/**
+ * Adds behaviors of these types to the item's block (in order; types it has are skipped). The first type with a
+ * preset sets up the main behavior with its states while the block has none; the others go to the further behaviors.
+ * `replaceStates` lets a preset replace states of the user's own (after asking).
+ */
+export function addBlockBehaviors(itemId: string, types: readonly string[], options?: ApplyBlockBehaviorOptions): void {
+  updateBlockWithKey(itemId, (block, itemKey, singleState) =>
+    types.reduce((next, type) => withAddedBlockBehavior(next, type, itemKey, singleState, options), block),
+  );
+}
+
+/** Replaces one behavior of the item's block; equal `historyKey`s in quick succession form one undo step. */
+export function updateBlockBehavior(itemId: string, ref: BlockBehaviorRef, entry: ConfigValue, historyKey?: string): void {
+  updateCraftEngineBlock(itemId, (block) => withBlockBehavior(block, ref, entry), historyKey);
+}
+
+/** Removes one behavior of the item's block; its states and the other behaviors stay. */
+export function removeBlockBehavior(itemId: string, ref: BlockBehaviorRef): void {
+  updateCraftEngineBlock(itemId, (block) => withBlockBehavior(block, ref, undefined));
+}
+
+/** Makes a further behavior with a preset the block's main behavior, with the states its preset sets up. */
+export function promoteBlockBehavior(itemId: string, ref: BlockBehaviorRef, options?: ApplyBlockBehaviorOptions): void {
+  updateBlockWithKey(itemId, (block, itemKey, singleState) => withPromotedBlockBehavior(block, ref, itemKey, singleState, options));
 }
 
 // --- Recipes -----------------------------------------------------------------------------------------
