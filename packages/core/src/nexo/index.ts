@@ -1,5 +1,8 @@
 /** Public API of @resourcepackbuilder/core/nexo. */
+export * from './carpentry';
 export * from './copyConfig';
+export * from './dialogs/files';
+export * from './dialogs/form';
 export * from './form/options';
 export * from './form/schema';
 export * from './form/schema/appearance';
@@ -12,8 +15,10 @@ export * from './form/schema/mechanics';
 export * from './form/schema/shared';
 export * from './glyphs/files';
 export * from './itemConfig';
+export * from './multipack';
 export * from './paintings/files';
 export * from './recipes/files';
 export * from './recipes/options';
 export * from './sounds/files';
+export * from './suggestions';
 export * from './yaml';

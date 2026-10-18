@@ -51,6 +51,7 @@ import {
   type Glyph,
   type GlyphGifType,
 } from './media/glyph';
+import type { Dialog } from './media/dialog';
 import type { MediaFile } from './media/entry';
 import type { MediaEntryByKind, MediaKind } from './media/kinds';
 import type { Painting } from './media/painting';
@@ -193,11 +194,19 @@ export const PaintingSchema = z.object({
   frametime: lenientNumber(2),
 });
 
+/** A dialog: its file content is kept like an item config (a bad one becomes empty). */
+export const DialogSchema = z.object({
+  id: id(),
+  dialogId: z.string(),
+  config: z.lazy(() => ConfigObjectSchema).catch({}),
+});
+
 /** The schema of each media kind (see MEDIA_KINDS). */
 export const MEDIA_SCHEMAS: { [K in MediaKind]: z.ZodType<MediaEntryByKind[K], unknown> } = {
   glyph: GlyphSchema,
   sound: SoundSchema,
   painting: PaintingSchema,
+  dialog: DialogSchema,
 };
 
 /* ------------------------------------------------------------ Recipes */
@@ -340,6 +349,8 @@ export function settingsSchema(projectName: string) {
       yamlFileMode: lenientEnum(['folder', 'item'], 'folder'),
       ceCategoriesFromFolders: lenientBoolean(defaults.ceCategoriesFromFolders),
       disabledRecipes: optional(stringList()),
+      carpentryAddon: optional(z.literal(true)),
+      multipack: optional(z.lazy(() => ConfigObjectSchema)),
     })
     .transform(withoutUndefined)
     .catch(defaults);
@@ -419,6 +430,7 @@ export function projectSchema(now: number) {
       glyphs: lenientList(GlyphSchema).parse(raw.glyphs),
       sounds: lenientList(SoundSchema).parse(raw.sounds),
       paintings: lenientList(PaintingSchema).parse(raw.paintings),
+      dialogs: lenientList(DialogSchema).parse(raw.dialogs),
       createdAt: lenientNumber(now).parse(raw.createdAt),
       updatedAt: lenientNumber(now).parse(raw.updatedAt),
     };
@@ -453,6 +465,8 @@ export type ProjectSchemaChecks = SchemaChecks<
     Covers<Out<typeof SoundSchema>, Sound>,
     Fits<Out<typeof PaintingSchema>, Painting>,
     Covers<Out<typeof PaintingSchema>, Painting>,
+    Fits<Out<typeof DialogSchema>, Dialog>,
+    Covers<Out<typeof DialogSchema>, Dialog>,
     Fits<Out<typeof IngredientRefSchema>, IngredientRef>,
     Covers<Out<typeof IngredientRefSchema>, IngredientRef>,
     Fits<Out<typeof IngredientSchema>, RecipeIngredient>,

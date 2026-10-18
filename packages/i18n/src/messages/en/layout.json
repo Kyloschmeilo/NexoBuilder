@@ -113,6 +113,14 @@
         "label": "Paintings",
         "hint": "Paintings: custom paintings to hang up"
       },
+      "dialogs": {
+        "label": "Dialogs",
+        "hint": "Dialogs: dialog screens with buttons and inputs (Minecraft 1.21.6+)"
+      },
+      "multipack": {
+        "label": "Multipack",
+        "hint": "Multipack: extra resource packs players can turn on and off"
+      },
       "lootSources": {
         "label": "Loot sources",
         "hint": "Loot sources: extra loot for vanilla blocks, mobs, chests and fishing"

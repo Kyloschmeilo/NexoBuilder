@@ -6,9 +6,12 @@ import { packTargetFor } from '@resourcepackbuilder/export';
 import { Field, FieldDescription, FieldError, FieldLabel, FieldTitle } from '@resourcepackbuilder/ui/components/field';
 import { Input } from '@resourcepackbuilder/ui/components/input';
 import { NativeSelect, NativeSelectOption } from '@resourcepackbuilder/ui/components/native-select';
+import { NEXO_DOCS } from '@resourcepackbuilder/core/nexo';
 import { CheckboxField } from '../../components/CheckboxField';
 import { TargetDot } from '../../components/TargetDot';
+import { setCarpentryAddon } from '../../commands/nexo';
 import { updateProjectSettings } from '../../commands/settings';
+import { DocsLinkButton } from '../media/DocsLinkButton';
 import { richTags } from '../../i18n/richTags';
 import { useOpenProject } from '../../store/project';
 import { NamespaceProblemText, useNamespaceProblem } from '../../components/NamespaceProblem';
@@ -104,6 +107,19 @@ export function ProjectSettings() {
           label={t('useItemModel')}
           description={t.rich('useItemModelHelp', { ...richTags, component: 'Components.item_model: nexo:<item_id>' })}
         />
+      )}
+      {/* A Nexo addon: its custom block types are only offered when the server has it */}
+      {project.target === 'nexo' && (
+        <div className="flex items-start gap-2">
+          <CheckboxField
+            className="flex-1"
+            checked={settings.carpentryAddon === true}
+            onChange={setCarpentryAddon}
+            label={t('carpentryAddon')}
+            description={t.rich('carpentryAddonHelp', richTags)}
+          />
+          <DocsLinkButton href={NEXO_DOCS.carpentry.page} label={t('carpentryAddonDocs')} />
+        </div>
       )}
       {/* A CraftEngine setting: Nexo has no item browser categories */}
       {project.target === 'craftengine' && (

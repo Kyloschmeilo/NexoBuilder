@@ -68,6 +68,22 @@
     "itemCreated": "Gemälde-Item angelegt.",
     "deleteTitle": "Gemälde löschen?"
   },
+  "dialogs": {
+    "title": "Dialoge",
+    "count": "{count, plural, one {# Dialog} other {# Dialoge}}",
+    "hint": "Dialogfenster ab Minecraft 1.21.6: ein Titel, Text und Items, Eingaben und Schaltflächen, die Befehle ausführen oder andere Dialoge öffnen. Jeder Dialog wird eine eigene Datei in dialogs/; Nexo registriert ihn als nexo:'<'id>. Neue Dialoge brauchen einen Serverneustart.",
+    "add": "Dialog hinzufügen",
+    "defaultId": "dialog",
+    "delete": "Dialog löschen",
+    "deleteTitle": "Dialog löschen?",
+    "idHelp": "Dateiname des Dialogs, genutzt in seinem Schlüssel nexo:'<'id>"
+  },
+  "multipack": {
+    "title": "Multipack",
+    "count": "{count, plural, one {# Vorlage} other {# Vorlagen}}",
+    "hint": "Vorlagenpakete sind Ressourcenpakete, die Nexo zusätzlich zum Hauptpaket sendet. Lege jedes nach plugins/Nexo/pack/template_packs/'<'id> auf den Server; der Export schreibt nur multipack.yml. Spieler schalten optionale Vorlagen mit /nexo multipack um.",
+    "docs": "Nexo-Doku öffnen"
+  },
   "glyphs": {
     "title": "Glyphs",
     "count": "{count, plural, one {# Glyph} other {# Glyphs}}",

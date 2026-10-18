@@ -18,7 +18,9 @@ import { TemplatesView } from '../features/craftEngine/TemplatesView';
 import { TranslationsView } from '../features/craftEngine/TranslationsView';
 import { WorldgenView } from '../features/craftEngine/WorldgenView';
 import { LootSourcesView } from '../features/lootSources/LootSourcesView';
+import { DialogsView } from '../features/dialogs/DialogsView';
 import { GlyphsView, PaintingsView, SoundsView } from '../features/media/MediaView';
+import { MultipackView } from '../features/multipack/MultipackView';
 import { SettingsPage } from '../features/settings/SettingsPage';
 import { TestServerView } from '../features/testServer/TestServerView';
 import { useOpenProject } from '../store/project';
@@ -29,6 +31,8 @@ const VIEWS: Record<ViewName, ComponentType> = {
   glyphs: GlyphsView,
   sounds: SoundsView,
   paintings: PaintingsView,
+  dialogs: DialogsView,
+  multipack: MultipackView,
   lootSources: LootSourcesView,
   templates: TemplatesView,
   globalVariables: GlobalVariablesView,

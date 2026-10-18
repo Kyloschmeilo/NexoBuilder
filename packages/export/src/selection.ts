@@ -27,6 +27,7 @@ export interface ExportSelection {
   excludedGlyphIds: string[];
   excludedSoundIds?: string[];
   excludedPaintingIds?: string[];
+  excludedDialogIds?: string[];
 }
 
 export const SELECT_ALL: ExportSelection = { excludedItemIds: [], excludedGlyphIds: [] };
@@ -53,11 +54,11 @@ function isEverythingSelected(selection: ExportSelection): boolean {
   return selection.excludedItemIds.length === 0 && MEDIA_KIND_LIST.every((kind) => !selection[MEDIA_KINDS[kind].excludedKey]?.length);
 }
 
-/** Number of selected items, glyphs, sounds and paintings. */
+/** Number of selected items, glyphs, sounds, paintings and dialogs. */
 export function countSelected(
   project: Project,
   selection: ExportSelection | undefined,
-): { items: number; glyphs: number; sounds: number; paintings: number } {
+): { items: number; glyphs: number; sounds: number; paintings: number; dialogs: number } {
   const excludedItems = new Set(selection?.excludedItemIds ?? []);
   const lists = mapMediaLists((kind) => selectedEntries(project, selection, kind));
   return {
@@ -65,6 +66,7 @@ export function countSelected(
     glyphs: lists.glyphs.length,
     sounds: lists.sounds.length,
     paintings: lists.paintings.length,
+    dialogs: lists.dialogs.length,
   };
 }
 
@@ -173,7 +175,7 @@ function crossProjectIssues(projects: PlannedProject[]): Issue[] {
 
   const packNames = new Map<string, number>();
   const itemIds = new Map<string, number>();
-  const mediaIds: Record<MediaKind, Map<string, number>> = { glyph: new Map(), sound: new Map(), painting: new Map() };
+  const mediaIds: Record<MediaKind, Map<string, number>> = { glyph: new Map(), sound: new Map(), painting: new Map(), dialog: new Map() };
   const pluginFiles = new Map<string, number>();
   const assetFiles = new Map<string, number>();
   const reportedAssets = new Set<string>();

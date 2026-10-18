@@ -8,7 +8,8 @@
         "label": "Block",
         "fields": {
           "type": {
-            "label": "Block-Typ"
+            "label": "Block-Typ",
+            "help": "NOTEBLOCK, STRINGBLOCK und CHORUSBLOCK bringt Nexo mit. Ist das Carpentry-Addon in den Projekteinstellungen eingeschaltet, kommen seine Treppen, Stufen, Türen, Falltüren, transparenten Blöcke, Ketten, Laternen und Gitter dazu."
           },
           "customVariation": {
             "label": "Variation (eindeutige Nummer)",

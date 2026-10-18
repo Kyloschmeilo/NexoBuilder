@@ -164,7 +164,7 @@ export function CommandPalette() {
     },
   ];
 
-  const pages: Entry[] = palettePages(availableActivities({ project, hasTestServer })).map((page) => {
+  const pages: Entry[] = palettePages(availableActivities({ project, hasTestServer }), project.target).map((page) => {
     const label = pageLabel(page);
     return {
       id: page.kind === 'settings' ? 'page:settings' : `page:${page.view}`,

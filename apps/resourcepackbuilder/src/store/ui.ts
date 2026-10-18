@@ -14,6 +14,8 @@ export type ViewName =
   | 'glyphs'
   | 'sounds'
   | 'paintings'
+  | 'dialogs'
+  | 'multipack'
   | 'lootSources'
   | 'templates'
   | 'globalVariables'
@@ -268,6 +270,9 @@ export function selectTarget(target: IssueTarget): void {
       break;
     case 'painting':
       select({ kind: 'view', view: 'paintings' });
+      break;
+    case 'dialog':
+      select({ kind: 'view', view: 'dialogs' });
       break;
   }
 }

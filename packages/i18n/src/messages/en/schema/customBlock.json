@@ -8,7 +8,8 @@
         "label": "Block",
         "fields": {
           "type": {
-            "label": "Block type"
+            "label": "Block type",
+            "help": "NOTEBLOCK, STRINGBLOCK and CHORUSBLOCK come with Nexo. With the Carpentry addon turned on in the project settings, its stairs, slabs, doors, trapdoors, transparent blocks, chains, lanterns and bars join the list."
           },
           "customVariation": {
             "label": "Variation (unique number)",

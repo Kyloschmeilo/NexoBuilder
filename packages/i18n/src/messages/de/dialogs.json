@@ -78,6 +78,9 @@
     "replace": "Ersetzen",
     "useItemModel": "ItemModel-Komponente setzen (empfohlen)",
     "useItemModelHelp": "Setzt <code>{component}</code>. So bekommt jedes Item ein eigenes ItemModel statt CustomModelData – das vermeidet Konflikte (Minecraft 1.21.4+). Wird bei Items mit fester CustomModelData automatisch weggelassen.",
+    "carpentryAddon": "Carpentry-Addon installiert",
+    "carpentryAddonHelp": "Bietet die eigenen Blocktypen des Nexo-Addons Carpentry an (<code>STAIR</code>, <code>SLAB</code>, <code>DOOR</code>, <code>TRAPDOOR</code>, <code>GRATE</code>, <code>CHAIN</code>, <code>LANTERN</code>, <code>BARS</code>). Schalte es nur ein, wenn das Addon auf dem Server ist.",
+    "carpentryAddonDocs": "Carpentry-Doku öffnen",
     "ceCategoriesFromFolders": "Kategorien aus Ordnern",
     "ceCategoriesFromFoldersHelp": "Schreibt categories.yml mit einer Kategorie pro Ordner, angezeigt im Item-Browser (<code>/ce</code>). Unterordner werden Unterkategorien."
   },
@@ -168,6 +171,7 @@
     "glyphs": "Glyphs",
     "sounds": "Sounds",
     "paintings": "Paintings",
+    "dialogs": "Dialoge",
     "noItems": "Keine Items.",
     "emptyProject": "Das Projekt ist leer.",
     "open": "geöffnet",
@@ -175,6 +179,7 @@
     "glyphCount": "{count} Glyphs",
     "soundCount": "{count} Sounds",
     "paintingCount": "{count} Paintings",
+    "dialogCount": "{count} Dialoge",
     "itemCount": "{count} Items"
   },
   "share": {

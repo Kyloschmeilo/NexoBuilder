@@ -36,7 +36,7 @@ export type MessageArg = string | number | LabelArg;
 export type MessageArgs = Record<string, MessageArg>;
 
 export interface IssueTarget {
-  kind: 'item' | 'folder' | 'glyph' | 'sound' | 'painting';
+  kind: 'item' | 'folder' | 'glyph' | 'sound' | 'painting' | 'dialog';
   id: string;
 }
 

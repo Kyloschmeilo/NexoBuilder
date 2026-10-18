@@ -1,5 +1,11 @@
-/** Which files glyphs, sounds and paintings take, and how a picked or dropped file is read for each. */
-import { glyphFileFromDataUrl, type MediaFile, type MediaKind, pngMediaFile, type SoundFile } from '@resourcepackbuilder/core/project';
+/** Which files glyphs, sounds and paintings take, and how a picked or dropped file is read for each (dialogs take none). */
+import {
+  glyphFileFromDataUrl,
+  type MediaFile,
+  pngMediaFile,
+  type SoundFile,
+  type UploadMediaKind,
+} from '@resourcepackbuilder/core/project';
 import { PNG_ACCEPT, readAsDataUrl, readPngAsDataUrl } from '@resourcepackbuilder/ui';
 
 /** The stored form of an uploaded file, per kind. */
@@ -23,7 +29,7 @@ export async function readPngFile(file: File): Promise<MediaFile | null> {
   return pngMediaFile(file.name, await readPngAsDataUrl(file));
 }
 
-export const MEDIA_FILES: { [K in MediaKind]: MediaFileType<MediaFileByKind[K]> } = {
+export const MEDIA_FILES: { [K in UploadMediaKind]: MediaFileType<MediaFileByKind[K]> } = {
   glyph: {
     accept: '.png,.gif,image/png,image/gif',
     formats: ['.png', '.gif'],

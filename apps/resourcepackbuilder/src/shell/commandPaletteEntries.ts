@@ -2,9 +2,10 @@
  * The searchable entries of the command palette that come from the project: items, folders and the project-wide
  * pages of the activities offered, plus the search ranking. The palette component adds the actions and the labels.
  */
-import { type Folder, itemLabel, type Project } from '@resourcepackbuilder/core/project';
+import { type Folder, itemLabel, type PackTargetId, type Project } from '@resourcepackbuilder/core/project';
 import type { Selection, ViewName } from '../store/ui';
 import type { Activity } from './activities';
+import { isViewOffered } from './sidebar/ViewEntries';
 
 /** A folder as the palette lists it: its name and the names of the folders above it. */
 export interface PaletteFolder {
@@ -68,11 +69,14 @@ export function paletteItems(project: Project): PaletteItem[] {
   });
 }
 
-/** The pages of the offered activities: the views each lists (or opens) and the settings page, in bar order. */
-export function palettePages(activities: readonly Activity[]): PalettePage[] {
+/**
+ * The pages of the offered activities: the views each lists (or opens) that projects of `target` have, and the
+ * settings page, in bar order.
+ */
+export function palettePages(activities: readonly Activity[], target: PackTargetId): PalettePage[] {
   const pages: PalettePage[] = [];
   for (const activity of activities) {
-    for (const view of activity.views) pages.push({ kind: 'view', view });
+    for (const view of activity.views) if (isViewOffered(view, target)) pages.push({ kind: 'view', view });
     if (activity.page?.kind === 'settings') pages.push({ kind: 'settings' });
   }
   return pages;

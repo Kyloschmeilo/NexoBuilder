@@ -18,6 +18,7 @@ const DELETE_TITLE_KEYS = {
   glyph: 'glyphs.deleteTitle',
   sound: 'sounds.deleteTitle',
   painting: 'paintings.deleteTitle',
+  dialog: 'dialogs.deleteTitle',
 } as const satisfies Record<MediaKind, string>;
 
 export function useMediaActions() {

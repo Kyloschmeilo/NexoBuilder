@@ -73,8 +73,8 @@ export const CE_RECIPE_DOCS: Partial<Record<RecipeType, string>> = {
 /** The wiki page of an item model node type (`configuration/item/models/<type>`, e.g. `range_dispatch`). */
 export const ceItemModelDocs = (type: string): string => `${CE_DOCS.itemModels}/${type.replace(/^minecraft:/, '').replace('/', '_')}`;
 
-/** The wiki pages of the media sections: images (with emoji), sounds and paintings */
-export const CE_MEDIA_DOCS: Record<MediaKind, string> = {
+/** The wiki pages of the media sections: images (with emoji), sounds and paintings (CraftEngine has no dialogs) */
+export const CE_MEDIA_DOCS: Partial<Record<MediaKind, string>> = {
   glyph: `${WIKI}/configuration/image`,
   sound: `${WIKI}/configuration/sound`,
   painting: `${WIKI}/configuration/painting`,

@@ -68,6 +68,22 @@
     "itemCreated": "Painting item created.",
     "deleteTitle": "Delete painting?"
   },
+  "dialogs": {
+    "title": "Dialogs",
+    "count": "{count, plural, one {# dialog} other {# dialogs}}",
+    "hint": "Dialog screens of Minecraft 1.21.6+: a title, text and items, inputs and buttons that run commands or open other dialogs. Each dialog becomes its own file in dialogs/; Nexo registers it as nexo:'<'id>. New dialogs need a server restart.",
+    "add": "Add dialog",
+    "defaultId": "dialog",
+    "delete": "Delete dialog",
+    "deleteTitle": "Delete dialog?",
+    "idHelp": "File name of the dialog, used in its key nexo:'<'id>"
+  },
+  "multipack": {
+    "title": "Multipack",
+    "count": "{count, plural, one {# template} other {# templates}}",
+    "hint": "Template packs are resource packs Nexo sends along with the main pack. Put each one into plugins/Nexo/pack/template_packs/'<'id> on the server; the export only writes multipack.yml. Players toggle optional templates with /nexo multipack.",
+    "docs": "Open the Nexo docs page"
+  },
   "glyphs": {
     "title": "Glyphs",
     "count": "{count, plural, one {# glyph} other {# glyphs}}",
