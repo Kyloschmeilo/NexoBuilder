@@ -38,6 +38,10 @@ describe('Test server: console lines', () => {
       { type: 'fatal', reason: 'crash' },
     ],
     ['[14:02:12 INFO]: [Nexo] Generating resourcepack...', { type: 'packBuilding' }],
+    // Nexo 1.30 with the self-host server the test server sets (real lines from Paper 26.3)
+    ['[23:54:16 INFO]: Nexo | Generating resourcepack...', { type: 'packBuilding' }],
+    ['[23:54:17 INFO]: Nexo | Resourcepack has been uploaded to SelfHost!', { type: 'packReady', url: null }],
+    ['[23:54:17 INFO]: Nexo | ResourcePack has been uploaded to Hermes!', { type: 'packReady', url: null }],
     [
       '[14:02:20 INFO]: [Nexo] Resourcepack uploaded and will be dispatched with publicAddress http://127.0.0.1:8082/pack.zip',
       { type: 'packReady', url: 'http://127.0.0.1:8082/pack.zip' },
