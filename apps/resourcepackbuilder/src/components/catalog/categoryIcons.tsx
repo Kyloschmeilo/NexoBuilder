@@ -4,6 +4,7 @@ import {
   Archive,
   ArrowDownToLine,
   Box,
+  BrickWall,
   Brush,
   Cpu,
   Footprints,
@@ -16,13 +17,17 @@ import {
   Sprout,
   Star,
   Sword,
+  Zap,
   UtensilsCrossed,
 } from 'lucide-react';
 
 const ICONS: Record<string, ReactNode> = {
   common: <Star />,
   shapes: <Box />,
-  redstone: <Lightbulb />,
+  redstone: <Zap />,
+  building: <BrickWall />,
+  light: <Lightbulb />,
+  storage: <Archive />,
   blockEntities: <Archive />,
   physics: <ArrowDownToLine />,
   placement: <Footprints />,
