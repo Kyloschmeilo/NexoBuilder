@@ -149,7 +149,7 @@
         "fields": {
           "title": {
             "label": "title",
-            "placeholder": "<lang:container.chest>"
+            "placeholder": "'<'lang:container.chest>"
           },
           "rows": {
             "label": "rows"
