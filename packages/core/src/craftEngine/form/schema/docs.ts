@@ -44,6 +44,7 @@ export const CE_DOCS = {
   equipmentSets: `${WIKI}/configuration/attribute/equipment-set`,
   damageFormulas: `${WIKI}/configuration/attribute/damage-formula`,
   recipes: `${WIKI}/configuration/recipe`,
+  itemModels: `${WIKI}/configuration/item/models`,
 };
 
 /** The wiki section of each recipe type CraftEngine reads (`dye` is only in the plugin source: the recipe types) */
@@ -62,6 +63,9 @@ export const CE_RECIPE_DOCS: Partial<Record<RecipeType, string>> = {
   smithing_trim: `${CE_DOCS.recipes}#smithing-trim-recipe`,
   dye: `${CE_DOCS.recipes}#recipe-types`,
 };
+
+/** The wiki page of an item model node type (`configuration/item/models/<type>`, e.g. `range_dispatch`). */
+export const ceItemModelDocs = (type: string): string => `${CE_DOCS.itemModels}/${type.replace(/^minecraft:/, '').replace('/', '_')}`;
 
 /** The wiki pages of the media sections: images (with emoji), sounds and paintings */
 export const CE_MEDIA_DOCS: Record<MediaKind, string> = {

@@ -2,6 +2,8 @@
  * Nexo: models for which ResourcepackBuilder writes item model definitions (assets/<ns>/items/…) itself:
  * custom inventory icon, connectable furniture, placement, light and state models of furniture
  * as well as stack stages and face models of blocks. The matching values in the item configuration are returned too.
+ * The item's own item model tree (`item.itemModel`) is written as its `ItemModel` (Nexo's ItemModel builder) and
+ * replaces the generated main definition (inventory icon, connectable furniture).
  */
 import { compareVersions, FEATURE_VERSIONS, formatResourceLocation } from '@resourcepackbuilder/minecraft';
 import type { ConfigAddition } from '@resourcepackbuilder/core/nexo';
@@ -13,6 +15,8 @@ import {
   directionalFaces,
   directionalModelPath,
   FURNITURE_MODEL_SLOTS,
+  itemModelRootValues,
+  resolveItemModelTokens,
   furnitureConfig,
   isStringBlock,
   PLACEMENT_SLOTS,
@@ -25,8 +29,10 @@ import {
   VARIANTS,
   type VariantSlot,
 } from '@resourcepackbuilder/core/project';
+import { parseRawYaml } from '@resourcepackbuilder/core/yaml';
 import { getPath, isPlainObject } from '@resourcepackbuilder/utils';
 import { itemModelDefinitionFile } from '../../paths';
+import { validateItemModelTree } from '../../validate/itemModelTree';
 import type { ItemExport } from '../../types';
 
 export interface ItemModelsResult {
@@ -45,11 +51,22 @@ function defOf(slot: VariantSlot): VariantDef {
   return SLOT_DEFS.get(slot) ?? stateDef(slot.slice('state:'.length));
 }
 
+/** Options of {@link writeItemModels}. */
+export interface ItemModelsOptions {
+  /** The item's own item model tree replaces the main definition (inventory icon, connectable furniture) */
+  treeReplacesMain?: boolean;
+}
+
 /**
  * @param modelKey key of the item's main model (null = it has none)
  * @param packVariants variant slots that Nexo builds in via Pack.<slot> (they stop working with an own item model)
  */
-export function writeItemModels(itemExport: ItemExport, modelKey: string | null, packVariants: VariantSlot[]): ItemModelsResult {
+export function writeItemModels(
+  itemExport: ItemExport,
+  modelKey: string | null,
+  packVariants: VariantSlot[],
+  options: ItemModelsOptions = {},
+): ItemModelsResult {
   const { project, item, writer, report } = itemExport;
   const ns = project.namespace;
   const result: ItemModelsResult = { itemModel: null, config: [] };
@@ -87,7 +104,9 @@ export function writeItemModels(itemExport: ItemExport, modelKey: string | null,
 
   /* ------------------------------------------------ Main item model: connectable + inventory icon */
   let main: ItemModelNode | null = null;
-  if (furniture) {
+  const replaced = options.treeReplacesMain ? mainDefinitionSlots(has, Boolean(furniture)) : [];
+  if (replaced.length > 0) report('warning', 'plan.itemModelTreeReplacesGenerated', { slots: replaced.join(', ') });
+  if (furniture && !options.treeReplacesMain) {
     const connect = CONNECT_SLOTS.flatMap((c) => {
       const key = has(c.slot) ? writeSlot(c.slot, c.state) : null;
       return key ? [{ state: c.state, key }] : [];
@@ -110,7 +129,7 @@ export function writeItemModels(itemExport: ItemExport, modelKey: string | null,
       };
     }
   }
-  const guiKey = has('gui_model') ? writeSlot('gui_model', 'gui') : null;
+  const guiKey = has('gui_model') && !options.treeReplacesMain ? writeSlot('gui_model', 'gui') : null;
   if (guiKey) {
     main = {
       type: 'minecraft:select',
@@ -219,4 +238,43 @@ export function writeDirectionalModels(itemExport: ItemExport, modelKey: string 
     additions.push({ path: directionalModelPath(face), value: key, ifMissing: true });
   }
   return additions;
+}
+
+/** The slots the generated main definition would show (inventory icon, connectable furniture models). */
+function mainDefinitionSlots(has: (slot: VariantSlot) => boolean, furniture: boolean): VariantSlot[] {
+  const connect: VariantSlot[] = furniture ? CONNECT_SLOTS.map((c) => c.slot) : [];
+  return (['gui_model', ...connect] as VariantSlot[]).filter(has);
+}
+
+/** The key Nexo serves an item's `ItemModel` under (what `Components.item_model` must name for the tree to show). */
+export const nexoTreeItemModel = (itemId: string): string => `nexo:${itemId}`;
+
+/**
+ * The item's own item model tree as its `ItemModel`, after checking it: the definition's shape (the root node under
+ * `model`, its root keys next to it, which Nexo's ItemModelBuilder moves to the definition's root) with `@model`
+ * resolved to the main model, and `Components.item_model` pointing at it unless the config names another one. Null
+ * when the item has no tree, or when the additional YAML sets `ItemModel` itself (which then wins).
+ * @param packVariants variant slots that Nexo builds in via Pack.<slot> (they stop working with an own item model)
+ */
+export function writeItemModelTree(
+  itemExport: ItemExport,
+  modelKey: string | null,
+  packVariants: VariantSlot[] = [],
+): ConfigAddition[] | null {
+  const { project, item, report } = itemExport;
+  const definition = item.itemModel;
+  if (!definition) return null;
+  if (parseRawYaml(item.rawYaml).value?.ItemModel !== undefined) {
+    report('warning', 'plan.itemModelTreeOverriddenByRawYaml');
+    return null;
+  }
+  if (compareVersions(project.settings.minecraftVersion, FEATURE_VERSIONS.itemModelDefinitions) < 0)
+    report('error', 'plan.itemModelTreeNeedsVersion', { version: FEATURE_VERSIONS.itemModelDefinitions });
+  if (packVariants.length > 0) report('warning', 'plan.itemModelTreeDisablesVariants', { variants: packVariants.join(', ') });
+  validateItemModelTree(itemExport, modelKey !== null);
+  const value = { model: resolveItemModelTokens(definition.model, modelKey), ...itemModelRootValues(definition) };
+  return [
+    { path: ['ItemModel'], value },
+    { path: ['Components', 'item_model'], value: nexoTreeItemModel(item.itemId), ifMissing: true },
+  ];
 }

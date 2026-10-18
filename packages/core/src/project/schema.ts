@@ -70,6 +70,7 @@ import { itemIdFromName } from './ids';
 import { defaultSettings, DEFAULT_PACK_NAME } from './factory';
 import { DEFAULT_PACK_TARGET, PACK_TARGETS } from './target';
 import { migrateNexoConfig } from './legacyNexoConfig';
+import { parseItemModelDefinition } from './itemModel/tree';
 import type {
   ConfigObject,
   ConfigValue,
@@ -293,6 +294,7 @@ export function itemSchema(now: number) {
         variants: optional(lenientRecord(lenientList(ImportedModelSchema))),
         armor: optional(ArmorSchema),
         translations: optional(lenientRecord(z.string())),
+        itemModel: optional(ConfigObjectSchema.transform(parseItemModelDefinition)),
         createdAt: lenientNumber(now),
         updatedAt: lenientNumber(now),
       })

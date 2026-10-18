@@ -13,6 +13,7 @@ import type { Painting } from './media/painting';
 import type { Recipe } from './recipes/model';
 import type { Sound } from './media/sound';
 import type { VariantSlot } from './variants';
+import type { ItemModelDefinition } from './itemModel/types';
 
 export interface Folder {
   id: string;
@@ -49,6 +50,8 @@ export interface Item {
   armor?: ArmorSettings;
   /** Display name per Minecraft locale ("de_de" → name); only the CraftEngine export writes them (as lang files) */
   translations?: Record<string, string>;
+  /** Item model definition tree written instead of the generated one (Nexo: `ItemModel`, CraftEngine: `model`) */
+  itemModel?: ItemModelDefinition;
   createdAt: number;
   updatedAt: number;
 }

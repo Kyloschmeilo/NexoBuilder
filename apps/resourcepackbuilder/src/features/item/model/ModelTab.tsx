@@ -9,6 +9,7 @@ import { BlockModelsSection } from './BlockModelsSection';
 import { CraftEngineBlockSection, hasBlockSettings } from './CraftEngineBlockSection';
 import { CraftEngineFurnitureSection } from './CraftEngineFurnitureSection';
 import { FurnitureModelsSection } from './FurnitureModelsSection';
+import { ItemModelTreeSection } from './itemModelTree';
 import { ModelCard } from './ModelCard';
 import { TexturesSection } from './TexturesSection';
 import { MODEL_ACCEPT, MODEL_FORMATS } from '../../../components/modelFiles';
@@ -16,6 +17,8 @@ import { useModelImport } from './useModelImport';
 import { VariantsSection } from './VariantsSection';
 
 const APPEARANCE_GROUP = 'appearance';
+/** CraftEngine's item keys around the model (oversized_in_gui, item_model …) */
+const MODEL_GROUP = 'model';
 
 function NoModelCard({ item }: { item: Item }) {
   const t = useTranslations('item');
@@ -43,12 +46,13 @@ function NoModelCard({ item }: { item: Item }) {
 /**
  * The item's model with its textures, extra models (variants, furniture, block) and the appearance properties, if the
  * project's form has that group (Nexo does, CraftEngine does not). CraftEngine items get the Block and Furniture
- * sections instead.
+ * sections instead, and the model group. Both targets get the item model tree.
  */
 export function ModelTab({ item }: { item: Item }) {
   const model = item.model;
   const groups = useProjectForm().groups;
   const hasAppearance = groups.some((group) => group.id === APPEARANCE_GROUP);
+  const hasModelGroup = groups.some((group) => group.id === MODEL_GROUP);
   return (
     <div className="flex flex-col gap-6">
       {model ? (
@@ -62,6 +66,8 @@ export function ModelTab({ item }: { item: Item }) {
       ) : (
         <NoModelCard item={item} />
       )}
+      <ItemModelTreeSection item={item} />
+      {hasModelGroup && <PropertiesPanel item={item} group={MODEL_GROUP} />}
       {hasBlockSettings(groups) && <CraftEngineBlockSection item={item} />}
       {hasBlockSettings(groups) && <CraftEngineFurnitureSection item={item} />}
       {hasAppearance && <PropertiesPanel item={item} group={APPEARANCE_GROUP} />}

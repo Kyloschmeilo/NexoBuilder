@@ -8,7 +8,7 @@ import type { ItemExport } from '../../types';
 import { validateItemConfig } from '../../validate/itemConfig';
 import type { ItemShared, PackTarget, WrittenItemModels } from '../types';
 import { nexoInstallGuide } from './installGuide';
-import { writeDirectionalModels, writeItemModels } from './itemModels';
+import { nexoTreeItemModel, writeDirectionalModels, writeItemModels, writeItemModelTree } from './itemModels';
 import { itemYamlFile, NEXO_PLUGIN_DIR, NEXO_RELOAD_COMMAND, packLocation } from './layout';
 import { planNexoPluginFiles } from './pluginFiles';
 import { PAINTINGS_FILE, SOUNDS_FILE } from './rootFiles';
@@ -59,8 +59,9 @@ function writeModels(itemExport: ItemExport, mainKey: string | null): NexoWritte
   if (!mainKey) itemExport.report('info', 'plan.missingModel');
   const variantKeys = writeVariants(itemExport, mainKey !== null);
   const packSlots = VARIANTS.filter((def) => variantKeys[def.slot] !== undefined).map((def) => def.slot);
-  const itemModels = writeItemModels(itemExport, mainKey, packSlots);
-  const extraConfig = [...itemModels.config, ...writeDirectionalModels(itemExport, mainKey)];
+  const tree = writeItemModelTree(itemExport, mainKey, packSlots);
+  const itemModels = writeItemModels(itemExport, mainKey, packSlots, { treeReplacesMain: tree !== null });
+  const extraConfig = [...itemModels.config, ...writeDirectionalModels(itemExport, mainKey), ...(tree ?? [])];
   return { mainKey, variantKeys, itemModel: itemModels.itemModel, extraConfig };
 }
 
@@ -116,6 +117,32 @@ function buildItem(itemExport: ItemExport, written: NexoWrittenModels, shared: I
   if (written.itemModel && itemModel !== written.itemModel) {
     itemExport.report('warning', 'plan.itemModelOverridesGenerated', { itemModel: String(itemModel), generated: written.itemModel });
   }
+  if (written.extraConfig.some((extra) => extra.path[0] === 'ItemModel')) checkItemModelTree(itemExport, built.config, itemModel);
   validateItemConfig(itemExport, { config: built.config, usedVariations: shared.usedVariations, armorSlot: shared.armor?.slot ?? null });
   return built.config;
+}
+
+/** The Pack keys that set the same as a root key of the item model tree. */
+const PACK_ROOT_KEYS = [
+  ['oversized_in_gui', 'oversized_in_gui'],
+  ['hand_animation_on_swap', 'hand_swap_animation'],
+  ['swap_animation_scale', 'swap_animation_scale'],
+] as const;
+
+/**
+ * Checks the written item model tree against the final config: `Components.item_model` must name it (another item
+ * model, from the config or the additional YAML, wins and leaves the tree unused), and a Pack key that disagrees with
+ * a root key of the tree is reported (the tree's definition is the one the client gets, so its root key wins).
+ */
+function checkItemModelTree(itemExport: ItemExport, config: Record<string, unknown>, itemModel: unknown): void {
+  const { item, report } = itemExport;
+  const definition = item.itemModel;
+  if (!definition) return;
+  if (itemModel !== nexoTreeItemModel(item.itemId)) report('warning', 'plan.itemModelTreeUnused', { itemModel: String(itemModel) });
+  const pack = (config.Pack ?? {}) as Record<string, unknown>;
+  for (const [key, packKey] of PACK_ROOT_KEYS) {
+    const own = definition[key];
+    if (own !== undefined && pack[packKey] !== undefined && pack[packKey] !== own)
+      report('warning', 'plan.itemModelTreeRootKeyConflict', { key, packKey: `Pack.${packKey}` });
+  }
 }

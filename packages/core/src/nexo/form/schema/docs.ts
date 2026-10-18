@@ -234,3 +234,18 @@ export function nexoArmorLayerDocs(layer: Pick<ArmorLayerDef, 'group' | 'key'>):
   const pages = { player: ARMOR, elytra: ELYTRAS, mob: MOB_ARMOR, saddle: NEXO_DOCS.armor.saddles };
   return pages[layer.group];
 }
+
+/** The ItemModel builder's page of a node type: its own sub-page, or the builder's page for a type without one. */
+export function nexoItemModelDocs(type: string): string {
+  const builder = `${ITEMS}/itemmodel-builder`;
+  const pages: Record<string, string> = {
+    model: 'reference-itemmodel',
+    composite: 'composite-itemmodel',
+    condition: 'condition-itemmodel',
+    select: 'select-itemmodel',
+    range_dispatch: 'rangedispatch-itemmodel',
+    empty: 'empty-itemmodel',
+  };
+  const page = pages[type.replace(/^minecraft:/, '')];
+  return page ? `${builder}/${page}` : builder;
+}

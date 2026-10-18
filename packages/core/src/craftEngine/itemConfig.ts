@@ -16,6 +16,8 @@
  * there wins, as Nexo's `Components.equippable` does.
  * The events of the item, its block and its furniture are written in the list form (events.ts), whatever form the
  * config or the additional YAML holds them in.
+ * The item's own item model tree (`item.itemModel`, itemModel.ts) is written as `model` instead of the generated
+ * `model`/`models`; a model key in the additional YAML wins over both.
  */
 import type { JavaModelJson } from '@resourcepackbuilder/minecraft';
 import { deepClone, deepMerge, isPlainObject } from '@resourcepackbuilder/utils';
@@ -39,6 +41,7 @@ import { buildRenderer, rendererElements, stateEntityCulling } from './blockRend
 import { withEventList } from './events';
 import { buildCraftEngineFurniture, craftEngineFurniture } from './furniture';
 import { extraBehaviors, type OwnPlacement, placementBehavior, writeBehaviors } from './itemBehaviors';
+import { craftEngineItemModel } from './itemModel';
 import { craftEngineItemName } from './lang';
 import { craftEngineItemKey, ordered } from './yaml';
 
@@ -89,6 +92,10 @@ export interface CraftEngineBuildResult {
   furnitureIgnored: boolean;
   /** The additional YAML has a `furniture:` but the item is no furniture (it is left out) */
   rawFurnitureIgnored: boolean;
+  /** The item has an item model tree, but the additional YAML sets the model itself (the tree is left out) */
+  itemModelTreeIgnored: boolean;
+  /** The item model tree is written in place of the generated slot models (`models:` of a bow, shield …) */
+  itemModelTreeReplacesModels: boolean;
   /** The placement type the config's `behavior` picks, when it does not fit the item's block or furniture (left out) */
   placementTypeIgnored: string | null;
   /** The additional YAML lists the item's behaviors itself (written in place of the form's extra behaviors) */
@@ -368,9 +375,13 @@ export function buildCraftEngineItem(context: CraftEngineBuildContext): CraftEng
   else delete resolved.data;
 
   const rawSetsModel = rawRest !== null && CE_MODEL_KEYS.some((key) => rawRest[key] !== undefined);
+  const tree = item.itemModel ? craftEngineItemModel(item.itemModel.model, modelKey) : null;
   if (rawSetsModel) {
     delete resolved.model;
     delete resolved.models;
+  } else if (tree) {
+    delete resolved.models;
+    resolved.model = tree;
   } else if (models && models.length > 0) resolved.models = models;
   else if (modelKey) resolved.model = modelKey;
   const config = { material: itemMaterial(item).toLowerCase(), ...ordered(resolved, TOP_LEVEL_ORDER) };
@@ -385,6 +396,8 @@ export function buildCraftEngineItem(context: CraftEngineBuildContext): CraftEng
     furniture: furniture ? withEventList(furniture.furniture) : null,
     furnitureIgnored: isFurniture && isBlock,
     rawFurnitureIgnored: rawFurniture !== null && !isFurniture,
+    itemModelTreeIgnored: tree !== null && rawSetsModel,
+    itemModelTreeReplacesModels: tree !== null && !rawSetsModel && (models?.length ?? 0) > 0,
     placementTypeIgnored: placement.ignoredType,
     rawBehaviorsOverride: rawListOverrides,
   };
