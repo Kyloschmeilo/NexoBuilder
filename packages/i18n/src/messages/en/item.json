@@ -32,18 +32,18 @@
     "emptyHint": "{text} Use <b>Add</b> to choose properties.",
     "titles": {
       "general": "General",
-      "appearance": "Pack & Appearance",
-      "attributes": "AttributeModifiers & Enchantments",
+      "appearance": "Appearance",
+      "attributes": "Attributes",
       "components": "Components",
       "mechanics": "Mechanics",
       "data": "Data",
       "settings": "Settings",
       "itemBehavior": "Behaviors",
-      "blockSettings": "Block Settings",
+      "blockSettings": "Block settings",
       "blockBehavior": "Behavior",
       "events": "Events",
       "loot": "Loot",
-      "model": "Item Model"
+      "model": "Item model"
     },
     "empty": {
       "general": "Nothing added yet (e.g. Lore).",
@@ -91,7 +91,11 @@
     "materialHelp": "Base item in Minecraft. Default is PAPER; for tools/armor use the matching material.",
     "folder": "Folder",
     "tooltipPreview": "Tooltip preview",
-    "tooltipHelp": "Without its own color, Minecraft shows the lore purple and italic."
+    "tooltipHelp": "Without its own color, Minecraft shows the lore purple and italic.",
+    "nameLabel": "Display name",
+    "idLabel": "Item ID",
+    "idHelp": "The key of the item in the YAML and in {target, select, nexo {/nexo give} other {/ce item give}}. Lowercase letters, numbers and _ only.",
+    "nameHelp": "MiniMessage text. Colors: {colors} · Formatting: {formatting}"
   },
   "yaml": {
     "notObject": "Expected key-value pairs (e.g. \"Mechanics:\").",
@@ -447,5 +451,39 @@
     "behaviorsHelp": "Storage, item display slots and lights. Each behavior can set its own hitboxes per variant.",
     "loot": "Drops the item when broken",
     "lootHelp": "Uses CraftEngine’s furniture loot. Other loot goes in the additional YAML under furniture: loot:."
+  },
+  "sections": {
+    "nav": "Item sections",
+    "basics": "Basics",
+    "model": "Model",
+    "textures": "Textures",
+    "features": "Features",
+    "block": "Block",
+    "furniture": "Furniture",
+    "events": "Events",
+    "loot": "Loot",
+    "recipes": "Recipes",
+    "advanced": "Advanced"
+  },
+  "features": {
+    "add": "Add feature",
+    "addTitle": "Add to {group}",
+    "addDescription": "Pick what this item should have. The search finds names, YAML keys and descriptions.",
+    "count": "{count, plural, one {# feature} other {# features}}"
+  },
+  "header": {
+    "copy": "Copy features",
+    "paste": "Paste features",
+    "moveToFolder": "Move to folder",
+    "delete": "Delete item"
+  },
+  "advanced": {
+    "title": "Raw YAML",
+    "showYaml": "Show the final YAML"
+  },
+  "palette": {
+    "group": "Settings of this item",
+    "added": "Added · {group}",
+    "available": "Add · {group}"
   }
 }

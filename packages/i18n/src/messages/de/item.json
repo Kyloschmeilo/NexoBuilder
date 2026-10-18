@@ -31,19 +31,19 @@
   "properties": {
     "emptyHint": "{text} Über <b>„Hinzufügen“</b> kannst du Eigenschaften auswählen.",
     "titles": {
-      "general": "General",
-      "appearance": "Pack & Appearance",
-      "attributes": "AttributeModifiers & Enchantments",
-      "components": "Components",
-      "mechanics": "Mechanics",
-      "data": "Data",
-      "settings": "Settings",
+      "general": "Allgemein",
+      "appearance": "Aussehen",
+      "attributes": "Attribute",
+      "components": "Komponenten",
+      "mechanics": "Mechaniken",
+      "data": "Daten",
+      "settings": "Einstellungen",
       "itemBehavior": "Verhalten",
-      "blockSettings": "Block Settings",
+      "blockSettings": "Blockeinstellungen",
       "blockBehavior": "Verhalten",
-      "events": "Events",
-      "loot": "Loot",
-      "model": "Item Model"
+      "events": "Ereignisse",
+      "loot": "Beute",
+      "model": "Item-Modell"
     },
     "empty": {
       "general": "Noch nichts hinzugefügt (z.B. Lore).",
@@ -91,7 +91,11 @@
     "materialHelp": "Basis-Item in Minecraft. Standard ist PAPER; für Werkzeuge/Rüstung das passende Material.",
     "folder": "Ordner",
     "tooltipPreview": "Tooltip-Vorschau",
-    "tooltipHelp": "Ohne eigene Farbe zeigt Minecraft die Lore lila und kursiv an."
+    "tooltipHelp": "Ohne eigene Farbe zeigt Minecraft die Lore lila und kursiv an.",
+    "nameLabel": "Anzeigename",
+    "idLabel": "Item-ID",
+    "idHelp": "Der Schlüssel des Items im YAML und in {target, select, nexo {/nexo give} other {/ce item give}}. Nur Kleinbuchstaben, Zahlen und _.",
+    "nameHelp": "MiniMessage-Text. Farben: {colors} · Formatierung: {formatting}"
   },
   "yaml": {
     "notObject": "Erwartet Schlüssel-Wert-Paare (z.B. \"Mechanics:\").",
@@ -447,5 +451,39 @@
     "behaviorsHelp": "Lager, Anzeigeplätze für Items und Licht. Jedes Verhalten kann eigene Hitboxen pro Variante setzen.",
     "loot": "Lässt beim Abbau das Item fallen",
     "lootHelp": "Nutzt CraftEngines Möbel-Loot. Anderen Loot schreibst du ins zusätzliche YAML unter furniture: loot:."
+  },
+  "sections": {
+    "nav": "Bereiche des Items",
+    "basics": "Grundlagen",
+    "model": "Modell",
+    "textures": "Texturen",
+    "features": "Eigenschaften",
+    "block": "Block",
+    "furniture": "Möbel",
+    "events": "Ereignisse",
+    "loot": "Beute",
+    "recipes": "Rezepte",
+    "advanced": "Erweitert"
+  },
+  "features": {
+    "add": "Eigenschaft hinzufügen",
+    "addTitle": "Zu {group} hinzufügen",
+    "addDescription": "Wähle, was dieses Item haben soll. Die Suche findet Namen, YAML-Schlüssel und Beschreibungen.",
+    "count": "{count, plural, one {# Eigenschaft} other {# Eigenschaften}}"
+  },
+  "header": {
+    "copy": "Eigenschaften kopieren",
+    "paste": "Eigenschaften einfügen",
+    "moveToFolder": "In Ordner verschieben",
+    "delete": "Item löschen"
+  },
+  "advanced": {
+    "title": "Roh-YAML",
+    "showYaml": "Fertiges YAML zeigen"
+  },
+  "palette": {
+    "group": "Einstellungen dieses Items",
+    "added": "Hinzugefügt · {group}",
+    "available": "Hinzufügen · {group}"
   }
 }
