@@ -12,6 +12,7 @@ import {
   packTargetFor,
   packYmlFile,
 } from '@resourcepackbuilder/export';
+import { buildDialogFiles, MULTIPACK_FILE, multipackFile } from '@resourcepackbuilder/core/nexo';
 import type { MediaKind, Project } from '@resourcepackbuilder/core/project';
 import { issuesFor, type Issue, type IssueTarget } from '@resourcepackbuilder/utils';
 import type { Selection, ViewName } from '../store/ui';
@@ -48,6 +49,21 @@ function mediaOutput(kind: MediaKind, target: IssueTarget['kind']): ViewOutputPr
   };
 }
 
+/** A Nexo project's dialog files, one after the other, each headed by its path; with the dialogs' issues. */
+const dialogsOutput: ViewOutputProvider = (project, plan) => {
+  const folder = packTargetFor(project).layout.mediaFile(project, 'dialog');
+  if (folder === null) return null;
+  const text = [...buildDialogFiles(project)].map(([path, yaml]) => `# ${path}\n${yaml}`).join('\n');
+  return { file: folder, text, issues: issuesOfKind(plan, 'dialog') };
+};
+
+/** A Nexo project's multipack.yml, with the checks of its templates and menu. */
+const multipackOutput: ViewOutputProvider = (project, plan) => {
+  if (project.target !== 'nexo') return null;
+  const issues = plan.issues.filter((issue) => issue.code.startsWith('multipack.'));
+  return { file: MULTIPACK_FILE, text: multipackFile(project) ?? '', issues };
+};
+
 /** A CraftEngine project's config file `<name>.yml` (only CraftEngine projects have these views). */
 function craftEngineFileOutput(name: string): ViewOutputProvider {
   return (project, plan) => {
@@ -65,6 +81,8 @@ export const VIEW_OUTPUTS: Partial<Record<ViewName, ViewOutputProvider>> = {
   glyphs: mediaOutput('glyph', 'glyph'),
   sounds: mediaOutput('sound', 'sound'),
   paintings: mediaOutput('painting', 'painting'),
+  dialogs: dialogsOutput,
+  multipack: multipackOutput,
   lootSources: craftEngineFileOutput('loot_sources'),
   templates: craftEngineFileOutput('templates'),
   globalVariables: craftEngineFileOutput('global_variables'),

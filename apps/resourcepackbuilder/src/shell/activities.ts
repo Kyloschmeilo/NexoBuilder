@@ -70,7 +70,7 @@ export const ACTIVITIES: readonly Activity[] = [
     icon: Images,
     placement: 'top',
     views: MEDIA_VIEW_NAMES,
-    badge: ({ plan }) => issueBadge(plan, ['glyph', 'sound', 'painting']),
+    badge: ({ plan }) => issueBadge(plan, ['glyph', 'sound', 'painting', 'dialog']),
   },
   {
     id: 'logic',

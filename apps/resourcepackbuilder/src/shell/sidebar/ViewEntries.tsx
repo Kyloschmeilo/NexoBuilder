@@ -1,14 +1,16 @@
 /**
- * The project-wide views of the registry panels: the media lists (glyphs, sounds, paintings) and a CraftEngine
+ * The project-wide views of the registry panels: the media lists (glyphs, sounds, paintings; a Nexo project's
+ * dialogs and multipack templates) and a CraftEngine
  * project's own lists (loot sources, templates, global variables, attributes, and every later project-level
  * registry). Each list is data; the Media and Logic activities show them as panels of entries in the sidebar.
  */
 import type { ReactNode } from 'react';
-import { Braces, Dumbbell, Frame, Gem, LayoutTemplate, Music, Smile } from 'lucide-react';
+import { Braces, Dumbbell, Frame, Gem, Layers, LayoutTemplate, MessageSquare, Music, Smile } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 import { cn } from 'cn';
 import { projectAttributeData } from '@resourcepackbuilder/core/craftEngine';
-import type { Project } from '@resourcepackbuilder/core/project';
+import { multipackTemplateIds } from '@resourcepackbuilder/core/nexo';
+import type { PackTargetId, Project } from '@resourcepackbuilder/core/project';
 import type { IssueTarget } from '@resourcepackbuilder/utils';
 import { StatusDot, Tip, treeRow, treeRowSlots } from '@resourcepackbuilder/ui';
 import { usePlan } from '../PlanProvider';
@@ -45,12 +47,35 @@ function ViewEntry({ view, icon, label, tip, status }: ViewEntryProps) {
   );
 }
 
-/** The resource lists and the issue target kind of their entries */
+/** A resource list: its size, the issue target kind of its entries (for the status dot) and the targets that have it. */
+interface ResourceView {
+  view: ViewName;
+  icon: ReactNode;
+  count: (project: Project) => number;
+  target?: IssueTarget['kind'];
+  /** The pack targets whose projects have this list; every target when absent */
+  targets?: readonly PackTargetId[];
+}
+
+/** The resource lists, in panel order */
 export const RESOURCES = [
-  { view: 'glyphs', target: 'glyph', icon: <Smile className="size-4" /> },
-  { view: 'sounds', target: 'sound', icon: <Music className="size-4" /> },
-  { view: 'paintings', target: 'painting', icon: <Frame className="size-4" /> },
-] as const satisfies ReadonlyArray<{ view: ViewName; target: IssueTarget['kind']; icon: ReactNode }>;
+  { view: 'glyphs', target: 'glyph', icon: <Smile className="size-4" />, count: (p: Project) => p.glyphs.length },
+  { view: 'sounds', target: 'sound', icon: <Music className="size-4" />, count: (p: Project) => p.sounds.length },
+  { view: 'paintings', target: 'painting', icon: <Frame className="size-4" />, count: (p: Project) => p.paintings.length },
+  {
+    view: 'dialogs',
+    target: 'dialog',
+    icon: <MessageSquare className="size-4" />,
+    count: (p: Project) => p.dialogs.length,
+    targets: ['nexo'],
+  },
+  { view: 'multipack', icon: <Layers className="size-4" />, count: (p: Project) => multipackTemplateIds(p).length, targets: ['nexo'] },
+] as const satisfies ReadonlyArray<ResourceView>;
+
+/** Whether projects of `target` have the resource list `entry`. */
+function isOffered(entry: ResourceView, target: PackTargetId): boolean {
+  return !entry.targets || entry.targets.includes(target);
+}
 
 /** A CraftEngine project's own lists and the size of each */
 export const CRAFT_ENGINE_VIEWS = [
@@ -68,20 +93,27 @@ export const CRAFT_ENGINE_VIEWS = [
   },
 ] as const satisfies ReadonlyArray<{ view: ViewName; icon: ReactNode; count: (project: Project) => number }>;
 
+/** Whether projects of `target` have the project-wide view `view` (dialogs and multipack are Nexo only). */
+export function isViewOffered(view: ViewName, target: PackTargetId): boolean {
+  const entry: ResourceView | undefined = RESOURCES.find((resource) => resource.view === view);
+  return !entry || isOffered(entry, target);
+}
+
 /** The views of the media lists, in panel order. */
 export const MEDIA_VIEW_NAMES: readonly ViewName[] = RESOURCES.map((entry) => entry.view);
 
 /** The views of a CraftEngine project's own lists, in panel order. */
 export const CRAFT_ENGINE_VIEW_NAMES: readonly ViewName[] = CRAFT_ENGINE_VIEWS.map((entry) => entry.view);
 
-/** The entries of the media lists, each with its size and the worst issue level of its entries. */
+/** The entries of the media lists the project's target has, each with its size and the worst issue level of its entries. */
 export function MediaEntries() {
   const t = useTranslations('layout.sidebar.resources');
   const project = useOpenProject();
   const plan = usePlan();
-  const sizes = { glyphs: project.glyphs.length, sounds: project.sounds.length, paintings: project.paintings.length };
-  return RESOURCES.map(({ view, target, icon }) => {
-    const level = plan ? worstLevel(levelsByTarget(plan.issues, target).values()) : null;
+  return RESOURCES.filter((entry) => isOffered(entry, project.target)).map((entry) => {
+    const { view, icon, count } = entry;
+    const target: ResourceView['target'] = 'target' in entry ? entry.target : undefined;
+    const level = plan && target ? worstLevel(levelsByTarget(plan.issues, target).values()) : null;
     return (
       <ViewEntry
         key={view}
@@ -92,7 +124,7 @@ export function MediaEntries() {
         status={
           <>
             {level && <StatusDot tone={level} />}
-            <span className={treeRowSlots.count}>{sizes[view]}</span>
+            <span className={treeRowSlots.count}>{count(project)}</span>
           </>
         }
       />

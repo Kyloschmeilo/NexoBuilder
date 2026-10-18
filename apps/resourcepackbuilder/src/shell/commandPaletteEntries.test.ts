@@ -44,7 +44,7 @@ describe('paletteItems', () => {
 describe('palettePages', () => {
   it('lists the pages of the offered activities', () => {
     const { project } = sample();
-    expect(palettePages(availableActivities({ project, hasTestServer: true }))).toEqual([
+    expect(palettePages(availableActivities({ project, hasTestServer: true }), project.target)).toEqual([
       { kind: 'view', view: 'glyphs' },
       { kind: 'view', view: 'sounds' },
       { kind: 'view', view: 'paintings' },
@@ -53,6 +53,18 @@ describe('palettePages', () => {
       { kind: 'view', view: 'globalVariables' },
       { kind: 'view', view: 'attributes' },
       { kind: 'view', view: 'testServer' },
+      { kind: 'settings' },
+    ]);
+  });
+
+  it('lists the Nexo-only pages (dialogs, multipack) only in Nexo projects', () => {
+    const project = createProject('Demo', 'demo', undefined, 'nexo');
+    expect(palettePages(availableActivities({ project, hasTestServer: false }), project.target)).toEqual([
+      { kind: 'view', view: 'glyphs' },
+      { kind: 'view', view: 'sounds' },
+      { kind: 'view', view: 'paintings' },
+      { kind: 'view', view: 'dialogs' },
+      { kind: 'view', view: 'multipack' },
       { kind: 'settings' },
     ]);
   });

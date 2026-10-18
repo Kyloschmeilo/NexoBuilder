@@ -12,7 +12,8 @@ interface MediaPageProps {
   configPath: string;
   actions?: ReactNode;
   hint: ReactNode;
-  drop: {
+  /** The drop zone for new entries' files; absent for kinds without files (dialogs) */
+  drop?: {
     accept: string;
     formats: string[];
     title: string;
@@ -23,7 +24,7 @@ interface MediaPageProps {
   children: ReactNode[];
 }
 
-/** Page of a media list (glyphs, sounds, paintings): header, hint, drop zone and one card per entry. */
+/** Page of a media list (glyphs, sounds, paintings, dialogs): header, hint, drop zone (if any) and one card per entry. */
 export function MediaPage({ icon, title, count, configPath, actions, hint, drop, children }: MediaPageProps) {
   return (
     <PageShell>
@@ -43,7 +44,9 @@ export function MediaPage({ icon, title, count, configPath, actions, hint, drop,
       <Alert variant="info">
         <AlertDescription>{hint}</AlertDescription>
       </Alert>
-      <DropZone onFiles={drop.onFiles} accept={drop.accept} title={drop.title} subtitle={drop.subtitle} formats={drop.formats} compact />
+      {drop && (
+        <DropZone onFiles={drop.onFiles} accept={drop.accept} title={drop.title} subtitle={drop.subtitle} formats={drop.formats} compact />
+      )}
       {children.length > 0 && <div className="mt-2 flex flex-col gap-4">{children}</div>}
     </PageShell>
   );

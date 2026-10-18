@@ -10,7 +10,17 @@ import type { Project } from '@resourcepackbuilder/core/project';
 import { useProjectStore } from './project';
 
 /** Project-wide pages that are not tied to a single folder or item. */
-export type ViewName = 'glyphs' | 'sounds' | 'paintings' | 'lootSources' | 'templates' | 'globalVariables' | 'attributes' | 'testServer';
+export type ViewName =
+  | 'glyphs'
+  | 'sounds'
+  | 'paintings'
+  | 'dialogs'
+  | 'multipack'
+  | 'lootSources'
+  | 'templates'
+  | 'globalVariables'
+  | 'attributes'
+  | 'testServer';
 
 /** What the page shows: an item, a folder, a project-wide view, the settings page, or nothing. */
 export type Selection =
@@ -254,6 +264,9 @@ export function selectTarget(target: IssueTarget): void {
       break;
     case 'painting':
       select({ kind: 'view', view: 'paintings' });
+      break;
+    case 'dialog':
+      select({ kind: 'view', view: 'dialogs' });
       break;
   }
 }
