@@ -7,7 +7,7 @@ import { useId } from 'react';
 import { useTranslations } from 'next-intl';
 import { MC_VERSIONS, PACK_NAME_PATTERN } from '@resourcepackbuilder/minecraft';
 import { packTargetFor } from '@resourcepackbuilder/export';
-import { FieldGroup, FieldRow } from '@resourcepackbuilder/ui';
+import { DocsLink, FieldGroup, FieldRow } from '@resourcepackbuilder/ui';
 import { Input } from '@resourcepackbuilder/ui/components/input';
 import { NativeSelect, NativeSelectOption } from '@resourcepackbuilder/ui/components/native-select';
 import { NEXO_DOCS } from '@resourcepackbuilder/core/nexo';
@@ -15,7 +15,6 @@ import { Switch } from '@resourcepackbuilder/ui/components/switch';
 import { TargetDot } from '../../components/TargetDot';
 import { setCarpentryAddon } from '../../commands/nexo';
 import { updateProjectSettings } from '../../commands/settings';
-import { DocsLinkButton } from '../media/DocsLinkButton';
 import { richTags } from '../../i18n/richTags';
 import { useOpenProject } from '../../store/project';
 import { useNamespaceProblem } from '../../components/NamespaceProblem';
@@ -148,7 +147,7 @@ export function TargetItemSettings() {
               checked={settings.carpentryAddon === true}
               onCheckedChange={setCarpentryAddon}
             />
-            <DocsLinkButton href={NEXO_DOCS.carpentry.page} label={t('carpentryAddonDocs')} />
+            <DocsLink url={NEXO_DOCS.carpentry.page} target="nexo" label={t('carpentryAddonDocs')} />
           </div>
         </FieldRow>
       </FieldGroup>

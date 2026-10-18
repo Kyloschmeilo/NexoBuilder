@@ -28,9 +28,16 @@ export type ViewName =
   | 'scripts'
   | 'testServer';
 
-/** What the page shows: an item, a folder, a project-wide view, the settings page, or nothing. */
+/**
+ * What the page shows: an item, a folder, a project-wide view, the settings page, or nothing. A view with `entry`
+ * shows one entry of its registry (a glyph, a loot source …); the registry decides what the key means.
+ */
 export type Selection =
-  { kind: 'item'; id: string } | { kind: 'folder'; id: string } | { kind: 'view'; view: ViewName } | { kind: 'settings' } | null;
+  | { kind: 'item'; id: string }
+  | { kind: 'folder'; id: string }
+  | { kind: 'view'; view: ViewName; entry?: string }
+  | { kind: 'settings' }
+  | null;
 
 /**
  * An entry of the activity bar; it decides what the sidebar shows. The entries themselves (icon, label, panel, which
@@ -177,6 +184,16 @@ export function select(selection: Selection): void {
   useUiStore.setState({ selection });
 }
 
+/** Shows one entry of a registry view (`entry` undefined: the view's overview). */
+export function selectEntry(view: ViewName, entry?: string): void {
+  select(entry === undefined ? { kind: 'view', view } : { kind: 'view', view, entry });
+}
+
+/** The entry of `view` the page shows, if that view is selected with one. */
+export function useSelectedEntry(view: ViewName): string | undefined {
+  return useUiStore((s) => (s.selection?.kind === 'view' && s.selection.view === view ? s.selection.entry : undefined));
+}
+
 /** Opens the settings page (project, device and appearance settings). */
 export function openSettings(): void {
   select({ kind: 'settings' });
@@ -263,13 +280,13 @@ export function selectTarget(target: IssueTarget): void {
       select({ kind: target.kind, id: target.id });
       break;
     case 'glyph':
-      select({ kind: 'view', view: 'glyphs' });
+      select({ kind: 'view', view: 'glyphs', entry: target.id });
       break;
     case 'sound':
-      select({ kind: 'view', view: 'sounds' });
+      select({ kind: 'view', view: 'sounds', entry: target.id });
       break;
     case 'painting':
-      select({ kind: 'view', view: 'paintings' });
+      select({ kind: 'view', view: 'paintings', entry: target.id });
       break;
     case 'dialog':
       select({ kind: 'view', view: 'dialogs' });

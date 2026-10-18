@@ -7,17 +7,16 @@ import { useMemo } from 'react';
 import { useTranslations } from 'next-intl';
 import { Plus, Trash2, X } from 'lucide-react';
 import {
-  type ConfigObject,
   type IngredientRef,
   type IngredientSource,
   ingredientSourcesFor,
   INGREDIENT_SOURCES,
   itemLabel,
   MAX_INGREDIENT_AMOUNT,
-  optionsField,
   optionsForType,
   type Project,
   type RecipeIngredient,
+  type RecipeOption,
   type RecipeType,
   withIngredientAmount,
   withIngredientId,
@@ -25,8 +24,7 @@ import {
 } from '@resourcepackbuilder/core/project';
 import { CRAFTING_MATERIALS, ITEM_TAGS, NEXO_REPLACEMENT_TYPES } from '@resourcepackbuilder/core/nexo';
 import { RECIPE_SECTION_LABELS, recipeOptionsFor } from '@resourcepackbuilder/core/targets';
-import { isPlainObject } from '@resourcepackbuilder/utils';
-import { CollapsibleSection, IconButton } from '@resourcepackbuilder/ui';
+import { IconButton, MoreOptions } from '@resourcepackbuilder/ui';
 import { Button } from '@resourcepackbuilder/ui/components/button';
 import { Field, FieldTitle } from '@resourcepackbuilder/ui/components/field';
 import { NativeSelect, NativeSelectOption } from '@resourcepackbuilder/ui/components/native-select';
@@ -34,6 +32,7 @@ import { FieldRenderer, NumberInput, TextInput, type LiteralChoice } from '../..
 import { useOpenProject } from '../../../store/project';
 import { useSchemaText } from '../../../components/useSchemaText';
 import { isOneOf } from '../../../lib/isOneOf';
+import { flatOptionsField, groupRecipeOptions, mergeOptionKeys, pickOptionKeys } from './options';
 
 /** CraftEngine writes vanilla ids in lower case (diamond), Nexo materials in upper case (DIAMOND). */
 const LOWER_CASE_MATERIALS = CRAFTING_MATERIALS.map((option) => ({ ...option, value: option.value.toLowerCase() }));
@@ -107,7 +106,11 @@ function IngredientRefInputs<T extends IngredientRef>({ value, onChange }: { val
   );
 }
 
-/** The further options the project's target reads on an ingredient of the recipe type, folded away until used. */
+/**
+ * The further options the project's target reads on an ingredient of the recipe type: the keys that belong to the
+ * type (CraftEngine's source flag of transform recipes) right away, the rest (alternatives, a replacement, predicates,
+ * damage, preserved components) under "More ingredient options", which opens by itself while one of them is set.
+ */
 function IngredientExtras({
   value,
   onChange,
@@ -120,103 +123,113 @@ function IngredientExtras({
   const t = useTranslations('item');
   const tSchema = useSchemaText();
   const project = useOpenProject();
-  const options = optionsForType(recipeOptionsFor(project.target).ingredient, recipeType);
+  const { primary, more } = groupRecipeOptions(optionsForType(recipeOptionsFor(project.target).ingredient, recipeType));
   const hasAlternatives = project.target === 'craftengine';
   const hasReplacement = project.target === 'nexo' && NEXO_REPLACEMENT_TYPES.includes(recipeType);
-  if (!hasAlternatives && !hasReplacement && options.length === 0) return null;
   const alternatives = value.alternatives ?? [];
-  const count =
-    (hasAlternatives ? alternatives.length : 0) + (hasReplacement && value.replacement ? 1 : 0) + Object.keys(value.options ?? {}).length;
+  const moreCount = more.length + (hasAlternatives ? 1 : 0) + (hasReplacement ? 1 : 0);
+  const hasMoreValue =
+    alternatives.length > 0 || (hasReplacement && !!value.replacement) || Object.keys(pickOptionKeys(value.options, more)).length > 0;
   const setAlternatives = (list: IngredientRef[]) => {
     const next: RecipeIngredient = { ...value, alternatives: list };
     if (list.length === 0) delete next.alternatives;
     onChange(next);
   };
+  const setOptions = (group: RecipeOption[], next: unknown) => {
+    const result = { ...value, options: mergeOptionKeys(value.options, group, next) };
+    if (!result.options) delete result.options;
+    onChange(result);
+  };
+  const label = tSchema(RECIPE_SECTION_LABELS.ingredient);
   return (
-    <CollapsibleSection
-      title={tSchema(RECIPE_SECTION_LABELS.ingredient)}
-      meta={count > 0 && <span className="font-mono">{count}</span>}
-      defaultOpen={count > 0}
-    >
-      <div className="flex flex-col gap-3">
-        {hasAlternatives && (
-          <Field className="gap-1.5">
-            <FieldTitle>{t('recipes.alternatives')}</FieldTitle>
-            {alternatives.map((alternative, index) => (
-              <div key={index} className="flex items-start gap-1.5">
-                <div className="grid min-w-0 flex-1 grid-cols-1 gap-1.5 @2xl:grid-cols-[9rem_minmax(0,1fr)]">
-                  <IngredientRefInputs
-                    value={alternative}
-                    onChange={(next) => setAlternatives(alternatives.map((other, i) => (i === index ? next : other)))}
-                  />
-                </div>
-                <IconButton
-                  label={t('recipes.removeAlternative')}
-                  variant="ghost-destructive"
-                  onClick={() => setAlternatives(alternatives.filter((_, i) => i !== index))}
-                >
-                  <Trash2 />
-                </IconButton>
-              </div>
-            ))}
-            <Button
-              variant="outline"
-              size="sm"
-              className="self-start"
-              onClick={() => setAlternatives([...alternatives, { source: 'minecraft', id: '' }])}
-            >
-              <Plus /> {t('recipes.addAlternative')}
-            </Button>
-          </Field>
-        )}
-        {hasReplacement && (
-          <Field className="gap-1.5">
-            <FieldTitle>{t('recipes.replacement')}</FieldTitle>
-            {value.replacement ? (
-              <div className="flex items-start gap-1.5">
-                <div className="grid min-w-0 flex-1 grid-cols-1 gap-1.5 @2xl:grid-cols-[9rem_minmax(0,1fr)]">
-                  <IngredientRefInputs value={value.replacement} onChange={(replacement) => onChange({ ...value, replacement })} />
-                </div>
-                <IconButton
-                  label={t('recipes.removeReplacement')}
+    <>
+      {primary.length > 0 && (
+        <FieldRenderer
+          field={flatOptionsField(primary, label)}
+          root
+          hideLabel
+          value={pickOptionKeys(value.options, primary)}
+          onChange={(next) => setOptions(primary, next)}
+        />
+      )}
+      {moreCount > 0 && (
+        <MoreOptions label={label} count={moreCount} hasValue={hasMoreValue}>
+          <div className="flex flex-col gap-3">
+            {hasAlternatives && (
+              <Field className="gap-1.5">
+                <FieldTitle>{t('recipes.alternatives')}</FieldTitle>
+                {alternatives.map((alternative, index) => (
+                  <div key={index} className="flex items-start gap-1.5">
+                    <div className="grid min-w-0 flex-1 grid-cols-1 gap-1.5 @2xl:grid-cols-[9rem_minmax(0,1fr)]">
+                      <IngredientRefInputs
+                        value={alternative}
+                        onChange={(next) => setAlternatives(alternatives.map((other, i) => (i === index ? next : other)))}
+                      />
+                    </div>
+                    <IconButton
+                      label={t('recipes.removeAlternative')}
+                      variant="ghost-destructive"
+                      onClick={() => setAlternatives(alternatives.filter((_, i) => i !== index))}
+                    >
+                      <Trash2 />
+                    </IconButton>
+                  </div>
+                ))}
+                <Button
                   variant="ghost"
-                  onClick={() => {
-                    const next = { ...value };
-                    delete next.replacement;
-                    onChange(next);
-                  }}
+                  size="sm"
+                  className="self-start text-primary hover:text-primary"
+                  onClick={() => setAlternatives([...alternatives, { source: 'minecraft', id: '' }])}
                 >
-                  <X />
-                </IconButton>
-              </div>
-            ) : (
-              <Button
-                variant="outline"
-                size="sm"
-                className="self-start"
-                onClick={() => onChange({ ...value, replacement: { source: 'minecraft', id: '' } })}
-              >
-                <Plus /> {t('recipes.addReplacement')}
-              </Button>
+                  <Plus /> {t('recipes.addAlternative')}
+                </Button>
+              </Field>
             )}
-          </Field>
-        )}
-        {options.length > 0 && (
-          <FieldRenderer
-            field={optionsField(options, RECIPE_SECTION_LABELS.ingredient)}
-            root
-            hideLabel
-            value={value.options}
-            onChange={(next) => {
-              const result = { ...value };
-              if (isPlainObject(next) && Object.keys(next).length > 0) result.options = next as ConfigObject;
-              else delete result.options;
-              onChange(result);
-            }}
-          />
-        )}
-      </div>
-    </CollapsibleSection>
+            {hasReplacement && (
+              <Field className="gap-1.5">
+                <FieldTitle>{t('recipes.replacement')}</FieldTitle>
+                {value.replacement ? (
+                  <div className="flex items-start gap-1.5">
+                    <div className="grid min-w-0 flex-1 grid-cols-1 gap-1.5 @2xl:grid-cols-[9rem_minmax(0,1fr)]">
+                      <IngredientRefInputs value={value.replacement} onChange={(replacement) => onChange({ ...value, replacement })} />
+                    </div>
+                    <IconButton
+                      label={t('recipes.removeReplacement')}
+                      variant="ghost"
+                      onClick={() => {
+                        const next = { ...value };
+                        delete next.replacement;
+                        onChange(next);
+                      }}
+                    >
+                      <X />
+                    </IconButton>
+                  </div>
+                ) : (
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    className="self-start text-primary hover:text-primary"
+                    onClick={() => onChange({ ...value, replacement: { source: 'minecraft', id: '' } })}
+                  >
+                    <Plus /> {t('recipes.addReplacement')}
+                  </Button>
+                )}
+              </Field>
+            )}
+            {more.length > 0 && (
+              <FieldRenderer
+                field={flatOptionsField(more, label)}
+                root
+                hideLabel
+                value={pickOptionKeys(value.options, more)}
+                onChange={(next) => setOptions(more, next)}
+              />
+            )}
+          </div>
+        </MoreOptions>
+      )}
+    </>
   );
 }
 
