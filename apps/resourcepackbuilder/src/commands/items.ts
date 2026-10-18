@@ -26,7 +26,6 @@ import { getPropertyValue, propertyById, type PropertyDef, setPropertyValue } fr
 import { formFor } from '@resourcepackbuilder/core/targets';
 import {
   addBlockBehavior as withAddedBlockBehavior,
-  applyBlockBehavior,
   type ApplyBlockBehaviorOptions,
   type BlockBehaviorRef,
   CE_DEFAULT_AUTO_STATE,
@@ -204,14 +203,6 @@ export function addFurnitureState(itemId: string, name: string): void {
 
 // --- CraftEngine blocks ------------------------------------------------------------------------------
 
-/** Turns the item into a CraftEngine block (a new block definition) or back into a plain item. */
-export function setCraftEngineBlock(itemId: string, isBlock: boolean): void {
-  updateItem(itemId, (item) => {
-    if (isBlock) item.config.block = newCraftEngineBlock();
-    else delete item.config.block;
-  });
-}
-
 /**
  * Replaces the item's block with what `next` makes of it (the block editors build it with core's block helpers);
  * equal `historyKey`s in quick succession form one undo step.
@@ -228,14 +219,6 @@ export function updateCraftEngineBlock(itemId: string, next: (block: ConfigObjec
   );
 }
 
-/** Makes the CraftEngine item furniture (a new definition) or removes its furniture. */
-export function setCraftEngineFurniture(itemId: string, isFurniture: boolean): void {
-  updateItem(itemId, (item) => {
-    if (isFurniture) item.config.furniture = newCraftEngineFurniture();
-    else delete item.config.furniture;
-  });
-}
-
 /**
  * Replaces the item's furniture with what `next` makes of it; equal `historyKey`s in quick succession form one undo
  * step.
@@ -249,19 +232,6 @@ export function updateCraftEngineFurniture(itemId: string, next: (furniture: Con
       item.config.furniture = next(isDraft(furniture) ? current(furniture) : furniture);
     },
     historyKey,
-  );
-}
-
-/**
- * Gives the item's block the behavior of a form with the states it needs, or none (`null`). The user's further
- * behaviors and own states stay; `replaceStates` replaces own states the form cannot merge (after asking).
- */
-export function setBlockBehavior(itemId: string, type: string | null, options?: ApplyBlockBehaviorOptions): void {
-  const project = getProject();
-  const item = project?.items[itemId];
-  if (!project || !item) return;
-  updateCraftEngineBlock(itemId, (block) =>
-    applyBlockBehavior(block, type, craftEngineItemKey(project, item), { auto_state: CE_DEFAULT_AUTO_STATE }, options),
   );
 }
 
