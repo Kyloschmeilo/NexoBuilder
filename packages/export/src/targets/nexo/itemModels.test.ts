@@ -106,6 +106,36 @@ describe('Additional models', () => {
     expect(plan.packFiles.has('assets/bl/models/block/pflanzen/blume-stack_2.json')).toBe(true);
   });
 
+  it('writes the face models of a directional NoteBlock', () => {
+    const project = createProject('Blöcke', 'bl', '1.21.11');
+    const folder = createFolder('Holz', null);
+    insertFolder(project, folder);
+    const log = createItem({ displayName: 'Stamm', itemId: 'stamm', folderId: folder.id, model: model('stamm') });
+    log.config.Mechanics = { custom_block: { type: 'NOTEBLOCK', model: '@model', directional: { type: 'LOG', x_model: 'eigenes:x' } } };
+    log.variants = { dir_y: [model('oben')], dir_x: [model('seite')], dir_north: [model('nord')] };
+    insertItem(project, log);
+    const plan = planExport(project);
+    const yaml = parse(pluginText(plan, 'items/holz/holz.yml')).stamm;
+    // The user's own x model wins; north is no face of a LOG and is reported
+    expect(yaml.Mechanics.custom_block.directional).toEqual({ type: 'LOG', x_model: 'eigenes:x', y_model: 'bl:block/holz/stamm-dir_y' });
+    expect(plan.packFiles.has('assets/bl/models/block/holz/stamm-dir_y.json')).toBe(true);
+    expect(plan.packFiles.has('assets/bl/models/block/holz/stamm-dir_north.json')).toBe(false);
+    expect(plan.issues.some((i) => i.code === 'plan.directionalFaceUnused' && i.args?.face === 'north')).toBe(true);
+  });
+
+  it('reports face models without a directional block', () => {
+    const project = createProject('Blöcke', 'bl', '1.21.11');
+    const folder = createFolder('Holz', null);
+    insertFolder(project, folder);
+    const block = createItem({ displayName: 'Block', itemId: 'block', folderId: folder.id, model: model('block') });
+    block.config.Mechanics = { custom_block: { type: 'NOTEBLOCK', model: '@model' } };
+    block.variants = { dir_up: [model('oben')] };
+    insertItem(project, block);
+    const plan = planExport(project);
+    expect(plan.issues.some((i) => i.code === 'plan.directionalMissing')).toBe(true);
+    expect(parse(pluginText(plan, 'items/holz/holz.yml')).block.Mechanics.custom_block.directional).toBeUndefined();
+  });
+
   it('gives the trident a throwing model via Pack.throwing_model', () => {
     const project = createProject('Waffen', 'wf', '1.21.11');
     const folder = createFolder('Dreizacke', null);

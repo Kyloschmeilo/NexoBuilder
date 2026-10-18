@@ -83,6 +83,10 @@
     "stateTypeUnused": "State “{state}” is of type {type} – the uploaded model is not used for it.",
     "customBlockMechanicMissing": "Stackable models are uploaded, but the “Custom Block” mechanic is missing – they are not exported.",
     "stackableNeedsStringblock": "Stackable only works with the block type STRINGBLOCK.",
+    "directionalMissing": "Face models are uploaded, but the custom block has no directional type – they are not exported.",
+    "directionalFaceUnused": "The directional type of this block has no face “{face}” – its model is not exported.",
+    "directionalNeedsNoteblock": "Only NOTEBLOCK blocks can be directional – Nexo ignores “directional” on {type}.",
+    "hitboxEntryInvalid": "The {kind} hitbox entry “{entry}” does not have the format Nexo reads.",
     "fileUnreadable": "The file “{path}” could not be read and is left out.",
     "unsafePath": "The path “{path}” would leave its folder and is not exported."
   },
