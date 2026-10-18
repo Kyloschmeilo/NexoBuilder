@@ -23,20 +23,8 @@
   },
   "settings": {
     "pageDescription": "Settings of this project and of this device.",
-    "project": {
-      "title": "Project",
-      "description": "Saved with this project."
-    },
-    "device": {
-      "title": "This device",
-      "description": "Only applies on this device, for every project."
-    },
     "languageHelp": "The language ResourcepackBuilder is shown in.",
     "themeHelp": "“System” follows your operating system’s setting.",
-    "appearance": {
-      "title": "Appearance",
-      "description": "How ResourcepackBuilder looks on this device."
-    },
     "colorTheme": "Color theme",
     "colorThemeHelp": "Changes the colors of the whole app. Every theme comes in light and dark.",
     "mode": "Light or dark",
@@ -82,7 +70,43 @@
     "carpentryAddonHelp": "Offers the custom block types of the Nexo addon Carpentry (<code>STAIR</code>, <code>SLAB</code>, <code>DOOR</code>, <code>TRAPDOOR</code>, <code>GRATE</code>, <code>CHAIN</code>, <code>LANTERN</code>, <code>BARS</code>). Turn it on only when the addon is on the server.",
     "carpentryAddonDocs": "Open the Carpentry docs page",
     "ceCategoriesFromFolders": "Categories from folders",
-    "ceCategoriesFromFoldersHelp": "Writes categories.yml with one category per folder, shown in the item browser (<code>/ce</code>). Subfolders become subcategories."
+    "ceCategoriesFromFoldersHelp": "Writes categories.yml with one category per folder, shown in the item browser (<code>/ce</code>). Subfolders become subcategories.",
+    "sectionsLabel": "Settings sections",
+    "sections": {
+      "general": {
+        "title": "General",
+        "description": "Name, plugin, namespace and Minecraft version of this project."
+      },
+      "pack": {
+        "title": "Resource pack",
+        "description": "The pack's folder name, description and icon."
+      },
+      "items": {
+        "title": "Items",
+        "description": "How Nexo finds the models of this project's items."
+      },
+      "categories": {
+        "title": "Categories",
+        "description": "How the items appear in CraftEngine's item browser."
+      },
+      "sharing": {
+        "title": "Sharing",
+        "description": "Work on this project together through a shared folder."
+      },
+      "device": {
+        "title": "This device",
+        "description": "Only applies on this device, for every project."
+      },
+      "appearance": {
+        "title": "Appearance",
+        "description": "How ResourcepackBuilder looks on this device."
+      }
+    },
+    "sharing": {
+      "status": "Status",
+      "manage": "Sharing settings",
+      "desktopOnly": "Sharing needs the Windows app. In the browser, pass the project on with “Save project file”."
+    }
   },
   "newItem": {
     "title": "New item",

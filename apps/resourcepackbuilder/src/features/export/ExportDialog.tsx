@@ -1,6 +1,6 @@
 import { useDeferredValue, useId, useMemo, useState, type Dispatch, type ReactNode, type SetStateAction } from 'react';
 import { useTranslations } from 'next-intl';
-import { Download, FileArchive, FolderTree, Package, ScrollText } from 'lucide-react';
+import { Download, FolderTree, Package, ScrollText } from 'lucide-react';
 import { countIssues } from '@resourcepackbuilder/utils';
 import {
   type ExportEntry,
@@ -216,7 +216,6 @@ function ExportFrame({ choices: { otherProjectIds, selections }, onChoicesChange
   return (
     <DialogFrame
       title={t('title')}
-      icon={<FileArchive />}
       size="wide"
       footerStart={<ExportSummary multi={multi} />}
       footer={

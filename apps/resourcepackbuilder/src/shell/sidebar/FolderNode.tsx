@@ -1,3 +1,4 @@
+/** A folder row of the sidebar tree with its subfolders and items below it. */
 import { ClipboardPaste, Folder as FolderIcon, FolderOpen, FolderPlus, Pencil, Plus, Trash2 } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 import { cn } from 'cn';

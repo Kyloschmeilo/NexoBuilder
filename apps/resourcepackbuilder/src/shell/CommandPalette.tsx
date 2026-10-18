@@ -209,10 +209,13 @@ export function CommandPalette() {
   );
 }
 
-/** The cmdk root, searching the entries' texts (not their ids) with {@link scorePaletteEntry}. */
+/**
+ * The cmdk root, searching the entries' texts (not their ids) with {@link scorePaletteEntry}. Its Ctrl+J/K/N/P list
+ * navigation is off: Ctrl+J and Ctrl+K are the app's own shortcuts, which do nothing while the palette is open.
+ */
 function CommandWithFilter({ children }: { children: ReactNode }) {
   return (
-    <Command filter={(_value, search, keywords) => scorePaletteEntry(keywords ?? [], search)} loop>
+    <Command filter={(_value, search, keywords) => scorePaletteEntry(keywords ?? [], search)} loop vimBindings={false}>
       {children}
     </Command>
   );

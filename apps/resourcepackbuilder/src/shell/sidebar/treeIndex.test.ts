@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import { createFolder, createItem, createProject, insertFolder, insertItem } from '@resourcepackbuilder/core/project';
 import type { Issue } from '@resourcepackbuilder/utils';
-import { countItemsPerFolder, foldersContaining, levelsByTarget, searchItems, worstLevel } from './treeIndex';
+import { countItemsPerFolder, filterItems, foldersContaining, itemKindOf, levelsByTarget, searchItems, worstLevel } from './treeIndex';
 
 function sampleProject() {
   const project = createProject('Test', 'test');
@@ -53,5 +53,45 @@ describe('levels', () => {
     expect([...levels]).toEqual([['i1', 'error']]);
     expect(worstLevel(levelsByTarget(issues, 'glyph').values())).toBe('warning');
     expect(worstLevel([])).toBeNull();
+  });
+});
+
+describe('itemKindOf', () => {
+  it('tells items, blocks and furniture apart for Nexo', () => {
+    const { ruby } = sampleProject();
+    expect(itemKindOf(ruby, 'nexo')).toBe('item');
+    expect(itemKindOf({ ...ruby, config: { Mechanics: { custom_block: { type: 'NOTEBLOCK' } } } }, 'nexo')).toBe('block');
+    expect(itemKindOf({ ...ruby, config: { Mechanics: { furniture: {} } } }, 'nexo')).toBe('furniture');
+  });
+
+  it('tells items, blocks and furniture apart for CraftEngine, a block winning over furniture', () => {
+    const { ruby } = sampleProject();
+    expect(itemKindOf({ ...ruby, config: { furniture: {} } }, 'craftengine')).toBe('furniture');
+    expect(itemKindOf({ ...ruby, config: { block: {}, furniture: {} } }, 'craftengine')).toBe('block');
+    // A block id (string) is a reference, not a definition
+    expect(itemKindOf({ ...ruby, config: { block: 'test:ore' } }, 'craftengine')).toBe('item');
+  });
+});
+
+describe('filterItems', () => {
+  it('narrows nothing without a query and with the All chip', () => {
+    const { project } = sampleProject();
+    expect(filterItems(project, '', 'all', new Map())).toBeNull();
+    expect(filterItems(project, ' ', 'all', new Map())).toBeNull();
+  });
+
+  it('filters by kind and combines the chip with the search', () => {
+    const { project, ruby, bow } = sampleProject();
+    project.items[bow.id].config = { Mechanics: { furniture: {} } };
+    expect(filterItems(project, '', 'furniture', new Map())).toEqual(new Set([bow.id]));
+    expect(filterItems(project, '', 'items', new Map())).toEqual(new Set([ruby.id]));
+    expect(filterItems(project, '', 'blocks', new Map())).toEqual(new Set());
+    expect(filterItems(project, 'ruby', 'furniture', new Map())).toEqual(new Set());
+  });
+
+  it('keeps the items with errors or warnings for the issues chip', () => {
+    const { project, ruby } = sampleProject();
+    expect(filterItems(project, '', 'issues', new Map([[ruby.id, 'warning']]))).toEqual(new Set([ruby.id]));
+    expect(filterItems(project, 'bow', 'issues', new Map([[ruby.id, 'error']]))).toEqual(new Set());
   });
 });

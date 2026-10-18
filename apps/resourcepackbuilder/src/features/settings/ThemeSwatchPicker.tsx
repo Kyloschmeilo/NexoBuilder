@@ -29,24 +29,32 @@ export function ThemeSwatch({ theme, className }: { theme: ColorTheme; className
 export function ThemeSwatchPicker({
   value,
   onChange,
+  compact = false,
   'aria-label': ariaLabel,
   className,
 }: {
   value: ColorTheme;
   onChange: (theme: ColorTheme) => void;
+  /** One column of name and swatch only, without the descriptions (for menus). */
+  compact?: boolean;
   'aria-label'?: string;
   className?: string;
 }) {
   const t = useTranslations('dialogs.settings.colorThemes');
   const name = useId();
   return (
-    <div role="radiogroup" aria-label={ariaLabel} className={cn('grid grid-cols-[repeat(auto-fill,minmax(14rem,1fr))] gap-2', className)}>
+    <div
+      role="radiogroup"
+      aria-label={ariaLabel}
+      className={cn(compact ? 'flex flex-col gap-1' : 'grid grid-cols-[repeat(auto-fill,minmax(14rem,1fr))] gap-2', className)}
+    >
       {COLOR_THEMES.map((theme) => (
         <label
           key={theme}
           data-testid={`color-theme-${theme}`}
           className={cn(
-            'flex items-center gap-3 rounded-(--radius-control) border border-line bg-surface px-2.5 py-2 transition-colors hover:border-line-strong',
+            'flex cursor-pointer items-center gap-3 rounded-(--radius-control) border border-line bg-surface transition-colors hover:border-line-strong',
+            compact ? 'px-2 py-1' : 'px-2.5 py-2',
             'has-checked:border-primary has-checked:bg-accent-soft has-focus-visible:ring-2 has-focus-visible:ring-ring',
           )}
         >
@@ -54,7 +62,7 @@ export function ThemeSwatchPicker({
           <ThemeSwatch theme={theme} />
           <span className="flex min-w-0 flex-col">
             <span className="text-label font-medium text-text">{t(`${theme}.name`)}</span>
-            <span className="text-meta text-text-muted">{t(`${theme}.description`)}</span>
+            {!compact && <span className="text-meta text-text-muted">{t(`${theme}.description`)}</span>}
           </span>
         </label>
       ))}
