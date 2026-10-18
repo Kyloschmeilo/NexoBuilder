@@ -288,7 +288,9 @@
     "equipmentSetPiecesMissing": "Das Ausrüstungsset hat keine Stufen (pieces), deshalb lehnt CraftEngine es ab.",
     "equipmentSetTierInvalid": "Die Stufe „{tier}“ muss eine ganze Anzahl Teile ab 1 sein, deshalb lehnt CraftEngine das Set ab.",
     "damageRuleTypeMissing": "Die Schadensregel hat keinen Schadenstyp und wird deshalb weggelassen.",
-    "damageRuleEmpty": "Die Schadensregel hat weder eine Formel noch Effekte, deshalb lehnt CraftEngine sie ab."
+    "damageRuleEmpty": "Die Schadensregel hat weder eine Formel noch Effekte, deshalb lehnt CraftEngine sie ab.",
+    "langLocaleInvalid": "Die Lang-Sprache „{locale}“ ist kein Minecraft-Sprachcode (wie en_us oder all), deshalb werden ihre Schlüssel weggelassen.",
+    "translationsLocaleInvalid": "Die Übersetzungssprache „{locale}“ ist keine Sprache, die CraftEngine liest (wie en oder zh_cn), deshalb werden ihre Schlüssel weggelassen."
   },
   "issueList": {
     "openItem": "Zum Item",

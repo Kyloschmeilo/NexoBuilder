@@ -1,9 +1,10 @@
 /**
  * The files of plugins/CraftEngine: the project's pack.yml, its item configs (with their blocks, furniture and
  * recipes) grouped by file, the configs of its glyphs, sounds and paintings, its armor sets (equipments.yml), its
- * folders as categories (categories.yml, when the project setting is on), its lang files, its loot sources
- * (loot_sources.yml), its templates (templates.yml), its global variables (global_variables.yml) and its
- * attribute system (attributes.yml).
+ * folders as categories (categories.yml, when the project setting is on), its lang files (item and block names
+ * and the project's own lang keys), its loot sources (loot_sources.yml), its templates (templates.yml), its global
+ * variables (global_variables.yml), its attribute system (attributes.yml) and its other project-level sections
+ * (projectSections.ts).
  */
 import { createIssue, groupBy, type Issue, type IssueCode, type IssueLevel, type MessageArgs } from '@resourcepackbuilder/utils';
 import { formatResourceLocation } from '@resourcepackbuilder/minecraft';
@@ -32,6 +33,7 @@ import { exportPackName } from '../../paths';
 import { CRAFT_ENGINE_RESERVED_PACK_NAME, craftEngineConfigFile, craftEngineMediaFile, packYmlFile } from './layout';
 import { attributeProjectIssues } from './attributes';
 import { blockProjectIssues, lootSourceIssues, templateProjectIssues } from './validate';
+import { planProjectSections, projectSectionIssues } from './projectSections';
 
 export function planCraftEnginePluginFiles(project: Project, plans: ItemPlan[], writer: PackWriter, issues: Issue[]): TargetPluginFiles {
   const pluginFiles = new Map<string, FileContent>([[packYmlFile(project), buildPackYml(project)]]);
@@ -55,6 +57,7 @@ export function planCraftEnginePluginFiles(project: Project, plans: ItemPlan[], 
     ...lootSourceIssues(project),
     ...templateProjectIssues(project),
     ...attributeProjectIssues(project),
+    ...projectSectionIssues(project),
   );
   const projectSections = [
     ['loot_sources', craftEngineLootSources(project), 'loot sources'],
@@ -75,12 +78,14 @@ export function planCraftEnginePluginFiles(project: Project, plans: ItemPlan[], 
   }
   for (const [path, text] of planMedia(project, writer, issues)) pluginFiles.set(path, text);
   for (const [path, text] of planItemExtras(project, plans)) pluginFiles.set(path, text);
+  for (const [path, text] of planProjectSections(project)) pluginFiles.set(path, text);
   return { pluginFiles };
 }
 
 /**
  * The config files the items share: equipments.yml (one component equipment per armor set, the same model the shared
- * export writes into the pack, which CraftEngine merges with it), categories.yml and the lang files.
+ * export writes into the pack, which CraftEngine merges with it), categories.yml and the lang files (the items'
+ * display names, the client names of their blocks and the project's own lang keys).
  */
 function planItemExtras(project: Project, plans: ItemPlan[]): Map<string, string> {
   const out = new Map<string, string>();
@@ -102,7 +107,8 @@ function planItemExtras(project: Project, plans: ItemPlan[]): Map<string, string
       out.set(craftEngineConfigFile(project, 'categories'), sectionsToYaml({ categories }, `categories of "${project.name}"`));
     }
   }
-  for (const [locale, texts] of craftEngineLang(project, items)) {
+  const blockItems = plans.flatMap((p) => (p.sections?.blocks ? [p.item] : []));
+  for (const [locale, texts] of craftEngineLang(project, items, blockItems)) {
     out.set(
       craftEngineConfigFile(project, `lang/${locale}`),
       sectionsToYaml({ lang: { [locale]: texts } }, `translations of "${project.name}"`),

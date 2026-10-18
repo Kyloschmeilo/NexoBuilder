@@ -1,4 +1,7 @@
-/** The project-wide CraftEngine data (`project.craftEngine`): loot sources, templates, global variables and attributes. */
+/**
+ * The project-wide CraftEngine data (`project.craftEngine`): loot sources, templates, global variables, attributes,
+ * lang keys and translations.
+ */
 import {
   type ConfigObject,
   type CraftEngineAttributeData,
@@ -58,4 +61,26 @@ export function setAttributeEntries(part: keyof CraftEngineAttributeData, value:
     if (Object.keys(data).length > 0) draft.craftEngine = data;
     else delete draft.craftEngine;
   }, `attributes.${part}`);
+}
+
+/** A locale → key → text map from an edited value: other values are dropped (a locale without keys stays, to be filled). */
+function localeTexts(value: unknown): Record<string, Record<string, string>> | undefined {
+  if (!isPlainObject(value)) return undefined;
+  const result: Record<string, Record<string, string>> = {};
+  for (const [locale, texts] of Object.entries(value)) {
+    if (!isPlainObject(texts)) continue;
+    const entries = Object.entries(texts).filter((entry): entry is [string, string] => typeof entry[1] === 'string');
+    result[locale] = Object.fromEntries(entries);
+  }
+  return Object.keys(result).length > 0 ? result : undefined;
+}
+
+/** Replaces the project's own client lang keys (locale → key → text); without any, the key is removed. */
+export function setLang(value: unknown): void {
+  setCraftEngineData('lang', localeTexts(value));
+}
+
+/** Replaces the server-side translations (locale → key → text); without any, the key is removed. */
+export function setServerTranslations(value: unknown): void {
+  setCraftEngineData('translations', localeTexts(value));
 }

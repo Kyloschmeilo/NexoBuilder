@@ -10,6 +10,7 @@ import { ItemEditor } from '../features/item/ItemEditor';
 import { AttributesView } from '../features/craftEngine/AttributesView';
 import { GlobalVariablesView } from '../features/craftEngine/GlobalVariablesView';
 import { TemplatesView } from '../features/craftEngine/TemplatesView';
+import { TranslationsView } from '../features/craftEngine/TranslationsView';
 import { LootSourcesView } from '../features/lootSources/LootSourcesView';
 import { GlyphsView, PaintingsView, SoundsView } from '../features/media/MediaView';
 import { TestServerView } from '../features/testServer/TestServerView';
@@ -25,6 +26,7 @@ const VIEWS: Record<ViewName, ComponentType> = {
   templates: TemplatesView,
   globalVariables: GlobalVariablesView,
   attributes: AttributesView,
+  translations: TranslationsView,
   testServer: TestServerView,
 };
 

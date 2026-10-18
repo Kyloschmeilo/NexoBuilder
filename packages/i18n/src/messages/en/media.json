@@ -243,5 +243,19 @@
       "title": "Damage rules",
       "hint": "Formulas that compute the damage of a damage type from the attributes of attacker and victim."
     }
+  },
+  "translations": {
+    "title": "Translations",
+    "count": "{count, plural, one {# key} other {# keys}}",
+    "hint": "Item names with translations and the names of custom blocks go into the language files by themselves. Here you add your own keys: lang keys the client translates (use them as '<'lang:key>), and server translations CraftEngine fills in itself ('<'l10n:key> in each player's language, '<'i18n:key> in the server's).",
+    "docs": "Translations in the CraftEngine wiki",
+    "lang": {
+      "title": "Lang keys (resource pack)",
+      "hint": "Written into the resource pack's language files. The language all writes a key into every language; block_name:namespace:id names a custom block. Changes need a resource pack reload."
+    },
+    "server": {
+      "title": "Server translations",
+      "hint": "Read on the server, so changes need no resource pack reload. A language without a country (en) also covers its regions."
+    }
   }
 }

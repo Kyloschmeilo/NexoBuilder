@@ -294,6 +294,8 @@ describe('CraftEngine checks', () => {
     expect([...plan.pluginFiles.keys()].filter((path) => path.includes('/configuration/') && !path.includes('/items/'))).toEqual([
       'resources/kristall_pack/configuration/images.yml',
       'resources/kristall_pack/configuration/categories.yml',
+      // The client name of the fixture's block
+      'resources/kristall_pack/configuration/lang/en_us.yml',
     ]);
     expect(plan.packFiles.has('assets/kristall/textures/glyphs/gem.png')).toBe(true);
   });

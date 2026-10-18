@@ -1,0 +1,34 @@
+{
+  "craftEngine": {
+    "fields": {
+      "lang": {
+        "label": "lang",
+        "keyLabel": "Sprache",
+        "keyPlaceholder": "z. B. en_us",
+        "value": {
+          "label": "Schlüssel",
+          "keyLabel": "Schlüssel",
+          "keyPlaceholder": "z. B. container.inventory",
+          "value": {
+            "label": "Text",
+            "placeholder": "z. B. Rucksack"
+          }
+        }
+      },
+      "translations": {
+        "label": "translations",
+        "keyLabel": "Sprache",
+        "keyPlaceholder": "z. B. de",
+        "value": {
+          "label": "Schlüssel",
+          "keyLabel": "Schlüssel",
+          "keyPlaceholder": "z. B. item.lantern",
+          "value": {
+            "label": "Text",
+            "placeholder": "z. B. '<'gold>Laterne"
+          }
+        }
+      }
+    }
+  }
+}

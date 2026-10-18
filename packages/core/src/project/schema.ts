@@ -299,6 +299,8 @@ export const CraftEngineProjectSchema = z
     templates: optional(lenientList(ConfigObjectSchema)),
     globalVariables: optional(lenientRecord(z.string())),
     attributes: optional(CraftEngineAttributeSchema),
+    lang: optional(lenientRecord(recordOf(z.string()))),
+    translations: optional(lenientRecord(recordOf(z.string()))),
   })
   .transform((data) => withoutUndefined(data))
   .transform((data) => (Object.keys(data).length > 0 ? data : undefined));

@@ -1,0 +1,34 @@
+{
+  "craftEngine": {
+    "fields": {
+      "lang": {
+        "label": "lang",
+        "keyLabel": "Language",
+        "keyPlaceholder": "e.g. en_us",
+        "value": {
+          "label": "Keys",
+          "keyLabel": "Key",
+          "keyPlaceholder": "e.g. container.inventory",
+          "value": {
+            "label": "Text",
+            "placeholder": "e.g. Backpack"
+          }
+        }
+      },
+      "translations": {
+        "label": "translations",
+        "keyLabel": "Language",
+        "keyPlaceholder": "e.g. en",
+        "value": {
+          "label": "Keys",
+          "keyLabel": "Key",
+          "keyPlaceholder": "e.g. item.lantern",
+          "value": {
+            "label": "Text",
+            "placeholder": "e.g. '<'gold>Lantern"
+          }
+        }
+      }
+    }
+  }
+}

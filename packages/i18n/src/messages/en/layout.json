@@ -88,6 +88,10 @@
       "attributes": {
         "label": "Attributes",
         "hint": "Attributes: custom stats, equipment sets and damage rules"
+      },
+      "translations": {
+        "label": "Translations",
+        "hint": "Translations: lang keys for the resource pack and server translations"
       }
     },
     "testServer": {

@@ -8,6 +8,7 @@ import { checkFieldValue, fieldToSchema } from '../../form/fieldSchema';
 import { fieldMessageKeys, formMessageKeys } from '../../form/messageKeys';
 import { loadCatalogue, type MessageTree } from '@resourcepackbuilder/test-utils/catalogue';
 import { CE_ATTRIBUTE_LISTS } from '../attributes';
+import { CE_LANG_MAP, CE_TRANSLATION_MAP } from '../lang';
 import { CE_LOGIC, logicMessageKeys } from '../logic';
 import { CE_LOOT_SOURCE_LIST } from '../loot';
 import { CE_GLOBAL_VARIABLE_MAP, CE_TEMPLATE_LIST } from '../templates';
@@ -89,6 +90,8 @@ describe('ceSchema message keys', () => {
     ...fieldMessageKeys(CE_TEMPLATE_LIST),
     ...fieldMessageKeys(CE_GLOBAL_VARIABLE_MAP),
     ...Object.values(CE_ATTRIBUTE_LISTS).flatMap((list) => fieldMessageKeys(list)),
+    ...fieldMessageKeys(CE_LANG_MAP),
+    ...fieldMessageKeys(CE_TRANSLATION_MAP),
   ]);
 
   it('references only keys that are well-formed', () => {

@@ -243,5 +243,19 @@
       "title": "Schadensregeln",
       "hint": "Formeln, die den Schaden eines Schadenstyps aus den Attributen von Angreifer und Opfer berechnen."
     }
+  },
+  "translations": {
+    "title": "Übersetzungen",
+    "count": "{count, plural, one {# Schlüssel} other {# Schlüssel}}",
+    "hint": "Itemnamen mit Übersetzungen und die Namen eigener Blöcke landen von selbst in den Sprachdateien. Hier fügst du eigene Schlüssel hinzu: Lang-Schlüssel, die der Client übersetzt (als '<'lang:key>), und Server-Übersetzungen, die CraftEngine selbst einsetzt ('<'l10n:key> in der Sprache jedes Spielers, '<'i18n:key> in der des Servers).",
+    "docs": "Übersetzungen im CraftEngine-Wiki",
+    "lang": {
+      "title": "Lang-Schlüssel (Resource Pack)",
+      "hint": "Werden in die Sprachdateien des Resource Packs geschrieben. Die Sprache all schreibt einen Schlüssel in jede Sprache; block_name:namespace:id benennt einen eigenen Block. Änderungen brauchen ein Neuladen des Resource Packs."
+    },
+    "server": {
+      "title": "Server-Übersetzungen",
+      "hint": "Werden auf dem Server gelesen, Änderungen brauchen also kein Neuladen des Resource Packs. Eine Sprache ohne Land (de) gilt auch für ihre Regionen."
+    }
   }
 }

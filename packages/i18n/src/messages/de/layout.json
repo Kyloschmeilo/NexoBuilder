@@ -88,6 +88,10 @@
       "attributes": {
         "label": "Attribute",
         "hint": "Attribute: eigene Werte, Ausrüstungssets und Schadensregeln"
+      },
+      "translations": {
+        "label": "Übersetzungen",
+        "hint": "Übersetzungen: Lang-Schlüssel für das Resource Pack und Server-Übersetzungen"
       }
     },
     "testServer": {

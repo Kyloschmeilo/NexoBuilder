@@ -83,6 +83,10 @@ export interface CraftEngineProjectData {
   globalVariables?: Record<string, string>;
   /** The attribute system (experimental): its definitions, operations, equipment sets and damage rules */
   attributes?: CraftEngineAttributeData;
+  /** Free client lang keys (`lang`): locale (or `all`) → lang key → text (core/craftEngine/lang.ts) */
+  lang?: Record<string, Record<string, string>>;
+  /** Server-side translations (`translations`, read by `<i18n:key>` and `<l10n:key>`): locale → key → text */
+  translations?: Record<string, Record<string, string>>;
 }
 
 /**

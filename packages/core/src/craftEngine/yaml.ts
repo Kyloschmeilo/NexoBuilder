@@ -17,6 +17,8 @@ export interface CraftEngineSections {
   categories?: Record<string, Record<string, unknown>>;
   /** Locale → lang key → text */
   lang?: Record<string, Record<string, unknown>>;
+  /** Server-side translations: locale → key → text */
+  translations?: Record<string, Record<string, unknown>>;
   loot_sources?: Record<string, Record<string, unknown>>;
   /** Template id → body (any config value) */
   templates?: Record<string, unknown>;
@@ -42,6 +44,7 @@ const SECTION_ORDER: Array<keyof CraftEngineSections> = [
   'equipments',
   'categories',
   'lang',
+  'translations',
   'loot_sources',
   'templates',
   'global_variables',
