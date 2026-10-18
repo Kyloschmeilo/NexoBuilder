@@ -1,3 +1,4 @@
+export { customFieldEditor, registerFieldEditor } from './customEditors';
 export { FieldRenderer } from './FieldRenderer';
 export { FieldContext, type FieldContextValue } from './fieldContext';
 export { BooleanSwitch } from './inputs/BooleanSwitch';

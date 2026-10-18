@@ -1,96 +1,221 @@
 /**
- * The CraftEngine furniture section of the Model tab: the toggle, the variants with their placement rules, elements,
- * hitboxes and seats, the settings, the behaviors and the loot.
+ * The body of a CraftEngine item's Furniture section: the variant switcher (ground, wall, ceiling and the furniture's
+ * own variants, plus "Add variant"), the two-pane editor of the selected variant, the furniture's settings as feature
+ * rows, and its behaviors as typed entry cards with an "Add behavior" catalog.
  */
 import { useState } from 'react';
 import { useTranslations } from 'next-intl';
-import { Plus, Trash2 } from 'lucide-react';
+import { Copy, Plus, Trash2 } from 'lucide-react';
 import {
-  CE_DOCS,
   CE_FURNITURE_ALIGNMENTS,
+  CE_FURNITURE_ANCHORS,
   CE_FURNITURE_BEHAVIOR_LIST,
   CE_FURNITURE_FIELDS,
-  CE_FURNITURE_ANCHORS,
   CE_FURNITURE_LOOT_TEMPLATE,
   CE_FURNITURE_ROTATIONS,
   CE_FURNITURE_SETTINGS_FIELDS,
-  craftEngineBlock,
-  craftEngineFurniture,
+  CE_FURNITURE_VARIANT_FIELDS,
+  CE_DOCS,
   furnitureVariants,
   furnitureVariantsKey,
-  newFurnitureVariant,
   withLightObjects,
 } from '@resourcepackbuilder/core/craftEngine';
 import type { ConfigObject, ConfigValue, Item } from '@resourcepackbuilder/core/project';
-import { SegmentedControl } from '@resourcepackbuilder/ui';
+import { EmptyHint, FieldGroup, FieldRow, SegmentedControl } from '@resourcepackbuilder/ui';
 import { Button } from '@resourcepackbuilder/ui/components/button';
-import { NativeSelect, NativeSelectOption } from '@resourcepackbuilder/ui/components/native-select';
 import { isPlainObject } from '@resourcepackbuilder/utils';
-import { CheckboxField } from '../../../components/CheckboxField';
-import { FieldRenderer } from '../../../components/editor';
-import { Section } from '../../../components/Section';
-import { setCraftEngineFurniture, updateCraftEngineFurniture } from '../../../commands/items';
-import { useOpenProject } from '../../../store/project';
-import { FurniturePreview } from './FurniturePreview';
-import { DocsLink, KeyedFields, NumberInput, withKey } from './DisplayElementsEditor';
+import { addCraftEngineFurnitureVariant, removeCraftEngineFurnitureVariant, updateCraftEngineFurniture } from '../../../commands/items';
+import { CatalogDialog, catalogFromTypedSource, TypedEntryCard, useCatalogText } from '../../../components/catalog';
+import { BooleanSwitch } from '../../../components/editor/inputs/BooleanSwitch';
+import { NumberInput } from '../../../components/editor/inputs/NumberInput';
+import { SelectInput } from '../../../components/editor/inputs/SelectInput';
+import { FeatureList, FeatureRow } from '../../../components/features';
+import { prompt } from '../../../store/dialogs';
+import { KeyedFields, withKey } from './DisplayElementsEditor';
 import { FurnitureVariantEditor } from './FurnitureVariantEditor';
+import { variantNameError, variantNames } from './model';
+import { FieldFeatureRow, FurnitureGroup } from './parts';
 
 const ANCHORS: readonly string[] = CE_FURNITURE_ANCHORS;
 const objectAt = (value: unknown): ConfigObject => (isPlainObject(value) ? (value as ConfigObject) : {});
 /** The key a furniture's behaviors are under: `behavior` when only that one is set, else `behaviors` */
 const behaviorsKey = (furniture: Record<string, unknown>) =>
   furniture.behaviors === undefined && furniture.behavior !== undefined ? 'behavior' : 'behaviors';
+/** A furniture's behaviors as a list (a single behavior may stand without one). */
+const behaviorList = (value: unknown): unknown[] => (Array.isArray(value) ? value : value === undefined ? [] : [value]);
 
 /** The loot each item turned off last (with its arguments), so turning it on again in the session brings it back. */
 const lastLoot = new Map<string, ConfigObject>();
 
-/** The placement rule selects of a variant (stored in the definition's `rules`, written to the item's behavior). */
-function RuleSelect({
-  label,
-  value,
-  values,
+/** The placement rules and further keys of a variant: what the detail pane shows while no entry is selected. */
+function VariantSettings({
+  furniture,
   name,
-  onChange,
+  label,
+  variant,
+  edit,
+  editVariant,
+  onRemove,
 }: {
+  furniture: Record<string, unknown>;
+  name: string;
   label: string;
-  value: string;
-  values: readonly string[];
-  name: (value: string) => string;
-  onChange: (value: string) => void;
+  variant: Record<string, unknown>;
+  edit: (next: (furniture: ConfigObject) => ConfigObject, historyKey?: string) => void;
+  editVariant: (next: (variant: ConfigObject) => ConfigObject, historyKey?: string) => void;
+  onRemove: () => void;
 }) {
+  const t = useTranslations('item.ceFurniture');
+  const tFurniture = useTranslations('item.furniture');
+  const rule = objectAt(objectAt(furniture.rules)[name]);
+  const setRule = (key: string, value: string | undefined) =>
+    edit((f) => {
+      const all = objectAt(f.rules);
+      const next = withKey(objectAt(all[name]), key, value === 'any' ? undefined : value);
+      const nextRules = withKey(all, name, Object.keys(next).length > 0 ? next : undefined);
+      return withKey(f, 'rules', Object.keys(nextRules).length > 0 ? nextRules : undefined);
+    });
+  const ruleRow = (key: 'rotation' | 'alignment', values: readonly string[]) => (
+    <FieldRow label={t(key)} yamlKey={`rules.${name}.${key}`}>
+      <SelectInput
+        aria-label={t(key)}
+        value={typeof rule[key] === 'string' ? rule[key].toLowerCase() : undefined}
+        // Rule values come from core at runtime; a test checks each has a name in en and de
+        placeholder={t(`${key === 'rotation' ? 'rotations' : 'alignments'}.any` as never)}
+        options={values
+          .filter((value) => value !== 'any')
+          .map((value) => ({ value, text: t(`${key === 'rotation' ? 'rotations' : 'alignments'}.${value}` as never) }))}
+        onChange={(value) => setRule(key, value)}
+      />
+    </FieldRow>
+  );
   return (
-    <label className="flex flex-col gap-1">
-      <span className="text-xs text-muted-foreground">{label}</span>
-      <NativeSelect className="w-full" size="sm" value={value} onChange={(e) => onChange(e.target.value)}>
-        {!values.includes(value) && <NativeSelectOption value={value}>{value}</NativeSelectOption>}
-        {values.map((v) => (
-          <NativeSelectOption key={v} value={v}>
-            {name(v)}
-          </NativeSelectOption>
-        ))}
-      </NativeSelect>
-    </label>
+    <>
+      <div className="flex min-h-7.5 items-center gap-2">
+        <h3 className="m-0 min-w-0 flex-1 truncate text-label font-semibold text-text">{tFurniture('variantTitle', { name: label })}</h3>
+        <Button type="button" variant="ghost" size="sm" className="text-danger hover:text-danger" onClick={onRemove}>
+          <Trash2 /> {t('removeVariant')}
+        </Button>
+      </div>
+      <FieldGroup>
+        {ANCHORS.includes(name) && (
+          <>
+            {ruleRow('rotation', CE_FURNITURE_ROTATIONS)}
+            {ruleRow('alignment', CE_FURNITURE_ALIGNMENTS)}
+          </>
+        )}
+        <KeyedFields
+          fields={CE_FURNITURE_VARIANT_FIELDS}
+          object={variant}
+          siblings={variant}
+          set={(key, value, historyKey) => editVariant((v) => withKey(v, key, value), historyKey)}
+          historyKey="variant"
+        />
+      </FieldGroup>
+      <p className="m-0 text-meta text-text-muted">{tFurniture('selectEntryHint')}</p>
+    </>
   );
 }
 
-function FurnitureEditor({ item, furniture }: { item: Item; furniture: Record<string, unknown> }) {
-  const t = useTranslations('item');
-  const project = useOpenProject();
+/** The furniture's behaviors (storage, item display slots, lights) as typed entry cards with an add catalog. */
+function FurnitureBehaviors({
+  furniture,
+  edit,
+}: {
+  furniture: Record<string, unknown>;
+  edit: (next: (furniture: ConfigObject) => ConfigObject, historyKey?: string) => void;
+}) {
+  const t = useTranslations('item.ceFurniture');
+  const tFurniture = useTranslations('item.furniture');
+  const text = useCatalogText();
+  const [isAdding, setIsAdding] = useState(false);
+  const key = behaviorsKey(furniture);
+  // Lights written as text show as their position and level
+  const list = behaviorList(withLightObjects(furniture[key]));
+  const used = list.map((entry) => (isPlainObject(entry) && typeof entry.type === 'string' ? entry.type : '')).filter(Boolean);
+  const commit = (next: unknown[], historyKey?: string) =>
+    edit((f) => {
+      const target = behaviorsKey(f);
+      // A furniture keeps a single behavior under `behavior` when it had it there
+      const value = next.length === 0 ? undefined : target === 'behavior' && next.length === 1 ? next[0] : next;
+      return withKey(
+        target === 'behavior' && next.length > 1 ? withKey(f, 'behavior', undefined) : f,
+        next.length > 1 ? 'behaviors' : target,
+        value as ConfigValue | undefined,
+      );
+    }, historyKey);
+  const catalog = catalogFromTypedSource(CE_FURNITURE_BEHAVIOR_LIST, { text, target: 'craftengine', added: used });
+  return (
+    <FurnitureGroup
+      title={t('behaviors')}
+      count={list.length}
+      help={t('behaviorsHelp')}
+      docs={{ url: CE_DOCS.furnitureBehaviors, target: 'craftengine' }}
+      actions={
+        list.length > 0 && (
+          <Button type="button" variant="ghost" size="sm" className="text-primary hover:text-primary" onClick={() => setIsAdding(true)}>
+            <Plus /> {tFurniture('addBehavior')}
+          </Button>
+        )
+      }
+    >
+      {list.length === 0 ? (
+        <EmptyHint actionLabel={tFurniture('addBehavior')} onAction={() => setIsAdding(true)}>
+          {tFurniture('noBehaviors')}
+        </EmptyHint>
+      ) : (
+        <div className="flex min-w-0 flex-col gap-2">
+          {list.map((entry, i) => (
+            <TypedEntryCard
+              key={i}
+              source={CE_FURNITURE_BEHAVIOR_LIST}
+              entry={entry}
+              onChange={(next) =>
+                commit(
+                  list.map((e, j) => (j === i ? next : e)),
+                  `behavior-${i}`,
+                )
+              }
+              onRemove={() => commit(list.filter((_, j) => j !== i))}
+              menu={[
+                {
+                  icon: <Copy />,
+                  label: tFurniture('duplicate'),
+                  onSelect: () => commit([...list.slice(0, i + 1), structuredClone(entry), ...list.slice(i + 1)]),
+                },
+              ]}
+            />
+          ))}
+        </div>
+      )}
+      <CatalogDialog
+        open={isAdding}
+        onOpenChange={setIsAdding}
+        title={tFurniture('addBehaviorTitle')}
+        {...catalog}
+        addLabel={tFurniture('addBehavior')}
+        onAdd={(types) => commit([...list, ...types.map((type) => ({ type }))])}
+      />
+    </FurnitureGroup>
+  );
+}
+
+/** The editor of a CraftEngine furniture (`furniture` is the item's `furniture` section). */
+export function CraftEngineFurnitureEditor({ item, furniture }: { item: Item; furniture: Record<string, unknown> }) {
+  const t = useTranslations('item.ceFurniture');
+  const tFurniture = useTranslations('item.furniture');
+  const tCommon = useTranslations('common');
   const variants = furnitureVariants(furniture);
-  const names = [...ANCHORS, ...Object.keys(variants).filter((name) => !ANCHORS.includes(name))];
+  const names = variantNames(furniture);
   const [selected, setSelected] = useState(() => names.find((name) => variants[name]) ?? 'ground');
   const name = names.includes(selected) ? selected : 'ground';
   const variant = variants[name] as Record<string, unknown> | undefined;
-  const isAnchor = ANCHORS.includes(name);
+  // Anchor names come from core at runtime; a test checks each has a name in en and de
+  const labelOf = (n: string) => (ANCHORS.includes(n) ? t(`anchors.${n}` as never) : n);
 
   const edit = (next: (furniture: ConfigObject) => ConfigObject, historyKey?: string) =>
     updateCraftEngineFurniture(item.id, next, historyKey);
   // Variants stay under the key the furniture has them (CraftEngine also reads `variant` and `placement`)
-  const setVariant = (value: ConfigObject | undefined, historyKey?: string) =>
-    edit((f) => {
-      const key = furnitureVariantsKey(f);
-      return withKey(f, key, withKey(objectAt(f[key]), name, value));
-    }, historyKey);
   const editVariant = (next: (variant: ConfigObject) => ConfigObject, historyKey?: string) =>
     edit(
       (f) => {
@@ -100,22 +225,32 @@ function FurnitureEditor({ item, furniture }: { item: Item; furniture: Record<st
       },
       historyKey && `${name}-${historyKey}`,
     );
-  const rules = objectAt(furniture.rules);
-  const rule = objectAt(rules[name]);
-  const setRule = (key: string, value: string) =>
-    edit((f) => {
-      const all = objectAt(f.rules);
-      const next = withKey(objectAt(all[name]), key, value === 'any' ? undefined : value);
-      const nextRules = withKey(all, name, Object.keys(next).length > 0 ? next : undefined);
-      return withKey(f, 'rules', Object.keys(nextRules).length > 0 ? nextRules : undefined);
+
+  const addVariant = async () => {
+    const created = await prompt({
+      title: tFurniture('newVariant'),
+      label: tFurniture('variantName'),
+      initial: '',
+      confirmLabel: tCommon('create'),
+      validate: (value) => {
+        const error = variantNameError(furniture, value);
+        return error && tFurniture(`variantNameErrors.${error}`);
+      },
     });
+    if (created === null) return;
+    addCraftEngineFurnitureVariant(item.id, created.trim());
+    setSelected(created.trim());
+  };
+
   const settings = objectAt(furniture.settings);
-  const behaviors = behaviorsKey(furniture);
   const setSetting = (key: string, value: ConfigValue | undefined, historyKey?: string) =>
-    edit((f) => {
-      const next = withKey(objectAt(f.settings), key, value);
-      return withKey(f, 'settings', Object.keys(next).length > 0 ? next : undefined);
-    }, historyKey);
+    edit(
+      (f) => {
+        const next = withKey(objectAt(f.settings), key, value);
+        return withKey(f, 'settings', Object.keys(next).length > 0 ? next : undefined);
+      },
+      historyKey && `setting-${historyKey}`,
+    );
   const loot = objectAt(furniture.loot);
   const dropsItem = loot.template === CE_FURNITURE_LOOT_TEMPLATE;
   const setDropsItem = (checked: boolean) => {
@@ -124,138 +259,108 @@ function FurnitureEditor({ item, furniture }: { item: Item; furniture: Record<st
     const restored = remembered?.template === CE_FURNITURE_LOOT_TEMPLATE ? remembered : null;
     edit((f) => withKey(f, 'loot', checked ? (restored ?? { template: CE_FURNITURE_LOOT_TEMPLATE }) : undefined));
   };
+  const [openSetting, setOpenSetting] = useState<string | null>(null);
+  const rowOpen = (key: string) => ({
+    open: openSetting === key,
+    onOpenChange: (open: boolean) => setOpenSetting(open ? key : null),
+  });
 
   return (
-    <div className="flex flex-col gap-5">
-      <div className="flex flex-col gap-2">
-        <SegmentedControl
-          size="sm"
-          aria-label={t('ceFurniture.variant')}
-          value={name}
-          onChange={setSelected}
-          options={names.map((n) => ({
-            value: n,
-            // Anchor names come from core at runtime; a test checks each has a name in en and de
-            label: ANCHORS.includes(n) ? t(`ceFurniture.anchors.${n}` as never) : n,
-            className: variants[n] ? undefined : 'text-muted-foreground',
-          }))}
-        />
-        <p className="text-xs text-muted-foreground">{t('ceFurniture.variantHelp')}</p>
-      </div>
-
-      {!variant ? (
-        <div className="flex flex-col items-start gap-2 rounded-lg border border-dashed border-border p-4">
-          <p className="text-sm text-muted-foreground">{t('ceFurniture.variantMissing')}</p>
-          <Button size="sm" variant="outline" onClick={() => setVariant(newFurnitureVariant())}>
-            <Plus /> {t('ceFurniture.addVariant')}
+    <div className="@container/furniture flex min-w-0 flex-col gap-6">
+      <div className="flex min-w-0 flex-col gap-4">
+        <div className="flex min-w-0 flex-wrap items-center gap-2">
+          <SegmentedControl
+            size="sm"
+            aria-label={t('variant')}
+            value={name}
+            onChange={setSelected}
+            options={names.map((n) => ({
+              value: n,
+              label: labelOf(n),
+              className: variants[n] ? undefined : 'text-text-faint',
+            }))}
+          />
+          <Button type="button" variant="ghost" size="sm" className="text-primary hover:text-primary" onClick={() => void addVariant()}>
+            <Plus /> {tFurniture('addVariant')}
           </Button>
         </div>
-      ) : (
-        <>
-          <div className="grid gap-4 @3xl:grid-cols-[minmax(0,1.25fr)_minmax(0,1fr)]">
-            <div className="flex flex-col gap-1.5">
-              <FurniturePreview project={project} item={item} variantName={name} variant={variant} />
-              <p className="text-xs text-muted-foreground">{t('ceFurniture.previewHelp')}</p>
-            </div>
-            <div className="flex min-w-0 flex-col gap-3">
-              {isAnchor && (
-                <div className="grid grid-cols-2 gap-2">
-                  <RuleSelect
-                    label={t('ceFurniture.rotation')}
-                    value={String(rule.rotation ?? 'any').toLowerCase()}
-                    values={CE_FURNITURE_ROTATIONS}
-                    // Rule values come from core at runtime; a test checks each has a name in en and de
-                    name={(v) => t(`ceFurniture.rotations.${v}` as never)}
-                    onChange={(v) => setRule('rotation', v)}
-                  />
-                  <RuleSelect
-                    label={t('ceFurniture.alignment')}
-                    value={String(rule.alignment ?? 'any').toLowerCase()}
-                    values={CE_FURNITURE_ALIGNMENTS}
-                    name={(v) => t(`ceFurniture.alignments.${v}` as never)}
-                    onChange={(v) => setRule('alignment', v)}
-                  />
-                  <p className="col-span-full text-xs text-muted-foreground">{t('ceFurniture.rulesHelp')}</p>
-                </div>
-              )}
-              <div>
-                <Button size="sm" variant="outline" onClick={() => setVariant(undefined)}>
-                  <Trash2 /> {t('ceFurniture.removeVariant')}
-                </Button>
-              </div>
-            </div>
-          </div>
-          <FurnitureVariantEditor variant={variant} edit={editVariant} />
-        </>
-      )}
+        {variant ? (
+          <FurnitureVariantEditor
+            item={item}
+            name={name}
+            variant={variant}
+            edit={editVariant}
+            settings={
+              <VariantSettings
+                furniture={furniture}
+                name={name}
+                label={labelOf(name)}
+                variant={variant}
+                edit={edit}
+                editVariant={editVariant}
+                onRemove={() => removeCraftEngineFurnitureVariant(item.id, name)}
+              />
+            }
+          />
+        ) : (
+          <EmptyHint
+            actionLabel={tFurniture('addThisVariant', { name: labelOf(name) })}
+            onAction={() => addCraftEngineFurnitureVariant(item.id, name)}
+          >
+            {tFurniture('variantMissing', { name: labelOf(name) })}
+          </EmptyHint>
+        )}
+      </div>
 
-      <div className="flex flex-col gap-2">
-        <span className="flex items-center gap-1 text-sm font-medium">
-          {t('ceFurniture.settings')}
-          <DocsLink href={CE_DOCS.furnitureSettings} />
-        </span>
-        <div className="grid grid-cols-[repeat(auto-fill,minmax(11rem,1fr))] gap-2">
-          <label className="flex flex-col gap-1">
-            <span className="text-xs text-muted-foreground">{t('ceFurniture.hitTimes')}</span>
-            <NumberInput
-              label={t('ceFurniture.hitTimes')}
-              placeholder="1"
-              value={typeof settings.hit_times === 'number' ? settings.hit_times : undefined}
-              onChange={(n) => setSetting('hit_times', n, 'hit-times')}
+      <FurnitureGroup title={t('settings')} help={t('settingsHelp')} docs={{ url: CE_DOCS.furnitureSettings, target: 'craftengine' }}>
+        <FeatureList>
+          <FeatureRow
+            featureId="settings.hit_times"
+            label={t('hitTimes')}
+            yamlKey="settings.hit_times"
+            control={
+              <NumberInput
+                label={t('hitTimes')}
+                className="w-28 font-mono"
+                placeholder="1"
+                integer
+                min={1}
+                value={typeof settings.hit_times === 'number' ? settings.hit_times : undefined}
+                onChange={(n) => setSetting('hit_times', n, 'hit-times')}
+              />
+            }
+          />
+          {CE_FURNITURE_SETTINGS_FIELDS.map((field) => (
+            <FieldFeatureRow
+              key={field.key}
+              field={field}
+              value={settings[field.key]}
+              yamlKey={`settings.${field.key}`}
+              onChange={(value) => setSetting(field.key, value as ConfigValue | undefined, field.key)}
+              {...rowOpen(`settings.${field.key}`)}
             />
-          </label>
-          <KeyedFields fields={CE_FURNITURE_SETTINGS_FIELDS} object={settings} siblings={settings} set={setSetting} historyKey="setting" />
-        </div>
-        <p className="text-xs text-muted-foreground">{t('ceFurniture.settingsHelp')}</p>
-      </div>
+          ))}
+          {CE_FURNITURE_FIELDS.map((field) => (
+            <FieldFeatureRow
+              key={field.key}
+              field={field}
+              value={furniture[field.key]}
+              onChange={(value) => edit((f) => withKey(f, field.key, value as ConfigValue | undefined), `furniture-${field.key}`)}
+              {...rowOpen(field.key)}
+            />
+          ))}
+          <FeatureRow
+            featureId="loot"
+            label={t('loot')}
+            yamlKey="loot"
+            control={
+              <BooleanSwitch allowUnset={false} aria-label={t('loot')} value={dropsItem} onChange={(checked) => setDropsItem(!!checked)} />
+            }
+          />
+        </FeatureList>
+      </FurnitureGroup>
 
-      <KeyedFields
-        fields={CE_FURNITURE_FIELDS}
-        object={furniture}
-        siblings={furniture}
-        set={(key, value, historyKey) => edit((f) => withKey(f, key, value), historyKey)}
-        historyKey="furniture"
-      />
-
-      <div className="flex flex-col gap-2">
-        <span className="flex items-center gap-1 text-sm font-medium">
-          {t('ceFurniture.behaviors')}
-          <DocsLink href={CE_DOCS.furnitureBehaviors} />
-        </span>
-        <p className="text-xs text-muted-foreground">{t('ceFurniture.behaviorsHelp')}</p>
-        <FieldRenderer
-          field={CE_FURNITURE_BEHAVIOR_LIST}
-          // Lights written as text show as their position and level
-          value={withLightObjects(furniture[behaviors])}
-          hideLabel
-          onChange={(value) => edit((f) => withKey(f, behaviors, value as ConfigValue | undefined), 'behaviors')}
-        />
-      </div>
-
-      <CheckboxField checked={dropsItem} onChange={setDropsItem} label={t('ceFurniture.loot')} description={t('ceFurniture.lootHelp')} />
+      <FurnitureBehaviors furniture={furniture} edit={edit} />
     </div>
-  );
-}
-
-/**
- * CraftEngine: whether the item places furniture, and its variants (ground, wall, ceiling) with their elements,
- * hitboxes and seats, its settings and loot. An item is either a block or furniture, so the toggle is off while the
- * item places a block.
- */
-export function CraftEngineFurnitureSection({ item }: { item: Item }) {
-  const t = useTranslations('item');
-  const furniture = craftEngineFurniture(item.config);
-  const isBlock = craftEngineBlock(item.config) !== null;
-  return (
-    <Section title={t('ceFurniture.title')} description={t('ceFurniture.description')}>
-      <CheckboxField
-        checked={furniture !== null}
-        disabled={isBlock && furniture === null}
-        onChange={(checked) => setCraftEngineFurniture(item.id, checked)}
-        label={t('ceFurniture.toggle')}
-        description={isBlock && furniture === null ? t('ceFurniture.toggleBlocked') : t('ceFurniture.toggleHelp')}
-      />
-      {furniture && <FurnitureEditor item={item} furniture={furniture} />}
-    </Section>
   );
 }

@@ -1,6 +1,7 @@
 /**
- * 3D previews of CraftEngine display elements: one variant of a furniture (its elements with their transforms,
- * hitboxes and seats) and the entity renderer of a block's state (its elements in the block's outline).
+ * 3D previews of furniture: one variant of a CraftEngine furniture (its display elements with their transforms,
+ * hitboxes and seats), the entity renderer of a CraftEngine block's state (its elements in the block's outline) and a
+ * Nexo furniture (the item's model with its display properties, hitboxes and seats).
  */
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { RotateCcw } from 'lucide-react';
@@ -16,6 +17,7 @@ import {
   variantList,
   type Vec3,
 } from '@resourcepackbuilder/core/craftEngine';
+import { type NexoHitbox, nexoHitboxEntries, parseNexoHitbox, parseNexoSeat } from '@resourcepackbuilder/core/nexo';
 import type { Item, Project } from '@resourcepackbuilder/core/project';
 import type { DisplaySlot, ImportedModel } from '@resourcepackbuilder/minecraft';
 import {
@@ -101,6 +103,69 @@ function rendererScene(project: Project, item: Item, state: Record<string, unkno
   return { elements: sceneElements(project, item, poses, blockElementMatrix), hitboxes: [BLOCK_OUTLINE], seats: [] };
 }
 
+/** A vector `x,y,z` of a Nexo display property, or `fallback`. */
+function nexoVector(value: unknown, fallback: Vec3): Vec3 {
+  const parts = typeof value === 'string' ? value.split(',').map((part) => Number(part.trim())) : [];
+  return parts.length === 3 && parts.every(Number.isFinite) ? (parts as Vec3) : fallback;
+}
+
+/** The space a Nexo hitbox takes, in the furniture's frame (blocks, standing on the furniture's block). */
+function nexoHitboxBox(hitbox: NexoHitbox): { min: Vec3; max: Vec3 } {
+  const cube = ([x, y, z]: Vec3, width: number, height = width) => ({
+    min: [x - width / 2, y, z - width / 2] as Vec3,
+    max: [x + width / 2, y + height, z + width / 2] as Vec3,
+  });
+  switch (hitbox.kind) {
+    case 'barriers':
+      // Barrier blocks fill whole blocks from `from` to `to`
+      return {
+        min: [hitbox.from[0] - 0.5, hitbox.from[1], hitbox.from[2] - 0.5],
+        max: [hitbox.to[0] + 0.5, hitbox.to[1] + 1, hitbox.to[2] + 0.5],
+      };
+    case 'interactions':
+      return cube(hitbox.position, hitbox.width ?? 1, hitbox.height ?? 1);
+    case 'shulkers':
+      return cube(hitbox.position, hitbox.scale);
+    case 'ghasts':
+      // A happy ghast is 4 blocks wide at scale 1 (0.25 = one block)
+      return cube(hitbox.position, 4 * hitbox.scale);
+  }
+}
+
+/**
+ * The scene of a Nexo furniture: the item's model as an item display at the block's center with the furniture's
+ * `properties` (translation, scale, display transform; rotations are left out), its hitboxes and its seats.
+ */
+function nexoFurnitureScene(item: Item, furniture: Record<string, unknown>): FurnitureScene {
+  const properties = (furniture.properties ?? {}) as Record<string, unknown>;
+  const transform = typeof properties.display_transform === 'string' ? properties.display_transform.toLowerCase() : 'none';
+  const model = item.model;
+  const matrix = furnitureElementMatrix({
+    position: [0, 0.5, 0],
+    translation: nexoVector(properties.translation, [0, 0, 0]),
+    scale: nexoVector(properties.scale, [1, 1, 1]),
+    rotation: [0, 0, 0, 1],
+    yaw: 0,
+    pitch: 0,
+    flip: true,
+  });
+  const hitboxes = nexoHitboxEntries(furniture.hitbox)
+    .map((entry) => parseNexoHitbox(entry.kind, entry.text))
+    .filter((hitbox): hitbox is NexoHitbox => hitbox !== null);
+  const seats = (Array.isArray(furniture.seats) ? furniture.seats : [furniture.seats]).map(parseNexoSeat).filter((seat) => seat !== null);
+  return {
+    elements: [
+      {
+        model: model && previewModel(model),
+        matrix,
+        display: transform === 'none' ? undefined : model?.json.display?.[transform as DisplaySlot],
+      },
+    ],
+    hitboxes: hitboxes.map(nexoHitboxBox),
+    seats: seats.map((seat) => seat.position),
+  };
+}
+
 /** A stage showing `scene`; the camera is framed on it when `frameKey` changes or the view is reset. */
 function ScenePreview({ scene, frameKey, height }: { scene: FurnitureScene; frameKey: string; height: number }) {
   const t = useTranslations('preview');
@@ -134,15 +199,15 @@ function ScenePreview({ scene, frameKey, height }: { scene: FurnitureScene; fram
   }, [scene, frameKey, resetCounter]);
 
   return (
-    <div className="relative overflow-hidden rounded-lg border border-border bg-background" style={{ height }}>
+    <div className="relative overflow-hidden rounded-xl border border-line bg-surface-sunken" style={{ height }}>
       <div ref={attachStage} className="absolute inset-0 [&>canvas]:block [&>canvas]:size-full" />
       {isWebglUnavailable ? (
-        <div className="absolute inset-0 grid place-items-center bg-background p-5 text-center text-[13px] text-muted-foreground">
+        <div className="absolute inset-0 grid place-items-center bg-surface-sunken p-5 text-center text-label text-text-muted">
           {t('webglUnavailable')}
         </div>
       ) : (
         <div className="absolute top-2 right-2">
-          <IconButton label={t('resetView')} variant="outline" className="bg-card" onClick={() => setResetCounter((c) => c + 1)}>
+          <IconButton label={t('resetView')} variant="outline" className="bg-surface" onClick={() => setResetCounter((c) => c + 1)}>
             <RotateCcw />
           </IconButton>
         </div>
@@ -185,4 +250,18 @@ export function BlockRendererPreview({
 }) {
   const scene = useMemo(() => rendererScene(project, item, state), [project, item, state]);
   return <ScenePreview scene={scene} frameKey={stateName} height={height} />;
+}
+
+/** The preview of a Nexo furniture (`furniture` is the item's `Mechanics.furniture`). */
+export function NexoFurniturePreview({
+  item,
+  furniture,
+  height = 280,
+}: {
+  item: Item;
+  furniture: Record<string, unknown>;
+  height?: number;
+}) {
+  const scene = useMemo(() => nexoFurnitureScene(item, furniture), [item, furniture]);
+  return <ScenePreview scene={scene} frameKey={item.id} height={height} />;
 }
