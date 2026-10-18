@@ -2,6 +2,8 @@
 
 ## Unreleased
 
+## 2.0.0
+
 ### Fixed
 
 - **Test server:** a start that failed (for example because port 25565 was taken) left a half-created world, and every
@@ -78,6 +80,11 @@
 - The Electron code is type-checked against a shared IPC contract; the desktop bridge is now
   `window.resourcepackBuilder`.
 - ESLint and Prettier for the whole repository; CI runs lint, typecheck and tests on Linux and Windows.
+
+### Download
+
+- **`ResourcepackBuilder-Setup-2.0.0.exe`**: installer with Start menu and desktop shortcuts.
+- **`ResourcepackBuilder-2.0.0-portable.exe`**: run without installing.
 
 ## 1.4.0
 
