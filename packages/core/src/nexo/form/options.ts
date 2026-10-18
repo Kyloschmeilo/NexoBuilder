@@ -103,7 +103,8 @@ export const TRACKING_ROTATIONS = labeled('trackingRotations', ['FIXED', 'VERTIC
 export const TOOL_TIERS = plainOptions(['WOODEN', 'STONE', 'IRON', 'GOLDEN', 'DIAMOND', 'NETHERITE']);
 export const TOOL_TYPES = plainOptions(['PICKAXE', 'AXE', 'SHOVEL', 'HOE', 'SWORD']);
 
-export const STORAGE_TYPES = labeled('storageTypes', ['STORAGE', 'PERSONAL', 'ENDERCHEST', 'DISPOSAL']);
+/** Storage types; SHULKER is read by Nexo 1.30 but not in its docs yet. */
+export const STORAGE_TYPES = labeled('storageTypes', ['STORAGE', 'PERSONAL', 'ENDERCHEST', 'DISPOSAL', 'SHULKER']);
 
 export const CUSTOM_BLOCK_TYPES = labeled('customBlockTypes', ['NOTEBLOCK', 'STRINGBLOCK', 'CHORUSBLOCK']);
 
@@ -121,7 +122,11 @@ export const CUSTOM_EVENTS = labeled('customEvents', [
   'CLICK:left:air',
   'CLICK:all:all',
   'INV_CLICK:all:all',
+  'INV_CLICK:right:all',
   'INV_CLICK:right:shift',
+  'INV_CLICK:left:all',
+  'INV_CLICK:left:shift',
+  'INV_CLICK:middle:all',
   'DROP',
   'PICKUP',
   'BREAK',
@@ -130,6 +135,28 @@ export const CUSTOM_EVENTS = labeled('customEvents', [
   'DEATH',
   'DROP_ALL',
 ]);
+
+/** Note block instrument sounds a NoteBlock can play (Mechanics.custom_block.instrument, Nexo default: bass). */
+export const NOTEBLOCK_INSTRUMENTS = plainOptions(
+  [
+    'harp',
+    'bass',
+    'basedrum',
+    'snare',
+    'hat',
+    'bell',
+    'flute',
+    'chime',
+    'guitar',
+    'xylophone',
+    'iron_xylophone',
+    'cow_bell',
+    'didgeridoo',
+    'bit',
+    'banjo',
+    'pling',
+  ].map((instrument) => `block.note_block.${instrument}`),
+);
 
 /** Common vanilla sound events. */
 export const SOUND_SUGGESTIONS = plainOptions(SOUND_EVENTS);

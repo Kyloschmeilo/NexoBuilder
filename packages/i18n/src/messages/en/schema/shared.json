@@ -125,27 +125,28 @@
             "inExplosion": {
               "label": "Also drop on explosion"
             },
-            "minecraftItem": {
-              "label": "Minecraft item stack",
-              "help": "An item stack as Nexo's in-game builders save it (YAML). Read by Nexo 1.30, not listed in the docs."
-            },
             "crucibleItem": {
-              "label": "MythicCrucible item",
-              "placeholder": "Item ID"
+              "label": "or Crucible item"
+            },
+            "minecraftItem": {
+              "label": "or Minecraft item stack",
+              "help": "An item stack as Nexo's in-game builders save it (YAML). Nexo 1.30 reads this key; the Nexo docs do not list it yet."
             },
             "mmoitemsType": {
-              "label": "MMOItems type",
-              "placeholder": "e.g. SWORD"
+              "label": "or MMOItems type",
+              "help": "Nexo 1.30 reads mmoitems_type; the Nexo docs spell it mmoitem_type."
             },
             "mmoitemsId": {
               "label": "MMOItems ID",
-              "placeholder": "e.g. FALCON_BLADE"
+              "help": "Nexo 1.30 reads mmoitems_id; the Nexo docs spell it mmoitem_id."
             },
             "minAmount": {
-              "label": "Min amount"
+              "label": "Minimum amount",
+              "help": "Nexo 1.30 reads this key; the Nexo docs do not list it yet."
             },
             "maxAmount": {
-              "label": "Max amount"
+              "label": "Maximum amount",
+              "help": "Nexo 1.30 reads this key; the Nexo docs do not list it yet."
             }
           }
         }
@@ -168,6 +169,21 @@
         },
         "fallSound": {
           "label": "Fall"
+        },
+        "place": {
+          "label": "Place, with volume and pitch"
+        },
+        "break": {
+          "label": "Break, with volume and pitch"
+        },
+        "hit": {
+          "label": "Hit, with volume and pitch"
+        },
+        "step": {
+          "label": "Step, with volume and pitch"
+        },
+        "fall": {
+          "label": "Fall, with volume and pitch"
         }
       }
     },
@@ -190,6 +206,22 @@
         },
         "closeSound": {
           "label": "Sound on close"
+        },
+        "volume": {
+          "label": "Sound volume",
+          "help": "Nexo 1.30 reads this key; the Nexo docs do not list it yet."
+        },
+        "pitch": {
+          "label": "Sound pitch",
+          "help": "Nexo 1.30 reads this key; the Nexo docs do not list it yet."
+        },
+        "openAnimation": {
+          "label": "Animation on open",
+          "help": "Nexo 1.30 reads this key; the Nexo docs do not list it yet."
+        },
+        "closeAnimation": {
+          "label": "Animation on close",
+          "help": "Nexo 1.30 reads this key; the Nexo docs do not list it yet."
         }
       }
     },
@@ -400,6 +432,28 @@
         },
         "scale": {
           "label": "Scale (x,y,z)"
+        },
+        "leftRotation": {
+          "label": "Left rotation (degrees or x,y,z,w)",
+          "placeholder": "45"
+        },
+        "rightRotation": {
+          "label": "Right rotation (degrees or x,y,z,w)",
+          "placeholder": "0"
+        },
+        "brightness": {
+          "label": "Override brightness",
+          "fields": {
+            "blockLight": {
+              "label": "Block light"
+            },
+            "skyLight": {
+              "label": "Sky light"
+            }
+          }
+        },
+        "viewRange": {
+          "label": "View range"
         }
       }
     },
@@ -415,6 +469,47 @@
         "actions": {
           "label": "Actions",
           "placeholder": "[console] say hello '<'player>"
+        }
+      }
+    },
+    "soundSettings": {
+      "volumePlaceholder": "1.0",
+      "pitchPlaceholder": "1.0",
+      "choices": {
+        "key": {
+          "label": "Sound",
+          "field": {
+            "label": "Sound"
+          }
+        },
+        "settings": {
+          "label": "With volume and pitch",
+          "field": {
+            "fields": {
+              "sound": {
+                "label": "Sound"
+              },
+              "volume": {
+                "label": "Volume"
+              },
+              "pitch": {
+                "label": "Pitch"
+              }
+            }
+          }
+        }
+      }
+    },
+    "blockSoundEvent": {
+      "fields": {
+        "sound": {
+          "label": "Sound"
+        },
+        "volume": {
+          "label": "Volume"
+        },
+        "pitch": {
+          "label": "Pitch"
         }
       }
     }

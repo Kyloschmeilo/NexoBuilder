@@ -7,7 +7,11 @@ import {
   createRecipe,
   insertFolder,
   insertItem,
+  DIRECTIONAL_MODEL_SLOTS,
+  FURNITURE_MODEL_SLOTS,
   isVariantForTarget,
+  STACK_MODELS,
+  stateDef,
   type Item,
   type Project,
   type RecipeType,
@@ -212,9 +216,10 @@ describe('CraftEngine variants', () => {
 
   it('offers only the variant slots its models list uses', () => {
     const used = new Set(Object.values(CE_MODEL_SLOTS).flatMap((slots) => slots.map((s) => s.slot)));
-    const offered = VARIANTS.filter((def) => isVariantForTarget(def, 'craftengine')).map((def) => def.slot);
+    const all = [...VARIANTS, ...FURNITURE_MODEL_SLOTS, STACK_MODELS, ...DIRECTIONAL_MODEL_SLOTS, stateDef('open')];
+    const offered = all.filter((def) => isVariantForTarget(def, 'craftengine')).map((def) => def.slot);
     expect(offered.filter((slot) => !used.has(slot))).toEqual([]);
-    expect(VARIANTS.filter((def) => !isVariantForTarget(def, 'nexo'))).toEqual([]);
+    expect(all.filter((def) => !isVariantForTarget(def, 'nexo'))).toEqual([]);
   });
 });
 

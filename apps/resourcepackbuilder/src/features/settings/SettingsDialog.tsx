@@ -6,6 +6,7 @@ import { Card, CardContent } from '@resourcepackbuilder/ui/components/card';
 import { createDialogHandle } from '@resourcepackbuilder/ui/components/dialog';
 import { FieldDescription, FieldLegend, FieldSet } from '@resourcepackbuilder/ui/components/field';
 import { DialogFrame, FeatureDialog } from '../../components/DialogFrame';
+import { AppearanceSettings } from './AppearanceSettings';
 import { DeviceSettings } from './DeviceSettings';
 import { ProjectSettings } from './ProjectSettings';
 
@@ -13,7 +14,7 @@ function SettingsGroup({ title, description, children }: { title: string; descri
   return (
     <FieldSet>
       <div>
-        <FieldLegend className="font-heading tracking-wide uppercase">{title}</FieldLegend>
+        <FieldLegend>{title}</FieldLegend>
         <FieldDescription>{description}</FieldDescription>
       </div>
       {children}
@@ -38,9 +39,12 @@ function SettingsFrame() {
           <ProjectSettings />
         </SettingsGroup>
         <Card variant="muted">
-          <CardContent>
+          <CardContent className="flex flex-col gap-6">
             <SettingsGroup title={t('device.title')} description={t('device.description')}>
               <DeviceSettings />
+            </SettingsGroup>
+            <SettingsGroup title={t('appearance.title')} description={t('appearance.description')}>
+              <AppearanceSettings />
             </SettingsGroup>
           </CardContent>
         </Card>

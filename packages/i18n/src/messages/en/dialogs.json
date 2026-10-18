@@ -32,6 +32,35 @@
     },
     "languageHelp": "The language ResourcepackBuilder is shown in.",
     "themeHelp": "“System” follows your operating system’s setting.",
+    "appearance": {
+      "title": "Appearance",
+      "description": "How ResourcepackBuilder looks on this device."
+    },
+    "colorTheme": "Color theme",
+    "colorThemeHelp": "Changes the colors of the whole app. Every theme comes in light and dark.",
+    "mode": "Light or dark",
+    "colorThemes": {
+      "deepslate": {
+        "name": "Deepslate",
+        "description": "Cool slate, lapis accent"
+      },
+      "amethyst": {
+        "name": "Amethyst",
+        "description": "Violet-tinted, amethyst accent"
+      },
+      "copper": {
+        "name": "Copper",
+        "description": "Warm stone, copper accent"
+      },
+      "prismarine": {
+        "name": "Prismarine",
+        "description": "Deep sea green, teal accent"
+      },
+      "crimson": {
+        "name": "Crimson",
+        "description": "Nether brick, crimson accent"
+      }
+    },
     "projectName": "Project name",
     "minecraftVersion": "Server Minecraft version",
     "target": "Server plugin",

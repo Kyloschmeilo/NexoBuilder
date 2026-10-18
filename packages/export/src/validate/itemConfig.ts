@@ -1,13 +1,37 @@
-/** Checks of an item's configuration (properties, field formats, custom block, stack size). */
+/** Checks of an item's configuration (properties, field formats, custom block, furniture hitbox, stack size). */
 import { getPath, isPlainObject, labelArg, MODEL_TOKEN, schemaKey } from '@resourcepackbuilder/utils';
 import { versionSupport } from '@resourcepackbuilder/minecraft';
-import { type Item, itemLabel, MATERIAL_PATTERN, propertyFrame, slotForMaterial } from '@resourcepackbuilder/core/project';
+import {
+  DIRECTIONAL_FACES,
+  type Item,
+  itemLabel,
+  MATERIAL_PATTERN,
+  propertyFrame,
+  slotForMaterial,
+} from '@resourcepackbuilder/core/project';
 import { checkFieldValue, getPropertyValue, type PropertyDef } from '@resourcepackbuilder/core/form';
 import { PROPERTIES } from '@resourcepackbuilder/core/nexo';
 import type { ItemExport } from '../types';
 
 /** Highest custom_variation per block type (Nexo limits) */
 const BLOCK_VARIATION_LIMITS: Record<string, number> = { NOTEBLOCK: 1149, STRINGBLOCK: 127, CHORUSBLOCK: 63 };
+
+const NUMBER = String.raw`-?\d+(?:\.\d+)?`;
+const OFFSET = String.raw`${NUMBER}\s*,\s*${NUMBER}\s*,\s*${NUMBER}`;
+/** A coordinate of a barrier, which may be a range such as `0..2` */
+const RANGE = String.raw`${NUMBER}(?:\.\.${NUMBER})?`;
+
+/**
+ * The entry formats of each hitbox kind (furniture-mechanic/hitbox in the Nexo docs): barriers `x,y,z` (ranges
+ * allowed), interactions `x,y,z width,height`, shulkers `x,y,z scale length [direction] [visible]`, ghasts
+ * `x,y,z scale [rotation] [visible]`.
+ */
+const HITBOX_PATTERNS: Record<string, RegExp> = {
+  barriers: new RegExp(String.raw`^${RANGE}\s*,\s*${RANGE}\s*,\s*${RANGE}$`),
+  interactions: new RegExp(String.raw`^${OFFSET}(?:\s+${NUMBER}\s*,\s*${NUMBER})?$`),
+  shulkers: new RegExp(String.raw`^${OFFSET}\s+${NUMBER}\s+${NUMBER}(?:\s+[A-Za-z_]+)?(?:\s+(?:true|false))?$`, 'i'),
+  ghasts: new RegExp(String.raw`^${OFFSET}\s+${NUMBER}(?:\s+${NUMBER})?(?:\s+(?:true|false))?$`, 'i'),
+};
 
 export interface ItemConfigChecks {
   /** The built configuration (what ends up in the YAML) */
@@ -31,19 +55,27 @@ export function validateItemConfig(itemExport: ItemExport, { config, usedVariati
   if (isPlainObject(block)) {
     const type = typeof block.type === 'string' ? block.type : '';
     if (!type) report('error', 'plan.blockTypeMissing');
-    const variation = block.custom_variation;
-    if (typeof variation === 'number' && type in BLOCK_VARIATION_LIMITS) {
+    const directional = isPlainObject(block.directional) ? block.directional : null;
+    if (directional && type && type !== 'NOTEBLOCK') report('warning', 'plan.directionalNeedsNoteblock', { type });
+    if (type in BLOCK_VARIATION_LIMITS) {
+      // The block's own variation and those of its directional faces (a face may reuse the block's own one)
+      const faceVariations = directional ? DIRECTIONAL_FACES.map((face) => directional[`${face}_variation`]) : [];
+      const variations = new Set([block.custom_variation, ...faceVariations].filter((v): v is number => typeof v === 'number'));
       const max = BLOCK_VARIATION_LIMITS[type];
-      if (variation < 1 || variation > max) report('error', 'plan.blockVariationRange', { variation, max, type });
-      const key = `${type}:${variation}`;
-      const other = usedVariations.get(key);
-      if (other) report('error', 'plan.blockVariationDuplicate', { variation, type, other: itemLabel(other) });
-      else usedVariations.set(key, item);
+      for (const variation of variations) {
+        if (variation < 1 || variation > max) report('error', 'plan.blockVariationRange', { variation, max, type });
+        const key = `${type}:${variation}`;
+        const other = usedVariations.get(key);
+        if (other) report('error', 'plan.blockVariationDuplicate', { variation, type, other: itemLabel(other) });
+        else usedVariations.set(key, item);
+      }
     }
     if (!item.model && (block.model === undefined || block.model === MODEL_TOKEN)) {
       report('warning', 'plan.blockWithoutModel');
     }
   }
+
+  validateHitbox(itemExport);
 
   if (item.armor?.set.trim() && armorSlot === null && typeof material === 'string' && !slotForMaterial(material)) {
     const equippable = getPath(item.config, ['Components', 'equippable']);
@@ -54,6 +86,21 @@ export function validateItemConfig(itemExport: ItemExport, { config, usedVariati
   if (isPlainObject(components)) {
     const stack = components.max_stack_size;
     if (typeof stack === 'number' && components.max_damage !== undefined && stack > 1) report('error', 'plan.damageableStackable');
+  }
+}
+
+/** Warns about furniture hitbox entries whose format Nexo cannot read. */
+function validateHitbox({ item, report }: ItemExport): void {
+  const hitbox = getPath(item.config, ['Mechanics', 'furniture', 'hitbox']);
+  if (!isPlainObject(hitbox)) return;
+  for (const [kind, pattern] of Object.entries(HITBOX_PATTERNS)) {
+    const value = hitbox[kind];
+    const entries = typeof value === 'string' ? [value] : Array.isArray(value) ? value : [];
+    for (const entry of entries) {
+      if (typeof entry === 'string' && entry.trim() && !pattern.test(entry.trim())) {
+        report('warning', 'plan.hitboxEntryInvalid', { kind, entry });
+      }
+    }
   }
 }
 

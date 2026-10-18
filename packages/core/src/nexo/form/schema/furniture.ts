@@ -1,5 +1,6 @@
 /** The furniture mechanic (Mechanics.furniture) – the largest property, hence its own module. */
 import { CULLABLE_STATES, DISPLAY_TRANSFORMS, TRACKING_ROTATIONS } from '../options';
+import { isPlainObject } from '@resourcepackbuilder/utils';
 import { field, type PropertySpec } from '../../../form/build';
 import { NEXO_DOCS } from './docs';
 import {
@@ -8,6 +9,7 @@ import {
   clickActionsField,
   dropField,
   furnitureStatesField,
+  JAR_ONLY,
   limitedPlacingField,
   soundField,
   storageField,
@@ -54,11 +56,23 @@ export const FURNITURE: PropertySpec = {
         cullable: field.select(CULLABLE_STATES, { docs: DOCS.culling }),
         display_width: field.number({ min: 0, step: 0.1, docs: DOCS.culling }),
         display_height: field.number({ min: 0, step: 0.1, docs: DOCS.culling }),
+        delay: field.text({ format: 'duration', placeholder: true, help: true, advanced: true, docs: DOCS.otherProperties }),
       },
       { docs: DOCS.properties },
     ),
-    rotatable: field.boolean({ docs: DOCS.rotatable }),
-    restricted_rotation: field.select(['STRICT', 'VERY_STRICT'], { docs: DOCS.restrictedRotation }),
+    rotatable: field.choice(
+      {
+        simple: { field: field.boolean(), matches: (value) => typeof value === 'boolean', newValue: () => true },
+        // Nexo 1.30 also reads a section that can limit rotating to sneaking players
+        section: {
+          field: field.object({ rotatable: field.boolean(), on_sneak: field.boolean() }),
+          matches: isPlainObject,
+          newValue: () => ({ rotatable: true, on_sneak: true }),
+        },
+      },
+      { docs: DOCS.rotatable },
+    ),
+    restricted_rotation: field.select(['NONE', 'STRICT', 'VERY_STRICT'], { docs: DOCS.restrictedRotation }),
     waterloggable: field.boolean({ docs: DOCS.waterloggable }),
     seats: field.stringList({ placeholder: true, docs: DOCS.seats }),
     beds: field.stringList({ placeholder: true, docs: DOCS.beds }),
@@ -116,11 +130,15 @@ export const FURNITURE: PropertySpec = {
         light_boost: field.boolean(),
         bone_meal_chance: field.number({ min: 0, max: 1, step: 0.05 }),
         next_stage: field.text(),
+        minimum_light_level: field.number({ integer: true, min: 0, max: 15, ...JAR_ONLY }),
+        boost_tick: field.number({ integer: true, min: 0, ...JAR_ONLY }),
+        rain_boost_tick: field.number({ integer: true, min: 0, ...JAR_ONLY }),
       },
       { docs: DOCS.evolution },
     ),
     preview_placement: field.object(
       {
+        enabled: field.boolean(),
         opacity: field.number({ min: 0, max: 1, step: 0.05 }),
         require_permission: field.boolean(),
       },
@@ -130,6 +148,11 @@ export const FURNITURE: PropertySpec = {
     modelengine_id: field.text({ name: 'ModelEngine ID', placeholder: true, docs: DOCS.modelengine }),
     clickActions: { ...clickActionsField(), docs: NEXO_DOCS.mechanics.clickActions },
     placements: field.yaml({ help: true, placeholder: true, docs: DOCS.placements }),
+    item: field.text({ placeholder: true, help: true, docs: DOCS.evolution }),
+    farmland_required: field.boolean({ ...JAR_ONLY, docs: DOCS.evolution }),
+    item_model: field.text({ format: 'resource', help: true, advanced: true, docs: DOCS.placements }),
+    hardness: field.number({ min: 0, step: 0.5, ...JAR_ONLY }),
+    blast_resistance: field.number({ min: 0, step: 0.5, ...JAR_ONLY }),
   }),
   defaultValue: () => ({ hitbox: { barriers: ['0,0,0'] }, rotatable: true }),
 };

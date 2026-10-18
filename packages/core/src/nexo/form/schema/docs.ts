@@ -141,7 +141,9 @@ export const NEXO_DOCS = {
     smelting: `${ALL_MECHANICS}#smelting`,
     itemtype: `${ALL_MECHANICS}#itemtype`,
     custom: `${DOCS}/mechanics/custom-mechanic`,
+    customEvents: `${DOCS}/mechanics/custom-mechanic#available-events`,
     trident: `${DOCS}/mechanics/custom-trident`,
+    tridentSounds: `${DOCS}/mechanics/custom-trident#trident-sounds`,
     clickActions: CLICK_ACTIONS,
   },
   /** How a config refers to a file of the resource pack (`Pack.model`, textures, namespaces) */
@@ -204,6 +206,7 @@ const VARIANT_DOCS: Array<[prefix: string, docs: string]> = [
   ['state:', NEXO_DOCS.furniture.states],
   ['stack_models', NEXO_DOCS.customBlock.stackable],
   ['broken_model', `${ITEMS}/itemmodel-builder/condition-itemmodel`],
+  ['dir_', NEXO_DOCS.customBlock.directional],
 ];
 
 /** The documentation section of a model variant slot. */
