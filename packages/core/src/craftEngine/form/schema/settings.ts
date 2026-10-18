@@ -2,7 +2,8 @@ import { CE_DAMAGE_CAUSES, CE_EQUIPMENT_SLOTS, CE_GLOW_COLORS, CE_ITEM_TAGS } fr
 import { ARMOR_PROPERTY } from '../../../form/armor';
 import { field, properties, type FieldSpecs } from '../../../form/build';
 import { attributeModifierList, equipmentSetPartList } from '../../attributes';
-import { CE_DOCS, withDocs } from './docs';
+import { withDocs } from '../../../form/docs';
+import { CE_DOCS } from './docs';
 
 /** One repair entry: which items (ids or `#tags`) it repairs and how much durability it restores */
 const repairEntry = (extra: FieldSpecs = {}) =>

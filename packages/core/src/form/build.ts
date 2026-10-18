@@ -35,11 +35,18 @@ interface PropertyBase {
   conflicts?: string[];
   /** Hint shown above the form – message key in the form's namespace */
   hint?: string;
+  /** URL of the property's page (or section) in the plugin's documentation */
   docs?: string;
   /** Write an empty object anyway (mechanic active, even without options) */
   keepEmpty?: boolean;
   /** Shown as a badge next to the label: the property needs a paid edition of the plugin */
   badge?: PropertyBadge;
+  /** Sub-group within the property's group that a catalog of properties sorts it into (e.g. `food`) */
+  category?: string;
+  /** A property most items use, offered first when adding one */
+  common?: boolean;
+  /** Other words a search for the property matches (e.g. `stack size` for `max_stack_size`) */
+  aliases?: string[];
 }
 
 /** A badge a property can carry (`premium`: CraftEngine Premium only) */
@@ -258,6 +265,9 @@ export interface PropertySpec {
   docs?: string;
   keepEmpty?: boolean;
   badge?: PropertyBadge;
+  category?: string;
+  common?: boolean;
+  aliases?: string[];
   /** Stored in an item field instead of the config: `item.armor` or `item.translations` */
   storage?: ItemFieldStorage;
 }

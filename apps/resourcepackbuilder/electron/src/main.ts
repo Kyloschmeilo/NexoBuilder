@@ -116,7 +116,7 @@ function buildMenu() {
       label: t('menu.help'),
       submenu: [
         { label: t('menu.nexoDocs'), click: () => openExternal('https://docs.nexomc.com/') },
-        { label: t('menu.craftEngineDocs'), click: () => openExternal('https://momirealms.net/craft-engine-wiki') },
+        { label: t('menu.craftEngineDocs'), click: () => openExternal('https://xiao-momi.github.io/craft-engine-wiki/') },
         { label: 'Blockbench', click: () => openExternal('https://www.blockbench.net/') },
         { type: 'separator' },
         {

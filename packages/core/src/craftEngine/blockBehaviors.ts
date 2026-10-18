@@ -7,6 +7,7 @@
 import { isPlainObject } from '@resourcepackbuilder/utils';
 import type { ConfigObject, ConfigValue, Item, Project } from '../project/types';
 import { effectiveCraftEngineBlock } from './block';
+import { ceBlockBehaviorDocs } from './form/schema/docs';
 import { blockStates, CE_STATE_TEMPLATES, statesTemplate, templateArguments } from './blockStates';
 import { craftEngineItemKey } from './yaml';
 
@@ -148,6 +149,8 @@ export interface BlockBehaviorForm {
   plant?: boolean;
   /** The item behavior that places it (a door is two blocks high) */
   itemBehavior?: string;
+  /** The behavior's page in the CraftEngine wiki */
+  docs: string;
 }
 
 const prop = (key: string) => `block.behavior.${key}`;
@@ -180,8 +183,8 @@ function stagedStates(name: string, last: number, autoState: string): ConfigObje
   };
 }
 
-/** The behaviors the editor has a form for (their vanilla blocks: CE_DEFAULT_BASE_BLOCKS). */
-export const CE_BLOCK_BEHAVIOR_FORMS: BlockBehaviorForm[] = [
+/** The behaviors the editor has a form for (their vanilla blocks: CE_DEFAULT_BASE_BLOCKS), without their wiki pages. */
+const FORMS: Array<Omit<BlockBehaviorForm, 'docs'>> = [
   {
     type: 'slab_block',
     properties: [arg('slab_base_block')],
@@ -280,6 +283,9 @@ export const CE_BLOCK_BEHAVIOR_FORMS: BlockBehaviorForm[] = [
     preset: () => ({ behavior: { type: 'simple_storage_block', rows: 3 } }),
   },
 ];
+
+/** The behaviors the editor has a form for, each with its wiki page. */
+export const CE_BLOCK_BEHAVIOR_FORMS: BlockBehaviorForm[] = FORMS.map((form) => ({ ...form, docs: ceBlockBehaviorDocs(form.type) }));
 
 /** The form of a behavior type, undefined when the editor has none (other behaviors live in the YAML). */
 export function blockBehaviorForm(type: unknown): BlockBehaviorForm | undefined {

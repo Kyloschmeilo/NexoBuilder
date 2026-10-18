@@ -1,7 +1,8 @@
 import { CE_BLOCK_SOUNDS, CE_BLOCK_TAGS, CE_INSTRUMENTS, CE_PUSH_REACTIONS } from '../options';
 import { field, properties, type PropertySpec } from '../../../form/build';
 import { CE_SETTINGS_TEMPLATE_OPTIONS } from '../../templates';
-import { CE_DOCS, withDocs } from './docs';
+import { withDocs } from '../../../form/docs';
+import { CE_DOCS } from './docs';
 
 const sound = () => field.text({ suggestions: CE_BLOCK_SOUNDS, placeholder: true });
 const lightLevel = () => field.number({ integer: true, min: 0, max: 15 });

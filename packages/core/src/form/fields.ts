@@ -24,6 +24,10 @@ export interface BaseField {
   showIf?: { key: string; values: Array<string | boolean | number> };
   /** Required Minecraft version for this field */
   minVersion?: string;
+  /** URL of the field's section in the plugin's documentation, when it has one of its own */
+  docs?: string;
+  /** A field few items need, which the editor may tuck away behind the common ones */
+  advanced?: boolean;
 }
 
 export interface TextField extends BaseField {
@@ -134,6 +138,10 @@ export interface TypedType {
   fields: Field[];
   /** Only the paid edition of the plugin reads this type */
   premium?: boolean;
+  /** URL of the type's page (or section) in the plugin's documentation */
+  docs?: string;
+  /** Sub-group of the catalog the type is listed under (e.g. `player` for functions acting on players) */
+  category?: string;
 }
 
 /**
