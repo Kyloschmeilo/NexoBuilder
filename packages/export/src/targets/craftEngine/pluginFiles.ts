@@ -1,16 +1,17 @@
 /**
  * The files of plugins/CraftEngine: the project's pack.yml, its item configs (with their blocks, furniture and
  * recipes) grouped by file, the configs of its glyphs, sounds and paintings, its armor sets (equipments.yml), its
- * folders as categories (categories.yml, when the project setting is on), its lang files (item and block names
- * and the project's own lang keys), its loot sources (loot_sources.yml), its templates (templates.yml), its global
- * variables (global_variables.yml), its attribute system (attributes.yml) and its other project-level sections
- * (projectSections.ts).
+ * own categories and, with the project setting on, its folders as categories (categories.yml), its lang files (item
+ * and block names and the project's own lang keys), its loot sources (loot_sources.yml), its templates
+ * (templates.yml), its global variables (global_variables.yml), its attribute system (attributes.yml) and its other
+ * project-level sections (projectSections.ts).
  */
 import { createIssue, groupBy, type Issue, type IssueCode, type IssueLevel, type MessageArgs } from '@resourcepackbuilder/utils';
 import { formatResourceLocation } from '@resourcepackbuilder/minecraft';
 import {
   craftEngineAttributeSections,
   craftEngineCategories,
+  craftEngineProjectCategories,
   craftEngineGlobalVariables,
   craftEngineGlyphs,
   craftEngineLang,
@@ -101,11 +102,11 @@ function planItemExtras(project: Project, plans: ItemPlan[]): Map<string, string
   if (Object.keys(equipments).length > 0) {
     out.set(craftEngineConfigFile(project, 'equipments'), sectionsToYaml({ equipments }, `armor sets of "${project.name}"`));
   }
-  if (project.settings.ceCategoriesFromFolders) {
-    const categories = craftEngineCategories(project, items);
-    if (Object.keys(categories).length > 0) {
-      out.set(craftEngineConfigFile(project, 'categories'), sectionsToYaml({ categories }, `categories of "${project.name}"`));
-    }
+  // The project's own categories win over a folder's category with the same id
+  const fromFolders = project.settings.ceCategoriesFromFolders ? craftEngineCategories(project, items) : {};
+  const categories = { ...fromFolders, ...craftEngineProjectCategories(project) };
+  if (Object.keys(categories).length > 0) {
+    out.set(craftEngineConfigFile(project, 'categories'), sectionsToYaml({ categories }, `categories of "${project.name}"`));
   }
   const blockItems = plans.flatMap((p) => (p.sections?.blocks ? [p.item] : []));
   for (const [locale, texts] of craftEngineLang(project, items, blockItems)) {

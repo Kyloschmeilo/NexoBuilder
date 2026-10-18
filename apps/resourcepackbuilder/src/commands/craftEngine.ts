@@ -1,6 +1,6 @@
 /**
  * The project-wide CraftEngine data (`project.craftEngine`): loot sources, templates, global variables, attributes,
- * lang keys and translations.
+ * lang keys, translations, categories and the other project sections.
  */
 import {
   type ConfigObject,
@@ -83,4 +83,10 @@ export function setLang(value: unknown): void {
 /** Replaces the server-side translations (locale → key → text); without any, the key is removed. */
 export function setServerTranslations(value: unknown): void {
   setCraftEngineData('translations', localeTexts(value));
+}
+
+/** Replaces the item browser categories; without any, the key is removed. */
+export function setCategories(value: unknown): void {
+  const categories = objectList(value);
+  setCraftEngineData('categories', categories.length > 0 ? categories : undefined);
 }

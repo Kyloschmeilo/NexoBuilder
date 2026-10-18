@@ -46,6 +46,11 @@ export const CE_GENERAL_PROPERTIES = properties(
       defaultValue: () => ({ material: '' }),
       docs: CE_DOCS.templates,
     },
+    category: {
+      field: field.stringList({ format: 'resource', dynamicSuggestions: 'categories', placeholder: true }),
+      defaultValue: () => [''],
+      docs: `${CE_DOCS.categories}#assigning-categories-from-items`,
+    },
     client_bound_material: {
       field: field.text({ placeholder: true }),
       defaultValue: () => 'paper',

@@ -32,6 +32,7 @@ export const CE_DOCS = {
   attributeModifiers: `${WIKI}/configuration/attribute/modifier`,
   equipmentSets: `${WIKI}/configuration/attribute/equipment-set`,
   damageFormulas: `${WIKI}/configuration/attribute/damage-formula`,
+  categories: `${WIKI}/configuration/category`,
 };
 
 /** The wiki page of a block behavior (`configuration/block/behaviors/<type>`). */
@@ -201,6 +202,7 @@ const LOGIC_DOCS: Record<LogicCatalogName, { page: string; anchors: Record<strin
     anchors: { expression: 'expression-expression-formulas', composition: 'composition-formula-parts', js: 'js-javascript-formulas' },
   },
   damageEffects: { page: CE_DOCS.damageFormulas, anchors: same('life_steal', 'potion_effect', 'function') },
+  categorySources: { page: CE_DOCS.categories, anchors: same('list', 'regex', 'all_items') },
 };
 
 /** The wiki section of a logic type: its heading on the catalog's page, or the page when it has none. */

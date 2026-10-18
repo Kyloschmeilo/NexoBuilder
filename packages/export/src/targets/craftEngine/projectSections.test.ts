@@ -93,3 +93,70 @@ describe('CraftEngine lang', () => {
     expect(planExport(project).pluginFiles.has(`${CONFIG}/lang/en-US.yml`)).toBe(false);
   });
 });
+
+describe('CraftEngine categories', () => {
+  it('writes the project categories with one source as that source, after the folder categories', () => {
+    const { project, add } = ceProject({
+      categories: [
+        {
+          id: 'swords',
+          name: '<!i>Swords',
+          icon: 'minecraft:iron_sword',
+          priority: 2,
+          hidden: false,
+          conditions: [{ type: 'permission', permission: 'category.swords' }],
+          source: [{ type: 'regex', regex: 'minecraft:.*_sword' }],
+        },
+        {
+          id: 'other:all',
+          source: [
+            { type: 'all_items', ignore_vanilla: true },
+            { type: 'list', list: ['#welt:swords'] },
+          ],
+        },
+        { id: '', name: 'left out' },
+      ],
+    });
+    project.settings.ceCategoriesFromFolders = true;
+    add('ruby', 'PAPER', (item) => (item.config = { category: ['welt:swords'] }));
+    const plan = planExport(project);
+    const text = pluginText(plan, `${CONFIG}/categories.yml`);
+    expect(text).toContain(
+      [
+        '  welt:swords:',
+        '    name: "<!i>Swords"',
+        '    icon: minecraft:iron_sword',
+        '    priority: 2',
+        '    hidden: false',
+        '    conditions:',
+        '      - type: permission',
+        '        permission: category.swords',
+        '    source:',
+        '      type: regex',
+        '      regex: minecraft:.*_sword',
+        '  other:all:',
+        '    source:',
+        '      - type: all_items',
+        '        ignore_vanilla: true',
+        '      - type: list',
+        '        list:',
+        '          - "#welt:swords"',
+        '',
+      ].join('\n'),
+    );
+    // The folder's category comes first
+    expect(text.indexOf('welt:teile:')).toBeLessThan(text.indexOf('welt:swords:'));
+    expect(pluginText(plan, `${CONFIG}/items/teile/teile.yml`)).toContain('    category:\n      - welt:swords\n');
+    expect(codes(project)).toContain('ce.categoryIdMissing');
+  });
+
+  it('reports bad and taken category ids', () => {
+    const { project } = ceProject({ categories: [{ id: 'Bad Id' }, { id: 'a' }, { id: 'welt:a' }] });
+    expect(codes(project)).toEqual(expect.arrayContaining(['ce.categoryIdInvalid', 'ce.categoryIdDuplicate']));
+  });
+
+  it('writes no categories.yml without categories', () => {
+    const { project } = ceProject();
+    expect(planExport(project).pluginFiles.has(`${CONFIG}/categories.yml`)).toBe(false);
+  });
+});

@@ -17,6 +17,12 @@
     "armorLayer": "{layer}",
     "lootSource": "Loot source “{id}”",
     "template": "Template “{id}”",
+    "category": "Category “{id}”",
+    "configuredFeature": "Configured feature “{id}”",
+    "placedFeature": "Placed feature “{id}”",
+    "atlas": "Atlas “{id}”",
+    "configFactory": "Config factory “{id}”",
+    "script": "Script “{id}”",
     "attribute": "Attribute “{id}”",
     "attributeOperation": "Attribute operation “{id}”",
     "equipmentSet": "Equipment set “{id}”",
@@ -290,7 +296,10 @@
     "damageRuleTypeMissing": "The damage rule has no damage type, so it is left out.",
     "damageRuleEmpty": "The damage rule has neither a formula nor effects, so CraftEngine rejects it.",
     "langLocaleInvalid": "The lang language “{locale}” is not a Minecraft language code (like en_us, or all), so its keys are left out.",
-    "translationsLocaleInvalid": "The translation language “{locale}” is not a locale CraftEngine reads (like en or zh_cn), so its keys are left out."
+    "translationsLocaleInvalid": "The translation language “{locale}” is not a locale CraftEngine reads (like en or zh_cn), so its keys are left out.",
+    "categoryIdMissing": "The category has no id, so it is left out.",
+    "categoryIdInvalid": "The category id “{id}” may only contain lowercase letters, digits and _ . - / (and one : after the namespace).",
+    "categoryIdDuplicate": "Another category already uses the id “{id}”, so this one is left out."
   },
   "issueList": {
     "openItem": "Go to item",

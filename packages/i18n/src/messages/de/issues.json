@@ -17,6 +17,12 @@
     "armorLayer": "{layer}",
     "lootSource": "Loot-Quelle „{id}“",
     "template": "Vorlage „{id}“",
+    "category": "Kategorie „{id}“",
+    "configuredFeature": "Konfiguriertes Feature „{id}“",
+    "placedFeature": "Platziertes Feature „{id}“",
+    "atlas": "Atlas „{id}“",
+    "configFactory": "Config-Factory „{id}“",
+    "script": "Skript „{id}“",
     "attribute": "Attribut „{id}“",
     "attributeOperation": "Attribut-Operation „{id}“",
     "equipmentSet": "Ausrüstungsset „{id}“",
@@ -290,7 +296,10 @@
     "damageRuleTypeMissing": "Die Schadensregel hat keinen Schadenstyp und wird deshalb weggelassen.",
     "damageRuleEmpty": "Die Schadensregel hat weder eine Formel noch Effekte, deshalb lehnt CraftEngine sie ab.",
     "langLocaleInvalid": "Die Lang-Sprache „{locale}“ ist kein Minecraft-Sprachcode (wie en_us oder all), deshalb werden ihre Schlüssel weggelassen.",
-    "translationsLocaleInvalid": "Die Übersetzungssprache „{locale}“ ist keine Sprache, die CraftEngine liest (wie en oder zh_cn), deshalb werden ihre Schlüssel weggelassen."
+    "translationsLocaleInvalid": "Die Übersetzungssprache „{locale}“ ist keine Sprache, die CraftEngine liest (wie en oder zh_cn), deshalb werden ihre Schlüssel weggelassen.",
+    "categoryIdMissing": "Die Kategorie hat keine ID und wird deshalb weggelassen.",
+    "categoryIdInvalid": "Die Kategorie-ID „{id}“ darf nur Kleinbuchstaben, Ziffern und _ . - / enthalten (und einen : nach dem Namespace).",
+    "categoryIdDuplicate": "Eine andere Kategorie nutzt schon die ID „{id}“, deshalb wird diese weggelassen."
   },
   "issueList": {
     "openItem": "Zum Item",

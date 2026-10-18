@@ -28,6 +28,89 @@
             "placeholder": "z. B. '<'gold>Laterne"
           }
         }
+      },
+      "categories": {
+        "label": "categories",
+        "itemLabel": "Kategorie",
+        "fields": {
+          "id": {
+            "label": "id",
+            "help": "Items und andere Kategorien nennen die Kategorie bei dieser ID. Ohne Namespace bekommt sie den des Projekts.",
+            "placeholder": "z. B. swords"
+          },
+          "name": {
+            "label": "name",
+            "help": "Der Titel im Item-Browser. Ohne Angabe: die ID.",
+            "placeholder": "z. B. '<'!i>'<'green>Schwerter"
+          },
+          "lore": {
+            "label": "lore",
+            "placeholder": "'<'gray>Eine Zeile"
+          },
+          "icon": {
+            "label": "icon",
+            "help": "Das Item, das für die Kategorie angezeigt wird. Ohne Angabe: minecraft:stone.",
+            "placeholder": "z. B. minecraft:iron_sword"
+          },
+          "priority": {
+            "label": "priority",
+            "help": "Kleinere Werte kommen zuerst, gleiche werden nach ID sortiert. Standard: 0."
+          },
+          "hidden": {
+            "label": "hidden",
+            "help": "Zeigt die Kategorie nicht auf der Startseite, z. B. eine, die nur aus einer anderen Kategorie geöffnet wird."
+          },
+          "source": {
+            "label": "source",
+            "help": "Woher die Einträge kommen. Mehrere Quellen werden der Reihe nach angehängt."
+          }
+        }
+      }
+    }
+  },
+  "logic": {
+    "categorySources": {
+      "list": {
+        "label": "list",
+        "help": "Item-IDs und #Kategorie-Verweise, in dieser Reihenfolge.",
+        "fields": {
+          "list": {
+            "label": "list",
+            "help": "Eine Item-ID oder eine Kategorie-ID mit # davor, um sie zu verschachteln.",
+            "placeholder": "z. B. #namespace:swords"
+          }
+        }
+      },
+      "regex": {
+        "label": "regex",
+        "help": "Jedes Item (auch Vanilla), dessen ganze ID passt.",
+        "fields": {
+          "regex": {
+            "label": "regex",
+            "help": "Ein oder mehrere reguläre Ausdrücke über die ganze Item-ID.",
+            "placeholder": "z. B. minecraft:.*_sword"
+          }
+        }
+      },
+      "allItems": {
+        "label": "all_items",
+        "help": "Alle Vanilla- und eigenen Items.",
+        "fields": {
+          "ignoreVanilla": {
+            "label": "ignore_vanilla",
+            "help": "Behält nur eigene Items. Standard: an."
+          }
+        }
+      }
+    }
+  },
+  "properties": {
+    "category": {
+      "label": "Category",
+      "description": "Fügt das Item zu Kategorien des /ce-Item-Browsers hinzu, nach deren eigenen Einträgen.",
+      "field": {
+        "label": "Kategorien",
+        "placeholder": "z. B. namespace:swords"
       }
     }
   }

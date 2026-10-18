@@ -92,6 +92,10 @@
       "translations": {
         "label": "Translations",
         "hint": "Translations: lang keys for the resource pack and server translations"
+      },
+      "categories": {
+        "label": "Categories",
+        "hint": "Categories: the groups of the /ce item browser"
       }
     },
     "testServer": {

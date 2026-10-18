@@ -28,6 +28,89 @@
             "placeholder": "e.g. '<'gold>Lantern"
           }
         }
+      },
+      "categories": {
+        "label": "categories",
+        "itemLabel": "Category",
+        "fields": {
+          "id": {
+            "label": "id",
+            "help": "Items and other categories name the category by this id. Without a namespace it gets the project's.",
+            "placeholder": "e.g. swords"
+          },
+          "name": {
+            "label": "name",
+            "help": "The title in the item browser. Unset: the id.",
+            "placeholder": "e.g. '<'!i>'<'green>Swords"
+          },
+          "lore": {
+            "label": "lore",
+            "placeholder": "'<'gray>A line"
+          },
+          "icon": {
+            "label": "icon",
+            "help": "The item shown for the category. Unset: minecraft:stone.",
+            "placeholder": "e.g. minecraft:iron_sword"
+          },
+          "priority": {
+            "label": "priority",
+            "help": "Lower values come first; equal ones are sorted by id. Default: 0."
+          },
+          "hidden": {
+            "label": "hidden",
+            "help": "Leaves the category off the main page, e.g. one only opened from another category."
+          },
+          "source": {
+            "label": "source",
+            "help": "Where the members come from. Several sources are appended in order."
+          }
+        }
+      }
+    }
+  },
+  "logic": {
+    "categorySources": {
+      "list": {
+        "label": "list",
+        "help": "Item ids and #category references, in this order.",
+        "fields": {
+          "list": {
+            "label": "list",
+            "help": "An item id, or a category id with # in front to nest it.",
+            "placeholder": "e.g. #namespace:swords"
+          }
+        }
+      },
+      "regex": {
+        "label": "regex",
+        "help": "Every item (vanilla too) whose full id matches.",
+        "fields": {
+          "regex": {
+            "label": "regex",
+            "help": "One or more regular expressions over the whole item id.",
+            "placeholder": "e.g. minecraft:.*_sword"
+          }
+        }
+      },
+      "allItems": {
+        "label": "all_items",
+        "help": "All vanilla and custom items.",
+        "fields": {
+          "ignoreVanilla": {
+            "label": "ignore_vanilla",
+            "help": "Keeps only custom items. Default: on."
+          }
+        }
+      }
+    }
+  },
+  "properties": {
+    "category": {
+      "label": "Category",
+      "description": "Adds the item to categories of the /ce item browser, after their own members.",
+      "field": {
+        "label": "Categories",
+        "placeholder": "e.g. namespace:swords"
       }
     }
   }

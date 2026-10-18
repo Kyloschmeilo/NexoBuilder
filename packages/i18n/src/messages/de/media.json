@@ -257,5 +257,13 @@
       "title": "Server-Übersetzungen",
       "hint": "Werden auf dem Server gelesen, Änderungen brauchen also kein Neuladen des Resource Packs. Eine Sprache ohne Land (de) gilt auch für ihre Regionen."
     }
+  },
+  "categories": {
+    "title": "Kategorien",
+    "count": "{count, plural, one {# Kategorie} other {# Kategorien}}",
+    "hint": "Eine Kategorie gruppiert Items im /ce-Item-Browser von CraftEngine. Sie listet Items und andere Kategorien, findet Item-IDs über einen regulären Ausdruck oder nimmt alle Items. Ein Item kann sich auch selbst über seine Eigenschaft Category hinzufügen.",
+    "fromFoldersOn": "Der Export schreibt außerdem eine Kategorie pro Ordner (Projekteinstellung); eine eigene mit derselben ID ersetzt sie.",
+    "fromFoldersOff": "Die Projekteinstellung für eine Kategorie pro Ordner ist aus, deshalb werden nur diese Kategorien geschrieben.",
+    "docs": "Kategorien im CraftEngine-Wiki"
   }
 }

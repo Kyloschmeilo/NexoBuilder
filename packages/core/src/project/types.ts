@@ -87,6 +87,8 @@ export interface CraftEngineProjectData {
   lang?: Record<string, Record<string, string>>;
   /** Server-side translations (`translations`, read by `<i18n:key>` and `<l10n:key>`): locale → key → text */
   translations?: Record<string, Record<string, string>>;
+  /** The item browser categories (`categories`), each a config with its `id` (core/craftEngine/categories.ts) */
+  categories?: ConfigObject[];
 }
 
 /**

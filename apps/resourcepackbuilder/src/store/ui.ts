@@ -6,7 +6,16 @@ import { useProjectStore } from './project';
 
 /** Project-wide pages that are not tied to a single folder or item. */
 export type ViewName =
-  'glyphs' | 'sounds' | 'paintings' | 'lootSources' | 'templates' | 'globalVariables' | 'attributes' | 'translations' | 'testServer';
+  | 'glyphs'
+  | 'sounds'
+  | 'paintings'
+  | 'lootSources'
+  | 'templates'
+  | 'globalVariables'
+  | 'attributes'
+  | 'translations'
+  | 'categories'
+  | 'testServer';
 
 export type Selection = { kind: 'item'; id: string } | { kind: 'folder'; id: string } | { kind: 'view'; view: ViewName } | null;
 

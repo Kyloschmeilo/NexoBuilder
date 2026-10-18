@@ -92,6 +92,10 @@
       "translations": {
         "label": "Übersetzungen",
         "hint": "Übersetzungen: Lang-Schlüssel für das Resource Pack und Server-Übersetzungen"
+      },
+      "categories": {
+        "label": "Kategorien",
+        "hint": "Kategorien: die Gruppen des /ce-Item-Browsers"
       }
     },
     "testServer": {

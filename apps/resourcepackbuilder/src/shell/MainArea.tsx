@@ -8,6 +8,7 @@ import { folderDirPath } from '../features/folder/folderDir';
 import { useFolderActions } from '../features/folder/useFolderActions';
 import { ItemEditor } from '../features/item/ItemEditor';
 import { AttributesView } from '../features/craftEngine/AttributesView';
+import { CategoriesView } from '../features/craftEngine/CategoriesView';
 import { GlobalVariablesView } from '../features/craftEngine/GlobalVariablesView';
 import { TemplatesView } from '../features/craftEngine/TemplatesView';
 import { TranslationsView } from '../features/craftEngine/TranslationsView';
@@ -27,6 +28,7 @@ const VIEWS: Record<ViewName, ComponentType> = {
   globalVariables: GlobalVariablesView,
   attributes: AttributesView,
   translations: TranslationsView,
+  categories: CategoriesView,
   testServer: TestServerView,
 };
 
