@@ -1,18 +1,24 @@
 import { useId } from 'react';
 import { useTranslations } from 'next-intl';
+import { ExternalLink } from 'lucide-react';
 import {
   blockBehaviorPropertyIds,
   blockBehaviorType,
   CE_BLOCK_BEHAVIOR_FORMS,
+  CE_BLOCK_BEHAVIORS,
   craftEngineBlock,
   craftEngineFurniture,
 } from '@resourcepackbuilder/core/craftEngine';
-import { type Item } from '@resourcepackbuilder/core/project';
+import { findTypedType } from '@resourcepackbuilder/core/form';
+import { type ConfigObject, type Item, toConfigValue } from '@resourcepackbuilder/core/project';
+import { isPlainObject } from '@resourcepackbuilder/utils';
+import { IconButton, SectionCard } from '@resourcepackbuilder/ui';
 import { Field, FieldDescription, FieldLabel } from '@resourcepackbuilder/ui/components/field';
 import { NativeSelect, NativeSelectOption } from '@resourcepackbuilder/ui/components/native-select';
 import { CheckboxField } from '../../../components/CheckboxField';
 import { Section } from '../../../components/Section';
-import { setBlockBehavior, setCraftEngineBlock } from '../../../commands/items';
+import { TypedEntryBody } from '../../../components/editor/editors/TypedListEditor';
+import { setBlockBehavior, setCraftEngineBlock, updateCraftEngineBlock } from '../../../commands/items';
 import { PropertiesPanel } from '../properties/PropertiesPanel';
 import { CraftEngineStatesEditor } from './CraftEngineStatesEditor';
 
@@ -56,8 +62,52 @@ function BehaviorSelect({ item, block }: { item: Item; block: Record<string, unk
   );
 }
 
+/** The block behavior catalog, as the source of the main behavior's fields */
+const BEHAVIOR_SOURCE = { types: () => CE_BLOCK_BEHAVIORS };
+
 /**
- * CraftEngine: whether the item places a block of its own, its behavior, its states (the vanilla states it borrows,
+ * The main behavior (`block.behavior`) with the fields of its type from the catalog and a link to its wiki page. The
+ * behavior select sets the type; an unknown type is edited as YAML.
+ */
+function MainBehavior({ item, behavior }: { item: Item; behavior: Record<string, unknown> }) {
+  const t = useTranslations('item');
+  const known = findTypedType(BEHAVIOR_SOURCE, behavior);
+  return (
+    <SectionCard
+      size="sm"
+      title={<span className="font-mono">{String(behavior.type ?? '')}</span>}
+      description={t('ceBlock.behaviorKeys')}
+      actions={
+        known?.docs && (
+          <IconButton
+            label={t('properties.docs.craftengine')}
+            nativeButton={false}
+            render={<a href={known.docs} target="_blank" rel="noreferrer" />}
+          >
+            <ExternalLink />
+          </IconButton>
+        )
+      }
+    >
+      <TypedEntryBody
+        source={BEHAVIOR_SOURCE}
+        entry={behavior}
+        onChange={(next) =>
+          updateCraftEngineBlock(
+            item.id,
+            (block) =>
+              ({ ...block, behavior: (toConfigValue(next) as ConfigObject | undefined) ?? { type: behavior.type } }) as ConfigObject,
+            'block.behavior',
+          )
+        }
+      />
+    </SectionCard>
+  );
+}
+
+/**
+ * CraftEngine: whether the item places a block of its own, its behavior (with the keys of its type), further behaviors,
+ * its states (the vanilla states it borrows,
  * `auto_state`) and the block settings. Shown for CraftEngine projects only (their form has the block settings group).
  * An item is either a block or furniture, so the toggle is off while the item places furniture.
  */
@@ -77,6 +127,7 @@ export function CraftEngineBlockSection({ item }: { item: Item }) {
       {block && (
         <>
           <BehaviorSelect item={item} block={block} />
+          {isPlainObject(block.behavior) && <MainBehavior item={item} behavior={block.behavior} />}
           <PropertiesPanel item={item} group={BLOCK_BEHAVIOR_GROUP} only={blockBehaviorPropertyIds(block)} />
           <CraftEngineStatesEditor item={item} block={block} />
           <p className="text-xs text-muted-foreground">{t('ceBlock.model')}</p>

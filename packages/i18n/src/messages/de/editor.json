@@ -31,6 +31,7 @@
   "typed": {
     "entry": "Eintrag",
     "typePlaceholder": "Typ wählen oder eingeben",
+    "docs": "Doku zu diesem Typ öffnen",
     "chooseType": "Wähle einen Typ, um seine Schlüssel zu sehen.",
     "unknownType": "Das Formular hat keine Felder für „{type}“. Bearbeite diesen Eintrag als YAML.",
     "invert": "Umkehren",

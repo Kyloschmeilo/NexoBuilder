@@ -4,9 +4,10 @@
  */
 import { useMemo } from 'react';
 import { useTranslations } from 'next-intl';
+import { ExternalLink } from 'lucide-react';
 import { findTypedType, type ObjectField, type TypedListField, type TypedType, type YamlField } from '@resourcepackbuilder/core/form';
 import { isPlainObject } from '@resourcepackbuilder/utils';
-import { Tip, useRowKeys } from '@resourcepackbuilder/ui';
+import { IconButton, Tip, useRowKeys } from '@resourcepackbuilder/ui';
 import { Badge } from '@resourcepackbuilder/ui/components/badge';
 import { Button } from '@resourcepackbuilder/ui/components/button';
 import { Card, CardContent, CardHeader } from '@resourcepackbuilder/ui/components/card';
@@ -30,7 +31,8 @@ interface TypedSource {
 const ENTRY_YAML: YamlField = { type: 'yaml', key: '', label: '' };
 
 /**
- * The searchable type input of an entry, with a Premium badge and (for conditions) the "!" toggle. The type is set
+ * The searchable type input of an entry, with a Premium badge, a link to the type's docs and (for conditions) the "!"
+ * toggle. The type is set
  * when it is picked or typed out (blur, Enter), so the entry's fields do not switch on every keystroke.
  */
 export function TypeInput({
@@ -90,6 +92,16 @@ export function TypeInput({
         <Tip label={t('typed.premiumHint')}>
           <Badge variant="info">{t('typed.premium')}</Badge>
         </Tip>
+      )}
+      {known?.docs && (
+        <IconButton
+          label={t('typed.docs')}
+          size="icon-sm"
+          nativeButton={false}
+          render={<a href={known.docs} target="_blank" rel="noreferrer" />}
+        >
+          <ExternalLink />
+        </IconButton>
       )}
     </div>
   );
