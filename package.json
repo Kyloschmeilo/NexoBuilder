@@ -16,6 +16,7 @@
     "icon": "npm run icon -w resourcepackbuilder",
     "lint": "turbo run lint",
     "check:encoding": "node scripts/check-encoding.mjs",
+    "verify:plugins": "npm run verify:plugins -w @resourcepackbuilder/test-server --",
     "format": "prettier --write .",
     "format:check": "prettier --check ."
   },
