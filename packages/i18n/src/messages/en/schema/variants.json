@@ -88,6 +88,42 @@
     "state": {
       "label": "{name}",
       "description": "Model in state “{name}”"
+    },
+    "dirY": {
+      "label": "Upright (y)",
+      "description": "Face model of a LOG standing upright"
+    },
+    "dirX": {
+      "label": "Along x",
+      "description": "Face model of a LOG lying along the x axis"
+    },
+    "dirZ": {
+      "label": "Along z",
+      "description": "Face model of a LOG lying along the z axis"
+    },
+    "dirNorth": {
+      "label": "North",
+      "description": "Face model of the block facing north"
+    },
+    "dirSouth": {
+      "label": "South",
+      "description": "Face model of the block facing south"
+    },
+    "dirEast": {
+      "label": "East",
+      "description": "Face model of the block facing east"
+    },
+    "dirWest": {
+      "label": "West",
+      "description": "Face model of the block facing west"
+    },
+    "dirUp": {
+      "label": "Up",
+      "description": "Face model of the block facing up"
+    },
+    "dirDown": {
+      "label": "Down",
+      "description": "Face model of the block facing down"
     }
   }
 }

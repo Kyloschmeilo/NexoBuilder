@@ -89,11 +89,37 @@
               },
               "displayHeight": {
                 "label": "Culling height"
+              },
+              "delay": {
+                "label": "Animation time",
+                "help": "How long an animated change of these properties takes, e.g. a door opening.",
+                "placeholder": "e.g. 4t"
               }
             }
           },
           "rotatable": {
-            "label": "Rotatable"
+            "label": "Rotatable",
+            "choices": {
+              "simple": {
+                "label": "On or off",
+                "field": {
+                  "label": "Can be rotated"
+                }
+              },
+              "section": {
+                "label": "With options",
+                "field": {
+                  "fields": {
+                    "rotatable": {
+                      "label": "Can be rotated"
+                    },
+                    "onSneak": {
+                      "label": "Only while sneaking"
+                    }
+                  }
+                }
+              }
+            }
           },
           "restrictedRotation": {
             "label": "Restricted rotation",
@@ -103,6 +129,9 @@
               },
               "veryStrict": {
                 "label": "VERY_STRICT – 4 directions"
+              },
+              "none": {
+                "label": "NONE – any angle"
               }
             }
           },
@@ -230,6 +259,18 @@
               },
               "nextStage": {
                 "label": "Next stage (item ID)"
+              },
+              "minimumLightLevel": {
+                "label": "Minimum light level",
+                "help": "Nexo 1.30 reads this key; the Nexo docs do not list it yet."
+              },
+              "boostTick": {
+                "label": "Light boost (ticks)",
+                "help": "Extra growth per check with light nearby. Nexo 1.30 reads this key; the Nexo docs do not list it yet."
+              },
+              "rainBoostTick": {
+                "label": "Rain boost (ticks)",
+                "help": "Extra growth per check while it rains. Nexo 1.30 reads this key; the Nexo docs do not list it yet."
               }
             }
           },
@@ -242,6 +283,9 @@
               },
               "requirePermission": {
                 "label": "Permission required"
+              },
+              "enabled": {
+                "label": "Preview enabled"
               }
             }
           },
@@ -253,6 +297,27 @@
             "label": "Placement variants (floor/wall/roof)",
             "help": "Upload custom models for Floor, Wall and Roof in the “Model & Pack” tab. Here you can override further values per variant.",
             "placeholder": "wall:\n  properties:\n    translation: 0,0.3,-0.3"
+          },
+          "item": {
+            "label": "Placed item (item ID)",
+            "help": "The furniture shows this Nexo item instead of itself, e.g. a seed that places its first plant stage.",
+            "placeholder": "e.g. rose_plant_stage1"
+          },
+          "farmlandRequired": {
+            "label": "Only on farmland",
+            "help": "Nexo 1.30 reads this key; the Nexo docs do not list it yet."
+          },
+          "itemModel": {
+            "label": "ItemModel of the furniture entity",
+            "help": "Shows another ItemModel on the placed furniture than in the inventory."
+          },
+          "hardness": {
+            "label": "Hardness",
+            "help": "Break time of the furniture. Nexo 1.30 reads this key; the Nexo docs do not list it yet."
+          },
+          "blastResistance": {
+            "label": "Blast resistance",
+            "help": "Nexo 1.30 reads this key; the Nexo docs do not list it yet."
           }
         }
       }
