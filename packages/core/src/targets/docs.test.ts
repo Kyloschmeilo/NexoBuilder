@@ -9,8 +9,8 @@ import { ARMOR_LAYERS } from '../project/armor';
 import { MEDIA_KIND_LIST } from '../project/media/kinds';
 import { RECIPE_TYPES } from '../project/recipes/model';
 import { PACK_TARGETS, type PackTargetId } from '../project/target';
-import { FURNITURE_MODEL_SLOTS, STACK_MODELS, stateDef, VARIANTS } from '../project/variants';
-import { formFor } from './index';
+import { DIRECTIONAL_MODEL_SLOTS, FURNITURE_MODEL_SLOTS, STACK_MODELS, stateDef, VARIANTS } from '../project/variants';
+import { emojiDocsFor, formFor, jukeboxDocsFor, mediaDocsFor } from './index';
 
 const DOCS_BASE: Record<PackTargetId, string> = {
   nexo: 'https://docs.nexomc.com/',
@@ -109,8 +109,19 @@ describe('docs links', () => {
     );
   });
 
+  for (const target of PACK_TARGETS) {
+    it(`link every ${target} media page, music discs and emoji to the ${target} docs`, () => {
+      const links: Array<[string, string]> = [
+        ...MEDIA_KIND_LIST.map((kind): [string, string] => [`media ${kind}`, mediaDocsFor(target, kind)]),
+        ['jukebox', jukeboxDocsFor(target)],
+        ['emoji', emojiDocsFor(target)],
+      ];
+      expect(offBase(DOCS_BASE[target], links)).toEqual([]);
+    });
+  }
+
   it('link every Nexo model variant, armor layer, media kind and recipe type to the Nexo docs', () => {
-    const variants = [...VARIANTS, ...FURNITURE_MODEL_SLOTS, STACK_MODELS, stateDef('open')];
+    const variants = [...VARIANTS, ...FURNITURE_MODEL_SLOTS, STACK_MODELS, ...DIRECTIONAL_MODEL_SLOTS, stateDef('open')];
     const links: Array<[string, string | undefined]> = [
       ...variants.map((v): [string, string] => [`variant ${v.slot}`, nexoVariantDocs(v.slot)]),
       ...ARMOR_LAYERS.map((layer): [string, string] => [`armor ${layer.key}`, nexoArmorLayerDocs(layer)]),

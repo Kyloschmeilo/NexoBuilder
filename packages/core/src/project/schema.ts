@@ -42,7 +42,15 @@ import {
   ModelTextureSchema,
 } from '@resourcepackbuilder/minecraft';
 import { toArmorSettings, type ArmorSettings } from './armor';
-import { CHAT_TEXT_HEIGHT, DEFAULT_FONT_ASCENT, type Glyph } from './media/glyph';
+import {
+  CHAT_TEXT_HEIGHT,
+  DEFAULT_FONT_ASCENT,
+  EMOJI_CONTEXTS,
+  type EmojiContext,
+  GLYPH_GIF_TYPES,
+  type Glyph,
+  type GlyphGifType,
+} from './media/glyph';
 import type { MediaFile } from './media/entry';
 import type { MediaEntryByKind, MediaKind } from './media/kinds';
 import type { Painting } from './media/painting';
@@ -105,6 +113,8 @@ export const ImportedModelSchema = z
 
 export const MediaFileSchema = z.object({ name: lenientString(), dataUrl: z.string(), width: lenientNumber(0), height: lenientNumber(0) });
 
+const isEmojiContext = (context: string): context is EmojiContext => (EMOJI_CONTEXTS as readonly string[]).includes(context);
+
 export const GlyphSchema = z.object({
   id: id(),
   glyphId: z.string(),
@@ -123,6 +133,15 @@ export const GlyphSchema = z.object({
   offset: nullableNumber(),
   reference: lenientString(),
   index: lenientNumber(1),
+  char: lenientString(),
+  shadow: lenientString(),
+  gifType: lenientEnum(GLYPH_GIF_TYPES as [GlyphGifType, ...GlyphGifType[]], ''),
+  interpolate: lenientBoolean(false),
+  template: lenientString(),
+  emojiContent: lenientString(),
+  emojiOverrides: lenientRecord(z.string())
+    .transform((map) => Object.fromEntries(Object.entries(map).filter(([context]) => isEmojiContext(context))))
+    .catch({}),
 });
 
 const SoundFileSchema = z.object({ name: lenientString(), dataUrl: z.string(), size: lenientNumber(0) });
@@ -142,6 +161,11 @@ export const SoundSchema = z.object({
   volume: nullableNumber(),
   pitch: nullableNumber(),
   distance: nullableNumber(),
+  preload: lenientBoolean(false),
+  weight: nullableNumber(),
+  replace: lenientBoolean(false),
+  subtitle: lenientString(),
+  reference: lenientString(),
   jukebox: JukeboxSongSchema.nullable().catch(null),
 });
 

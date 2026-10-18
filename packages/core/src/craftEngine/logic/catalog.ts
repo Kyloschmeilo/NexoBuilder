@@ -24,7 +24,9 @@ export type LogicCatalogName =
   | 'attributeSyncValues'
   | 'damageFormulas'
   | 'damageEffects'
-  | 'blockBehaviors';
+  | 'blockBehaviors'
+  | 'itemBehaviors'
+  | 'itemUpdaters';
 
 /** The objects that fire events (and so have event triggers) */
 export type LogicObjectKind = 'item' | 'block' | 'furniture';

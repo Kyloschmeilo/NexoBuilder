@@ -86,6 +86,8 @@ function buildItem(itemExport: ItemExport, written: CraftEngineWrittenModels, sh
   if (built.rawBlockInvalid) itemExport.report('warning', 'ce.rawBlockNotMapping');
   if (built.rawFurnitureIgnored) itemExport.report('warning', 'ce.rawFurnitureWithoutFurniture');
   if (built.furnitureIgnored) itemExport.report('error', 'ce.furnitureWithBlock');
+  if (built.rawBehaviorsOverride) itemExport.report('warning', 'ce.rawBehaviorsOverride');
+  if (built.placementTypeIgnored) itemExport.report('warning', 'ce.placementTypeIgnored', { type: built.placementTypeIgnored });
   for (const locale of craftEngineTranslations(item).invalidLocales)
     itemExport.report('warning', 'ce.translationLocaleInvalid', { locale });
   validateCraftEngineItem(itemExport, built.config);

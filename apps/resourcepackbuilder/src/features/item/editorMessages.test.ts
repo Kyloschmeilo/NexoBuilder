@@ -11,6 +11,7 @@ import {
   CE_FURNITURE_ELEMENT_TYPES,
   CE_FURNITURE_HITBOX_TYPES,
   CE_FURNITURE_ROTATIONS,
+  CE_PLACEMENT_PROPERTY_NAMES,
 } from '@resourcepackbuilder/core/craftEngine';
 import { formFor } from '@resourcepackbuilder/core/targets';
 import { MESSAGES_BY_LOCALE } from '@resourcepackbuilder/i18n';
@@ -45,6 +46,10 @@ describe('item editor messages', () => {
         ...CE_FURNITURE_ROTATIONS.map((rule) => `item.ceFurniture.rotations.${rule}`),
         ...CE_FURNITURE_ALIGNMENTS.map((rule) => `item.ceFurniture.alignments.${rule}`),
       ];
+      expect(keys.filter((key) => typeof lookup(messages, key) !== 'string')).toEqual([]);
+    });
+    it(`has the ${locale} hint of every block state property name CraftEngine fills in`, () => {
+      const keys = CE_PLACEMENT_PROPERTY_NAMES.map((name) => `item.ceBlock.states.nameHints.${name}`);
       expect(keys.filter((key) => typeof lookup(messages, key) !== 'string')).toEqual([]);
     });
   }

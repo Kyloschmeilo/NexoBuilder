@@ -7,7 +7,7 @@ import type { Project } from '../types';
 import { slugify, toIdentifier } from '@resourcepackbuilder/utils';
 import type { Glyph } from './glyph';
 import type { Painting } from './painting';
-import type { Sound } from './sound';
+import { soundEventKey, type Sound } from './sound';
 import { mediaKey } from './entry';
 
 export interface MediaEntryByKind {
@@ -52,7 +52,7 @@ export const MEDIA_KINDS: { [K in MediaKind]: MediaKindInfo<K> } = {
     idField: 'soundId',
     orderField: 'soundOrder',
     excludedKey: 'excludedSoundIds',
-    globalId: (project, sound) => mediaKey(project, sound.soundId),
+    globalId: (project, sound) => soundEventKey(project, sound),
     uidPrefix: 's_',
     idFromName: (name) => toIdentifier(name, SOUND_ID_CHARS, 'sound'),
   },

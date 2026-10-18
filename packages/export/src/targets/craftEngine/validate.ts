@@ -32,6 +32,7 @@ import {
   CE_LOOT_SOURCE_LIST,
   CE_LOOT_SOURCES,
   CE_MODEL_KEYS,
+  CE_PLACEMENT_BEHAVIORS,
   CE_PROPERTIES,
   CE_STATE_TEMPLATES,
   CE_TEMPLATE_ID,
@@ -98,6 +99,12 @@ export function validateCraftEngineItem(itemExport: ItemExport, config: Record<s
   );
   if (!CE_MODEL_KEYS.some((key) => config[key] !== undefined)) report('warning', 'ce.missingModel');
   validateCraftEngineEvents(itemExport, 'item', config);
+  // A placement behavior needs the block or furniture it places (the item's own one is filled in by the export)
+  for (const behavior of [...asList(config.behavior), ...asList(config.behaviors)]) {
+    if (!isPlainObject(behavior) || typeof behavior.type !== 'string' || !CE_PLACEMENT_BEHAVIORS.includes(behavior.type)) continue;
+    const target = behavior.type.includes('furniture') ? behavior.furniture : behavior.block;
+    if (target === undefined || target === null || target === '') report('error', 'ce.behaviorTargetMissing', { type: behavior.type });
+  }
 }
 
 /** The issue CraftEngine's objects report for a trigger they never fire, by object kind. */
@@ -301,7 +308,9 @@ export function templateProjectIssues(project: Project): Issue[] {
 function validateState(itemExport: ItemExport, state: Record<string, unknown>, appearance: string | null): void {
   const { report } = itemExport;
   const auto = stateAutoState(state);
-  if (state.auto_state === undefined && state.state === undefined) {
+  // An exact state left blank (the editor starts one empty) names no vanilla state
+  const exact = typeof state.state === 'string' ? state.state.trim() !== '' : state.state !== undefined;
+  if (state.auto_state === undefined && !exact) {
     if (appearance === null) report('error', 'ce.blockStateMissing');
     else report('error', 'ce.blockAppearanceStateMissing', { appearance });
   } else if (state.auto_state !== undefined && !(auto && autoStateGroupOf(auto.group))) {
@@ -309,6 +318,12 @@ function validateState(itemExport: ItemExport, state: Record<string, unknown>, a
   }
   // The single state is named by its key in the YAML
   const where = { look: appearance ?? 'state' };
+  // CraftEngine needs a path to save a model it builds from several textures (the export names one from the item's model)
+  const model = isPlainObject(state.model) ? state.model : null;
+  const textures = model && (model.textures ?? model.texture);
+  if (model && model.path === undefined && Array.isArray(textures) && textures.length > 1) {
+    report('error', 'ce.blockModelPathMissing', where);
+  }
   const elements = rendererElements(state);
   for (const element of elements) validateDisplayElement(itemExport, element, RENDERER_ELEMENT_CODES, where);
   if (isTransparentState(state) && elements.length === 0) report('warning', 'ce.blockTransparentInvisible', where);

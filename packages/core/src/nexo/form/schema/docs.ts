@@ -47,16 +47,21 @@ export const NEXO_DOCS = {
     attributeModifiers: `${ITEMS}#attributemodifiers`,
     enchantments: `${ITEMS}#enchantments`,
     disableEnchanting: `${ITEMS}#disable-enchanting`,
+    /** `injectId: false` keeps helper items out of Nexo's item registry (shown with Carpentry doors) */
+    injectId: `${DOCS}/addons/carpentry#custom-doors`,
+    trims: `${DOCS}/configuration/trims`,
   },
   appearance: {
     page: APPEARANCE,
     oversizedInGui: `${APPEARANCE}#oversized-items-in-gui-1.21.6`,
+    invisibleItem: `${APPEARANCE}#invisible-item`,
   },
   components: `${ITEMS}/components`,
   playerHeads: `${ITEMS}/2d-player-heads`,
   armor: {
     page: ARMOR,
     equippable: `${ARMOR}#the-equippable-component`,
+    equipmentModels: `${ARMOR}#custom-equipmentmodels`,
     elytras: ELYTRAS,
     mobArmor: MOB_ARMOR,
     harness: `${MOB_ARMOR}/custom-harness-1.21.6+`,
@@ -137,7 +142,9 @@ export const NEXO_DOCS = {
     smelting: `${ALL_MECHANICS}#smelting`,
     itemtype: `${ALL_MECHANICS}#itemtype`,
     custom: `${DOCS}/mechanics/custom-mechanic`,
+    customEvents: `${DOCS}/mechanics/custom-mechanic#available-events`,
     trident: `${DOCS}/mechanics/custom-trident`,
+    tridentSounds: `${DOCS}/mechanics/custom-trident#trident-sounds`,
     clickActions: CLICK_ACTIONS,
   },
   /** How a config refers to a file of the resource pack (`Pack.model`, textures, namespaces) */
@@ -199,6 +206,8 @@ const VARIANT_DOCS: Array<[prefix: string, docs: string]> = [
   ['light_on', NEXO_DOCS.furniture.lights],
   ['state:', NEXO_DOCS.furniture.states],
   ['stack_models', NEXO_DOCS.customBlock.stackable],
+  ['broken_model', `${ITEMS}/itemmodel-builder/condition-itemmodel`],
+  ['dir_', NEXO_DOCS.customBlock.directional],
 ];
 
 /** The documentation section of a model variant slot. */

@@ -212,12 +212,31 @@ export function autoStateOverruns(project: Pick<Project, 'items' | 'settings'>):
   });
 }
 
-/** Parents CraftEngine generates a block model with, by the number of textures (CraftEngine's own slot order). */
+const CUBE_FACES = ['down', 'up', 'north', 'south', 'west', 'east'];
+
+/**
+ * Parents CraftEngine generates a block model with, by the number of textures, with the slots in the order its
+ * simplified block model readers fill them (CubeAll, CubeColumn, CubeBottomTop, Orientable, CubeFiveTextures, Cube).
+ */
 const PARENTS_BY_TEXTURE_COUNT: Array<{ parent: string; slots: string[] }> = [
   { parent: 'minecraft:block/cube_all', slots: ['all'] },
   { parent: 'minecraft:block/cube_column', slots: ['end', 'side'] },
   { parent: 'minecraft:block/cube_bottom_top', slots: ['bottom', 'side', 'top'] },
+  { parent: 'minecraft:block/orientable', slots: ['bottom', 'front', 'side', 'top'] },
+  { parent: 'minecraft:block/cube', slots: CUBE_FACES.slice(0, 5) },
+  { parent: 'minecraft:block/cube', slots: CUBE_FACES },
 ];
+
+/**
+ * The texture slots of a generated model. The vanilla cube has no particle texture, so the north face is used; with
+ * five textures, east takes the west texture (as CraftEngine does).
+ */
+function generatedTextures(slots: string[], textures: string[]): Record<string, string> {
+  const result = Object.fromEntries(slots.map((slot, i) => [slot, textures[i]]));
+  if (slots === PARENTS_BY_TEXTURE_COUNT[4].slots) result.east = result.west;
+  if (slots.includes('north')) result.particle = result.north;
+  return result;
+}
 
 /** A flat item model (item/generated …) without a shape of its own. */
 const isFlatModel = (modelJson: JavaModelJson) => !modelJson.elements && isGeneratedItemParent(modelJson.parent ?? '');
@@ -254,8 +273,9 @@ export interface CraftEngineBlockModel {
  * The model of the block's state, from the item's main model:
  *  - a model with a shape of its own (a cube parent, elements, a Blockbench model) is used as it is;
  *  - a flat item model (item/generated …) has no block shape, so CraftEngine generates a cube from its layer textures:
- *    1 texture is cube_all, 2 are cube_column (end, side), 3 are cube_bottom_top (bottom, side, top). The generated
- *    model goes to `<main model>-block`, next to the main model.
+ *    1 texture is cube_all, 2 are cube_column (end, side), 3 are cube_bottom_top (bottom, side, top), 4 are orientable
+ *    (bottom, front, side, top), 5 and 6 a cube with one texture per face (down, up, north, south, west, east). The
+ *    generated model goes to `<main model>-block`, next to the main model.
  */
 export function craftEngineBlockModel(modelKey: string | null, modelJson: JavaModelJson | null, plant = false): CraftEngineBlockModel {
   if (!modelKey || !modelJson) return { model: null, unusedTextures: 0 };
@@ -271,7 +291,7 @@ export function craftEngineBlockModel(modelKey: string | null, modelJson: JavaMo
   }
   const used = layers.slice(0, CE_BLOCK_MAX_TEXTURES);
   const { parent, slots } = PARENTS_BY_TEXTURE_COUNT[used.length - 1];
-  const textures = Object.fromEntries(slots.map((slot, i) => [slot, used[i]]));
+  const textures = generatedTextures(slots, used);
   return {
     model: { path: `${modelKey}-block`, generation: { parent, textures } },
     unusedTextures: layers.length - used.length,

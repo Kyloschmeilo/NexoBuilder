@@ -4,6 +4,7 @@
  * are the slugged heading texts); a type without a heading of its own links to its catalog's page.
  */
 import type { LogicCatalogName } from '../../logic/catalog';
+import type { MediaKind } from '../../../project/media/kinds';
 
 /** The wiki's base URL; every CraftEngine docs link starts with it. */
 export const CE_WIKI_URL = 'https://xiao-momi.github.io/craft-engine-wiki/';
@@ -14,11 +15,15 @@ const WIKI = CE_WIKI_URL.slice(0, -1);
 export const CE_DOCS = {
   data: `${WIKI}/configuration/item/data`,
   settings: `${WIKI}/configuration/item/settings`,
+  itemBehaviors: `${WIKI}/configuration/item/behaviors`,
+  updater: `${WIKI}/configuration/item/updater`,
   blockSettings: `${WIKI}/configuration/block/settings`,
   blockStates: `${WIKI}/configuration/block/states`,
   blockBehaviors: `${WIKI}/configuration/block/behaviors`,
   loot: `${WIKI}/reference/loot_table`,
   equipment: `${WIKI}/configuration/equipment`,
+  equipmentComponent: `${WIKI}/configuration/equipment#component-based`,
+  equipmentTrim: `${WIKI}/configuration/equipment#trim-based`,
   lang: `${WIKI}/configuration/translations`,
   events: `${WIKI}/reference/events`,
   conditions: `${WIKI}/reference/conditions`,
@@ -32,6 +37,20 @@ export const CE_DOCS = {
   attributeModifiers: `${WIKI}/configuration/attribute/modifier`,
   equipmentSets: `${WIKI}/configuration/attribute/equipment-set`,
   damageFormulas: `${WIKI}/configuration/attribute/damage-formula`,
+};
+
+/** The wiki pages of the media sections: images (with emoji), sounds and paintings */
+export const CE_MEDIA_DOCS: Record<MediaKind, string> = {
+  glyph: `${WIKI}/configuration/image`,
+  sound: `${WIKI}/configuration/sound`,
+  painting: `${WIKI}/configuration/painting`,
+};
+
+/** The wiki pages of emoji (a glyph's chat shortcuts) and of jukebox songs (a sound's music disc) */
+export const CE_MEDIA_EXTRA_DOCS = {
+  emoji: `${WIKI}/configuration/emoji`,
+  emojiOverrides: `${WIKI}/configuration/emoji#context-specific-overrides`,
+  jukeboxSongs: `${WIKI}/configuration/jukebox_song`,
 };
 
 /** Block behaviors whose wiki page is not named after the type (null: no page of their own yet) */
@@ -49,6 +68,12 @@ export function ceBlockBehaviorDocs(type: string): string {
   const page = Object.hasOwn(BEHAVIOR_PAGES, type) ? BEHAVIOR_PAGES[type] : type;
   return page ? `${CE_DOCS.blockBehaviors}/${page}` : CE_DOCS.blockBehaviors;
 }
+
+/** The wiki page of an item behavior (`configuration/item/behaviors/<type>`). */
+export const ceItemBehaviorDocs = (type: string): string => `${CE_DOCS.itemBehaviors}/${type}`;
+
+/** The section of an item setting on the settings page (`configuration/item/settings#<heading>`). */
+export const ceItemSettingDocs = (heading: string): string => `${CE_DOCS.settings}#${heading}`;
 
 /** Types whose heading on the catalog's page is the type itself */
 const same = (...types: string[]): Record<string, string> => Object.fromEntries(types.map((type) => [type, type]));
@@ -216,6 +241,9 @@ const LOGIC_DOCS: Record<LogicCatalogName, { page: string; anchors: Record<strin
   damageEffects: { page: CE_DOCS.damageFormulas, anchors: same('life_steal', 'potion_effect', 'function') },
   // Each block behavior has a page of its own (ceBlockBehaviorDocs)
   blockBehaviors: { page: CE_DOCS.blockBehaviors, anchors: {} },
+  // Each item behavior has a page of its own (ceItemBehaviorDocs); one without links to the behaviors page
+  itemBehaviors: { page: CE_DOCS.itemBehaviors, anchors: {} },
+  itemUpdaters: { page: CE_DOCS.updater, anchors: same('apply_data', 'transmute', 'reset') },
 };
 
 /** The wiki section of a logic type: its heading on the catalog's page, or the page when it has none. */
