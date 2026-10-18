@@ -1,6 +1,6 @@
 /**
  * The shape of the CraftEngine logic catalogs (conditions, functions, number providers, event triggers, loot sources)
- * and the builder that turns their specs into the typed-list types of the form DSL.
+ * and the builder that turns their specs into the typed-list types of the form DSL, each linked to its wiki section.
  *
  * Messages (in `ceSchema`): `logic.<catalog>.<camel(type)>.label` (the type itself in both languages) and `.help`
  * (a short description); the fields of a type below `.fields.<camel(key)>` like any field spec. Field titles show the
@@ -10,6 +10,7 @@ import { keySegment } from '@resourcepackbuilder/utils';
 import { type FieldSpecs, resolveFields } from '../../form/build';
 import type { Field, TypedType } from '../../form/fields';
 import { fieldMessageKeys } from '../../form/messageKeys';
+import { ceLogicDocs } from '../form/schema/docs';
 
 export type LogicCatalogName =
   | 'conditions'
@@ -37,6 +38,10 @@ export interface LogicTypeSpec {
   aliases?: string[];
   /** Only CraftEngine Premium reads this type */
   premium?: boolean;
+  /** Wiki link of the type, when it is not the type's section on its catalog's page (ceLogicDocs) */
+  docs?: string;
+  /** Sub-group of the catalog the type is listed under */
+  category?: string;
 }
 
 export interface LogicType extends TypedType {
@@ -56,11 +61,11 @@ export function withKeyNames(fields: Field[]): Field[] {
   });
 }
 
-/** Resolves the specs of a catalog into its types, with their message keys. */
+/** Resolves the specs of a catalog into its types, with their message keys and their wiki links. */
 export function logicCatalog(catalog: LogicCatalogName, specs: LogicTypeSpec[]): LogicType[] {
-  return specs.map(({ type, fields = {}, ...rest }) => {
+  return specs.map(({ type, fields = {}, docs = ceLogicDocs(catalog, type), ...rest }) => {
     const scope = `logic.${catalog}.${keySegment(type)}`;
-    return { type, label: `${scope}.label`, help: `${scope}.help`, fields: withKeyNames(resolveFields(fields, scope)), ...rest };
+    return { type, label: `${scope}.label`, help: `${scope}.help`, fields: withKeyNames(resolveFields(fields, scope)), docs, ...rest };
   });
 }
 

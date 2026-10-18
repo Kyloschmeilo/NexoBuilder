@@ -5,6 +5,7 @@ export * from './form/schema';
 export * from './form/schema/appearance';
 export * from './form/schema/attributes';
 export * from './form/schema/components';
+export * from './form/schema/docs';
 export * from './form/schema/furniture';
 export * from './form/schema/general';
 export * from './form/schema/mechanics';

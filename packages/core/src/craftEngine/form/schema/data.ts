@@ -10,7 +10,8 @@ import {
   CE_TRIM_PATTERNS,
 } from '../options';
 import { field, properties } from '../../../form/build';
-import { CE_DOCS, withDocs } from './docs';
+import { withDocs } from '../../../form/docs';
+import { CE_DOCS } from './docs';
 
 /**
  * The item data (`data`): mostly vanilla data components that CraftEngine converts across versions. Components

@@ -1,6 +1,7 @@
 import { CE_COMPONENTS, CE_LOCALES } from '../options';
 import { field, properties } from '../../../form/build';
-import { CE_DOCS, withDocs } from './docs';
+import { withDocs } from '../../../form/docs';
+import { CE_DOCS } from './docs';
 
 /**
  * Shown on the General tab. `data.item_name` is managed: the item's display name is written there, or a `<lang:…>`

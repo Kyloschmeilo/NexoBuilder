@@ -1,6 +1,6 @@
 /**
  * All properties that can be added in the item editor of a CraftEngine project.
- * Source: CraftEngine wiki (momirealms.net/craft-engine-wiki), checked against the plugin source and the jar's
+ * Source: CraftEngine wiki (xiao-momi.github.io/craft-engine-wiki), checked against the plugin source and the jar's
  * default assets. The groups live in `schema/`; `form/build.ts` explains how paths and message keys are derived.
  */
 import type { PropertyDef } from '../../form/build';
