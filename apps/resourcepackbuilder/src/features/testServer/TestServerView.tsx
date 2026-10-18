@@ -5,7 +5,7 @@ import { Badge } from '@resourcepackbuilder/ui/components/badge';
 import { Empty, EmptyHeader, EmptyMedia, EmptyTitle } from '@resourcepackbuilder/ui/components/empty';
 import { Progress } from '@resourcepackbuilder/ui/components/progress';
 import { Spinner } from '@resourcepackbuilder/ui/components/spinner';
-import { PageHeader, PageShell, StatusBadge } from '@resourcepackbuilder/ui';
+import { Page, PageHeader, StatusPill } from '@resourcepackbuilder/ui';
 import type { TestServerState } from '../../platform/desktopApi';
 import { useServices } from '../../services/bootstrap';
 import { useTestServerStore } from '../../services/testServerStore';
@@ -18,7 +18,7 @@ import { DEFAULT_PACK_TARGET } from '@resourcepackbuilder/core/project';
 import { useErrorMessage } from '../../i18n/errors';
 import { useProjectStore } from '../../store/project';
 import { serverRunsOtherTarget, wrongTargetError } from '../../services/testServerSync';
-import { TEST_SERVER_STATUS_TONE } from './status';
+import { TEST_SERVER_PILL_TONE } from './status';
 import { SyncCard } from './SyncCard';
 
 export function TestServerView() {
@@ -29,12 +29,12 @@ export function TestServerView() {
 
   if (!isAvailable) {
     return (
-      <PageShell>
+      <Page>
         <Alert variant="warning">
           <TriangleAlert />
           <AlertDescription>{t('desktopOnly')}</AlertDescription>
         </Alert>
-      </PageShell>
+      </Page>
     );
   }
   if (!server) {
@@ -65,15 +65,17 @@ function TestServerPage({ server }: { server: TestServerState }) {
   const setup = <ServerSetup config={config} isLocked={isConfigLocked(server.status)} isReady={isReady} target={target} />;
 
   return (
-    <PageShell>
+    <Page>
       <PageHeader
         icon={<Server className="size-7 text-primary" />}
         title={t('title')}
+        status={
+          <span data-testid="test-server-status" data-status={server.status} className="inline-flex">
+            <StatusPill dot tone={TEST_SERVER_PILL_TONE[server.status]} label={t(`status.${server.status}`)} />
+          </span>
+        }
         meta={
           <>
-            <StatusBadge tone={TEST_SERVER_STATUS_TONE[server.status]} data-testid="test-server-status" data-status={server.status}>
-              {t(`status.${server.status}`)}
-            </StatusBadge>
             {installed && (
               <Badge variant="outline" className="font-mono" data-testid="test-server-version-label">
                 {t('installed', { paper: installed.paperVersion, java: installed.javaVersion })}
@@ -89,28 +91,30 @@ function TestServerPage({ server }: { server: TestServerState }) {
         actions={<ServerControls server={server} />}
       />
 
-      {/* server.message comes from the desktop process, which already writes it in the app's language */}
-      {server.message && (
-        <Alert variant={server.status === 'error' ? 'warning' : 'info'}>
-          {isWorking && <Spinner />}
-          <AlertDescription className="flex items-center gap-3">
-            <span>{server.message}</span>
-            {server.progress !== null && <Progress className="flex-1" value={server.progress} />}
-          </AlertDescription>
-        </Alert>
-      )}
-      {server.target && serverRunsOtherTarget(server, target) && (
-        <Alert variant="warning">
-          <TriangleAlert />
-          <AlertDescription>{errorMessage(wrongTargetError(server.target, target))}</AlertDescription>
-        </Alert>
-      )}
+      <div className="flex flex-col gap-3">
+        {/* server.message comes from the desktop process, which already writes it in the app's language */}
+        {server.message && (
+          <Alert variant={server.status === 'error' ? 'warning' : 'info'}>
+            {isWorking && <Spinner />}
+            <AlertDescription className="flex items-center gap-3">
+              <span>{server.message}</span>
+              {server.progress !== null && <Progress className="flex-1" value={server.progress} />}
+            </AlertDescription>
+          </Alert>
+        )}
+        {server.target && serverRunsOtherTarget(server, target) && (
+          <Alert variant="warning">
+            <TriangleAlert />
+            <AlertDescription>{errorMessage(wrongTargetError(server.target, target))}</AlertDescription>
+          </Alert>
+        )}
 
-      {!isReady && setup}
-      <ConnectCard server={server} />
-      <SyncCard server={server} />
-      <ServerConsole />
-      {isReady && setup}
-    </PageShell>
+        {!isReady && setup}
+        <ConnectCard server={server} />
+        <SyncCard server={server} />
+        <ServerConsole />
+        {isReady && setup}
+      </div>
+    </Page>
   );
 }

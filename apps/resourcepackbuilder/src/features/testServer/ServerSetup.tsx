@@ -6,7 +6,7 @@ import { Checkbox } from '@resourcepackbuilder/ui/components/checkbox';
 import { Field, FieldContent, FieldDescription, FieldLabel } from '@resourcepackbuilder/ui/components/field';
 import { Input } from '@resourcepackbuilder/ui/components/input';
 import { NativeSelect, NativeSelectOption } from '@resourcepackbuilder/ui/components/native-select';
-import { AutoGrid, SectionCard, StatusBadge, useDraft } from '@resourcepackbuilder/ui';
+import { FieldGroup, FieldRow, Section, StatusPill, useDraft } from '@resourcepackbuilder/ui';
 import type { PackTargetId } from '@resourcepackbuilder/core/project';
 import {
   MAX_PLAYER_NAME_LENGTH,
@@ -16,7 +16,6 @@ import {
   RAM_OPTIONS_GB,
   serverAdapterFor,
 } from '@resourcepackbuilder/test-server';
-import { FormField, FormHelp } from '../../components/FormField';
 import type { TestServerConfig } from '../../platform/desktopApi';
 import { notify } from '../../shell/notify';
 import { confirm } from '../../store/dialogs';
@@ -43,20 +42,21 @@ export function ServerSetup({
 }) {
   const t = useTranslations('media.testServer.setup');
   const setConfig = useSetConfig();
+  const ramId = useId();
 
   return (
-    <SectionCard
-      size="sm"
+    <Section
+      id="setup"
       title={isReady ? t('title') : t('firstStartTitle')}
       description={isLocked ? t('lockedDescription') : isReady ? t('description') : t('firstStartDescription')}
-      contentClassName="flex flex-col gap-4"
     >
-      <AutoGrid min="15rem" fit>
+      <FieldGroup>
         <PluginJarField config={config} target={target} />
         <VersionSelect paperVersion={config.paperVersion} isLocked={isLocked} />
         <PlayerNameField playerName={config.playerName} />
-        <FormField label={t('ram')} description={<FormHelp>{t('ramHelp')}</FormHelp>}>
+        <FieldRow label={t('ram')} htmlFor={ramId} help={t('ramHelp')}>
           <NativeSelect
+            id={ramId}
             className="w-full"
             value={config.ramGb}
             disabled={isLocked}
@@ -68,7 +68,7 @@ export function ServerSetup({
               </NativeSelectOption>
             ))}
           </NativeSelect>
-        </FormField>
+        </FieldRow>
         <PortField label={t('port')} help={t('portHelp')} port={config.port} isLocked={isLocked} onCommit={(port) => setConfig({ port })} />
         <PortField
           label={t('packPort')}
@@ -78,9 +78,9 @@ export function ServerSetup({
           onCommit={(packPort) => setConfig({ packPort })}
         />
         <WorldField isLocked={isLocked} />
-      </AutoGrid>
-      <EulaField isAccepted={config.eulaAccepted} />
-    </SectionCard>
+        <EulaField isAccepted={config.eulaAccepted} />
+      </FieldGroup>
+    </Section>
   );
 }
 
@@ -109,10 +109,12 @@ function PortField({
   );
   const value = Number(draft);
   const isValid = Number.isInteger(value) && value >= MIN_PORT && value <= MAX_PORT;
+  const id = useId();
 
   return (
-    <FormField label={label} description={<FormHelp>{isValid ? help : t('portRange', { min: MIN_PORT, max: MAX_PORT })}</FormHelp>}>
+    <FieldRow label={label} htmlFor={id} help={help} error={isValid ? undefined : t('portRange', { min: MIN_PORT, max: MAX_PORT })}>
       <Input
+        id={id}
         className="font-mono"
         inputMode="numeric"
         value={draft}
@@ -124,7 +126,7 @@ function PortField({
           else if (value !== port) onCommit(value);
         }}
       />
-    </FormField>
+    </FieldRow>
   );
 }
 
@@ -147,13 +149,13 @@ function WorldField({ isLocked }: { isLocked: boolean }) {
     });
 
   return (
-    <FormField label={t('world')} description={<FormHelp>{t('worldHelp')}</FormHelp>}>
+    <FieldRow label={t('world')} help={t('worldHelp')}>
       <div>
         <Button variant="outline" size="sm" disabled={isBusy || isLocked} onClick={() => void resetWorld()}>
           <Trash2 /> {t('resetWorld')}
         </Button>
       </div>
-    </FormField>
+    </FieldRow>
   );
 }
 
@@ -181,10 +183,15 @@ function PluginJarField({ config, target }: { config: TestServerConfig; target: 
     });
 
   return (
-    <div className="flex min-w-0 flex-col gap-1.5">
-      <span className="text-xs font-medium text-muted-foreground">{t('plugin', { plugin })}</span>
+    <FieldRow
+      label={t('plugin', { plugin })}
+      help={canDownload ? t('jarDownloadHelp', { plugin }) : t('jarHelp', { plugin, target })}
+      // A disabled button shows no tooltip, so the reason is written out
+      error={jar ? undefined : t('noPlugin', { plugin })}
+      warning={canDownload && !config.paperVersion ? t('downloadNeedsVersion') : undefined}
+    >
       <div className="flex flex-wrap items-center gap-2">
-        <StatusBadge tone={jar ? 'success' : 'warning'}>{jar ? `${jar.name} ${jar.version}` : t('notSelected')}</StatusBadge>
+        <StatusPill dot tone={jar ? 'ok' : 'warning'} label={jar ? `${jar.name} ${jar.version}` : t('notSelected')} />
         {canDownload ? (
           <>
             <Button
@@ -206,11 +213,7 @@ function PluginJarField({ config, target }: { config: TestServerConfig; target: 
           </Button>
         )}
       </div>
-      {!jar && <FormHelp error>{t('noPlugin', { plugin })}</FormHelp>}
-      {/* A disabled button shows no tooltip, so the reason is written out */}
-      {canDownload && !config.paperVersion && <FormHelp>{t('downloadNeedsVersion')}</FormHelp>}
-      <FormHelp>{canDownload ? t('jarDownloadHelp', { plugin }) : t('jarHelp', { plugin, target })}</FormHelp>
-    </div>
+    </FieldRow>
   );
 }
 
@@ -223,10 +226,12 @@ function PlayerNameField({ playerName }: { playerName: string }) {
     (text) => ({ value: text }),
     (value) => value,
   );
+  const id = useId();
 
   return (
-    <FormField label={t('playerName')} description={<FormHelp>{t('playerHelp')}</FormHelp>}>
+    <FieldRow label={t('playerName')} htmlFor={id} help={t('playerHelp')}>
       <Input
+        id={id}
         data-testid="test-server-player-name"
         value={draft}
         placeholder={t('playerPlaceholder')}
@@ -236,7 +241,7 @@ function PlayerNameField({ playerName }: { playerName: string }) {
           if (draft !== playerName) setConfig({ playerName: draft });
         }}
       />
-    </FormField>
+    </FieldRow>
   );
 }
 
