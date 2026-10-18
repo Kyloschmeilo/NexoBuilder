@@ -47,12 +47,12 @@
     },
     "empty": {
       "general": "Noch nichts hinzugefügt (z.B. Lore).",
-      "appearance": "Noch keine Pack-Optionen (z.B. CustomArmor, Color).",
-      "attributes": "Noch keine AttributeModifiers oder Enchantments.",
+      "appearance": "Noch keine Optionen fürs Aussehen (z. B. Farbe, eigene Rüstung).",
+      "attributes": "Noch keine Attribute oder Verzauberungen.",
       "components": "Noch keine Components.",
       "mechanics": "Noch keine Mechanics.",
       "data": "Noch keine Item-Daten (z.B. Food, Equippable).",
-      "settings": "Noch keine Settings (z.B. Tags, Fuel Time).",
+      "settings": "Noch keine Einstellungen (z. B. Tags, Brenndauer).",
       "itemBehavior": "Noch keine Verhalten (z. B. Platzierung an Wänden, Bereichsabbau).",
       "blockSettings": "Noch keine Block-Einstellungen (z. B. Hardness, Sounds).",
       "blockBehavior": "Noch keine Optionen des Verhaltens (z. B. Sounds, weitere Verhalten).",
@@ -629,7 +629,9 @@
   },
   "palette": {
     "group": "Einstellungen dieses Items",
-    "added": "Hinzugefügt · {group}",
-    "available": "Hinzufügen · {group}"
+    "added": "In {group}",
+    "available": "Zu {group} hinzufügen",
+    "tooOld": "Zu {group} hinzufügen (braucht Minecraft {version} oder neuer)",
+    "removed": "Zu {group} hinzufügen (nur bis Minecraft {version})"
   }
 }

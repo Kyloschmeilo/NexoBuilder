@@ -9,7 +9,7 @@ import { NEXO_FORM } from '../nexo/form/schema';
 /** The groups whose catalog must be sorted into categories, per form. */
 const CATEGORIZED: Array<[FormSchema, Record<string, unknown>, string[]]> = [
   [NEXO_FORM, NEXO_CATALOG, ['general', 'appearance', 'attributes', 'components', 'mechanics']],
-  [CRAFT_ENGINE_FORM, CE_CATALOG, ['general', 'data', 'settings']],
+  [CRAFT_ENGINE_FORM, CE_CATALOG, ['general', 'data', 'settings', 'blockSettings', 'model', 'itemBehavior']],
 ];
 
 for (const [form, catalog, groups] of CATEGORIZED) {

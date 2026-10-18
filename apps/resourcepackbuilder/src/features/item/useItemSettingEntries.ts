@@ -23,14 +23,20 @@ export function useItemSettingEntries(itemId: string | null): { heading: string;
   const project = useProjectStore((s) => s.project);
   const item = itemId ? project?.items[itemId] : undefined;
   if (!project || !item) return null;
-  const entries = paletteSettings(formFor(project.target), item).map((setting): ItemSettingEntry => {
+  const entries = paletteSettings(formFor(project.target), item, project.settings.minecraftVersion).map((setting): ItemSettingEntry => {
     const label = text(setting.def.label);
     // Group ids come from the form at runtime; a test checks the catalogue has a title for each of them
     const group = t(`properties.titles.${setting.group}` as never);
     return {
       id: `setting:${setting.def.id}`,
       label,
-      detail: setting.added ? t('palette.added', { group }) : t('palette.available', { group }),
+      detail: setting.added
+        ? t('palette.added', { group })
+        : setting.support === 'tooOld'
+          ? t('palette.tooOld', { group, version: setting.def.minVersion ?? '' })
+          : setting.support === 'removed'
+            ? t('palette.removed', { group, version: setting.def.maxVersion ?? '' })
+            : t('palette.available', { group }),
       keywords: [label, setting.yamlKey, ...(setting.def.aliases ?? [])],
       run: () => openPaletteSetting(item.id, setting),
     };

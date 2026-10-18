@@ -1,7 +1,7 @@
 /**
- * Catalog metadata of the CraftEngine item properties (general, data and settings): the category each one is sorted
- * into in the "Add feature" catalog, the common ones offered first, and search aliases. Category names live at
- * `groups.<group>.categories.<category>` in the `ceSchema` namespace.
+ * Catalog metadata of the CraftEngine item properties (general, data, settings, block settings, model and item
+ * behaviors): the category each one is sorted into in the "Add feature" catalog, the common ones offered first, and
+ * search aliases. Category names live at `groups.<group>.categories.<category>` in the `ceSchema` namespace.
  */
 import { catalogTable, type PropertyCatalog } from '../../../form/catalogMeta';
 
@@ -118,5 +118,94 @@ const SETTINGS = catalogTable(
   },
 );
 
-/** Categories, common entries and aliases of the CraftEngine general, data and settings properties, by property id. */
-export const CE_CATALOG: PropertyCatalog = { ...GENERAL, ...DATA, ...SETTINGS };
+const BLOCK_SETTINGS = catalogTable(
+  {
+    breaking: [
+      'block.settings.hardness',
+      'block.settings.resistance',
+      'block.settings.correct_tools',
+      'block.settings.require_correct_tools',
+      'block.settings.respect_tool_component',
+      'block.settings.required_break_power',
+      'block.settings.incorrect_tool_dig_speed',
+      'block.settings.destroy_stages',
+    ],
+    sounds: ['block.settings.sounds', 'block.settings.instrument'],
+    light: [
+      'block.settings.luminance',
+      'block.settings.block_light',
+      'block.settings.propagate_skylight',
+      'block.settings.use_shape_for_light_occlusion',
+      'block.settings.can_occlude',
+      'block.settings.is_view_blocking',
+    ],
+    physics: [
+      'block.settings.friction',
+      'block.settings.speed_factor',
+      'block.settings.jump_factor',
+      'block.settings.bounce_restitution',
+      'block.settings.push_reaction',
+      'block.settings.is_suffocating',
+      'block.settings.support_shape',
+      'block.settings.block_raytrace',
+      'block.settings.replaceable',
+    ],
+    fireFluids: [
+      'block.settings.burnable',
+      'block.settings.burn_chance',
+      'block.settings.fire_spread_chance',
+      'block.settings.fluid_state',
+    ],
+    redstone: ['block.settings.is_redstone_conductor', 'block.settings.is_randomly_ticking'],
+    appearance: ['block.settings.map_color'],
+    templates: ['block.settings.template', 'block.settings.arguments', 'block.settings.tags'],
+  },
+  [
+    'block.settings.hardness',
+    'block.settings.resistance',
+    'block.settings.sounds',
+    'block.settings.tags',
+    'block.settings.luminance',
+    'block.settings.correct_tools',
+  ],
+  {
+    'block.settings.hardness': ['break time', 'mining time'],
+    'block.settings.resistance': ['blast', 'explosion'],
+    'block.settings.luminance': ['light level', 'glow'],
+    'block.settings.sounds': ['step sound', 'break sound', 'place sound'],
+    'block.settings.correct_tools': ['pickaxe', 'axe', 'tool'],
+    'block.settings.friction': ['slippery', 'ice'],
+    'block.settings.burnable': ['flammable'],
+    'block.settings.push_reaction': ['piston'],
+    'block.settings.map_color': ['map'],
+    'block.settings.is_redstone_conductor': ['power'],
+  },
+);
+
+const MODEL = catalogTable(
+  {
+    model: ['item_model', 'custom_model_data', 'legacy_model'],
+    display: ['oversized_in_gui', 'hand_animation_on_swap', 'swap_animation_scale'],
+  },
+  ['item_model', 'oversized_in_gui'],
+  {
+    custom_model_data: ['cmd'],
+    oversized_in_gui: ['big icon', 'large'],
+    hand_animation_on_swap: ['swap animation'],
+  },
+);
+
+const ITEM_BEHAVIOR = catalogTable({ placement: ['behavior'], extra: ['behaviors'] }, ['behavior'], {
+  behavior: ['place', 'block item', 'furniture item'],
+  behaviors: ['compostable', 'range mining'],
+});
+
+/** Categories, common entries and aliases of the CraftEngine item properties, by property id. */
+export const CE_CATALOG: PropertyCatalog = {
+  ...GENERAL,
+  ...DATA,
+  ...SETTINGS,
+  ...BLOCK_SETTINGS,
+  ...MODEL,
+  ...ITEM_BEHAVIOR,
+};

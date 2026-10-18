@@ -3,7 +3,15 @@
  * its group, YAML key and search aliases, so "hardness" or "stack size" finds the setting. Picking one goes to its
  * section and opens it; a setting the item does not use yet is added first.
  */
-import { type FormSchema, isPropertyActive, type PropertyDef, type PropertyGroup, propertyYamlPath } from '@resourcepackbuilder/core/form';
+import {
+  type FormSchema,
+  isPropertyActive,
+  propertyConflict,
+  type PropertyDef,
+  type PropertyGroup,
+  propertyYamlPath,
+} from '@resourcepackbuilder/core/form';
+import { versionSupport } from '@resourcepackbuilder/minecraft';
 import type { Item } from '@resourcepackbuilder/core/project';
 import { isPlainObject } from '@resourcepackbuilder/utils';
 import { addProperty } from '../../commands/items';
@@ -21,20 +29,28 @@ export interface PaletteSetting {
   yamlKey: string;
   /** Whether the item already uses it (then picking it jumps there). */
   added: boolean;
+  /** How the project's Minecraft version supports it (`tooOld`: too new for it, `removed`: gone in it). */
+  support: VersionSupport;
 }
 
-/** The sections outside Features that edit a property group of the item. */
 /** CraftEngine's block settings, edited in the Block section. */
 const BLOCK_SETTINGS_GROUP = 'blockSettings';
 
+/** The sections outside Features that edit a property group of the item. */
 const OTHER_GROUP_SECTIONS: Readonly<Record<PropertyGroup, string>> = {
   general: 'basics',
   model: 'model',
   [BLOCK_SETTINGS_GROUP]: 'block',
 };
 
-/** Every setting of the item editor's groups, in form order. */
-export function paletteSettings(schema: FormSchema, item: Item): PaletteSetting[] {
+/** What `versionSupport` says about a property in the project's version. */
+type VersionSupport = ReturnType<typeof versionSupport>;
+
+/**
+ * Every setting of the item editor's groups, in form order. Settings that conflict with one the item uses are left
+ * out (they cannot be added); `version` is the project's Minecraft version.
+ */
+export function paletteSettings(schema: FormSchema, item: Item, version: string): PaletteSetting[] {
   const featureGroups = FEATURE_GROUPS[schema.target];
   const exclude = FEATURE_EXCLUDE[schema.target];
   return schema.properties.flatMap((def): PaletteSetting[] => {
@@ -42,7 +58,9 @@ export function paletteSettings(schema: FormSchema, item: Item): PaletteSetting[
     if (!navId || exclude[def.group]?.includes(def.id)) return [];
     // Block settings only exist on an item that places a block
     if (def.group === BLOCK_SETTINGS_GROUP && !isPlainObject(item.config.block)) return [];
-    return [{ def, group: def.group, navId, yamlKey: propertyYamlPath(def) ?? def.id, added: isPropertyActive(item, def) }];
+    const added = isPropertyActive(item, def);
+    if (!added && propertyConflict(schema, item, def)) return [];
+    return [{ def, group: def.group, navId, yamlKey: propertyYamlPath(def) ?? def.id, added, support: versionSupport(version, def) }];
   });
 }
 

@@ -10,6 +10,7 @@ export const FEATURE_GROUPS: Readonly<Record<PackTargetId, readonly PropertyGrou
 
 /** Property ids a feature group leaves out because a section of their own edits them, per target and group. */
 export const FEATURE_EXCLUDE: Readonly<Record<PackTargetId, Readonly<Record<PropertyGroup, readonly string[]>>>> = {
-  nexo: {},
+  // The Furniture section edits the furniture mechanic
+  nexo: { mechanics: ['Mechanics.furniture'] },
   craftengine: {},
 };

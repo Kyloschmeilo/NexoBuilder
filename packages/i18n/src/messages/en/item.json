@@ -47,12 +47,12 @@
     },
     "empty": {
       "general": "Nothing added yet (e.g. Lore).",
-      "appearance": "No pack options yet (e.g. CustomArmor, Color).",
-      "attributes": "No AttributeModifiers or Enchantments yet.",
+      "appearance": "No appearance options yet (e.g. color, custom armor).",
+      "attributes": "No attributes or enchantments yet.",
       "components": "No components yet.",
       "mechanics": "No mechanics yet.",
       "data": "No item data yet (e.g. Food, Equippable).",
-      "settings": "No settings yet (e.g. Tags, Fuel Time).",
+      "settings": "No settings yet (e.g. tags, fuel time).",
       "itemBehavior": "No behaviors yet (e.g. a placement on walls, range mining).",
       "blockSettings": "No block settings yet (e.g. Hardness, Sounds).",
       "blockBehavior": "No behavior options yet (e.g. sounds, extra behaviors).",
@@ -629,7 +629,9 @@
   },
   "palette": {
     "group": "Settings of this item",
-    "added": "Added · {group}",
-    "available": "Add · {group}"
+    "added": "In {group}",
+    "available": "Add to {group}",
+    "tooOld": "Add to {group} (needs Minecraft {version} or newer)",
+    "removed": "Add to {group} (only up to Minecraft {version})"
   }
 }

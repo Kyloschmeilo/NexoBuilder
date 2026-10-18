@@ -3,7 +3,6 @@
  * (Basics, Model, Features …, see `sections.ts`). The picked section is kept in the ui store, so it stays when the
  * user switches items. The item's final YAML is in the output dock.
  */
-import { useEffect, useRef } from 'react';
 import { useTranslations } from 'next-intl';
 import type { Item } from '@resourcepackbuilder/core/project';
 import { issuesFor } from '@resourcepackbuilder/utils';
@@ -11,9 +10,11 @@ import { Page, SectionNav } from '@resourcepackbuilder/ui';
 import { FieldContext } from '../../components/editor';
 import { usePlan } from '../../shell/PlanProvider';
 import { useOpenProject } from '../../store/project';
-import { setEditorSection, useUiStore } from '../../store/ui';
+import { useUiStore } from '../../store/ui';
 import { ItemHeader } from './ItemHeader';
 import { useProjectForm } from './properties/useProjectForm';
+import { goToSection } from './sectionNavigation';
+import { FEATURE_GROUPS } from './sections/featureGroups';
 import { itemSectionNav, itemSections, resolveItemSection, type ItemSectionLabels } from './sections';
 import { useItemFieldContext } from './useItemFieldContext';
 
@@ -37,22 +38,12 @@ function ItemEditorContent({ item }: { item: Item }) {
   const labels = useSectionLabels();
   const issues = plan ? issuesFor(plan.issues, { kind: 'item', id: item.id }) : [];
   const sections = itemSections(target, item);
-  const { section, focus, navId } = resolveItemSection(sections, storedSection);
-  const top = useRef<HTMLDivElement>(null);
-  const shownSection = section.id;
-
-  // A new section starts at its top (the page keeps its scroll position otherwise)
-  const previous = useRef(shownSection);
-  useEffect(() => {
-    if (previous.current === shownSection) return;
-    previous.current = shownSection;
-    top.current?.scrollIntoView({ block: 'start' });
-  }, [shownSection]);
-
+  const { section, focus, navId } = resolveItemSection(sections, storedSection, FEATURE_GROUPS[target]);
   const { Component } = section;
   return (
     <FieldContext.Provider value={fieldContext}>
-      <div ref={top} className="scroll-mt-0">
+      {/* The scroll target of a section switch (EDITOR_TOP_ATTRIBUTE) */}
+      <div data-item-editor-top="">
         <Page
           header={<ItemHeader item={item} issues={issues} />}
           nav={
@@ -60,7 +51,7 @@ function ItemEditorContent({ item }: { item: Item }) {
               label={t('sections.nav')}
               items={itemSectionNav(schema, item, labels)}
               activeId={navId}
-              onSelect={setEditorSection}
+              onSelect={goToSection}
             />
           }
         >

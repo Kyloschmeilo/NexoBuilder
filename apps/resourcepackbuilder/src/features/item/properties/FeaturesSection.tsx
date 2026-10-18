@@ -2,7 +2,6 @@
  * The Features section of the item editor: one feature list panel per property group of the form (Components,
  * Mechanics … or Data, Settings …). A group picked in the section nav scrolls into view.
  */
-import { useEffect } from 'react';
 import type { Item } from '@resourcepackbuilder/core/project';
 import type { PropertyGroup } from '@resourcepackbuilder/core/form';
 import { PropertyGroupPanel } from './PropertyGroupPanel';
@@ -13,16 +12,12 @@ export interface FeaturesSectionProps {
   groups: readonly PropertyGroup[];
   /** Property ids each group leaves out because another section edits them. */
   exclude?: Readonly<Record<PropertyGroup, readonly string[]>>;
-  /** The group to bring into view (picked in the section nav). */
+  /** The group picked in the section nav (the nav scrolls to it, see `sectionNavigation.ts`). */
   focusGroup?: PropertyGroup;
 }
 
 /** Every feature group of the item, each one panel. */
-export function FeaturesSection({ item, groups, exclude, focusGroup }: FeaturesSectionProps) {
-  useEffect(() => {
-    if (!focusGroup) return;
-    document.querySelector(`[data-section-id="group-${CSS.escape(focusGroup)}"]`)?.scrollIntoView({ block: 'start' });
-  }, [focusGroup]);
+export function FeaturesSection({ item, groups, exclude }: FeaturesSectionProps) {
   return (
     <div className="flex flex-col gap-3">
       {groups.map((group) => (

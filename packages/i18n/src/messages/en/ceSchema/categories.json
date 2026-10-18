@@ -24,6 +24,30 @@
         "equipment": "Equipment",
         "appearance": "Appearance"
       }
+    },
+    "blockSettings": {
+      "categories": {
+        "breaking": "Breaking and tools",
+        "sounds": "Sounds",
+        "light": "Light",
+        "physics": "Physics and collision",
+        "fireFluids": "Fire and fluids",
+        "redstone": "Redstone",
+        "appearance": "Appearance",
+        "templates": "Templates and tags"
+      }
+    },
+    "model": {
+      "categories": {
+        "model": "Model",
+        "display": "Display"
+      }
+    },
+    "itemBehavior": {
+      "categories": {
+        "placement": "Placement",
+        "extra": "Extra behaviors"
+      }
     }
   }
 }

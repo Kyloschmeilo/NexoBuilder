@@ -10,7 +10,7 @@ import { activeProperties, type FormSchema, type PropertyGroup } from '@resource
 import type { Item, PackTargetId } from '@resourcepackbuilder/core/project';
 import type { SectionNavItem } from '@resourcepackbuilder/ui';
 import { CraftEngineBlockSection } from './model/CraftEngineBlockSection';
-import { CraftEngineFurnitureSection } from './model/CraftEngineFurnitureSection';
+import { FurnitureSection, placesFurniture } from './furniture';
 import { TexturesSection } from './model';
 import { RecipesSection } from './recipes';
 import { AdvancedSection } from './sections/AdvancedSection';
@@ -34,8 +34,8 @@ export interface ItemSectionDef {
   id: ItemSectionId;
   /** Offered only in projects of these targets (all when left out). */
   targets?: readonly PackTargetId[];
-  /** Offered only while this holds for the item. */
-  available?: (item: Item) => boolean;
+  /** Offered only while this holds for the item in a project of `target`. */
+  available?: (item: Item, target: PackTargetId) => boolean;
   /** The number shown in the nav. */
   count?: (item: Item, schema: FormSchema) => number;
   Component: ComponentType<ItemSectionProps>;
@@ -70,7 +70,7 @@ export const ITEM_SECTIONS: readonly ItemSectionDef[] = [
     Component: ItemFeaturesSection,
   },
   { id: 'block', targets: ['craftengine'], Component: CraftEngineBlockSection },
-  { id: 'furniture', targets: ['craftengine'], Component: CraftEngineFurnitureSection },
+  { id: 'furniture', available: placesFurniture, Component: FurnitureSection },
   { id: 'events', targets: ['craftengine'], count: limitedGroupCount('events'), Component: EventsSection },
   { id: 'loot', targets: ['craftengine'], count: limitedGroupCount('loot'), Component: LootSection },
   { id: 'recipes', count: (item) => item.recipes.length, Component: RecipesSection },
@@ -79,7 +79,7 @@ export const ITEM_SECTIONS: readonly ItemSectionDef[] = [
 
 /** The sections a project of `target` offers for `item`, in nav order. */
 export function itemSections(target: PackTargetId, item: Item): ItemSectionDef[] {
-  return ITEM_SECTIONS.filter((section) => (!section.targets || section.targets.includes(target)) && (section.available?.(item) ?? true));
+  return ITEM_SECTIONS.filter((section) => (!section.targets || section.targets.includes(target)) && (section.available?.(item, target) ?? true));
 }
 
 /** Texts of the nav entries. */
@@ -105,16 +105,21 @@ export function itemSectionNav(schema: FormSchema, item: Item, labels: ItemSecti
 
 /**
  * The section to show for the stored nav id: a feature group shows the Features section focused on it; an id the item
- * does not offer (or the old tab ids) falls back to the first section.
+ * does not offer (or the old tab ids) falls back to the first section. `groups` are the target's feature groups.
  */
 export function resolveItemSection(
   sections: readonly ItemSectionDef[],
   navId: string,
+  groups: readonly PropertyGroup[],
 ): { section: ItemSectionDef; focus?: string; navId: string } {
   const first = sections[0];
   if (navId.startsWith(GROUP_PREFIX)) {
     const features = sections.find((section) => section.id === 'features');
-    if (features) return { section: features, focus: navId.slice(GROUP_PREFIX.length), navId };
+    const group = navId.slice(GROUP_PREFIX.length);
+    if (features) {
+      // A group of the other target (stored while another project was open) shows Features without a focus
+      return groups.includes(group) ? { section: features, focus: group, navId } : { section: features, navId: features.id };
+    }
   }
   const section = sections.find((candidate) => candidate.id === navId);
   return section ? { section, navId } : { section: first, navId: first.id };
