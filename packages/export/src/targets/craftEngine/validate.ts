@@ -46,6 +46,7 @@ import {
   type LogicObjectKind,
   lootSourceKey,
   type LogicType,
+  missingBehaviorKeys,
   missingBehaviorProperties,
   parseCeRotation,
   parseCeVector,
@@ -56,6 +57,7 @@ import {
   projectTemplates,
   propertyValues,
   rendererElements,
+  seagrassWithoutWater,
   requiredElementKey,
   resolveTrigger,
   sharedBaseBlocks,
@@ -365,6 +367,18 @@ export function validateCraftEngineBlock(
   else if (!template) {
     validateStates(itemExport, states);
     for (const [name, appearance] of blockAppearances(block)) validateState(itemExport, appearance, name);
+  } else if (template === 'default:block_state/button') {
+    // The button shows two items as well
+    const { project } = itemExport;
+    const items = Object.values(project.items).map((item) => `${project.namespace}:${item.itemId}`);
+    const args = templateArguments(states);
+    for (const argument of ['button_not_pressed_item', 'button_pressed_item']) {
+      const value = args[argument];
+      if (!value) report('error', 'ce.blockButtonItemMissing', { argument });
+      else if (String(value).startsWith(`${project.namespace}:`) && !items.includes(String(value))) {
+        report('warning', 'ce.blockButtonItemUnknown', { item: String(value) });
+      }
+    }
   } else if (template === 'default:block_state/fence') {
     // The fence shows two items: both must be set, and those of this pack must exist
     const { project } = itemExport;
@@ -381,6 +395,8 @@ export function validateCraftEngineBlock(
   for (const { behavior, property, type } of missingBehaviorProperties(block, blockPropertyTypes(block))) {
     report('error', 'ce.blockBehaviorProperty', { behavior, property, type });
   }
+  for (const { behavior, key } of missingBehaviorKeys(block)) report('error', 'ce.blockBehaviorKeyMissing', { behavior, key });
+  if (seagrassWithoutWater(block)) report('warning', 'ce.blockSeagrassWithoutWater');
   if (blockModel && !blockModel.model) report('error', 'ce.blockMissingModel');
   if (blockModel && blockModel.unusedTextures > 0) {
     report('warning', 'ce.blockExtraTextures', { max: CE_BLOCK_MAX_TEXTURES, count: blockModel.unusedTextures });

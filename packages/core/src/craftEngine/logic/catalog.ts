@@ -24,6 +24,7 @@ export type LogicCatalogName =
   | 'attributeSyncValues'
   | 'damageFormulas'
   | 'damageEffects'
+  | 'blockBehaviors'
   | 'itemBehaviors'
   | 'furnitureBehaviors'
   | 'itemUpdaters';
