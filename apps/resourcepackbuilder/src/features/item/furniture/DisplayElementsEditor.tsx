@@ -26,7 +26,7 @@ import { SelectInput } from '../../../components/editor/inputs/SelectInput';
 import { TextInput } from '../../../components/editor/inputs/TextInput';
 import { Vector3Input } from '../../../components/editor/inputs/Vector3Input';
 import { isFieldVisible } from '../../../components/editor/values';
-import { EntrySummary, vectorText } from './nexoEntryEditors';
+import { EntrySummary, vectorText } from '../../../components/editor/nexoFurnitureEditors';
 import { FurnitureGroup, TypeSelect } from './parts';
 
 /** The object with `key` set, or without it for `undefined`. */

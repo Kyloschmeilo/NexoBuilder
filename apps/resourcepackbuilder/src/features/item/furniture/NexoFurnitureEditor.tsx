@@ -5,11 +5,12 @@
  */
 import { useState } from 'react';
 import { useTranslations } from 'next-intl';
-import { Plus } from 'lucide-react';
+import { Plus, Trash2 } from 'lucide-react';
 import { type Field, type ObjectField, propertyById } from '@resourcepackbuilder/core/form';
 import { NEXO_DOCS, nexoHitboxEntries } from '@resourcepackbuilder/core/nexo';
 import type { ConfigObject, ConfigValue, Item } from '@resourcepackbuilder/core/project';
-import { EmptyHint } from '@resourcepackbuilder/ui';
+import { EmptyHint, FieldGroup, IconButton } from '@resourcepackbuilder/ui';
+import { isPlainObject } from '@resourcepackbuilder/utils';
 import { Button } from '@resourcepackbuilder/ui/components/button';
 import { CatalogDialog, type CatalogItem, versionBadges } from '../../../components/catalog';
 import { FeatureList } from '../../../components/features';
@@ -20,12 +21,18 @@ import { useProjectForm } from '../properties/useProjectForm';
 import { NexoFurnitureModels } from './FurnitureModelsSection';
 import { NexoFurniturePreview } from './FurniturePreview';
 import { withKey } from './DisplayElementsEditor';
-import { entryCount, NexoHitboxList, NexoSeatList } from './nexoEntryEditors';
+import { entryCount, NexoBedList, NexoHitboxList, NexoLightList, NexoSeatList } from '../../../components/editor/nexoFurnitureEditors';
+import { FieldRenderer } from '../../../components/editor';
 import { NEXO_FURNITURE_PROPERTY } from './model';
 import { FieldFeatureRow, FurnitureGroup } from './parts';
 
 /** Keys with a list of their own beside the preview. */
 const LISTED_KEYS = new Set(['hitbox', 'seats']);
+/**
+ * Options added through the catalog that, once set, are lists of their own beside the preview instead of feature rows
+ * (a list inside a feature row would nest a third box).
+ */
+const LIST_OPTIONS = new Set(['lights', 'beds']);
 
 /** The catalog categories of the furniture's further options, in display order, with their keys. */
 const OPTION_CATEGORIES: Record<string, readonly string[]> = {
@@ -65,9 +72,19 @@ export function NexoFurnitureEditor({ item, furniture }: { item: Item; furniture
     updateNexoFurniture(item.id, (f) => withKey(f, key, value as ConfigValue | undefined), historyKey && `furniture-${historyKey}`);
 
   const options = fields.filter((f) => !LISTED_KEYS.has(f.key));
-  const shown = options.filter((f) => furniture[f.key] !== undefined);
+  const shown = options.filter((f) => furniture[f.key] !== undefined && !LIST_OPTIONS.has(f.key));
   const hitboxField = fieldOf('hitbox');
   const seatsField = fieldOf('seats');
+  const lightsField = fieldOf('lights');
+  const lights = isPlainObject(furniture.lights) ? furniture.lights : undefined;
+  const setLights = (key: string, value: unknown, historyKey?: string) =>
+    set('lights', withKey(lights ?? {}, key, value as ConfigValue | undefined), historyKey && `lights-${historyKey}`);
+  /** "Remove" in a list option's heading. */
+  const removeAction = (key: string, title: string) => (
+    <IconButton label={t('removeOption', { name: title })} size="icon-xs" variant="ghost-destructive" onClick={() => set(key, undefined)}>
+      <Trash2 />
+    </IconButton>
+  );
 
   const catalogItems: CatalogItem[] = options.map((f: Field) => ({
     id: f.key,
@@ -104,6 +121,33 @@ export function NexoFurnitureEditor({ item, furniture }: { item: Item; furniture
               docs={{ url: NEXO_DOCS.furniture.seats, target: 'nexo' }}
             >
               <NexoSeatList label={t('seats')} value={furniture.seats} onChange={(value) => set('seats', value, 'seats')} />
+            </FurnitureGroup>
+          )}
+          {furniture.beds !== undefined && (
+            <FurnitureGroup
+              title={t('beds')}
+              count={entryCount(furniture.beds)}
+              docs={{ url: NEXO_DOCS.furniture.beds, target: 'nexo' }}
+              actions={removeAction('beds', t('beds'))}
+            >
+              <NexoBedList label={t('beds')} value={furniture.beds} onChange={(value) => set('beds', value ?? [], 'beds')} />
+            </FurnitureGroup>
+          )}
+          {lightsField?.type === 'object' && furniture.lights !== undefined && (
+            <FurnitureGroup
+              title={t('light')}
+              count={entryCount(lights?.lights)}
+              docs={{ url: NEXO_DOCS.furniture.lights, target: 'nexo' }}
+              actions={removeAction('lights', t('light'))}
+            >
+              <NexoLightList label={t('light')} value={lights?.lights} onChange={(value) => setLights('lights', value, 'list')} />
+              <FieldGroup>
+                {lightsField.fields
+                  .filter((f) => f.key !== 'lights')
+                  .map((f) => (
+                    <FieldRenderer key={f.key} field={f} value={lights?.[f.key]} onChange={(value) => setLights(f.key, value, f.key)} />
+                  ))}
+              </FieldGroup>
             </FurnitureGroup>
           )}
         </div>
@@ -164,7 +208,7 @@ export function NexoFurnitureEditor({ item, furniture }: { item: Item; furniture
           setOpenKey(keys[keys.length - 1] ?? null);
         }}
         onJumpTo={(key) => {
-          setOpenKey(key);
+          if (!LIST_OPTIONS.has(key)) setOpenKey(key);
           requestAnimationFrame(() =>
             document.querySelector(`[data-feature-id="${CSS.escape(key)}"]`)?.scrollIntoView({ block: 'center' }),
           );

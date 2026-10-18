@@ -17,6 +17,9 @@ import {
   CARPENTRY_LATE_VERSION,
   CARPENTRY_VARIATION_LIMIT,
   isCarpentryBlockType,
+  isReadableNexoEntry,
+  NEXO_HITBOX_KINDS,
+  parseNexoHitbox,
   PROPERTIES,
 } from '@resourcepackbuilder/core/nexo';
 import type { ItemExport } from '../types';
@@ -29,23 +32,6 @@ const BLOCK_VARIATION_LIMITS: Record<string, number> = {
   ...Object.fromEntries(
     CARPENTRY_BLOCK_TYPES.filter((type) => !CARPENTRY_LATE_TYPES.includes(type)).map((type) => [type, CARPENTRY_VARIATION_LIMIT]),
   ),
-};
-
-const NUMBER = String.raw`-?\d+(?:\.\d+)?`;
-const OFFSET = String.raw`${NUMBER}\s*,\s*${NUMBER}\s*,\s*${NUMBER}`;
-/** A coordinate of a barrier, which may be a range such as `0..2` */
-const RANGE = String.raw`${NUMBER}(?:\.\.${NUMBER})?`;
-
-/**
- * The entry formats of each hitbox kind (furniture-mechanic/hitbox in the Nexo docs): barriers `x,y,z` (ranges
- * allowed), interactions `x,y,z width,height`, shulkers `x,y,z scale length [direction] [visible]`, ghasts
- * `x,y,z scale [rotation] [visible]`.
- */
-const HITBOX_PATTERNS: Record<string, RegExp> = {
-  barriers: new RegExp(String.raw`^${RANGE}\s*,\s*${RANGE}\s*,\s*${RANGE}$`),
-  interactions: new RegExp(String.raw`^${OFFSET}(?:\s+${NUMBER}\s*,\s*${NUMBER})?$`),
-  shulkers: new RegExp(String.raw`^${OFFSET}\s+${NUMBER}\s+${NUMBER}(?:\s+[A-Za-z_]+)?(?:\s+(?:true|false))?$`, 'i'),
-  ghasts: new RegExp(String.raw`^${OFFSET}\s+${NUMBER}(?:\s+${NUMBER})?(?:\s+(?:true|false))?$`, 'i'),
 };
 
 export interface ItemConfigChecks {
@@ -115,11 +101,12 @@ export function validateItemConfig(itemExport: ItemExport, { config, usedVariati
 function validateHitbox({ item, report }: ItemExport): void {
   const hitbox = getPath(item.config, ['Mechanics', 'furniture', 'hitbox']);
   if (!isPlainObject(hitbox)) return;
-  for (const [kind, pattern] of Object.entries(HITBOX_PATTERNS)) {
+  // The editor's parser decides, so the editor and the checks agree on what Nexo reads
+  for (const kind of NEXO_HITBOX_KINDS) {
     const value = hitbox[kind];
     const entries = typeof value === 'string' ? [value] : Array.isArray(value) ? value : [];
     for (const entry of entries) {
-      if (typeof entry === 'string' && entry.trim() && !pattern.test(entry.trim())) {
+      if (typeof entry === 'string' && entry.trim() && !isReadableNexoEntry(parseNexoHitbox(kind, entry))) {
         report('warning', 'plan.hitboxEntryInvalid', { kind, entry });
       }
     }

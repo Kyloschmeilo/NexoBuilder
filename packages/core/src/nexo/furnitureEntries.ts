@@ -3,7 +3,8 @@
  * Nexo reads each as one string (furniture-mechanic docs): barriers `x,y,z` (each axis may be a range `0..2`),
  * interactions `x,y,z [width,height]`, shulkers `x,y,z scale length [direction] [visible]`, ghasts
  * `x,y,z scale [rotation] [visible]`, seats `x,y,z`, beds `x,y,z skip_night reset_phantoms [force_visibility]` and
- * lights `x,y,z level`. Words after the ones a kind reads are kept, so writing an entry back never loses text.
+ * lights `x,y,z level`. Words after the ones a kind reads are kept (`extra`), so writing an entry back never loses
+ * text; the plugin cannot read an entry with such words, so `isReadableNexoEntry` and the export's checks reject it.
  */
 import { isPlainObject } from '@resourcepackbuilder/utils';
 
@@ -83,13 +84,19 @@ export interface NexoBed {
 export interface NexoLight {
   position: NexoVec3;
   /** 1–15 */
-  level: number | null;
+  level: number;
   extra: string[];
 }
 
 const NUMBER = /^-?\d+(?:\.\d+)?$/;
 const toNumber = (text: string | undefined): number | null => (text !== undefined && NUMBER.test(text) ? Number(text) : null);
-const words = (text: string) => text.trim().split(/\s+/).filter(Boolean);
+/** The words of an entry; spaces around the commas of an offset or size (`0, 0, 0`) do not split it. */
+const words = (text: string) =>
+  text
+    .trim()
+    .replace(/\s*,\s*/g, ',')
+    .split(/\s+/)
+    .filter(Boolean);
 const toBoolean = (text: string | undefined): boolean | null => {
   const lower = text?.toLowerCase();
   return lower === 'true' ? true : lower === 'false' ? false : null;
@@ -233,8 +240,9 @@ export function parseNexoLight(value: unknown): NexoLight | null {
   const [offset, levelText, ...extra] = words(value);
   const position = readVector(offset);
   if (!position) return null;
+  // The level is required (1–15, light-mechanic docs)
   const level = toNumber(levelText);
-  if (levelText !== undefined && level === null) return null;
+  if (level === null) return null;
   return { position, level, extra };
 }
 
@@ -269,3 +277,8 @@ export function withNexoHitboxEntries(
 }
 
 const isHitboxKind = (key: string): key is NexoHitboxKind => (NEXO_HITBOX_KINDS as readonly string[]).includes(key);
+
+/** Whether the plugin reads a parsed entry as it is: it was readable and has no words after the ones its kind reads. */
+export function isReadableNexoEntry(entry: { extra: readonly string[] } | null): boolean {
+  return entry !== null && entry.extra.length === 0;
+}

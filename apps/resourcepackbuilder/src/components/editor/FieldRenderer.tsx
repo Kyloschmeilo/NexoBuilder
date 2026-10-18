@@ -7,6 +7,8 @@
 import type { ComponentType } from 'react';
 import type { Field } from '@resourcepackbuilder/core/form';
 import { renderCustomFieldEditor } from './customEditors';
+// Registers the hand-written editors the form schema names (`Field.editor`)
+import './nexoFurnitureEditors';
 import { BooleanEditor } from './editors/BooleanEditor';
 import { ChoiceEditor } from './editors/ChoiceEditor';
 import { MapEditor } from './editors/MapEditor';

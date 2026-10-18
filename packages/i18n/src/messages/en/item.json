@@ -540,6 +540,9 @@
     "variantMissing": "No {name} variant, so the item cannot be placed this way.",
     "seatName": "Seat {number}",
     "bedName": "Bed {number}",
-    "lightName": "Light {number}"
+    "lightName": "Light {number}",
+    "beds": "Beds",
+    "light": "Light",
+    "removeOption": "Remove {name}"
   }
 }

@@ -540,6 +540,9 @@
     "variantMissing": "Keine Variante {name}, daher kann das Item so nicht platziert werden.",
     "seatName": "Sitz {number}",
     "bedName": "Bett {number}",
-    "lightName": "Licht {number}"
+    "lightName": "Licht {number}",
+    "beds": "Betten",
+    "light": "Licht",
+    "removeOption": "{name} entfernen"
   }
 }

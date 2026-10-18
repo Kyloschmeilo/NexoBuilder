@@ -13,7 +13,7 @@ import { FieldRenderer } from '../../../components/editor';
 import { getProject, setProject } from '../../../store/project';
 import { FurnitureSection } from './FurnitureSection';
 import { itemFurniture, placesFurniture, variantNameError, variantNames, withoutVariant, withVariant } from './model';
-import { NexoHitboxList, NexoLightList } from './nexoEntryEditors';
+import { NexoHitboxList, NexoLightList, NexoSeatList } from '../../../components/editor/nexoFurnitureEditors';
 
 /** Opens a project of `target` with one item whose config is `config`; returns the item. */
 function openProject(target: PackTargetId, config: Record<string, unknown>): Item {
@@ -97,6 +97,26 @@ describe('Nexo furniture entry lists', () => {
     click(rows[1].querySelector('button[aria-expanded]'));
     type(host.querySelector<HTMLInputElement>('input[aria-label="Width"]')!, '3');
     expect(value).toEqual({ barriers: ['0..1,0,0'], interactions: ['0,1,0 3,2'] });
+  });
+
+  it('lets a required size be emptied while typing, and writes the typed number', () => {
+    openProject('nexo', {});
+    let value: unknown = { shulkers: ['0,0,0 3 1'] };
+    const host = render(<NexoHitboxList label="Hitboxes" value={value} onChange={(next) => (value = next)} />, 'nexo');
+    click(host.querySelector('[data-slot=list-row] button[aria-expanded]'));
+    const size = host.querySelector<HTMLInputElement>('input[aria-label="Size"]')!;
+    type(size, '');
+    expect(size.value).toBe('');
+    expect(value).toEqual({ shulkers: ['0,0,0 3 1'] });
+    type(size, '2');
+    expect(value).toEqual({ shulkers: ['0,0,0 2 1'] });
+  });
+
+  it('edits an entry with words the plugin does not read as text, as the export checks report it', () => {
+    openProject('nexo', {});
+    const host = render(<NexoSeatList label="Seats" value={['0,0.5,0 90']} onChange={() => undefined} />, 'nexo');
+    click(host.querySelector('[data-slot=list-row] button[aria-expanded]'));
+    expect(host.textContent).toContain('The plugin cannot read this entry.');
   });
 
   it('keeps an entry Nexo cannot read editable as text', () => {

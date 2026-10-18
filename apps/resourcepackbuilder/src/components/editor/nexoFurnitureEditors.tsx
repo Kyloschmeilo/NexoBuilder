@@ -2,8 +2,10 @@
  * Structured editors of a Nexo furniture's text entries: its hitboxes (barriers, interactions, shulkers and happy
  * ghasts in one list), seats, beds and light sources. Each entry is a `ListEditor` row with a one-line summary that
  * expands to its parts (an x/y/z offset, sizes, switches); an entry Nexo could not read stays editable as text. The
- * editors are registered by name, so the form schema's fields that name them (`Field.editor`) use them everywhere, also
- * inside a door's or a state's nested forms.
+ * editors are registered by name when this module loads (the field renderer imports it), so the form schema's fields
+ * that name them (`Field.editor`) use them everywhere, also inside a door's or a state's nested forms. An entry the
+ * plugin cannot read as it is (also one with words after the ones its kind reads) is edited as text, the same rule the
+ * export's checks use.
  */
 import type { ReactNode } from 'react';
 import { useTranslations } from 'next-intl';
@@ -13,6 +15,7 @@ import {
   formatNexoHitbox,
   formatNexoLight,
   formatNexoSeat,
+  isReadableNexoEntry,
   NEXO_FURNITURE_EDITORS,
   NEXO_HITBOX_KINDS,
   NEXO_SHULKER_DIRECTIONS,
@@ -30,18 +33,21 @@ import {
 import { FieldGroup, FieldRow, ListEditor } from '@resourcepackbuilder/ui';
 import { Button } from '@resourcepackbuilder/ui/components/button';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@resourcepackbuilder/ui/components/dropdown-menu';
-import { registerFieldEditor } from '../../../components/editor';
-import { FieldShell, useFieldLabel } from '../../../components/editor/FieldShell';
-import { BooleanSwitch } from '../../../components/editor/inputs/BooleanSwitch';
-import { NumberInput } from '../../../components/editor/inputs/NumberInput';
-import { SelectInput } from '../../../components/editor/inputs/SelectInput';
-import { TextInput } from '../../../components/editor/inputs/TextInput';
-import { parseVector3, Vector3Input } from '../../../components/editor/inputs/Vector3Input';
-import type { EditorProps } from '../../../components/editor/types';
-import { toStringList } from '../../../components/editor/values';
+import { registerFieldEditor } from './customEditors';
+import { FieldShell, useFieldLabel } from './FieldShell';
+import { BooleanSwitch } from './inputs/BooleanSwitch';
+import { NumberInput } from './inputs/NumberInput';
+import { SelectInput } from './inputs/SelectInput';
+import { TextInput } from './inputs/TextInput';
+import { parseVector3, Vector3Input } from './inputs/Vector3Input';
+import type { EditorProps } from './types';
+import { toStringList } from './values';
 
 /** An offset as the summary shows it ("0, 0.5, 0"). */
 export const vectorText = (vector: readonly number[]) => vector.join(', ');
+
+/** A parsed entry the plugin reads as it is, else null (it is then edited as text). */
+const readable = <T extends { extra: readonly string[] }>(entry: T | null): T | null => (isReadableNexoEntry(entry) ? entry : null);
 
 /** The list's value: undefined once it has no entries. */
 const listValue = (list: unknown[]) => (list.length > 0 ? list : undefined);
@@ -73,7 +79,7 @@ function OffsetRow({
   );
 }
 
-/** A number of an entry; `fallback` is what an emptied required number becomes. */
+/** A number of an entry in its field row. */
 function NumberRow({
   label,
   value,
@@ -82,6 +88,7 @@ function NumberRow({
   min,
   max,
   integer,
+  required,
 }: {
   label: string;
   value: number | null;
@@ -90,6 +97,8 @@ function NumberRow({
   min?: number;
   max?: number;
   integer?: boolean;
+  /** The entry needs the number: an emptied field writes nothing and shows the stored value again on blur. */
+  required?: boolean;
 }) {
   return (
     <FieldRow label={label}>
@@ -101,7 +110,9 @@ function NumberRow({
         min={min}
         max={max}
         integer={integer}
-        onChange={(n) => onChange(n ?? null)}
+        onChange={(n) => {
+          if (n !== undefined || !required) onChange(n ?? null);
+        }}
       />
     </FieldRow>
   );
@@ -186,13 +197,20 @@ function HitboxFields({ hitbox, onChange }: { hitbox: NexoHitbox; onChange: (hit
       return (
         <FieldGroup>
           <OffsetRow label={t('position')} value={hitbox.position} onChange={(position) => onChange({ ...hitbox, position })} />
-          <NumberRow label={t('size')} value={hitbox.scale} min={0} onChange={(scale) => onChange({ ...hitbox, scale: scale ?? 1 })} />
+          <NumberRow
+            label={t('size')}
+            value={hitbox.scale}
+            min={0}
+            required
+            onChange={(scale) => onChange({ ...hitbox, scale: scale ?? hitbox.scale })}
+          />
           <NumberRow
             label={t('length')}
             value={hitbox.length}
             min={1}
             max={2}
-            onChange={(length) => onChange({ ...hitbox, length: length ?? 1 })}
+            required
+            onChange={(length) => onChange({ ...hitbox, length: length ?? hitbox.length })}
           />
           <FieldRow label={t('direction')}>
             <SelectInput
@@ -210,7 +228,13 @@ function HitboxFields({ hitbox, onChange }: { hitbox: NexoHitbox; onChange: (hit
       return (
         <FieldGroup>
           <OffsetRow label={t('position')} value={hitbox.position} onChange={(position) => onChange({ ...hitbox, position })} />
-          <NumberRow label={t('size')} value={hitbox.scale} min={0} onChange={(scale) => onChange({ ...hitbox, scale: scale ?? 0.25 })} />
+          <NumberRow
+            label={t('size')}
+            value={hitbox.scale}
+            min={0}
+            required
+            onChange={(scale) => onChange({ ...hitbox, scale: scale ?? hitbox.scale })}
+          />
           <NumberRow
             label={t('rotation')}
             value={hitbox.rotation}
@@ -291,11 +315,11 @@ export function NexoHitboxList({ value, onChange, label }: { value: unknown; onC
         reorderable={false}
         emptyText={t('noHitboxes')}
         renderSummary={(entry) => {
-          const hitbox = parseNexoHitbox(entry.kind, entry.text);
+          const hitbox = readable(parseNexoHitbox(entry.kind, entry.text));
           return <EntrySummary name={t(`hitboxKinds.${entry.kind}`)} detail={hitbox ? detail(hitbox) : String(entry.text)} />;
         }}
         renderEditor={(entry, change) => {
-          const hitbox = parseNexoHitbox(entry.kind, entry.text);
+          const hitbox = readable(parseNexoHitbox(entry.kind, entry.text));
           return hitbox ? (
             <HitboxFields hitbox={hitbox} onChange={(next) => change({ ...entry, text: formatNexoHitbox(next) })} />
           ) : (
@@ -311,7 +335,7 @@ export function NexoHitboxList({ value, onChange, label }: { value: unknown; onC
 /* ---------------------------------------------------------------------------------- seats, beds, lights */
 
 /** A list of text entries, each read by `parse` and written by `format`. */
-function EntryList<T>({
+function EntryList<T extends { extra: readonly string[] }>({
   label,
   name,
   value,
@@ -348,11 +372,11 @@ function EntryList<T>({
       addLabel={addLabel}
       onAdd={() => onChange([...list, newEntry])}
       renderSummary={(text, i) => {
-        const entry = parse(text);
+        const entry = readable(parse(text));
         return <EntrySummary name={name(i + 1)} detail={entry ? summary(entry) : String(text)} />;
       }}
       renderEditor={(text, change) => {
-        const entry = parse(text);
+        const entry = readable(parse(text));
         return entry ? fields(entry, (next) => change(format(next))) : <RawEntry text={text} onChange={change} />;
       }}
     />
@@ -431,7 +455,7 @@ export function NexoLightList({ value, onChange, label }: { value: unknown; onCh
       onChange={onChange}
       parse={parseNexoLight}
       format={formatNexoLight}
-      summary={(light) => `${vectorText(light.position)} · ${t('levelValue', { value: light.level ?? '–' })}`}
+      summary={(light) => `${vectorText(light.position)} · ${t('levelValue', { value: light.level })}`}
       fields={(light, change) => (
         <FieldGroup>
           <OffsetRow label={t('position')} value={light.position} onChange={(position) => change({ ...light, position })} />
@@ -441,7 +465,8 @@ export function NexoLightList({ value, onChange, label }: { value: unknown; onCh
             min={1}
             max={15}
             integer
-            onChange={(level) => change({ ...light, level })}
+            required
+            onChange={(level) => change({ ...light, level: level ?? light.level })}
           />
         </FieldGroup>
       )}

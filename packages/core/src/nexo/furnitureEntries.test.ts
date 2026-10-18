@@ -4,6 +4,7 @@ import {
   formatNexoHitbox,
   formatNexoLight,
   formatNexoSeat,
+  isReadableNexoEntry,
   NEXO_HITBOX_KINDS,
   newNexoHitbox,
   nexoHitboxEntries,
@@ -63,7 +64,15 @@ describe('Nexo furniture hitbox entries', () => {
     expect(formatNexoHitbox(parseNexoHitbox('ghasts', '0,0,0 0.25')!)).toBe('0,0,0 0.25');
   });
 
-  it('keeps words it does not read', () => {
+  it('reads offsets and sizes with spaces after the commas, as the export checks do', () => {
+    expect(parseNexoHitbox('barriers', '-1, 0, 0')).toMatchObject({ from: [-1, 0, 0] });
+    expect(parseNexoHitbox('interactions', '0, 1, 0 1, 2')).toMatchObject({ position: [0, 1, 0], width: 1, height: 2 });
+  });
+
+  it('keeps words it does not read, but the entry is then not readable', () => {
+    expect(isReadableNexoEntry(parseNexoHitbox('interactions', '0,0,0 1,1'))).toBe(true);
+    expect(isReadableNexoEntry(parseNexoHitbox('interactions', '0,0,0 1,1 future'))).toBe(false);
+    expect(isReadableNexoEntry(null)).toBe(false);
     expect(formatNexoHitbox(parseNexoHitbox('interactions', '0,0,0 1,1 future')!)).toBe('0,0,0 1,1 future');
     expect(formatNexoSeat(parseNexoSeat('0,0.5,0 90')!)).toBe('0,0.5,0 90');
   });
@@ -113,5 +122,7 @@ describe('Nexo furniture seats, beds and lights', () => {
     expect(parseNexoLight('0,1,0 15')).toEqual({ position: [0, 1, 0], level: 15, extra: [] });
     expect(formatNexoLight({ position: [1, 0, 0], level: 7, extra: [] })).toBe('1,0,0 7');
     expect(parseNexoLight('0,1,0 bright')).toBeNull();
+    // The level is required
+    expect(parseNexoLight('0,1,0')).toBeNull();
   });
 });

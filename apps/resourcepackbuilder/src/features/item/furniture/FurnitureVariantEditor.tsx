@@ -34,7 +34,7 @@ import { parseVector3, Vector3Input } from '../../../components/editor/inputs/Ve
 import { useOpenProject } from '../../../store/project';
 import { ElementFields, KeyedFields, toNumber, useElementSummary, vectorSummary, withKey } from './DisplayElementsEditor';
 import { FurniturePreview } from './FurniturePreview';
-import { EntrySummary, vectorText } from './nexoEntryEditors';
+import { EntrySummary, vectorText } from '../../../components/editor/nexoFurnitureEditors';
 import { FurnitureGroup, TypeSelect } from './parts';
 
 type Edit = (next: (value: ConfigObject) => ConfigObject, historyKey?: string) => void;
