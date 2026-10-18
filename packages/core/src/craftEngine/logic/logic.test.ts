@@ -31,6 +31,7 @@ const listOf = (catalog: keyof typeof CE_LOGIC): TypedListField => ({
 function sample(field: Field): unknown {
   switch (field.type) {
     case 'text':
+      if (field.format === 'vector') return '0.5,0.5,0.5';
       return field.format === 'resource' ? 'minecraft:stone' : field.format === 'duration' ? '5s' : 'text';
     case 'number':
       return field.min ?? 1;
@@ -89,6 +90,7 @@ describe('the logic catalogs', () => {
       attributeSyncValues: 3,
       damageFormulas: 3,
       damageEffects: 3,
+      blockBehaviors: 54,
     });
   });
 
@@ -113,7 +115,7 @@ describe('the logic catalogs', () => {
 });
 
 describe('typedList', () => {
-  const typedCatalogs = ['conditions', 'functions', 'numbers', 'lootSources', 'lootEntries', 'lootFunctions'] as const;
+  const typedCatalogs = ['conditions', 'functions', 'numbers', 'lootSources', 'lootEntries', 'lootFunctions', 'blockBehaviors'] as const;
   for (const catalog of typedCatalogs) {
     it.each(CE_LOGIC[catalog].map((t: LogicType) => [t.type, t]))(`round-trips a sample ${catalog} entry: %s`, (type, t) => {
       const entry = { type, ...sampleObject((t as LogicType).fields) };

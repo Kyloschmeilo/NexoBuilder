@@ -34,8 +34,21 @@ export const CE_DOCS = {
   damageFormulas: `${WIKI}/configuration/attribute/damage-formula`,
 };
 
-/** The wiki page of a block behavior (`configuration/block/behaviors/<type>`). */
-export const ceBlockBehaviorDocs = (type: string): string => `${CE_DOCS.blockBehaviors}/${type}`;
+/** Block behaviors whose wiki page is not named after the type (null: no page of their own yet) */
+const BEHAVIOR_PAGES: Record<string, string | null> = {
+  drop_exp_block: 'drop_experience_block',
+  vine_crop_head_block: null,
+  vine_crop_body_block: null,
+};
+
+/**
+ * The wiki page of a block behavior (`configuration/block/behaviors/<page>`); the behaviors page for a behavior the
+ * wiki does not document yet.
+ */
+export function ceBlockBehaviorDocs(type: string): string {
+  const page = Object.hasOwn(BEHAVIOR_PAGES, type) ? BEHAVIOR_PAGES[type] : type;
+  return page ? `${CE_DOCS.blockBehaviors}/${page}` : CE_DOCS.blockBehaviors;
+}
 
 /** Types whose heading on the catalog's page is the type itself */
 const same = (...types: string[]): Record<string, string> => Object.fromEntries(types.map((type) => [type, type]));
@@ -201,6 +214,8 @@ const LOGIC_DOCS: Record<LogicCatalogName, { page: string; anchors: Record<strin
     anchors: { expression: 'expression-expression-formulas', composition: 'composition-formula-parts', js: 'js-javascript-formulas' },
   },
   damageEffects: { page: CE_DOCS.damageFormulas, anchors: same('life_steal', 'potion_effect', 'function') },
+  // Each block behavior has a page of its own (ceBlockBehaviorDocs)
+  blockBehaviors: { page: CE_DOCS.blockBehaviors, anchors: {} },
 };
 
 /** The wiki section of a logic type: its heading on the catalog's page, or the page when it has none. */

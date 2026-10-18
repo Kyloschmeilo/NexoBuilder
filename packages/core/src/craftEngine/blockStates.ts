@@ -150,6 +150,8 @@ export const CE_STATE_TEMPLATES: Record<string, StateTemplate> = {
   'default:block_state/fence': {
     properties: { north: 'boolean', east: 'boolean', south: 'boolean', west: 'boolean', ...WATERLOGGED },
   },
+  // The button's look comes from item displays too (pressed and not pressed)
+  'default:block_state/button': { properties: { powered: 'boolean', face: 'anchor_type', facing: 'horizontal_direction' } },
   'default:block_state/leaves': {
     properties: { distance: 'int', persistent: 'boolean', ...WATERLOGGED },
     autoStates: (args) => {
@@ -218,8 +220,49 @@ export function toSingleState(block: ConfigObject, fallback: ConfigObject): Conf
   return { ...rest, state: isPlainObject(first) ? (first as ConfigObject) : fallback };
 }
 
+/* ====================================================================== State builders */
+
+/**
+ * States with a boolean property `name` (default false) that switches between two appearances, `[off, on]`, each
+ * taking a state of the auto_state group; `onSettings` are the block settings while it is true (a lit lamp's light).
+ */
+export function switchStates(name: string, [off, on]: [string, string], autoState: string, onSettings?: ConfigObject): ConfigObject {
+  return {
+    properties: { [name]: { type: 'boolean', default: false } },
+    appearances: { [off]: { auto_state: autoState }, [on]: { auto_state: autoState } },
+    variants: { [`${name}=false`]: { appearance: off }, [`${name}=true`]: { appearance: on, ...(onSettings && { settings: onSettings }) } },
+  };
+}
+
+/** States with an int property `name` from `first` to `last`, one appearance per value (`<prefix><value>`). */
+export function intStates(name: string, first: number, last: number, autoState: string, prefix: string): ConfigObject {
+  const values = Array.from({ length: last - first + 1 }, (_, i) => first + i);
+  return {
+    properties: { [name]: { type: 'int', default: first, range: `${first}~${last}` } },
+    appearances: Object.fromEntries(values.map((i) => [`${prefix}${i}`, { auto_state: autoState }])),
+    variants: Object.fromEntries(values.map((i) => [`${name}=${i}`, { appearance: `${prefix}${i}` }])),
+  };
+}
+
+/** States with a property of an enum type (`sofa_shape` …), one appearance per value, named after it. */
+export function enumStates(name: string, type: string, autoState: string): ConfigObject {
+  const values = ENUM_VALUES[type] ?? [];
+  return {
+    properties: { [name]: { type, default: values[0] ?? '' } },
+    appearances: Object.fromEntries(values.map((value) => [value, { auto_state: autoState }])),
+    variants: Object.fromEntries(values.map((value) => [`${name}=${value}`, { appearance: value }])),
+  };
+}
+
+/** States with these properties and one look (`default`) for all of them (a sapling's stages look the same). */
+export function oneLookStates(properties: ConfigObject, autoState: string): ConfigObject {
+  return { properties, appearances: { default: { auto_state: autoState } }, variants: {} };
+}
+
 /** The rotation of the model around the y axis that turns a block facing north to each horizontal direction. */
 const FACING_ROTATION: Record<string, number> = { north: 0, east: 90, south: 180, west: 270 };
+/** The rotation of the model around the x axis that turns a block facing north up or down. */
+const VERTICAL_ROTATION: Record<string, number> = { up: 270, down: 90 };
 
 /**
  * Makes the block face the player: a `facing` property (horizontal_direction, which CraftEngine sets on placement)
@@ -227,20 +270,29 @@ const FACING_ROTATION: Record<string, number> = { north: 0, east: 90, south: 180
  * an appearance becomes one variant per direction (`facing=east,lit=true` picks `on_east`); variants with settings
  * only stay. Last, `facing=<direction>` picks the first appearance turned, for the states no other variant matches
  * (CraftEngine takes the appearance of the first matching variant). The model path is left to the export when an
- * appearance has none.
+ * appearance has none. With `type` `direction`, the block can also face up and down (its model turned around the x
+ * axis; an entity renderer stays as it is for these two).
  */
-export function withFacing(states: ConfigObject): ConfigObject {
+export function withFacing(states: ConfigObject, type: 'horizontal_direction' | 'direction' = 'horizontal_direction'): ConfigObject {
+  const directions =
+    type === 'direction' ? [...Object.keys(FACING_ROTATION), ...Object.keys(VERTICAL_ROTATION)] : Object.keys(FACING_ROTATION);
   const appearances: Record<string, unknown> = {};
   for (const [name, value] of Object.entries(statesMap(states, 'appearances'))) {
     const look: Record<string, unknown> = isPlainObject(value) ? value : {};
     const model = isPlainObject(look.model) ? look.model : {};
-    for (const [direction, turn] of Object.entries(FACING_ROTATION)) {
+    // A transparent look, or a renderer on a fixed vanilla state, shows no model of its own: only the renderer turns
+    const fixed = isTransparentState(look) || rendererIsLook(look);
+    for (const direction of directions) {
+      const turn = FACING_ROTATION[direction];
+      if (turn === undefined) {
+        const x = ((Number(model.x) || 0) + VERTICAL_ROTATION[direction]) % 360;
+        appearances[`${name}_${direction}`] = fixed ? look : { ...look, model: { ...model, x } };
+        continue;
+      }
       const y = ((Number(model.y) || 0) + turn) % 360;
       const rotated: Record<string, unknown> = { ...model, y };
       if (y === 0) delete rotated.y;
-      // A transparent look, or a renderer on a fixed vanilla state, shows no model of its own: only the renderer turns
-      const turned = isTransparentState(look) || rendererIsLook(look) ? look : { ...look, model: rotated };
-      appearances[`${name}_${direction}`] = turnRenderer(turned, turn);
+      appearances[`${name}_${direction}`] = turnRenderer(fixed ? look : { ...look, model: rotated }, turn);
     }
   }
   const variants: Record<string, unknown> = {};
@@ -250,17 +302,17 @@ export function withFacing(states: ConfigObject): ConfigObject {
       variants[key] = value;
       continue;
     }
-    for (const direction of Object.keys(FACING_ROTATION)) {
+    for (const direction of directions) {
       variants[`facing=${direction},${key}`] = { ...(value as object), appearance: `${appearance}_${direction}` };
     }
   }
   const first = Object.keys(statesMap(states, 'appearances'))[0];
   if (first !== undefined) {
-    for (const direction of Object.keys(FACING_ROTATION)) variants[`facing=${direction}`] = { appearance: `${first}_${direction}` };
+    for (const direction of directions) variants[`facing=${direction}`] = { appearance: `${first}_${direction}` };
   }
   return {
     ...states,
-    properties: { ...statesMap(states, 'properties'), facing: { type: 'horizontal_direction', default: 'north' } },
+    properties: { ...statesMap(states, 'properties'), facing: { type, default: 'north' } },
     appearances,
     variants,
   } as ConfigObject;

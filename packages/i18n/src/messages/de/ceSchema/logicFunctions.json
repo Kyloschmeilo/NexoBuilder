@@ -125,36 +125,7 @@
       },
       "particle": {
         "label": "particle",
-        "help": "Erzeugt Partikel. Schlüssel für Partikeldaten bleiben erhalten.",
-        "fields": {
-          "particle": {
-            "label": "particle"
-          },
-          "x": {
-            "label": "x"
-          },
-          "y": {
-            "label": "y"
-          },
-          "z": {
-            "label": "z"
-          },
-          "count": {
-            "label": "count"
-          },
-          "offsetX": {
-            "label": "offset_x"
-          },
-          "offsetY": {
-            "label": "offset_y"
-          },
-          "offsetZ": {
-            "label": "offset_z"
-          },
-          "speed": {
-            "label": "speed"
-          }
-        }
+        "help": "Erzeugt Partikel, mit den Daten, die manche Partikeltypen brauchen (ein Block, ein Item, eine Farbe …)."
       },
       "potionEffect": {
         "label": "potion_effect",

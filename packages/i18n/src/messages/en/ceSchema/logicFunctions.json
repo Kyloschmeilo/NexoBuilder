@@ -125,36 +125,7 @@
       },
       "particle": {
         "label": "particle",
-        "help": "Spawns particles. Particle data keys are kept as they are.",
-        "fields": {
-          "particle": {
-            "label": "particle"
-          },
-          "x": {
-            "label": "x"
-          },
-          "y": {
-            "label": "y"
-          },
-          "z": {
-            "label": "z"
-          },
-          "count": {
-            "label": "count"
-          },
-          "offsetX": {
-            "label": "offset_x"
-          },
-          "offsetY": {
-            "label": "offset_y"
-          },
-          "offsetZ": {
-            "label": "offset_z"
-          },
-          "speed": {
-            "label": "speed"
-          }
-        }
+        "help": "Spawns particles, with the data some particle types need (a block, an item, a color …)."
       },
       "potionEffect": {
         "label": "potion_effect",
