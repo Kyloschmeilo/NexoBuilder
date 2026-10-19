@@ -1,0 +1,394 @@
+{
+  "craftEngine": {
+    "fields": {
+      "lang": {
+        "label": "lang",
+        "keyLabel": "Language",
+        "keyPlaceholder": "e.g. en_us",
+        "value": {
+          "label": "Keys",
+          "keyLabel": "Key",
+          "keyPlaceholder": "e.g. container.inventory",
+          "value": {
+            "label": "Text",
+            "placeholder": "e.g. Backpack"
+          }
+        }
+      },
+      "translations": {
+        "label": "translations",
+        "keyLabel": "Language",
+        "keyPlaceholder": "e.g. en",
+        "value": {
+          "label": "Keys",
+          "keyLabel": "Key",
+          "keyPlaceholder": "e.g. item.lantern",
+          "value": {
+            "label": "Text",
+            "placeholder": "e.g. '<'gold>Lantern"
+          }
+        }
+      },
+      "categories": {
+        "label": "categories",
+        "itemLabel": "Category",
+        "fields": {
+          "id": {
+            "label": "id",
+            "help": "Items and other categories name the category by this id. Without a namespace it gets the project's.",
+            "placeholder": "e.g. swords"
+          },
+          "name": {
+            "label": "name",
+            "help": "The title in the item browser. Unset: the id.",
+            "placeholder": "e.g. '<'!i>'<'green>Swords"
+          },
+          "lore": {
+            "label": "lore",
+            "placeholder": "'<'gray>A line"
+          },
+          "icon": {
+            "label": "icon",
+            "help": "The item shown for the category. Unset: minecraft:stone.",
+            "placeholder": "e.g. minecraft:iron_sword"
+          },
+          "priority": {
+            "label": "priority",
+            "help": "Lower values come first; equal ones are sorted by id. Default: 0."
+          },
+          "hidden": {
+            "label": "hidden",
+            "help": "Leaves the category off the main page, e.g. one only opened from another category."
+          },
+          "source": {
+            "label": "source",
+            "help": "Where the members come from. Several sources are appended in order."
+          }
+        }
+      },
+      "configuredFeatures": {
+        "label": "configured_features",
+        "itemLabel": "Configured feature",
+        "fields": {
+          "id": {
+            "label": "id",
+            "help": "Saplings and placed features name the feature by this id. Without a namespace it gets the project's.",
+            "placeholder": "e.g. palm_tree"
+          },
+          "type": {
+            "label": "type",
+            "help": "The vanilla feature type, or craftengine:simple_block for a custom block."
+          },
+          "config": {
+            "label": "config",
+            "help": "The feature's settings as YAML, e.g. from misode's configured feature generator. Custom block ids work wherever vanilla ones do; craftengine:simple_state_provider and the other craftengine: providers help where vanilla ones do not.",
+            "placeholder": "to_place: …"
+          }
+        }
+      },
+      "placedFeatures": {
+        "label": "placed_features",
+        "itemLabel": "Placed feature",
+        "fields": {
+          "id": {
+            "label": "id",
+            "help": "Grass blocks name the feature by this id. Without a namespace it gets the project's.",
+            "placeholder": "e.g. palm_tree_beach"
+          },
+          "feature": {
+            "label": "feature",
+            "help": "The configured feature to place: its id, or one written here.",
+            "choices": {
+              "reference": {
+                "label": "Id",
+                "field": {
+                  "label": "Configured feature",
+                  "placeholder": "e.g. namespace:palm_tree"
+                }
+              },
+              "inline": {
+                "label": "Inline",
+                "field": {
+                  "label": "Configured feature",
+                  "placeholder": "type: minecraft:simple_block"
+                }
+              }
+            }
+          },
+          "placement": {
+            "label": "placement",
+            "help": "The placement modifiers as a YAML list, e.g. rarity_filter, in_square, heightmap. A biome filter needs - type: minecraft:biome here.",
+            "placeholder": "- type: minecraft:rarity_filter"
+          },
+          "world": {
+            "label": "world",
+            "help": "Only these worlds, by their exact name. Unset: all.",
+            "placeholder": "e.g. world"
+          },
+          "dimension": {
+            "label": "dimension",
+            "help": "Only these dimensions. Unset: all."
+          },
+          "dimensionType": {
+            "label": "dimension_type",
+            "help": "Only dimensions of these types. Unset: all."
+          },
+          "biome": {
+            "label": "biome",
+            "help": "Only these biomes. Needs the minecraft:biome modifier in the placement."
+          }
+        }
+      },
+      "atlases": {
+        "label": "atlases",
+        "itemLabel": "Atlas",
+        "fields": {
+          "id": {
+            "label": "id",
+            "help": "The atlas the sources go into, e.g. minecraft:blocks. Entries with the same id are merged.",
+            "placeholder": "e.g. minecraft:blocks"
+          },
+          "sources": {
+            "label": "sources",
+            "help": "Where the atlas's sprites come from."
+          }
+        }
+      },
+      "pack": {
+        "label": "pack",
+        "fields": {
+          "author": {
+            "label": "author",
+            "placeholder": "ResourcepackBuilder"
+          },
+          "version": {
+            "label": "version",
+            "placeholder": "1.0"
+          },
+          "enable": {
+            "label": "enable",
+            "help": "Off: CraftEngine skips the whole pack."
+          },
+          "subpacks": {
+            "label": "subpacks",
+            "help": "Folders of the pack loaded as packs of their own when true. A key like $$>=1.21.4 turns a group on only for those server versions.",
+            "placeholder": "my_subpack: true"
+          }
+        }
+      },
+      "configFactories": {
+        "label": "config_factories",
+        "itemLabel": "Config factory",
+        "fields": {
+          "id": {
+            "label": "id",
+            "help": "Names the section config_factory#id; letters, digits and _ . -.",
+            "placeholder": "e.g. sofas"
+          },
+          "blueprint": {
+            "label": "blueprint",
+            "help": "Config sections (items, recipes, …) with $'{'argument'}' placeholders, read once per instance.",
+            "placeholder": "items: …"
+          },
+          "instances": {
+            "label": "instances",
+            "help": "A YAML list of argument maps, one per copy, e.g. - color: white. An argument can be a typed template argument.",
+            "placeholder": "- color: white"
+          }
+        }
+      },
+      "scripts": {
+        "label": "scripts",
+        "itemLabel": "Script",
+        "fields": {
+          "path": {
+            "label": "path",
+            "help": "The file below the pack's script folder, without .js. Functions and conditions name it as namespace:path.",
+            "placeholder": "e.g. utils/combo"
+          },
+          "source": {
+            "label": "source",
+            "help": "JavaScript. //@Subscribe, //@Task, //@Enable and //@Disable above a function register it.",
+            "placeholder": "function run() '{' … '}'"
+          }
+        }
+      }
+    }
+  },
+  "logic": {
+    "categorySources": {
+      "list": {
+        "label": "list",
+        "help": "Item ids and #category references, in this order.",
+        "fields": {
+          "list": {
+            "label": "list",
+            "help": "An item id, or a category id with # in front to nest it.",
+            "placeholder": "e.g. #namespace:swords"
+          }
+        }
+      },
+      "regex": {
+        "label": "regex",
+        "help": "Every item (vanilla too) whose full id matches.",
+        "fields": {
+          "regex": {
+            "label": "regex",
+            "help": "One or more regular expressions over the whole item id.",
+            "placeholder": "e.g. minecraft:.*_sword"
+          }
+        }
+      },
+      "allItems": {
+        "label": "all_items",
+        "help": "All vanilla and custom items.",
+        "fields": {
+          "ignoreVanilla": {
+            "label": "ignore_vanilla",
+            "help": "Keeps only custom items. Default: on."
+          }
+        }
+      }
+    },
+    "atlasSources": {
+      "directory": {
+        "label": "directory",
+        "help": "Every texture in a folder and its subfolders.",
+        "fields": {
+          "source": {
+            "label": "source",
+            "help": "The folder below assets/<atlas namespace>/textures/.",
+            "placeholder": "e.g. block"
+          },
+          "prefix": {
+            "label": "prefix",
+            "help": "Put in front of every sprite id.",
+            "placeholder": "e.g. block/"
+          }
+        }
+      },
+      "single": {
+        "label": "single",
+        "help": "One texture.",
+        "fields": {
+          "sprite": {
+            "label": "sprite",
+            "help": "The sprite id. Unset: the texture id.",
+            "placeholder": "e.g. namespace:machine"
+          }
+        }
+      },
+      "filter": {
+        "label": "filter",
+        "help": "Removes the sprites whose namespace or path matches.",
+        "fields": {
+          "pattern": {
+            "label": "pattern",
+            "help": "Regular expressions; set at least one.",
+            "fields": {
+              "namespace": {
+                "label": "namespace",
+                "placeholder": "e.g. my_pack"
+              },
+              "path": {
+                "label": "path",
+                "placeholder": "e.g. gui/.*"
+              }
+            }
+          }
+        }
+      },
+      "unstitch": {
+        "label": "unstitch",
+        "help": "Cuts regions of one texture into sprites of their own.",
+        "fields": {
+          "divisorX": {
+            "label": "divisor_x",
+            "help": "The width the region coordinates refer to. Default: 1."
+          },
+          "divisorY": {
+            "label": "divisor_y",
+            "help": "The height the region coordinates refer to. Default: 1."
+          },
+          "regions": {
+            "label": "regions",
+            "itemLabel": "Region",
+            "fields": {
+              "sprite": {
+                "label": "sprite",
+                "placeholder": "e.g. namespace:gui/button"
+              },
+              "x": {
+                "label": "x"
+              },
+              "y": {
+                "label": "y"
+              },
+              "width": {
+                "label": "width"
+              },
+              "height": {
+                "label": "height"
+              }
+            }
+          }
+        }
+      },
+      "palettedPermutations": {
+        "label": "paletted_permutations",
+        "help": "Recoloured copies of textures, one per palette.",
+        "fields": {
+          "textures": {
+            "label": "textures",
+            "placeholder": "e.g. namespace:trims/items/helmet_trim"
+          },
+          "separator": {
+            "label": "separator",
+            "help": "Joins texture name and suffix. Default: _.",
+            "placeholder": "_"
+          },
+          "permutations": {
+            "label": "permutations",
+            "help": "Suffix to palette texture.",
+            "keyLabel": "Suffix",
+            "keyPlaceholder": "e.g. ruby",
+            "value": {
+              "label": "Palette",
+              "placeholder": "e.g. namespace:trims/color_palettes/ruby"
+            }
+          }
+        }
+      }
+    },
+    "shared": {
+      "atlasTexture": {
+        "label": "Texture",
+        "placeholder": "e.g. namespace:block/machine"
+      }
+    }
+  },
+  "properties": {
+    "category": {
+      "label": "Category",
+      "description": "Adds the item to categories of the /ce item browser, after their own members.",
+      "field": {
+        "label": "Categories",
+        "placeholder": "e.g. namespace:swords"
+      }
+    },
+    "overrides": {
+      "label": "Overrides",
+      "description": "Keys that replace the template's keys as a whole (no merging), e.g. a list the template sets.",
+      "field": {
+        "label": "YAML"
+      }
+    },
+    "merges": {
+      "label": "Merges",
+      "description": "Keys deep-merged into the template's result, after its arguments are filled in.",
+      "field": {
+        "label": "YAML"
+      }
+    }
+  }
+}

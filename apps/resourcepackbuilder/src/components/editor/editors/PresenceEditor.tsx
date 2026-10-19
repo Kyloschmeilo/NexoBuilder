@@ -1,20 +1,24 @@
+/** A switch that writes `{}` while on and nothing while off (e.g. CLEAR_ALL_EFFECTS). */
+import { useId } from 'react';
 import type { PresenceField } from '@resourcepackbuilder/core/form';
 import { isPlainObject } from '@resourcepackbuilder/utils';
-import { CheckboxField } from '../../CheckboxField';
-import { useSchemaText } from '../../useSchemaText';
-import { FieldName } from '../FieldShell';
+import { Switch } from '@resourcepackbuilder/ui/components/switch';
+import { FieldShell, useFieldLabel } from '../FieldShell';
 import type { EditorProps } from '../types';
 
-/** A checkbox that writes `{}` when checked (e.g. CLEAR_ALL_EFFECTS). */
-export function PresenceEditor({ field, value, onChange }: EditorProps<PresenceField>) {
-  const text = useSchemaText();
+export function PresenceEditor({ field, value, onChange, hideLabel }: EditorProps<PresenceField>) {
+  const id = useId();
+  const label = useFieldLabel(field);
   return (
-    <CheckboxField
-      className="col-span-full py-1.5"
-      checked={isPlainObject(value) || value === true}
-      onChange={(checked) => onChange(checked ? {} : undefined)}
-      label={<FieldName field={field} />}
-      description={text(field.help)}
-    />
+    <FieldShell field={field} hideLabel={hideLabel} htmlFor={id}>
+      <div className="flex min-h-7.5 items-center">
+        <Switch
+          id={id}
+          aria-label={hideLabel ? label : undefined}
+          checked={isPlainObject(value) || value === true}
+          onCheckedChange={(checked) => onChange(checked ? {} : undefined)}
+        />
+      </div>
+    </FieldShell>
   );
 }

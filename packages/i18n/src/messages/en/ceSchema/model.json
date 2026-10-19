@@ -1,0 +1,83 @@
+{
+  "groups": {
+    "model": {
+      "label": "Item model",
+      "description": "Item keys around the model: GUI size, swap animation, model ids and the legacy model."
+    }
+  },
+  "properties": {
+    "oversizedInGui": {
+      "label": "Oversized In GUI",
+      "description": "Lets the model render beyond its inventory slot (from Minecraft 1.21.6). CraftEngine’s default is true.",
+      "field": {
+        "label": "Oversized"
+      }
+    },
+    "handAnimationOnSwap": {
+      "label": "Hand Animation On Swap",
+      "description": "Whether the first-person swap animation plays when the held item changes. Default: true.",
+      "field": {
+        "label": "Play animation"
+      }
+    },
+    "swapAnimationScale": {
+      "label": "Swap Animation Scale",
+      "description": "Speed of the swap animation; larger is faster. Default: 1.0.",
+      "field": {
+        "label": "Scale"
+      }
+    },
+    "itemModel": {
+      "label": "Item Model",
+      "description": "The items model definition the item points to (assets/'<'namespace>/items/'<'id>.json). CraftEngine sets it from the item ID by itself.",
+      "hint": "Only set it when another plugin or pack needs a fixed id; the item model tree on this tab is written to the item’s own definition.",
+      "field": {
+        "label": "Item model",
+        "placeholder": "namespace:path"
+      }
+    },
+    "customModelData": {
+      "label": "Custom Model Data",
+      "description": "A fixed CustomModelData number instead of the one CraftEngine allocates (for clients before 1.21.4 or other plugins).",
+      "field": {
+        "label": "Number"
+      }
+    },
+    "legacyModel": {
+      "label": "Legacy Model",
+      "description": "The model for clients before 1.21.4 with its overrides. CraftEngine converts the modern model by itself; use this only when that conversion is wrong.",
+      "hint": "Not needed when the pack only targets 1.21.4 and newer.",
+      "field": {
+        "label": "Legacy model",
+        "fields": {
+          "path": {
+            "label": "Path",
+            "placeholder": "namespace:item/my_item"
+          },
+          "generation": {
+            "label": "Generation",
+            "help": "Optional: parent, textures, display and gui_light of a model CraftEngine generates at this path."
+          },
+          "overrides": {
+            "label": "Overrides",
+            "itemLabel": "Override",
+            "fields": {
+              "path": {
+                "label": "Path",
+                "placeholder": "namespace:item/my_item_cast"
+              },
+              "predicate": {
+                "label": "Predicate",
+                "keyLabel": "Predicate",
+                "keyPlaceholder": "cast",
+                "value": {
+                  "label": "Value"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}

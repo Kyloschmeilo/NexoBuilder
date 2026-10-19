@@ -1,0 +1,596 @@
+{
+  "groups": {
+    "data": {
+      "label": "Data",
+      "description": "Item data components (Food, Equippable, Enchantment …)"
+    }
+  },
+  "properties": {
+    "dataInsertLore": {
+      "label": "Insert Lore",
+      "description": "Inserts lines into the lore at a position.",
+      "field": {
+        "label": "Insert Lore",
+        "fields": {
+          "position": {
+            "label": "Position"
+          },
+          "pattern": {
+            "label": "Pattern (regex)",
+            "placeholder": "Text to match"
+          },
+          "fallback": {
+            "label": "Fallback",
+            "help": "Used instead when the pattern matches no line.",
+            "fields": {
+              "position": {
+                "label": "Position"
+              },
+              "pattern": {
+                "label": "Pattern (regex)",
+                "placeholder": "Text to match"
+              }
+            }
+          }
+        }
+      }
+    },
+    "dataRemoveLore": {
+      "label": "Remove Lore",
+      "description": "Removes the lore lines that match a regular expression.",
+      "field": {
+        "label": "Pattern (regex)",
+        "placeholder": "Text to match"
+      }
+    },
+    "dataTooltipStyle": {
+      "label": "Tooltip Style",
+      "description": "The background texture of the tooltip.",
+      "field": {
+        "label": "Style",
+        "placeholder": "minecraft:topaz"
+      }
+    },
+    "dataDyedColor": {
+      "label": "Dyed Color",
+      "description": "The color of dyeable items such as leather armor, as r,g,b.",
+      "field": {
+        "label": "Color",
+        "placeholder": "255,128,64"
+      }
+    },
+    "dataTrim": {
+      "label": "Trim",
+      "description": "An armor trim with pattern and material.",
+      "field": {
+        "label": "Trim",
+        "fields": {
+          "pattern": {
+            "label": "Pattern"
+          },
+          "material": {
+            "label": "Material"
+          }
+        }
+      }
+    },
+    "dataCustomModelData": {
+      "label": "Custom Model Data",
+      "description": "Sets the custom_model_data component of the item.",
+      "field": {
+        "label": "Value"
+      },
+      "hint": "Only sets the component. The model the item shows is bound by custom_model_data at the item root."
+    },
+    "dataItemModel": {
+      "label": "Item Model",
+      "description": "Sets the item_model component of the item.",
+      "field": {
+        "label": "Model",
+        "placeholder": "default:sword"
+      },
+      "hint": "Only sets the component; no model is generated. The item_model key at the item root also generates the model."
+    },
+    "dataProfile": {
+      "label": "Profile",
+      "description": "The skin of a player head: a player name, a texture URL or base64.",
+      "field": {
+        "label": "Profile",
+        "choices": {
+          "text": {
+            "label": "Text",
+            "field": {
+              "label": "Profile",
+              "placeholder": "Player name, URL or base64"
+            }
+          },
+          "map": {
+            "label": "Details",
+            "field": {
+              "fields": {
+                "name": {
+                  "label": "The player whose skin the head shows.",
+                  "placeholder": "'<'arg:player.name>"
+                },
+                "texture": {
+                  "label": "A skin texture of the resource pack.",
+                  "placeholder": "minecraft:entity/player/wide/steve"
+                },
+                "url": {
+                  "label": "The URL of a skin texture.",
+                  "placeholder": "https://textures.minecraft.net/texture/…"
+                },
+                "base64": {
+                  "label": "The skin as base64 texture data."
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "dataFood": {
+      "label": "Food",
+      "description": "Food values when eaten. The item also needs a consumable component to be edible.",
+      "field": {
+        "label": "Food",
+        "fields": {
+          "nutrition": {
+            "label": "Nutrition (hunger points)"
+          },
+          "saturation": {
+            "label": "Saturation"
+          },
+          "canAlwaysEat": {
+            "label": "Edible even when not hungry"
+          }
+        }
+      }
+    },
+    "dataEquippable": {
+      "label": "Equippable",
+      "description": "The item can be worn in an equipment slot.",
+      "field": {
+        "label": "Equippable",
+        "fields": {
+          "slot": {
+            "label": "Slot"
+          },
+          "assetId": {
+            "label": "Equipment asset",
+            "placeholder": "e.g. minecraft:topaz"
+          },
+          "cameraOverlay": {
+            "label": "Camera overlay",
+            "placeholder": "e.g. minecraft:misc/pumpkinblur"
+          },
+          "swappable": {
+            "label": "Swappable by right-click"
+          },
+          "damageOnHurt": {
+            "label": "Takes damage when the wearer is hit"
+          },
+          "dispensable": {
+            "label": "Equippable by dispenser"
+          },
+          "equipOnInteract": {
+            "label": "Can be put on a mob by using it"
+          }
+        }
+      }
+    },
+    "dataUseRemainder": {
+      "label": "Use Remainder",
+      "description": "The item that is left after using this one.",
+      "field": {
+        "label": "Use Remainder",
+        "fields": {
+          "id": {
+            "label": "Item",
+            "placeholder": "minecraft:glass_bottle"
+          },
+          "count": {
+            "label": "Count"
+          }
+        }
+      }
+    },
+    "dataMaxDamage": {
+      "label": "Max Damage",
+      "description": "Maximum durability.",
+      "field": {
+        "label": "Durability"
+      }
+    },
+    "dataAttributeModifiers": {
+      "label": "Attribute Modifiers",
+      "description": "Vanilla attribute modifiers, e.g. more attack damage in the main hand.",
+      "field": {
+        "label": "Modifiers",
+        "itemLabel": "Modifier",
+        "fields": {
+          "type": {
+            "label": "Attribute"
+          },
+          "amount": {
+            "label": "Amount"
+          },
+          "operation": {
+            "label": "Operation"
+          },
+          "slot": {
+            "label": "Slot"
+          },
+          "id": {
+            "label": "Modifier ID",
+            "placeholder": "optional, e.g. namespace:bonus"
+          }
+        }
+      }
+    },
+    "dataEnchantment": {
+      "label": "Enchantment",
+      "description": "Fixed enchantments with their level.",
+      "field": {
+        "label": "Enchantments",
+        "choices": {
+          "levels": {
+            "label": "Levels",
+            "field": {
+              "label": "Enchantments",
+              "keyLabel": "Enchantment",
+              "value": {
+                "label": "Level"
+              },
+              "keyPlaceholder": "e.g. minecraft:sharpness"
+            }
+          },
+          "merge": {
+            "label": "Merge",
+            "field": {
+              "fields": {
+                "merge": {
+                  "label": "Keeps the enchantments the item already has and adds these."
+                },
+                "enchantments": {
+                  "label": "Enchantments",
+                  "keyLabel": "Enchantment",
+                  "value": {
+                    "label": "Level"
+                  },
+                  "keyPlaceholder": "e.g. minecraft:sharpness"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "dataPaintingVariant": {
+      "label": "Painting Variant",
+      "description": "The painting a painting item places.",
+      "field": {
+        "label": "Painting",
+        "placeholder": "namespace:painting"
+      }
+    },
+    "dataJukeboxPlayable": {
+      "label": "Jukebox Playable",
+      "description": "The song a jukebox plays with this item.",
+      "field": {
+        "label": "Song",
+        "placeholder": "namespace:song"
+      }
+    },
+    "dataBlockState": {
+      "label": "Block State",
+      "description": "The block state the item places, which also makes placing feel instant for players with high latency.",
+      "field": {
+        "label": "Block state",
+        "choices": {
+          "block": {
+            "label": "Block",
+            "field": {
+              "label": "A block state of a custom block, written as id[property=value].",
+              "placeholder": "default:palm_sapling[stage=0]"
+            }
+          },
+          "properties": {
+            "label": "Properties",
+            "field": {
+              "label": "Vanilla block properties and their values.",
+              "keyLabel": "Property",
+              "value": {
+                "label": "Value"
+              },
+              "keyPlaceholder": "e.g. note"
+            }
+          }
+        }
+      }
+    },
+    "dataWrittenBookContent": {
+      "label": "Written Book Content",
+      "description": "The title, author and pages of a written book (material written_book).",
+      "field": {
+        "label": "Book",
+        "fields": {
+          "author": {
+            "label": "The author shown in the tooltip.",
+            "placeholder": "XiaoMoMi"
+          },
+          "generation": {
+            "label": "How often the book was copied.",
+            "help": "0 original, 1 copy of the original, 2 copy of a copy, 3 tattered."
+          },
+          "resolved": {
+            "label": "Whether the text is already resolved."
+          },
+          "pages": {
+            "label": "The pages of the book.",
+            "choices": {
+              "lines": {
+                "label": "One line each",
+                "field": {
+                  "label": "Pages",
+                  "placeholder": "A single-line page"
+                }
+              },
+              "yaml": {
+                "label": "YAML",
+                "field": {
+                  "label": "Pages as YAML: lists of lines or raw/filtered entries."
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "dataRandomValues": {
+      "label": "Random Values",
+      "description": "Values rolled once when the item is built and kept on it, never rolled again.",
+      "field": {
+        "label": "Values",
+        "keyLabel": "Name",
+        "value": {
+          "label": "Number"
+        },
+        "keyPlaceholder": "e.g. attack"
+      }
+    },
+    "dataFunctions": {
+      "label": "Functions",
+      "description": "Functions run while the item is built, e.g. set_variable for values that later data keys read.",
+      "field": {
+        "label": "Functions"
+      }
+    },
+    "dataTags": {
+      "label": "Tags",
+      "description": "Raw NBT tags on the item; a key starting with @ is a dotted path.",
+      "field": {
+        "label": "Tags (YAML)"
+      }
+    },
+    "dataDynamicLore": {
+      "label": "Dynamic Lore",
+      "description": "A different lore for each display context the item is shown in.",
+      "field": {
+        "label": "Contexts",
+        "keyLabel": "Context",
+        "keyPlaceholder": "e.g. default"
+      },
+      "hint": "Read by CraftEngine 26.9 (DynamicLoreProcessor) but not documented on the wiki. The first context is the default."
+    },
+    "dataExternal": {
+      "label": "External",
+      "description": "Takes the data of an item from another plugin.",
+      "field": {
+        "label": "External",
+        "fields": {
+          "plugin": {
+            "label": "Plugin",
+            "placeholder": "e.g. mmoitems"
+          },
+          "id": {
+            "label": "Item ID",
+            "placeholder": "example_item"
+          }
+        }
+      }
+    },
+    "dataComponents": {
+      "label": "Components",
+      "description": "Raw vanilla data components. CraftEngine does not check them across versions.",
+      "field": {
+        "label": "Components",
+        "keyLabel": "Component",
+        "value": {
+          "label": "Value (YAML)"
+        },
+        "keyPlaceholder": "e.g. minecraft:tool"
+      }
+    },
+    "dataRemoveComponents": {
+      "label": "Remove Components",
+      "description": "Removes these components from the item.",
+      "field": {
+        "label": "Components",
+        "placeholder": "minecraft:attribute_modifiers"
+      }
+    },
+    "updater": {
+      "label": "Updater",
+      "description": "Patches items of an older version in players' inventories when the config changes.",
+      "field": {
+        "label": "Versions",
+        "keyLabel": "Version",
+        "value": {
+          "label": "Updaters"
+        },
+        "keyPlaceholder": "Version number, e.g. 1"
+      },
+      "hint": "Items below a version run its steps. New items skip the updater, so change data to the final state too. The update triggers are set in config.yml."
+    },
+    "clientBoundData": {
+      "label": "Client Bound Data",
+      "description": "Item data that is only sent to players and resolved for each of them, such as conditional names and lore.",
+      "field": {
+        "label": "Client-bound data",
+        "fields": {
+          "overwritableItemName": {
+            "label": "A name used only while the item has no custom name.",
+            "placeholder": "'<'!i>Default name"
+          },
+          "overwritableItemModel": {
+            "label": "A model used only while the item has none.",
+            "placeholder": "default:sword"
+          },
+          "overwritableCustomModelData": {
+            "label": "Custom model data used only while the item has none."
+          },
+          "overwritableDyedColor": {
+            "label": "A color used only while the item has none.",
+            "help": "Read by CraftEngine 26.9 but not documented on the wiki.",
+            "placeholder": "255,128,64"
+          },
+          "overwritableEquippableAssetId": {
+            "label": "An equipment asset used only while the item has none.",
+            "help": "Read by CraftEngine 26.9 but not documented on the wiki."
+          },
+          "entries": {
+            "label": "Further data keys and conditional entries.",
+            "keyLabel": "Key",
+            "keyPlaceholder": "e.g. conditional#unlocked or lore",
+            "value": {
+              "label": "Value",
+              "choices": {
+                "conditional": {
+                  "label": "Conditional",
+                  "field": {
+                    "fields": {
+                      "data": {
+                        "label": "The data applied while the conditions hold (YAML)."
+                      }
+                    }
+                  }
+                },
+                "value": {
+                  "label": "Value",
+                  "field": {
+                    "label": "The value of the data key (YAML)."
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "hint": "Takes the same keys as data. The overwritable keys apply only while the item lacks that value; conditional#name entries apply their data while their conditions hold."
+    }
+  },
+  "dataShared": {
+    "lore": {
+      "label": "Lore lines: plain lines, or entries with priority, operation and conditions.",
+      "choices": {
+        "lines": {
+          "label": "Lines",
+          "field": {
+            "label": "Lines",
+            "placeholder": "'<'gray>A line"
+          }
+        },
+        "entries": {
+          "label": "Entries",
+          "field": {
+            "label": "Entries",
+            "itemLabel": "Entry",
+            "fields": {
+              "content": {
+                "label": "The line or lines of this entry (MiniMessage).",
+                "placeholder": "'<'gray>A line"
+              },
+              "priority": {
+                "label": "Order among the entries: lower numbers come first.",
+                "help": "Unset: the priority of the entry before."
+              },
+              "operation": {
+                "label": "Whether the lines go after or before the lines so far.",
+                "help": "APPEND (default) adds them at the end, PREPEND at the start."
+              },
+              "splitLines": {
+                "label": "Splits the lines at line breaks.",
+                "help": "A line with a line break becomes several lore lines."
+              }
+            }
+          }
+        }
+      }
+    },
+    "bookTitle": {
+      "label": "The title of the book.",
+      "choices": {
+        "text": {
+          "label": "Text",
+          "field": {
+            "label": "Title",
+            "placeholder": "Survival Guide"
+          }
+        },
+        "filterable": {
+          "label": "Filtered",
+          "field": {
+            "fields": {
+              "raw": {
+                "label": "The text players see."
+              },
+              "filtered": {
+                "label": "The text players with the chat filter on see."
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "logic": {
+    "itemUpdaters": {
+      "applyData": {
+        "label": "apply_data",
+        "help": "Applies item data, with the same keys as data.",
+        "fields": {
+          "data": {
+            "label": "The item data to apply.",
+            "help": "YAML with data keys, e.g. item_name or lore."
+          }
+        }
+      },
+      "transmute": {
+        "label": "transmute",
+        "help": "Changes the base material and keeps all components and NBT.",
+        "fields": {
+          "material": {
+            "label": "The new material.",
+            "placeholder": "minecraft:stone_sword"
+          }
+        }
+      },
+      "reset": {
+        "label": "reset",
+        "help": "Rebuilds the item from the current config and keeps only what is listed.",
+        "fields": {
+          "keepComponents": {
+            "label": "The components the rebuilt item keeps (1.20.5+).",
+            "help": "Everything not listed is discarded."
+          },
+          "keepTags": {
+            "label": "The NBT paths the rebuilt item keeps (before 1.20.5).",
+            "help": "Dotted paths such as display.Name.",
+            "placeholder": "display.Name"
+          }
+        }
+      }
+    }
+  }
+}

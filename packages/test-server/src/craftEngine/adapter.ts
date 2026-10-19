@@ -11,7 +11,7 @@ import { parseCraftEngineLogLine } from './log';
 
 /** What the export writes into resources/<pack>/ of plugins/CraftEngine. */
 const SYNC_FILES = ['pack.yml'];
-const SYNC_DIRS = ['configuration/', 'resourcepack/'];
+const SYNC_DIRS = ['configuration/', 'resourcepack/', 'script/'];
 
 /**
  * A CraftEngine reload typed by the user that rebuilds the pack: "ce reload all" or "ce reload pack". "ce reload" (=

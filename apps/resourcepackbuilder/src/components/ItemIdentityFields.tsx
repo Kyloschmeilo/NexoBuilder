@@ -1,7 +1,10 @@
-/** Display name, item ID and material of an item – in the item editor and for new items. */
+/**
+ * Display name, item ID and material of an item: as plain fields for the new-item dialog, and as Workbench field rows
+ * (label, control, YAML key, help in the ⓘ popover) for the item editor's Basics section.
+ */
 import { useId } from 'react';
 import { useTranslations } from 'next-intl';
-import { cn } from 'cn';
+import { cn } from '@resourcepackbuilder/ui/cn';
 import { normalizeTypedId } from '@resourcepackbuilder/minecraft';
 import {
   DEFAULT_MATERIAL,
@@ -9,8 +12,10 @@ import {
   type ItemIdError,
   itemLabel,
   normalizeTypedMaterial,
+  type PackTargetId,
 } from '@resourcepackbuilder/core/project';
 import { MATERIALS } from '@resourcepackbuilder/core/nexo';
+import { FieldRow } from '@resourcepackbuilder/ui';
 import { Field, FieldDescription, FieldError, FieldLabel } from '@resourcepackbuilder/ui/components/field';
 import { Input } from '@resourcepackbuilder/ui/components/input';
 import { useProjectStore } from '../store/project';
@@ -118,6 +123,63 @@ export function ItemIdentityFields({
         />
         {showHelp && <FieldDescription className="text-xs">{t('general.materialHelp')}</FieldDescription>}
       </Field>
+    </>
+  );
+}
+
+/** The YAML key the display name is written to, per target. */
+const DISPLAY_NAME_KEY: Record<PackTargetId, string> = { nexo: 'itemname', craftengine: 'data.item_name' };
+
+interface ItemIdentityRowsProps {
+  value: ItemIdentity;
+  idError: ItemIdError | null;
+  /** Receives the changed field; IDs and materials are normalised as typed */
+  onChange: (patch: Partial<ItemIdentity>, field: keyof ItemIdentity) => void;
+  /** `data-testid` of the display name input */
+  displayNameTestId?: string;
+}
+
+/** The three fields as field rows of the item editor (to be placed in a `FieldGroup`). */
+export function ItemIdentityRows({ value, idError, onChange, displayNameTestId }: ItemIdentityRowsProps) {
+  const t = useTranslations('item');
+  const idErrorText = useItemIdErrorText()(idError);
+  const target = useProjectStore((s) => s.project?.target ?? DEFAULT_PACK_TARGET);
+  const id = useId();
+  return (
+    <>
+      <FieldRow
+        label={t('general.nameLabel')}
+        htmlFor={`${id}-name`}
+        yamlKey={DISPLAY_NAME_KEY[target]}
+        help={t('general.nameHelp', { colors: COLOR_EXAMPLES, formatting: FORMATTING_EXAMPLES })}
+      >
+        <Input
+          id={`${id}-name`}
+          data-testid={displayNameTestId}
+          value={value.displayName}
+          placeholder={t('general.displayNamePlaceholder', { tag: DISPLAY_NAME_EXAMPLE })}
+          onChange={(e) => onChange({ displayName: e.target.value }, 'displayName')}
+        />
+      </FieldRow>
+      <FieldRow label={t('general.idLabel')} htmlFor={`${id}-id`} help={t('general.idHelp', { target })} error={idErrorText ?? undefined}>
+        <Input
+          id={`${id}-id`}
+          className="font-mono"
+          aria-invalid={idErrorText ? true : undefined}
+          value={value.itemId}
+          onChange={(e) => onChange({ itemId: normalizeTypedId(e.target.value) }, 'itemId')}
+        />
+      </FieldRow>
+      <FieldRow label={t('general.material')} htmlFor={`${id}-material`} yamlKey="material" help={t('general.materialHelp')}>
+        <TextInput
+          id={`${id}-material`}
+          value={value.material}
+          placeholder={DEFAULT_MATERIAL}
+          suggestions={MATERIALS}
+          mono
+          onChange={(material) => onChange({ material: normalizeTypedMaterial(material ?? '') }, 'material')}
+        />
+      </FieldRow>
     </>
   );
 }

@@ -1,9 +1,15 @@
 import { cva } from 'class-variance-authority';
-import { cn } from 'cn';
+import { cn } from './lib/cn';
 import { ChevronDown, ChevronRight } from 'lucide-react';
 
 /** Indentation per tree level, in pixels (applied as runtime padding of the rows). */
 export const TREE_INDENT_PX = 16;
+/** Width of the {@link TreeChevron} column, in pixels (`w-4`). */
+export const TREE_CHEVRON_PX = 16;
+/** Gap between the parts of a row, in pixels (`gap-1.5` of {@link treeRowSlots}.button). */
+export const TREE_GAP_PX = 6;
+/** Size of a row's icon, in pixels (`size-4` of {@link treeRowSlots}.icon). */
+export const TREE_ICON_PX = 16;
 
 /**
  * A row of a tree (sidebar or a checkable selection list); `group/row` and `data-selected` style its parts.
@@ -12,11 +18,11 @@ export const TREE_INDENT_PX = 16;
 export const treeRow = cva('group/row flex items-center rounded-sm text-sm select-none', {
   variants: {
     surface: {
-      sidebar: 'h-8 hover:bg-sidebar-accent',
-      panel: 'min-h-8 gap-2 pr-3 text-foreground hover:bg-muted',
+      sidebar: 'h-7 hover:bg-sidebar-accent',
+      panel: 'min-h-7 gap-2 pr-3 text-foreground hover:bg-muted',
     },
     selected: {
-      true: 'bg-primary/10 ring-1 ring-primary ring-inset hover:bg-primary/15',
+      true: 'bg-accent-soft shadow-[inset_2px_0_0_var(--accent)] hover:bg-accent-soft',
       false: '',
     },
     dropTarget: {
@@ -31,7 +37,7 @@ export const treeRow = cva('group/row flex items-center rounded-sm text-sm selec
 export const treeRowSlots = {
   /** The focusable, clickable part of a row. */
   button:
-    'flex h-full min-w-0 flex-1 cursor-pointer items-center gap-1.5 rounded-sm pr-1 text-left outline-none focus-visible:ring-2 focus-visible:ring-ring/50',
+    'flex h-full min-w-0 flex-1 cursor-pointer items-center gap-1.5 rounded-sm pr-1 text-left outline-none focus-visible:ring-2 focus-visible:ring-ring',
   /** An icon, or a span around one. */
   icon: 'grid size-4 shrink-0 place-items-center text-muted-foreground group-data-selected/row:text-primary [&_svg]:size-4',
   label: 'min-w-0 flex-1 truncate',

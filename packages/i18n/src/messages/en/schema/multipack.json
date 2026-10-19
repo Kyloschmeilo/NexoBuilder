@@ -1,0 +1,113 @@
+{
+  "nexoMultipack": {
+    "fields": {
+      "multipack": {
+        "label": "multipack.yml",
+        "fields": {
+          "templates": {
+            "label": "Template packs sent with the main pack",
+            "keyLabel": "Template ID",
+            "keyPlaceholder": "music_pack",
+            "value": {
+              "fields": {
+                "required": {
+                  "label": "Always sent, players cannot turn it off"
+                },
+                "default": {
+                  "label": "On for players who never toggled it"
+                },
+                "conflictsWith": {
+                  "label": "Templates turned off when this one is turned on",
+                  "placeholder": "Template ID"
+                },
+                "path": {
+                  "label": "Where the pack lies",
+                  "help": "A folder or zip, absolute, relative to pack/template_packs or to the Nexo folder. Empty: pack/template_packs/'<'id>.",
+                  "placeholder": "template_packs/music_pack"
+                }
+              }
+            }
+          },
+          "menu": {
+            "label": "Menu to toggle the templates (/nexo multipack)",
+            "fields": {
+              "title": {
+                "label": "Menu title",
+                "placeholder": "'<'gold>Resource pack options"
+              },
+              "rows": {
+                "label": "Rows of the menu (1–6)"
+              },
+              "slots": {
+                "label": "Slots of the menu",
+                "keyLabel": "Slot name",
+                "keyPlaceholder": "music_toggle",
+                "value": {
+                  "fields": {
+                    "offset": {
+                      "label": "Position of the top left cell",
+                      "help": "Column 1–9 and row, separated by a comma.",
+                      "placeholder": "5,2"
+                    },
+                    "size": {
+                      "label": "Cells wide and tall (default 1,1)",
+                      "placeholder": "1,1"
+                    },
+                    "allSlotsExceptFirstEmpty": {
+                      "label": "Only the top left cell can be clicked"
+                    },
+                    "baseItem": {
+                      "label": "Item shown when a state has none",
+                      "help": "nexo_item: '<'id>, item_model: '<'ItemModel builder> or an inline item (material, itemname, lore …).",
+                      "placeholder": "material: PAPER\nitemname: \"'<'gray>My pack\""
+                    },
+                    "action": {
+                      "label": "What a click does",
+                      "fields": {
+                        "type": {
+                          "label": "TOGGLE turns one template on and off, CYCLING switches through several"
+                        },
+                        "target": {
+                          "label": "Template the slot toggles"
+                        },
+                        "enabledItem": {
+                          "label": "Item while the template is on",
+                          "help": "Merged on top of the slot’s item; nexo_item, item_model or an inline item.",
+                          "placeholder": "material: LIME_DYE"
+                        },
+                        "disabledItem": {
+                          "label": "Item while the template is off",
+                          "help": "Merged on top of the slot’s item; nexo_item, item_model or an inline item.",
+                          "placeholder": "material: GRAY_DYE"
+                        },
+                        "targets": {
+                          "label": "Templates to cycle through",
+                          "choices": {
+                            "ids": {
+                              "label": "Template IDs",
+                              "field": {
+                                "label": "Template IDs",
+                                "placeholder": "Template ID"
+                              }
+                            },
+                            "items": {
+                              "label": "Templates with their own item",
+                              "field": {
+                                "label": "Entries with id and item keys",
+                                "placeholder": "- id: 2d_tools\n  material: PAPER"
+                              }
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}

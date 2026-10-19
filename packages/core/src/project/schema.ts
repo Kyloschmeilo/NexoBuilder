@@ -6,6 +6,8 @@
  * Migrations (as preprocessing steps):
  *  - armor settings moved from `item.config.$armor` to `item.armor`
  *  - issues stored with imported models: `params` became `args`
+ *  - Nexo item configs move to the keys Nexo 1.30 reads (renamed keys, dropped keys, three-state `cullable`; see
+ *    legacyNexoConfig.ts)
  *
  * The TypeScript types stay in types.ts and the entity modules; the `SchemaChecks` at the end make sure both agree.
  */
@@ -42,15 +44,36 @@ import {
   ModelTextureSchema,
 } from '@resourcepackbuilder/minecraft';
 import { toArmorSettings, type ArmorSettings } from './armor';
-import { CHAT_TEXT_HEIGHT, DEFAULT_FONT_ASCENT, type Glyph } from './media/glyph';
+import {
+  CHAT_TEXT_HEIGHT,
+  DEFAULT_FONT_ASCENT,
+  EMOJI_CONTEXTS,
+  type EmojiContext,
+  GLYPH_GIF_TYPES,
+  type Glyph,
+  type GlyphGifType,
+} from './media/glyph';
+import type { Dialog } from './media/dialog';
 import type { MediaFile } from './media/entry';
 import type { MediaEntryByKind, MediaKind } from './media/kinds';
 import type { Painting } from './media/painting';
-import { INGREDIENT_LETTERS, RECIPE_TYPES, type Recipe, type RecipeIngredient } from './recipes/model';
+import {
+  type ExtraRecipeSlot,
+  type IngredientRef,
+  type IngredientSource,
+  INGREDIENT_LETTERS,
+  INGREDIENT_SOURCES,
+  RECIPE_SLOTS,
+  RECIPE_TYPES,
+  type Recipe,
+  type RecipeIngredient,
+} from './recipes/model';
 import type { JukeboxSong, Sound, SoundFile } from './media/sound';
 import { itemIdFromName } from './ids';
 import { defaultSettings, DEFAULT_PACK_NAME } from './factory';
 import { DEFAULT_PACK_TARGET, PACK_TARGETS } from './target';
+import { migrateNexoConfig } from './legacyNexoConfig';
+import { parseItemModelDefinition } from './itemModel/tree';
 import type {
   ConfigObject,
   ConfigValue,
@@ -104,6 +127,8 @@ export const ImportedModelSchema = z
 
 export const MediaFileSchema = z.object({ name: lenientString(), dataUrl: z.string(), width: lenientNumber(0), height: lenientNumber(0) });
 
+const isEmojiContext = (context: string): context is EmojiContext => (EMOJI_CONTEXTS as readonly string[]).includes(context);
+
 export const GlyphSchema = z.object({
   id: id(),
   glyphId: z.string(),
@@ -122,6 +147,15 @@ export const GlyphSchema = z.object({
   offset: nullableNumber(),
   reference: lenientString(),
   index: lenientNumber(1),
+  char: lenientString(),
+  shadow: lenientString(),
+  gifType: lenientEnum(GLYPH_GIF_TYPES as [GlyphGifType, ...GlyphGifType[]], ''),
+  interpolate: lenientBoolean(false),
+  template: lenientString(),
+  emojiContent: lenientString(),
+  emojiOverrides: lenientRecord(z.string())
+    .transform((map) => Object.fromEntries(Object.entries(map).filter(([context]) => isEmojiContext(context))))
+    .catch({}),
 });
 
 const SoundFileSchema = z.object({ name: lenientString(), dataUrl: z.string(), size: lenientNumber(0) });
@@ -141,6 +175,11 @@ export const SoundSchema = z.object({
   volume: nullableNumber(),
   pitch: nullableNumber(),
   distance: nullableNumber(),
+  preload: lenientBoolean(false),
+  weight: nullableNumber(),
+  replace: lenientBoolean(false),
+  subtitle: lenientString(),
+  reference: lenientString(),
   jukebox: JukeboxSongSchema.nullable().catch(null),
 });
 
@@ -157,39 +196,73 @@ export const PaintingSchema = z.object({
   frametime: lenientNumber(2),
 });
 
+/** A dialog: its file content is kept like an item config (a bad one becomes empty). */
+export const DialogSchema = z.object({
+  id: id(),
+  dialogId: z.string(),
+  config: z.lazy(() => ConfigObjectSchema).catch({}),
+});
+
 /** The schema of each media kind (see MEDIA_KINDS). */
 export const MEDIA_SCHEMAS: { [K in MediaKind]: z.ZodType<MediaEntryByKind[K], unknown> } = {
   glyph: GlyphSchema,
   sound: SoundSchema,
   painting: PaintingSchema,
+  dialog: DialogSchema,
 };
 
 /* ------------------------------------------------------------ Recipes */
 
 const RECIPE_TYPE_NAMES = RECIPE_TYPES.map((t) => t.type) as [Recipe['type'], ...Recipe['type'][]];
+const INGREDIENT_SOURCE_NAMES = INGREDIENT_SOURCES.map((s) => s.value) as [IngredientSource, ...IngredientSource[]];
 
-const IngredientSchema = z
+/** The options of a recipe or ingredient (keys by YAML name); declared lazily, the config schemas follow below. */
+const recipeOptions = () => optional(z.lazy(() => ConfigObjectSchema));
+
+const IngredientRefSchema = z
   .object({
-    source: lenientEnum(['minecraft', 'nexo', 'tag'], 'minecraft'),
+    source: lenientEnum(INGREDIENT_SOURCE_NAMES, 'minecraft'),
     id: lenientString(),
-    amount: optional(z.number()),
+    itemType: optional(z.string()),
   })
   .transform(withoutUndefined);
 
+const IngredientSchema = z
+  .object({
+    source: lenientEnum(INGREDIENT_SOURCE_NAMES, 'minecraft'),
+    id: lenientString(),
+    itemType: optional(z.string()),
+    amount: optional(z.number()),
+    alternatives: optional(listOf(IngredientRefSchema)),
+    replacement: optional(IngredientRefSchema),
+    options: recipeOptions(),
+  })
+  .transform(withoutUndefined);
+
+/** The single slots besides `input`; a bad one is dropped, no slot at all leaves `slots` out. */
+const RecipeSlotsSchema = z
+  .object(Object.fromEntries(RECIPE_SLOTS.filter((slot) => slot !== 'input').map((slot) => [slot, optional(IngredientSchema)])))
+  .transform((slots) => withoutUndefined(slots) as Partial<Record<ExtraRecipeSlot, RecipeIngredient>>)
+  .transform((slots) => (Object.keys(slots).length > 0 ? slots : undefined));
+
 /** A recipe needs its id and a known type; the shaped grid always has 9 cells. */
-export const RecipeSchema = z.object({
-  id: id(),
-  type: z.enum(RECIPE_TYPE_NAMES),
-  resultAmount: lenientNumber(1),
-  grid: z
-    .array(z.unknown())
-    .catch([])
-    .transform((cells) => INGREDIENT_LETTERS.map((_, i) => (typeof cells[i] === 'string' ? (cells[i] as string) : ''))),
-  ingredients: lenientRecord(IngredientSchema),
-  input: IngredientSchema.nullable().catch(null),
-  cookingTime: lenientNumber(200),
-  experience: lenientNumber(0.1),
-});
+export const RecipeSchema = z
+  .object({
+    id: id(),
+    type: z.enum(RECIPE_TYPE_NAMES),
+    resultAmount: lenientNumber(1),
+    grid: z
+      .array(z.unknown())
+      .catch([])
+      .transform((cells) => INGREDIENT_LETTERS.map((_, i) => (typeof cells[i] === 'string' ? (cells[i] as string) : ''))),
+    ingredients: lenientRecord(IngredientSchema),
+    input: IngredientSchema.nullable().catch(null),
+    cookingTime: lenientNumber(200),
+    experience: lenientNumber(0.1),
+    slots: optional(RecipeSlotsSchema),
+    options: recipeOptions(),
+  })
+  .transform(withoutUndefined);
 
 /* ------------------------------------------------------------ Items */
 
@@ -201,7 +274,7 @@ export const ConfigObjectSchema: z.ZodType<ConfigObject, unknown> = z.lazy(() =>
 
 const ArmorSchema = z.record(z.string(), z.unknown()).transform((value): ArmorSettings => toArmorSettings(value));
 
-/** Moves the legacy `config.$armor` to `armor` and fills in the id from the map key (`fallbackId`). */
+/** Moves the legacy `config.$armor` to `armor`, brings Nexo keys up to date and fills in the id from the map key (`fallbackId`). */
 function migrateItemInput(raw: unknown, fallbackId: string | undefined): unknown {
   if (!isPlainObject(raw)) return raw;
   const item: Record<string, unknown> = { ...raw };
@@ -211,6 +284,7 @@ function migrateItemInput(raw: unknown, fallbackId: string | undefined): unknown
     item.config = config;
     if (!isPlainObject(item.armor)) item.armor = legacyArmor;
   }
+  if (isPlainObject(item.config)) item.config = migrateNexoConfig(item.config);
   return item;
 }
 
@@ -231,6 +305,7 @@ export function itemSchema(now: number) {
         variants: optional(lenientRecord(lenientList(ImportedModelSchema))),
         armor: optional(ArmorSchema),
         translations: optional(lenientRecord(z.string())),
+        itemModel: optional(ConfigObjectSchema.transform(parseItemModelDefinition)),
         createdAt: lenientNumber(now),
         updatedAt: lenientNumber(now),
       })
@@ -275,7 +350,11 @@ export function settingsSchema(projectName: string) {
       itemsInProjectFolder: lenientBoolean(defaults.itemsInProjectFolder),
       yamlFileMode: lenientEnum(['folder', 'item'], 'folder'),
       ceCategoriesFromFolders: lenientBoolean(defaults.ceCategoriesFromFolders),
+      disabledRecipes: optional(stringList()),
+      carpentryAddon: optional(z.literal(true)),
+      multipack: optional(z.lazy(() => ConfigObjectSchema)),
     })
+    .transform(withoutUndefined)
     .catch(defaults);
 }
 
@@ -297,6 +376,15 @@ export const CraftEngineProjectSchema = z
     templates: optional(lenientList(ConfigObjectSchema)),
     globalVariables: optional(lenientRecord(z.string())),
     attributes: optional(CraftEngineAttributeSchema),
+    lang: optional(lenientRecord(recordOf(z.string()))),
+    translations: optional(lenientRecord(recordOf(z.string()))),
+    categories: optional(lenientList(ConfigObjectSchema)),
+    configuredFeatures: optional(lenientList(ConfigObjectSchema)),
+    placedFeatures: optional(lenientList(ConfigObjectSchema)),
+    atlases: optional(lenientList(ConfigObjectSchema)),
+    pack: optional(ConfigObjectSchema),
+    configFactories: optional(lenientList(ConfigObjectSchema)),
+    scripts: optional(lenientList(ConfigObjectSchema)),
   })
   .transform((data) => withoutUndefined(data))
   .transform((data) => (Object.keys(data).length > 0 ? data : undefined));
@@ -344,6 +432,7 @@ export function projectSchema(now: number) {
       glyphs: lenientList(GlyphSchema).parse(raw.glyphs),
       sounds: lenientList(SoundSchema).parse(raw.sounds),
       paintings: lenientList(PaintingSchema).parse(raw.paintings),
+      dialogs: lenientList(DialogSchema).parse(raw.dialogs),
       createdAt: lenientNumber(now).parse(raw.createdAt),
       updatedAt: lenientNumber(now).parse(raw.updatedAt),
     };
@@ -378,6 +467,10 @@ export type ProjectSchemaChecks = SchemaChecks<
     Covers<Out<typeof SoundSchema>, Sound>,
     Fits<Out<typeof PaintingSchema>, Painting>,
     Covers<Out<typeof PaintingSchema>, Painting>,
+    Fits<Out<typeof DialogSchema>, Dialog>,
+    Covers<Out<typeof DialogSchema>, Dialog>,
+    Fits<Out<typeof IngredientRefSchema>, IngredientRef>,
+    Covers<Out<typeof IngredientRefSchema>, IngredientRef>,
     Fits<Out<typeof IngredientSchema>, RecipeIngredient>,
     Covers<Out<typeof IngredientSchema>, RecipeIngredient>,
     Fits<Out<typeof RecipeSchema>, Recipe>,

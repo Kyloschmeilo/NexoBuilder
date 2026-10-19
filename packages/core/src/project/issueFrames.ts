@@ -4,6 +4,7 @@
  */
 import { labelArg, schemaKey, type IssueContext, type IssueTarget } from '@resourcepackbuilder/utils';
 import type { MediaKind } from './media/kinds';
+import { recipeSlotLabel, type RecipeSlot } from './recipes/model';
 import type { VariantDef } from './variants';
 import { itemLabel } from './item';
 import type { Item, Project } from './types';
@@ -30,6 +31,7 @@ export const RECIPE_FRAME_CODES = {
   recipe: 'context.recipe',
   ingredient: 'context.recipeIngredient',
   input: 'context.recipeInput',
+  slot: 'context.recipeSlot',
 } as const;
 
 /** A recipe; `key` is its unique key (see recipeKeys). */
@@ -45,6 +47,11 @@ export function recipeIngredientFrame(key: string, letter: string): IssueContext
 /** The single input of a furnace, stonecutter … recipe. */
 export function recipeInputFrame(key: string): IssueContext {
   return { code: RECIPE_FRAME_CODES.input, args: { recipe: key } };
+}
+
+/** A named single slot of a recipe (brewing reagent, smithing base …); `slot` is translated by its schema label. */
+export function recipeSlotFrame(key: string, slot: RecipeSlot): IssueContext {
+  return { code: RECIPE_FRAME_CODES.slot, args: { recipe: key, slot: labelArg(schemaKey(recipeSlotLabel(slot))), slotName: slot } };
 }
 
 /** A configuration property; `label` is a message key in the `schema` namespace. */
@@ -70,6 +77,27 @@ export function lootSourceFrame(id: string): IssueContext {
 /** A CraftEngine template of the project, named by its id. */
 export function templateFrame(id: string): IssueContext {
   return { code: 'context.template', args: { id: id || '?' } };
+}
+
+/** The kind of an entry of a CraftEngine project section; it names the entry's frame (`context.<kind>`). */
+export type ProjectEntryKind = 'category' | 'configuredFeature' | 'placedFeature' | 'atlas' | 'configFactory' | 'script';
+
+/** An entry of a CraftEngine project section (`context.category`, `context.placedFeature`, …), named by its id. */
+export function projectEntryFrame(kind: ProjectEntryKind, id: string): IssueContext {
+  return { code: `context.${kind}`, args: { id: id || '?' } };
+}
+
+/**
+ * Entry `index` (counted from 1) of a CraftEngine project section, for an entry without an id. It reads like
+ * {@link listEntryFrame}; its `section` arg keeps the entry's kind so the section's checks can be told apart.
+ */
+export function projectListEntryFrame(kind: ProjectEntryKind, index: number): IssueContext {
+  return { code: 'context.listEntry', args: { index, section: kind } };
+}
+
+/** Whether `frame` names an entry of kind `kind` of a CraftEngine project section, by its id or its position. */
+export function isProjectEntryFrame(frame: IssueContext, kind: ProjectEntryKind): boolean {
+  return frame.code === `context.${kind}` || (frame.code === 'context.listEntry' && frame.args?.section === kind);
 }
 
 /**

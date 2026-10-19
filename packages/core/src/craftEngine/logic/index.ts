@@ -1,24 +1,38 @@
 /**
- * The CraftEngine logic catalogs: conditions, functions, number providers, event triggers, loot sources, loot tables
- * and the typed values of the attribute system.
+ * The CraftEngine logic catalogs: conditions, functions, number providers, event triggers, loot sources, loot tables,
+ * the typed values of the attribute system, the extra item behaviors, the furniture behaviors, the item updater types,
+ * the block behaviors, the sources of item browser categories and the sprite sources of atlases.
  */
+import { CE_ATLAS_SOURCES } from './atlasSources';
 import { CE_ATTRIBUTE_BASES, CE_ATTRIBUTE_SYNC_VALUES, CE_DAMAGE_EFFECTS, CE_DAMAGE_FORMULAS } from './attributes';
+import { CE_BLOCK_BEHAVIORS } from './blockBehaviors';
 import type { LogicCatalogName, LogicType } from './catalog';
+import { CE_CATEGORY_SOURCES } from './categorySources';
 import { CE_CONDITIONS } from './conditions';
 import { CE_FUNCTIONS } from './functions';
+import { CE_FURNITURE_BEHAVIORS } from './furnitureBehaviors';
+import { CE_ITEM_BEHAVIORS } from './itemBehaviors';
+import { CE_ITEM_UPDATERS } from './itemUpdaters';
 import { CE_LOOT_ENTRIES, CE_LOOT_FUNCTIONS } from './loot';
 import { CE_LOOT_SOURCES } from './lootSources';
 import { CE_NUMBERS } from './numbers';
 import { CE_TRIGGERS } from './triggers';
 
+export { CE_ATLAS_SOURCES } from './atlasSources';
 export { CE_ATTRIBUTE_BASES, CE_ATTRIBUTE_SYNC_VALUES, CE_DAMAGE_EFFECTS, CE_DAMAGE_FORMULAS } from './attributes';
+export { CE_BLOCK_BEHAVIORS } from './blockBehaviors';
 export * from './catalog';
+export { CE_CATEGORY_SOURCES } from './categorySources';
 export { CE_CONDITIONS } from './conditions';
 export { CE_FUNCTIONS } from './functions';
+export { CE_ITEM_BEHAVIORS } from './itemBehaviors';
+export { CE_FURNITURE_BEHAVIORS, hitboxFieldSpecs, soundFieldSpec } from './furnitureBehaviors';
+export { CE_ITEM_UPDATERS } from './itemUpdaters';
 export { CE_LOOT_ENTRIES, CE_LOOT_FUNCTIONS } from './loot';
 export { CE_LOOT_SOURCES } from './lootSources';
 export { lootTable } from './shared';
 export { CE_NUMBERS } from './numbers';
+export { CE_PARTICLE_TYPES, particleFields } from './particles';
 export { CE_TRIGGERS, resolveTrigger, triggersFor } from './triggers';
 
 /** Every catalog by name */
@@ -34,4 +48,10 @@ export const CE_LOGIC: Record<LogicCatalogName, readonly LogicType[]> = {
   attributeSyncValues: CE_ATTRIBUTE_SYNC_VALUES,
   damageFormulas: CE_DAMAGE_FORMULAS,
   damageEffects: CE_DAMAGE_EFFECTS,
+  categorySources: CE_CATEGORY_SOURCES,
+  atlasSources: CE_ATLAS_SOURCES,
+  blockBehaviors: CE_BLOCK_BEHAVIORS,
+  itemBehaviors: CE_ITEM_BEHAVIORS,
+  furnitureBehaviors: CE_FURNITURE_BEHAVIORS,
+  itemUpdaters: CE_ITEM_UPDATERS,
 };

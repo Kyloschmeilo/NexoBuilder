@@ -5,7 +5,9 @@
  */
 import { APPEARANCE_PROPERTIES } from './schema/appearance';
 import { ATTRIBUTE_PROPERTIES } from './schema/attributes';
+import { NEXO_CATALOG } from './schema/catalog';
 import type { PropertyDef } from '../../form/build';
+import { withCatalog } from '../../form/catalogMeta';
 import type { FormSchema } from '../../form/types';
 import { COMPONENT_PROPERTIES } from './schema/components';
 import { GENERAL_PROPERTIES } from './schema/general';
@@ -18,13 +20,11 @@ export const PROPERTY_GROUPS: Array<{ id: NexoPropertyGroup; label: string; desc
   ['general', 'appearance', 'attributes', 'components', 'mechanics'] as const
 ).map((id) => ({ id, label: `groups.${id}.label`, description: `groups.${id}.description` }));
 
-export const PROPERTIES: PropertyDef[] = [
-  ...GENERAL_PROPERTIES,
-  ...APPEARANCE_PROPERTIES,
-  ...ATTRIBUTE_PROPERTIES,
-  ...COMPONENT_PROPERTIES,
-  ...MECHANIC_PROPERTIES,
-];
+/** Every property, with its catalog category, common flag and aliases from `schema/catalog.ts`. */
+export const PROPERTIES: PropertyDef[] = withCatalog(
+  [...GENERAL_PROPERTIES, ...APPEARANCE_PROPERTIES, ...ATTRIBUTE_PROPERTIES, ...COMPONENT_PROPERTIES, ...MECHANIC_PROPERTIES],
+  NEXO_CATALOG,
+);
 
 /** Paths that ResourcepackBuilder sets automatically and that do not count as properties. */
 export const MANAGED_TOP_LEVEL_KEYS = ['itemname', 'material'];

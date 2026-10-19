@@ -2,9 +2,10 @@
   "name": "@resourcepackbuilder/test-utils",
   "private": true,
   "version": "0.0.0",
-  "description": "Node-only test helpers shared by the package tests (real PNG files); never imported by shipped code.",
+  "description": "Node-only test helpers shared by the package tests (real PNG files, message catalogues read from disk); never imported by shipped code.",
   "type": "module",
   "exports": {
+    "./catalogue": "./src/catalogue.ts",
     "./png": "./src/png.ts",
     "./pngEncoder.cjs": "./src/pngEncoder.cjs"
   },

@@ -22,16 +22,34 @@
     "confirm": "Verschieben"
   },
   "settings": {
-    "project": {
-      "title": "Projekt",
-      "description": "Wird mit dem Projekt gespeichert."
-    },
-    "device": {
-      "title": "Dieses Gerät",
-      "description": "Gilt nur auf diesem Gerät, für alle Projekte."
-    },
+    "pageDescription": "Einstellungen dieses Projekts und dieses Geräts.",
     "languageHelp": "Die Sprache, in der ResourcepackBuilder angezeigt wird.",
     "themeHelp": "„System“ folgt der Einstellung deines Betriebssystems.",
+    "colorTheme": "Farbschema",
+    "colorThemeHelp": "Ändert die Farben der ganzen App. Jedes Schema gibt es hell und dunkel.",
+    "mode": "Hell oder dunkel",
+    "colorThemes": {
+      "deepslate": {
+        "name": "Tiefenschiefer",
+        "description": "Kühler Schiefer, Lapis-Akzent"
+      },
+      "amethyst": {
+        "name": "Amethyst",
+        "description": "Violett getönt, Amethyst-Akzent"
+      },
+      "copper": {
+        "name": "Kupfer",
+        "description": "Warmer Stein, Kupfer-Akzent"
+      },
+      "prismarine": {
+        "name": "Prismarin",
+        "description": "Tiefes Meeresgrün, Türkis-Akzent"
+      },
+      "crimson": {
+        "name": "Karmesin",
+        "description": "Netherziegel, Karmesin-Akzent"
+      }
+    },
     "projectName": "Projektname",
     "minecraftVersion": "Minecraft-Version des Servers",
     "target": "Server-Plugin",
@@ -48,8 +66,47 @@
     "replace": "Ersetzen",
     "useItemModel": "ItemModel-Komponente setzen (empfohlen)",
     "useItemModelHelp": "Setzt <code>{component}</code>. So bekommt jedes Item ein eigenes ItemModel statt CustomModelData – das vermeidet Konflikte (Minecraft 1.21.4+). Wird bei Items mit fester CustomModelData automatisch weggelassen.",
+    "carpentryAddon": "Carpentry-Addon installiert",
+    "carpentryAddonHelp": "Bietet die eigenen Blocktypen des Nexo-Addons Carpentry an (<code>STAIR</code>, <code>SLAB</code>, <code>DOOR</code>, <code>TRAPDOOR</code>, <code>GRATE</code>, <code>CHAIN</code>, <code>LANTERN</code>, <code>BARS</code>). Schalte es nur ein, wenn das Addon auf dem Server ist.",
+    "carpentryAddonDocs": "Carpentry-Doku öffnen",
     "ceCategoriesFromFolders": "Kategorien aus Ordnern",
-    "ceCategoriesFromFoldersHelp": "Schreibt categories.yml mit einer Kategorie pro Ordner, angezeigt im Item-Browser (<code>/ce</code>). Unterordner werden Unterkategorien."
+    "ceCategoriesFromFoldersHelp": "Schreibt categories.yml mit einer Kategorie pro Ordner, angezeigt im Item-Browser (<code>/ce</code>). Unterordner werden Unterkategorien.",
+    "sectionsLabel": "Bereiche der Einstellungen",
+    "sections": {
+      "general": {
+        "title": "Allgemein",
+        "description": "Name, Plugin, Namespace und Minecraft-Version dieses Projekts."
+      },
+      "pack": {
+        "title": "Resourcepack",
+        "description": "Ordnername, Beschreibung und Icon des Packs."
+      },
+      "items": {
+        "title": "Items",
+        "description": "Wie Nexo die Modelle der Items dieses Projekts findet."
+      },
+      "categories": {
+        "title": "Kategorien",
+        "description": "Wie die Items im Item-Browser von CraftEngine erscheinen."
+      },
+      "sharing": {
+        "title": "Teilen",
+        "description": "Gemeinsam über einen geteilten Ordner an diesem Projekt arbeiten."
+      },
+      "device": {
+        "title": "Dieses Gerät",
+        "description": "Gilt nur auf diesem Gerät, für alle Projekte."
+      },
+      "appearance": {
+        "title": "Darstellung",
+        "description": "Wie ResourcepackBuilder auf diesem Gerät aussieht."
+      }
+    },
+    "sharing": {
+      "status": "Status",
+      "manage": "Einstellungen zum Teilen",
+      "desktopOnly": "Teilen geht nur im Windows-Programm. Im Browser gibst du das Projekt per „Projektdatei speichern“ weiter."
+    }
   },
   "newItem": {
     "title": "Neues Item",
@@ -138,6 +195,7 @@
     "glyphs": "Glyphs",
     "sounds": "Sounds",
     "paintings": "Paintings",
+    "dialogs": "Dialoge",
     "noItems": "Keine Items.",
     "emptyProject": "Das Projekt ist leer.",
     "open": "geöffnet",
@@ -145,6 +203,7 @@
     "glyphCount": "{count} Glyphs",
     "soundCount": "{count} Sounds",
     "paintingCount": "{count} Paintings",
+    "dialogCount": "{count} Dialoge",
     "itemCount": "{count} Items"
   },
   "share": {

@@ -36,14 +36,54 @@
       "warnings": "{count, plural, one {# warning} other {# warnings}}",
       "ok": "All good"
     },
-    "preview": {
-      "show": "Show preview",
-      "hide": "Hide preview"
-    },
     "export": "Export"
+  },
+  "activities": {
+    "title": "Activities",
+    "items": {
+      "label": "Items",
+      "hint": "Folders and items of the project"
+    },
+    "media": {
+      "label": "Media",
+      "hint": "Glyphs, sounds and paintings"
+    },
+    "logic": {
+      "label": "Logic and data",
+      "hint": "Loot sources, templates, global variables, attributes and other CraftEngine lists"
+    },
+    "testServer": {
+      "label": "Test server",
+      "hint": "Local Minecraft test server that updates automatically"
+    },
+    "settings": {
+      "label": "Settings",
+      "hint": "Project, language and appearance"
+    },
+    "badge": {
+      "errors": "{count, plural, one {# error} other {# errors}}",
+      "warnings": "{count, plural, one {# warning} other {# warnings}}",
+      "withBadge": "{label}, {badge}"
+    }
+  },
+  "commandPalette": {
+    "trigger": "Search items, pages and actions…",
+    "shortcut": "Ctrl+K",
+    "title": "Command palette",
+    "description": "Search for items, folders, pages and actions",
+    "placeholder": "Type a name, an ID or an action…",
+    "empty": "Nothing found.",
+    "groups": {
+      "actions": "Actions",
+      "pages": "Pages",
+      "folders": "Folders",
+      "items": "Items"
+    }
   },
   "sidebar": {
     "title": "Folders & items",
+    "label": "Sidebar",
+    "resize": "Resize sidebar",
     "newFolder": "New folder",
     "folderButton": "Folder",
     "searchPlaceholder": "Search items…",
@@ -73,6 +113,14 @@
         "label": "Paintings",
         "hint": "Paintings: custom paintings to hang up"
       },
+      "dialogs": {
+        "label": "Dialogs",
+        "hint": "Dialogs: dialog screens with buttons and inputs (Minecraft 1.21.6+)"
+      },
+      "multipack": {
+        "label": "Multipack",
+        "hint": "Multipack: extra resource packs players can turn on and off"
+      },
       "lootSources": {
         "label": "Loot sources",
         "hint": "Loot sources: extra loot for vanilla blocks, mobs, chests and fishing"
@@ -88,11 +136,31 @@
       "attributes": {
         "label": "Attributes",
         "hint": "Attributes: custom stats, equipment sets and damage rules"
+      },
+      "translations": {
+        "label": "Translations",
+        "hint": "Translations: lang keys for the resource pack and server translations"
+      },
+      "categories": {
+        "label": "Categories",
+        "hint": "Categories: the groups of the /ce item browser"
+      },
+      "worldgen": {
+        "label": "Worldgen",
+        "hint": "Worldgen: trees, ores and flowers that generate in the world"
+      },
+      "atlases": {
+        "label": "Atlases",
+        "hint": "Atlases: which textures go into a texture atlas"
+      },
+      "pack": {
+        "label": "Pack",
+        "hint": "Pack: pack.yml and config factories"
+      },
+      "scripts": {
+        "label": "Scripts",
+        "hint": "Scripts: JavaScript files for js functions and conditions"
       }
-    },
-    "testServer": {
-      "label": "Test server",
-      "hint": "Local Minecraft test server with {plugin} – updates automatically"
     },
     "folderMenu": {
       "newItem": "New item",
@@ -109,6 +177,14 @@
       "fromItem": "from “{name}”",
       "fromItemIntoFolder": "from “{name}” into all items of the folder",
       "needsCopy": "Copy from an item first"
+    },
+    "filters": {
+      "label": "Filter items",
+      "all": "All",
+      "items": "Items",
+      "blocks": "Blocks",
+      "furniture": "Furniture",
+      "issues": "With issues"
     }
   },
   "folder": {
@@ -136,19 +212,43 @@
   },
   "folderView": {
     "targetHint": "Target in the plugin folder",
-    "itemCount": "{count, plural, one {# item} other {# items}}",
     "newItem": "New item",
     "newSubfolder": "Create subfolder",
     "delete": "Delete folder",
     "dropTitle": "Drop models here to create items",
     "dropSubtitle": "Several .bbmodel files create several items",
-    "itemsHeading": "Items in this folder",
-    "subfoldersHeading": "Subfolders"
+    "itemsHeading": "Items",
+    "subfoldersHeading": "Subfolders",
+    "addItem": "Add item",
+    "noItems": "No items in this folder yet.",
+    "table": {
+      "thumbnail": "Thumbnail",
+      "name": "Name",
+      "id": "ID",
+      "kind": "Type",
+      "issues": "Checks",
+      "noIssues": "No problems",
+      "kinds": {
+        "item": "Item",
+        "block": "Block",
+        "furniture": "Furniture"
+      }
+    }
   },
-  "rightPanel": {
-    "title": "YAML preview",
-    "empty": "Select an item to see the finished {plugin} YAML here.",
-    "checks": "Check"
+  "dock": {
+    "label": "Output",
+    "yamlTab": "YAML",
+    "checksTab": "Checks",
+    "show": "Show output",
+    "hide": "Hide output",
+    "toggleShortcut": "Ctrl+J",
+    "resize": "Resize output",
+    "emptyFile": "Nothing is written to this file yet.",
+    "noFile": "This page writes no file.",
+    "entryChecks": "This entry",
+    "entryChecksEmpty": "No problems found.",
+    "projectChecks": "Whole project ({count})",
+    "projectChecksEmpty": "No problems in the project."
   },
   "welcome": {
     "tagline": "Turns Blockbench models, Java models or textures into finished items for Nexo or CraftEngine – with item config and resource pack.",
@@ -173,7 +273,9 @@
         "title": "Export",
         "text": "Unzip the ZIP into the plugin folder and reload the plugin – the included INSTALL.txt explains how."
       }
-    }
+    },
+    "stepsLabel": "How it works",
+    "stepsHelp": "How it works in detail"
   },
   "projectForm": {
     "name": "Project name",
@@ -185,10 +287,13 @@
     "target": "Server plugin",
     "targetHint": "Choose this first – it can’t be changed later, because the whole project is built for this plugin.",
     "targets": {
-      "nexo": { "name": "Nexo", "description": "Items, blocks and furniture for Nexo. The test server needs your purchased Nexo JAR." },
+      "nexo": {
+        "name": "Nexo",
+        "description": "Items, blocks and furniture. The test server needs your purchased Nexo JAR."
+      },
       "craftengine": {
         "name": "CraftEngine",
-        "description": "Items, blocks and furniture for CraftEngine, plus loot sources, templates, global variables and attributes. Free – the test server downloads it from Modrinth."
+        "description": "Items, blocks and furniture, plus loot, templates and more. Free on Modrinth."
       }
     }
   },

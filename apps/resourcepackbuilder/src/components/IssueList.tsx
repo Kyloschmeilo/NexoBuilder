@@ -16,6 +16,7 @@ const OPEN_LABEL_KEYS: Record<IssueTarget['kind'], IssueKey> = {
   glyph: 'issueList.openGlyphs',
   sound: 'issueList.openSounds',
   painting: 'issueList.openPaintings',
+  dialog: 'issueList.openDialogs',
 };
 
 /**

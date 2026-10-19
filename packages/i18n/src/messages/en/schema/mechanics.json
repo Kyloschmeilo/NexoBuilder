@@ -1,0 +1,320 @@
+{
+  "groups": {
+    "mechanics": {
+      "label": "Mechanics",
+      "description": "Nexo mechanics (Furniture, Custom Block, Backpack, Commands …)"
+    }
+  },
+  "properties": {
+    "mechanicsBackpack": {
+      "label": "Backpack",
+      "description": "Right-click opens a custom inventory.",
+      "hint": "Also set “Max Stack Size” to 1.",
+      "field": {
+        "label": "Backpack",
+        "fields": {
+          "rows": {
+            "label": "Rows"
+          },
+          "title": {
+            "label": "Title",
+            "placeholder": "Backpack"
+          },
+          "openSound": {
+            "label": "Sound on open"
+          },
+          "closeSound": {
+            "label": "Sound on close"
+          },
+          "blacklist": {
+            "label": "Forbidden items",
+            "fields": {
+              "nexoItems": {
+                "label": "Nexo items",
+                "placeholder": "Item ID"
+              },
+              "materials": {
+                "label": "Materials",
+                "placeholder": "DIAMOND"
+              },
+              "tags": {
+                "label": "Item tags",
+                "help": "Nexo 1.30 reads this key; the Nexo docs do not list it yet.",
+                "placeholder": "minecraft:shulker_boxes"
+              }
+            }
+          },
+          "volume": {
+            "label": "Sound volume",
+            "help": "Nexo 1.30 reads this key; the Nexo docs do not list it yet."
+          },
+          "pitch": {
+            "label": "Sound pitch",
+            "help": "Nexo 1.30 reads this key; the Nexo docs do not list it yet."
+          },
+          "whitelist": {
+            "label": "Allowed items (only these)",
+            "help": "Nexo 1.30 reads this key; the Nexo docs do not list it yet.",
+            "fields": {
+              "nexoItems": {
+                "label": "Nexo items",
+                "placeholder": "Item ID"
+              },
+              "materials": {
+                "label": "Materials",
+                "placeholder": "DIAMOND"
+              },
+              "tags": {
+                "label": "Item tags",
+                "help": "Nexo 1.30 reads this key; the Nexo docs do not list it yet.",
+                "placeholder": "minecraft:shulker_boxes"
+              }
+            }
+          }
+        }
+      }
+    },
+    "mechanicsCommands": {
+      "label": "Commands",
+      "description": "Runs commands on use (as console, player or OP). %p% = player name.",
+      "field": {
+        "label": "Commands",
+        "fields": {
+          "console": {
+            "label": "As console",
+            "placeholder": "say %p% used the item"
+          },
+          "player": {
+            "label": "As player",
+            "placeholder": "spawn"
+          },
+          "oppedPlayer": {
+            "label": "As player with OP rights",
+            "placeholder": "give diamond 1"
+          },
+          "cooldown": {
+            "label": "Cooldown (seconds)"
+          },
+          "permission": {
+            "label": "Required permission"
+          },
+          "oneUsage": {
+            "label": "Item is consumed"
+          }
+        }
+      }
+    },
+    "mechanicsCustom": {
+      "label": "Custom Mechanic",
+      "description": "Event → conditions → actions, no programming needed.",
+      "hint": "Actions: [console] command, [player] command, [message] text, [actionbar] text, '{'source=AMBIENT volume=1 pitch=1'}' [sound] sound. Placeholder: '<'player>",
+      "field": {
+        "label": "Actions",
+        "keyLabel": "Name",
+        "keyPlaceholder": "e.g. rightclick",
+        "value": {
+          "fields": {
+            "event": {
+              "label": "Event"
+            },
+            "oneUsage": {
+              "label": "Item is consumed"
+            },
+            "conditions": {
+              "label": "Conditions",
+              "placeholder": "HAS_PERMISSION:my.permission"
+            },
+            "actions": {
+              "label": "Actions",
+              "placeholder": "[console] give '<'player> diamond 1"
+            },
+            "cancelEvent": {
+              "label": "Cancel the event",
+              "help": "Nexo 1.30 reads this key; the Nexo docs do not list it yet."
+            },
+            "cooldown": {
+              "label": "Cooldown",
+              "help": "Nexo 1.30 reads this key; the Nexo docs do not list it yet.",
+              "placeholder": "e.g. 5s"
+            }
+          }
+        }
+      }
+    },
+    "mechanicsArmorEffects": {
+      "label": "Armor Effects",
+      "description": "Potion effects while the item is worn.",
+      "field": {
+        "label": "Effects",
+        "fields": {
+          "set": {
+            "label": "Set ID for “full set” (optional)",
+            "placeholder": "e.g. forest"
+          },
+          "entries": {
+            "label": "Effects",
+            "keyLabel": "Effect"
+          },
+          "resetOnUnequip": {
+            "label": "Remove effects on unequip",
+            "help": "Nexo 1.30 reads this key; the Nexo docs do not list it yet."
+          }
+        }
+      }
+    },
+    "mechanicsTrident": {
+      "label": "Trident",
+      "description": "Throwing behavior of an item with material TRIDENT: damage, sounds and look of the thrown trident.",
+      "hint": "Upload a custom model for throwing in the “Model & Pack” tab under “Special Item Appearance → Throwing Model”.",
+      "field": {
+        "label": "Trident",
+        "fields": {
+          "damage": {
+            "label": "Damage",
+            "placeholder": "8"
+          },
+          "displayTransform": {
+            "label": "Look in flight"
+          },
+          "rotation": {
+            "label": "Rotation in flight (yaw,pitch)",
+            "placeholder": "0,0"
+          },
+          "thrownItem": {
+            "label": "Different Nexo item in flight (item ID)"
+          },
+          "thrownItemModel": {
+            "label": "Different ItemModel in flight"
+          },
+          "sounds": {
+            "label": "Sounds",
+            "fields": {
+              "throw": {
+                "label": "Throw"
+              },
+              "hit": {
+                "label": "Hit"
+              },
+              "hitGround": {
+                "label": "Ground impact"
+              },
+              "return": {
+                "label": "Return (Loyalty)"
+              }
+            }
+          }
+        }
+      }
+    },
+    "mechanicsRepair": {
+      "label": "Repair",
+      "description": "This item can repair other items in the inventory (drag the item onto the damaged item).",
+      "field": {
+        "label": "Repair",
+        "fields": {
+          "ratio": {
+            "label": "Share of durability (0–1)"
+          },
+          "fixedAmount": {
+            "label": "Fixed durability amount"
+          }
+        }
+      }
+    },
+    "mechanicsMisc": {
+      "label": "Misc",
+      "description": "Small behavior tweaks such as preventing renaming or allowing vanilla recipes.",
+      "field": {
+        "label": "Miscellaneous",
+        "fields": {
+          "breaksFromCactus": {
+            "label": "Destroyed by cacti"
+          },
+          "disableVanillaInteractions": {
+            "label": "Disable vanilla interactions"
+          },
+          "canStripLogs": {
+            "label": "Can strip logs"
+          },
+          "piglinsIgnoreWhenEquipped": {
+            "label": "Piglins ignore the wearer"
+          },
+          "compostable": {
+            "label": "Compostable"
+          },
+          "allowInVanillaRecipes": {
+            "label": "Allowed in vanilla recipes"
+          },
+          "preventBreaking": {
+            "label": "Prevent breaking"
+          },
+          "preventRenaming": {
+            "label": "Prevent renaming"
+          },
+          "preventItemFrames": {
+            "label": "Cannot be put in item frames"
+          }
+        }
+      }
+    },
+    "mechanicsSoulbound": {
+      "label": "Soulbound",
+      "description": "The item stays in the inventory on death.",
+      "field": {
+        "label": "Soulbound",
+        "fields": {
+          "loseChance": {
+            "label": "Loss chance (0–1)"
+          }
+        }
+      }
+    },
+    "mechanicsHarvesting": {
+      "label": "Harvesting",
+      "description": "Automatically harvests and replants ripe crops in the area.",
+      "field": {
+        "label": "Harvesting",
+        "fields": {
+          "radius": {
+            "label": "Radius"
+          },
+          "height": {
+            "label": "Height"
+          },
+          "cooldown": {
+            "label": "Cooldown (milliseconds)"
+          },
+          "lowerItemDurability": {
+            "label": "Harvesting wears the tool",
+            "help": "Nexo 1.30 reads this key; the Nexo docs do not list it yet."
+          }
+        }
+      }
+    },
+    "mechanicsSmelting": {
+      "label": "Smelting",
+      "description": "Ores are smelted instantly when mined (supports Fortune and Silk Touch).",
+      "field": {
+        "label": "Smelting",
+        "fields": {
+          "playSound": {
+            "label": "Play sound"
+          }
+        }
+      }
+    },
+    "mechanicsItemtype": {
+      "label": "ItemType",
+      "description": "Changes the tool type for Nexo blocks (the type must be defined in mechanics.yml).",
+      "field": {
+        "label": "ItemType",
+        "fields": {
+          "value": {
+            "label": "Type",
+            "placeholder": "SUPER_MATERIAL"
+          }
+        }
+      }
+    }
+  }
+}

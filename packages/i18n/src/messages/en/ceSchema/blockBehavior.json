@@ -1,0 +1,129 @@
+{
+  "groups": {
+    "blockBehavior": {
+      "label": "Block Behavior",
+      "description": "The block’s behaviors and their keys (sounds, growth, storage …)"
+    }
+  },
+  "properties": {
+    "blockStatesArgumentsSlabBaseBlock": {
+      "label": "Vanilla slab",
+      "description": "The vanilla slab whose unused states the slab borrows (its look is replaced).",
+      "hint": "Each vanilla block can carry only one custom block. CraftEngine’s own default pack uses petrified_oak_slab.",
+      "field": {
+        "label": "Slab"
+      }
+    },
+    "blockStatesArgumentsStairsBaseBlock": {
+      "label": "Vanilla stairs",
+      "description": "The vanilla stairs whose unused states the stairs borrow.",
+      "hint": "Each vanilla block can carry only one custom block. CraftEngine’s own default pack uses cut_copper_stairs.",
+      "field": {
+        "label": "Stairs"
+      }
+    },
+    "blockStatesArgumentsDoorBaseBlock": {
+      "label": "Vanilla door",
+      "description": "The vanilla door whose powered states the door borrows (they look the same as the unpowered ones).",
+      "hint": "Each vanilla block can carry only one custom block. CraftEngine’s own default pack uses oak_door.",
+      "field": {
+        "label": "Door"
+      }
+    },
+    "blockStatesArgumentsTrapdoorBaseBlock": {
+      "label": "Vanilla trapdoor",
+      "description": "The vanilla trapdoor whose powered states the trapdoor borrows.",
+      "hint": "Each vanilla block can carry only one custom block. CraftEngine’s own default pack uses oak_trapdoor.",
+      "field": {
+        "label": "Trapdoor"
+      }
+    },
+    "blockStatesArgumentsFenceGateBaseBlock": {
+      "label": "Vanilla fence gate",
+      "description": "The vanilla fence gate whose powered states the fence gate borrows.",
+      "hint": "Each vanilla block can carry only one custom block. CraftEngine’s own default pack uses oak_fence_gate.",
+      "field": {
+        "label": "Fence gate"
+      }
+    },
+    "blockStatesArgumentsFenceBaseBlock": {
+      "label": "Vanilla fence",
+      "description": "The vanilla fence whose collision the fence uses. Its look comes from the post and side items.",
+      "hint": "Several fences may share one vanilla fence.",
+      "field": {
+        "label": "Fence"
+      }
+    },
+    "blockStatesArgumentsFencePostItem": {
+      "label": "Post item",
+      "description": "The item whose model CraftEngine shows as the fence post.",
+      "hint": "Create two items for the post and the side, each with its model (for example with the parents block/fence_post and block/fence_side).",
+      "field": {
+        "label": "Item ID",
+        "placeholder": "namespace:fence_post"
+      }
+    },
+    "blockStatesArgumentsFenceSideItem": {
+      "label": "Side item",
+      "description": "The item whose model CraftEngine shows for each connected side.",
+      "field": {
+        "label": "Item ID",
+        "placeholder": "namespace:fence_side"
+      }
+    },
+    "blockStatesArgumentsButtonBaseBlock": {
+      "label": "Vanilla button",
+      "description": "The vanilla button whose states (and collision) the button uses. Its look comes from the pressed and not pressed items.",
+      "hint": "Several buttons may share one vanilla button.",
+      "field": {
+        "label": "Button"
+      }
+    },
+    "blockStatesArgumentsButtonNotPressedItem": {
+      "label": "Not pressed item",
+      "description": "The item whose model CraftEngine shows while the button is not pressed.",
+      "hint": "Create two items for the button, each with its model (for example with the parents block/button and block/button_pressed).",
+      "field": {
+        "label": "Item ID",
+        "placeholder": "namespace:button_not_pressed"
+      }
+    },
+    "blockStatesArgumentsButtonPressedItem": {
+      "label": "Pressed item",
+      "description": "The item whose model CraftEngine shows while the button is pressed.",
+      "field": {
+        "label": "Item ID",
+        "placeholder": "namespace:button_pressed"
+      }
+    },
+    "blockStatesArgumentsLeavesTintable": {
+      "label": "Biome tint",
+      "description": "The leaves take the biome’s foliage color (the texture should be gray).",
+      "field": {
+        "label": "Tinted"
+      }
+    },
+    "blockStatesArgumentsLeavesMaxDistance": {
+      "label": "Max distance",
+      "description": "How far the leaves may be from a log before they decay (vanilla 7).",
+      "field": {
+        "label": "Distance"
+      }
+    },
+    "blockBehavior": {
+      "label": "Behavior",
+      "description": "The block’s main behavior with its keys. The behavior select of the Block section sets it up.",
+      "field": {
+        "label": "Behavior"
+      }
+    },
+    "blockBehaviors": {
+      "label": "More behaviors",
+      "description": "Further behaviors, each with its keys. The export writes them before the main behavior.",
+      "hint": "Combine behaviors like the jar does, e.g. falling_block with concrete_powder_block, or bush_block to choose what a plant stands on. Each behavior needs the block state properties its wiki page lists.",
+      "field": {
+        "label": "Behaviors"
+      }
+    }
+  }
+}

@@ -1,0 +1,129 @@
+{
+  "groups": {
+    "blockBehavior": {
+      "label": "Blockverhalten",
+      "description": "Die Verhalten des Blocks und ihre Schlüssel (Sounds, Wachstum, Lager …)"
+    }
+  },
+  "properties": {
+    "blockStatesArgumentsSlabBaseBlock": {
+      "label": "Vanilla-Stufe",
+      "description": "Die Vanilla-Stufe, deren ungenutzte Zustände die Stufe nutzt (ihr Aussehen wird ersetzt).",
+      "hint": "Jeder Vanilla-Block kann nur einen eigenen Block tragen. CraftEngines eigenes Standardpaket nutzt petrified_oak_slab.",
+      "field": {
+        "label": "Stufe"
+      }
+    },
+    "blockStatesArgumentsStairsBaseBlock": {
+      "label": "Vanilla-Treppe",
+      "description": "Die Vanilla-Treppe, deren ungenutzte Zustände die Treppe nutzt.",
+      "hint": "Jeder Vanilla-Block kann nur einen eigenen Block tragen. CraftEngines eigenes Standardpaket nutzt cut_copper_stairs.",
+      "field": {
+        "label": "Treppe"
+      }
+    },
+    "blockStatesArgumentsDoorBaseBlock": {
+      "label": "Vanilla-Tür",
+      "description": "Die Vanilla-Tür, deren Zustände mit Strom die Tür nutzt (sie sehen aus wie die ohne Strom).",
+      "hint": "Jeder Vanilla-Block kann nur einen eigenen Block tragen. CraftEngines eigenes Standardpaket nutzt oak_door.",
+      "field": {
+        "label": "Tür"
+      }
+    },
+    "blockStatesArgumentsTrapdoorBaseBlock": {
+      "label": "Vanilla-Falltür",
+      "description": "Die Vanilla-Falltür, deren Zustände mit Strom die Falltür nutzt.",
+      "hint": "Jeder Vanilla-Block kann nur einen eigenen Block tragen. CraftEngines eigenes Standardpaket nutzt oak_trapdoor.",
+      "field": {
+        "label": "Falltür"
+      }
+    },
+    "blockStatesArgumentsFenceGateBaseBlock": {
+      "label": "Vanilla-Zauntor",
+      "description": "Das Vanilla-Zauntor, dessen Zustände mit Strom das Zauntor nutzt.",
+      "hint": "Jeder Vanilla-Block kann nur einen eigenen Block tragen. CraftEngines eigenes Standardpaket nutzt oak_fence_gate.",
+      "field": {
+        "label": "Zauntor"
+      }
+    },
+    "blockStatesArgumentsFenceBaseBlock": {
+      "label": "Vanilla-Zaun",
+      "description": "Der Vanilla-Zaun, dessen Kollision der Zaun nutzt. Sein Aussehen kommt von den Items für Pfosten und Seite.",
+      "hint": "Mehrere Zäune dürfen sich einen Vanilla-Zaun teilen.",
+      "field": {
+        "label": "Zaun"
+      }
+    },
+    "blockStatesArgumentsFencePostItem": {
+      "label": "Item für den Pfosten",
+      "description": "Das Item, dessen Modell CraftEngine als Zaunpfosten zeigt.",
+      "hint": "Lege zwei Items für Pfosten und Seite an, jedes mit seinem Modell (zum Beispiel mit den Parents block/fence_post und block/fence_side).",
+      "field": {
+        "label": "Item-ID",
+        "placeholder": "namespace:zaun_pfosten"
+      }
+    },
+    "blockStatesArgumentsFenceSideItem": {
+      "label": "Item für die Seite",
+      "description": "Das Item, dessen Modell CraftEngine für jede verbundene Seite zeigt.",
+      "field": {
+        "label": "Item-ID",
+        "placeholder": "namespace:zaun_seite"
+      }
+    },
+    "blockStatesArgumentsButtonBaseBlock": {
+      "label": "Vanilla-Knopf",
+      "description": "Der Vanilla-Knopf, dessen Zustände (und Kollision) der Knopf nutzt. Sein Aussehen kommt von den Items für gedrückt und nicht gedrückt.",
+      "hint": "Mehrere Knöpfe dürfen sich einen Vanilla-Knopf teilen.",
+      "field": {
+        "label": "Knopf"
+      }
+    },
+    "blockStatesArgumentsButtonNotPressedItem": {
+      "label": "Item nicht gedrückt",
+      "description": "Das Item, dessen Modell CraftEngine zeigt, solange der Knopf nicht gedrückt ist.",
+      "hint": "Lege zwei Items für den Knopf an, jedes mit seinem Modell (zum Beispiel mit den Parents block/button und block/button_pressed).",
+      "field": {
+        "label": "Item-ID",
+        "placeholder": "namespace:button_not_pressed"
+      }
+    },
+    "blockStatesArgumentsButtonPressedItem": {
+      "label": "Item gedrückt",
+      "description": "Das Item, dessen Modell CraftEngine zeigt, solange der Knopf gedrückt ist.",
+      "field": {
+        "label": "Item-ID",
+        "placeholder": "namespace:button_pressed"
+      }
+    },
+    "blockStatesArgumentsLeavesTintable": {
+      "label": "Biomfärbung",
+      "description": "Das Laub nimmt die Laubfarbe des Bioms an (die Textur sollte grau sein).",
+      "field": {
+        "label": "Gefärbt"
+      }
+    },
+    "blockStatesArgumentsLeavesMaxDistance": {
+      "label": "Maximale Entfernung",
+      "description": "Wie weit das Laub von einem Stamm entfernt sein darf, bevor es zerfällt (Vanilla 7).",
+      "field": {
+        "label": "Entfernung"
+      }
+    },
+    "blockBehavior": {
+      "label": "Verhalten",
+      "description": "Das Hauptverhalten des Blocks mit seinen Schlüsseln. Die Verhaltensauswahl im Abschnitt Block richtet es ein.",
+      "field": {
+        "label": "Verhalten"
+      }
+    },
+    "blockBehaviors": {
+      "label": "Weitere Verhalten",
+      "description": "Weitere Verhalten, jedes mit seinen Schlüsseln. Der Export schreibt sie vor das Hauptverhalten.",
+      "hint": "Kombiniere Verhalten wie das Jar, z. B. falling_block mit concrete_powder_block, oder bush_block, um festzulegen, worauf eine Pflanze steht. Jedes Verhalten braucht die Blockzustands-Eigenschaften, die seine Wiki-Seite nennt.",
+      "field": {
+        "label": "Verhalten"
+      }
+    }
+  }
+}

@@ -1,0 +1,189 @@
+{
+  "options": {
+    "attributeOperations": {
+      "addNumber": {
+        "label": "ADD_NUMBER (add value)"
+      },
+      "addScalar": {
+        "label": "ADD_SCALAR (percent of base value)"
+      },
+      "multiplyScalar1": {
+        "label": "MULTIPLY_SCALAR_1 (multiply)"
+      }
+    },
+    "attributeSlots": {
+      "any": {
+        "label": "ANY (anywhere)"
+      },
+      "mainhand": {
+        "label": "MAINHAND (main hand)"
+      },
+      "offhand": {
+        "label": "OFFHAND (off hand)"
+      },
+      "hand": {
+        "label": "HAND (both hands)"
+      },
+      "head": {
+        "label": "HEAD (head)"
+      },
+      "chest": {
+        "label": "CHEST (chest)"
+      },
+      "legs": {
+        "label": "LEGS (legs)"
+      },
+      "feet": {
+        "label": "FEET (feet)"
+      },
+      "armor": {
+        "label": "ARMOR (any armor piece)"
+      },
+      "body": {
+        "label": "BODY (animal armor)"
+      },
+      "saddle": {
+        "label": "SADDLE (saddle, 1.21.5+)"
+      }
+    },
+    "trackingRotations": {
+      "fixed": {
+        "label": "FIXED (no rotation)"
+      },
+      "vertical": {
+        "label": "VERTICAL (around the vertical axis)"
+      },
+      "horizontal": {
+        "label": "HORIZONTAL (around the horizontal axis)"
+      },
+      "center": {
+        "label": "CENTER (always facing the player)"
+      }
+    },
+    "storageTypes": {
+      "storage": {
+        "label": "STORAGE (like a chest)"
+      },
+      "personal": {
+        "label": "PERSONAL (per player)"
+      },
+      "enderchest": {
+        "label": "ENDERCHEST (ender chest inventory)"
+      },
+      "disposal": {
+        "label": "DISPOSAL (trash can)"
+      },
+      "shulker": {
+        "label": "SHULKER (like a shulker box)"
+      }
+    },
+    "customBlockTypes": {
+      "noteblock": {
+        "label": "NOTEBLOCK – regular block (up to 1149)"
+      },
+      "stringblock": {
+        "label": "STRINGBLOCK – plants/decoration (up to 127)"
+      },
+      "chorusblock": {
+        "label": "CHORUSBLOCK – transparent blocks (up to 63)"
+      },
+      "stair": {
+        "label": "STAIR – stairs (Carpentry, up to 4)"
+      },
+      "slab": {
+        "label": "SLAB – slabs (Carpentry, up to 4)"
+      },
+      "door": {
+        "label": "DOOR – doors (Carpentry, up to 4)"
+      },
+      "trapdoor": {
+        "label": "TRAPDOOR – trapdoors (Carpentry, up to 4)"
+      },
+      "grate": {
+        "label": "GRATE – transparent blocks such as leaves (Carpentry, up to 4)"
+      },
+      "chain": {
+        "label": "CHAIN – chains (Carpentry, 1.21.10+)"
+      },
+      "lantern": {
+        "label": "LANTERN – lanterns (Carpentry, 1.21.10+)"
+      },
+      "bars": {
+        "label": "BARS – bars like iron bars (Carpentry, 1.21.10+)"
+      }
+    },
+    "cullableStates": {
+      "true": {
+        "label": "TRUE – allow culling"
+      },
+      "false": {
+        "label": "FALSE – never cull"
+      },
+      "notSet": {
+        "label": "NOT_SET – let Nexo decide"
+      }
+    },
+    "customEvents": {
+      "clickRightAll": {
+        "label": "Right-click (anywhere)"
+      },
+      "clickRightBlock": {
+        "label": "Right-click on block"
+      },
+      "clickRightAir": {
+        "label": "Right-click in the air"
+      },
+      "clickLeftAll": {
+        "label": "Left-click (anywhere)"
+      },
+      "clickLeftBlock": {
+        "label": "Left-click on block"
+      },
+      "clickLeftAir": {
+        "label": "Left-click in the air"
+      },
+      "clickAllAll": {
+        "label": "Any click"
+      },
+      "invClickAllAll": {
+        "label": "Click in inventory"
+      },
+      "invClickRightShift": {
+        "label": "Shift-right-click in inventory"
+      },
+      "drop": {
+        "label": "Drop"
+      },
+      "pickup": {
+        "label": "Pick up"
+      },
+      "break": {
+        "label": "Item breaks"
+      },
+      "equip": {
+        "label": "Equip"
+      },
+      "unequip": {
+        "label": "Unequip"
+      },
+      "death": {
+        "label": "Player death"
+      },
+      "dropAll": {
+        "label": "Last copy dropped"
+      },
+      "invClickRightAll": {
+        "label": "Right-click in inventory"
+      },
+      "invClickLeftAll": {
+        "label": "Left-click in inventory"
+      },
+      "invClickLeftShift": {
+        "label": "Shift-left-click in inventory"
+      },
+      "invClickMiddleAll": {
+        "label": "Middle-click in inventory"
+      }
+    }
+  }
+}

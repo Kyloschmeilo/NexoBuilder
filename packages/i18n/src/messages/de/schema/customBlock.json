@@ -1,0 +1,259 @@
+{
+  "properties": {
+    "mechanicsCustomBlock": {
+      "label": "Custom Block",
+      "description": "Das Item wird als echter Block platziert (NoteBlock, StringBlock oder ChorusBlock).",
+      "hint": "Für Blöcke empfiehlt Nexo ein Nicht-Block-Material wie PAPER. Das Modell dieses Items wird automatisch verwendet.",
+      "field": {
+        "label": "Block",
+        "fields": {
+          "type": {
+            "label": "Block-Typ",
+            "help": "NOTEBLOCK, STRINGBLOCK und CHORUSBLOCK bringt Nexo mit. Ist das Carpentry-Addon in den Projekteinstellungen eingeschaltet, kommen seine Treppen, Stufen, Türen, Falltüren, transparenten Blöcke, Ketten, Laternen und Gitter dazu."
+          },
+          "customVariation": {
+            "label": "Variation (eindeutige Nummer)",
+            "help": "Leer lassen, damit Nexo automatisch eine freie Nummer vergibt. Nicht mehr ändern, sobald Blöcke platziert wurden!"
+          },
+          "model": {
+            "label": "Modell",
+            "help": "„@model“ = Modell dieses Items"
+          },
+          "hardness": {
+            "label": "Härte"
+          },
+          "blastResistant": {
+            "label": "Explosionsfest"
+          },
+          "isFalling": {
+            "label": "Fällt wie Sand"
+          },
+          "beaconBaseBlock": {
+            "label": "Leuchtfeuer-Basis"
+          },
+          "placeableOnWater": {
+            "label": "Auf Wasser platzierbar"
+          },
+          "requireSupporting": {
+            "label": "Braucht Block darunter"
+          },
+          "isTall": {
+            "label": "Hohe Pflanze (2 Blöcke)"
+          },
+          "randomPlace": {
+            "label": "Zufällig platzieren aus",
+            "placeholder": "Item-ID"
+          },
+          "directional": {
+            "label": "Ausrichtung beim Platzieren (wie Holzstämme)",
+            "help": "Nexo dreht das Modell je nach Richtung und vergibt die Variationen selbst. Ein Seitenmodell (hier oder im Modell-Tab) wird unverändert ohne Drehung verwendet.",
+            "fields": {
+              "type": {
+                "label": "Art",
+                "options": {
+                  "log": {
+                    "label": "LOG – 3 Achsen wie Holzstämme"
+                  },
+                  "furnace": {
+                    "label": "FURNACE – 4 Richtungen zum Spieler"
+                  },
+                  "dropper": {
+                    "label": "DROPPER – 6 Richtungen zum Spieler"
+                  },
+                  "barrel": {
+                    "label": "BARREL – 6 Richtungen"
+                  }
+                }
+              },
+              "yVariation": {
+                "label": "Variation aufrecht (y)"
+              },
+              "xVariation": {
+                "label": "Variation liegend entlang x"
+              },
+              "zVariation": {
+                "label": "Variation liegend entlang z"
+              },
+              "northVariation": {
+                "label": "Variation nach Norden",
+                "help": "Nexo 1.30 liest diesen Schlüssel; die Nexo-Doku führt ihn noch nicht auf."
+              },
+              "southVariation": {
+                "label": "Variation nach Süden",
+                "help": "Nexo 1.30 liest diesen Schlüssel; die Nexo-Doku führt ihn noch nicht auf."
+              },
+              "eastVariation": {
+                "label": "Variation nach Osten",
+                "help": "Nexo 1.30 liest diesen Schlüssel; die Nexo-Doku führt ihn noch nicht auf."
+              },
+              "westVariation": {
+                "label": "Variation nach Westen",
+                "help": "Nexo 1.30 liest diesen Schlüssel; die Nexo-Doku führt ihn noch nicht auf."
+              },
+              "upVariation": {
+                "label": "Variation nach oben",
+                "help": "Nexo 1.30 liest diesen Schlüssel; die Nexo-Doku führt ihn noch nicht auf."
+              },
+              "downVariation": {
+                "label": "Variation nach unten",
+                "help": "Nexo 1.30 liest diesen Schlüssel; die Nexo-Doku führt ihn noch nicht auf."
+              },
+              "yModel": {
+                "label": "Modell aufrecht (y)"
+              },
+              "xModel": {
+                "label": "Modell liegend entlang x"
+              },
+              "zModel": {
+                "label": "Modell liegend entlang z"
+              },
+              "northModel": {
+                "label": "Modell nach Norden"
+              },
+              "southModel": {
+                "label": "Modell nach Süden"
+              },
+              "eastModel": {
+                "label": "Modell nach Osten"
+              },
+              "westModel": {
+                "label": "Modell nach Westen"
+              },
+              "upModel": {
+                "label": "Modell nach oben"
+              },
+              "downModel": {
+                "label": "Modell nach unten"
+              },
+              "parentBlock": {
+                "label": "Elternblock (Item-ID)",
+                "help": "Nexo setzt das bei den erzeugten Seitenblöcken selbst. Nexo 1.30 liest diesen Schlüssel; die Nexo-Doku führt ihn noch nicht auf."
+              }
+            }
+          },
+          "logStrip": {
+            "label": "Entrinden mit der Axt",
+            "fields": {
+              "strippedLog": {
+                "label": "Wird zu (Item-ID des entrindeten Blocks)"
+              },
+              "drop": {
+                "label": "Zusätzlicher Drop (Item-ID)",
+                "placeholder": "z.B. rinde"
+              },
+              "decreaseAxeDurability": {
+                "label": "Entrinden nutzt die Axt ab",
+                "help": "Nexo 1.30 liest diesen Schlüssel; die Nexo-Doku führt ihn noch nicht auf."
+              }
+            }
+          },
+          "sapling": {
+            "label": "Setzling (wächst zu einer Schematic)",
+            "help": "Die Schematics müssen im Ordner plugins/Nexo/schematics liegen (WorldEdit/FAWE).",
+            "fields": {
+              "growsNaturally": {
+                "label": "Wächst von selbst"
+              },
+              "naturalGrowthTime": {
+                "label": "Wachstumszeit (Ticks)",
+                "placeholder": "6000"
+              },
+              "growsFromBonemeal": {
+                "label": "Wächst mit Knochenmehl"
+              },
+              "bonemealGrowthSpeedup": {
+                "label": "Beschleunigung durch Knochenmehl (Ticks)"
+              },
+              "growSound": {
+                "label": "Sound beim Wachsen"
+              },
+              "minLightLevel": {
+                "label": "Mindest-Lichtstufe"
+              },
+              "requiresWaterSource": {
+                "label": "Braucht Wasser in der Nähe"
+              },
+              "schematic": {
+                "label": "Schematic",
+                "choices": {
+                  "single": {
+                    "label": "Eine Schematic",
+                    "field": {
+                      "label": "Schematic",
+                      "placeholder": "z. B. palm"
+                    }
+                  },
+                  "list": {
+                    "label": "Zufällig aus einer Liste",
+                    "field": {
+                      "label": "Schematics",
+                      "itemLabel": "Schematic",
+                      "fields": {
+                        "schem": {
+                          "label": "Schematic",
+                          "placeholder": "z. B. palm_1"
+                        },
+                        "chance": {
+                          "label": "Wahrscheinlichkeit"
+                        }
+                      }
+                    }
+                  }
+                }
+              },
+              "replaceBlocks": {
+                "label": "Blöcke ersetzen"
+              },
+              "copyBiomes": {
+                "label": "Biome übernehmen"
+              },
+              "copyEntities": {
+                "label": "Entities übernehmen"
+              }
+            }
+          },
+          "immovable": {
+            "label": "Kolben können ihn nicht bewegen",
+            "help": "Nexo 1.30 liest diesen Schlüssel; die Nexo-Doku führt ihn noch nicht auf."
+          },
+          "canIgnite": {
+            "label": "Kann angezündet werden",
+            "help": "Nexo 1.30 liest diesen Schlüssel; die Nexo-Doku führt ihn noch nicht auf."
+          },
+          "instrument": {
+            "label": "Notenblock-Klang",
+            "help": "Klang beim Anschlagen des Blocks, wenn die Notenblock-Funktionen in der mechanics.yml nachgebildet werden. Nexo 1.30 liest diesen Schlüssel; die Nexo-Doku führt ihn noch nicht auf.",
+            "placeholder": "block.note_block.bass"
+          },
+          "variants": {
+            "label": "Zufällige Modelle",
+            "help": "Gewichtete, gedrehte Modelle, aus denen Nexo für jeden platzierten Block zufällig wählt. Nexo 1.30 liest diesen Schlüssel; die Nexo-Doku führt ihn noch nicht auf.",
+            "itemLabel": "Modell",
+            "fields": {
+              "model": {
+                "label": "Modell",
+                "placeholder": "z. B. my_pack:block/stone_2"
+              },
+              "weight": {
+                "label": "Gewicht"
+              },
+              "x": {
+                "label": "Drehung um x (Grad)"
+              },
+              "y": {
+                "label": "Drehung um y (Grad)"
+              },
+              "uvlock": {
+                "label": "Textur nicht mitdrehen (uvlock)"
+              },
+              "offset": {
+                "label": "Versatz (x,y,z)",
+                "placeholder": "0,0,0"
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}

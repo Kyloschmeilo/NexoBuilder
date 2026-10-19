@@ -1,0 +1,100 @@
+{
+  "groups": {
+    "general": {
+      "label": "General",
+      "description": "Lore, Unbreakable, ItemFlags and more"
+    }
+  },
+  "properties": {
+    "lore": {
+      "label": "Lore",
+      "description": "Text lines below the item name (MiniMessage, e.g. '<'gray>).",
+      "field": {
+        "label": "Lines",
+        "placeholder": "'<'gray>A line"
+      }
+    },
+    "unbreakable": {
+      "label": "Unbreakable",
+      "description": "The item does not lose durability.",
+      "field": {
+        "label": "Unbreakable"
+      }
+    },
+    "excludeFromInventory": {
+      "label": "Exclude From Inventory",
+      "description": "The item does not appear in /nexo inventory but can still be given with /nexo give.",
+      "field": {
+        "label": "Hide"
+      }
+    },
+    "excludeFromCommands": {
+      "label": "Exclude From Commands",
+      "description": "The item does not show up in command completion (e.g. for helper items).",
+      "field": {
+        "label": "Hide from commands"
+      }
+    },
+    "template": {
+      "label": "Template",
+      "description": "Inherits all properties of other Nexo items.",
+      "field": {
+        "label": "Template item IDs",
+        "placeholder": "e.g. template_item",
+        "help": "Several templates are merged in order. Nexo 1.30 reads them all from template (the docs call the list templates)."
+      }
+    },
+    "itemFlags": {
+      "label": "ItemFlags",
+      "description": "Hides parts of the tooltip. From 1.21.5 on, prefer the “Tooltip Display” component.",
+      "field": {
+        "label": "Flags"
+      }
+    },
+    "persistentData": {
+      "label": "PersistentData",
+      "description": "Custom data in the item''s PersistentDataContainer (PublicBukkitValues).",
+      "field": {
+        "label": "Entries",
+        "itemLabel": "Entry",
+        "fields": {
+          "type": {
+            "label": "Type"
+          },
+          "key": {
+            "label": "Key",
+            "placeholder": "namespace:key"
+          },
+          "value": {
+            "label": "Value"
+          }
+        }
+      }
+    },
+    "customname": {
+      "label": "Custom Name",
+      "description": "A name shown like a rename on an anvil (italic unless formatted).",
+      "field": {
+        "label": "Name",
+        "placeholder": "e.g. '<'red>Ruby",
+        "help": "Read by Nexo 1.30, not listed in the docs."
+      }
+    },
+    "injectId": {
+      "label": "Inject ID",
+      "description": "Off: the item is not registered as a Nexo item (for helper items such as Carpentry door halves).",
+      "field": {
+        "label": "Register as Nexo item",
+        "help": "Read by Nexo 1.30, not listed in the docs."
+      }
+    },
+    "noAutoUpdate": {
+      "label": "No Auto Update",
+      "description": "Nexo does not update existing copies of the item after a config change.",
+      "field": {
+        "label": "Skip automatic updates",
+        "help": "Read by Nexo 1.30, not listed in the docs."
+      }
+    }
+  }
+}

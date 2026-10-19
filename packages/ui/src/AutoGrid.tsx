@@ -1,5 +1,5 @@
 import type { CSSProperties, ReactNode } from 'react';
-import { cn } from 'cn';
+import { cn } from './lib/cn';
 
 /**
  * Responsive grid whose columns are at least `min` wide; children with `col-span-full` span all columns.

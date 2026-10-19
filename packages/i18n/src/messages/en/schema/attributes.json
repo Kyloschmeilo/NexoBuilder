@@ -1,0 +1,109 @@
+{
+  "groups": {
+    "attributes": {
+      "label": "AttributeModifiers & Enchantments",
+      "description": "Attributes and enchantments"
+    }
+  },
+  "properties": {
+    "attributeModifiers": {
+      "label": "AttributeModifiers",
+      "description": "Changes values such as attack damage, speed or health.",
+      "field": {
+        "label": "Attributes",
+        "itemLabel": "Attribute",
+        "fields": {
+          "attribute": {
+            "label": "Attribute"
+          },
+          "amount": {
+            "label": "Value"
+          },
+          "operation": {
+            "label": "Operation"
+          },
+          "slot": {
+            "label": "Slot"
+          },
+          "display": {
+            "label": "Tooltip display (1.21.6+)",
+            "fields": {
+              "type": {
+                "label": "Type",
+                "options": {
+                  "default": {
+                    "label": "default – normal"
+                  },
+                  "hidden": {
+                    "label": "hidden – hide"
+                  },
+                  "override": {
+                    "label": "override – custom text"
+                  }
+                }
+              },
+              "text": {
+                "label": "Text"
+              }
+            }
+          }
+        }
+      }
+    },
+    "enchantments": {
+      "label": "Enchantments",
+      "description": "Fixed enchantments – even above the vanilla maximum (e.g. Sharpness 15).",
+      "field": {
+        "label": "Enchantments",
+        "keyLabel": "Enchantment",
+        "keyPlaceholder": "e.g. sharpness",
+        "value": {
+          "label": "Level"
+        }
+      }
+    },
+    "storedEnchantments": {
+      "label": "Stored Enchantments",
+      "description": "Enchantments an enchanted book stores and passes on in an anvil.",
+      "field": {
+        "label": "Stored enchantments",
+        "help": "Use with material ENCHANTED_BOOK. Read by Nexo 1.30, not listed in the docs.",
+        "keyLabel": "Enchantment",
+        "keyPlaceholder": "e.g. mending",
+        "value": {
+          "label": "Level"
+        }
+      }
+    },
+    "potionEffects": {
+      "label": "Potion Effects",
+      "description": "Effects of a potion or tipped arrow.",
+      "field": {
+        "label": "Effects",
+        "help": "Use with POTION, SPLASH_POTION, LINGERING_POTION or TIPPED_ARROW. Read by Nexo 1.30, not listed in the docs.",
+        "itemLabel": "Effect",
+        "fields": {
+          "type": {
+            "label": "Effect"
+          },
+          "duration": {
+            "label": "Duration",
+            "placeholder": "e.g. 30s"
+          },
+          "amplifier": {
+            "label": "Level (0 = I)"
+          },
+          "ambient": {
+            "label": "Ambient (subtle particles)"
+          },
+          "particles": {
+            "label": "Show particles"
+          },
+          "icon": {
+            "label": "Show icon"
+          }
+        }
+      }
+    }
+  }
+}

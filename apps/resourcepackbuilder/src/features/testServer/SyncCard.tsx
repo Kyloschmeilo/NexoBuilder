@@ -3,7 +3,7 @@ import { useFormatter, useTranslations } from 'next-intl';
 import { countIssues } from '@resourcepackbuilder/utils';
 import { Alert, AlertDescription } from '@resourcepackbuilder/ui/components/alert';
 import { Button } from '@resourcepackbuilder/ui/components/button';
-import { SectionCard } from '@resourcepackbuilder/ui';
+import { Section } from '@resourcepackbuilder/ui';
 import { Spinner } from '@resourcepackbuilder/ui/components/spinner';
 import { CheckboxField } from '../../components/CheckboxField';
 import { useErrorMessage } from '../../i18n/errors';
@@ -32,8 +32,8 @@ export function SyncCard({ server }: { server: TestServerState }) {
   const summary = useSummaryText(syncSummary({ lastResult, lastCheck, syncError }, isRunning), adapter.pluginName);
 
   return (
-    <SectionCard
-      size="sm"
+    <Section
+      id="sync"
       title={t('title')}
       description={t('description', { folder: adapter.pluginDir, command: adapter.reloadCommand })}
       actions={
@@ -41,28 +41,29 @@ export function SyncCard({ server }: { server: TestServerState }) {
           {isSyncing ? <Spinner /> : <RefreshCw />} {t('now')}
         </Button>
       }
-      contentClassName="flex flex-col gap-2"
     >
-      <CheckboxField
-        checked={server.config.autoUpdate}
-        onChange={(checked) => setConfig({ autoUpdate: checked })}
-        label={t('auto')}
-        description={t('autoHint')}
-      />
-      {summary && <div className="text-xs text-muted-foreground">{summary}</div>}
-      {syncError !== null && (
-        <Alert variant="warning">
-          <TriangleAlert />
-          <AlertDescription>{t('failed', { error: errorMessage(syncError) })}</AlertDescription>
-        </Alert>
-      )}
-      {errorCount > 0 && (
-        <Alert variant="warning">
-          <TriangleAlert />
-          <AlertDescription>{t('projectErrors', { count: errorCount })}</AlertDescription>
-        </Alert>
-      )}
-    </SectionCard>
+      <div className="flex flex-col gap-2">
+        <CheckboxField
+          checked={server.config.autoUpdate}
+          onChange={(checked) => setConfig({ autoUpdate: checked })}
+          label={t('auto')}
+          description={t('autoHint')}
+        />
+        {summary && <div className="text-xs text-muted-foreground">{summary}</div>}
+        {syncError !== null && (
+          <Alert variant="warning">
+            <TriangleAlert />
+            <AlertDescription>{t('failed', { error: errorMessage(syncError) })}</AlertDescription>
+          </Alert>
+        )}
+        {errorCount > 0 && (
+          <Alert variant="warning">
+            <TriangleAlert />
+            <AlertDescription>{t('projectErrors', { count: errorCount })}</AlertDescription>
+          </Alert>
+        )}
+      </div>
+    </Section>
   );
 }
 

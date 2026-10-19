@@ -1,6 +1,10 @@
-/** The files of plugins/Nexo: item YAMLs grouped by file, recipes and glyphs, plus the media in the pack. */
-import { groupBy, type Issue } from '@resourcepackbuilder/utils';
-import { buildRecipeFiles, itemsToYaml } from '@resourcepackbuilder/core/nexo';
+/**
+ * The files of plugins/Nexo: item YAMLs grouped by file, recipes, glyphs and dialogs, plus the media in the pack and
+ * the project's part of multipack.yml (a root file, merged across projects).
+ */
+import { groupBy, isPlainObject, type Issue } from '@resourcepackbuilder/utils';
+import { buildRecipeFiles, itemsToYaml, NEXO_MULTIPACK_FIELD, validateMultipack } from '@resourcepackbuilder/core/nexo';
+import { pruneValue } from '@resourcepackbuilder/core/form';
 import { type Project, validateRecipes } from '@resourcepackbuilder/core/project';
 import type { PackWriter } from '../../packWriter';
 import type { FileContent, ItemPlan } from '../../types';
@@ -19,10 +23,13 @@ export function planNexoPluginFiles(project: Project, plans: ItemPlan[], writer:
     );
   }
 
-  const { glyphFiles, ...nexo } = writeMedia(writer, project, issues);
+  const { glyphFiles, dialogFiles, ...media } = writeMedia(writer, project, issues);
   const items = plans.map((p) => p.item);
   issues.push(...validateRecipes(project, items));
   for (const [path, text] of buildRecipeFiles(project, items)) pluginFiles.set(path, text);
   for (const [path, text] of glyphFiles) pluginFiles.set(path, text);
-  return { pluginFiles, nexo };
+  for (const [path, text] of dialogFiles) pluginFiles.set(path, text);
+  issues.push(...validateMultipack(project));
+  const multipack = pruneValue(project.settings.multipack, NEXO_MULTIPACK_FIELD);
+  return { pluginFiles, nexo: { ...media, multipack: isPlainObject(multipack) ? multipack : null } };
 }

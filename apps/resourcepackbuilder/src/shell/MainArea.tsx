@@ -1,3 +1,4 @@
+/** The page of the selected entry: an item's editor, a folder, a project-wide view, the settings, or a start hint. */
 import type { ComponentType } from 'react';
 import { FolderPlus, MousePointerClick } from 'lucide-react';
 import { useTranslations } from 'next-intl';
@@ -7,11 +8,20 @@ import { FolderView } from '../features/folder/FolderView';
 import { folderDirPath } from '../features/folder/folderDir';
 import { useFolderActions } from '../features/folder/useFolderActions';
 import { ItemEditor } from '../features/item/ItemEditor';
+import { AtlasesView } from '../features/craftEngine/AtlasesView';
 import { AttributesView } from '../features/craftEngine/AttributesView';
+import { CategoriesView } from '../features/craftEngine/CategoriesView';
 import { GlobalVariablesView } from '../features/craftEngine/GlobalVariablesView';
+import { PackView } from '../features/craftEngine/PackView';
+import { ScriptsView } from '../features/craftEngine/ScriptsView';
 import { TemplatesView } from '../features/craftEngine/TemplatesView';
+import { TranslationsView } from '../features/craftEngine/TranslationsView';
+import { WorldgenView } from '../features/craftEngine/WorldgenView';
 import { LootSourcesView } from '../features/lootSources/LootSourcesView';
+import { DialogsView } from '../features/dialogs/DialogsView';
 import { GlyphsView, PaintingsView, SoundsView } from '../features/media/MediaView';
+import { MultipackView } from '../features/multipack/MultipackView';
+import { SettingsPage } from '../features/settings/SettingsPage';
 import { TestServerView } from '../features/testServer/TestServerView';
 import { useOpenProject } from '../store/project';
 import { useUiStore, type ViewName } from '../store/ui';
@@ -21,10 +31,18 @@ const VIEWS: Record<ViewName, ComponentType> = {
   glyphs: GlyphsView,
   sounds: SoundsView,
   paintings: PaintingsView,
+  dialogs: DialogsView,
+  multipack: MultipackView,
   lootSources: LootSourcesView,
   templates: TemplatesView,
   globalVariables: GlobalVariablesView,
   attributes: AttributesView,
+  translations: TranslationsView,
+  categories: CategoriesView,
+  worldgen: WorldgenView,
+  atlases: AtlasesView,
+  pack: PackView,
+  scripts: ScriptsView,
   testServer: TestServerView,
 };
 
@@ -44,7 +62,7 @@ function NothingSelected() {
             <FolderPlus className="size-9 text-muted-foreground" />
           )}
         </EmptyMedia>
-        <EmptyTitle className="font-heading text-xl tracking-wide uppercase">{hasFolders ? t('pickTitle') : t('startTitle')}</EmptyTitle>
+        <EmptyTitle className="text-page font-semibold">{hasFolders ? t('pickTitle') : t('startTitle')}</EmptyTitle>
         <EmptyDescription>
           {hasFolders ? t('pickDescription') : t('startDescription', { path: folderDirPath(project, null) })}
         </EmptyDescription>
@@ -74,12 +92,15 @@ function SelectedPage() {
       const View = VIEWS[selection.view];
       return <View />;
     }
+    case 'settings':
+      return <SettingsPage />;
   }
 }
 
+/** The page area of the workbench: the selected entry's page. */
 export function MainArea() {
   return (
-    <main className="min-h-0 min-w-0 overflow-auto">
+    <main className="min-h-0 min-w-0 flex-1 overflow-auto bg-canvas">
       <SelectedPage />
     </main>
   );

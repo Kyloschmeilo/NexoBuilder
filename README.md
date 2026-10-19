@@ -1,7 +1,7 @@
 # ResourcepackBuilder
 
 **Turn Blockbench models into ready-to-use [Nexo](https://docs.nexomc.com/) or
-[CraftEngine](https://mo-mi.gitbook.io/xiaomomi-plugins-docs/) items – resource pack included.**
+[CraftEngine](https://xiao-momi.github.io/craft-engine-wiki/) items – resource pack included.**
 
 ResourcepackBuilder is a **Windows program (.exe)**. You create folders, drop your models in, set the properties in
 forms and export everything as a ZIP that you unpack straight into `plugins/Nexo/` or `plugins/CraftEngine/`.
@@ -12,6 +12,15 @@ forms and export everything as a ZIP that you unpack straight into `plugins/Nexo
 
 - **Nexo or CraftEngine** – every project targets one plugin, chosen when you create it. It cannot change later. Models,
   folders, glyphs, sounds, paintings, recipes, the 3D preview and sharing work the same for both.
+- **Workbench editor** – an activity bar (items, media, CraftEngine logic, test server, settings), a sidebar with the
+  item tree and filter chips, and an output dock with the YAML and the checks of the open page (Ctrl+J). The command
+  palette (Ctrl+K) finds items, pages, actions and the settings of the open item.
+- **Item editor** – a section nav (Basics, Model, Textures, Features, Block, Furniture, Events, Loot, Recipes,
+  Advanced) beside one section at a time. Features are compact rows you add from a searchable catalog with categories;
+  every field shows its label, its YAML key and a link to its section of the plugin docs.
+- **Docs links everywhere** – every Nexo and CraftEngine property, block behavior, recipe type, condition, function and
+  media page links to the [Nexo docs](https://docs.nexomc.com/) or the
+  [CraftEngine wiki](https://xiao-momi.github.io/craft-engine-wiki/).
 - **Folders & items** – folders (also nested) become subfolders of `plugins/Nexo/items`. Move items by drag & drop,
   duplicate and search them.
 - **Copy & paste properties** – take the complete configuration of an item (material, lore, attributes, components,
@@ -26,7 +35,7 @@ forms and export everything as a ZIP that you unpack straight into `plugins/Nexo
   - `.png` only – as a 2D item, tool or block (cube_all, pillar, six sides, plant …).
   - Several files at once → several items.
 - **3D preview** of every model (incl. display views such as hand, head, inventory) and thumbnails in the tree.
-- **Nexo properties in forms** (Nexo 1.29 / Minecraft 26.3):
+- **Nexo properties in forms** (Nexo 1.30 / Minecraft 26.3):
   - General: lore (with MiniMessage preview), unbreakable, item flags, templates, PersistentData
   - Attributes & enchantments
   - Components: food, consumable, tool, weapon, equippable, glider, durability, max stack size, cooldown, death
@@ -36,11 +45,22 @@ forms and export everything as a ZIP that you unpack straight into `plugins/Nexo
     Backpack, Commands, Custom Mechanic, Armor Effects, Trident, Repair, Harvesting, Smelting …
   - CustomArmor (worn): player armor, elytra, wolf/horse/llama/nautilus armor, harness and saddles → creates equipment
     models in the pack and sets Equippable automatically
+  - Structured editors for `blocks_attacks`, `kinetic_weapon` and `custom_model_data`, plus rarity, instrument, trims,
+    stored enchantments, potion effects, template lists and more – with the keys Nexo 1.30 reads (older projects are
+    migrated)
+  - Every furniture, custom block and mechanic option Nexo 1.30 reads, with structured hitbox, seat, bed and light
+    editors and a furniture preview
+  - **Dialogs** (`plugins/Nexo/dialogs`), **multipack** templates and menu (`multipack.yml`) and the **Carpentry**
+    addon's block types
   - Anything else: extra YAML per item
   - All features are named as in the Nexo/Minecraft docs (Components, Mechanics, Max Stack Size …) with an explanation
-    on hover
-- **Recipes** – crafting table (shaped/shapeless), furnace, blast furnace, smoker, campfire and stonecutter →
+    in the help popover
+- **Recipes** – every recipe type of the plugin: crafting table (shaped/shapeless), furnace, blast furnace, smoker,
+  campfire, stonecutter, smithing (upgrade and trim), brewing, crafter, transform, transmute, anvil and dye, laid out
+  like their station, with categories, groups, permissions and unlocks; Nexo's disabled vanilla recipes too →
   `recipes/<type>/<project>.yml`
+- **Item model trees** – Minecraft item model definitions (model, composite, condition, select, range dispatch, special,
+  bundle, tints …) as an outline with a card for the selected node, for Nexo (`ItemModel`) and CraftEngine (`model`)
 - **Special item appearance** – pulling/charged/firework (bow, crossbow), blocking (shield), cast (fishing rod),
   throwing (trident), damaged, dyeable and composite models (`Pack.pulling_models`, `Pack.blocking_model` …) plus a
   separate **GUI model** (a different model in the inventory)
@@ -70,17 +90,24 @@ forms and export everything as a ZIP that you unpack straight into `plugins/Nexo
   changes reach everyone within seconds, in both directions.
 - **Local test server** – a Paper server with Nexo or CraftEngine on your PC that updates itself: changes in the project are in the
   game within seconds, including a new resource pack.
-- **CraftEngine projects** (CraftEngine 26.9) add:
-  - Items with data components, settings and behaviors, plus custom blocks (single and multi-state, `auto_state` budget
-    check) and furniture (variants, hitboxes, seats) with block entity renderers
+- **CraftEngine projects** (CraftEngine 26.9) cover every feature of the wiki:
+  - Items with data components, every item setting and behavior (placement, range mining, composting …), advanced lore,
+    client-bound data and a per-version item updater
+  - Custom blocks with all 54 block behaviors from a catalog, every block setting, per-variant settings and compact
+    state tables (single and multi-state, `auto_state` budget check)
+  - Furniture (variants with a preview, hitboxes, seats, behaviors) and block entity renderers with every display
+    parameter
   - Events, conditions and functions for items, blocks and furniture, loot tables and project loot sources
-  - Templates, global variables and the attribute system
+  - Templates (with a reference of the default templates), global variables and the attribute system
+  - Translations and lang keys, item browser categories, worldgen features, atlases, `pack.yml` settings with config
+    factories and JavaScript scripts
   - Recipes, images and emoji, sounds and jukebox songs, paintings, armor as equipments, folders as categories and
     language files for display names
   - Export to `plugins/CraftEngine/resources/<pack>/` with `pack.yml`; the test server downloads CraftEngine from
     Modrinth (a purchased Premium JAR also works)
-- **English and German, light and dark** – _Settings → This device_ sets the language and the appearance (Light, Dark
-  or System); the top bar has a quick theme toggle. Menus and native dialogs follow the chosen language.
+- **Five color themes, English and German** – Deepslate, Amethyst, Copper, Prismarine and Crimson, each in light and
+  dark (_Settings → Appearance_, also on the welcome screen). _Settings → This device_ sets the language; menus and
+  native dialogs follow it.
 
 ## Usage
 
@@ -120,7 +147,7 @@ Good to know:
 
 ### Local test server
 
-The **Test server** area at the bottom left runs a Minecraft server (Paper) with the open project's plugin (Nexo or
+The **Test server** in the activity bar runs a Minecraft server (Paper) with the open project's plugin (Nexo or
 CraftEngine) on your PC – and everything you change in ResourcepackBuilder is in the game within seconds. Until
 everything a start needs is set, the page shows **Before the first start** at the top.
 
@@ -231,7 +258,7 @@ server exports its adapters from its single entry point).
 | `packages/test-server`      | The local test server's rules. A `ServerAdapter` per target (`nexo/`, `craftEngine/`) holds the plugin config patch, commands, log patterns, reload behavior (`buildsPackOnStart`, `reportsPackBuild`) and the paths a project may sync. Shared: config and limits, console commands, log parsing, status, Java/Paper versions, plugin JAR handling, the Modrinth download (CraftEngine) and the sync manifest.                                                                          |
 | `packages/preview`          | 3D model preview and thumbnails with three.js – no React; the app's `ModelPreview` and `useThumbnail` wrap it.                                                                                                                                                                                                                                                                                                                                                                           |
 | `packages/i18n`             | English and German message catalogues per namespace (`src/messages/<locale>/<namespace>.json`), supported locales, typed message keys and the parity check that keeps both languages in step. `./desktop` exports the texts of the Electron main process (`desktop` namespace, not in the UI catalogue).                                                                                                                                                                                 |
-| `packages/ui`               | Generic React building blocks: the vendored shadcn/ui components (Base UI flavour) in `src/components`, shared components on top of them, and the CastCrafter theme (`src/styles.css`: Tailwind v4 with light/dark design tokens; fonts Chakra Petch, Hanken Grotesk and Martian Mono bundled via `src/fonts.css`).                                                                                                                                                                      |
+| `packages/ui`               | Generic React building blocks: the vendored shadcn/ui components (Base UI flavour) in `src/components`, shared components on top of them, and the Workbench theme (`src/styles.css`: Tailwind v4 design tokens in five colour themes, each light and dark; fonts IBM Plex Sans, IBM Plex Mono and Chakra Petch for the brand mark, bundled via `src/fonts.css`).                                                                                                                         |
 | `packages/desktop-contract` | The IPC contract between UI and Electron: one channel map (`DESKTOP_API`) from which the preload bridge and all types are derived, zod argument schemas (`./schemas`, main process only) and serialisable `DesktopError`s.                                                                                                                                                                                                                                                               |
 | `packages/s3`               | Typed wrapper over the AWS SDK for S3-compatible storage (AWS, R2, MinIO, B2 …), Node only, bundled into the Electron main process once it imports it. Prepared for the upcoming storage locations feature (`docs/superpowers/specs/2026-10-16-storage-locations-design.md`).                                                                                                                                                                                                            |
 | `packages/test-utils`       | Node-only test helpers (real PNG files), used by package tests and the app's scripts; never shipped.                                                                                                                                                                                                                                                                                                                                                                                     |
@@ -256,15 +283,16 @@ The app (`apps/resourcepackbuilder`):
   Tailwind utilities and the theme tokens only, so every view works in light and dark mode. Language and theme are
   per-device settings. Projects are stored in IndexedDB and saved automatically. Layout:
   - `app/` – Next.js routes only (layout with the pre-paint theme script, page, global CSS);
-  - `shell/` – the frame: providers and boot screen, top bar, sidebar, right panel, main area (a map from the
-    selection to its view), dialog host, keyboard shortcuts, window drop;
+  - `shell/` – the frame: providers and boot screen, top bar, activity bar, sidebar panels, output dock, command
+    palette, main area (a map from the selection to its view), dialog host, keyboard shortcuts, window drop;
   - `store/` – zustand stores: project + undo history, UI state, clipboard, promise-based `confirm`/`prompt` dialogs;
   - `commands/` – every change to a project goes through these functions (one user action = one undo step);
   - `services/` – long-running work created once by `bootstrap()`: project repository (IndexedDB), autosave, share
     sync, test-server sync, desktop locale sync;
   - `features/<feature>/` – the views and dialogs of each feature (item editor, folder, glyphs, sounds, paintings,
     test server, export, share, settings, projects, new item, …);
-  - `components/` – app-wide components, incl. the generic field editor that renders the Nexo property schema;
+  - `components/` – app-wide components, incl. the generic field editor that renders each plugin's property schema,
+    the add catalog and the feature rows;
   - `i18n/`, `theme/`, `platform/` – language store and error translation, theme provider, the desktop bridge.
 - `src/platform/desktopApi.ts` – re-exports the IPC contract types of `packages/desktop-contract`;
   `src/platform/desktop.ts` hands out `window.resourcepackBuilder` and turns failed calls back into `DesktopError`s. The

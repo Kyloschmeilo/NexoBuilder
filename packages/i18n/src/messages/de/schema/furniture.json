@@ -1,0 +1,240 @@
+{
+  "properties": {
+    "mechanicsFurniture": {
+      "label": "Furniture",
+      "description": "Das Item wird als Möbelstück (Item-Display) platziert – mit Hitbox, Sitzen, Licht usw.",
+      "field": {
+        "label": "Möbel",
+        "fields": {
+          "hitbox": {
+            "label": "Hitbox"
+          },
+          "properties": {
+            "label": "Darstellung"
+          },
+          "rotatable": {
+            "label": "Drehbar",
+            "choices": {
+              "simple": {
+                "label": "An oder aus",
+                "field": {
+                  "label": "Lässt sich drehen"
+                }
+              },
+              "section": {
+                "label": "Mit Optionen",
+                "field": {
+                  "fields": {
+                    "rotatable": {
+                      "label": "Lässt sich drehen"
+                    },
+                    "onSneak": {
+                      "label": "Nur beim Schleichen"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "restrictedRotation": {
+            "label": "Eingeschränkte Drehung",
+            "options": {
+              "strict": {
+                "label": "STRICT – 8 Richtungen"
+              },
+              "veryStrict": {
+                "label": "VERY_STRICT – 4 Richtungen"
+              },
+              "none": {
+                "label": "NONE – beliebiger Winkel"
+              }
+            }
+          },
+          "waterloggable": {
+            "label": "Kann unter Wasser stehen"
+          },
+          "seats": {
+            "label": "Sitze",
+            "placeholder": "0,0.5,0"
+          },
+          "beds": {
+            "label": "Betten",
+            "placeholder": "0,0,0 true true"
+          },
+          "lights": {
+            "label": "Licht",
+            "fields": {
+              "lights": {
+                "label": "Lichtquellen",
+                "placeholder": "0,0,0 15"
+              },
+              "toggleable": {
+                "label": "Per Rechtsklick schaltbar"
+              },
+              "toggledModel": {
+                "label": "Nexo-Item im eingeschalteten Zustand",
+                "placeholder": "Item-ID"
+              },
+              "toggledItemModel": {
+                "label": "ItemModel im eingeschalteten Zustand (leer = hochgeladenes „Toggled“-Modell)"
+              }
+            }
+          },
+          "connectable": {
+            "label": "Verbindbar (Connectable)",
+            "help": "Gleiche Möbel nebeneinander verbinden sich, z.B. Stühle zu einem Sofa. Die Modelle (Straight, Left, Right, Inner, Outer) lädst du im Tab „Model & Pack“ hoch – dann wird das hier automatisch gesetzt.",
+            "fields": {
+              "type": {
+                "label": "Art",
+                "options": {
+                  "itemModel": {
+                    "label": "ITEM_MODEL (empfohlen)"
+                  },
+                  "item": {
+                    "label": "ITEM – je Verbindung ein eigenes Nexo-Item"
+                  }
+                }
+              },
+              "default": {
+                "label": "Standard (nur bei eigenen Item-IDs/ItemModels)"
+              },
+              "straight": {
+                "label": "Gerade"
+              },
+              "left": {
+                "label": "Links"
+              },
+              "right": {
+                "label": "Rechts"
+              },
+              "inner": {
+                "label": "Innenecke"
+              },
+              "outer": {
+                "label": "Außenecke"
+              }
+            }
+          },
+          "jukebox": {
+            "label": "Jukebox",
+            "fields": {
+              "volume": {
+                "label": "Lautstärke"
+              },
+              "pitch": {
+                "label": "Tonhöhe"
+              },
+              "permission": {
+                "label": "Permission"
+              }
+            }
+          },
+          "door": {
+            "label": "Tür",
+            "fields": {
+              "isSliding": {
+                "label": "Schiebetür"
+              },
+              "openSound": {
+                "label": "Sound beim Öffnen"
+              },
+              "closeSound": {
+                "label": "Sound beim Schließen"
+              },
+              "toggleHitboxOnOpen": {
+                "label": "Hitbox beim Öffnen durchlässig machen"
+              },
+              "delayHitboxToggle": {
+                "label": "Hitbox erst nach dem Öffnen wechseln"
+              },
+              "automaticCloseDelay": {
+                "label": "Automatisch schließen nach"
+              },
+              "openProperties": {
+                "label": "Darstellung im offenen Zustand"
+              }
+            }
+          },
+          "evolution": {
+            "label": "Wachstum (Farming)",
+            "fields": {
+              "delay": {
+                "label": "Wachstumszeit",
+                "placeholder": "10s"
+              },
+              "probability": {
+                "label": "Wachstums-Wahrscheinlichkeit"
+              },
+              "lightBoost": {
+                "label": "Wächst mit Licht schneller"
+              },
+              "boneMealChance": {
+                "label": "Knochenmehl-Chance"
+              },
+              "nextStage": {
+                "label": "Nächste Stufe (Item-ID)"
+              },
+              "minimumLightLevel": {
+                "label": "Minimale Lichtstufe",
+                "help": "Nexo 1.30 liest diesen Schlüssel; die Nexo-Doku führt ihn noch nicht auf."
+              },
+              "boostTick": {
+                "label": "Licht-Bonus (Ticks)",
+                "help": "Zusätzliches Wachstum pro Prüfung, wenn Licht in der Nähe ist. Nexo 1.30 liest diesen Schlüssel; die Nexo-Doku führt ihn noch nicht auf."
+              },
+              "rainBoostTick": {
+                "label": "Regen-Bonus (Ticks)",
+                "help": "Zusätzliches Wachstum pro Prüfung, während es regnet. Nexo 1.30 liest diesen Schlüssel; die Nexo-Doku führt ihn noch nicht auf."
+              }
+            }
+          },
+          "previewPlacement": {
+            "label": "Platzier-Vorschau",
+            "help": "Leer lassen für die Standardwerte.",
+            "fields": {
+              "opacity": {
+                "label": "Deckkraft"
+              },
+              "requirePermission": {
+                "label": "Permission erforderlich"
+              },
+              "enabled": {
+                "label": "Vorschau aktiv"
+              }
+            }
+          },
+          "modelengineId": {
+            "label": "ModelEngine-Modell",
+            "placeholder": "name_der_bbmodel"
+          },
+          "placements": {
+            "label": "Platzierungs-Varianten (floor/wall/roof)",
+            "help": "Eigene Modelle für Floor, Wall und Roof lädst du im Tab „Model & Pack“ hoch. Hier kannst du je Variante weitere Werte überschreiben.",
+            "placeholder": "wall:\n  properties:\n    translation: 0,0.3,-0.3"
+          },
+          "item": {
+            "label": "Platziertes Item (Item-ID)",
+            "help": "Das Möbelstück zeigt dieses Nexo-Item statt sich selbst, z. B. ein Samen, der seine erste Pflanzenstufe setzt.",
+            "placeholder": "z. B. rose_plant_stage1"
+          },
+          "farmlandRequired": {
+            "label": "Nur auf Ackerboden",
+            "help": "Nexo 1.30 liest diesen Schlüssel; die Nexo-Doku führt ihn noch nicht auf."
+          },
+          "itemModel": {
+            "label": "ItemModel der Möbel-Entity",
+            "help": "Zeigt auf dem platzierten Möbelstück ein anderes ItemModel als im Inventar."
+          },
+          "hardness": {
+            "label": "Härte",
+            "help": "Abbauzeit des Möbelstücks. Nexo 1.30 liest diesen Schlüssel; die Nexo-Doku führt ihn noch nicht auf."
+          },
+          "blastResistance": {
+            "label": "Explosionsfestigkeit",
+            "help": "Nexo 1.30 liest diesen Schlüssel; die Nexo-Doku führt ihn noch nicht auf."
+          }
+        }
+      }
+    }
+  }
+}

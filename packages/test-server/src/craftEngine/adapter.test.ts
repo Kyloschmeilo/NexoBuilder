@@ -67,6 +67,15 @@ describe('patchCraftEngineConfig', () => {
     expect(attribute(patchCraftEngineConfig(null, { packPort: 8082, attributes: true }))).toEqual({ enable: true });
   });
 
+  it('switches JavaScript scripting on for projects with scripts and leaves it alone otherwise', () => {
+    const scripting = (text: string) => (parse(text) as { scripting?: { js?: Record<string, unknown> } }).scripting?.js;
+    const off = patchCraftEngineConfig(JAR_CONFIG, { packPort: 8082 });
+    const on = patchCraftEngineConfig(off, { packPort: 8082, scripting: true });
+    expect(scripting(on)?.enable).toBe(true);
+    expect(patchCraftEngineConfig(on, { packPort: 8082, scripting: false })).toBe(on);
+    expect(scripting(patchCraftEngineConfig(null, { packPort: 8082, scripting: true }))).toEqual({ enable: true });
+  });
+
   it('rewrites a broken file with only its own values', () => {
     const patched = patchCraftEngineConfig('resource-pack: [unclosed', { packPort: 8082 });
     expect(selfHost(patched)['self-host']).toEqual({ ip: '127.0.0.1', port: 8082, one_time_token: false });
@@ -113,6 +122,7 @@ describe('the CraftEngine adapter', () => {
     expect(ce.syncPathSegments('resources/test_pack/pack.yml', project)).toEqual(['resources', 'test_pack', 'pack.yml']);
     expect(ce.syncPathSegments('resources/test_pack/configuration/items/a.yml', project)).not.toBeNull();
     expect(ce.syncPathSegments('resources/test_pack/resourcepack/assets/x.png', project)).not.toBeNull();
+    expect(ce.syncPathSegments('resources/test_pack/script/utils/math.js', project)).not.toBeNull();
     for (const path of [
       'config.yml',
       'resources/other/pack.yml',

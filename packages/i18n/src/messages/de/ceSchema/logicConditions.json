@@ -1,0 +1,386 @@
+{
+  "logic": {
+    "conditions": {
+      "allOf": {
+        "label": "all_of",
+        "help": "Wahr, wenn alle Bedingungen wahr sind.",
+        "fields": {
+          "terms": {
+            "label": "terms"
+          }
+        }
+      },
+      "anyOf": {
+        "label": "any_of",
+        "help": "Wahr, wenn eine der Bedingungen wahr ist.",
+        "fields": {
+          "terms": {
+            "label": "terms"
+          }
+        }
+      },
+      "inverted": {
+        "label": "inverted",
+        "help": "Kehrt die Bedingung um.",
+        "fields": {
+          "term": {
+            "label": "term"
+          }
+        }
+      },
+      "hasPlayer": {
+        "label": "has_player",
+        "help": "Ein Spieler gehört zum Kontext."
+      },
+      "hasItem": {
+        "label": "has_item",
+        "help": "Es liegt ein Item in der Hand."
+      },
+      "matchItem": {
+        "label": "match_item",
+        "help": "Das Item in der Hand hat eine der IDs.",
+        "fields": {
+          "id": {
+            "label": "id"
+          },
+          "regex": {
+            "label": "regex"
+          }
+        }
+      },
+      "equipment": {
+        "label": "equipment",
+        "help": "Das Item in einem Ausrüstungsslot passt zu einer ID oder einem Tag.",
+        "fields": {
+          "slot": {
+            "label": "slot"
+          },
+          "id": {
+            "label": "id"
+          },
+          "tag": {
+            "label": "tag"
+          },
+          "regex": {
+            "label": "regex"
+          }
+        }
+      },
+      "equipmentSet": {
+        "label": "equipment_set",
+        "help": "Das Wesen trägt genug Teile eines Ausrüstungssets.",
+        "fields": {
+          "set": {
+            "label": "set"
+          },
+          "count": {
+            "label": "count",
+            "help": "Genaue Anzahl Teile; ersetzt min und max."
+          },
+          "min": {
+            "label": "min"
+          },
+          "max": {
+            "label": "max"
+          }
+        }
+      },
+      "matchEntity": {
+        "label": "match_entity",
+        "help": "Das Wesen hat eine der IDs.",
+        "fields": {
+          "id": {
+            "label": "id"
+          },
+          "regex": {
+            "label": "regex"
+          }
+        }
+      },
+      "matchBlock": {
+        "label": "match_block",
+        "help": "Der Block an einer Position hat eine der IDs.",
+        "fields": {
+          "id": {
+            "label": "id"
+          },
+          "regex": {
+            "label": "regex"
+          },
+          "x": {
+            "label": "x"
+          },
+          "y": {
+            "label": "y"
+          },
+          "z": {
+            "label": "z"
+          }
+        }
+      },
+      "matchBlockProperty": {
+        "label": "match_block_property",
+        "help": "Der Blockzustand hat diese Eigenschaftswerte.",
+        "fields": {
+          "properties": {
+            "label": "properties",
+            "keyLabel": "Eigenschaft",
+            "keyPlaceholder": "age",
+            "value": {
+              "label": "Wert"
+            }
+          }
+        }
+      },
+      "matchFurnitureVariant": {
+        "label": "match_furniture_variant",
+        "help": "Das Möbel zeigt eine der Varianten.",
+        "fields": {
+          "variants": {
+            "label": "variants"
+          }
+        }
+      },
+      "tableBonus": {
+        "label": "table_bonus",
+        "help": "Eine Chance je Stufe einer Verzauberung auf dem Werkzeug.",
+        "fields": {
+          "enchantment": {
+            "label": "enchantment"
+          },
+          "chances": {
+            "label": "chances",
+            "help": "Eine Liste von Chancen von 0 bis 1, eine je Stufe ab Stufe 0."
+          }
+        }
+      },
+      "survivesExplosion": {
+        "label": "survives_explosion",
+        "help": "Der Drop übersteht die Explosion."
+      },
+      "fallingBlock": {
+        "label": "falling_block",
+        "help": "Der Drop stammt von einem fallenden Block."
+      },
+      "enchantment": {
+        "label": "enchantment",
+        "help": "Das Item in der Hand hat eine Verzauberungsstufe.",
+        "fields": {
+          "predicate": {
+            "label": "predicate",
+            "placeholder": "minecraft:sharpness>=2"
+          }
+        }
+      },
+      "random": {
+        "label": "random",
+        "help": "Wahr mit einer Chance von 0 bis 1.",
+        "fields": {
+          "value": {
+            "label": "value"
+          },
+          "id": {
+            "label": "id",
+            "help": "Bedingungen mit derselben ID teilen sich einen Wurf."
+          }
+        }
+      },
+      "distance": {
+        "label": "distance",
+        "help": "Der Spieler ist in diesem Abstand zur Position.",
+        "fields": {
+          "min": {
+            "label": "min"
+          },
+          "max": {
+            "label": "max"
+          }
+        }
+      },
+      "permission": {
+        "label": "permission",
+        "help": "Der Spieler hat die Berechtigung.",
+        "fields": {
+          "permission": {
+            "label": "permission"
+          }
+        }
+      },
+      "hasDiscoveredRecipe": {
+        "label": "has_discovered_recipe",
+        "help": "Der Spieler hat das Rezept freigeschaltet.",
+        "fields": {
+          "recipe": {
+            "label": "recipe"
+          }
+        }
+      },
+      "equals": {
+        "label": "equals",
+        "help": "Beide Texte sind gleich.",
+        "fields": {
+          "value1": {
+            "label": "value1"
+          },
+          "value2": {
+            "label": "value2"
+          }
+        }
+      },
+      "stringEquals": {
+        "label": "string_equals",
+        "help": "Beide Texte sind gleich.",
+        "fields": {
+          "value1": {
+            "label": "value1"
+          },
+          "value2": {
+            "label": "value2"
+          }
+        }
+      },
+      "stringContains": {
+        "label": "string_contains",
+        "help": "value1 enthält value2.",
+        "fields": {
+          "value1": {
+            "label": "value1"
+          },
+          "value2": {
+            "label": "value2"
+          }
+        }
+      },
+      "regex": {
+        "label": "regex",
+        "help": "Der Wert passt zum regulären Ausdruck.",
+        "fields": {
+          "value": {
+            "label": "value"
+          },
+          "regex": {
+            "label": "regex"
+          }
+        }
+      },
+      "expression": {
+        "label": "expression",
+        "help": "Der Ausdruck ist wahr.",
+        "fields": {
+          "expression": {
+            "label": "expression"
+          }
+        }
+      },
+      "isNull": {
+        "label": "is_null",
+        "help": "Das Kontext-Argument ist nicht gesetzt.",
+        "fields": {
+          "argument": {
+            "label": "argument"
+          }
+        }
+      },
+      "hand": {
+        "label": "hand",
+        "help": "Die Interaktion nutzt diese Hand.",
+        "fields": {
+          "hand": {
+            "label": "hand"
+          }
+        }
+      },
+      "onCooldown": {
+        "label": "on_cooldown",
+        "help": "Der Spieler hat diesen Cooldown (siehe set_cooldown).",
+        "fields": {
+          "id": {
+            "label": "id"
+          }
+        }
+      },
+      "onItemCooldown": {
+        "label": "on_item_cooldown",
+        "help": "Die Item-Cooldown-Gruppe ist aktiv (1.21.2+).",
+        "fields": {
+          "id": {
+            "label": "id"
+          }
+        }
+      },
+      "inventoryHasItem": {
+        "label": "inventory_has_item",
+        "help": "Das Inventar enthält so viele des Items.",
+        "fields": {
+          "id": {
+            "label": "id"
+          },
+          "count": {
+            "label": "count"
+          }
+        }
+      },
+      "isBedrockPlayer": {
+        "label": "is_bedrock_player",
+        "help": "Der Spieler spielt auf Bedrock."
+      },
+      "openWater": {
+        "label": "open_water",
+        "help": "Der Schwimmer ist in offenem Wasser."
+      },
+      "biome": {
+        "label": "biome",
+        "help": "Die Position liegt in einem der Biome.",
+        "fields": {
+          "biome": {
+            "label": "biome"
+          }
+        }
+      },
+      "world": {
+        "label": "world",
+        "help": "Die Position liegt in einer der Welten.",
+        "fields": {
+          "world": {
+            "label": "world"
+          }
+        }
+      },
+      "js": {
+        "label": "js",
+        "help": "Eine JavaScript-Funktion, die true oder false zurückgibt.",
+        "fields": {
+          "script": {
+            "label": "script"
+          },
+          "function": {
+            "label": "function",
+            "placeholder": "main"
+          }
+        }
+      },
+      "worldguardRegion": {
+        "label": "worldguard:region",
+        "help": "Die Position liegt in WorldGuard-Regionen (braucht WorldGuard).",
+        "fields": {
+          "mode": {
+            "label": "mode",
+            "help": "1: in einer der Regionen, 2: in allen."
+          },
+          "regions": {
+            "label": "regions"
+          }
+        }
+      },
+      "hasMoney": {
+        "label": "has_money",
+        "help": "Der Spieler hat so viel Geld (braucht Vault).",
+        "fields": {
+          "amount": {
+            "label": "amount"
+          }
+        }
+      }
+    }
+  }
+}

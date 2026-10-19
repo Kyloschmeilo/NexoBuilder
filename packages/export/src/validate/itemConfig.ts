@@ -1,13 +1,40 @@
-/** Checks of an item's configuration (properties, field formats, custom block, stack size). */
+/** Checks of an item's configuration (properties, field formats, custom block, furniture hitbox, stack size). */
 import { getPath, isPlainObject, labelArg, MODEL_TOKEN, schemaKey } from '@resourcepackbuilder/utils';
-import { versionSupport } from '@resourcepackbuilder/minecraft';
-import { type Item, itemLabel, MATERIAL_PATTERN, propertyFrame, slotForMaterial } from '@resourcepackbuilder/core/project';
+import { compareVersions, versionSupport } from '@resourcepackbuilder/minecraft';
+import {
+  DIRECTIONAL_FACES,
+  type Item,
+  itemLabel,
+  MATERIAL_PATTERN,
+  propertyFrame,
+  slotForMaterial,
+} from '@resourcepackbuilder/core/project';
 import { checkFieldValue, getPropertyValue, type PropertyDef } from '@resourcepackbuilder/core/form';
-import { PROPERTIES } from '@resourcepackbuilder/core/nexo';
+import {
+  CARPENTRY_BLOCK_TYPES,
+  CARPENTRY_LATE_MIN_LISTED_VERSION,
+  CARPENTRY_LATE_TYPES,
+  CARPENTRY_LATE_VERSION,
+  CARPENTRY_VARIATION_LIMIT,
+  isCarpentryBlockType,
+  isReadableNexoEntry,
+  NEXO_HITBOX_KINDS,
+  type NexoVec3,
+  parseNexoHitbox,
+  parseNexoLight,
+  PROPERTIES,
+} from '@resourcepackbuilder/core/nexo';
 import type { ItemExport } from '../types';
 
-/** Highest custom_variation per block type (Nexo limits) */
-const BLOCK_VARIATION_LIMITS: Record<string, number> = { NOTEBLOCK: 1149, STRINGBLOCK: 127, CHORUSBLOCK: 63 };
+/** Highest custom_variation per block type (Nexo limits; the Carpentry types with variations have four) */
+const BLOCK_VARIATION_LIMITS: Record<string, number> = {
+  NOTEBLOCK: 1149,
+  STRINGBLOCK: 127,
+  CHORUSBLOCK: 63,
+  ...Object.fromEntries(
+    CARPENTRY_BLOCK_TYPES.filter((type) => !CARPENTRY_LATE_TYPES.includes(type)).map((type) => [type, CARPENTRY_VARIATION_LIMIT]),
+  ),
+};
 
 export interface ItemConfigChecks {
   /** The built configuration (what ends up in the YAML) */
@@ -31,19 +58,34 @@ export function validateItemConfig(itemExport: ItemExport, { config, usedVariati
   if (isPlainObject(block)) {
     const type = typeof block.type === 'string' ? block.type : '';
     if (!type) report('error', 'plan.blockTypeMissing');
-    const variation = block.custom_variation;
-    if (typeof variation === 'number' && type in BLOCK_VARIATION_LIMITS) {
+    const directional = isPlainObject(block.directional) ? block.directional : null;
+    if (directional && type && type !== 'NOTEBLOCK') report('warning', 'plan.directionalNeedsNoteblock', { type });
+    if (isCarpentryBlockType(type)) {
+      const { settings } = itemExport.project;
+      if (!settings.carpentryAddon) report('warning', 'plan.carpentryNotInstalled', { type });
+      if (CARPENTRY_LATE_TYPES.includes(type) && compareVersions(settings.minecraftVersion, CARPENTRY_LATE_MIN_LISTED_VERSION) < 0) {
+        report('warning', 'plan.carpentryNeedsVersion', { type, version: CARPENTRY_LATE_VERSION });
+      }
+    }
+    if (type in BLOCK_VARIATION_LIMITS) {
+      // The block's own variation and those of its directional faces (a face may reuse the block's own one)
+      const faceVariations = directional ? DIRECTIONAL_FACES.map((face) => directional[`${face}_variation`]) : [];
+      const variations = new Set([block.custom_variation, ...faceVariations].filter((v): v is number => typeof v === 'number'));
       const max = BLOCK_VARIATION_LIMITS[type];
-      if (variation < 1 || variation > max) report('error', 'plan.blockVariationRange', { variation, max, type });
-      const key = `${type}:${variation}`;
-      const other = usedVariations.get(key);
-      if (other) report('error', 'plan.blockVariationDuplicate', { variation, type, other: itemLabel(other) });
-      else usedVariations.set(key, item);
+      for (const variation of variations) {
+        if (variation < 1 || variation > max) report('error', 'plan.blockVariationRange', { variation, max, type });
+        const key = `${type}:${variation}`;
+        const other = usedVariations.get(key);
+        if (other) report('error', 'plan.blockVariationDuplicate', { variation, type, other: itemLabel(other) });
+        else usedVariations.set(key, item);
+      }
     }
     if (!item.model && (block.model === undefined || block.model === MODEL_TOKEN)) {
       report('warning', 'plan.blockWithoutModel');
     }
   }
+
+  validateHitbox(itemExport);
 
   if (item.armor?.set.trim() && armorSlot === null && typeof material === 'string' && !slotForMaterial(material)) {
     const equippable = getPath(item.config, ['Components', 'equippable']);
@@ -54,6 +96,59 @@ export function validateItemConfig(itemExport: ItemExport, { config, usedVariati
   if (isPlainObject(components)) {
     const stack = components.max_stack_size;
     if (typeof stack === 'number' && components.max_damage !== undefined && stack > 1) report('error', 'plan.damageableStackable');
+    // Nexo 1.30 calls a Paper API method for blocks_attacks that older Paper lacks, and then builds no item at all
+    const version = itemExport.project.settings.minecraftVersion;
+    if (components.blocks_attacks !== undefined && compareVersions(version, NEXO_BLOCKS_ATTACKS_VERSION) < 0) {
+      report('warning', 'plan.blocksAttacksNeedsVersion', { version: NEXO_BLOCKS_ATTACKS_VERSION });
+    }
+    // Nexo's converter takes such ids for armor of its old naming scheme and prints two misleading lines
+    if (isPlainObject(components.equippable) && LEGACY_ARMOR_ID.test(item.itemId) && config.CustomArmor === undefined) {
+      report('info', 'plan.nexoLegacyArmorName');
+    }
+  }
+}
+
+/** First Minecraft version on which Nexo 1.30 builds an item with `blocks_attacks` (on Paper 1.21.11 it fails). */
+const NEXO_BLOCKS_ATTACKS_VERSION = '26.1';
+
+/** Item ids Nexo's converter checks for old-style armor textures (`<set>_armor_layer_1.png`) without a CustomArmor section. */
+const LEGACY_ARMOR_ID = /^.+?_(chestplate|leggings|boots|elytra)$/;
+
+/** Warns about furniture hitbox entries whose format Nexo cannot read, and about lights inside a barrier. */
+function validateHitbox(itemExport: ItemExport): void {
+  const { item, report } = itemExport;
+  const hitbox = getPath(item.config, ['Mechanics', 'furniture', 'hitbox']);
+  if (!isPlainObject(hitbox)) return;
+  // The editor's parser decides, so the editor and the checks agree on what Nexo reads
+  for (const kind of NEXO_HITBOX_KINDS) {
+    const value = hitbox[kind];
+    const entries = typeof value === 'string' ? [value] : Array.isArray(value) ? value : [];
+    for (const entry of entries) {
+      if (typeof entry === 'string' && entry.trim() && !isReadableNexoEntry(parseNexoHitbox(kind, entry))) {
+        report('warning', 'plan.hitboxEntryInvalid', { kind, entry });
+      }
+    }
+  }
+  validateLights(itemExport, hitbox);
+}
+
+/** The entries of a list key that may also hold a single string. */
+const listEntries = (value: unknown): unknown[] => (typeof value === 'string' ? [value] : Array.isArray(value) ? value : []);
+
+/** Warns about furniture lights inside a barrier hitbox: Nexo ignores them ("lights that overlap with the barrierHitboxes"). */
+function validateLights({ item, report }: ItemExport, hitbox: Record<string, unknown>): void {
+  const lights = getPath(item.config, ['Mechanics', 'furniture', 'lights', 'lights']);
+  const barriers = listEntries(hitbox.barriers).flatMap((entry) => {
+    const barrier = parseNexoHitbox('barriers', entry);
+    return barrier?.kind === 'barriers' ? [barrier] : [];
+  });
+  const inside = (position: NexoVec3) =>
+    barriers.some(({ from, to }) =>
+      position.every((value, axis) => value >= Math.min(from[axis], to[axis]) && value <= Math.max(from[axis], to[axis])),
+    );
+  for (const entry of listEntries(lights)) {
+    const light = parseNexoLight(entry);
+    if (light && inside(light.position)) report('warning', 'plan.furnitureLightInBarrier', { light: String(entry) });
   }
 }
 

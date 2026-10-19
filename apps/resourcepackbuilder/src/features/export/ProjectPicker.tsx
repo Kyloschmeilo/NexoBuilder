@@ -1,6 +1,6 @@
 /** All saved projects to export together; the expanded one shows its selection tree. */
 import { useTranslations } from 'next-intl';
-import { cn } from 'cn';
+import { cn } from '@resourcepackbuilder/ui/cn';
 import { countSelected, SELECT_ALL, type ExportSelection } from '@resourcepackbuilder/export';
 import { MEDIA_KIND_LIST, MEDIA_KINDS, type MediaKind } from '@resourcepackbuilder/core/project';
 import { treeRowSlots } from '@resourcepackbuilder/ui';
@@ -25,6 +25,7 @@ const MEDIA_COUNT_KEYS = {
   glyph: 'glyphCount',
   sound: 'soundCount',
   painting: 'paintingCount',
+  dialog: 'dialogCount',
 } as const satisfies Record<MediaKind, string>;
 
 /** What is selected of a project, e.g. "12/14 items · 3 glyphs". */
@@ -76,7 +77,7 @@ export function ProjectPicker({
             >
               <span className={cn(treeRowSlots.label, 'font-medium')}>{summary.name}</span>
               {isOpen && (
-                <Badge variant="outline" className="font-heading tracking-wider text-muted-foreground uppercase">
+                <Badge variant="outline" className="text-text-muted">
                   {t('open')}
                 </Badge>
               )}

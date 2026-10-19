@@ -1,25 +1,11 @@
 {
   "editor": {
-    "tabs": {
-      "general": "General",
-      "model": "Model & Pack",
-      "data": "Data",
-      "settings": "Settings",
-      "attributes": "Attributes",
-      "components": "Components",
-      "mechanics": "Mechanics",
-      "events": "Events",
-      "recipes": "Recipes",
-      "yaml": "YAML",
-      "loot": "Loot"
-    },
     "itemId": "Item ID",
     "folder": "Folder",
     "ready": "Ready",
     "copyTooltip": "Copy all properties – except name, item ID, model and folder",
     "pasteTooltip": "Paste properties from “{name}”",
     "pasteDisabled": "Choose “Copy” on another item first",
-    "move": "Move",
     "give": "Give in test server",
     "giveTooltip": "Put the item into your inventory on the local test server",
     "giveNeedsServer": "Start the test server first (Test server in the sidebar)",
@@ -31,29 +17,33 @@
     "emptyHint": "{text} Use <b>Add</b> to choose properties.",
     "titles": {
       "general": "General",
-      "appearance": "Pack & Appearance",
-      "attributes": "AttributeModifiers & Enchantments",
+      "appearance": "Appearance",
+      "attributes": "Attributes",
       "components": "Components",
       "mechanics": "Mechanics",
       "data": "Data",
       "settings": "Settings",
-      "blockSettings": "Block Settings",
+      "itemBehavior": "Behaviors",
+      "blockSettings": "Block settings",
       "blockBehavior": "Behavior",
       "events": "Events",
-      "loot": "Loot"
+      "loot": "Loot",
+      "model": "Item model"
     },
     "empty": {
       "general": "Nothing added yet (e.g. Lore).",
-      "appearance": "No pack options yet (e.g. CustomArmor, Color).",
-      "attributes": "No AttributeModifiers or Enchantments yet.",
+      "appearance": "No appearance options yet (e.g. color, custom armor).",
+      "attributes": "No attributes or enchantments yet.",
       "components": "No components yet.",
       "mechanics": "No mechanics yet.",
       "data": "No item data yet (e.g. Food, Equippable).",
-      "settings": "No settings yet (e.g. Tags, Fuel Time).",
+      "settings": "No settings yet (e.g. tags, fuel time).",
+      "itemBehavior": "No behaviors yet (e.g. a placement on walls, range mining).",
       "blockSettings": "No block settings yet (e.g. Hardness, Sounds).",
       "blockBehavior": "No behavior options yet (e.g. sounds, extra behaviors).",
       "events": "No events yet (e.g. a command on right click).",
-      "loot": "No loot yet. Without loot the block or the furniture drops nothing."
+      "loot": "No loot yet. Without loot the block or the furniture drops nothing.",
+      "model": "No model options yet (e.g. Oversized In GUI)."
     },
     "fromVersion": "from {version}",
     "untilVersion": "until {version}",
@@ -86,18 +76,18 @@
     "materialHelp": "Base item in Minecraft. Default is PAPER; for tools/armor use the matching material.",
     "folder": "Folder",
     "tooltipPreview": "Tooltip preview",
-    "tooltipHelp": "Without its own color, Minecraft shows the lore purple and italic."
+    "tooltipHelp": "Without its own color, Minecraft shows the lore purple and italic.",
+    "nameLabel": "Display name",
+    "idLabel": "Item ID",
+    "idHelp": "The key of the item in the YAML and in {target, select, nexo {/nexo give} other {/ce item give}}. Lowercase letters, numbers and _ only.",
+    "nameHelp": "MiniMessage text. Colors: {colors} · Formatting: {formatting}"
   },
   "yaml": {
     "notObject": "Expected key-value pairs (e.g. \"Mechanics:\").",
-    "extraTitle": "Additional YAML",
     "extraDescription": "For everything the editor doesn’t offer (yet). Applied last on top of the settings and overrides identical keys.",
     "example": "# Example:",
     "error": "YAML error: {error}",
-    "keyHint": "Don’t include the item key ({id}) – only the content below it.",
-    "finalTitle": "Final YAML",
-    "finalDescription": "This is how the item ends up in {file}",
-    "computing": "# computing …"
+    "keyHint": "Don’t include the item key ({id}) – only the content below it."
   },
   "model": {
     "parents": {
@@ -114,7 +104,6 @@
     "unreadable": "The model could not be read.",
     "fileUnreadable": "“{name}” could not be read.",
     "onlyFirst": "Only the first model was used.",
-    "noneTitle": "No model",
     "noneDescription": "Without a model the item looks like its base material ({material}).",
     "dropTitle": "Drop model here",
     "dropSubtitle": "Blockbench project (.bbmodel), Java model (.json) with PNG textures, or PNG textures",
@@ -131,11 +120,10 @@
     "noProblems": "No problems found.",
     "importNotes": "Import notes ({count})",
     "textures": "Textures",
-    "ambientOcclusion": "Ambient Occlusion",
+    "ambientOcclusion": "Ambient occlusion",
     "ambientOcclusionHelp": "Soft shadows in corners and edges (ambientocclusion). Off for flat or glowing models.",
     "shade": "Shade",
     "shadeOverride": "The model uses shade_direction_override (from Blockbench) – please change it there.",
-    "shadeSome": "Directional shading of the cubes (shade) – off for {off} of {total} cubes.",
     "shadeHelp": "Directional shading of the cubes (shade). Off = all sides equally bright.",
     "texture": {
       "size": "{width}×{height} px",
@@ -149,11 +137,20 @@
       "minecraftTexture": "(Minecraft texture)",
       "notInPack": "(not in pack!)",
       "assignOwnPng": "Assign own PNG"
-    }
+    },
+    "title": "Model",
+    "displayHelp": "How a flat model is held in the hand. It sets the model’s parent.",
+    "holdStyles": {
+      "generated": "Flat item",
+      "handheld": "Tool",
+      "handheldRod": "Rod"
+    },
+    "shadeOff": "Off for {off} of {total} cubes",
+    "texturesEmpty": "No textures yet. Add a model first.",
+    "texturesCount": "{count, plural, one {# texture} other {# textures}}"
   },
   "variants": {
-    "title": "Special Item Appearance",
-    "empty": "Pulling, Charged, Blocking, Cast, Throwing, Damaged, Dyeable, Composite or a custom GUI Model: add more models via <b>Add</b>.",
+    "title": "Special appearance",
     "ownItemModel": "own ItemModel",
     "remove": "Remove variant",
     "wrongMaterial": "Only works with the material {materials} – currently {material}.",
@@ -162,7 +159,28 @@
     "dropManySubtitle": "Multiple files at once – they are sorted by file name (e.g. bow_0, bow_1, bow_2).",
     "dropOneSubtitle": ".bbmodel, .json + .png or .png",
     "moveUp": "Move up",
-    "moveDown": "Move down"
+    "moveDown": "Move down",
+    "description": "Extra models for states such as pulling a bow, blocking with a shield or a damaged tool.",
+    "emptyText": "No special appearance yet.",
+    "add": "Add appearance",
+    "catalogTitle": "Add a special appearance",
+    "modelCount": "{count, plural, =0 {No model yet} one {# model} other {# models}}",
+    "notExported": "Not exported for {plugin}",
+    "needsMaterial": "Needs {materials}"
+  },
+  "modelTree": {
+    "nodes": "Nodes of the item model tree",
+    "emptyText": "No item model tree. The item uses the model ResourcepackBuilder generates.",
+    "rootKeys": "Definition keys",
+    "caseSlot": "Case {value}",
+    "caseNoValue": "Case without value",
+    "entrySlot": "From {threshold}",
+    "modelSlot": "Model {index}",
+    "branches": "Branches",
+    "property": "Property",
+    "open": "Open {name}",
+    "removeNode": "Remove node",
+    "noChildren": "No entries yet."
   },
   "slots": {
     "model": "Model",
@@ -185,16 +203,9 @@
   },
   "recipes": {
     "title": "Recipes",
-    "empty": "No recipes yet. Use <b>Add</b> to define how this item can be crafted.",
-    "key": "Recipe key",
-    "file": "File:",
     "remove": "Remove recipe",
-    "input": "Input",
     "source": "Ingredient source",
-    "cookingTime": "Cooking time in ticks ({seconds, number} s)",
     "experience": "Experience",
-    "result": "Result:",
-    "exportHint": "Recipes are exported to <code>{path}</code> and loaded with <code>{command}</code>.",
     "typePlaceholder": "type",
     "grid": "Grid",
     "emptySlot": "empty",
@@ -207,22 +218,64 @@
     "placeholderMinecraft": "e.g. {target, select, craftengine {diamond} other {DIAMOND}}",
     "placeholderNexo": "Item ID",
     "placeholderTag": "e.g. planks",
-    "amount": "Required amount per slot (optional)"
+    "amount": "Required amount per slot (optional)",
+    "placeholderExternal": "e.g. mythicmobs:kingscrown",
+    "placeholderCrucible": "MythicCrucible item ID",
+    "placeholderMmoitems": "MMOItems item ID",
+    "placeholderItemType": "Type, e.g. SWORD",
+    "alternatives": "Also accepted in this slot",
+    "addAlternative": "Add alternative",
+    "removeAlternative": "Remove alternative",
+    "replacement": "Item left in the grid after crafting",
+    "addReplacement": "Add replacement",
+    "removeReplacement": "Remove replacement",
+    "optional": "(optional)",
+    "unsupported": {
+      "nexo": "Nexo does not read this recipe type. It stays in the project but is not exported.",
+      "craftengine": "CraftEngine does not read this recipe type. It stays in the project but is not exported."
+    },
+    "noResult": "This recipe changes the base item and has no result of its own.",
+    "disabledTitle": "Disabled vanilla recipes",
+    "addRecipe": "Add recipe",
+    "catalogTitle": "Add a recipe",
+    "catalogDescription": "Pick how players get this item.",
+    "catalogSearch": "Search recipe types, keys and descriptions",
+    "categories": {
+      "crafting": "Crafting",
+      "cooking": "Cooking",
+      "smithing": "Smithing",
+      "stations": "Other stations"
+    },
+    "writtenTo": "Written to {path}",
+    "emptyHint": "No recipes yet.",
+    "sectionDescription": "Exported to {path} and loaded with {command}.",
+    "summary": {
+      "empty": "empty",
+      "noIngredients": "No ingredients yet",
+      "seconds": "{seconds, number} s",
+      "makes": "makes {amount, number}"
+    },
+    "resultLabel": "Result",
+    "resultAmount": "Amount made",
+    "duplicate": "Duplicate",
+    "moveUp": "Move up",
+    "moveDown": "Move down",
+    "cookingTimeLabel": "Cooking time",
+    "cookingTimeHelp": "In ticks; 20 ticks are one second.",
+    "disabledSummary": "For the whole project: Nexo disables these vanilla recipes. Exported to {path}."
   },
   "ceBlock": {
-    "title": "Block",
-    "description": "CraftEngine places the item as a block of its own.",
-    "toggle": "Place as a block",
-    "toggleHelp": "The item places a custom block with the same ID.",
-    "toggleBlocked": "The item places furniture. Turn off “Place as furniture” to make it a block.",
     "autoState": "Block state group",
     "autoStateHelp": "CraftEngine shows the block through a free state of these vanilla blocks. The group decides the collision box: solid for full blocks, leaves for see-through blocks, tripwire for thin plants.",
-    "model": "The block shows the item’s model. A flat item model becomes a cube from its textures: 1 texture on all sides, 2 as end and side (like a log), 3 as bottom, side and top.",
-    "behavior": "Behavior",
-    "behaviorHelp": "What the block does. A behavior sets up the states it needs. For any other behavior, write it in the additional YAML under block: (for example block: behavior: type: falling_block).",
+    "model": "The block shows the item’s model. A flat item model becomes a cube from its textures: 1 texture on all sides, 2 as end and side (like a log), 3 as bottom, side and top, 4 as bottom, front, side and top (like a furnace), 5 one per face (down, up, north, south, west; east repeats west).",
+    "replaceStates": {
+      "title": "Replace the block’s states?",
+      "message": "This behavior brings states from a template, which cannot be combined with the states you set up. Replacing them removes your properties, appearances and variants.",
+      "confirm": "Replace states"
+    },
+    "storageOpenLook": "Look open while in use",
+    "storageOpenLookHelp": "Adds the open property: the block shows its open appearance while a player has the container open.",
     "behaviors": {
-      "none": "None",
-      "other": "Other (from the additional YAML)",
       "slab_block": "Slab",
       "stairs_block": "Stairs",
       "door_block": "Door",
@@ -235,7 +288,32 @@
       "lamp_block": "Lamp (redstone)",
       "toggleable_lamp_block": "Togglable light",
       "seat_block": "Seat",
-      "simple_storage_block": "Storage"
+      "simple_storage_block": "Storage",
+      "button_block": "Button",
+      "pressure_plate_block": "Pressure plate",
+      "vertical_crop_block": "Vertical crop (like sugar cane)",
+      "stem_block": "Stem (melon, pumpkin)",
+      "attached_stem_block": "Attached stem",
+      "snowy_block": "Snowy block",
+      "hangable_block": "Hangable (lantern)",
+      "sofa_block": "Sofa",
+      "double_high_block": "Two blocks high",
+      "multi_high_block": "Several blocks high",
+      "stackable_block": "Stackable (pebbles)",
+      "falling_block": "Falling (sand)",
+      "concrete_powder_block": "Concrete powder",
+      "strippable_block": "Strippable (log)",
+      "drop_exp_block": "Drops experience",
+      "drawer_block": "Drawer",
+      "display_item_block": "Item display",
+      "item_frame_block": "Item frame",
+      "tint_source_block": "Tint source",
+      "simple_particle_block": "Particles",
+      "wall_torch_particle_block": "Wall torch",
+      "directional_attached_block": "Attached to a wall",
+      "on_liquid_block": "On water (lily pad)",
+      "none": "None",
+      "other": "Other (from the additional YAML)"
     },
     "states": {
       "toMulti": "Use several states",
@@ -264,8 +342,28 @@
       "variantKey": "Property values",
       "variantAppearance": "Appearance",
       "noAppearance": "No appearance",
-      "withSettings": "+ settings",
-      "addFacing": "Face the player"
+      "addFacing": "Face the player",
+      "source": "Vanilla state",
+      "sourceAuto": "A free state of a group",
+      "sourceAutoHelp": "CraftEngine picks a free state of the block state group.",
+      "sourceState": "An exact vanilla state",
+      "exactState": "Vanilla state",
+      "exactStatePlaceholder": "minecraft:note_block[instrument=hat,note=0,powered=false]",
+      "exactStateHelp": "The block always shows this vanilla state, written in full or as a mapped short form like note_block:0. One vanilla state can show only one model.",
+      "sharedId": "Shared state id",
+      "sharedIdPlaceholder": "e.g. transparent",
+      "sharedIdHelp": "Appearances with the same group and id share one vanilla state. Hidden models (entity renderer only) can all use the id transparent.",
+      "fixedId": "Fixed internal id",
+      "fixedIdPlaceholder": "Automatic",
+      "fixedIdHelp": "Usually left empty. A fixed id keeps the block’s internal ids the same, for example for data packs; several states take the ids from this one on. The ids must be unique across all blocks.",
+      "variantSettingsHelp": "Block settings that apply only to the states this variant matches, for example more light while lit or water while waterlogged. They are merged over the block’s settings.",
+      "nameHints": {
+        "axis": "CraftEngine sets axis from the clicked face on placement. Use the type axis.",
+        "facing": "CraftEngine turns the block towards the player on placement. Use the type direction or horizontal_direction.",
+        "facing_clockwise": "Like facing, but turned 90° clockwise on placement. Use the type horizontal_direction.",
+        "rotation": "CraftEngine sets a fine rotation on placement. Use the type int with the range 0~7 or 0~15.",
+        "waterlogged": "CraftEngine sets waterlogged when the block is placed in water. Use the type boolean and a waterlogged look."
+      }
     },
     "renderer": {
       "title": "Entity renderer",
@@ -276,28 +374,22 @@
       "elements": "Elements",
       "elementsHelp": "What the block shows. An item display without an item shows this item’s model. Positions are in blocks from the block’s corner; without one, an element stands at the block’s center (a block display at the corner).",
       "previewHelp": "The block’s outline is yellow. Other blocks and texts show as grey blocks."
-    }
+    },
+    "title": "Block",
+    "description": "CraftEngine places the item as a block of its own."
   },
   "ceFurniture": {
     "title": "Furniture",
     "description": "CraftEngine places the item as furniture made of display entities, which can sit anywhere on a block.",
-    "toggle": "Place as furniture",
-    "toggleHelp": "The item places furniture with the same ID.",
-    "toggleBlocked": "The item places a block. Turn off “Place as a block” to make it furniture.",
     "variant": "Variant",
-    "variantHelp": "Each variant is how the furniture looks when a player places it on top of a block, on its side or below it.",
     "anchors": {
       "ground": "Ground",
       "wall": "Wall",
       "ceiling": "Ceiling"
     },
-    "variantMissing": "The furniture has no variant here, so the item cannot be placed this way.",
-    "addVariant": "Add this variant",
     "removeVariant": "Remove variant",
-    "previewHelp": "The variant as placed in front of the player. Hitboxes are yellow, seats blue. Other blocks and texts show as grey blocks.",
     "rotation": "Rotation",
     "alignment": "Alignment",
-    "rulesHelp": "How the furniture snaps when a player places it.",
     "rotations": {
       "any": "Any angle",
       "four": "In 90° steps",
@@ -361,15 +453,238 @@
     "addSeat": "Add seat",
     "seatPosition": "Seat position",
     "seatYaw": "Yaw",
+    "seatLimit": "Keep the body facing the yaw",
+    "seatForce": "Turn the view to the yaw",
     "settings": "Settings",
     "hitTimes": "Hits to break",
-    "sounds": {
-      "break": "Break sound",
-      "place": "Place sound",
-      "hit": "Hit sound"
-    },
-    "settingsHelp": "Behaviors, events and other keys go in the additional YAML under furniture:.",
+    "settingsHelp": "Other keys go in the additional YAML under furniture:.",
+    "behaviors": "Behaviors",
+    "behaviorsHelp": "Storage, item display slots and lights. Each behavior can set its own hitboxes per variant.",
     "loot": "Drops the item when broken",
-    "lootHelp": "Uses CraftEngine’s furniture loot. Other loot goes in the additional YAML under furniture: loot:."
+    "seat": "Seat",
+    "seatYawValue": "yaw {yaw}",
+    "seatCount": "{count, plural, one {# seat} other {# seats}}"
+  },
+  "furniture": {
+    "title": "Furniture",
+    "descriptionCraftEngine": "The item places furniture made of display entities, with hitboxes and seats.",
+    "descriptionNexo": "The item is placed as an item display, with hitboxes, seats, light and more.",
+    "hitboxes": "Hitboxes",
+    "seats": "Seats",
+    "options": "Options",
+    "addOption": "Add option",
+    "addOptionTitle": "Add a furniture option",
+    "noOptions": "No further options yet.",
+    "models": "Models",
+    "optionCategories": {
+      "look": "Look",
+      "use": "Use",
+      "placing": "Placing and growing",
+      "breaking": "Breaking and drops"
+    },
+    "addModel": "Add model",
+    "noStates": "No states yet",
+    "modelsSet": "{set} of {total} set",
+    "rawEntry": "Entry",
+    "rawEntryError": "The plugin cannot read this entry. Fix the text or remove it.",
+    "position": "Position",
+    "barrierTo": "Fill up to",
+    "barrierToHelp": "Fills every block from the position up to here with barriers. Leave it at the position for one block.",
+    "width": "Width",
+    "height": "Height",
+    "size": "Size",
+    "length": "Opening",
+    "direction": "Opens to",
+    "directionDefault": "Up",
+    "directions": {
+      "UP": "Up",
+      "DOWN": "Down",
+      "NORTH": "North",
+      "SOUTH": "South",
+      "EAST": "East",
+      "WEST": "West"
+    },
+    "visible": "Visible",
+    "rotation": "Rotation",
+    "sizeValue": "size {value}",
+    "hitboxKinds": {
+      "barriers": "Barrier",
+      "interactions": "Interaction",
+      "shulkers": "Shulker",
+      "ghasts": "Happy ghast"
+    },
+    "hitboxKindHints": {
+      "barriers": "Solid blocks, one per block",
+      "interactions": "Any size, players walk through it",
+      "shulkers": "Solid, any size, can open",
+      "ghasts": "Solid, players can stand on it (1.21.6+)"
+    },
+    "addHitbox": "Add hitbox",
+    "noHitboxes": "No hitboxes yet.",
+    "addSeat": "Add seat",
+    "noSeats": "No seats yet.",
+    "addBed": "Add bed",
+    "noBeds": "No beds yet.",
+    "skipNight": "Skips the night",
+    "resetPhantoms": "Resets phantoms",
+    "forceVisibility": "Force visibility",
+    "forceVisibilityHelp": "Nexo 1.30 reads this flag; the Nexo docs do not list it yet.",
+    "addLight": "Add light",
+    "noLights": "No light sources yet.",
+    "lightLevel": "Light level",
+    "levelValue": "level {value}",
+    "noElements": "No elements yet.",
+    "addElement": "Add element",
+    "closeEntry": "Back to the variant",
+    "variantTitle": "{name} variant",
+    "selectEntryHint": "Select an element or hitbox to edit it here.",
+    "addBehavior": "Add behavior",
+    "addBehaviorTitle": "Add a furniture behavior",
+    "noBehaviors": "No behaviors yet.",
+    "duplicate": "Duplicate",
+    "addVariant": "Add variant",
+    "newVariant": "New variant",
+    "variantName": "Variant name",
+    "variantNameErrors": {
+      "required": "Enter a name.",
+      "invalid": "Use lower case letters, digits and _ only.",
+      "taken": "The furniture already has a variant with this name."
+    },
+    "addThisVariant": "Add {name} variant",
+    "variantMissing": "No {name} variant, so the item cannot be placed this way.",
+    "seatName": "Seat {number}",
+    "bedName": "Bed {number}",
+    "lightName": "Light {number}",
+    "beds": "Beds",
+    "light": "Light",
+    "removeOption": "Remove {name}"
+  },
+  "block": {
+    "title": "Block",
+    "description": {
+      "nexo": "Places the item as a Nexo custom block: its type, model, hardness and what else it does.",
+      "craftengine": "Places the item as a block of its own: what it does, how it looks and its settings."
+    },
+    "places": "Places",
+    "placesHelp": "What the item puts into the world when a player uses it. An item places a block or furniture, never both.",
+    "placesOptions": {
+      "nothing": "Nothing",
+      "block": "Block",
+      "furniture": "Furniture"
+    },
+    "placesNote": {
+      "nothing": "The item places nothing. Choose Block or Furniture to place it in the world.",
+      "furniture": "The item places furniture. Its models, hitboxes and seats are in the Furniture section."
+    },
+    "leave": {
+      "block": {
+        "title": "Remove the block?",
+        "message": "The block’s behaviors, states and settings are removed. Undo brings them back.",
+        "confirm": "Remove block"
+      },
+      "furniture": {
+        "title": "Remove the furniture?",
+        "message": "The furniture’s variants, elements and hitboxes are removed. Undo brings them back.",
+        "confirm": "Remove furniture"
+      },
+      "both": {
+        "title": "Remove the block and the furniture?",
+        "message": "The item has both a block and furniture. Both are removed. Undo brings them back.",
+        "confirm": "Remove both"
+      }
+    },
+    "behaviors": {
+      "title": "Behaviors",
+      "description": "What the block does: grow, fall, open like a door. Each behavior has its own settings.",
+      "add": "Add behavior",
+      "dialogTitle": "Add a block behavior",
+      "dialogDescription": "Pick what the block should do. You can add more later and change each one.",
+      "search": "Search behaviors, e.g. door, grow, fall",
+      "empty": "No behaviors yet.",
+      "main": "Main",
+      "setUp": "Set up its states",
+      "presetNote": "The block has no main behavior yet, so this one becomes it: adding it also sets up the states it needs, its helper behaviors and its drops.",
+      "missingKeys": "Needs {keys}",
+      "missingProperties": "Needs the property {names}",
+      "editTitle": "{name} behavior",
+      "remove": "Remove behavior"
+    },
+    "states": {
+      "title": "States",
+      "single": "One state",
+      "templateSummary": "Template {template}",
+      "multiSummary": "{count, plural, one {# state} other {# states}}",
+      "multiUnknown": "Several states",
+      "rendererElements": "{count, plural, one {# element} other {# elements}}",
+      "rendererNone": "None",
+      "editRenderer": "Edit renderer",
+      "addProperty": "Add property",
+      "addAppearance": "Add appearance",
+      "addVariant": "Add variant",
+      "propertyValuesColumn": "Values or range",
+      "rotationXColumn": "x",
+      "rotationYColumn": "y",
+      "settingsColumn": "Settings",
+      "settingsCount": "{count, plural, one {# setting} other {# settings}}",
+      "noSettings": "Add settings",
+      "variantSettingsOf": "Settings of {variant}",
+      "variantSettingsEmpty": "No settings of its own. The variant uses the block’s settings.",
+      "appearanceDetails": "More options of {name}",
+      "noVariants": "No variants yet. Every state shows the first appearance."
+    },
+    "settings": {
+      "title": "Block settings",
+      "description": "Hardness, sounds, light, tool rules and the other settings of the block.",
+      "add": "Add setting",
+      "dialogTitle": "Add a block setting",
+      "search": "Search settings, e.g. hardness, light, sound",
+      "empty": "No settings yet. CraftEngine’s defaults apply."
+    },
+    "nexo": {
+      "featuresTitle": "Block features",
+      "featuresDescription": "The larger parts of the custom block: directional faces, growth, sounds, drops, storage and more.",
+      "addFeature": "Add feature",
+      "dialogTitle": "Add a block feature",
+      "search": "Search features, e.g. drop, sound, sapling",
+      "featuresEmpty": "No features yet.",
+      "advancedNote": "Rarely needed. Nexo reads it, but most blocks do without it.",
+      "modelsDescription": "The extra models the block’s type uses: its stack stages or one model per face."
+    }
+  },
+  "sections": {
+    "nav": "Item sections",
+    "basics": "Basics",
+    "model": "Model",
+    "textures": "Textures",
+    "features": "Features",
+    "block": "Block",
+    "furniture": "Furniture",
+    "events": "Events",
+    "loot": "Loot",
+    "recipes": "Recipes",
+    "advanced": "Advanced"
+  },
+  "features": {
+    "add": "Add feature",
+    "addTitle": "Add to {group}",
+    "addDescription": "Pick what this item should have. The search finds names, YAML keys and descriptions.",
+    "count": "{count, plural, one {# feature} other {# features}}"
+  },
+  "header": {
+    "copy": "Copy features",
+    "paste": "Paste features",
+    "moveToFolder": "Move to folder",
+    "delete": "Delete item"
+  },
+  "advanced": {
+    "title": "Raw YAML",
+    "showYaml": "Show the final YAML"
+  },
+  "palette": {
+    "group": "Settings of this item",
+    "added": "In {group}",
+    "available": "Add to {group}",
+    "tooOld": "Add to {group} (needs Minecraft {version} or newer)",
+    "removed": "Add to {group} (only up to Minecraft {version})"
   }
 }

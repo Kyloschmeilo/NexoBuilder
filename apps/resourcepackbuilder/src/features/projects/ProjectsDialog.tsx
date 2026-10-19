@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { FolderOpen, FolderSync, Upload } from 'lucide-react';
+import { FolderSync, Upload } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 import { Button } from '@resourcepackbuilder/ui/components/button';
 import { createDialogHandle } from '@resourcepackbuilder/ui/components/dialog';
@@ -19,7 +19,7 @@ function ProjectsFrame({ tab: initialTab }: { tab: ProjectsTab }) {
   const actions = useProjectActions();
   const [tab, setTab] = useState<ProjectsTab>(initialTab);
   return (
-    <DialogFrame title={t('projectsDialog.title')} icon={<FolderOpen />}>
+    <DialogFrame title={t('projectsDialog.title')}>
       <Tabs value={tab} onValueChange={(value) => setTab(value === 'new' ? 'new' : 'open')}>
         <TabsList variant="line">
           <TabsTrigger value="open">{t('projectsDialog.openTab')}</TabsTrigger>

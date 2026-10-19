@@ -5,6 +5,23 @@
   "labels": {
     "close": "Close",
     "closeToast": "Close notification",
-    "loading": "Loading"
+    "loading": "Loading",
+    "addEntry": "Add entry",
+    "docsCraftEngine": "Open CraftEngine wiki",
+    "docsNexo": "Open Nexo docs",
+    "done": "Done",
+    "dragToReorder": "Drag to reorder (or use the arrow keys)",
+    "duplicate": "Duplicate",
+    "key": "Key",
+    "keyTaken": "This key already exists.",
+    "moreActions": "More actions",
+    "moreInfo": "More information",
+    "moreOptions": "More options",
+    "moveDown": "Move down",
+    "moveUp": "Move up",
+    "remove": "Remove",
+    "resetToDefault": "Reset to default",
+    "sections": "Sections",
+    "value": "Value"
   }
 }

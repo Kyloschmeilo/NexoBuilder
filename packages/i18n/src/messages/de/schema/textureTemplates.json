@@ -1,0 +1,40 @@
+{
+  "textureTemplates": {
+    "generated": {
+      "label": "2D-Item",
+      "description": "Flaches Item wie Papier oder Edelsteine. Weitere PNGs werden als zusätzliche Ebenen übereinandergelegt."
+    },
+    "handheld": {
+      "label": "2D-Werkzeug / Waffe",
+      "description": "Wie item/generated, wird aber wie ein Schwert oder eine Spitzhacke schräg in der Hand gehalten."
+    },
+    "handheldRod": {
+      "label": "2D-Stab / Angel",
+      "description": "Wird wie eine Angel bzw. ein Stock in der Hand gehalten."
+    },
+    "cubeAll": {
+      "label": "Block – eine Textur",
+      "description": "Würfel mit derselben Textur auf allen Seiten (z.B. Erz, Stein)."
+    },
+    "cubeColumn": {
+      "label": "Block – Säule",
+      "description": "Oben/unten (end) und Seiten (side), z.B. Holzstämme."
+    },
+    "cubeBottomTop": {
+      "label": "Block – oben/unten/Seite",
+      "description": "Eigene Texturen für oben, unten und die Seiten (z.B. Sandstein)."
+    },
+    "orientable": {
+      "label": "Block – mit Vorderseite",
+      "description": "Vorderseite, Seiten und Oberseite (z.B. Ofen)."
+    },
+    "cube": {
+      "label": "Block – sechs Seiten",
+      "description": "Jede Seite bekommt eine eigene Textur."
+    },
+    "cross": {
+      "label": "Pflanze (Kreuz)",
+      "description": "Zwei gekreuzte Flächen wie bei Blumen – ideal für StringBlocks."
+    }
+  }
+}

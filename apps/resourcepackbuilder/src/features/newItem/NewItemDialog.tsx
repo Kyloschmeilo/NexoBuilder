@@ -1,13 +1,12 @@
 import { useId, useState } from 'react';
 import { useTranslations } from 'next-intl';
-import { Box, FilePlus2, PackagePlus, TriangleAlert } from 'lucide-react';
+import { Box, FilePlus2, TriangleAlert } from 'lucide-react';
 import { isPngDataUrl } from '@resourcepackbuilder/minecraft';
 import { getFolderPathLabel, ignoredFileNames, type NewItemAction, type NewItemState, sourceKey } from '@resourcepackbuilder/core/project';
-import { AutoGrid, DropZone, SectionCard, SegmentedControl } from '@resourcepackbuilder/ui';
+import { AutoGrid, DropZone, FieldRow, SegmentedControl } from '@resourcepackbuilder/ui';
 import { Alert, AlertDescription } from '@resourcepackbuilder/ui/components/alert';
 import { Button } from '@resourcepackbuilder/ui/components/button';
 import { createDialogHandle } from '@resourcepackbuilder/ui/components/dialog';
-import { Field, FieldLabel } from '@resourcepackbuilder/ui/components/field';
 import { Spinner } from '@resourcepackbuilder/ui/components/spinner';
 import { addItems } from '../../commands/items';
 import { DialogFrame, FeatureDialog } from '../../components/DialogFrame';
@@ -15,9 +14,10 @@ import { FolderSelect } from '../../components/FolderSelect';
 import { richTags } from '../../i18n/richTags';
 import { notify } from '../../shell/notify';
 import { useOpenProject } from '../../store/project';
-import { setEditorTab } from '../../store/ui';
+import { setEditorSection } from '../../store/ui';
 import { MODEL_ACCEPT, MODEL_FORMATS } from '../../components/modelFiles';
 import { DraftCard } from './DraftCard';
+import { DraftPanel } from './DraftPanel';
 import { ItemIdentityFields } from '../../components/ItemIdentityFields';
 import { useNewItems } from './useNewItems';
 
@@ -26,7 +26,7 @@ function PngModeToggle({ state, dispatch }: { state: NewItemState; dispatch: (ac
   const t = useTranslations('dialogs.newItem');
   return (
     <div className="flex flex-wrap items-center gap-2">
-      <span className="text-sm text-muted-foreground">{t('multiplePngs')}</span>
+      <span className="text-label text-text-muted">{t('multiplePngs')}</span>
       <SegmentedControl
         size="sm"
         aria-label={t('multiplePngs')}
@@ -62,13 +62,12 @@ function NewItemFrame({ folderId, files: initialFiles }: { folderId: string; fil
     addItems(toCreate);
     newItemDialog.close();
     notify('success', t('created', { count: toCreate.length }));
-    setEditorTab('general');
+    setEditorSection('general');
   };
 
   return (
     <DialogFrame
       title={t('title')}
-      icon={<PackagePlus />}
       size="wide"
       sticky={hasDrafts}
       footerStart={t.rich('target', { ...richTags, folder: getFolderPathLabel(project, targetFolderId) })}
@@ -85,10 +84,9 @@ function NewItemFrame({ folderId, files: initialFiles }: { folderId: string; fil
       }
     >
       <div className="flex flex-col gap-3.5">
-        <Field className="max-w-xs">
-          <FieldLabel htmlFor={folderFieldId}>{t('folder')}</FieldLabel>
+        <FieldRow label={t('folder')} htmlFor={folderFieldId} layout="stacked" className="max-w-xs">
           <FolderSelect id={folderFieldId} value={targetFolderId} onChange={setTargetFolderId} />
-        </Field>
+        </FieldRow>
 
         {!state.isWithoutModel && (
           <DropZone
@@ -102,7 +100,7 @@ function NewItemFrame({ folderId, files: initialFiles }: { folderId: string; fil
           />
         )}
         {isReading && (
-          <p className="flex items-center gap-2 text-xs text-muted-foreground">
+          <p className="flex items-center gap-2 text-meta text-text-muted">
             <Spinner /> {t('reading')}
           </p>
         )}
@@ -115,7 +113,7 @@ function NewItemFrame({ folderId, files: initialFiles }: { folderId: string; fil
 
         {!hasDrafts && !state.isWithoutModel && (
           <div className="flex flex-wrap items-center gap-2">
-            <span className="text-xs text-muted-foreground">{t('noModel')}</span>
+            <span className="text-meta text-text-muted">{t('noModel')}</span>
             <Button variant="outline" size="sm" onClick={() => dispatch({ type: 'withoutModelChanged', isWithoutModel: true })}>
               <Box /> {t('createWithoutModel')}
             </Button>
@@ -123,8 +121,7 @@ function NewItemFrame({ folderId, files: initialFiles }: { folderId: string; fil
         )}
 
         {state.isWithoutModel && (
-          <SectionCard
-            size="sm"
+          <DraftPanel
             title={t('withoutModelTitle')}
             description={t('withoutModelDescription')}
             actions={
@@ -142,7 +139,7 @@ function NewItemFrame({ folderId, files: initialFiles }: { folderId: string; fil
                 displayNameTestId="new-item-display-name"
               />
             </AutoGrid>
-          </SectionCard>
+          </DraftPanel>
         )}
 
         {isOnlyPngs && <PngModeToggle state={state} dispatch={dispatch} />}

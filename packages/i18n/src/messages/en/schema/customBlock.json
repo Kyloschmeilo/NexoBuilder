@@ -1,0 +1,259 @@
+{
+  "properties": {
+    "mechanicsCustomBlock": {
+      "label": "Custom Block",
+      "description": "The item is placed as a real block (NoteBlock, StringBlock or ChorusBlock).",
+      "hint": "For blocks, Nexo recommends a non-block material such as PAPER. This item''s model is used automatically.",
+      "field": {
+        "label": "Block",
+        "fields": {
+          "type": {
+            "label": "Block type",
+            "help": "NOTEBLOCK, STRINGBLOCK and CHORUSBLOCK come with Nexo. With the Carpentry addon turned on in the project settings, its stairs, slabs, doors, trapdoors, transparent blocks, chains, lanterns and bars join the list."
+          },
+          "customVariation": {
+            "label": "Variation (unique number)",
+            "help": "Leave empty to let Nexo assign a free number automatically. Do not change it once blocks have been placed!"
+          },
+          "model": {
+            "label": "Model",
+            "help": "“@model” = this item''s model"
+          },
+          "hardness": {
+            "label": "Hardness"
+          },
+          "blastResistant": {
+            "label": "Blast resistant"
+          },
+          "isFalling": {
+            "label": "Falls like sand"
+          },
+          "beaconBaseBlock": {
+            "label": "Beacon base"
+          },
+          "placeableOnWater": {
+            "label": "Placeable on water"
+          },
+          "requireSupporting": {
+            "label": "Needs a block below"
+          },
+          "isTall": {
+            "label": "Tall plant (2 blocks)"
+          },
+          "randomPlace": {
+            "label": "Place randomly from",
+            "placeholder": "Item ID"
+          },
+          "directional": {
+            "label": "Orientation when placed (like logs)",
+            "help": "Nexo rotates the model depending on the direction and assigns the variations itself. A face model (here or on the model tab) is used as it is, without rotation.",
+            "fields": {
+              "type": {
+                "label": "Kind",
+                "options": {
+                  "log": {
+                    "label": "LOG – 3 axes like logs"
+                  },
+                  "furnace": {
+                    "label": "FURNACE – 4 directions facing the player"
+                  },
+                  "dropper": {
+                    "label": "DROPPER – 6 directions facing the player"
+                  },
+                  "barrel": {
+                    "label": "BARREL – 6 directions"
+                  }
+                }
+              },
+              "yVariation": {
+                "label": "Variation upright (y)"
+              },
+              "xVariation": {
+                "label": "Variation lying along x"
+              },
+              "zVariation": {
+                "label": "Variation lying along z"
+              },
+              "northVariation": {
+                "label": "Variation facing north",
+                "help": "Nexo 1.30 reads this key; the Nexo docs do not list it yet."
+              },
+              "southVariation": {
+                "label": "Variation facing south",
+                "help": "Nexo 1.30 reads this key; the Nexo docs do not list it yet."
+              },
+              "eastVariation": {
+                "label": "Variation facing east",
+                "help": "Nexo 1.30 reads this key; the Nexo docs do not list it yet."
+              },
+              "westVariation": {
+                "label": "Variation facing west",
+                "help": "Nexo 1.30 reads this key; the Nexo docs do not list it yet."
+              },
+              "upVariation": {
+                "label": "Variation facing up",
+                "help": "Nexo 1.30 reads this key; the Nexo docs do not list it yet."
+              },
+              "downVariation": {
+                "label": "Variation facing down",
+                "help": "Nexo 1.30 reads this key; the Nexo docs do not list it yet."
+              },
+              "yModel": {
+                "label": "Model upright (y)"
+              },
+              "xModel": {
+                "label": "Model lying along x"
+              },
+              "zModel": {
+                "label": "Model lying along z"
+              },
+              "northModel": {
+                "label": "Model facing north"
+              },
+              "southModel": {
+                "label": "Model facing south"
+              },
+              "eastModel": {
+                "label": "Model facing east"
+              },
+              "westModel": {
+                "label": "Model facing west"
+              },
+              "upModel": {
+                "label": "Model facing up"
+              },
+              "downModel": {
+                "label": "Model facing down"
+              },
+              "parentBlock": {
+                "label": "Parent block (item ID)",
+                "help": "Nexo sets this on the generated face blocks itself. Nexo 1.30 reads this key; the Nexo docs do not list it yet."
+              }
+            }
+          },
+          "logStrip": {
+            "label": "Strip with an axe",
+            "fields": {
+              "strippedLog": {
+                "label": "Turns into (item ID of the stripped block)"
+              },
+              "drop": {
+                "label": "Additional drop (item ID)",
+                "placeholder": "e.g. bark"
+              },
+              "decreaseAxeDurability": {
+                "label": "Stripping wears the axe",
+                "help": "Nexo 1.30 reads this key; the Nexo docs do not list it yet."
+              }
+            }
+          },
+          "sapling": {
+            "label": "Sapling (grows into a schematic)",
+            "help": "The schematics must be in the plugins/Nexo/schematics folder (WorldEdit/FAWE).",
+            "fields": {
+              "growsNaturally": {
+                "label": "Grows naturally"
+              },
+              "naturalGrowthTime": {
+                "label": "Growth time (ticks)",
+                "placeholder": "6000"
+              },
+              "growsFromBonemeal": {
+                "label": "Grows with bone meal"
+              },
+              "bonemealGrowthSpeedup": {
+                "label": "Bone meal speed-up (ticks)"
+              },
+              "growSound": {
+                "label": "Sound when growing"
+              },
+              "minLightLevel": {
+                "label": "Minimum light level"
+              },
+              "requiresWaterSource": {
+                "label": "Needs water nearby"
+              },
+              "schematic": {
+                "label": "Schematic",
+                "choices": {
+                  "single": {
+                    "label": "One schematic",
+                    "field": {
+                      "label": "Schematic",
+                      "placeholder": "e.g. palm"
+                    }
+                  },
+                  "list": {
+                    "label": "Random from a list",
+                    "field": {
+                      "label": "Schematics",
+                      "itemLabel": "Schematic",
+                      "fields": {
+                        "schem": {
+                          "label": "Schematic",
+                          "placeholder": "e.g. palm_1"
+                        },
+                        "chance": {
+                          "label": "Chance"
+                        }
+                      }
+                    }
+                  }
+                }
+              },
+              "replaceBlocks": {
+                "label": "Replace blocks"
+              },
+              "copyBiomes": {
+                "label": "Copy biomes"
+              },
+              "copyEntities": {
+                "label": "Copy entities"
+              }
+            }
+          },
+          "immovable": {
+            "label": "Pistons cannot move it",
+            "help": "Nexo 1.30 reads this key; the Nexo docs do not list it yet."
+          },
+          "canIgnite": {
+            "label": "Can be set on fire",
+            "help": "Nexo 1.30 reads this key; the Nexo docs do not list it yet."
+          },
+          "instrument": {
+            "label": "Note block sound",
+            "help": "Sound played when the block is hit, if note block features are reimplemented in mechanics.yml. Nexo 1.30 reads this key; the Nexo docs do not list it yet.",
+            "placeholder": "block.note_block.bass"
+          },
+          "variants": {
+            "label": "Random models",
+            "help": "Weighted, rotated models Nexo picks from at random for each placed block. Nexo 1.30 reads this key; the Nexo docs do not list it yet.",
+            "itemLabel": "Model",
+            "fields": {
+              "model": {
+                "label": "Model",
+                "placeholder": "e.g. my_pack:block/stone_2"
+              },
+              "weight": {
+                "label": "Weight"
+              },
+              "x": {
+                "label": "Rotation around x (degrees)"
+              },
+              "y": {
+                "label": "Rotation around y (degrees)"
+              },
+              "uvlock": {
+                "label": "Keep the texture unrotated (uvlock)"
+              },
+              "offset": {
+                "label": "Offset (x,y,z)",
+                "placeholder": "0,0,0"
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}

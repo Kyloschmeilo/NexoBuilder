@@ -7,9 +7,14 @@ import {
   createRecipe,
   insertFolder,
   insertItem,
+  DIRECTIONAL_MODEL_SLOTS,
+  FURNITURE_MODEL_SLOTS,
+  isVariantForTarget,
+  STACK_MODELS,
+  stateDef,
   type Item,
   type Project,
-  type RecipeType,
+  VARIANTS,
 } from '@resourcepackbuilder/core/project';
 import { createTextureModel, type ImportedModel } from '@resourcepackbuilder/minecraft';
 import { makePngDataUrl } from '@resourcepackbuilder/test-utils/png';
@@ -20,6 +25,7 @@ import { planMultiExport } from '../../selection';
 import { buildMultiExportZip, INSTALL_GUIDE_FILE, listMultiExportPaths, pluginFolderEntries } from '../../zip';
 import { pluginText } from '../../../test-utils/export';
 import { CRAFT_ENGINE_TARGET } from '.';
+import { CE_MODEL_SLOTS } from './variants';
 import { folderConfigPath } from '..';
 
 const PNG16 = makePngDataUrl(16, 16);
@@ -206,6 +212,14 @@ describe('CraftEngine variants', () => {
     expect(plan.items[0].config.models).toBeUndefined();
     expect([...plan.packFiles.keys()].some((path) => path.includes('thing-'))).toBe(false);
   });
+
+  it('offers only the variant slots its models list uses', () => {
+    const used = new Set(Object.values(CE_MODEL_SLOTS).flatMap((slots) => slots.map((s) => s.slot)));
+    const all = [...VARIANTS, ...FURNITURE_MODEL_SLOTS, STACK_MODELS, ...DIRECTIONAL_MODEL_SLOTS, stateDef('open')];
+    const offered = all.filter((def) => isVariantForTarget(def, 'craftengine')).map((def) => def.slot);
+    expect(offered.filter((slot) => !used.has(slot))).toEqual([]);
+    expect(all.filter((def) => !isVariantForTarget(def, 'nexo'))).toEqual([]);
+  });
 });
 
 describe('CraftEngine checks', () => {
@@ -294,6 +308,8 @@ describe('CraftEngine checks', () => {
     expect([...plan.pluginFiles.keys()].filter((path) => path.includes('/configuration/') && !path.includes('/items/'))).toEqual([
       'resources/kristall_pack/configuration/images.yml',
       'resources/kristall_pack/configuration/categories.yml',
+      // The client name of the fixture's block
+      'resources/kristall_pack/configuration/lang/en_us.yml',
     ]);
     expect(plan.packFiles.has('assets/kristall/textures/glyphs/gem.png')).toBe(true);
   });
@@ -322,12 +338,12 @@ describe('CraftEngine recipes', () => {
 
   it('reports recipe kinds CraftEngine has no type for and leaves them out', () => {
     const project = oneItemProject((item) => {
-      item.recipes = [{ ...createRecipe('furnace', 'r'), type: 'brewing' as RecipeType }];
+      item.recipes = [createRecipe('crafter', 'r')];
     });
     const plan = planExport(project);
-    const issue = plan.issues.find((i) => i.code === 'ce.recipeKindUnsupported');
-    expect(issue?.args).toEqual({ type: 'brewing' });
-    expect(issue?.context?.at(-1)).toEqual({ code: 'context.recipe', args: { recipe: 'thing_brewing' } });
+    const issue = plan.issues.find((i) => i.code === 'recipe.typeUnsupported');
+    expect(issue?.args).toEqual({ target: 'CraftEngine', type: 'crafter' });
+    expect(issue?.context?.at(-1)).toEqual({ code: 'context.recipe', args: { recipe: 'thing_crafter' } });
     expect([...plan.pluginFiles.values()].some((text) => String(text).includes('recipes:'))).toBe(false);
   });
 });

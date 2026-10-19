@@ -11,6 +11,7 @@
  *   glyphs/<id>.json      a glyph
  *   sounds/<id>.json      a sound (incl. OGG files)
  *   paintings/<id>.json   a painting (incl. image)
+ *   dialogs/<id>.json     a dialog (Nexo)
  *
  * Each file is an "envelope" with a version number (rev) and sender. Deleted entries remain as
  * a small tombstone (deleted: true) so that the deletion reaches everyone.
@@ -70,11 +71,13 @@ export interface ProjectMeta {
   /** Since 1.4 – older versions know no sounds/paintings */
   soundOrder?: string[];
   paintingOrder?: string[];
+  /** Missing in files of versions without dialogs */
+  dialogOrder?: string[];
   /** Missing in damaged files – the project keeps its own then */
   createdAt?: number;
 }
 
-/** What each kind of entry stores; glyphs, sounds and paintings (see MEDIA_KINDS) each get their own file too. */
+/** What each kind of entry stores; glyphs, sounds, paintings and dialogs (see MEDIA_KINDS) each get their own file too. */
 interface EntityDataByKind extends MediaEntryByKind {
   project: ProjectMeta;
   folder: Folder;
@@ -92,6 +95,7 @@ const DIRS: Record<FileKind, string> = {
   glyph: MEDIA_KINDS.glyph.list,
   sound: MEDIA_KINDS.sound.list,
   painting: MEDIA_KINDS.painting.list,
+  dialog: MEDIA_KINDS.dialog.list,
 };
 const KIND_BY_DIR = new Map(Object.entries(DIRS).map(([kind, dir]) => [dir, kind as FileKind]));
 
@@ -199,6 +203,7 @@ function projectMeta(project: Project): ProjectMeta {
     glyphOrder: project.glyphs.map((g) => g.id),
     soundOrder: project.sounds.map((g) => g.id),
     paintingOrder: project.paintings.map((g) => g.id),
+    dialogOrder: project.dialogs.map((g) => g.id),
     createdAt: project.createdAt,
   });
 }
@@ -312,6 +317,7 @@ const ProjectMetaSchema = z
     glyphOrder: listOf(z.string()),
     soundOrder: optional(listOf(z.string())),
     paintingOrder: optional(listOf(z.string())),
+    dialogOrder: optional(listOf(z.string())),
     createdAt: optional(z.number()),
   })
   .transform((meta): ProjectMeta => withoutUndefined({ ...meta, settings: settingsSchema(meta.name).parse(meta.settings) }));
@@ -355,6 +361,7 @@ const EnvelopeSchema = z.discriminatedUnion('kind', [
   envelopeSchema('glyph', MEDIA_SCHEMAS.glyph),
   envelopeSchema('sound', MEDIA_SCHEMAS.sound),
   envelopeSchema('painting', MEDIA_SCHEMAS.painting),
+  envelopeSchema('dialog', MEDIA_SCHEMAS.dialog),
 ]);
 
 /** Reads an envelope and checks whether it matches the expected path. Incomplete or invalid files yield null. */

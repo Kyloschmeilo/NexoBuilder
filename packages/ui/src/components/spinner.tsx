@@ -1,4 +1,4 @@
-import { cn } from "cn"
+import { cn } from "../lib/cn"
 import { Loader2Icon } from "lucide-react"
 
 import { useUiLabels } from "../labels"

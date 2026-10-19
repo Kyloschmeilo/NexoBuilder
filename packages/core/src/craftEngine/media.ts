@@ -6,9 +6,9 @@
 import { formatResourceLocation } from '@resourcepackbuilder/minecraft';
 import type { Project } from '../project/types';
 import { mediaKey } from '../project/media/entry';
-import { type Glyph, isMultiBitmap } from '../project/media/glyph';
+import { EMOJI_CONTEXTS, type Glyph, isMultiBitmap } from '../project/media/glyph';
 import type { Painting } from '../project/media/painting';
-import { durationSeconds, soundFilePath, type Sound } from '../project/media/sound';
+import { durationSeconds, soundEventKey, soundFilePath, type Sound } from '../project/media/sound';
 
 type Entries = Record<string, Record<string, unknown>>;
 
@@ -60,6 +60,7 @@ function bitmapImage(project: Project, glyph: Glyph): Record<string, unknown> {
   };
   if (glyph.font.trim()) out.font = glyph.font.trim();
   if (isMultiBitmap(glyph)) out.grid_size = `${Math.max(1, glyph.rows)},${Math.max(1, glyph.columns)}`;
+  else if (glyph.char) out.char = glyph.char;
   return out;
 }
 
@@ -72,33 +73,55 @@ function referenceImage(project: Project, glyph: Glyph): Record<string, unknown>
   return { ref: `${mediaKey(project, target.glyphId)}:${Math.floor(cell / columns)}:${cell % columns}` };
 }
 
-/** The emoji that replaces the glyph's chat shortcuts with `image`; CraftEngine suggests them unless turned off. */
+/**
+ * The emoji that replaces the glyph's chat shortcuts with `image`, or with its own content (also per text context);
+ * CraftEngine suggests them unless turned off.
+ */
 function emoji(glyph: Glyph, image: string, keywords: string[]): Record<string, unknown> {
   const out: Record<string, unknown> = { image, keywords };
+  if (glyph.emojiContent.trim()) out.content = glyph.emojiContent.trim();
+  const overrides = Object.fromEntries(
+    EMOJI_CONTEXTS.flatMap((context) => {
+      const content = glyph.emojiOverrides[context]?.trim();
+      return content ? [[context, content]] : [];
+    }),
+  );
+  if (Object.keys(overrides).length > 0) out.content_overrides = overrides;
   if (glyph.permission.trim()) out.permission = glyph.permission.trim();
   if (!glyph.tabcomplete) out.chat_completion = false;
   return out;
 }
 
-/** The sound event: one OGG as a plain path, with volume, pitch, stream or range as a sound object. */
+/**
+ * The sound event: one OGG as a plain path, with volume, pitch, weight, stream, range or preload as a sound object,
+ * and the sound event it plays as an entry of `type: event`. A replacing sound overrides the vanilla event.
+ */
 export function craftEngineSound(project: Project, sound: Sound): Record<string, unknown> {
-  const files = sound.files.map((_, i) => {
-    const name = formatResourceLocation(project.namespace, soundFilePath(sound, i));
-    const file: Record<string, unknown> = { name };
-    if (sound.volume !== null) file.volume = sound.volume;
-    if (sound.pitch !== null) file.pitch = sound.pitch;
-    if (sound.stream) file.stream = true;
-    if (sound.distance !== null) file.attenuation_distance = sound.distance;
-    return Object.keys(file).length > 1 ? file : name;
-  });
-  return { sounds: files };
+  const entry = (name: string, type?: 'event'): Record<string, unknown> | string => {
+    const out: Record<string, unknown> = { name, ...(type && { type }) };
+    if (sound.volume !== null) out.volume = sound.volume;
+    if (sound.pitch !== null) out.pitch = sound.pitch;
+    if (sound.weight !== null) out.weight = sound.weight;
+    if (sound.stream) out.stream = true;
+    if (sound.distance !== null) out.attenuation_distance = sound.distance;
+    if (sound.preload) out.preload = true;
+    return Object.keys(out).length > 1 ? out : name;
+  };
+  const entries = sound.files.map((_, i) => entry(formatResourceLocation(project.namespace, soundFilePath(sound, i))));
+  const reference = sound.reference.trim();
+  if (reference) entries.push(entry(reference, 'event'));
+  const out: Record<string, unknown> = {};
+  if (sound.replace) out.replace = true;
+  if (sound.subtitle.trim()) out.subtitle = sound.subtitle.trim();
+  out.sounds = entries;
+  return out;
 }
 
 /** The jukebox song of a music disc; null for other sounds. */
 export function craftEngineJukeboxSong(project: Project, sound: Sound): Record<string, unknown> | null {
   if (!sound.jukebox) return null;
   const out: Record<string, unknown> = {
-    sound: mediaKey(project, sound.soundId),
+    sound: soundEventKey(project, sound),
     length: durationSeconds(sound.jukebox.duration) ?? 1,
   };
   if (sound.jukebox.description.trim()) out.description = sound.jukebox.description.trim();

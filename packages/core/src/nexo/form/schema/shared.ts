@@ -10,11 +10,42 @@ import {
   TRACKING_ROTATIONS,
 } from '../options';
 import { RESERVED_STATE_KEYS } from '../../../project/variants';
+import { isPlainObject } from '@resourcepackbuilder/utils';
 import { field, whenType } from '../../../form/build';
+import { furnitureHitboxSpec, furniturePropertiesSpec } from './furnitureParts';
+
+/**
+ * Options of a field Nexo 1.30 reads although its docs do not list it yet: tucked away as advanced, with a help text
+ * (at `<scope>.help`) that says which plugin version reads it.
+ */
+export const JAR_ONLY = { advanced: true, help: true } as const;
 
 /** Sound key with suggestions; all sound fields share one placeholder. */
 export const soundField = (options: { help?: boolean } = {}) =>
   field.text({ suggestions: SOUND_SUGGESTIONS, placeholder: 'shared.sound.placeholder', ...options });
+
+/** Volume and pitch of a sound (both default to what Minecraft uses) */
+const soundVolumePitch = {
+  volume: field.number({ min: 0, step: 0.1, placeholder: 'shared.soundSettings.volumePlaceholder' }),
+  pitch: field.number({ min: 0, step: 0.1, placeholder: 'shared.soundSettings.pitchPlaceholder' }),
+};
+
+/**
+ * A sound that is either a sound key or a section with the key, volume and pitch (`{sound, volume, pitch}`), like the
+ * sounds of a custom trident. `label` is the message key of the field's description.
+ */
+export const soundSettingsField = (label?: string) =>
+  field.choice(
+    {
+      key: { field: soundField(), matches: (value) => typeof value === 'string', newValue: () => '' },
+      settings: {
+        field: field.object({ sound: soundField(), ...soundVolumePitch }),
+        matches: isPlainObject,
+        newValue: () => ({ sound: '' }),
+      },
+    },
+    { scope: 'shared.soundSettings', ...(label && { label }) },
+  );
 
 /** Settings of one potion effect (the value of an effect map keyed by effect) */
 export const potionEffect = {
@@ -52,7 +83,11 @@ export const consumeEffectsField = (label: string) =>
       }),
       REMOVE_EFFECTS: field.stringList({ suggestions: POTION_EFFECTS, placeholder: true }),
       CLEAR_ALL_EFFECTS: field.presence(),
-      TELEPORT_RANDOMLY: field.object({ diameter: field.number({ min: 0, step: 1, placeholder: true }) }),
+      TELEPORT_RANDOMLY: field.object({
+        diameter: field.number({ min: 0, step: 1, placeholder: true }),
+        // Read by Nexo 1.30 on Minecraft 26.3+ only (not in the docs)
+        directional_particles: field.boolean({ minVersion: '26.3', help: true, advanced: true }),
+      }),
       PLAY_SOUND: field.object({ sound: soundField() }),
     },
     { scope: 'shared.consumeEffects', label },
@@ -69,7 +104,14 @@ export const dropField = () =>
         {
           nexo_item: field.text({ placeholder: true }),
           minecraft_type: field.select(MATERIALS, { allowCustom: true }),
+          crucible_item: field.text({ advanced: true }),
+          // Nexo's Loot reads a serialized Bukkit ItemStack here (as its in-game builders save it), not an item ID
+          minecraft_item: field.yaml({ ...JAR_ONLY }),
+          mmoitems_type: field.text({ ...JAR_ONLY }),
+          mmoitems_id: field.text({ ...JAR_ONLY }),
           amount: field.text({ format: 'range', placeholder: true }),
+          min_amount: field.number({ integer: true, min: 0, ...JAR_ONLY }),
+          max_amount: field.number({ integer: true, min: 0, ...JAR_ONLY }),
           probability: field.number({ min: 0, max: 1, step: 0.05 }),
           in_explosion: field.boolean(),
         },
@@ -77,6 +119,13 @@ export const dropField = () =>
       ),
     },
     { scope: 'shared.drop', help: true },
+  );
+
+/** The long form of one block sound (`place: {sound, volume, pitch}`), next to the short `place_sound` form */
+const blockSoundEvent = (event: string) =>
+  field.object(
+    { sound: soundField(), ...soundVolumePitch },
+    { scope: 'shared.blockSoundEvent', label: `shared.blockSounds.fields.${event}.label`, advanced: true },
   );
 
 export const blockSoundsField = () =>
@@ -87,6 +136,11 @@ export const blockSoundsField = () =>
       hit_sound: soundField(),
       step_sound: soundField(),
       fall_sound: soundField(),
+      place: blockSoundEvent('place'),
+      break: blockSoundEvent('break'),
+      hit: blockSoundEvent('hit'),
+      step: blockSoundEvent('step'),
+      fall: blockSoundEvent('fall'),
     },
     { scope: 'shared.blockSounds' },
   );
@@ -99,6 +153,10 @@ export const storageField = () =>
       title: field.text({ format: 'minimessage', placeholder: true }),
       open_sound: soundField(),
       close_sound: soundField(),
+      volume: field.number({ min: 0, step: 0.1, ...JAR_ONLY }),
+      pitch: field.number({ min: 0, step: 0.1, ...JAR_ONLY }),
+      open_animation: field.text({ ...JAR_ONLY }),
+      close_animation: field.text({ ...JAR_ONLY }),
     },
     { scope: 'shared.storage' },
   );
@@ -153,8 +211,16 @@ export const furnitureStatesField = () =>
           lerp_in: field.text({ format: 'duration', ...whenType(...ANIMATION_TYPES) }),
           lerp_out: field.text({ format: 'duration', ...whenType(...ANIMATION_TYPES) }),
           speed: field.number({ min: 0, step: 0.1, ...whenType(...ANIMATION_TYPES) }),
-          properties: field.yaml({ placeholder: true, ...whenType('FURNITURE') }),
-          hitbox: field.yaml({ placeholder: true, ...whenType('FURNITURE') }),
+          force: field.boolean(whenType(...ANIMATION_TYPES)),
+          // A FURNITURE state shows the furniture with these display properties and this hitbox
+          properties: {
+            ...furniturePropertiesSpec('shared.furnitureStates.fields.entries.value.fields.properties.label'),
+            ...whenType('FURNITURE'),
+          },
+          hitbox: {
+            ...furnitureHitboxSpec('shared.furnitureStates.fields.entries.value.fields.hitbox.label'),
+            ...whenType('FURNITURE'),
+          },
           next_after: field.text({ format: 'duration' }),
           reset_after: field.text({ format: 'duration' }),
           conditions: field.stringList({ placeholder: true }),
@@ -180,6 +246,16 @@ export const textEntitiesField = () =>
       see_through: field.boolean(),
       translation: field.text({ format: 'vector' }),
       scale: field.text({ format: 'vector' }),
+      left_rotation: field.text({ placeholder: true, advanced: true }),
+      right_rotation: field.text({ placeholder: true, advanced: true }),
+      brightness: field.object(
+        {
+          block_light: field.number({ integer: true, min: 0, max: 15 }),
+          sky_light: field.number({ integer: true, min: 0, max: 15 }),
+        },
+        { advanced: true },
+      ),
+      view_range: field.number({ min: 0, step: 0.1, advanced: true }),
     },
     { scope: 'shared.textEntities', help: true, newItem: () => ({ text: [''], offset: '0,1,0' }) },
   );

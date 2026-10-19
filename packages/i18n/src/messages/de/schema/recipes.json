@@ -1,0 +1,320 @@
+{
+  "recipes": {
+    "types": {
+      "crafter": {
+        "label": "Crafter",
+        "description": "Nur im Crafter-Block: wie ein geformtes Rezept, aber nicht in Werkbank oder Inventar."
+      },
+      "shapedTransform": {
+        "label": "Shaped transform",
+        "description": "Werkbank im Muster: eine Zutat ist das Quell-Item, dessen Daten das Ergebnis übernimmt."
+      },
+      "shapelessTransform": {
+        "label": "Shapeless transform",
+        "description": "Werkbank in beliebiger Anordnung: eine Zutat ist das Quell-Item, dessen Daten das Ergebnis übernimmt."
+      },
+      "brewing": {
+        "label": "Brewing",
+        "description": "Braustand: eine Zutat verwandelt das Item im Flaschenplatz in dieses Item."
+      },
+      "smithingTransform": {
+        "label": "Smithing upgrade",
+        "description": "Schmiedetisch: wertet das Basis-Item zu diesem Item auf, wie Netherit-Ausrüstung."
+      },
+      "smithingTrim": {
+        "label": "Smithing trim",
+        "description": "Schmiedetisch: setzt ein Besatz-Muster auf das Basis-Item; das Rezept hat kein eigenes Ergebnis."
+      },
+      "transmute": {
+        "label": "Transmute",
+        "description": "Werkbank: verwandelt die Eingabe in dieses Item und behält die angegebenen Komponenten."
+      },
+      "anvil": {
+        "label": "Anvil",
+        "description": "Amboss: kombiniert die Eingabe mit einem Material zu diesem Item oder repariert sie. Von Nexo 1.30 gelesen, nicht in der Doku."
+      },
+      "dye": {
+        "label": "Dye",
+        "description": "Werkbank: färbt das Ziel-Item. Von CraftEngine 26.9 gelesen, nicht im Wiki."
+      }
+    },
+    "sources": {
+      "external": "Item eines anderen Plugins",
+      "crucible": "MythicCrucible-Item",
+      "mmoitems": "MMOItems-Item"
+    },
+    "slots": {
+      "input": {
+        "label": "Eingabe",
+        "help": "Die Eingabe von Ofen oder Steinsäge, die Flasche im Braustand, das zu verwandelnde oder reparierende Item oder das zu färbende Item."
+      },
+      "reagent": {
+        "label": "Zutat",
+        "help": "Das Item oben im Braustand."
+      },
+      "template": {
+        "label": "Vorlage",
+        "help": "Die Schmiedevorlage im ersten Platz."
+      },
+      "base": {
+        "label": "Basis",
+        "help": "Das Item, das aufgewertet oder verziert wird."
+      },
+      "addition": {
+        "label": "Zusatz",
+        "help": "Das Material im dritten Platz, z. B. ein Netheritbarren oder ein Besatz-Material."
+      },
+      "material": {
+        "label": "Material",
+        "help": "Das Item, das mit der Eingabe kombiniert wird."
+      },
+      "dye": {
+        "label": "Farbstoff",
+        "help": "Der Farbstoff oder Farbstoff-Tag, der das Ziel färbt."
+      }
+    },
+    "categories": {
+      "building": {
+        "label": "Baumaterial"
+      },
+      "redstone": {
+        "label": "Redstone"
+      },
+      "equipment": {
+        "label": "Ausrüstung"
+      },
+      "misc": {
+        "label": "Verschiedenes"
+      },
+      "food": {
+        "label": "Nahrung"
+      },
+      "blocks": {
+        "label": "Blöcke"
+      }
+    },
+    "options": {
+      "fields": {
+        "permission": {
+          "label": "Berechtigung, die ein Spieler zum Herstellen braucht",
+          "help": "Spieler ohne sie können das Rezept nicht nutzen. Von Nexo 1.30 gelesen, nicht in der Doku.",
+          "placeholder": "z. B. ruby.craft.sword"
+        },
+        "nexoGroup": {
+          "label": "Gruppe im Rezeptbuch",
+          "help": "Rezepte mit gleicher Gruppe teilen sich einen Platz im Rezeptbuch. Von Nexo 1.30 gelesen, nicht in der Doku."
+        },
+        "nexoCraftingCategory": {
+          "label": "Reiter im Rezeptbuch",
+          "help": "Der Reiter des Rezeptbuchs, in dem das Rezept steht. Von Nexo 1.30 gelesen, nicht in der Doku."
+        },
+        "nexoCookingCategory": {
+          "label": "Reiter im Rezeptbuch",
+          "help": "Der Reiter des Ofen-Rezeptbuchs, in dem das Rezept steht. Von Nexo 1.30 gelesen, nicht in der Doku."
+        },
+        "copyComponents": {
+          "label": "Daten des Basis-Items ins Ergebnis übernehmen",
+          "help": "Behält Namen, Lore, Verzauberungen und andere Komponenten des Basis-Items."
+        },
+        "trimPattern": {
+          "label": "Besatz-Muster, das auf das Basis-Item kommt",
+          "help": "Ein Vanilla-Muster oder eines aus einem Datenpaket.",
+          "placeholder": "z. B. minecraft:silence"
+        },
+        "recipePreserve": {
+          "label": "Komponenten, die das Ergebnis von der Eingabe behält",
+          "help": "Z. B. damage, enchantments oder custom_name."
+        },
+        "anvilCost": {
+          "label": "Erfahrungsstufen, die der Amboss kostet",
+          "help": "Kosten ab dem Amboss-Maximum (Recipes.anvil_max_repair_cost) gelten außerhalb des Kreativmodus als zu teuer. Von Nexo 1.30 gelesen, nicht in der Doku."
+        },
+        "anvilRepair": {
+          "label": "Haltbarkeit, die der Amboss wiederherstellt",
+          "help": "Wenn gesetzt, repariert der Amboss die Eingabe um diesen Wert, statt dieses Item herzustellen. Von Nexo 1.30 gelesen, nicht in der Doku."
+        },
+        "damage": {
+          "label": "Haltbarkeit, die das Item verliert, statt verbraucht zu werden",
+          "help": "Die Zutat bleibt im Raster und nimmt so viel Schaden, wie ein Messer."
+        },
+        "preserve": {
+          "label": "Komponenten, die das Ergebnis von dieser Zutat behält",
+          "help": "Z. B. damage, enchantments oder custom_name; so wertet ein Rezept ein Item auf, ohne es zurückzusetzen."
+        },
+        "craftingCategory": {
+          "label": "Reiter im Rezeptbuch",
+          "help": "Der Reiter des Rezeptbuchs, in dem das Rezept steht."
+        },
+        "cookingCategory": {
+          "label": "Reiter im Rezeptbuch",
+          "help": "Der Reiter des Ofen-Rezeptbuchs, in dem das Rezept steht."
+        },
+        "group": {
+          "label": "Gruppe im Rezeptbuch",
+          "help": "Rezepte mit gleicher Gruppe im selben Reiter teilen sich einen Platz im Rezeptbuch."
+        },
+        "unlockOnIngredientObtained": {
+          "label": "Freischalten, sobald der Spieler die Zutaten hat",
+          "help": "Überschreibt den Standard aus config.yml (recipe.unlock-on-ingredient-obtained)."
+        },
+        "unlockOnJoin": {
+          "label": "Beim Betreten freischalten",
+          "help": "Schaltet das Rezept beim Betreten frei, auch ohne die Zutaten."
+        },
+        "showNotification": {
+          "label": "Hinweis beim Freischalten zeigen",
+          "help": "Zeigt eine Meldung, wenn das Rezept freigeschaltet wird (standardmäßig an). Von CraftEngine 26.9 gelesen, nicht im Wiki."
+        },
+        "alwaysRebuildResult": {
+          "label": "Ergebnis bei jedem Herstellen neu bauen",
+          "help": "Aus verwendet das gebaute Ergebnis-Item weiter. Von CraftEngine 26.9 gelesen, nicht im Wiki."
+        },
+        "mergeComponents": {
+          "label": "Komponenten des Quell-Items ins Ergebnis übernehmen",
+          "help": "Standardmäßig an, wie beim Vanilla-Schmieden."
+        },
+        "transformProcessors": {
+          "label": "Wie die Daten des Quell-Items ins Ergebnis kommen",
+          "help": "Daten anwenden, Verzauberungen zusammenführen oder Custom Data, Komponenten oder Tags des Quell-Items behalten."
+        },
+        "postProcessors": {
+          "label": "Änderungen am Ergebnis-Item",
+          "help": "Wendet Item-Daten auf das Ergebnis an, z. B. Verzauberungen, damit ein Rezept abgewandelte Items liefert."
+        },
+        "pattern": {
+          "label": "Besatz-Muster, das auf das Basis-Item kommt",
+          "help": "Ab Minecraft 1.21.5 erforderlich.",
+          "placeholder": "z. B. minecraft:bolt"
+        },
+        "conditions": {
+          "label": "Bedingungen, die ein Spieler für das Rezept erfüllen muss",
+          "help": "Alle müssen gelten. Nur CraftEngine Premium."
+        },
+        "functions": {
+          "label": "Funktionen, die beim Herstellen laufen",
+          "help": "Z. B. ein Befehl oder ein Sound. Nur CraftEngine Premium."
+        },
+        "visualResult": {
+          "label": "Ergebnis, das statt des echten im Raster erscheint",
+          "help": "Verbirgt ein zufälliges Ergebnis bis zum Herstellen (id, count, post_processors). Nur CraftEngine Premium.",
+          "placeholder": "id: ruby:ruby_sword\ncount: 1"
+        },
+        "disabledRecipes": {
+          "label": "Vanilla-Rezepte, die Nexo abschaltet",
+          "help": "Rezept-Schlüssel wie minecraft:diamond_sword, für das ganze Projekt in recipes/disabled_recipes.yml geschrieben.",
+          "placeholder": "minecraft:diamond_sword"
+        }
+      },
+      "ingredient": {
+        "fields": {
+          "predicate": {
+            "label": "Prüfungen, die die Zutat bestehen muss",
+            "help": "Verlangt Verzauberungen oder eine exakte Datenkomponente zusätzlich zur Item-ID."
+          },
+          "source": {
+            "label": "Quell-Item, dessen Daten das Ergebnis behält",
+            "help": "Markiere genau eine Zutat eines Umwandlungsrezepts."
+          }
+        }
+      }
+    },
+    "processors": {
+      "applyData": {
+        "label": "Daten anwenden",
+        "help": "Wendet Item-Daten auf das kombinierte Item an.",
+        "fields": {
+          "data": {
+            "label": "Anzuwendende Item-Daten, wie im data-Abschnitt eines Items",
+            "help": "Als YAML, z. B. enchantment oder lore.",
+            "placeholder": "enchantment:\n  minecraft:efficiency: 5"
+          }
+        }
+      },
+      "mergeEnchantments": {
+        "label": "Verzauberungen zusammenführen",
+        "help": "Vereint die Verzauberungen von Ergebnis und Quell-Item, statt eine Seite zu wählen."
+      },
+      "keepCustomData": {
+        "label": "Custom Data behalten",
+        "help": "Behält Pfade der custom_data-Komponente (1.20.5+).",
+        "fields": {
+          "paths": {
+            "label": "Pfade in custom_data, die erhalten bleiben",
+            "placeholder": "energy.fly"
+          }
+        }
+      },
+      "keepComponents": {
+        "label": "Komponenten behalten",
+        "help": "Behält die aufgeführten Datenkomponenten (1.20.5+).",
+        "fields": {
+          "components": {
+            "label": "Datenkomponenten, die erhalten bleiben"
+          }
+        }
+      },
+      "keepTags": {
+        "label": "Tags behalten",
+        "help": "Behält die aufgeführten NBT-Tags (1.20–1.20.4).",
+        "fields": {
+          "tags": {
+            "label": "NBT-Tags, die erhalten bleiben",
+            "placeholder": "display.Name"
+          }
+        }
+      }
+    },
+    "postProcessors": {
+      "applyData": {
+        "label": "Daten anwenden",
+        "help": "Wendet Item-Daten auf das Ergebnis an.",
+        "fields": {
+          "data": {
+            "label": "Anzuwendende Item-Daten, wie im data-Abschnitt eines Items",
+            "help": "Als YAML, z. B. enchantment oder lore.",
+            "placeholder": "enchantment:\n  minecraft:efficiency: 5"
+          }
+        }
+      }
+    },
+    "predicates": {
+      "enchantment": {
+        "label": "Verzauberung",
+        "help": "Das Item braucht mindestens diese Verzauberungsstufen.",
+        "fields": {
+          "enchantments": {
+            "label": "Mindeststufe je Verzauberung",
+            "keyLabel": "Verzauberung",
+            "value": {
+              "label": "Mindeststufe"
+            }
+          }
+        }
+      },
+      "exact": {
+        "label": "Exakte Komponente",
+        "help": "Das Item braucht genau diesen Komponentenwert; kopiere ihn mit /ce debug item-component.",
+        "fields": {
+          "component": {
+            "label": "Zu vergleichende Datenkomponente"
+          },
+          "value": {
+            "label": "Wert mit Format-Präfix",
+            "placeholder": "(snbt) ..."
+          }
+        }
+      }
+    },
+    "sections": {
+      "options": {
+        "label": "Rezeptoptionen"
+      },
+      "premium": {
+        "label": "CraftEngine Premium"
+      },
+      "ingredient": {
+        "label": "Weitere Zutatenoptionen"
+      }
+    }
+  }
+}

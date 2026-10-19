@@ -21,6 +21,63 @@ export function isWideField(field: Field): boolean {
   return (field.type === 'text' && !!field.multiline) || WIDE_TYPES.has(field.type);
 }
 
+/** Objects with more fields than this tuck their unflagged fields with a known plugin default into "More options". */
+const ADVANCED_HEURISTIC_MIN_FIELDS = 5;
+
+/**
+ * Whether a field goes into "More options": the schema marks it `advanced`, or, in an object of at least five fields,
+ * it is an optional field with a known plugin default (`defaultHint`), which most items leave unset.
+ */
+function isAdvancedField(field: Field, fieldCount: number): boolean {
+  if (field.advanced !== undefined) return field.advanced;
+  return fieldCount >= ADVANCED_HEURISTIC_MIN_FIELDS && field.type === 'boolean' && field.defaultHint !== undefined;
+}
+
+/**
+ * The fields of an object in display order: the common ones first (simple fields, then wide ones), and apart from them
+ * the fields the editor tucks into "More options" (see {@link isAdvancedField}). The heuristic never leaves an object
+ * with fewer than two common fields.
+ */
+export function arrangeObjectFields(fields: readonly Field[]): { common: Field[]; advanced: Field[] } {
+  const byWidth = (list: Field[]) => [...list.filter((f) => !isWideField(f)), ...list.filter(isWideField)];
+  const flagged = fields.filter((f) => f.advanced);
+  const guessed = fields.filter((f) => isAdvancedField(f, fields.length));
+  const advanced = fields.length - guessed.length >= 2 ? guessed : flagged;
+  return { common: byWidth(fields.filter((f) => !advanced.includes(f))), advanced: byWidth(advanced) };
+}
+
+/** The control a choice of `count` options gets: segments up to 4, a select up to 12, a searchable combobox above. */
+export type ChoiceControl = 'segmented' | 'select' | 'combobox';
+
+export function choiceControl(count: number): ChoiceControl {
+  if (count <= 4) return 'segmented';
+  return count <= 12 ? 'select' : 'combobox';
+}
+
+/** The three components of a vector value. */
+export type VectorParts = readonly [string, string, string];
+
+const VECTOR_TEXT = /^\s*(-?\d+(?:\.\d+)?)\s*,\s*(-?\d+(?:\.\d+)?)\s*,\s*(-?\d+(?:\.\d+)?)\s*$/;
+
+/** The components of a vector "x,y,z"; empty parts for no value; undefined for text that is no vector. */
+export function parseVector(value: unknown): VectorParts | undefined {
+  if (value === undefined || value === null || value === '') return ['', '', ''];
+  if (typeof value !== 'string') return undefined;
+  const m = VECTOR_TEXT.exec(value);
+  return m ? [m[1], m[2], m[3]] : undefined;
+}
+
+/**
+ * The vector value of three typed components: "x,y,z" once all three are numbers, undefined when all are empty, and
+ * null while the input is incomplete or invalid (nothing is written then).
+ */
+export function formatVector(parts: VectorParts): string | undefined | null {
+  const trimmed = parts.map((part) => part.trim().replace(',', '.'));
+  if (trimmed.every((part) => part === '')) return undefined;
+  const numbers = trimmed.map((part) => parseNumber(part));
+  return numbers.every((n) => n !== undefined) ? numbers.join(',') : null;
+}
+
 /** Applies `showIf`: a field is hidden unless the sibling it depends on has one of the listed values. */
 export function isFieldVisible(field: Field, siblings: Record<string, unknown> | undefined): boolean {
   if (!field.showIf || !siblings) return true;

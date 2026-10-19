@@ -1,9 +1,9 @@
+/** "Move item": moves an item of the open project into another folder. */
 import { useId, useState } from 'react';
 import { useTranslations } from 'next-intl';
-import { FolderInput } from 'lucide-react';
 import { Button } from '@resourcepackbuilder/ui/components/button';
 import { createDialogHandle } from '@resourcepackbuilder/ui/components/dialog';
-import { Field, FieldLabel } from '@resourcepackbuilder/ui/components/field';
+import { FieldRow } from '@resourcepackbuilder/ui';
 import { moveItem } from '../../commands/items';
 import { DialogFrame, FeatureDialog } from '../../components/DialogFrame';
 import { FolderSelect } from '../../components/FolderSelect';
@@ -23,7 +23,6 @@ function MoveItemFrame({ itemId }: { itemId: string }) {
   return (
     <DialogFrame
       title={t('title')}
-      icon={<FolderInput />}
       size="narrow"
       footer={
         <>
@@ -41,10 +40,9 @@ function MoveItemFrame({ itemId }: { itemId: string }) {
         </>
       }
     >
-      <Field>
-        <FieldLabel htmlFor={folderFieldId}>{t('targetFolder')}</FieldLabel>
+      <FieldRow label={t('targetFolder')} htmlFor={folderFieldId} layout="stacked">
         <FolderSelect id={folderFieldId} value={target} onChange={setTarget} />
-      </Field>
+      </FieldRow>
     </DialogFrame>
   );
 }

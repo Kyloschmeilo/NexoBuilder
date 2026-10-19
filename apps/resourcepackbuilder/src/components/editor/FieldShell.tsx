@@ -1,25 +1,28 @@
-/** The frame around one field editor: title (with version badge), the control, error and help text. */
+/**
+ * The frame around one field editor of the form schema, as a thin adapter onto the ui `FieldRow`: the translated label,
+ * the field's YAML key in the key rail, the docs link of the project's target, the version badge, help in the ⓘ
+ * popover and the validation error below the control.
+ */
 import type { ReactNode } from 'react';
 import { useTranslations } from 'next-intl';
-import { cn } from 'cn';
+import { cn } from '@resourcepackbuilder/ui/cn';
 import { type Field, fieldName } from '@resourcepackbuilder/core/form';
 import { compareVersions } from '@resourcepackbuilder/minecraft';
-import { Tip } from '@resourcepackbuilder/ui';
+import { FieldRow, Tip } from '@resourcepackbuilder/ui';
 import { Badge } from '@resourcepackbuilder/ui/components/badge';
-import { Field as FieldRoot, FieldDescription, FieldError, FieldTitle } from '@resourcepackbuilder/ui/components/field';
+import { useFormTarget } from '../formTarget';
 import { useSchemaText } from '../useSchemaText';
 import { useFieldContext } from './fieldContext';
 
-/**
- * Displayed name of a field: its original English (Nexo) name, or the translated label when there is no
- * name. The translated label is the tooltip when it differs from the name.
- */
-export function useFieldTitle(field: Field): { title: string; description: string | undefined } {
+/** The YAML key a field writes, shown in the key rail; none for the remaining keys of a map (`*`) or unnamed values. */
+export function fieldYamlKey(field: Pick<Field, 'key'>): string | undefined {
+  return field.key && field.key !== '*' ? field.key : undefined;
+}
+
+/** Displayed label of a field: the translated label, or the plugin's English name when the field has no label. */
+export function useFieldLabel(field: Field): string {
   const text = useSchemaText();
-  const name = fieldName(field);
-  const title = name === field.label ? (text(name) ?? name) : name;
-  const description = text(field.label);
-  return { title, description: description !== title ? description : undefined };
+  return text(field.label) ?? fieldName(field);
 }
 
 /** Whether the project's Minecraft version is below the field's `minVersion`. */
@@ -28,6 +31,7 @@ export function useVersionTooLow(field: Field): boolean {
   return !!field.minVersion && compareVersions(minecraftVersion, field.minVersion) < 0;
 }
 
+/** "from 1.21.4" next to a field that needs a newer Minecraft version; tinted when the project's version is too low. */
 export function MinVersionBadge({ field }: { field: Field }) {
   const t = useTranslations('editor');
   const tooLow = useVersionTooLow(field);
@@ -44,41 +48,39 @@ export function MinVersionBadge({ field }: { field: Field }) {
   );
 }
 
-/** Field name with the translated label as tooltip. */
-export function FieldName({ field }: { field: Field }) {
-  const { title, description } = useFieldTitle(field);
-  return (
-    <Tip label={description}>
-      <span className="min-w-0 truncate">{title}</span>
-    </Tip>
-  );
-}
-
 interface FieldShellProps {
   field: Field;
-  /** The title is omitted (the context already names the field). */
+  /** The label is omitted (the context already names the field); help then shows below the control. */
   hideLabel?: boolean;
-  /** Spans the full width of the form grid. */
+  /** Stacks the label above the control, for controls that need the width (lists, maps, YAML, long text). */
   wide?: boolean;
   /** Translated validation message. */
   error?: string;
+  /** Id of the control, so the label names it and a click on the label focuses it. */
+  htmlFor?: string;
   children: ReactNode;
 }
 
-export function FieldShell({ field, hideLabel, wide, error, children }: FieldShellProps) {
+/** A schema field as a `FieldRow`. */
+export function FieldShell({ field, hideLabel, wide, error, htmlFor, children }: FieldShellProps) {
   const text = useSchemaText();
+  const label = useFieldLabel(field);
+  const target = useFormTarget();
   const help = text(field.help);
+  const hasLabel = !hideLabel && !!field.label;
   return (
-    <FieldRoot orientation="stacked" data-invalid={!!error || undefined} className={cn('min-w-0 gap-1.5', wide && 'col-span-full')}>
-      {!hideLabel && field.label && (
-        <FieldTitle className="w-full gap-1.5 text-sm leading-4">
-          <FieldName field={field} />
-          <MinVersionBadge field={field} />
-        </FieldTitle>
-      )}
+    <FieldRow
+      label={hasLabel ? label : undefined}
+      htmlFor={hasLabel ? htmlFor : undefined}
+      yamlKey={hasLabel ? fieldYamlKey(field) : undefined}
+      docs={hasLabel && field.docs && target ? { url: field.docs, target, label } : undefined}
+      badges={hasLabel && <MinVersionBadge field={field} />}
+      help={help}
+      helpInline={!hasLabel}
+      error={error}
+      layout={wide ? 'stacked' : 'side'}
+    >
       {children}
-      <FieldError className="text-xs leading-4">{error}</FieldError>
-      {help && <FieldDescription className="text-xs leading-4">{help}</FieldDescription>}
-    </FieldRoot>
+    </FieldRow>
   );
 }

@@ -1,10 +1,10 @@
 import { useLayoutEffect, useRef } from 'react';
 import { Trash2 } from 'lucide-react';
 import { useTranslations } from 'next-intl';
-import { cn } from 'cn';
+import { cn } from '@resourcepackbuilder/ui/cn';
 import { Button } from '@resourcepackbuilder/ui/components/button';
 import { Input } from '@resourcepackbuilder/ui/components/input';
-import { SectionCard, Tip } from '@resourcepackbuilder/ui';
+import { Panel, Section, Tip } from '@resourcepackbuilder/ui';
 import { consoleCommandText, isPlayerName, serverAdapterFor } from '@resourcepackbuilder/test-server';
 import { packTargetFor } from '@resourcepackbuilder/export';
 import { useProjectStore } from '../../store/project';
@@ -65,8 +65,8 @@ export function ServerConsole() {
   };
 
   return (
-    <SectionCard
-      size="sm"
+    <Section
+      id="console"
       title={t('title')}
       description={t('description')}
       actions={
@@ -76,56 +76,57 @@ export function ServerConsole() {
           </Button>
         </Tip>
       }
-      contentClassName="p-0"
     >
-      <div
-        ref={output}
-        data-testid="test-server-console"
-        className="h-84 overflow-auto border-b border-border bg-background px-4 py-3 font-mono text-xs leading-5"
-        onScroll={(e) => {
-          const el = e.currentTarget;
-          isFollowing.current = el.scrollHeight - el.scrollTop - el.clientHeight < FOLLOW_THRESHOLD_PX;
-        }}
-      >
-        {log.length === 0 ? (
-          <div className="text-muted-foreground">{t('empty')}</div>
-        ) : (
-          log.map((line) => (
-            <div
-              key={line.id}
-              data-testid="console-line"
-              data-level={line.kind}
-              className={cn('break-words whitespace-pre-wrap', LINE_COLOR[line.kind])}
-            >
-              {line.line}
-            </div>
-          ))
-        )}
-      </div>
-      <div className="flex items-center gap-2 px-4 py-3">
-        <span className="font-mono text-muted-foreground" aria-hidden>
-          &gt;
-        </span>
-        <Input
-          data-testid="test-server-command"
-          aria-label={t('commandLabel')}
-          className="min-w-0 flex-1 font-mono"
-          value={command}
-          disabled={!isRunning}
-          placeholder={isRunning ? placeholder : t('notRunning')}
-          onChange={(e) => setCommand(e.target.value)}
-          onKeyDown={(e) => {
-            if (e.key === 'Enter') send();
-            else if (e.key === 'ArrowUp') older();
-            else if (e.key === 'ArrowDown') newer();
-            else return;
-            e.preventDefault();
+      <Panel className="overflow-hidden">
+        <div
+          ref={output}
+          data-testid="test-server-console"
+          className="h-84 overflow-auto border-b border-line bg-canvas px-4 py-3 font-mono text-xs leading-5"
+          onScroll={(e) => {
+            const el = e.currentTarget;
+            isFollowing.current = el.scrollHeight - el.scrollTop - el.clientHeight < FOLLOW_THRESHOLD_PX;
           }}
-        />
-        <Button variant="outline" size="sm" disabled={!isRunning || !command.trim()} onClick={send}>
-          {t('send')}
-        </Button>
-      </div>
-    </SectionCard>
+        >
+          {log.length === 0 ? (
+            <div className="text-muted-foreground">{t('empty')}</div>
+          ) : (
+            log.map((line) => (
+              <div
+                key={line.id}
+                data-testid="console-line"
+                data-level={line.kind}
+                className={cn('break-words whitespace-pre-wrap', LINE_COLOR[line.kind])}
+              >
+                {line.line}
+              </div>
+            ))
+          )}
+        </div>
+        <div className="flex items-center gap-2 px-4 py-3">
+          <span className="font-mono text-muted-foreground" aria-hidden>
+            &gt;
+          </span>
+          <Input
+            data-testid="test-server-command"
+            aria-label={t('commandLabel')}
+            className="min-w-0 flex-1 font-mono"
+            value={command}
+            disabled={!isRunning}
+            placeholder={isRunning ? placeholder : t('notRunning')}
+            onChange={(e) => setCommand(e.target.value)}
+            onKeyDown={(e) => {
+              if (e.key === 'Enter') send();
+              else if (e.key === 'ArrowUp') older();
+              else if (e.key === 'ArrowDown') newer();
+              else return;
+              e.preventDefault();
+            }}
+          />
+          <Button variant="outline" size="sm" disabled={!isRunning || !command.trim()} onClick={send}>
+            {t('send')}
+          </Button>
+        </div>
+      </Panel>
+    </Section>
   );
 }

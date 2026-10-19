@@ -1,0 +1,828 @@
+{
+  "logic": {
+    "functions": {
+      "command": {
+        "label": "command",
+        "help": "Runs commands.",
+        "fields": {
+          "command": {
+            "label": "command"
+          }
+        }
+      },
+      "message": {
+        "label": "message",
+        "help": "Sends chat messages.",
+        "fields": {
+          "message": {
+            "label": "message"
+          },
+          "overlay": {
+            "label": "overlay"
+          }
+        }
+      },
+      "actionbar": {
+        "label": "actionbar",
+        "help": "Shows a text in the action bar.",
+        "fields": {
+          "actionbar": {
+            "label": "actionbar"
+          }
+        }
+      },
+      "title": {
+        "label": "title",
+        "help": "Shows a title and subtitle.",
+        "fields": {
+          "title": {
+            "label": "title"
+          },
+          "subtitle": {
+            "label": "subtitle"
+          },
+          "fadeIn": {
+            "label": "fade_in"
+          },
+          "stay": {
+            "label": "stay"
+          },
+          "fadeOut": {
+            "label": "fade_out"
+          }
+        }
+      },
+      "toast": {
+        "label": "toast",
+        "help": "Shows an advancement toast.",
+        "fields": {
+          "toast": {
+            "label": "toast"
+          },
+          "item": {
+            "label": "item"
+          },
+          "advancementType": {
+            "label": "advancement_type"
+          }
+        }
+      },
+      "openWindow": {
+        "label": "open_window",
+        "help": "Opens a workstation window.",
+        "fields": {
+          "guiType": {
+            "label": "gui_type"
+          },
+          "title": {
+            "label": "title"
+          }
+        }
+      },
+      "closeInventory": {
+        "label": "close_inventory",
+        "help": "Closes the open inventory."
+      },
+      "merchantTrade": {
+        "label": "merchant_trade",
+        "help": "Opens a trading window with offers.",
+        "fields": {
+          "title": {
+            "label": "title"
+          },
+          "offers": {
+            "label": "offers",
+            "help": "The offers: cost_1, cost_2, result and exp each."
+          }
+        }
+      },
+      "playSound": {
+        "label": "play_sound",
+        "help": "Plays a sound.",
+        "fields": {
+          "sound": {
+            "label": "sound"
+          },
+          "volume": {
+            "label": "volume"
+          },
+          "pitch": {
+            "label": "pitch"
+          },
+          "source": {
+            "label": "source"
+          },
+          "x": {
+            "label": "x"
+          },
+          "y": {
+            "label": "y"
+          },
+          "z": {
+            "label": "z"
+          }
+        }
+      },
+      "particle": {
+        "label": "particle",
+        "help": "Spawns particles, with the data some particle types need (a block, an item, a color …)."
+      },
+      "potionEffect": {
+        "label": "potion_effect",
+        "help": "Gives a potion effect.",
+        "fields": {
+          "potionEffect": {
+            "label": "potion_effect"
+          },
+          "duration": {
+            "label": "duration"
+          },
+          "amplifier": {
+            "label": "amplifier"
+          },
+          "ambient": {
+            "label": "ambient"
+          },
+          "particles": {
+            "label": "particles"
+          },
+          "showIcon": {
+            "label": "show_icon"
+          }
+        }
+      },
+      "removePotionEffect": {
+        "label": "remove_potion_effect",
+        "help": "Removes a potion effect (or all).",
+        "fields": {
+          "potionEffect": {
+            "label": "potion_effect"
+          },
+          "all": {
+            "label": "all"
+          }
+        }
+      },
+      "damage": {
+        "label": "damage",
+        "help": "Damages the players.",
+        "fields": {
+          "amount": {
+            "label": "amount"
+          },
+          "damageType": {
+            "label": "damage_type"
+          }
+        }
+      },
+      "heal": {
+        "label": "heal",
+        "help": "Heals the players.",
+        "fields": {
+          "amount": {
+            "label": "amount"
+          }
+        }
+      },
+      "setFood": {
+        "label": "set_food",
+        "help": "Sets the food level.",
+        "fields": {
+          "food": {
+            "label": "food"
+          }
+        }
+      },
+      "setSaturation": {
+        "label": "set_saturation",
+        "help": "Sets the saturation.",
+        "fields": {
+          "saturation": {
+            "label": "saturation"
+          }
+        }
+      },
+      "setExp": {
+        "label": "set_exp",
+        "help": "Sets the experience points.",
+        "fields": {
+          "exp": {
+            "label": "exp"
+          }
+        }
+      },
+      "setLevel": {
+        "label": "set_level",
+        "help": "Sets the experience level.",
+        "fields": {
+          "level": {
+            "label": "level"
+          }
+        }
+      },
+      "levelerExp": {
+        "label": "leveler_exp",
+        "help": "Gives experience in a leveling plugin (e.g. AuraSkills, Jobs).",
+        "fields": {
+          "plugin": {
+            "label": "plugin"
+          },
+          "leveler": {
+            "label": "leveler"
+          },
+          "count": {
+            "label": "count"
+          }
+        }
+      },
+      "teleport": {
+        "label": "teleport",
+        "help": "Teleports the players.",
+        "fields": {
+          "world": {
+            "label": "world"
+          },
+          "x": {
+            "label": "x"
+          },
+          "y": {
+            "label": "y"
+          },
+          "z": {
+            "label": "z"
+          },
+          "pitch": {
+            "label": "pitch"
+          },
+          "yaw": {
+            "label": "yaw"
+          }
+        }
+      },
+      "transfer": {
+        "label": "transfer",
+        "help": "Sends the player to another server.",
+        "fields": {
+          "host": {
+            "label": "host"
+          },
+          "port": {
+            "label": "port"
+          },
+          "server": {
+            "label": "server"
+          }
+        }
+      },
+      "setCooldown": {
+        "label": "set_cooldown",
+        "help": "Starts a cooldown (see on_cooldown).",
+        "fields": {
+          "id": {
+            "label": "id"
+          },
+          "time": {
+            "label": "time"
+          }
+        }
+      },
+      "removeCooldown": {
+        "label": "remove_cooldown",
+        "help": "Removes a cooldown (or all).",
+        "fields": {
+          "id": {
+            "label": "id"
+          },
+          "all": {
+            "label": "all"
+          }
+        }
+      },
+      "setItemCooldown": {
+        "label": "set_item_cooldown",
+        "help": "Starts an item cooldown group (1.21.2+).",
+        "fields": {
+          "id": {
+            "label": "id"
+          },
+          "time": {
+            "label": "time"
+          }
+        }
+      },
+      "discoverRecipe": {
+        "label": "discover_recipe",
+        "help": "Unlocks a recipe.",
+        "fields": {
+          "recipe": {
+            "label": "recipe"
+          }
+        }
+      },
+      "playTotemAnimation": {
+        "label": "play_totem_animation",
+        "help": "Plays the totem animation with an item.",
+        "fields": {
+          "item": {
+            "label": "item"
+          },
+          "sound": {
+            "label": "sound"
+          },
+          "volume": {
+            "label": "volume"
+          },
+          "pitch": {
+            "label": "pitch"
+          },
+          "silent": {
+            "label": "silent"
+          }
+        }
+      },
+      "swingHand": {
+        "label": "swing_hand",
+        "help": "Swings the hand.",
+        "fields": {
+          "hand": {
+            "label": "hand"
+          }
+        }
+      },
+      "setCount": {
+        "label": "set_count",
+        "help": "Sets the count of the item in the hand.",
+        "fields": {
+          "count": {
+            "label": "count"
+          }
+        }
+      },
+      "damageItem": {
+        "label": "damage_item",
+        "help": "Damages the item.",
+        "fields": {
+          "amount": {
+            "label": "amount"
+          },
+          "slot": {
+            "label": "slot"
+          }
+        }
+      },
+      "clearItem": {
+        "label": "clear_item",
+        "help": "Removes items from the inventory.",
+        "fields": {
+          "item": {
+            "label": "item"
+          },
+          "count": {
+            "label": "count"
+          }
+        }
+      },
+      "dropLoot": {
+        "label": "drop_loot",
+        "help": "Drops loot at a position.",
+        "fields": {
+          "toInventory": {
+            "label": "to_inventory"
+          },
+          "x": {
+            "label": "x"
+          },
+          "y": {
+            "label": "y"
+          },
+          "z": {
+            "label": "z"
+          }
+        }
+      },
+      "cancelEvent": {
+        "label": "cancel_event",
+        "help": "Cancels the event."
+      },
+      "run": {
+        "label": "run",
+        "help": "Runs functions, optionally after a delay in ticks.",
+        "fields": {
+          "functions": {
+            "label": "functions"
+          },
+          "delay": {
+            "label": "delay"
+          }
+        }
+      },
+      "ifElse": {
+        "label": "if_else",
+        "help": "Runs the functions of the first rule whose conditions hold.",
+        "fields": {
+          "rules": {
+            "label": "rules",
+            "itemLabel": "Rule",
+            "fields": {
+              "functions": {
+                "label": "functions"
+              }
+            }
+          }
+        }
+      },
+      "alternatives": {
+        "label": "alternatives",
+        "help": "Another name for if_else.",
+        "fields": {
+          "rules": {
+            "label": "rules",
+            "itemLabel": "Rule",
+            "fields": {
+              "functions": {
+                "label": "functions"
+              }
+            }
+          }
+        }
+      },
+      "when": {
+        "label": "when",
+        "help": "Runs the functions of the case that matches a text.",
+        "fields": {
+          "source": {
+            "label": "source",
+            "placeholder": "'<'papi:player_world>"
+          },
+          "cases": {
+            "label": "cases",
+            "itemLabel": "Case",
+            "fields": {
+              "when": {
+                "label": "when"
+              },
+              "functions": {
+                "label": "functions"
+              }
+            }
+          },
+          "fallback": {
+            "label": "fallback"
+          }
+        }
+      },
+      "setVariable": {
+        "label": "set_variable",
+        "help": "Sets a variable of the context.",
+        "fields": {
+          "name": {
+            "label": "name"
+          },
+          "valueType": {
+            "label": "value_type"
+          },
+          "number": {
+            "label": "number"
+          },
+          "text": {
+            "label": "text"
+          }
+        }
+      },
+      "placeBlock": {
+        "label": "place_block",
+        "help": "Places a block.",
+        "fields": {
+          "blockState": {
+            "label": "block_state",
+            "placeholder": "minecraft:stone"
+          },
+          "x": {
+            "label": "x"
+          },
+          "y": {
+            "label": "y"
+          },
+          "z": {
+            "label": "z"
+          },
+          "updateFlags": {
+            "label": "update_flags"
+          }
+        }
+      },
+      "breakBlock": {
+        "label": "break_block",
+        "help": "Breaks a block.",
+        "fields": {
+          "x": {
+            "label": "x"
+          },
+          "y": {
+            "label": "y"
+          },
+          "z": {
+            "label": "z"
+          }
+        }
+      },
+      "updateBlockProperty": {
+        "label": "update_block_property",
+        "help": "Changes properties of the block state.",
+        "fields": {
+          "properties": {
+            "label": "properties",
+            "keyLabel": "Property",
+            "keyPlaceholder": "age",
+            "value": {
+              "label": "Value"
+            }
+          },
+          "x": {
+            "label": "x"
+          },
+          "y": {
+            "label": "y"
+          },
+          "z": {
+            "label": "z"
+          },
+          "updateFlags": {
+            "label": "update_flags"
+          }
+        }
+      },
+      "transformBlock": {
+        "label": "transform_block",
+        "help": "Turns the block into another, keeping matching properties.",
+        "fields": {
+          "block": {
+            "label": "block"
+          },
+          "properties": {
+            "label": "properties",
+            "keyLabel": "Property",
+            "keyPlaceholder": "facing",
+            "value": {
+              "label": "Value"
+            }
+          },
+          "x": {
+            "label": "x"
+          },
+          "y": {
+            "label": "y"
+          },
+          "z": {
+            "label": "z"
+          },
+          "updateFlags": {
+            "label": "update_flags"
+          }
+        }
+      },
+      "cycleBlockProperty": {
+        "label": "cycle_block_property",
+        "help": "Switches a block property to its next value.",
+        "fields": {
+          "property": {
+            "label": "property"
+          },
+          "inverse": {
+            "label": "inverse"
+          },
+          "rules": {
+            "label": "rules",
+            "keyLabel": "From value",
+            "keyPlaceholder": "low",
+            "value": {
+              "label": "Value"
+            }
+          },
+          "x": {
+            "label": "x"
+          },
+          "y": {
+            "label": "y"
+          },
+          "z": {
+            "label": "z"
+          },
+          "updateFlags": {
+            "label": "update_flags"
+          }
+        }
+      },
+      "updateInteractionTick": {
+        "label": "update_interaction_tick",
+        "help": "Updates the tick of the last interaction."
+      },
+      "spawnFurniture": {
+        "label": "spawn_furniture",
+        "help": "Places a furniture.",
+        "fields": {
+          "furnitureId": {
+            "label": "furniture_id"
+          },
+          "variant": {
+            "label": "variant"
+          },
+          "x": {
+            "label": "x"
+          },
+          "y": {
+            "label": "y"
+          },
+          "z": {
+            "label": "z"
+          },
+          "pitch": {
+            "label": "pitch"
+          },
+          "yaw": {
+            "label": "yaw"
+          },
+          "playSound": {
+            "label": "play_sound"
+          }
+        }
+      },
+      "replaceFurniture": {
+        "label": "replace_furniture",
+        "help": "Replaces the furniture with another.",
+        "fields": {
+          "furnitureId": {
+            "label": "furniture_id"
+          },
+          "variant": {
+            "label": "variant"
+          },
+          "x": {
+            "label": "x"
+          },
+          "y": {
+            "label": "y"
+          },
+          "z": {
+            "label": "z"
+          },
+          "pitch": {
+            "label": "pitch"
+          },
+          "yaw": {
+            "label": "yaw"
+          },
+          "dropLoot": {
+            "label": "drop_loot"
+          },
+          "playSound": {
+            "label": "play_sound"
+          }
+        }
+      },
+      "removeFurniture": {
+        "label": "remove_furniture",
+        "help": "Removes the furniture.",
+        "fields": {
+          "dropLoot": {
+            "label": "drop_loot"
+          },
+          "playSound": {
+            "label": "play_sound"
+          }
+        }
+      },
+      "rotateFurniture": {
+        "label": "rotate_furniture",
+        "help": "Rotates the furniture.",
+        "fields": {
+          "degree": {
+            "label": "degree"
+          },
+          "onSuccess": {
+            "label": "on_success"
+          },
+          "onFailure": {
+            "label": "on_failure"
+          }
+        }
+      },
+      "setFurnitureVariant": {
+        "label": "set_furniture_variant",
+        "help": "Switches the furniture to another variant.",
+        "fields": {
+          "variant": {
+            "label": "variant"
+          },
+          "force": {
+            "label": "force"
+          }
+        }
+      },
+      "removeEntity": {
+        "label": "remove_entity",
+        "help": "Removes the entity."
+      },
+      "js": {
+        "label": "js",
+        "help": "Runs a JavaScript function.",
+        "fields": {
+          "script": {
+            "label": "script"
+          },
+          "function": {
+            "label": "function",
+            "placeholder": "main"
+          },
+          "args": {
+            "label": "args"
+          }
+        }
+      },
+      "takeMoney": {
+        "label": "take_money",
+        "help": "Takes money from the player (needs Vault).",
+        "fields": {
+          "amount": {
+            "label": "amount"
+          }
+        }
+      },
+      "giveMoney": {
+        "label": "give_money",
+        "help": "Gives the player money (needs Vault).",
+        "fields": {
+          "amount": {
+            "label": "amount"
+          }
+        }
+      },
+      "mythicMobsSkill": {
+        "label": "mythic_mobs_skill",
+        "help": "Casts a MythicMobs skill (needs MythicMobs).",
+        "fields": {
+          "skill": {
+            "label": "skill"
+          },
+          "power": {
+            "label": "power"
+          },
+          "parameters": {
+            "label": "parameters"
+          },
+          "variables": {
+            "label": "variables"
+          }
+        }
+      },
+      "castMythicSkill": {
+        "label": "cast_mythic_skill",
+        "help": "Another name for mythic_mobs_skill.",
+        "fields": {
+          "skill": {
+            "label": "skill"
+          },
+          "power": {
+            "label": "power"
+          },
+          "parameters": {
+            "label": "parameters"
+          },
+          "variables": {
+            "label": "variables"
+          }
+        }
+      },
+      "spawnMythicMob": {
+        "label": "spawn_mythic_mob",
+        "help": "Spawns a MythicMobs mob (needs MythicMobs).",
+        "fields": {
+          "mob": {
+            "label": "mob"
+          },
+          "level": {
+            "label": "level"
+          },
+          "world": {
+            "label": "world"
+          },
+          "x": {
+            "label": "x"
+          },
+          "y": {
+            "label": "y"
+          },
+          "z": {
+            "label": "z"
+          },
+          "pitch": {
+            "label": "pitch"
+          },
+          "yaw": {
+            "label": "yaw"
+          }
+        }
+      }
+    }
+  }
+}

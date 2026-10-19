@@ -1,0 +1,193 @@
+{
+  "groups": {
+    "appearance": {
+      "label": "Pack & Appearance",
+      "description": "Pack options, CustomArmor and Color"
+    }
+  },
+  "properties": {
+    "color": {
+      "label": "Color",
+      "description": "Tints dyeable items (e.g. leather armor) or faces with “Tint” in the model.",
+      "field": {
+        "label": "Color (R, G, B)",
+        "placeholder": "255, 128, 0"
+      }
+    },
+    "packOversizedInGui": {
+      "label": "Oversized In GUI",
+      "description": "Lets models extend beyond the 16×16 slot in the inventory.",
+      "field": {
+        "label": "Oversized in inventory"
+      }
+    },
+    "packCustomModelData": {
+      "label": "Custom Model Data (Pack)",
+      "description": "Only needed if other plugins must recognize the item by CustomModelData. Otherwise Nexo assigns it itself.",
+      "field": {
+        "label": "CustomModelData"
+      }
+    },
+    "armor": {
+      "label": "CustomArmor (Armor, Elytra, Mob Armor, Harness, Saddles)",
+      "description": "Texture shown when worn: player armor, elytra wings, armor for wolf/horse/llama/nautilus, harness for the happy ghast, or saddles. ResourcepackBuilder generates an equipment model in the pack from it and sets Components.equippable (slot, asset_id, allowed animals).",
+      "hint": "All parts of a set get the same set ID; the textures only need to be uploaded on one part. Elytras, animal armor and saddles each need their own set ID.",
+      "field": {
+        "label": "Armor",
+        "fields": {
+          "set": {
+            "label": "Set ID",
+            "placeholder": "e.g. ruby"
+          },
+          "layer1": {
+            "label": "Player: Layer 1 (helmet, chestplate, boots)",
+            "help": "Corresponds to e.g. diamond_layer_1.png"
+          },
+          "layer2": {
+            "label": "Player: Layer 2 (leggings)",
+            "help": "Corresponds to e.g. diamond_layer_2.png"
+          },
+          "humanoidBaby": {
+            "label": "Player: Baby layer (26.1+)",
+            "help": "Armor as worn by baby zombies and other baby humanoids."
+          },
+          "elytra": {
+            "label": "Elytra wings",
+            "help": "Like elytra.png. Without material ELYTRA, ResourcepackBuilder adds the glider component automatically."
+          },
+          "mob": {
+            "label": "Animal armor & harness",
+            "fields": {
+              "wolfArmor": {
+                "label": "Wolf armor",
+                "help": "Like wolf_armor.png"
+              },
+              "horseArmor": {
+                "label": "Horse armor",
+                "help": "Like horse_armor_diamond.png"
+              },
+              "llamaArmor": {
+                "label": "Llama carpet",
+                "help": "Like llama/decor/*.png"
+              },
+              "nautilusArmor": {
+                "label": "Nautilus armor"
+              },
+              "harness": {
+                "label": "Harness (happy ghast)"
+              }
+            }
+          },
+          "saddles": {
+            "label": "Saddles (1.21.5+)",
+            "help": "A saddle can have textures for several animals.",
+            "fields": {
+              "horseSaddle": {
+                "label": "Horse"
+              },
+              "pigSaddle": {
+                "label": "Pig"
+              },
+              "striderSaddle": {
+                "label": "Strider"
+              },
+              "donkeySaddle": {
+                "label": "Donkey"
+              },
+              "muleSaddle": {
+                "label": "Mule"
+              },
+              "camelSaddle": {
+                "label": "Camel"
+              },
+              "skeletonHorseSaddle": {
+                "label": "Skeleton horse"
+              },
+              "zombieHorseSaddle": {
+                "label": "Zombie horse"
+              },
+              "nautilusSaddle": {
+                "label": "Nautilus"
+              },
+              "camelHuskSaddle": {
+                "label": "Camel husk"
+              }
+            }
+          },
+          "overlays": {
+            "label": "Overlay textures",
+            "help": "A second texture drawn over the layer. It keeps its colors on dyeable armor, e.g. for buckles or gems.",
+            "fields": {
+              "layer1": {
+                "label": "Over layer 1"
+              },
+              "layer2": {
+                "label": "Over layer 2"
+              },
+              "humanoidBaby": {
+                "label": "Over the baby layer"
+              },
+              "elytra": {
+                "label": "Over the elytra wings"
+              }
+            }
+          },
+          "dyeable": {
+            "label": "Dyeable",
+            "help": "The layers take the item’s dye color, like leather armor. The item needs a dye color itself to show one."
+          },
+          "colorWhenUndyed": {
+            "label": "Color when undyed",
+            "help": "Color of the dyeable layers while the item is not dyed. Empty = no tint.",
+            "placeholder": "e.g. 160, 101, 64"
+          },
+          "usePlayerTexture": {
+            "label": "Use player texture",
+            "help": "The elytra wings show the player’s own elytra or cape texture instead of this set’s texture."
+          }
+        }
+      }
+    },
+    "componentsItemModel": {
+      "label": "Item Model",
+      "description": "The item model the item shows; nexo:empty makes it invisible.",
+      "field": {
+        "label": "Item model",
+        "placeholder": "e.g. nexo:empty",
+        "help": "Replaces the item model the export sets. Order: additional YAML, then this field, then the definition the export generates (inventory icon, furniture), then nexo:'<'item ID>. The export warns when this field hides a generated definition."
+      }
+    },
+    "packHandSwapAnimation": {
+      "label": "Hand Swap Animation",
+      "description": "Plays the hand animation when the item is switched to.",
+      "field": {
+        "label": "Animate swapping",
+        "help": "Read by Nexo 1.30, not listed in the docs."
+      }
+    },
+    "packSwapAnimationScale": {
+      "label": "Swap Animation Scale",
+      "description": "Speed of the animation when the item is switched to.",
+      "field": {
+        "label": "Scale",
+        "help": "Read by Nexo 1.30, not listed in the docs."
+      }
+    },
+    "trimPattern": {
+      "label": "Trim Pattern",
+      "description": "Armor trim pattern on the item (vanilla armor only).",
+      "field": {
+        "label": "Pattern",
+        "help": "Set the trim material too. Read by Nexo 1.30, not listed in the docs."
+      }
+    },
+    "trimMaterial": {
+      "label": "Trim Material",
+      "description": "Material (color) of the armor trim.",
+      "field": {
+        "label": "Material",
+        "help": "Set the trim pattern too. Read by Nexo 1.30, not listed in the docs."
+      }
+    }
+  }
+}

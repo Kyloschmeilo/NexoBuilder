@@ -3,8 +3,8 @@
  * This test walks all that data and checks that each key exists in the English and German
  * catalogue – and that the catalogue holds no keys nobody references any more.
  */
-import { readFileSync } from 'node:fs';
 import { describe, expect, it } from 'vitest';
+import { loadCatalogue, type MessageTree } from '@resourcepackbuilder/test-utils/catalogue';
 import { TEXTURE_TEMPLATES } from '@resourcepackbuilder/minecraft';
 import { ARMOR_LAYERS } from '../project/armor';
 import { COPY_CATEGORIES, summarizeClipboard, type ItemConfigClipboard } from './copyConfig';
@@ -12,17 +12,12 @@ import { type Field, type TextField, validateTextFormat } from '../form/fields';
 import { keySegment } from '@resourcepackbuilder/utils';
 import type { Option } from '../form/options';
 import * as options from './form/options';
-import { INGREDIENT_SOURCES, RECIPE_TYPES } from '../project/recipes/model';
 import { NEXO_FORM, PROPERTIES } from './form/schema';
-import { formMessageKeys, optionMessageKeys } from '../form/messageKeys';
-import { FURNITURE_MODEL_SLOTS, STACK_MODELS, stateDef, VARIANTS } from '../project/variants';
-
-type MessageTree = { [key: string]: string | MessageTree };
-
-function loadCatalogue(locale: 'en' | 'de'): MessageTree {
-  const url = new URL(`../../../i18n/src/messages/${locale}/schema.json`, import.meta.url);
-  return JSON.parse(readFileSync(url, 'utf8')) as MessageTree;
-}
+import { fieldMessageKeys, formMessageKeys, optionMessageKeys } from '../form/messageKeys';
+import { NEXO_DIALOG_FIELD } from './dialogs/form';
+import { NEXO_MULTIPACK_FIELD } from './multipack';
+import { DIRECTIONAL_MODEL_SLOTS, FURNITURE_MODEL_SLOTS, STACK_MODELS, stateDef, VARIANTS } from '../project/variants';
+import { itemModelMessageKeys } from '../project/itemModel';
 
 function lookup(tree: MessageTree, key: string): unknown {
   let node: unknown = tree;
@@ -41,19 +36,18 @@ function leafKeys(tree: MessageTree, prefix = ''): string[] {
 }
 
 function referencedKeys(): Set<string> {
-  const keys: string[] = formMessageKeys(NEXO_FORM);
+  const keys: string[] = [...formMessageKeys(NEXO_FORM), ...fieldMessageKeys(NEXO_DIALOG_FIELD), ...fieldMessageKeys(NEXO_MULTIPACK_FIELD)];
   for (const value of Object.values(options)) {
     if (Array.isArray(value)) keys.push(...optionMessageKeys(value as Option[]));
   }
   for (const layer of ARMOR_LAYERS) keys.push(layer.label);
-  for (const def of [...VARIANTS, ...FURNITURE_MODEL_SLOTS, STACK_MODELS, stateDef('on')]) {
+  for (const def of [...VARIANTS, ...FURNITURE_MODEL_SLOTS, STACK_MODELS, ...DIRECTIONAL_MODEL_SLOTS, stateDef('on')]) {
     keys.push(def.label, def.description);
     if (def.hint) keys.push(def.hint);
   }
-  for (const type of RECIPE_TYPES) keys.push(type.label, type.description);
-  for (const source of INGREDIENT_SOURCES) keys.push(source.label);
   for (const category of COPY_CATEGORIES) keys.push(category.label, category.description);
   for (const template of TEXTURE_TEMPLATES) keys.push(template.label, template.description);
+  keys.push(...itemModelMessageKeys());
 
   const invalid: Array<[TextField['format'], string]> = [
     ['duration', 'x'],
@@ -93,14 +87,15 @@ describe('schema message keys', () => {
 
   for (const locale of ['en', 'de'] as const) {
     it(`finds every referenced key in the ${locale} catalogue`, () => {
-      const catalogue = loadCatalogue(locale);
+      const catalogue = loadCatalogue(locale, 'schema');
       const missing = [...keys].filter((k) => typeof lookup(catalogue, k) !== 'string');
       expect(missing).toEqual([]);
     });
   }
 
+  // The recipe editor's texts serve both targets; targets/recipes.test.ts checks them
   it('has no unreferenced keys in the catalogue', () => {
-    const unused = leafKeys(loadCatalogue('en')).filter((k) => !keys.has(k));
+    const unused = leafKeys(loadCatalogue('en', 'schema')).filter((k) => !keys.has(k) && !k.startsWith('recipes.'));
     expect(unused).toEqual([]);
   });
 });
@@ -157,7 +152,7 @@ describe('message key derivation', () => {
 
   it('derives option, variant and armor layer labels from their values', () => {
     for (const option of options.ATTRIBUTE_SLOTS) expect(option.label).toBe(`options.attributeSlots.${keySegment(option.value)}.label`);
-    for (const def of [...VARIANTS, ...FURNITURE_MODEL_SLOTS, STACK_MODELS])
+    for (const def of [...VARIANTS, ...FURNITURE_MODEL_SLOTS, STACK_MODELS, ...DIRECTIONAL_MODEL_SLOTS])
       expect(def.label).toBe(`variants.${keySegment(def.slot)}.label`);
     for (const layer of ARMOR_LAYERS) expect(layer.label).toBe(`armor.layers.${keySegment(layer.key)}`);
   });

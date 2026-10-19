@@ -1,7 +1,7 @@
 import { useCallback } from 'react';
 import { useTranslations } from 'next-intl';
 import { formFor } from '@resourcepackbuilder/core/targets';
-import { useProjectStore } from '../store/project';
+import { useFormTarget } from './formTarget';
 
 type SchemaParams = Record<string, string | number>;
 
@@ -16,12 +16,13 @@ const SHARED_NAMESPACE = 'schema';
 
 /**
  * Translates human-readable strings of core's data (field labels, help texts, placeholders, option labels…). A key
- * is looked up in the namespace of the open project's form (`schema` for Nexo, `ceSchema` for CraftEngine) and then
- * in `schema`, which holds the texts every target shares. Core's tests guarantee each key exists; `''` or
- * `undefined` mean "no text".
+ * is looked up in the namespace of the form of the open project, or of a `FormTargetProvider` (`schema` for Nexo,
+ * `ceSchema` for CraftEngine), and then in `schema`, which holds the texts every target shares. Core's tests guarantee
+ * each key exists; `''` or `undefined` mean "no text".
  */
 export function useSchemaText(): SchemaText {
-  const namespace = useProjectStore((s) => (s.project ? formFor(s.project.target).messages : SHARED_NAMESPACE));
+  const target = useFormTarget();
+  const namespace = target ? formFor(target).messages : SHARED_NAMESPACE;
   const t = useTranslations();
   // Keys come from core data at runtime, so they cannot be typed as literal keys here; these are the only casts.
   return useCallback(

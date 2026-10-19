@@ -8,6 +8,7 @@
     ".": "./src/index.ts",
     "./components/*": "./src/components/*.tsx",
     "./hooks/*": "./src/hooks/*.ts",
+    "./cn": "./src/lib/cn.ts",
     "./lib/*": "./src/lib/*.tsx",
     "./styles.css": "./src/styles.css",
     "./fonts.css": "./src/fonts.css"
@@ -19,8 +20,8 @@
   "dependencies": {
     "@base-ui/react": "^1.9.0",
     "@fontsource/chakra-petch": "^5.3.0",
-    "@fontsource/hanken-grotesk": "^5.3.0",
-    "@fontsource/martian-mono": "^5.3.0",
+    "@fontsource/ibm-plex-mono": "^5.3.0",
+    "@fontsource/ibm-plex-sans": "^5.3.0",
     "@shadcn/react": "^0.3.1",
     "class-variance-authority": "^0.7.1",
     "cmdk": "^1.1.1",

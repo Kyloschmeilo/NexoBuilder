@@ -1,0 +1,186 @@
+{
+  "logic": {
+    "attributeBases": {
+      "constant": {
+        "label": "constant",
+        "help": "A fixed number.",
+        "fields": {
+          "value": {
+            "label": "value"
+          }
+        }
+      },
+      "vanilla": {
+        "label": "vanilla",
+        "help": "The entity's current value of a vanilla attribute.",
+        "fields": {
+          "updateInterval": {
+            "label": "update_interval"
+          }
+        }
+      },
+      "byEntityType": {
+        "label": "by_entity_type",
+        "help": "The default value of a vanilla attribute for the entity's type."
+      }
+    },
+    "attributeSyncValues": {
+      "expression": {
+        "label": "expression",
+        "help": "The result of an expression over value and base.",
+        "fields": {
+          "expression": {
+            "label": "expression",
+            "placeholder": "e.g. (value - base) * 0.5"
+          }
+        }
+      },
+      "delta": {
+        "label": "delta",
+        "help": "Only the change from the base: value - base."
+      },
+      "ratio": {
+        "label": "ratio",
+        "help": "The value relative to the base: value / base."
+      }
+    },
+    "damageFormulas": {
+      "expression": {
+        "label": "expression",
+        "help": "The result of an expression.",
+        "fields": {
+          "expression": {
+            "label": "expression",
+            "placeholder": "e.g. damage * 1.25"
+          }
+        }
+      },
+      "composition": {
+        "label": "composition",
+        "help": "The sum of several parts, each its own formula.",
+        "fields": {
+          "parts": {
+            "label": "parts",
+            "keyLabel": "Part",
+            "keyPlaceholder": "e.g. physical",
+            "value": {
+              "label": "Formula",
+              "placeholder": "e.g. damage + '<'attacker_attr:namespace:might>"
+            }
+          }
+        }
+      },
+      "js": {
+        "label": "js",
+        "help": "The result of a JavaScript function in the pack.",
+        "fields": {
+          "script": {
+            "label": "script",
+            "placeholder": "e.g. namespace:combat/damage"
+          },
+          "function": {
+            "label": "function",
+            "placeholder": "main"
+          },
+          "args": {
+            "label": "args"
+          }
+        }
+      }
+    },
+    "damageEffects": {
+      "lifeSteal": {
+        "label": "life_steal",
+        "help": "Heals the attacker by a share of the damage plus a fixed amount.",
+        "fields": {
+          "ratio": {
+            "label": "ratio"
+          },
+          "amount": {
+            "label": "amount"
+          },
+          "functions": {
+            "label": "functions"
+          }
+        }
+      },
+      "potionEffect": {
+        "label": "potion_effect",
+        "help": "Gives the victim or the attacker a potion effect.",
+        "fields": {
+          "target": {
+            "label": "target"
+          },
+          "potionEffect": {
+            "label": "potion_effect"
+          },
+          "duration": {
+            "label": "duration"
+          },
+          "amplifier": {
+            "label": "amplifier"
+          },
+          "ambient": {
+            "label": "ambient"
+          },
+          "particles": {
+            "label": "particles"
+          },
+          "showIcon": {
+            "label": "show_icon"
+          },
+          "functions": {
+            "label": "functions"
+          }
+        }
+      },
+      "function": {
+        "label": "function",
+        "help": "Only runs its functions (when its conditions hold).",
+        "fields": {
+          "functions": {
+            "label": "functions"
+          }
+        }
+      }
+    }
+  },
+  "attributes": {
+    "modifier": {
+      "type": {
+        "label": "type",
+        "help": "The custom attribute the modifier changes.",
+        "placeholder": "e.g. namespace:might"
+      },
+      "id": {
+        "label": "id",
+        "help": "A unique id for this modifier. CraftEngine finds, replaces and removes it by this id.",
+        "placeholder": "e.g. namespace:item/war_blade/might"
+      },
+      "amount": {
+        "label": "amount",
+        "help": "The value given to the operation: a number, a range like 5~10, an expression or a number provider."
+      },
+      "operation": {
+        "label": "operation",
+        "help": "How the amount is applied: a built-in operation or one of the project."
+      },
+      "scope": {
+        "label": "scope",
+        "help": "entity: adds to the holder's attribute. weapon: only counts in damage formulas for attacks with this item. Default: entity."
+      },
+      "slot": {
+        "label": "slot",
+        "help": "The slot or slot group in which the modifier applies (mainhand, armor, any …)."
+      },
+      "conditions": {
+        "label": "conditions",
+        "help": "The modifier only applies while all conditions hold."
+      },
+      "updateInterval": {
+        "label": "update_interval",
+        "help": "How often a changing amount or the conditions are checked, in ticks. Default: 20."
+      }
+    }
+  }
+}

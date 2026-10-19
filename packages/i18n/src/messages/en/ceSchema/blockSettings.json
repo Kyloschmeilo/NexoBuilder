@@ -1,0 +1,420 @@
+{
+  "groups": {
+    "blockSettings": {
+      "label": "Block Settings",
+      "description": "Properties of the placed block (Hardness, Sounds, Tags, Loot …)"
+    }
+  },
+  "properties": {
+    "blockSettingsTemplate": {
+      "label": "Template",
+      "description": "Takes the block settings from templates: CraftEngine's default templates (default:settings/…, default:hardness/…, default:sound/…, default:burn_data/…) or the project's own. Later templates win over earlier ones.",
+      "hint": "The settings set here are merged over those of the templates: values replace theirs, lists are added to theirs.",
+      "field": {
+        "label": "Templates",
+        "placeholder": "e.g. default:sound/stone"
+      }
+    },
+    "blockSettingsArguments": {
+      "label": "Arguments",
+      "description": "The values for the placeholders of the settings templates, e.g. break_power for default:settings/ore.",
+      "field": {
+        "label": "Arguments",
+        "keyLabel": "Argument",
+        "keyPlaceholder": "e.g. break_power",
+        "value": {
+          "label": "Value",
+          "placeholder": "e.g. 2"
+        }
+      }
+    },
+    "blockSettingsHardness": {
+      "label": "Hardness",
+      "description": "How long the block takes to break. Stone has 1.5, obsidian 50.",
+      "field": {
+        "label": "Hardness"
+      }
+    },
+    "blockSettingsResistance": {
+      "label": "Resistance",
+      "description": "How well the block withstands explosions.",
+      "field": {
+        "label": "Resistance"
+      }
+    },
+    "blockSettingsTags": {
+      "label": "Tags",
+      "description": "Block tags of the block, e.g. the tool that mines it fast (minecraft:mineable/pickaxe).",
+      "field": {
+        "label": "Tags",
+        "placeholder": "namespace:tag"
+      }
+    },
+    "blockSettingsSounds": {
+      "label": "Sounds",
+      "description": "The sounds of the block: break, step, place, hit while mining and fall.",
+      "field": {
+        "label": "Sounds",
+        "fields": {
+          "break": {
+            "label": "Break"
+          },
+          "step": {
+            "label": "Step"
+          },
+          "place": {
+            "label": "Place"
+          },
+          "hit": {
+            "label": "Hit while mining"
+          },
+          "fall": {
+            "label": "Fall"
+          }
+        },
+        "sound": {
+          "choices": {
+            "id": {
+              "label": "Sound",
+              "field": {
+                "label": "Sound event",
+                "placeholder": "minecraft:block.stone.break"
+              }
+            },
+            "detailed": {
+              "label": "Sound with volume and pitch",
+              "field": {
+                "fields": {
+                  "id": {
+                    "label": "Sound event",
+                    "placeholder": "minecraft:block.stone.break"
+                  },
+                  "volume": {
+                    "label": "Volume"
+                  },
+                  "pitch": {
+                    "label": "Pitch"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "blockSettingsCorrectTools": {
+      "label": "Correct Tools",
+      "description": "Tools or item tags that get the drops. Setting it turns on Require Correct Tools.",
+      "field": {
+        "label": "Tools",
+        "placeholder": "#minecraft:pickaxes"
+      }
+    },
+    "blockSettingsRequireCorrectTools": {
+      "label": "Require Correct Tools",
+      "description": "The block drops something only when it is mined with a correct tool.",
+      "field": {
+        "label": "Correct tool required"
+      }
+    },
+    "blockSettingsRespectToolComponent": {
+      "label": "Respect Tool Component",
+      "description": "Tools whose minecraft:tool component marks them correct for drops count as correct tools, as if they were in Correct Tools.",
+      "field": {
+        "label": "Use the tool component"
+      }
+    },
+    "blockSettingsRequiredBreakPower": {
+      "label": "Required Break Power",
+      "description": "The break power a tool needs: wood and gold 1, stone and copper 2, iron 3, diamond 4, netherite 5.",
+      "field": {
+        "label": "Break power"
+      }
+    },
+    "blockSettingsIncorrectToolDigSpeed": {
+      "label": "Incorrect Tool Dig Speed",
+      "description": "Dig speed with a wrong tool, as a share of the normal speed (0 to 1).",
+      "field": {
+        "label": "Speed factor"
+      }
+    },
+    "blockSettingsLuminance": {
+      "label": "Luminance",
+      "description": "The light level the block gives off (0 to 15).",
+      "field": {
+        "label": "Light level"
+      }
+    },
+    "blockSettingsMapColor": {
+      "label": "Map Color",
+      "description": "The color id of the block on maps, e.g. 11 for stone.",
+      "field": {
+        "label": "Color id"
+      }
+    },
+    "blockSettingsPushReaction": {
+      "label": "Push Reaction",
+      "description": "What a piston does with the block.",
+      "field": {
+        "label": "Reaction"
+      }
+    },
+    "blockSettingsInstrument": {
+      "label": "Instrument",
+      "description": "The sound of a note block that stands on the block.",
+      "field": {
+        "label": "Instrument"
+      }
+    },
+    "blockSettingsFluidState": {
+      "label": "Fluid State",
+      "description": "The fluid the block holds. Water makes it waterlogged; give waterlogged variants this setting and a waterlogged look.",
+      "field": {
+        "label": "Fluid",
+        "options": {
+          "water": {
+            "label": "Water"
+          },
+          "empty": {
+            "label": "None"
+          }
+        }
+      }
+    },
+    "blockSettingsBurnable": {
+      "label": "Burnable",
+      "description": "Fire from the surroundings can set the block alight.",
+      "field": {
+        "label": "Burnable"
+      }
+    },
+    "blockSettingsBurnChance": {
+      "label": "Burn Chance",
+      "description": "How likely the block catches fire (0 to 100).",
+      "field": {
+        "label": "Chance"
+      }
+    },
+    "blockSettingsFireSpreadChance": {
+      "label": "Fire Spread Chance",
+      "description": "How likely fire on the block spreads to its neighbors (0 to 100).",
+      "field": {
+        "label": "Chance"
+      }
+    },
+    "blockSettingsReplaceable": {
+      "label": "Replaceable",
+      "description": "Placing another block on it replaces it, like grass.",
+      "field": {
+        "label": "Replaceable"
+      }
+    },
+    "blockSettingsIsRedstoneConductor": {
+      "label": "Is Redstone Conductor",
+      "description": "The block conducts redstone power.",
+      "field": {
+        "label": "Conducts redstone"
+      }
+    },
+    "blockSettingsIsSuffocating": {
+      "label": "Is Suffocating",
+      "description": "Entities inside the block take suffocation damage.",
+      "field": {
+        "label": "Suffocates"
+      }
+    },
+    "blockSettingsIsViewBlocking": {
+      "label": "Is View Blocking",
+      "description": "The block blocks the view of mobs. Players still see what the model shows.",
+      "field": {
+        "label": "Blocks the view"
+      }
+    },
+    "blockSettingsIsRandomlyTicking": {
+      "label": "Is Randomly Ticking",
+      "description": "The block gets random ticks, which some block behaviors need (growing, spreading).",
+      "field": {
+        "label": "Random ticks"
+      }
+    },
+    "blockSettingsCanOcclude": {
+      "label": "Can Occlude",
+      "description": "The block stops light from passing and turns grass below it into dirt.",
+      "field": {
+        "label": "Occludes"
+      }
+    },
+    "blockSettingsBlockLight": {
+      "label": "Block Light",
+      "description": "How much the block weakens light that passes through it (0 to 15).",
+      "field": {
+        "label": "Light reduction"
+      }
+    },
+    "blockSettingsPropagateSkylight": {
+      "label": "Propagate Skylight",
+      "description": "Daylight passes through the block.",
+      "field": {
+        "label": "Lets skylight through"
+      }
+    },
+    "blockSettingsUseShapeForLightOcclusion": {
+      "label": "Use Shape For Light Occlusion",
+      "description": "Light is blocked by the shape of the block instead of the whole block space, as for slabs and stairs.",
+      "field": {
+        "label": "Shape blocks light",
+        "help": "Read by CraftEngine 26.9; not described on the wiki."
+      }
+    },
+    "blockSettingsFriction": {
+      "label": "Friction",
+      "description": "How slippery the block is for mobs and items. Ice has 0.98. Players are not affected.",
+      "field": {
+        "label": "Friction"
+      }
+    },
+    "blockSettingsSpeedFactor": {
+      "label": "Speed Factor",
+      "description": "Changes how fast mobs walk on the block. Players are not affected.",
+      "field": {
+        "label": "Factor"
+      }
+    },
+    "blockSettingsJumpFactor": {
+      "label": "Jump Factor",
+      "description": "Changes how high mobs jump from the block. Players are not affected.",
+      "field": {
+        "label": "Factor"
+      }
+    },
+    "blockSettingsBounceRestitution": {
+      "label": "Bounce Restitution",
+      "description": "How high mobs bounce after landing on the block. Slime has 1. Players are not affected.",
+      "field": {
+        "label": "Bounce"
+      }
+    },
+    "blockSettingsSupportShape": {
+      "label": "Support Shape",
+      "description": "The vanilla block whose shape the block offers to neighbors, e.g. for torches on its side.",
+      "field": {
+        "label": "Block",
+        "placeholder": "minecraft:stone"
+      }
+    },
+    "blockSettingsBlockRaytrace": {
+      "label": "Block Raytrace",
+      "description": "The block stops ray traces, such as the line of sight CraftEngine checks.",
+      "field": {
+        "label": "Stops ray traces",
+        "help": "Read by CraftEngine 26.9; not described on the wiki."
+      }
+    },
+    "blockSettingsDestroyStages": {
+      "label": "Destroy Stages",
+      "description": "Items shown on the block while it is being mined, in place of the vanilla cracks, with their position, rotation and scale.",
+      "field": {
+        "label": "Destroy stages",
+        "fields": {
+          "items": {
+            "label": "Items",
+            "help": "One item per stage, from the first crack to the last. Any number of items works.",
+            "placeholder": "minecraft:destroy_stage_0"
+          },
+          "translation": {
+            "label": "Translation",
+            "placeholder": "0,0.5,0"
+          },
+          "position": {
+            "label": "Position",
+            "placeholder": "0.5,0.5,0.5"
+          },
+          "scale": {
+            "label": "Scale",
+            "placeholder": "1,1,1"
+          },
+          "yaw": {
+            "label": "Yaw"
+          },
+          "pitch": {
+            "label": "Pitch"
+          },
+          "rotation": {
+            "label": "Rotation",
+            "help": "One angle around y, Euler angles x,y,z or a quaternion x,y,z,w.",
+            "placeholder": "45,45,0"
+          },
+          "displayTransform": {
+            "label": "Display transform"
+          },
+          "billboard": {
+            "label": "Billboard"
+          },
+          "viewRange": {
+            "label": "View range"
+          },
+          "brightness": {
+            "label": "Brightness",
+            "fields": {
+              "blockLight": {
+                "label": "Block light"
+              },
+              "skyLight": {
+                "label": "Sky light"
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "blockStates": {
+    "fields": {
+      "model": {
+        "label": "Model details",
+        "fields": {
+          "textures": {
+            "label": "Textures",
+            "help": "CraftEngine builds the model from the textures: 1 on all sides, 2 as end and side, 3 as bottom, side and top, 4 as bottom, front, side and top, 5 or 6 one per face (down, up, north, south, west, east). Start a texture with ^ to use it for the particles too.",
+            "placeholder": "minecraft:block/custom/my_block"
+          },
+          "z": {
+            "label": "Rotation around z",
+            "help": "In steps of 90 degrees. Minecraft 1.21.11 and newer."
+          },
+          "uvlock": {
+            "label": "UV lock",
+            "help": "The textures keep their direction when the model is rotated."
+          }
+        }
+      },
+      "models": {
+        "label": "Weighted models",
+        "help": "Several models: each placed block shows one of them, picked at random by weight. Replaces the model above.",
+        "itemLabel": "Model",
+        "fields": {
+          "path": {
+            "label": "Path",
+            "placeholder": "minecraft:block/custom/flower_1"
+          },
+          "weight": {
+            "label": "Weight"
+          },
+          "x": {
+            "label": "Rotation around x"
+          },
+          "y": {
+            "label": "Rotation around y"
+          },
+          "z": {
+            "label": "Rotation around z",
+            "help": "In steps of 90 degrees. Minecraft 1.21.11 and newer."
+          },
+          "uvlock": {
+            "label": "UV lock"
+          }
+        }
+      }
+    }
+  }
+}

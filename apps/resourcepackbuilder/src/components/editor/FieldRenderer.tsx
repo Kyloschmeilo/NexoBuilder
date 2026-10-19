@@ -1,10 +1,14 @@
 /**
  * Renders a form field of core's Nexo property schema with the editor for its type. Values are stored
  * unchanged in the config object; "not set" is undefined. Human-readable strings of the schema are
- * `schema` message keys and are translated by the editors.
+ * `schema` message keys and are translated by the editors. A field that names a registered hand-written editor
+ * (`Field.editor`, see `customEditors`) is shown with that one instead.
  */
 import type { ComponentType } from 'react';
-import type { Field } from '@resourcepackbuilder/core/form';
+import type { Field, ObjectListField } from '@resourcepackbuilder/core/form';
+import { renderCustomFieldEditor } from './customEditors';
+// Registers the hand-written editors the form schema names (`Field.editor`)
+import './nexoFurnitureEditors';
 import { BooleanEditor } from './editors/BooleanEditor';
 import { ChoiceEditor } from './editors/ChoiceEditor';
 import { MapEditor } from './editors/MapEditor';
@@ -18,12 +22,17 @@ import { SelectEditor } from './editors/SelectEditor';
 import { StringListEditor } from './editors/StringListEditor';
 import { TextEditor } from './editors/TextEditor';
 import { TextureEditor } from './editors/TextureEditor';
-import { TypedListEditor } from './editors/TypedListEditor';
+import { TypedListEditor, TypedObjectListEditor } from './editors/TypedListEditor';
 import { YamlEditor } from './editors/YamlEditor';
 import type { EditorProps } from './types';
 import { isFieldVisible } from './values';
 
 type FieldByType = { [F in Field as F['type']]: F };
+
+/** An object list; one whose entries are told apart by a type key (`typedBy`, e.g. events) as typed cards. */
+function AnyObjectListEditor(props: EditorProps<ObjectListField>) {
+  return props.field.typedBy ? <TypedObjectListEditor {...props} /> : <ObjectListEditor {...props} />;
+}
 
 const EDITORS: { [T in keyof FieldByType]: ComponentType<EditorProps<FieldByType[T]>> } = {
   text: TextEditor,
@@ -33,7 +42,7 @@ const EDITORS: { [T in keyof FieldByType]: ComponentType<EditorProps<FieldByType
   stringList: StringListEditor,
   multiSelect: MultiSelectEditor,
   object: ObjectEditor,
-  objectList: ObjectListEditor,
+  objectList: AnyObjectListEditor,
   map: MapEditor,
   yaml: YamlEditor,
   presence: PresenceEditor,
@@ -55,5 +64,6 @@ interface FieldRendererProps extends EditorProps {
 
 export function FieldRenderer({ siblings, ...props }: FieldRendererProps) {
   if (!isFieldVisible(props.field, siblings)) return null;
-  return <Editor {...props} />;
+  // A field that names a hand-written editor (and one is registered) is shown with it
+  return renderCustomFieldEditor(props) ?? <Editor {...props} />;
 }

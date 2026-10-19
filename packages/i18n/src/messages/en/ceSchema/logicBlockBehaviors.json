@@ -1,0 +1,804 @@
+{
+  "logic": {
+    "blockBehaviors": {
+      "slabBlock": {
+        "label": "slab_block",
+        "help": "A slab: a half block that becomes a double slab when placed on another. Needs the slab properties (the slab preset sets them up)."
+      },
+      "stairsBlock": {
+        "label": "stairs_block",
+        "help": "Stairs that connect to neighbouring stairs like vanilla stairs."
+      },
+      "doorBlock": {
+        "label": "door_block",
+        "help": "A two blocks high door that opens by hand, redstone or a wind charge."
+      },
+      "trapdoorBlock": {
+        "label": "trapdoor_block",
+        "help": "A trapdoor that opens by hand, redstone or a wind charge."
+      },
+      "fenceGateBlock": {
+        "label": "fence_gate_block",
+        "help": "A fence gate that opens by hand, redstone or a wind charge and lowers next to walls."
+      },
+      "fenceBlock": {
+        "label": "fence_block",
+        "help": "A fence that connects to its neighbours (north, east, south and west properties).",
+        "fields": {
+          "connectableBlockTag": {
+            "label": "connectable_block_tag",
+            "help": "The block tag of the fences it connects to (default minecraft:wooden_fences).",
+            "placeholder": "minecraft:wooden_fences"
+          },
+          "canLeash": {
+            "label": "can_leash",
+            "help": "A lead can be tied to the fence."
+          }
+        }
+      },
+      "sofaBlock": {
+        "label": "sofa_block",
+        "help": "A sofa that forms corners with its neighbours (shape and facing properties)."
+      },
+      "doubleHighBlock": {
+        "label": "double_high_block",
+        "help": "A block two blocks high (half property); breaking one half breaks both."
+      },
+      "multiHighBlock": {
+        "label": "multi_high_block",
+        "help": "A block several blocks high; an int property counts the part (0 = bottom).",
+        "fields": {
+          "property": {
+            "label": "property",
+            "help": "The int property that numbers the parts (required). Its range sets the height.",
+            "placeholder": "height"
+          }
+        }
+      },
+      "stackableBlock": {
+        "label": "stackable_block",
+        "help": "Several of the item fit in one block (like sea pickles); an int property counts them.",
+        "fields": {
+          "property": {
+            "label": "property",
+            "help": "The int property that counts the stacked items (default amount).",
+            "placeholder": "amount"
+          },
+          "items": {
+            "label": "items"
+          }
+        }
+      },
+      "snowyBlock": {
+        "label": "snowy_block",
+        "help": "Turns snowy when snow lies on top (snowy property), like grass."
+      },
+      "hangableBlock": {
+        "label": "hangable_block",
+        "help": "Hangs from the block above when placed on its underside (hanging property), like a lantern."
+      },
+      "strippableBlock": {
+        "label": "strippable_block",
+        "help": "Turns into another block when used with a tool, like logs with an axe.",
+        "fields": {
+          "stripped": {
+            "label": "stripped",
+            "help": "The block it becomes (required). Its matching properties are copied over.",
+            "placeholder": "namespace:stripped_log"
+          },
+          "tools": {
+            "label": "tools",
+            "help": "The items or #item tags that strip it (default #minecraft:axes).",
+            "placeholder": "#minecraft:axes"
+          }
+        }
+      },
+      "buttonBlock": {
+        "label": "button_block",
+        "help": "A button that gives a redstone signal for a while when pressed (powered property).",
+        "fields": {
+          "ticksToStayPressed": {
+            "label": "ticks_to_stay_pressed"
+          },
+          "canBeActivatedByArrows": {
+            "label": "can_be_activated_by_arrows"
+          }
+        }
+      },
+      "pressurePlateBlock": {
+        "label": "pressure_plate_block",
+        "help": "A pressure plate that gives a redstone signal while something stands on it (powered property).",
+        "fields": {
+          "sensitivity": {
+            "label": "sensitivity",
+            "help": "What presses it: all entities (all) or living mobs only (mob). Default all."
+          },
+          "pressedTime": {
+            "label": "pressed_time"
+          }
+        }
+      },
+      "lampBlock": {
+        "label": "lamp_block",
+        "help": "A lamp that lights up while powered by redstone (lit property)."
+      },
+      "toggleableLampBlock": {
+        "label": "toggleable_lamp_block",
+        "help": "A lamp switched by redstone or by hand (lit property; powered when redstone switches it).",
+        "fields": {
+          "canOpenWithHand": {
+            "label": "can_open_with_hand",
+            "help": "A right click switches the light. Without it, the block needs a powered property."
+          }
+        }
+      },
+      "seatBlock": {
+        "label": "seat_block",
+        "help": "Players sit on the block with a right click.",
+        "fields": {
+          "seats": {
+            "label": "seats",
+            "help": "One entry per seat: x,y,z relative to the block, and an optional yaw that fixes the view.",
+            "placeholder": "0,0,0 90"
+          }
+        }
+      },
+      "simpleStorageBlock": {
+        "label": "simple_storage_block",
+        "help": "A container with an inventory, like a chest (block entity).",
+        "fields": {
+          "title": {
+            "label": "title",
+            "placeholder": "'<'lang:container.chest>"
+          },
+          "rows": {
+            "label": "rows"
+          }
+        }
+      },
+      "drawerBlock": {
+        "label": "drawer_block",
+        "help": "A drawer that holds many items of one kind and shows the item and the count (block entity).",
+        "fields": {
+          "maxStacks": {
+            "label": "max_stacks"
+          },
+          "itemPosition": {
+            "label": "item_position",
+            "placeholder": "0.5,0.5,0.5"
+          },
+          "textPosition": {
+            "label": "text_position",
+            "placeholder": "0.5,0.5,0.5"
+          },
+          "itemScale": {
+            "label": "item_scale",
+            "placeholder": "0.5,0.5,0.5"
+          },
+          "textScale": {
+            "label": "text_scale",
+            "placeholder": "0.5,0.5,0.5"
+          },
+          "compatibleMode": {
+            "label": "compatible_mode",
+            "help": "Works with other storage plugins (default false)."
+          }
+        }
+      },
+      "displayItemBlock": {
+        "label": "display_item_block",
+        "help": "Shows one item placed on it with a right click (block entity).",
+        "fields": {
+          "position": {
+            "label": "position",
+            "placeholder": "0.5,0.5,0.5"
+          },
+          "tintSource": {
+            "label": "tint_source",
+            "help": "The item tints the block (with a tint source in the block model)."
+          }
+        }
+      },
+      "itemFrameBlock": {
+        "label": "item_frame_block",
+        "help": "An item frame as a block: shows an item and rotates it with a right click (block entity, facing property).",
+        "fields": {
+          "position": {
+            "label": "position",
+            "placeholder": "0,0,0"
+          },
+          "glow": {
+            "label": "glow"
+          },
+          "invisible": {
+            "label": "invisible"
+          },
+          "renderMapItem": {
+            "label": "render_map_item"
+          }
+        }
+      },
+      "tintSourceBlock": {
+        "label": "tint_source_block",
+        "help": "Takes a dyeable item whose color tints the block (block entity).",
+        "fields": {
+          "dropItem": {
+            "label": "drop_item",
+            "help": "Drops the stored item when the block breaks (default true)."
+          }
+        }
+      },
+      "simpleParticleBlock": {
+        "label": "simple_particle_block",
+        "help": "Shows particles around the block every few ticks, like a torch (block entity)."
+      },
+      "wallTorchParticleBlock": {
+        "label": "wall_torch_particle_block",
+        "help": "Shows particles like a wall torch; their position turns with the facing property (block entity)."
+      },
+      "fallingBlock": {
+        "label": "falling_block",
+        "help": "Falls down like sand when nothing is below.",
+        "fields": {
+          "hurtAmount": {
+            "label": "hurt_amount",
+            "help": "Damage per block fallen to entities it lands on; needs max_hurt too. -1: no damage."
+          },
+          "maxHurt": {
+            "label": "max_hurt"
+          }
+        }
+      },
+      "concretePowderBlock": {
+        "label": "concrete_powder_block",
+        "help": "Turns into a solid block when it touches water.",
+        "fields": {
+          "solidBlock": {
+            "label": "solid_block",
+            "help": "The block (or block state) it becomes (required).",
+            "placeholder": "namespace:solid_block"
+          }
+        }
+      },
+      "bouncingBlock": {
+        "label": "bouncing_block",
+        "help": "Entities bounce off it like off a slime block.",
+        "fields": {
+          "bounceHeight": {
+            "label": "bounce_height",
+            "help": "How strongly entities bounce (default 0.66). From Minecraft 26.2 the block setting bounce_restitution does this instead."
+          },
+          "fallDamageMultiplier": {
+            "label": "fall_damage_multiplier"
+          },
+          "syncPlayerPosition": {
+            "label": "sync_player_position"
+          }
+        }
+      },
+      "chimeBlock": {
+        "label": "chime_block",
+        "help": "Plays a sound when a projectile hits it, like amethyst."
+      },
+      "dropExpBlock": {
+        "label": "drop_experience_block",
+        "help": "Drops experience when broken, like an ore.",
+        "fields": {
+          "amount": {
+            "label": "amount",
+            "help": "How much experience: a number, a range like 1~3 or a number provider."
+          }
+        }
+      },
+      "bushBlock": {
+        "label": "bush_block",
+        "help": "Can only stand on certain blocks and breaks when its support is gone, like a flower."
+      },
+      "hangingBlock": {
+        "label": "hanging_block",
+        "help": "Can only hang from certain blocks and breaks when they are gone."
+      },
+      "sturdyBaseBlock": {
+        "label": "sturdy_base_block",
+        "help": "Needs a sturdy face of the neighbour in one direction, like a pressure plate.",
+        "fields": {
+          "direction": {
+            "label": "direction",
+            "help": "Where the supporting block is (default down)."
+          },
+          "supportTypes": {
+            "label": "support_types",
+            "help": "Which faces support it: full, rigid or center (default full)."
+          }
+        }
+      },
+      "directionalAttachedBlock": {
+        "label": "directional_attached_block",
+        "help": "Sticks to the block it faces away from, like a wall torch (facing property)."
+      },
+      "faceAttachedHorizontalDirectionalBlock": {
+        "label": "face_attached_horizontal_directional_block",
+        "help": "Sticks to the floor, a wall or the ceiling, like a button (face and facing properties)."
+      },
+      "liquidFlowableBlock": {
+        "label": "liquid_flowable_block",
+        "help": "Water and lava wash it away, like a flower.",
+        "fields": {
+          "dropItem": {
+            "label": "drop_item",
+            "help": "Drops its loot when washed away (default true)."
+          }
+        }
+      },
+      "nearLiquidBlock": {
+        "label": "near_liquid_block",
+        "help": "Can only stand where water or lava is at one of the given positions, like sugar cane.",
+        "fields": {
+          "positions": {
+            "label": "positions",
+            "help": "Where to look for the liquid, as x,y,z relative to the block (required).",
+            "placeholder": "1,-1,0"
+          }
+        }
+      },
+      "onLiquidBlock": {
+        "label": "on_liquid_block",
+        "help": "Can only stand on water or lava, like a lily pad."
+      },
+      "seagrassLikeBlock": {
+        "label": "seagrass_like_block",
+        "help": "An underwater plant like seagrass. Give the block the setting fluid_state: water."
+      },
+      "cropBlock": {
+        "label": "crop_block",
+        "help": "A crop that grows through its age stages in light and takes bone meal.",
+        "fields": {
+          "spawnLightRequirement": {
+            "label": "spawn_light_requirement",
+            "help": "The light it needs to be placed (default: light_requirement)."
+          },
+          "maxSpawnLightRequirement": {
+            "label": "max_spawn_light_requirement"
+          },
+          "isBoneMealTarget": {
+            "label": "is_bone_meal_target"
+          },
+          "boneMealAgeBonus": {
+            "label": "bone_meal_age_bonus",
+            "help": "Stages bone meal adds: a number, a range like 1~3 or a number provider (default 1)."
+          }
+        }
+      },
+      "saplingBlock": {
+        "label": "sapling_block",
+        "help": "A sapling that grows into a tree (a configured feature or a structure).",
+        "fields": {
+          "feature": {
+            "label": "feature",
+            "help": "The configured feature it grows into (required unless structure is set).",
+            "placeholder": "minecraft:oak"
+          },
+          "structure": {
+            "label": "structure",
+            "help": "A structure it grows into instead of a feature.",
+            "placeholder": "namespace:my_tree"
+          },
+          "boneMealSuccessChance": {
+            "label": "bone_meal_success_chance"
+          }
+        }
+      },
+      "stemBlock": {
+        "label": "stem_block",
+        "help": "A melon or pumpkin stem: grows through its ages, then grows its fruit next to it.",
+        "fields": {
+          "fruit": {
+            "label": "fruit",
+            "placeholder": "minecraft:melon"
+          },
+          "attachedStem": {
+            "label": "attached_stem",
+            "help": "The block (with attached_stem_block) that replaces the stem once the fruit has grown (required).",
+            "placeholder": "namespace:attached_melon_stem"
+          }
+        }
+      },
+      "attachedStemBlock": {
+        "label": "attached_stem_block",
+        "help": "A stem bent towards its fruit; turns back into the stem when the fruit is gone (facing property).",
+        "fields": {
+          "fruit": {
+            "label": "fruit",
+            "placeholder": "minecraft:melon"
+          },
+          "stem": {
+            "label": "stem",
+            "help": "The stem block it turns back into (required; it needs an age property).",
+            "placeholder": "namespace:melon_stem"
+          }
+        }
+      },
+      "verticalCropBlock": {
+        "label": "vertical_crop_block",
+        "help": "Grows upwards (or downwards) on itself, like sugar cane or bamboo."
+      },
+      "vineCropHeadBlock": {
+        "label": "vine_crop_head_block",
+        "help": "The growing tip of a vine crop like cave vines (age property). Read by CraftEngine 26.9 and newer; the wiki does not document it yet.",
+        "fields": {
+          "body": {
+            "label": "body",
+            "help": "The block that the tip leaves behind as it grows (required).",
+            "placeholder": "namespace:vine_body"
+          }
+        }
+      },
+      "vineCropBodyBlock": {
+        "label": "vine_crop_body_block",
+        "help": "The body of a vine crop below its tip. Read by CraftEngine 26.9 and newer; the wiki does not document it yet.",
+        "fields": {
+          "head": {
+            "label": "head",
+            "help": "The tip block (with vine_crop_head_block) it belongs to (required).",
+            "placeholder": "namespace:vine_head"
+          }
+        }
+      },
+      "buddingBlock": {
+        "label": "budding_block",
+        "help": "Grows blocks on its sides in stages, like budding amethyst.",
+        "fields": {
+          "growthChance": {
+            "label": "growth_chance"
+          },
+          "blocks": {
+            "label": "blocks",
+            "help": "The stages that grow, smallest first (required)."
+          }
+        }
+      },
+      "decayBlock": {
+        "label": "decay_block",
+        "help": "Ages over time and then turns into another block, like melting ice (age property).",
+        "fields": {
+          "decayInto": {
+            "label": "decay_into",
+            "placeholder": "air"
+          },
+          "delay": {
+            "label": "delay",
+            "help": "Ticks between two ages, e.g. 100~200. Unset: it ages on random ticks."
+          },
+          "chance": {
+            "label": "chance"
+          },
+          "requiredLight": {
+            "label": "required_light"
+          }
+        }
+      },
+      "changeOverTimeBlock": {
+        "label": "change_over_time_block",
+        "help": "Turns into another block over time, like copper oxidizing.",
+        "fields": {
+          "changeSpeed": {
+            "label": "change_speed"
+          },
+          "nextBlock": {
+            "label": "next_block",
+            "help": "The block it turns into (required).",
+            "placeholder": "namespace:weathered_block"
+          }
+        }
+      },
+      "spreadingBlock": {
+        "label": "spreading_block",
+        "help": "Spreads to a nearby block and turns it into itself, like the sculk.",
+        "fields": {
+          "targetBlock": {
+            "label": "target_block",
+            "help": "The block it spreads onto (required).",
+            "placeholder": "minecraft:stone"
+          }
+        }
+      },
+      "surfaceSpreadingBlock": {
+        "label": "surface_spreading_block",
+        "help": "Spreads over its base block in light and dies back without it, like grass on dirt.",
+        "fields": {
+          "baseBlock": {
+            "label": "base_block",
+            "help": "The block it spreads onto and turns back into (default minecraft:dirt).",
+            "placeholder": "minecraft:dirt"
+          }
+        }
+      },
+      "grassBlock": {
+        "label": "grass_block",
+        "help": "Bone meal grows plants around it, like a grass block.",
+        "fields": {
+          "feature": {
+            "label": "feature",
+            "help": "The placed feature bone meal runs (required).",
+            "placeholder": "minecraft:grass_bonemeal"
+          }
+        }
+      },
+      "leavesBlock": {
+        "label": "leaves_block",
+        "help": "Leaves that decay away from logs (distance and persistent properties)."
+      }
+    },
+    "shared": {
+      "blockBehavior": {
+        "canOpenWithHand": {
+          "label": "can_open_with_hand",
+          "help": "A right click opens and closes it (default true)."
+        },
+        "canOpenByWindCharge": {
+          "label": "can_open_by_wind_charge",
+          "help": "A wind charge opens and closes it (default true)."
+        },
+        "sounds": {
+          "label": "sounds",
+          "help": "The sounds of the block’s actions. Unset: no sound."
+        },
+        "excludedProperties": {
+          "label": "excluded_properties",
+          "help": "Properties not copied over to the new block."
+        },
+        "hasSignal": {
+          "label": "has_signal",
+          "help": "A comparator reads how full it is (default true)."
+        },
+        "allowInput": {
+          "label": "allow_input",
+          "help": "Hoppers can put items in (default true)."
+        },
+        "allowOutput": {
+          "label": "allow_output",
+          "help": "Hoppers can take items out (default true)."
+        },
+        "dataKey": {
+          "label": "data_key",
+          "help": "The key the block entity stores its data under. Change it only to keep two blocks apart.",
+          "placeholder": "craftengine:my_data"
+        },
+        "tickInterval": {
+          "label": "tick_interval",
+          "help": "Ticks between two bursts of particles (default 10)."
+        },
+        "particles": {
+          "label": "particles",
+          "help": "The particles shown, each relative to the block’s corner.",
+          "itemLabel": "particle"
+        },
+        "blacklist": {
+          "label": "blacklist",
+          "help": "true: the listed blocks are the ones it can not stand on; false: the only ones it can."
+        },
+        "stackable": {
+          "label": "stackable",
+          "help": "It can also stand on itself (default false)."
+        },
+        "maxHeight": {
+          "label": "max_height",
+          "help": "How many can stack on each other (0: no limit for supports, more than 1 when stackable)."
+        },
+        "delay": {
+          "label": "delay",
+          "help": "Ticks before it breaks without support (0: at once)."
+        },
+        "bottomBlocks": {
+          "label": "bottom_blocks",
+          "help": "Blocks or block states below that count (minecraft:stone, default:my_block[age=1]).",
+          "placeholder": "minecraft:farmland"
+        },
+        "bottomBlockTags": {
+          "label": "bottom_block_tags",
+          "help": "Block tags below that count."
+        },
+        "aboveBlocks": {
+          "label": "above_blocks",
+          "help": "Blocks or block states above that count.",
+          "placeholder": "minecraft:stone"
+        },
+        "aboveBlockTags": {
+          "label": "above_block_tags",
+          "help": "Block tags above that count."
+        },
+        "attachedBlocks": {
+          "label": "attached_blocks",
+          "help": "Blocks or block states it may (or, as a blacklist, may not) stick to.",
+          "placeholder": "minecraft:stone"
+        },
+        "attachedBlockTags": {
+          "label": "attached_block_tags",
+          "help": "Block tags it may (or may not) stick to."
+        },
+        "liquidType": {
+          "label": "liquid_type",
+          "help": "water, lava or both (default water)."
+        },
+        "growSpeed": {
+          "label": "grow_speed",
+          "help": "Growth per random tick: the whole part in stages, the fraction as a chance of one more."
+        },
+        "lightRequirement": {
+          "label": "light_requirement",
+          "help": "The least light it needs to grow (crops 0, saplings 9 by default)."
+        },
+        "maxLightRequirement": {
+          "label": "max_light_requirement",
+          "help": "The most light it grows in (default 15)."
+        },
+        "fruitBottomBlocks": {
+          "label": "fruit_bottom_blocks",
+          "help": "Blocks the fruit may grow on (unset: any).",
+          "placeholder": "minecraft:dirt"
+        },
+        "fruitBottomBlockTags": {
+          "label": "fruit_bottom_block_tags",
+          "help": "Block tags the fruit may grow on."
+        },
+        "direction": {
+          "label": "direction",
+          "help": "The direction it grows in (default up)."
+        },
+        "boneMeal": {
+          "label": "bone_meal",
+          "help": "What bone meal does: ripen berries, or grow grow_blocks blocks.",
+          "fields": {
+            "behavior": {
+              "label": "behavior"
+            },
+            "growBlocks": {
+              "label": "grow_blocks"
+            }
+          }
+        }
+      },
+      "sound": {
+        "label": "sound",
+        "help": "A sound id, or id with volume and pitch (a number or a range like 0.9~1).",
+        "choices": {
+          "id": {
+            "label": "Sound ID",
+            "field": {
+              "label": "Sound ID"
+            }
+          },
+          "detailed": {
+            "label": "With volume and pitch",
+            "field": {
+              "fields": {
+                "id": {
+                  "label": "id"
+                },
+                "volume": {
+                  "label": "volume"
+                },
+                "pitch": {
+                  "label": "pitch"
+                }
+              }
+            }
+          }
+        }
+      },
+      "particle": {
+        "particle": {
+          "label": "particle",
+          "help": "The particle type, e.g. minecraft:flame."
+        },
+        "x": {
+          "label": "x"
+        },
+        "y": {
+          "label": "y"
+        },
+        "z": {
+          "label": "z"
+        },
+        "count": {
+          "label": "count",
+          "help": "How many particles (default 1)."
+        },
+        "offsetX": {
+          "label": "offset_x",
+          "help": "The spread around the position on each axis (default 0)."
+        },
+        "offsetY": {
+          "label": "offset_y"
+        },
+        "offsetZ": {
+          "label": "offset_z"
+        },
+        "speed": {
+          "label": "speed",
+          "help": "The particles’ speed (default 0)."
+        },
+        "blockState": {
+          "label": "block_state",
+          "help": "The block (state) the particle shows (block, falling_dust, dust_pillar, block_crumble, block_marker).",
+          "placeholder": "minecraft:stone"
+        },
+        "item": {
+          "label": "item",
+          "help": "The item the particle shows."
+        },
+        "color": {
+          "label": "color",
+          "help": "The particle’s color as r,g,b (dust, entity_effect, tinted_leaves, spell, trail).",
+          "placeholder": "255,0,0"
+        },
+        "from": {
+          "label": "from",
+          "help": "The start color as r,g,b.",
+          "placeholder": "255,0,0"
+        },
+        "to": {
+          "label": "to",
+          "help": "The end color as r,g,b.",
+          "placeholder": "0,0,255"
+        },
+        "scale": {
+          "label": "scale",
+          "help": "The dust size (default 1)."
+        },
+        "power": {
+          "label": "power",
+          "help": "The spell particle’s strength (default 1)."
+        },
+        "targetX": {
+          "label": "target_x",
+          "help": "Where the particle travels to (x)."
+        },
+        "targetY": {
+          "label": "target_y",
+          "help": "Where the particle travels to (y)."
+        },
+        "targetZ": {
+          "label": "target_z",
+          "help": "Where the particle travels to (z)."
+        },
+        "arrivalTime": {
+          "label": "arrival_time",
+          "help": "Ticks until the vibration arrives (default 10)."
+        },
+        "duration": {
+          "label": "duration",
+          "help": "Ticks the trail lasts (default 10)."
+        },
+        "charge": {
+          "label": "charge",
+          "help": "The sculk charge’s roll angle."
+        },
+        "shriek": {
+          "label": "shriek",
+          "help": "Ticks before the shriek shows."
+        },
+        "blocks": {
+          "label": "blocks",
+          "help": "How many water blocks the geyser spans."
+        },
+        "burstImpulseBase": {
+          "label": "burst_impulse_base",
+          "help": "The geyser burst’s base impulse."
+        }
+      }
+    },
+    "categories": {
+      "blockBehaviors": {
+        "plants": "Plants and growth",
+        "building": "Building blocks",
+        "interaction": "Doors and seats",
+        "redstone": "Redstone",
+        "light": "Light and particles",
+        "storage": "Storage and displays",
+        "physics": "Physics",
+        "placement": "Placement rules"
+      }
+    }
+  }
+}

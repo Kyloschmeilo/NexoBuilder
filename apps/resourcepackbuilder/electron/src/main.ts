@@ -22,8 +22,11 @@ const APP_NAME = 'ResourcepackBuilder';
 const APP_DIR = path.join(__dirname, '..', '..');
 const OUT_DIR = path.join(APP_DIR, 'out');
 const ICON = path.join(APP_DIR, 'build', 'icon.png');
-/** `--background` of packages/ui/src/styles.css (light and dark), shown until the UI has painted. */
-const BACKGROUND = { light: '#f4f7f5', dark: '#0a1110' };
+/**
+ * `--canvas` of the default colour theme (Deepslate) in packages/ui/src/styles.css, light and dark, shown until the UI
+ * has painted. A test keeps it in line with the stylesheet.
+ */
+const BACKGROUND = { light: '#e4e7eb', dark: '#0c0f13' };
 /** Web permissions the UI needs: copy buttons write to the clipboard. Everything else is denied. */
 const ALLOWED_PERMISSIONS = new Set(['clipboard-sanitized-write']);
 
@@ -116,7 +119,7 @@ function buildMenu() {
       label: t('menu.help'),
       submenu: [
         { label: t('menu.nexoDocs'), click: () => openExternal('https://docs.nexomc.com/') },
-        { label: t('menu.craftEngineDocs'), click: () => openExternal('https://momirealms.net/craft-engine-wiki') },
+        { label: t('menu.craftEngineDocs'), click: () => openExternal('https://xiao-momi.github.io/craft-engine-wiki/') },
         { label: 'Blockbench', click: () => openExternal('https://www.blockbench.net/') },
         { type: 'separator' },
         {

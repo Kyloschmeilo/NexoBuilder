@@ -1,12 +1,12 @@
+/** One model of a variant as a plain row: thumbnail, path suffix and file, with move / replace / remove. */
 import { useTranslations } from 'next-intl';
 import { ArrowDown, ArrowUp, Box, RefreshCw, Trash2 } from 'lucide-react';
 import type { ImportedModel } from '@resourcepackbuilder/minecraft';
 import { IconButton, Thumb } from '@resourcepackbuilder/ui';
-import { Item, ItemActions, ItemContent, ItemDescription, ItemMedia, ItemTitle } from '@resourcepackbuilder/ui/components/item';
 import { useThumbnail } from '../../../components/useThumbnail';
 import { IssueCountBadges } from '../../../components/IssueCountBadges';
 
-const THUMB_SIZE = 44;
+const THUMB_SIZE = 36;
 
 interface VariantModelRowProps {
   model: ImportedModel;
@@ -25,25 +25,29 @@ export function VariantModelRow({ model, label, position, onMove, onReplace, onR
   const tCommon = useTranslations('common');
   const thumb = useThumbnail(model);
   return (
-    <Item variant="muted" size="xs" className="flex-nowrap gap-3 border-border p-2">
-      <ItemMedia>
-        <Thumb size={THUMB_SIZE} src={thumb} fallback={<Box className="size-4.5 opacity-60" />} />
-      </ItemMedia>
-      <ItemContent className="min-w-0 gap-0.5 text-xs">
-        <ItemTitle className="font-mono text-xs font-normal">{label}</ItemTitle>
-        <ItemDescription className="line-clamp-1">{model.fileName}</ItemDescription>
-        <span className="flex flex-wrap gap-1 empty:hidden">
+    <div data-slot="variant-model" className="flex min-w-0 items-center gap-2.5">
+      <Thumb size={THUMB_SIZE} src={thumb} fallback={<Box className="size-4 opacity-60" />} />
+      <div className="flex min-w-0 flex-1 flex-col">
+        <span className="flex min-w-0 items-center gap-1.5">
+          <code className="truncate font-mono text-label text-text">{label}</code>
           <IssueCountBadges issues={model.issues} />
         </span>
-      </ItemContent>
-      <ItemActions className="shrink-0 flex-wrap justify-end gap-0">
+        <span className="truncate text-meta text-text-muted">{model.fileName}</span>
+      </div>
+      <div className="flex flex-none items-center">
         {position && (
           <>
-            <IconButton label={t('variants.moveUp')} disabled={position.index === 0} onClick={() => onMove(position.index - 1)}>
+            <IconButton
+              label={t('variants.moveUp')}
+              size="icon-sm"
+              disabled={position.index === 0}
+              onClick={() => onMove(position.index - 1)}
+            >
               <ArrowUp />
             </IconButton>
             <IconButton
               label={t('variants.moveDown')}
+              size="icon-sm"
               disabled={position.index === position.count - 1}
               onClick={() => onMove(position.index + 1)}
             >
@@ -51,13 +55,13 @@ export function VariantModelRow({ model, label, position, onMove, onReplace, onR
             </IconButton>
           </>
         )}
-        <IconButton label={t('model.replace')} onClick={onReplace}>
+        <IconButton label={t('model.replace')} size="icon-sm" onClick={onReplace}>
           <RefreshCw />
         </IconButton>
-        <IconButton label={tCommon('remove')} variant="ghost-destructive" onClick={onRemove}>
+        <IconButton label={tCommon('remove')} size="icon-sm" variant="ghost-destructive" onClick={onRemove}>
           <Trash2 />
         </IconButton>
-      </ItemActions>
-    </Item>
+      </div>
+    </div>
   );
 }

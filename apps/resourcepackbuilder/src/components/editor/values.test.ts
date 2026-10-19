@@ -1,7 +1,10 @@
 import { describe, expect, it } from 'vitest';
 import type { Field } from '@resourcepackbuilder/core/form';
 import {
+  arrangeObjectFields,
+  choiceControl,
   countSetValues,
+  formatVector,
   hexToNexoColor,
   insertAt,
   isFieldVisible,
@@ -9,6 +12,7 @@ import {
   moveInArray,
   nexoColorToHex,
   parseNumber,
+  parseVector,
   renameKey,
   toStringList,
   toggleSelection,
@@ -128,5 +132,76 @@ describe('typed entries', () => {
     expect(withEntryType(entry, 'command', command)).toEqual({ type: 'command', conditions: [] });
     expect(withEntryType(entry, 'comm', undefined)).toEqual({ type: 'comm', message: 'hi', conditions: [] });
     expect(withEntryType(entry, '', undefined)).toEqual({ message: 'hi', conditions: [] });
+  });
+});
+
+describe('arrangeObjectFields', () => {
+  it('puts simple fields before wide ones and keeps advanced fields apart, each in schema order', () => {
+    const fields: Field[] = [
+      { type: 'stringList', key: 'list', label: 'l' },
+      text({ key: 'a' }),
+      text({ key: 'rare', advanced: true }),
+      { type: 'yaml', key: 'raw', label: 'l', advanced: true },
+      text({ key: 'b' }),
+      text({ key: 'rarer', advanced: true }),
+    ];
+    const { common, advanced } = arrangeObjectFields(fields);
+    expect(common.map((f) => f.key)).toEqual(['a', 'b', 'list']);
+    expect(advanced.map((f) => f.key)).toEqual(['rare', 'rarer', 'raw']);
+  });
+});
+
+describe('arrangeObjectFields heuristic', () => {
+  const bool = (key: string, defaultHint?: boolean, advanced?: boolean): Field => ({
+    type: 'boolean',
+    key,
+    label: 'l',
+    defaultHint,
+    advanced,
+  });
+
+  it('tucks booleans with a plugin default away in objects of five or more fields', () => {
+    const fields = [text({ key: 'a' }), text({ key: 'b' }), bool('c', true), bool('d'), bool('e', false)];
+    const { common, advanced } = arrangeObjectFields(fields);
+    expect(common.map((f) => f.key)).toEqual(['a', 'b', 'd']);
+    expect(advanced.map((f) => f.key)).toEqual(['c', 'e']);
+  });
+
+  it('leaves small objects and fields marked advanced: false alone', () => {
+    expect(arrangeObjectFields([text({ key: 'a' }), bool('c', true)]).advanced).toEqual([]);
+    const fields = [text({ key: 'a' }), text({ key: 'b' }), bool('c', true, false), bool('d', true), text({ key: 'e' })];
+    expect(arrangeObjectFields(fields).advanced.map((f) => f.key)).toEqual(['d']);
+  });
+
+  it('keeps at least two common fields, falling back to the flags alone', () => {
+    const fields = [text({ key: 'a' }), bool('b', true), bool('c', true), bool('d', true), bool('e', true, true)];
+    const { common, advanced } = arrangeObjectFields(fields);
+    expect(common.map((f) => f.key)).toEqual(['a', 'b', 'c', 'd']);
+    expect(advanced.map((f) => f.key)).toEqual(['e']);
+  });
+});
+
+describe('choiceControl', () => {
+  it('picks segments up to 4 options, a select up to 12 and a combobox above', () => {
+    expect([1, 4, 5, 12, 13, 200].map(choiceControl)).toEqual(['segmented', 'segmented', 'select', 'select', 'combobox', 'combobox']);
+  });
+});
+
+describe('vectors', () => {
+  it('splits "x,y,z" text, empty values and rejects other text', () => {
+    expect(parseVector('0, 0.5,-1')).toEqual(['0', '0.5', '-1']);
+    expect(parseVector(undefined)).toEqual(['', '', '']);
+    expect(parseVector('')).toEqual(['', '', '']);
+    expect(parseVector('1 2 3')).toBeUndefined();
+    expect(parseVector('<random>')).toBeUndefined();
+    expect(parseVector(3)).toBeUndefined();
+  });
+
+  it('writes a vector only once all three parts are numbers', () => {
+    expect(formatVector(['0', '0.50', '-1'])).toBe('0,0.5,-1');
+    expect(formatVector(['1,5', '2', '3'])).toBe('1.5,2,3');
+    expect(formatVector(['1', '', '3'])).toBeNull();
+    expect(formatVector(['1', '-', '3'])).toBeNull();
+    expect(formatVector(['', ' ', ''])).toBeUndefined();
   });
 });

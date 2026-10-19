@@ -24,6 +24,15 @@ export interface BaseField {
   showIf?: { key: string; values: Array<string | boolean | number> };
   /** Required Minecraft version for this field */
   minVersion?: string;
+  /** URL of the field's section in the plugin's documentation, when it has one of its own */
+  docs?: string;
+  /** A field few items need, which the editor may tuck away behind the common ones */
+  advanced?: boolean;
+  /**
+   * Name of a hand-written editor the UI shows instead of the generic one of the field's type (e.g. a furniture's
+   * hitbox entries read into their parts); the value and its checks stay those of the type.
+   */
+  editor?: string;
 }
 
 export interface TextField extends BaseField {
@@ -87,6 +96,12 @@ export interface ObjectListField extends BaseField {
   /** Field whose value is shown as the title of an entry */
   titleKey?: string;
   newItem?: () => Record<string, unknown>;
+  /**
+   * The entries are told apart by the value of the field `key`, which names a type of `types` (e.g. a CraftEngine
+   * event by its trigger in `on`). Editors may show each entry as a card of that type and add entries by picking one.
+   * Checking and pruning go by `fields` as for any object list.
+   */
+  typedBy?: { key: string; catalog: string; types: () => readonly TypedType[] };
 }
 
 export interface MapField extends BaseField {
@@ -134,6 +149,12 @@ export interface TypedType {
   fields: Field[];
   /** Only the paid edition of the plugin reads this type */
   premium?: boolean;
+  /** URL of the type's page (or section) in the plugin's documentation */
+  docs?: string;
+  /** Sub-group of the catalog the type is listed under (e.g. `player` for functions acting on players) */
+  category?: string;
+  /** Name of the type's `category` – message key in the form's namespace */
+  categoryLabel?: string;
 }
 
 /**

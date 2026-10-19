@@ -6,6 +6,7 @@
  */
 import { craftEngineMaterial } from '@resourcepackbuilder/core/craftEngine';
 import {
+  DIRECTIONAL_MODEL_SLOTS,
   FURNITURE_MODEL_SLOTS,
   STACK_MODELS,
   stateDef,
@@ -41,7 +42,9 @@ export const CE_MODEL_SLOTS: Record<string, ModelSlot[]> = {
   elytra: [{ slot: 'damaged_models', index: 0 }],
 };
 
-const SLOT_DEFS = new Map<VariantSlot, VariantDef>([...VARIANTS, ...FURNITURE_MODEL_SLOTS, STACK_MODELS].map((def) => [def.slot, def]));
+const SLOT_DEFS = new Map<VariantSlot, VariantDef>(
+  [...VARIANTS, ...FURNITURE_MODEL_SLOTS, STACK_MODELS, ...DIRECTIONAL_MODEL_SLOTS].map((def) => [def.slot, def]),
+);
 
 function defOf(slot: VariantSlot): VariantDef {
   return SLOT_DEFS.get(slot) ?? stateDef(slot.slice('state:'.length));

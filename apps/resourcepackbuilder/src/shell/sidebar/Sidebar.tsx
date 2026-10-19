@@ -1,8 +1,13 @@
-import { useMemo, useState } from 'react';
+/**
+ * The sidebar: the panel of the current activity (the folder and item tree, or the entries of the media or a CraftEngine
+ * project's logic registries), resizable by its right edge. Activities that open a page have no panel; the sidebar is
+ * then left out and the page gets its room.
+ */
+import { useMemo, useState, type ReactNode } from 'react';
 import { FolderPlus, Search } from 'lucide-react';
 import { useTranslations } from 'next-intl';
-import { cn } from 'cn';
-import { SectionLabel, Tip } from '@resourcepackbuilder/ui';
+import { cn } from '@resourcepackbuilder/ui/cn';
+import { Tip } from '@resourcepackbuilder/ui';
 import { Button } from '@resourcepackbuilder/ui/components/button';
 import { Empty, EmptyContent, EmptyDescription, EmptyHeader, EmptyMedia, EmptyTitle } from '@resourcepackbuilder/ui/components/empty';
 import { InputGroup, InputGroupAddon, InputGroupInput } from '@resourcepackbuilder/ui/components/input-group';
@@ -12,22 +17,28 @@ import { folderDirPath } from '../../features/folder/folderDir';
 import { useFolderActions } from '../../features/folder/useFolderActions';
 import { useServices } from '../../services/bootstrap';
 import { usePlan } from '../PlanProvider';
+import { ResizeHandle } from '../ResizeHandle';
+import { activityById, isActivityAvailable } from '../activities';
 import { useOpenProject } from '../../store/project';
+import { type ActivityId, SIDEBAR_WIDTH, setSidebarWidth, useUiStore } from '../../store/ui';
 import { FolderNode } from './FolderNode';
-import { countItemsPerFolder, foldersContaining, levelsByTarget, searchItems, type SidebarTree } from './treeIndex';
+import { countItemsPerFolder, filterItems, foldersContaining, levelsByTarget, type SidebarTree, type TreeFilter } from './treeIndex';
+import { TreeFilterChips } from './TreeFilterChips';
 import { DRAG_FOLDER, useDropTarget } from './useDropTarget';
-import { ResourceEntries, TestServerEntry } from './ViewEntries';
+import { LogicPanel } from './panels/LogicPanel';
+import { MediaPanel } from './panels/MediaPanel';
+import { PanelHeader } from './panels/PanelHeader';
 
-/** The tree data, derived once per project, plan or search change. */
-function useSidebarTree(query: string): SidebarTree {
+/** The tree data, derived once per project, plan, search or filter change. */
+function useSidebarTree(query: string, filter: TreeFilter): SidebarTree {
   const project = useOpenProject();
   const plan = usePlan();
   const itemCounts = useMemo(() => countItemsPerFolder(project), [project]);
   const itemLevels = useMemo(() => levelsByTarget(plan?.issues ?? [], 'item'), [plan]);
   const search = useMemo(() => {
-    const items = searchItems(project, query);
+    const items = filterItems(project, query, filter, itemLevels);
     return items && { items, folders: foldersContaining(project, items) };
-  }, [project, query]);
+  }, [project, query, filter, itemLevels]);
   return { project, itemCounts, itemLevels, search };
 }
 
@@ -41,8 +52,8 @@ function NoFolders() {
         <EmptyMedia>
           <FolderPlus className="size-8 text-muted-foreground" />
         </EmptyMedia>
-        <EmptyTitle className="font-heading text-base tracking-wide uppercase">{t('title')}</EmptyTitle>
-        <EmptyDescription className="text-xs">{t('description', { path: folderDirPath(project, null) })}</EmptyDescription>
+        <EmptyTitle className="text-title font-semibold">{t('title')}</EmptyTitle>
+        <EmptyDescription className="text-meta">{t('description', { path: folderDirPath(project, null) })}</EmptyDescription>
       </EmptyHeader>
       <EmptyContent>
         <Button onClick={() => void folders.create(null)}>
@@ -53,13 +64,13 @@ function NoFolders() {
   );
 }
 
-/** Folders and items of the open project, with search, and the project-wide views below. */
-export function Sidebar() {
+/** Folders and items of the open project, with search and filter chips. */
+function ItemsPanel() {
   const t = useTranslations('layout.sidebar');
   const folders = useFolderActions();
-  const isTestServerAvailable = useServices().testServer !== null;
   const [query, setQuery] = useState('');
-  const tree = useSidebarTree(query);
+  const [filter, setFilter] = useState<TreeFilter>('all');
+  const tree = useSidebarTree(query, filter);
   // A folder dropped beside the folders (not onto one) moves to the top level
   const rootDrop = useDropTarget([DRAG_FOLDER], (data) => {
     const folderId = data.getData(DRAG_FOLDER);
@@ -67,9 +78,9 @@ export function Sidebar() {
   });
 
   return (
-    <aside className="flex min-h-0 min-w-0 flex-col border-r border-sidebar-border bg-sidebar text-sidebar-foreground">
-      <SectionLabel
-        className="pt-3 pr-3 pb-2 pl-4"
+    <>
+      <PanelHeader
+        title={t('title')}
         actions={
           <Tip label={t('newFolder')}>
             <Button variant="ghost" size="sm" onClick={() => void folders.create(null)}>
@@ -77,10 +88,8 @@ export function Sidebar() {
             </Button>
           </Tip>
         }
-      >
-        <h2 className="truncate">{t('title')}</h2>
-      </SectionLabel>
-      <div className="px-3 pb-2">
+      />
+      <div className="px-2.5 pb-2">
         <InputGroup className="h-7.5">
           <InputGroupAddon>
             <Search className="size-3.5" />
@@ -92,13 +101,14 @@ export function Sidebar() {
             onChange={(e) => setQuery(e.target.value)}
           />
         </InputGroup>
+        {tree.project.rootFolderIds.length > 0 && <TreeFilterChips className="mt-2" value={filter} onChange={setFilter} />}
       </div>
       <ScrollArea className={cn('min-h-0 flex-1', rootDrop.isOver && 'bg-primary/10')} {...rootDrop.handlers}>
-        <div role="tree" aria-label={t('title')} className="px-2 pt-0.5 pb-4">
+        <div role="tree" aria-label={t('title')} className="px-1.5 pt-0.5 pb-4">
           {tree.project.rootFolderIds.length === 0 ? (
             <NoFolders />
           ) : tree.search?.items.size === 0 ? (
-            <p role="status" className="px-2 pt-6 text-center text-xs text-muted-foreground">
+            <p role="status" className="px-2 pt-6 text-center text-meta text-muted-foreground">
               {t('noMatches')}
             </p>
           ) : (
@@ -106,8 +116,41 @@ export function Sidebar() {
           )}
         </div>
       </ScrollArea>
-      <ResourceEntries />
-      {isTestServerAvailable && <TestServerEntry />}
+    </>
+  );
+}
+
+/** The panel content of each activity that has one. */
+const PANELS: Partial<Record<ActivityId, () => ReactNode>> = {
+  items: () => <ItemsPanel />,
+  media: () => <MediaPanel />,
+  logic: () => <LogicPanel />,
+};
+
+/** The activity whose panel the sidebar shows: the current one, or Items when the current one is not offered here. */
+export function usePanelActivity(): ActivityId | null {
+  const project = useOpenProject();
+  const hasTestServer = useServices().testServer !== null;
+  const activityId = useUiStore((s) => s.activity);
+  const activity = activityById(activityId);
+  if (!activity || !isActivityAvailable(activity, { project, hasTestServer })) return 'items';
+  return PANELS[activity.id] ? activity.id : null;
+}
+
+/** The sidebar with the panel of `activity`, resizable by its right edge. */
+export function Sidebar({ activity }: { activity: ActivityId }) {
+  const t = useTranslations('layout.sidebar');
+  const width = useUiStore((s) => s.sidebarWidth);
+  const panel = PANELS[activity];
+  if (!panel) return null;
+  return (
+    <aside
+      aria-label={t('label')}
+      style={{ width }}
+      className="relative flex min-h-0 shrink-0 flex-col border-r border-sidebar-border bg-sidebar text-sidebar-foreground"
+    >
+      {panel()}
+      <ResizeHandle edge="right" width={width} range={SIDEBAR_WIDTH} onResize={setSidebarWidth} label={t('resize')} />
     </aside>
   );
 }

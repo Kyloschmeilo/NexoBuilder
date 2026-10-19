@@ -1,0 +1,804 @@
+{
+  "logic": {
+    "blockBehaviors": {
+      "slabBlock": {
+        "label": "slab_block",
+        "help": "Eine Stufe: ein halber Block, der auf einer zweiten zur Doppelstufe wird. Braucht die Stufen-Eigenschaften (die Vorlage Stufe legt sie an)."
+      },
+      "stairsBlock": {
+        "label": "stairs_block",
+        "help": "Eine Treppe, die sich wie Vanilla-Treppen mit Nachbartreppen verbindet."
+      },
+      "doorBlock": {
+        "label": "door_block",
+        "help": "Eine zwei Blöcke hohe Tür, die sich per Hand, Redstone oder Windkugel öffnet."
+      },
+      "trapdoorBlock": {
+        "label": "trapdoor_block",
+        "help": "Eine Falltür, die sich per Hand, Redstone oder Windkugel öffnet."
+      },
+      "fenceGateBlock": {
+        "label": "fence_gate_block",
+        "help": "Ein Zauntor, das sich per Hand, Redstone oder Windkugel öffnet und neben Mauern absenkt."
+      },
+      "fenceBlock": {
+        "label": "fence_block",
+        "help": "Ein Zaun, der sich mit seinen Nachbarn verbindet (Eigenschaften north, east, south und west).",
+        "fields": {
+          "connectableBlockTag": {
+            "label": "connectable_block_tag",
+            "help": "Der Block-Tag der Zäune, mit denen er sich verbindet (Standard minecraft:wooden_fences).",
+            "placeholder": "minecraft:wooden_fences"
+          },
+          "canLeash": {
+            "label": "can_leash",
+            "help": "Eine Leine kann an den Zaun gebunden werden."
+          }
+        }
+      },
+      "sofaBlock": {
+        "label": "sofa_block",
+        "help": "Ein Sofa, das mit seinen Nachbarn Ecken bildet (Eigenschaften shape und facing)."
+      },
+      "doubleHighBlock": {
+        "label": "double_high_block",
+        "help": "Ein zwei Blöcke hoher Block (Eigenschaft half); wer eine Hälfte abbaut, baut beide ab."
+      },
+      "multiHighBlock": {
+        "label": "multi_high_block",
+        "help": "Ein mehrere Blöcke hoher Block; eine Ganzzahl-Eigenschaft zählt den Teil (0 = unten).",
+        "fields": {
+          "property": {
+            "label": "property",
+            "help": "Die Ganzzahl-Eigenschaft, die die Teile nummeriert (Pflicht). Ihr Bereich legt die Höhe fest.",
+            "placeholder": "height"
+          }
+        }
+      },
+      "stackableBlock": {
+        "label": "stackable_block",
+        "help": "Mehrere Exemplare des Items passen in einen Block (wie Meeresgurken); eine Ganzzahl-Eigenschaft zählt sie.",
+        "fields": {
+          "property": {
+            "label": "property",
+            "help": "Die Ganzzahl-Eigenschaft, die die gestapelten Items zählt (Standard amount).",
+            "placeholder": "amount"
+          },
+          "items": {
+            "label": "items"
+          }
+        }
+      },
+      "snowyBlock": {
+        "label": "snowy_block",
+        "help": "Wird verschneit, wenn Schnee darauf liegt (Eigenschaft snowy), wie Gras."
+      },
+      "hangableBlock": {
+        "label": "hangable_block",
+        "help": "Hängt am Block darüber, wenn es an dessen Unterseite gesetzt wird (Eigenschaft hanging), wie eine Laterne."
+      },
+      "strippableBlock": {
+        "label": "strippable_block",
+        "help": "Wird mit einem Werkzeug zu einem anderen Block, wie Stämme mit der Axt.",
+        "fields": {
+          "stripped": {
+            "label": "stripped",
+            "help": "Der Block, zu dem es wird (Pflicht). Gleichnamige Eigenschaften werden übernommen.",
+            "placeholder": "namespace:stripped_log"
+          },
+          "tools": {
+            "label": "tools",
+            "help": "Die Items oder #Item-Tags, die es umwandeln (Standard #minecraft:axes).",
+            "placeholder": "#minecraft:axes"
+          }
+        }
+      },
+      "buttonBlock": {
+        "label": "button_block",
+        "help": "Ein Knopf, der beim Drücken eine Weile ein Redstone-Signal gibt (Eigenschaft powered).",
+        "fields": {
+          "ticksToStayPressed": {
+            "label": "ticks_to_stay_pressed"
+          },
+          "canBeActivatedByArrows": {
+            "label": "can_be_activated_by_arrows"
+          }
+        }
+      },
+      "pressurePlateBlock": {
+        "label": "pressure_plate_block",
+        "help": "Eine Druckplatte, die ein Redstone-Signal gibt, solange etwas darauf steht (Eigenschaft powered).",
+        "fields": {
+          "sensitivity": {
+            "label": "sensitivity",
+            "help": "Was sie auslöst: alle Entitäten (all) oder nur lebende Mobs (mob). Standard all."
+          },
+          "pressedTime": {
+            "label": "pressed_time"
+          }
+        }
+      },
+      "lampBlock": {
+        "label": "lamp_block",
+        "help": "Eine Lampe, die bei Redstone-Strom leuchtet (Eigenschaft lit)."
+      },
+      "toggleableLampBlock": {
+        "label": "toggleable_lamp_block",
+        "help": "Eine Lampe, die per Redstone oder per Hand geschaltet wird (Eigenschaft lit; powered, wenn Redstone sie schaltet).",
+        "fields": {
+          "canOpenWithHand": {
+            "label": "can_open_with_hand",
+            "help": "Ein Rechtsklick schaltet das Licht. Ohne braucht der Block die Eigenschaft powered."
+          }
+        }
+      },
+      "seatBlock": {
+        "label": "seat_block",
+        "help": "Spieler setzen sich per Rechtsklick auf den Block.",
+        "fields": {
+          "seats": {
+            "label": "seats",
+            "help": "Ein Eintrag pro Sitz: x,y,z relativ zum Block und optional ein Yaw, der die Blickrichtung festlegt.",
+            "placeholder": "0,0,0 90"
+          }
+        }
+      },
+      "simpleStorageBlock": {
+        "label": "simple_storage_block",
+        "help": "Ein Behälter mit Inventar, wie eine Truhe (Block-Entität).",
+        "fields": {
+          "title": {
+            "label": "title",
+            "placeholder": "'<'lang:container.chest>"
+          },
+          "rows": {
+            "label": "rows"
+          }
+        }
+      },
+      "drawerBlock": {
+        "label": "drawer_block",
+        "help": "Eine Schublade, die viele Items einer Sorte fasst und Item und Anzahl zeigt (Block-Entität).",
+        "fields": {
+          "maxStacks": {
+            "label": "max_stacks"
+          },
+          "itemPosition": {
+            "label": "item_position",
+            "placeholder": "0.5,0.5,0.5"
+          },
+          "textPosition": {
+            "label": "text_position",
+            "placeholder": "0.5,0.5,0.5"
+          },
+          "itemScale": {
+            "label": "item_scale",
+            "placeholder": "0.5,0.5,0.5"
+          },
+          "textScale": {
+            "label": "text_scale",
+            "placeholder": "0.5,0.5,0.5"
+          },
+          "compatibleMode": {
+            "label": "compatible_mode",
+            "help": "Arbeitet mit anderen Lager-Plugins zusammen (Standard false)."
+          }
+        }
+      },
+      "displayItemBlock": {
+        "label": "display_item_block",
+        "help": "Zeigt ein per Rechtsklick abgelegtes Item (Block-Entität).",
+        "fields": {
+          "position": {
+            "label": "position",
+            "placeholder": "0.5,0.5,0.5"
+          },
+          "tintSource": {
+            "label": "tint_source",
+            "help": "Das Item färbt den Block ein (mit einer Tint-Quelle im Blockmodell)."
+          }
+        }
+      },
+      "itemFrameBlock": {
+        "label": "item_frame_block",
+        "help": "Ein Rahmen als Block: zeigt ein Item und dreht es per Rechtsklick (Block-Entität, Eigenschaft facing).",
+        "fields": {
+          "position": {
+            "label": "position",
+            "placeholder": "0,0,0"
+          },
+          "glow": {
+            "label": "glow"
+          },
+          "invisible": {
+            "label": "invisible"
+          },
+          "renderMapItem": {
+            "label": "render_map_item"
+          }
+        }
+      },
+      "tintSourceBlock": {
+        "label": "tint_source_block",
+        "help": "Nimmt ein färbbares Item auf, dessen Farbe den Block einfärbt (Block-Entität).",
+        "fields": {
+          "dropItem": {
+            "label": "drop_item",
+            "help": "Lässt das gespeicherte Item beim Abbau fallen (Standard true)."
+          }
+        }
+      },
+      "simpleParticleBlock": {
+        "label": "simple_particle_block",
+        "help": "Zeigt alle paar Ticks Partikel am Block, wie eine Fackel (Block-Entität)."
+      },
+      "wallTorchParticleBlock": {
+        "label": "wall_torch_particle_block",
+        "help": "Zeigt Partikel wie eine Wandfackel; ihre Position dreht sich mit der Eigenschaft facing (Block-Entität)."
+      },
+      "fallingBlock": {
+        "label": "falling_block",
+        "help": "Fällt wie Sand, wenn nichts darunter ist.",
+        "fields": {
+          "hurtAmount": {
+            "label": "hurt_amount",
+            "help": "Schaden pro gefallenem Block an Entitäten, auf die er fällt; braucht auch max_hurt. -1: kein Schaden."
+          },
+          "maxHurt": {
+            "label": "max_hurt"
+          }
+        }
+      },
+      "concretePowderBlock": {
+        "label": "concrete_powder_block",
+        "help": "Wird zu einem festen Block, wenn es Wasser berührt.",
+        "fields": {
+          "solidBlock": {
+            "label": "solid_block",
+            "help": "Der Block (oder Blockzustand), zu dem es wird (Pflicht).",
+            "placeholder": "namespace:solid_block"
+          }
+        }
+      },
+      "bouncingBlock": {
+        "label": "bouncing_block",
+        "help": "Entitäten springen davon ab wie von einem Schleimblock.",
+        "fields": {
+          "bounceHeight": {
+            "label": "bounce_height",
+            "help": "Wie stark Entitäten abprallen (Standard 0.66). Ab Minecraft 26.2 übernimmt das die Blockeinstellung bounce_restitution."
+          },
+          "fallDamageMultiplier": {
+            "label": "fall_damage_multiplier"
+          },
+          "syncPlayerPosition": {
+            "label": "sync_player_position"
+          }
+        }
+      },
+      "chimeBlock": {
+        "label": "chime_block",
+        "help": "Spielt einen Sound, wenn ein Projektil trifft, wie Amethyst."
+      },
+      "dropExpBlock": {
+        "label": "drop_experience_block",
+        "help": "Lässt beim Abbau Erfahrung fallen, wie ein Erz.",
+        "fields": {
+          "amount": {
+            "label": "amount",
+            "help": "Wie viel Erfahrung: eine Zahl, ein Bereich wie 1~3 oder ein Zahlenanbieter."
+          }
+        }
+      },
+      "bushBlock": {
+        "label": "bush_block",
+        "help": "Kann nur auf bestimmten Blöcken stehen und bricht ohne Untergrund ab, wie eine Blume."
+      },
+      "hangingBlock": {
+        "label": "hanging_block",
+        "help": "Kann nur an bestimmten Blöcken hängen und bricht ohne sie ab."
+      },
+      "sturdyBaseBlock": {
+        "label": "sturdy_base_block",
+        "help": "Braucht in einer Richtung eine stabile Seite des Nachbarn, wie eine Druckplatte.",
+        "fields": {
+          "direction": {
+            "label": "direction",
+            "help": "Wo der tragende Block ist (Standard down)."
+          },
+          "supportTypes": {
+            "label": "support_types",
+            "help": "Welche Seiten ihn tragen: full, rigid oder center (Standard full)."
+          }
+        }
+      },
+      "directionalAttachedBlock": {
+        "label": "directional_attached_block",
+        "help": "Haftet an dem Block, von dem es wegzeigt, wie eine Wandfackel (Eigenschaft facing)."
+      },
+      "faceAttachedHorizontalDirectionalBlock": {
+        "label": "face_attached_horizontal_directional_block",
+        "help": "Haftet an Boden, Wand oder Decke, wie ein Knopf (Eigenschaften face und facing)."
+      },
+      "liquidFlowableBlock": {
+        "label": "liquid_flowable_block",
+        "help": "Wasser und Lava spülen es weg, wie eine Blume.",
+        "fields": {
+          "dropItem": {
+            "label": "drop_item",
+            "help": "Lässt beim Wegspülen seine Beute fallen (Standard true)."
+          }
+        }
+      },
+      "nearLiquidBlock": {
+        "label": "near_liquid_block",
+        "help": "Kann nur stehen, wo an einer der Positionen Wasser oder Lava ist, wie Zuckerrohr.",
+        "fields": {
+          "positions": {
+            "label": "positions",
+            "help": "Wo nach der Flüssigkeit gesucht wird, als x,y,z relativ zum Block (Pflicht).",
+            "placeholder": "1,-1,0"
+          }
+        }
+      },
+      "onLiquidBlock": {
+        "label": "on_liquid_block",
+        "help": "Kann nur auf Wasser oder Lava stehen, wie ein Seerosenblatt."
+      },
+      "seagrassLikeBlock": {
+        "label": "seagrass_like_block",
+        "help": "Eine Unterwasserpflanze wie Seegras. Gib dem Block die Einstellung fluid_state: water."
+      },
+      "cropBlock": {
+        "label": "crop_block",
+        "help": "Eine Feldfrucht, die bei Licht durch ihre Altersstufen wächst und Knochenmehl annimmt.",
+        "fields": {
+          "spawnLightRequirement": {
+            "label": "spawn_light_requirement",
+            "help": "Das Licht, das es zum Setzen braucht (Standard: light_requirement)."
+          },
+          "maxSpawnLightRequirement": {
+            "label": "max_spawn_light_requirement"
+          },
+          "isBoneMealTarget": {
+            "label": "is_bone_meal_target"
+          },
+          "boneMealAgeBonus": {
+            "label": "bone_meal_age_bonus",
+            "help": "Stufen, die Knochenmehl hinzufügt: eine Zahl, ein Bereich wie 1~3 oder ein Zahlenanbieter (Standard 1)."
+          }
+        }
+      },
+      "saplingBlock": {
+        "label": "sapling_block",
+        "help": "Ein Setzling, der zu einem Baum wächst (ein Configured Feature oder eine Struktur).",
+        "fields": {
+          "feature": {
+            "label": "feature",
+            "help": "Das Configured Feature, zu dem er wächst (Pflicht, außer structure ist gesetzt).",
+            "placeholder": "minecraft:oak"
+          },
+          "structure": {
+            "label": "structure",
+            "help": "Eine Struktur, zu der er statt eines Features wächst.",
+            "placeholder": "namespace:my_tree"
+          },
+          "boneMealSuccessChance": {
+            "label": "bone_meal_success_chance"
+          }
+        }
+      },
+      "stemBlock": {
+        "label": "stem_block",
+        "help": "Ein Melonen- oder Kürbisstiel: wächst durch seine Altersstufen und lässt dann daneben seine Frucht wachsen.",
+        "fields": {
+          "fruit": {
+            "label": "fruit",
+            "placeholder": "minecraft:melon"
+          },
+          "attachedStem": {
+            "label": "attached_stem",
+            "help": "Der Block (mit attached_stem_block), der den Stiel ersetzt, sobald die Frucht gewachsen ist (Pflicht).",
+            "placeholder": "namespace:attached_melon_stem"
+          }
+        }
+      },
+      "attachedStemBlock": {
+        "label": "attached_stem_block",
+        "help": "Ein zur Frucht gebogener Stiel; wird wieder zum Stiel, wenn die Frucht fehlt (Eigenschaft facing).",
+        "fields": {
+          "fruit": {
+            "label": "fruit",
+            "placeholder": "minecraft:melon"
+          },
+          "stem": {
+            "label": "stem",
+            "help": "Der Stielblock, zu dem es wieder wird (Pflicht; er braucht eine Eigenschaft age).",
+            "placeholder": "namespace:melon_stem"
+          }
+        }
+      },
+      "verticalCropBlock": {
+        "label": "vertical_crop_block",
+        "help": "Wächst auf sich selbst nach oben (oder unten), wie Zuckerrohr oder Bambus."
+      },
+      "vineCropHeadBlock": {
+        "label": "vine_crop_head_block",
+        "help": "Die wachsende Spitze einer Rankenpflanze wie Höhlenranken (Eigenschaft age). Ab CraftEngine 26.9 gelesen; das Wiki dokumentiert es noch nicht.",
+        "fields": {
+          "body": {
+            "label": "body",
+            "help": "Der Block, den die Spitze beim Wachsen zurücklässt (Pflicht).",
+            "placeholder": "namespace:vine_body"
+          }
+        }
+      },
+      "vineCropBodyBlock": {
+        "label": "vine_crop_body_block",
+        "help": "Der Körper einer Rankenpflanze unter ihrer Spitze. Ab CraftEngine 26.9 gelesen; das Wiki dokumentiert es noch nicht.",
+        "fields": {
+          "head": {
+            "label": "head",
+            "help": "Der Spitzenblock (mit vine_crop_head_block), zu dem es gehört (Pflicht).",
+            "placeholder": "namespace:vine_head"
+          }
+        }
+      },
+      "buddingBlock": {
+        "label": "budding_block",
+        "help": "Lässt an seinen Seiten stufenweise Blöcke wachsen, wie knospender Amethyst.",
+        "fields": {
+          "growthChance": {
+            "label": "growth_chance"
+          },
+          "blocks": {
+            "label": "blocks",
+            "help": "Die wachsenden Stufen, die kleinste zuerst (Pflicht)."
+          }
+        }
+      },
+      "decayBlock": {
+        "label": "decay_block",
+        "help": "Altert mit der Zeit und wird dann zu einem anderen Block, wie schmelzendes Eis (Eigenschaft age).",
+        "fields": {
+          "decayInto": {
+            "label": "decay_into",
+            "placeholder": "air"
+          },
+          "delay": {
+            "label": "delay",
+            "help": "Ticks zwischen zwei Altersstufen, z. B. 100~200. Leer: es altert bei zufälligen Ticks."
+          },
+          "chance": {
+            "label": "chance"
+          },
+          "requiredLight": {
+            "label": "required_light"
+          }
+        }
+      },
+      "changeOverTimeBlock": {
+        "label": "change_over_time_block",
+        "help": "Wird mit der Zeit zu einem anderen Block, wie oxidierendes Kupfer.",
+        "fields": {
+          "changeSpeed": {
+            "label": "change_speed"
+          },
+          "nextBlock": {
+            "label": "next_block",
+            "help": "Der Block, zu dem es wird (Pflicht).",
+            "placeholder": "namespace:weathered_block"
+          }
+        }
+      },
+      "spreadingBlock": {
+        "label": "spreading_block",
+        "help": "Breitet sich auf einen Block in der Nähe aus und verwandelt ihn in sich selbst, wie Sculk.",
+        "fields": {
+          "targetBlock": {
+            "label": "target_block",
+            "help": "Der Block, auf den es sich ausbreitet (Pflicht).",
+            "placeholder": "minecraft:stone"
+          }
+        }
+      },
+      "surfaceSpreadingBlock": {
+        "label": "surface_spreading_block",
+        "help": "Breitet sich bei Licht über seinen Grundblock aus und stirbt ohne Licht ab, wie Gras auf Erde.",
+        "fields": {
+          "baseBlock": {
+            "label": "base_block",
+            "help": "Der Block, auf den es sich ausbreitet und zu dem es wieder wird (Standard minecraft:dirt).",
+            "placeholder": "minecraft:dirt"
+          }
+        }
+      },
+      "grassBlock": {
+        "label": "grass_block",
+        "help": "Knochenmehl lässt Pflanzen drumherum wachsen, wie bei einem Grasblock.",
+        "fields": {
+          "feature": {
+            "label": "feature",
+            "help": "Das Placed Feature, das Knochenmehl ausführt (Pflicht).",
+            "placeholder": "minecraft:grass_bonemeal"
+          }
+        }
+      },
+      "leavesBlock": {
+        "label": "leaves_block",
+        "help": "Laub, das fern von Stämmen zerfällt (Eigenschaften distance und persistent)."
+      }
+    },
+    "shared": {
+      "blockBehavior": {
+        "canOpenWithHand": {
+          "label": "can_open_with_hand",
+          "help": "Ein Rechtsklick öffnet und schließt es (Standard true)."
+        },
+        "canOpenByWindCharge": {
+          "label": "can_open_by_wind_charge",
+          "help": "Eine Windkugel öffnet und schließt es (Standard true)."
+        },
+        "sounds": {
+          "label": "sounds",
+          "help": "Die Sounds der Aktionen des Blocks. Leer: kein Sound."
+        },
+        "excludedProperties": {
+          "label": "excluded_properties",
+          "help": "Eigenschaften, die nicht auf den neuen Block übertragen werden."
+        },
+        "hasSignal": {
+          "label": "has_signal",
+          "help": "Ein Komparator liest, wie voll es ist (Standard true)."
+        },
+        "allowInput": {
+          "label": "allow_input",
+          "help": "Trichter können Items hineinlegen (Standard true)."
+        },
+        "allowOutput": {
+          "label": "allow_output",
+          "help": "Trichter können Items herausnehmen (Standard true)."
+        },
+        "dataKey": {
+          "label": "data_key",
+          "help": "Der Schlüssel, unter dem die Block-Entität ihre Daten speichert. Nur ändern, um zwei Blöcke zu trennen.",
+          "placeholder": "craftengine:my_data"
+        },
+        "tickInterval": {
+          "label": "tick_interval",
+          "help": "Ticks zwischen zwei Partikelausstößen (Standard 10)."
+        },
+        "particles": {
+          "label": "particles",
+          "help": "Die gezeigten Partikel, jeweils relativ zur Ecke des Blocks.",
+          "itemLabel": "Partikel"
+        },
+        "blacklist": {
+          "label": "blacklist",
+          "help": "true: auf den gelisteten Blöcken kann es nicht stehen; false: nur auf ihnen."
+        },
+        "stackable": {
+          "label": "stackable",
+          "help": "Es kann auch auf sich selbst stehen (Standard false)."
+        },
+        "maxHeight": {
+          "label": "max_height",
+          "help": "Wie viele aufeinander stehen können (0: keine Grenze für Stützen, mehr als 1 wenn stackable)."
+        },
+        "delay": {
+          "label": "delay",
+          "help": "Ticks, bevor es ohne Halt abbricht (0: sofort)."
+        },
+        "bottomBlocks": {
+          "label": "bottom_blocks",
+          "help": "Blöcke oder Blockzustände darunter, die zählen (minecraft:stone, default:my_block[age=1]).",
+          "placeholder": "minecraft:farmland"
+        },
+        "bottomBlockTags": {
+          "label": "bottom_block_tags",
+          "help": "Block-Tags darunter, die zählen."
+        },
+        "aboveBlocks": {
+          "label": "above_blocks",
+          "help": "Blöcke oder Blockzustände darüber, die zählen.",
+          "placeholder": "minecraft:stone"
+        },
+        "aboveBlockTags": {
+          "label": "above_block_tags",
+          "help": "Block-Tags darüber, die zählen."
+        },
+        "attachedBlocks": {
+          "label": "attached_blocks",
+          "help": "Blöcke oder Blockzustände, an denen es haften darf (oder als Sperrliste nicht darf).",
+          "placeholder": "minecraft:stone"
+        },
+        "attachedBlockTags": {
+          "label": "attached_block_tags",
+          "help": "Block-Tags, an denen es haften darf (oder nicht darf)."
+        },
+        "liquidType": {
+          "label": "liquid_type",
+          "help": "water, lava oder beides (Standard water)."
+        },
+        "growSpeed": {
+          "label": "grow_speed",
+          "help": "Wachstum pro zufälligem Tick: der ganze Teil in Stufen, der Bruchteil als Chance auf eine weitere."
+        },
+        "lightRequirement": {
+          "label": "light_requirement",
+          "help": "Das mindeste Licht, das es zum Wachsen braucht (Standard: Feldfrüchte 0, Setzlinge 9)."
+        },
+        "maxLightRequirement": {
+          "label": "max_light_requirement",
+          "help": "Das meiste Licht, bei dem es wächst (Standard 15)."
+        },
+        "fruitBottomBlocks": {
+          "label": "fruit_bottom_blocks",
+          "help": "Blöcke, auf denen die Frucht wachsen darf (leer: alle).",
+          "placeholder": "minecraft:dirt"
+        },
+        "fruitBottomBlockTags": {
+          "label": "fruit_bottom_block_tags",
+          "help": "Block-Tags, auf denen die Frucht wachsen darf."
+        },
+        "direction": {
+          "label": "direction",
+          "help": "Die Richtung, in die es wächst (Standard up)."
+        },
+        "boneMeal": {
+          "label": "bone_meal",
+          "help": "Was Knochenmehl bewirkt: Beeren reifen lassen oder um grow_blocks Blöcke wachsen.",
+          "fields": {
+            "behavior": {
+              "label": "behavior"
+            },
+            "growBlocks": {
+              "label": "grow_blocks"
+            }
+          }
+        }
+      },
+      "sound": {
+        "label": "sound",
+        "help": "Eine Sound-ID oder ID mit Lautstärke und Tonhöhe (eine Zahl oder ein Bereich wie 0.9~1).",
+        "choices": {
+          "id": {
+            "label": "Sound-ID",
+            "field": {
+              "label": "Sound-ID"
+            }
+          },
+          "detailed": {
+            "label": "Mit Lautstärke und Tonhöhe",
+            "field": {
+              "fields": {
+                "id": {
+                  "label": "id"
+                },
+                "volume": {
+                  "label": "volume"
+                },
+                "pitch": {
+                  "label": "pitch"
+                }
+              }
+            }
+          }
+        }
+      },
+      "particle": {
+        "particle": {
+          "label": "particle",
+          "help": "Der Partikeltyp, z. B. minecraft:flame."
+        },
+        "x": {
+          "label": "x"
+        },
+        "y": {
+          "label": "y"
+        },
+        "z": {
+          "label": "z"
+        },
+        "count": {
+          "label": "count",
+          "help": "Wie viele Partikel (Standard 1)."
+        },
+        "offsetX": {
+          "label": "offset_x",
+          "help": "Die Streuung um die Position auf jeder Achse (Standard 0)."
+        },
+        "offsetY": {
+          "label": "offset_y"
+        },
+        "offsetZ": {
+          "label": "offset_z"
+        },
+        "speed": {
+          "label": "speed",
+          "help": "Die Geschwindigkeit der Partikel (Standard 0)."
+        },
+        "blockState": {
+          "label": "block_state",
+          "help": "Der Block(zustand), den der Partikel zeigt (block, falling_dust, dust_pillar, block_crumble, block_marker).",
+          "placeholder": "minecraft:stone"
+        },
+        "item": {
+          "label": "item",
+          "help": "Das Item, das der Partikel zeigt."
+        },
+        "color": {
+          "label": "color",
+          "help": "Die Farbe des Partikels als r,g,b (dust, entity_effect, tinted_leaves, spell, trail).",
+          "placeholder": "255,0,0"
+        },
+        "from": {
+          "label": "from",
+          "help": "Die Startfarbe als r,g,b.",
+          "placeholder": "255,0,0"
+        },
+        "to": {
+          "label": "to",
+          "help": "Die Endfarbe als r,g,b.",
+          "placeholder": "0,0,255"
+        },
+        "scale": {
+          "label": "scale",
+          "help": "Die Größe des Staubs (Standard 1)."
+        },
+        "power": {
+          "label": "power",
+          "help": "Die Stärke des Zauberpartikels (Standard 1)."
+        },
+        "targetX": {
+          "label": "target_x",
+          "help": "Wohin der Partikel fliegt (x)."
+        },
+        "targetY": {
+          "label": "target_y",
+          "help": "Wohin der Partikel fliegt (y)."
+        },
+        "targetZ": {
+          "label": "target_z",
+          "help": "Wohin der Partikel fliegt (z)."
+        },
+        "arrivalTime": {
+          "label": "arrival_time",
+          "help": "Ticks, bis die Vibration ankommt (Standard 10)."
+        },
+        "duration": {
+          "label": "duration",
+          "help": "Ticks, die die Spur bleibt (Standard 10)."
+        },
+        "charge": {
+          "label": "charge",
+          "help": "Der Rollwinkel der Sculk-Ladung."
+        },
+        "shriek": {
+          "label": "shriek",
+          "help": "Ticks, bevor der Schrei erscheint."
+        },
+        "blocks": {
+          "label": "blocks",
+          "help": "Über wie viele Wasserblöcke der Geysir reicht."
+        },
+        "burstImpulseBase": {
+          "label": "burst_impulse_base",
+          "help": "Der Grundimpuls des Geysir-Ausbruchs."
+        }
+      }
+    },
+    "categories": {
+      "blockBehaviors": {
+        "plants": "Pflanzen und Wachstum",
+        "building": "Baublöcke",
+        "interaction": "Türen und Sitze",
+        "redstone": "Redstone",
+        "light": "Licht und Partikel",
+        "storage": "Lager und Anzeigen",
+        "physics": "Physik",
+        "placement": "Platzierungsregeln"
+      }
+    }
+  }
+}

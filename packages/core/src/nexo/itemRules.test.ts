@@ -11,6 +11,8 @@ import {
 } from '../form/properties';
 import { NEXO_FORM } from './form/schema';
 import {
+  DIRECTIONAL_MODEL_SLOTS,
+  directionalFaces,
   furnitureConfig,
   furnitureStateNames,
   isStringBlock,
@@ -69,6 +71,17 @@ describe('variant rules', () => {
     expect(variantConfigPath(VARIANTS[0])).toEqual(['Pack', 'pulling_models']);
     expect(variantConfigPath(STACK_MODELS)).toEqual(['Mechanics', 'custom_block', 'stackable']);
     expect(variantConfigPath(VARIANTS.find((def) => def.kind === 'definition')!)).toBeNull();
+    const north = DIRECTIONAL_MODEL_SLOTS.find((def) => def.slot === 'dir_north')!;
+    expect(variantConfigPath(north)).toEqual(['Mechanics', 'custom_block', 'directional', 'north_model']);
+  });
+
+  it('gives each directional type its faces', () => {
+    const directional = (type: string): ConfigObject => ({ Mechanics: { custom_block: { type: 'NOTEBLOCK', directional: { type } } } });
+    expect(directionalFaces(directional('LOG'))).toEqual(['y', 'x', 'z']);
+    expect(directionalFaces(directional('furnace'))).toEqual(['north', 'south', 'east', 'west']);
+    expect(directionalFaces(directional('BARREL'))).toHaveLength(6);
+    expect(directionalFaces(directional('SPIRAL'))).toEqual([]);
+    expect(directionalFaces({ Mechanics: { custom_block: { type: 'NOTEBLOCK' } } })).toEqual([]);
   });
 
   it('offers hold styles only for flat item models', () => {

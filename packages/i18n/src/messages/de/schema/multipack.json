@@ -1,0 +1,113 @@
+{
+  "nexoMultipack": {
+    "fields": {
+      "multipack": {
+        "label": "multipack.yml",
+        "fields": {
+          "templates": {
+            "label": "Mit dem Hauptpaket gesendete Vorlagenpakete",
+            "keyLabel": "Vorlagen-ID",
+            "keyPlaceholder": "music_pack",
+            "value": {
+              "fields": {
+                "required": {
+                  "label": "Immer gesendet, Spieler können es nicht ausschalten"
+                },
+                "default": {
+                  "label": "An für Spieler, die es nie umgeschaltet haben"
+                },
+                "conflictsWith": {
+                  "label": "Vorlagen, die beim Einschalten dieser ausgeschaltet werden",
+                  "placeholder": "Vorlagen-ID"
+                },
+                "path": {
+                  "label": "Wo das Paket liegt",
+                  "help": "Ein Ordner oder Zip, absolut, relativ zu pack/template_packs oder zum Nexo-Ordner. Leer: pack/template_packs/'<'id>.",
+                  "placeholder": "template_packs/music_pack"
+                }
+              }
+            }
+          },
+          "menu": {
+            "label": "Menü zum Umschalten der Vorlagen (/nexo multipack)",
+            "fields": {
+              "title": {
+                "label": "Menütitel",
+                "placeholder": "'<'gold>Ressourcenpaket-Optionen"
+              },
+              "rows": {
+                "label": "Zeilen des Menüs (1–6)"
+              },
+              "slots": {
+                "label": "Plätze des Menüs",
+                "keyLabel": "Name des Platzes",
+                "keyPlaceholder": "music_toggle",
+                "value": {
+                  "fields": {
+                    "offset": {
+                      "label": "Position der oberen linken Zelle",
+                      "help": "Spalte 1–9 und Zeile, durch ein Komma getrennt.",
+                      "placeholder": "5,2"
+                    },
+                    "size": {
+                      "label": "Zellen breit und hoch (Standard 1,1)",
+                      "placeholder": "1,1"
+                    },
+                    "allSlotsExceptFirstEmpty": {
+                      "label": "Nur die obere linke Zelle ist klickbar"
+                    },
+                    "baseItem": {
+                      "label": "Item, wenn ein Zustand keins hat",
+                      "help": "nexo_item: '<'id>, item_model: '<'ItemModel-Builder> oder ein Inline-Item (material, itemname, lore …).",
+                      "placeholder": "material: PAPER\nitemname: \"'<'gray>Mein Paket\""
+                    },
+                    "action": {
+                      "label": "Was ein Klick bewirkt",
+                      "fields": {
+                        "type": {
+                          "label": "TOGGLE schaltet eine Vorlage ein und aus, CYCLING wechselt durch mehrere"
+                        },
+                        "target": {
+                          "label": "Vorlage, die der Platz umschaltet"
+                        },
+                        "enabledItem": {
+                          "label": "Item, solange die Vorlage an ist",
+                          "help": "Wird über das Item des Platzes gelegt; nexo_item, item_model oder ein Inline-Item.",
+                          "placeholder": "material: LIME_DYE"
+                        },
+                        "disabledItem": {
+                          "label": "Item, solange die Vorlage aus ist",
+                          "help": "Wird über das Item des Platzes gelegt; nexo_item, item_model oder ein Inline-Item.",
+                          "placeholder": "material: GRAY_DYE"
+                        },
+                        "targets": {
+                          "label": "Vorlagen, durch die gewechselt wird",
+                          "choices": {
+                            "ids": {
+                              "label": "Vorlagen-IDs",
+                              "field": {
+                                "label": "Vorlagen-IDs",
+                                "placeholder": "Vorlagen-ID"
+                              }
+                            },
+                            "items": {
+                              "label": "Vorlagen mit eigenem Item",
+                              "field": {
+                                "label": "Einträge mit id und Item-Schlüsseln",
+                                "placeholder": "- id: 2d_tools\n  material: PAPER"
+                              }
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}

@@ -1,0 +1,100 @@
+{
+  "groups": {
+    "general": {
+      "label": "General",
+      "description": "Lore, Unbreakable, ItemFlags und mehr"
+    }
+  },
+  "properties": {
+    "lore": {
+      "label": "Lore",
+      "description": "Textzeilen unter dem Item-Namen (MiniMessage, z.B. '<'gray>).",
+      "field": {
+        "label": "Zeilen",
+        "placeholder": "'<'gray>Eine Zeile"
+      }
+    },
+    "unbreakable": {
+      "label": "Unbreakable",
+      "description": "Das Item verliert keine Haltbarkeit.",
+      "field": {
+        "label": "Unzerstörbar"
+      }
+    },
+    "excludeFromInventory": {
+      "label": "Exclude From Inventory",
+      "description": "Das Item erscheint nicht in /nexo inventory, kann aber per /nexo give vergeben werden.",
+      "field": {
+        "label": "Verstecken"
+      }
+    },
+    "excludeFromCommands": {
+      "label": "Exclude From Commands",
+      "description": "Das Item taucht nicht in der Befehls-Vervollständigung auf (z.B. für Hilfs-Items).",
+      "field": {
+        "label": "Aus Befehlen ausblenden"
+      }
+    },
+    "template": {
+      "label": "Template",
+      "description": "Übernimmt alle Eigenschaften anderer Nexo-Items.",
+      "field": {
+        "label": "Item-IDs der Vorlagen",
+        "placeholder": "z.B. template_item",
+        "help": "Mehrere Vorlagen werden der Reihe nach zusammengeführt. Nexo 1.30 liest alle aus template (die Doku nennt die Liste templates)."
+      }
+    },
+    "itemFlags": {
+      "label": "ItemFlags",
+      "description": "Blendet Teile des Tooltips aus. Ab 1.21.5 besser die Component „Tooltip Display“ verwenden.",
+      "field": {
+        "label": "Flags"
+      }
+    },
+    "persistentData": {
+      "label": "PersistentData",
+      "description": "Eigene Daten im PersistentDataContainer (PublicBukkitValues) des Items.",
+      "field": {
+        "label": "Einträge",
+        "itemLabel": "Eintrag",
+        "fields": {
+          "type": {
+            "label": "Typ"
+          },
+          "key": {
+            "label": "Schlüssel",
+            "placeholder": "namespace:schluessel"
+          },
+          "value": {
+            "label": "Wert"
+          }
+        }
+      }
+    },
+    "customname": {
+      "label": "Custom Name",
+      "description": "Ein Name wie nach dem Umbenennen am Amboss (kursiv, wenn nicht formatiert).",
+      "field": {
+        "label": "Name",
+        "placeholder": "z.B. '<'red>Rubin",
+        "help": "Von Nexo 1.30 gelesen, nicht in der Doku aufgeführt."
+      }
+    },
+    "injectId": {
+      "label": "Inject ID",
+      "description": "Aus: das Item wird nicht als Nexo-Item registriert (für Hilfs-Items wie die Türhälften von Carpentry).",
+      "field": {
+        "label": "Als Nexo-Item registrieren",
+        "help": "Von Nexo 1.30 gelesen, nicht in der Doku aufgeführt."
+      }
+    },
+    "noAutoUpdate": {
+      "label": "No Auto Update",
+      "description": "Nexo aktualisiert vorhandene Exemplare des Items nach einer Config-Änderung nicht.",
+      "field": {
+        "label": "Automatische Updates überspringen",
+        "help": "Von Nexo 1.30 gelesen, nicht in der Doku aufgeführt."
+      }
+    }
+  }
+}

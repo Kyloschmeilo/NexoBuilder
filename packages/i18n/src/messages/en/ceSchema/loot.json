@@ -1,0 +1,21 @@
+{
+  "groups": {
+    "loot": {
+      "label": "Loot",
+      "description": "What the block or the furniture drops when it breaks"
+    }
+  },
+  "properties": {
+    "blockLoot": {
+      "label": "Loot",
+      "description": "What the block drops when it breaks. default:loot_table/self drops the block itself. Without loot the block drops nothing."
+    },
+    "furnitureLoot": {
+      "label": "Loot",
+      "description": "What the furniture drops when it breaks. default:loot_table/furniture drops the item it was placed with. Without loot it drops nothing."
+    }
+  },
+  "lootSources": {
+    "label": "loot_sources"
+  }
+}

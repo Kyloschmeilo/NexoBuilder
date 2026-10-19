@@ -4,9 +4,12 @@
  *   resources/<pack>/configuration/items/<folder…>/<folder|item_id>.yml (items with their blocks, furniture, recipes)
  *   resources/<pack>/configuration/{images,sounds,paintings}.yml (glyphs with their emoji, sounds with their jukebox songs)
  *   resources/<pack>/configuration/{equipments,categories}.yml (the armor sets, a category per folder)
- *   resources/<pack>/configuration/lang/<locale>.yml (the items' display name translations)
+ *   resources/<pack>/configuration/lang/<locale>.yml (item and block names, the project's own lang keys)
  *   resources/<pack>/configuration/{loot_sources,templates,global_variables}.yml (the project-wide configuration)
  *   resources/<pack>/configuration/attributes.yml (the attribute system)
+ *   resources/<pack>/configuration/{translations,worldgen,atlases,config_factories}.yml (server translations,
+ *     worldgen features, atlases, config factories)
+ *   resources/<pack>/script/<path>.js (the project's scripts)
  *   resources/<pack>/resourcepack/ (the resource pack: pack.mcmeta, pack.png, assets/…)
  * The test server's CraftEngine adapter accepts these paths: pack.yml, configuration/… and resourcepack/….
  */
@@ -35,11 +38,13 @@ export function packYmlFile(project: Project): string {
   return `${craftEnginePackDir(project)}/pack.yml`;
 }
 
-/** The media config files: images.yml (with the emoji), sounds.yml (with the jukebox songs), paintings.yml. */
-export const CRAFT_ENGINE_MEDIA_FILES = { glyph: 'images', sound: 'sounds', painting: 'paintings' } as const satisfies Record<
-  MediaKind,
-  string
+/** The media config files: images.yml (with the emoji), sounds.yml (with the jukebox songs), paintings.yml; no dialogs. */
+export const CRAFT_ENGINE_MEDIA_FILES = { glyph: 'images', sound: 'sounds', painting: 'paintings' } as const satisfies Partial<
+  Record<MediaKind, string>
 >;
+
+/** The media kinds CraftEngine has a config file for. */
+export type CraftEngineMediaKind = keyof typeof CRAFT_ENGINE_MEDIA_FILES;
 
 /** A config file of the pack (relative to plugins/CraftEngine), e.g. "resources/golden/configuration/categories.yml". */
 export function craftEngineConfigFile(project: Project, name: string): string {
@@ -47,7 +52,7 @@ export function craftEngineConfigFile(project: Project, name: string): string {
 }
 
 /** A config file of the pack's media (relative to plugins/CraftEngine), e.g. "resources/golden/configuration/images.yml". */
-export function craftEngineMediaFile(project: Project, name: (typeof CRAFT_ENGINE_MEDIA_FILES)[MediaKind]): string {
+export function craftEngineMediaFile(project: Project, name: (typeof CRAFT_ENGINE_MEDIA_FILES)[CraftEngineMediaKind]): string {
   return craftEngineConfigFile(project, name);
 }
 

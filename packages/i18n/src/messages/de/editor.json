@@ -3,16 +3,32 @@
     "unnamed": "Unbenannt"
   },
   "inputs": {
-    "default": "Standard",
-    "defaultWithHint": "Standard ({value})",
     "defaultTooltip": "Nicht gesetzt – {plugin} verwendet den Standardwert",
     "allowedRange": "Erlaubt: {min} bis {max}",
     "selectOrType": "Auswählen oder eingeben",
-    "notSetOption": "– nicht gesetzt –",
-    "placeholderOption": "– {placeholder} –",
-    "moveUp": "Nach oben",
-    "moveDown": "Nach unten",
-    "pickColor": "Farbe wählen"
+    "pickColor": "Farbe wählen",
+    "axis": "{axis}-Wert",
+    "defaultIs": "Standard: {value}",
+    "noMatches": "Keine Option passt.",
+    "noResources": "Keine Ressource passt.",
+    "notSet": "Nicht gesetzt",
+    "notSetHint": "Lässt den Schlüssel weg; das Plugin nimmt seinen Standardwert",
+    "off": "aus",
+    "on": "an",
+    "pickResource": "Aus dem Projekt wählen",
+    "resourceGroups": {
+      "items": "Items",
+      "models": "Modelle",
+      "sounds": "Sounds",
+      "textures": "Texturen"
+    },
+    "searchOptions": "{placeholder} – zum Suchen tippen",
+    "searchResources": "Items, Modelle, Texturen und Sounds durchsuchen",
+    "unset": "Zurücksetzen",
+    "unsetWithDefault": "Zurücksetzen (Standard: {value})",
+    "vector": {
+      "axis": "{label} {axis}"
+    }
   },
   "field": {
     "minVersion": "ab {version}",
@@ -21,26 +37,236 @@
     "clearSection": "Abschnitt leeren",
     "addEntry": "Eintrag hinzufügen",
     "addItem": "{item} hinzufügen",
-    "keyTaken": "„{key}“ ist bereits vorhanden.",
     "yamlError": "YAML-Fehler: {error}",
     "noTexture": "Noch keine Textur",
     "noTextureHint": "Noch keine Textur (empfohlen: {size})",
     "replace": "Ersetzen",
-    "uploadPng": "PNG hochladen"
+    "uploadPng": "PNG hochladen",
+    "entry": "Eintrag {index}",
+    "entryError": "Eintrag {index}: {error}",
+    "listEmpty": "Noch keine Einträge."
   },
   "typed": {
-    "entry": "Eintrag",
     "typePlaceholder": "Typ wählen oder eingeben",
+    "docs": "Doku zu diesem Typ öffnen",
     "chooseType": "Wähle einen Typ, um seine Schlüssel zu sehen.",
     "unknownType": "Das Formular hat keine Felder für „{type}“. Bearbeite diesen Eintrag als YAML.",
     "invert": "Umkehren",
     "invertHint": "Schreibt ein ! vor den Typ, das die Bedingung umkehrt.",
-    "value": "Wert",
-    "valueHint": "Eine Zahl, ein Bereich wie 1~3 oder ein Ausdruck",
     "valuePlaceholder": "1, 1~3 oder ein Ausdruck",
-    "object": "Typ",
-    "objectHint": "Ein Zahlengeber mit Typ, etwa uniform",
     "premium": "Premium",
     "premiumHint": "Nur CraftEngine Premium liest diesen Typ."
+  },
+  "catalog": {
+    "searchPlaceholder": "Namen, Schlüssel und Beschreibungen durchsuchen",
+    "facets": "Kategorien",
+    "all": "Alle",
+    "common": "Häufig",
+    "added": "Hinzugefügt",
+    "other": "Sonstiges",
+    "addedPill": "Hinzugefügt",
+    "jumpTo": "Hinspringen",
+    "adds": "Fügt hinzu",
+    "premium": "Premium",
+    "fromVersion": "ab {version}",
+    "untilVersion": "bis {version}",
+    "noMatch": "Nichts passt zu „{query}“.",
+    "noMatchHint": "Versuche den YAML-Schlüssel oder ein anderes Wort.",
+    "empty": "Hier gibt es nichts hinzuzufügen.",
+    "checkedCount": "{count} ausgewählt",
+    "addCount": "{count, plural, one {# Eintrag hinzufügen} other {# Einträge hinzufügen}}",
+    "conflict": "Nicht zusammen mit „{name}“ möglich.",
+    "keys": {
+      "move": "bewegen",
+      "add": "hinzufügen",
+      "check": "auswählen",
+      "addKeepOpen": "hinzufügen und offen lassen",
+      "addChecked": "ausgewählte hinzufügen"
+    }
+  },
+  "feature": {
+    "actions": "Aktionen für {name}",
+    "on": "An",
+    "off": "Aus",
+    "notSet": "Nicht gesetzt",
+    "entries": "{count, plural, one {# Eintrag} other {# Einträge}}",
+    "reset": "Auf Standard zurücksetzen",
+    "copyYaml": "YAML kopieren",
+    "remove": "Entfernen",
+    "tooOld": "Braucht Minecraft {min} oder neuer; das Projekt ist auf {version} eingestellt.",
+    "removed": "Gibt es nur bis Minecraft {max}.",
+    "premium": "Nur CraftEngine Premium liest das."
+  },
+  "typedEntry": {
+    "noType": "Noch kein Typ",
+    "noSettings": "Keine Einstellungen",
+    "unknownSummary": "Als YAML bearbeitet",
+    "negate": "Umkehren",
+    "negateHint": "Schreibt ein ! vor den Typ, das die Bedingung umkehrt.",
+    "noFields": "Dieser Typ hat keine Einstellungen. Es reicht, ihn hinzuzufügen.",
+    "unknown": "Für diesen Typ gibt es noch kein Formular; bearbeite ihn als YAML."
+  },
+  "typedList": {
+    "default": {
+      "add": "Eintrag hinzufügen",
+      "title": "Einen Eintrag hinzufügen",
+      "noun": "Eintrag"
+    },
+    "catalogs": {
+      "conditions": {
+        "add": "Bedingung hinzufügen",
+        "title": "Eine Bedingung hinzufügen",
+        "noun": "Bedingung",
+        "count": "{count, plural, one {# Bedingung} other {# Bedingungen}}"
+      },
+      "functions": {
+        "add": "Funktion hinzufügen",
+        "title": "Eine Funktion hinzufügen",
+        "noun": "Funktion",
+        "count": "{count, plural, one {# Funktion} other {# Funktionen}}"
+      },
+      "triggers": {
+        "add": "Event hinzufügen",
+        "title": "Ein Event hinzufügen",
+        "noun": "Event",
+        "count": "{count, plural, one {# Event} other {# Events}}"
+      },
+      "lootEntries": {
+        "add": "Loot-Eintrag hinzufügen",
+        "title": "Einen Loot-Eintrag hinzufügen",
+        "noun": "Loot-Eintrag",
+        "count": "{count, plural, one {# Loot-Eintrag} other {# Loot-Einträge}}"
+      },
+      "lootFunctions": {
+        "add": "Loot-Funktion hinzufügen",
+        "title": "Eine Loot-Funktion hinzufügen",
+        "noun": "Loot-Funktion",
+        "count": "{count, plural, one {# Loot-Funktion} other {# Loot-Funktionen}}"
+      },
+      "lootSources": {
+        "add": "Loot-Quelle hinzufügen",
+        "title": "Eine Loot-Quelle hinzufügen",
+        "noun": "Loot-Quelle",
+        "count": "{count, plural, one {# Loot-Quelle} other {# Loot-Quellen}}"
+      },
+      "blockBehaviors": {
+        "add": "Verhalten hinzufügen",
+        "title": "Ein Blockverhalten hinzufügen",
+        "noun": "Verhalten",
+        "count": "{count, plural, one {# Verhalten} other {# Verhalten}}"
+      },
+      "itemBehaviors": {
+        "add": "Verhalten hinzufügen",
+        "title": "Ein Item-Verhalten hinzufügen",
+        "noun": "Verhalten",
+        "count": "{count, plural, one {# Verhalten} other {# Verhalten}}"
+      },
+      "furnitureBehaviors": {
+        "add": "Verhalten hinzufügen",
+        "title": "Ein Möbelverhalten hinzufügen",
+        "noun": "Verhalten",
+        "count": "{count, plural, one {# Verhalten} other {# Verhalten}}"
+      },
+      "itemUpdaters": {
+        "add": "Schritt hinzufügen",
+        "title": "Einen Updater-Schritt hinzufügen",
+        "noun": "Updater-Schritt",
+        "count": "{count, plural, one {# Schritt} other {# Schritte}}"
+      }
+    },
+    "crumb": "{noun}: {label}",
+    "changeType": "Typ ändern",
+    "changeTrigger": "Auslöser ändern",
+    "triggerTitle": "Einen Auslöser wählen",
+    "number": {
+      "useType": "Zahlentyp verwenden",
+      "title": "Einen Zahlentyp wählen",
+      "changeType": "Zahlentyp ändern",
+      "useValue": "Einfachen Wert verwenden",
+      "noPlainValue": "Dieser Typ hat keinen einfachen Wert"
+    }
+  },
+  "devPrimitives": {
+    "actions": {
+      "addBehavior": "Verhalten hinzufügen",
+      "addRecipe": "Rezept hinzufügen",
+      "copyFeatures": "Funktionen kopieren",
+      "delete": "Item löschen",
+      "duplicate": "Duplizieren"
+    },
+    "choices": {
+      "block": "Block",
+      "furniture": "Möbel",
+      "nothing": "Nichts"
+    },
+    "colorTheme": "Farbschema",
+    "empty": {
+      "behaviors": "Noch keine Verhalten.",
+      "recipes": "Noch keine Rezepte."
+    },
+    "fields": {
+      "delay": "Verzögerung",
+      "delayHelp": "Ticks, bevor das Verhalten erneut läuft. 20 Ticks sind eine Sekunde.",
+      "displayName": "Anzeigename",
+      "displayNameHelp": "MiniMessage-Tags wie '<'gold> oder '<'bold> gestalten den Namen.",
+      "glint": "Verzauberungsglanz",
+      "hardness": "Härte",
+      "hardnessHelp": "Zeit zum Abbauen des Blocks. Stein hat 1,5, Obsidian 50.",
+      "lore": "Beschreibung",
+      "loreValue": "Verbrennt alles, was es berührt",
+      "material": "Material",
+      "materialWarning": "Von der Vorlage übernommen.",
+      "places": "Platziert",
+      "saturation": "Sättigung",
+      "saturationError": "Die Sättigung muss 0 oder größer sein.",
+      "type": "Typ",
+      "unbreakable": "Unzerstörbar",
+      "variable": "Variable",
+      "variableValue": "Wert"
+    },
+    "meta": {
+      "folder": "Waffen"
+    },
+    "panel": "Ein Panel enthält Listen und Vorschauen.",
+    "pills": {
+      "draft": "Entwurf",
+      "errors": "{count, plural, one {# Fehler} other {# Fehler}}",
+      "info": "Info",
+      "valid": "Gültig",
+      "warnings": "{count, plural, one {# Warnung} other {# Warnungen}}"
+    },
+    "sections": {
+      "choices": "Auswahl",
+      "empty": "Leere Zustände",
+      "feedback": "Rückmeldung",
+      "fields": "Felder",
+      "fieldsDescription": "Feldzeilen mit Bezeichnung, Eingabe und YAML-Schlüssel, Doku-Links neben der Bezeichnung und Hilfe im Popover.",
+      "food": "Nahrung",
+      "foodDescription": "Ein Unterabschnitt mit drei kurzen Feldern nebeneinander.",
+      "lists": "Listen",
+      "listsDescription": "Zeilen klappen an Ort und Stelle auf oder öffnen einen Dialog; zum Umsortieren den Griff ziehen oder die Pfeiltasten nutzen.",
+      "maps": "Zuordnungen",
+      "mapsDescription": "Schlüssel werden umbenannt, sobald das Eingabefeld den Fokus verliert.",
+      "catalog": "Katalog und typisierte Einträge",
+      "catalogDescription": "CraftEngine-Blockverhalten: die Auswahl und eine Karte pro Verhalten, auch ein unbekannter Typ.",
+      "features": "Feature-Liste",
+      "featuresDescription": "Nexo-Komponenten als Feature-Zeilen, mit der Auswahl über die Komponentengruppe.",
+      "controls": "Steuerelemente"
+    },
+    "title": "Editor-Bausteine",
+    "toggleMode": "Hell oder dunkel",
+    "catalog": {
+      "addBehavior": "Verhalten hinzufügen",
+      "behaviorsTitle": "Blockverhalten hinzufügen",
+      "behaviorsDescription": "Wähle, was der Block tun soll. Du kannst mehrere hinzufügen und später ändern.",
+      "behaviorsSearch": "Verhalten suchen, z. B. Tür, wachsen, fallen",
+      "addComponent": "Komponente hinzufügen",
+      "componentsTitle": "Komponente hinzufügen",
+      "componentsSearch": "Komponenten, Schlüssel und Beschreibungen durchsuchen",
+      "stackWarning": "Werkzeuge stapeln meist nur bis 1.",
+      "translation": "Verschiebung",
+      "glint": "Verzauberungsglanz",
+      "unbreakable": "Unzerstörbar"
+    }
   }
 }

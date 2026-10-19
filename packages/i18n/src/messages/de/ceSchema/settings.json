@@ -1,0 +1,757 @@
+{
+  "groups": {
+    "settings": {
+      "label": "Settings",
+      "description": "Item-Einstellungen von CraftEngine (Tags, Fuel Time, Reparatur …)"
+    }
+  },
+  "properties": {
+    "settingsTags": {
+      "label": "Tags",
+      "description": "Item-Tags, zu denen das Item gehört, z.B. für Rezepte.",
+      "field": {
+        "label": "Tags",
+        "placeholder": "namespace:tag"
+      }
+    },
+    "settingsFuelTime": {
+      "label": "Fuel Time",
+      "description": "Wie lange das Item als Ofenbrennstoff brennt, in Ticks.",
+      "field": {
+        "label": "Ticks"
+      }
+    },
+    "settingsFuelRemainder": {
+      "label": "Fuel Remainder",
+      "description": "Das Item, das nach dem Verbrennen im Ofen bleibt. Nur für Items, die sich nicht stapeln.",
+      "field": {
+        "label": "Item",
+        "placeholder": "minecraft:bucket"
+      }
+    },
+    "settingsBreakPower": {
+      "label": "Break Power",
+      "description": "Abbaustufe des Werkzeugs. Blöcke mit einer benötigten Abbaustufe brauchen mindestens diesen Wert.",
+      "field": {
+        "label": "Abbaustufe"
+      }
+    },
+    "settingsRepairable": {
+      "label": "Repairable",
+      "description": "Ob das Item in Werkbank, Amboss oder Schleifstein repariert werden kann: überall zugleich oder je Ort.",
+      "field": {
+        "label": "Reparierbar",
+        "choices": {
+          "simple": {
+            "label": "Überall",
+            "field": {
+              "label": "Reparierbar"
+            }
+          },
+          "detailed": {
+            "label": "Je Ort",
+            "field": {
+              "fields": {
+                "craftingTable": {
+                  "label": "Zwei in der Werkbank kombinieren"
+                },
+                "anvilRepair": {
+                  "label": "Im Amboss mit Material reparieren"
+                },
+                "anvilCombine": {
+                  "label": "Zwei im Amboss kombinieren"
+                },
+                "grindstoneRepair": {
+                  "label": "Zwei im Schleifstein kombinieren"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "settingsAnvilRepairItem": {
+      "label": "Anvil Repair Item",
+      "description": "Wird beim Reparaturmaterial gesetzt: die Items, die es im Amboss repariert.",
+      "field": {
+        "label": "Einträge",
+        "itemLabel": "Eintrag",
+        "fields": {
+          "target": {
+            "label": "Items oder Tags",
+            "placeholder": "#namespace:werkzeuge"
+          },
+          "amount": {
+            "label": "Wiederhergestellte Haltbarkeit"
+          },
+          "percent": {
+            "label": "Anteil der maximalen Haltbarkeit (0–1)"
+          }
+        }
+      }
+    },
+    "settingsDragRepairItem": {
+      "label": "Drag Repair Item",
+      "description": "Wird beim Reparaturmaterial gesetzt: die Items, die es repariert, wenn man es im Inventar darauf ablegt.",
+      "field": {
+        "label": "Einträge",
+        "itemLabel": "Eintrag",
+        "fields": {
+          "target": {
+            "label": "Items oder Tags",
+            "placeholder": "#namespace:werkzeuge"
+          },
+          "amount": {
+            "label": "Wiederhergestellte Haltbarkeit"
+          },
+          "percent": {
+            "label": "Anteil der maximalen Haltbarkeit (0–1)"
+          }
+        }
+      }
+    },
+    "settingsAnvilRepairMaterial": {
+      "label": "Anvil Repair Material",
+      "description": "Wird beim zu reparierenden Item gesetzt: die Materialien, die es im Amboss reparieren. Für CraftEngine-Versionen nach 26.9 dokumentiert; 26.9 ignoriert es.",
+      "field": {
+        "label": "Einträge",
+        "itemLabel": "Eintrag",
+        "fields": {
+          "material": {
+            "label": "Materialien oder Tags",
+            "placeholder": "minecraft:diamond"
+          },
+          "amount": {
+            "label": "Wiederhergestellte Haltbarkeit"
+          },
+          "percent": {
+            "label": "Anteil der maximalen Haltbarkeit (0–1)"
+          }
+        }
+      }
+    },
+    "settingsDragRepairMaterial": {
+      "label": "Drag Repair Material",
+      "description": "Wird beim zu reparierenden Item gesetzt: die Materialien, die es reparieren, wenn man sie im Inventar darauf ablegt. Für CraftEngine-Versionen nach 26.9 dokumentiert; 26.9 ignoriert es.",
+      "field": {
+        "label": "Einträge",
+        "itemLabel": "Eintrag",
+        "fields": {
+          "material": {
+            "label": "Materialien oder Tags",
+            "placeholder": "minecraft:diamond"
+          },
+          "amount": {
+            "label": "Wiederhergestellte Haltbarkeit"
+          },
+          "percent": {
+            "label": "Anteil der maximalen Haltbarkeit (0–1)"
+          }
+        }
+      }
+    },
+    "settingsRespectRepairableComponent": {
+      "label": "Respect Repairable Component",
+      "description": "Der Amboss beachtet die Vanilla-Komponente repairable des Items.",
+      "field": {
+        "label": "Beachten"
+      }
+    },
+    "settingsRenameable": {
+      "label": "Renameable",
+      "description": "Ob das Item im Amboss umbenannt werden kann.",
+      "field": {
+        "label": "Umbenennbar"
+      }
+    },
+    "settingsEnchantable": {
+      "label": "Enchantable",
+      "description": "Ob das Item im Zaubertisch verwendet werden kann.",
+      "field": {
+        "label": "Verzauberbar"
+      }
+    },
+    "settingsPreventBreak": {
+      "label": "Prevent Break",
+      "description": "Das Item behält seinen letzten Haltbarkeitspunkt, statt zu zerbrechen.",
+      "field": {
+        "label": "Zerbrechen verhindern"
+      }
+    },
+    "settingsCanPlace": {
+      "label": "Can Place",
+      "description": "Ob der Vanilla-Block des Materials platziert werden kann.",
+      "field": {
+        "label": "Platzierbar"
+      }
+    },
+    "settingsDisableVanillaBehavior": {
+      "label": "Disable Vanilla Behavior",
+      "description": "Schaltet ab, was das Vanilla-Material bei Benutzung tut, z. B. seinen Block platzieren. Von CraftEngine 26.9 gelesen, im Wiki nicht dokumentiert.",
+      "field": {
+        "label": "Abschalten"
+      }
+    },
+    "settingsDyeable": {
+      "label": "Dyeable",
+      "description": "Ob das Item in der Werkbank gefärbt werden kann.",
+      "field": {
+        "label": "Färbbar"
+      }
+    },
+    "settingsDyeColor": {
+      "label": "Dye Color",
+      "description": "Die Farbe, die das Item in Färberezepten beisteuert, als r,g,b.",
+      "field": {
+        "label": "Farbe",
+        "placeholder": "255,140,0"
+      }
+    },
+    "settingsFireworkColor": {
+      "label": "Firework Color",
+      "description": "Die Farbe, die das Item dem Übergang eines Feuerwerkssterns gibt, als r,g,b.",
+      "field": {
+        "label": "Farbe",
+        "placeholder": "255,140,0"
+      }
+    },
+    "settingsEquipment": {
+      "label": "Equipment",
+      "description": "Wendet eine Equipment-Definition von CraftEngine an, wenn das Item getragen wird.",
+      "field": {
+        "label": "Ausrüstung",
+        "fields": {
+          "assetId": {
+            "label": "Equipment-ID",
+            "placeholder": "namespace:equipment"
+          },
+          "slot": {
+            "label": "Slot"
+          },
+          "clientBoundModel": {
+            "label": "Client-seitiges Modell"
+          },
+          "cameraOverlay": {
+            "label": "Kamera-Overlay",
+            "placeholder": "z.B. minecraft:misc/pumpkinblur"
+          },
+          "swappable": {
+            "label": "Per Rechtsklick tauschbar"
+          },
+          "damageOnHurt": {
+            "label": "Nimmt Schaden, wenn der Träger getroffen wird"
+          },
+          "dispensable": {
+            "label": "Per Werfer anziehbar"
+          },
+          "equipOnInteract": {
+            "label": "Kann einem Mob per Benutzen angezogen werden"
+          }
+        }
+      }
+    },
+    "armor": {
+      "label": "CustomArmor (Armor, Elytra, Mob Armor, Harness, Saddles)",
+      "description": "Textur, die beim Tragen angezeigt wird: Spieler-Rüstung, Elytra-Flügel, Rüstung für Wolf/Pferd/Lama/Nautilus, Geschirr für den Glücklichen Ghast oder Sättel. ResourcepackBuilder erzeugt daraus ein Equipment-Modell im Pack und einen Eintrag in equipments.yml und setzt settings.equipment (Equipment-ID und ohne Rüstungsmaterial den Slot).",
+      "hint": "Alle Teile eines Sets bekommen dieselbe Set-ID, die Texturen müssen nur bei einem Teil hochgeladen werden. Elytren, Tier-Rüstungen und Sättel brauchen jeweils eine eigene Set-ID. CraftEngine kennt keine erlaubten Tiere: Tier-Rüstung passt auf jedes Tier mit diesem Slot.",
+      "field": {
+        "label": "Rüstung",
+        "fields": {
+          "set": {
+            "label": "Set-ID",
+            "placeholder": "z.B. ruby"
+          },
+          "type": {
+            "label": "Ausrüstungstyp",
+            "help": "Component funktioniert ab 1.21.2. Trim funktioniert schon ab 1.20, nutzt aber nur die Spieler-Rüstung (Layer 1 und 2), und das Item kann keinen weiteren Rüstungsbesatz bekommen.",
+            "options": {
+              "component": {
+                "label": "Component (equippable)"
+              },
+              "trim": {
+                "label": "Trim (ab 1.20)"
+              }
+            }
+          },
+          "layer1": {
+            "label": "Spieler: Layer 1 (Helm, Brust, Schuhe)",
+            "help": "Entspricht z.B. diamond_layer_1.png"
+          },
+          "layer2": {
+            "label": "Spieler: Layer 2 (Hose)",
+            "help": "Entspricht z.B. diamond_layer_2.png"
+          },
+          "humanoidBaby": {
+            "label": "Spieler: Baby-Layer (ab 26.1)",
+            "help": "Rüstung, wie Babyzombies und andere Baby-Humanoide sie tragen."
+          },
+          "elytra": {
+            "label": "Elytra-Flügel",
+            "help": "Wie elytra.png. Ohne Material ELYTRA setzt ResourcepackBuilder die Gleiter-Komponente automatisch."
+          },
+          "mob": {
+            "label": "Tier-Rüstung & Geschirr",
+            "fields": {
+              "wolfArmor": {
+                "label": "Wolfspanzer",
+                "help": "Wie wolf_armor.png"
+              },
+              "horseArmor": {
+                "label": "Pferderüstung",
+                "help": "Wie horse_armor_diamond.png"
+              },
+              "llamaArmor": {
+                "label": "Lama-Teppich",
+                "help": "Wie llama/decor/*.png"
+              },
+              "nautilusArmor": {
+                "label": "Nautilus-Rüstung"
+              },
+              "harness": {
+                "label": "Geschirr (Glücklicher Ghast)"
+              }
+            }
+          },
+          "saddles": {
+            "label": "Sättel (ab 1.21.5)",
+            "help": "Ein Sattel kann für mehrere Tiere Texturen haben.",
+            "fields": {
+              "horseSaddle": {
+                "label": "Pferd"
+              },
+              "pigSaddle": {
+                "label": "Schwein"
+              },
+              "striderSaddle": {
+                "label": "Schreiter"
+              },
+              "donkeySaddle": {
+                "label": "Esel"
+              },
+              "muleSaddle": {
+                "label": "Maultier"
+              },
+              "camelSaddle": {
+                "label": "Kamel"
+              },
+              "skeletonHorseSaddle": {
+                "label": "Skelettpferd"
+              },
+              "zombieHorseSaddle": {
+                "label": "Zombiepferd"
+              },
+              "nautilusSaddle": {
+                "label": "Nautilus"
+              },
+              "camelHuskSaddle": {
+                "label": "Wüstenkamel"
+              }
+            }
+          },
+          "overlays": {
+            "label": "Überlagerungs-Texturen",
+            "help": "Eine zweite Textur, die über die Ebene gezeichnet wird. Sie behält bei färbbarer Rüstung ihre Farben, z. B. für Schnallen oder Edelsteine.",
+            "fields": {
+              "layer1": {
+                "label": "Über Layer 1"
+              },
+              "layer2": {
+                "label": "Über Layer 2"
+              },
+              "humanoidBaby": {
+                "label": "Über dem Baby-Layer"
+              },
+              "elytra": {
+                "label": "Über den Elytra-Flügeln"
+              }
+            }
+          },
+          "dyeable": {
+            "label": "Färbbar",
+            "help": "Die Ebenen nehmen die Färbung des Items an, wie Lederrüstung. Das Item braucht selbst eine Farbe, damit eine zu sehen ist."
+          },
+          "colorWhenUndyed": {
+            "label": "Farbe ungefärbt",
+            "help": "Farbe der färbbaren Ebenen, solange das Item nicht gefärbt ist. Leer = keine Tönung.",
+            "placeholder": "z. B. 160, 101, 64"
+          },
+          "usePlayerTexture": {
+            "label": "Spieler-Textur verwenden",
+            "help": "Die Elytra-Flügel zeigen die eigene Elytra- oder Umhang-Textur des Spielers statt der Textur dieses Sets."
+          }
+        }
+      }
+    },
+    "settingsEquipmentLod": {
+      "label": "Equipment LOD",
+      "description": "Ein einfacheres Aussehen der Ausrüstung für Betrachter, die weiter als eine Entfernung weg sind, z. B. 2D-Rüstung statt eines 3D-Modells.",
+      "field": {
+        "label": "Equipment LOD",
+        "fields": {
+          "assetId": {
+            "label": "Ausrüstungs-ID aus der Ferne",
+            "placeholder": "namespace:armor_2d"
+          },
+          "distance": {
+            "label": "Entfernung",
+            "help": "Ab so vielen Blöcken Abstand sehen Betrachter die ferne Ausrüstung (Standard 32)."
+          }
+        }
+      }
+    },
+    "settingsEquipmentPotionEffects": {
+      "label": "Equipment Potion Effects",
+      "description": "Trankeffekte, solange das Item in einem Slot ist. Vom selben Effekt gilt nur die höchste Stufe.",
+      "field": {
+        "label": "Effekte",
+        "itemLabel": "Effekt",
+        "fields": {
+          "slot": {
+            "label": "slot",
+            "help": "Der Slot oder die Slot-Gruppe (armor, hand, any), in der das Item sein muss."
+          },
+          "type": {
+            "label": "type"
+          },
+          "amplifier": {
+            "label": "amplifier"
+          },
+          "ambient": {
+            "label": "ambient"
+          },
+          "particles": {
+            "label": "particles"
+          },
+          "showIcon": {
+            "label": "show_icon"
+          },
+          "updateInterval": {
+            "label": "update_interval"
+          }
+        }
+      }
+    },
+    "settingsFood": {
+      "label": "Food",
+      "description": "Macht das Item über das Plugin essbar statt über die Food-Komponente. Auf Servern ab 1.20.5 ist die Food-Komponente die bessere Wahl.",
+      "field": {
+        "label": "Nahrung",
+        "fields": {
+          "nutrition": {
+            "label": "Nährwert (0–20)"
+          },
+          "saturation": {
+            "label": "Sättigung (0–10)"
+          }
+        }
+      }
+    },
+    "settingsConsumeReplacement": {
+      "label": "Consume Replacement",
+      "description": "Das Item, das ein Spieler nach dem Verzehr zurückbekommt.",
+      "field": {
+        "label": "Item",
+        "placeholder": "minecraft:bowl"
+      }
+    },
+    "settingsCraftRemainder": {
+      "label": "Craft Remainder",
+      "description": "Was nach dem Craften im Raster bleibt: ein Item, ein festes Item mit Anzahl, Schaden am Item selbst oder ein Rest je Rezept."
+    },
+    "settingsAllowedProjectiles": {
+      "label": "Allowed Projectiles",
+      "description": "Items, die ein Bogen oder eine Armbrust verschießen kann.",
+      "field": {
+        "label": "Items",
+        "placeholder": "minecraft:arrow"
+      }
+    },
+    "settingsIngredientSubstitute": {
+      "label": "Ingredient Substitute",
+      "description": "Vanilla-Items, die dieses Item in Rezepten ersetzen kann.",
+      "field": {
+        "label": "Items",
+        "placeholder": "minecraft:paper"
+      }
+    },
+    "settingsCompostProbability": {
+      "label": "Compost Probability",
+      "description": "Chance, dass das Item den Komposter füllt (0–1).",
+      "field": {
+        "label": "Chance"
+      }
+    },
+    "settingsInvulnerable": {
+      "label": "Invulnerable",
+      "description": "Schadensarten, die ein fallengelassenes Item übersteht.",
+      "field": {
+        "label": "Schadensarten"
+      }
+    },
+    "settingsKeepOnDeathChance": {
+      "label": "Keep On Death Chance",
+      "description": "Chance, dass ein Spieler das Item beim Tod behält (0–1).",
+      "field": {
+        "label": "Chance"
+      }
+    },
+    "settingsDestroyOnDeathChance": {
+      "label": "Destroy On Death Chance",
+      "description": "Chance, dass das Item beim Tod zerstört wird (0–1).",
+      "field": {
+        "label": "Chance"
+      }
+    },
+    "settingsDropDisplay": {
+      "label": "Drop Display",
+      "description": "Ob über dem fallengelassenen Item sein Name angezeigt wird und was dort steht.",
+      "field": {
+        "label": "Drop-Anzeige",
+        "choices": {
+          "toggle": {
+            "label": "An oder aus",
+            "field": {
+              "label": "Namen anzeigen"
+            }
+          },
+          "text": {
+            "label": "Eigener Text",
+            "field": {
+              "label": "Text (MiniMessage)",
+              "placeholder": "<arg:count>x <name>"
+            }
+          }
+        }
+      }
+    },
+    "settingsGlowColor": {
+      "label": "Glow Color",
+      "description": "Die Leuchtfarbe des fallengelassenen Items.",
+      "field": {
+        "label": "Farbe"
+      }
+    },
+    "settingsHatHeight": {
+      "label": "Hat Height",
+      "description": "Wie weit das Item als Hut getragen das Namensschild anhebt (braucht CustomNameplates). Für CraftEngine-Versionen nach 26.9 dokumentiert.",
+      "field": {
+        "label": "Höhe"
+      }
+    },
+    "settingsTriggerAdvancement": {
+      "label": "Trigger Advancement",
+      "description": "Ob die Benutzung des Items Vanilla-Fortschritte auslöst. Von CraftEngine 26.9 gelesen, im Wiki nicht dokumentiert.",
+      "field": {
+        "label": "Auslösen"
+      }
+    },
+    "settingsProjectile": {
+      "label": "Projectile",
+      "description": "Macht das geworfene oder geschossene Item zu einem eigenen Projektil (Dreizack, Pfeil, Schneeball …) mit eigenem Aussehen, Sounds und Trefferverhalten.",
+      "field": {
+        "label": "Projektil",
+        "fields": {
+          "display": {
+            "label": "display",
+            "fields": {
+              "item": {
+                "label": "item",
+                "placeholder": "namespace:speer"
+              },
+              "displayTransform": {
+                "label": "display_transform"
+              },
+              "billboard": {
+                "label": "billboard"
+              },
+              "scale": {
+                "label": "scale",
+                "placeholder": "0.5"
+              },
+              "translation": {
+                "label": "translation",
+                "placeholder": "0,0,0"
+              },
+              "rotation": {
+                "label": "rotation",
+                "help": "Ein Quaternion x,y,z,w oder Euler-Winkel; hängt davon ab, wie das Modell gebaut ist.",
+                "placeholder": "1,1,1,1"
+              }
+            }
+          },
+          "sounds": {
+            "label": "sounds"
+          },
+          "ignoreInfinityEnchantment": {
+            "label": "ignore_infinity_enchantment"
+          },
+          "pickupable": {
+            "label": "pickupable"
+          },
+          "removeOnHit": {
+            "label": "remove_on_hit"
+          },
+          "gravity": {
+            "label": "gravity"
+          },
+          "velocity": {
+            "label": "velocity"
+          },
+          "damage": {
+            "label": "damage",
+            "help": "Grundschaden beim Treffer; ohne Wert bleibt der Vanilla-Schaden."
+          },
+          "pierceLevel": {
+            "label": "pierce_level"
+          }
+        }
+      }
+    },
+    "settingsAttributeModifiers": {
+      "label": "Custom Attribute Modifiers",
+      "description": "Modifikatoren der eigenen Attribute des Projekts (siehe Attribute), solange das Item in einem Slot ist. Braucht das Attributsystem von CraftEngine.",
+      "field": {
+        "label": "Modifikatoren",
+        "itemLabel": "Modifikator"
+      }
+    },
+    "settingsEquipmentSetPart": {
+      "label": "Equipment Set Piece",
+      "description": "Macht das Item zu einem Teil von Ausrüstungssets (siehe Attribute), solange es in einem der Slots ist. Braucht das Attributsystem von CraftEngine.",
+      "field": {
+        "label": "Einträge",
+        "itemLabel": "Eintrag",
+        "fields": {
+          "slots": {
+            "label": "slots",
+            "help": "Die Slots, in denen das Item als Teil zählt. Slotgruppen wie armor sind hier nicht erlaubt."
+          },
+          "sets": {
+            "label": "sets",
+            "help": "Die Ausrüstungssets, für die das Item zählt.",
+            "placeholder": "z.B. namespace:guardian"
+          }
+        }
+      }
+    }
+  },
+  "itemSettings": {
+    "sound": {
+      "label": "Sound",
+      "choices": {
+        "id": {
+          "label": "ID",
+          "field": {
+            "label": "Sound",
+            "placeholder": "minecraft:item.armor.equip_iron"
+          }
+        },
+        "detailed": {
+          "label": "Mit Lautstärke und Tonhöhe",
+          "field": {
+            "fields": {
+              "id": {
+                "label": "id",
+                "placeholder": "minecraft:item.armor.equip_iron"
+              },
+              "volume": {
+                "label": "volume"
+              },
+              "pitch": {
+                "label": "pitch"
+              }
+            }
+          }
+        }
+      }
+    },
+    "targetSound": {
+      "label": "Sound",
+      "choices": {
+        "id": {
+          "label": "ID",
+          "field": {
+            "label": "Sound",
+            "placeholder": "minecraft:item.trident.hit"
+          }
+        },
+        "byTarget": {
+          "label": "Je Trefferziel",
+          "field": {
+            "fields": {
+              "default": {
+                "label": "default",
+                "placeholder": "minecraft:item.trident.hit"
+              },
+              "overrides": {
+                "label": "overrides",
+                "help": "Ein anderer Sound für diese getroffenen Blöcke oder Entities.",
+                "keyLabel": "Block oder Entity",
+                "keyPlaceholder": "minecraft:stone",
+                "value": {
+                  "label": "Sound",
+                  "placeholder": "minecraft:item.trident.hit_ground"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "craftRemainder": {
+      "label": "Rest",
+      "termLabel": "Was diese Rezepte übrig lassen",
+      "fallbackLabel": "Was andere Rezepte übrig lassen",
+      "choices": {
+        "item": {
+          "label": "Item",
+          "field": {
+            "label": "Item",
+            "placeholder": "minecraft:bucket"
+          }
+        },
+        "fixed": {
+          "label": "Item und Anzahl",
+          "field": {
+            "fields": {
+              "item": {
+                "label": "item",
+                "placeholder": "minecraft:bucket"
+              },
+              "count": {
+                "label": "count"
+              }
+            }
+          }
+        },
+        "hurtAndBreak": {
+          "label": "Schaden",
+          "field": {
+            "fields": {
+              "damage": {
+                "label": "damage"
+              }
+            }
+          }
+        },
+        "recipeBased": {
+          "label": "Je Rezept",
+          "field": {
+            "fields": {
+              "terms": {
+                "label": "terms",
+                "itemLabel": "Eintrag",
+                "fields": {
+                  "recipes": {
+                    "label": "recipes",
+                    "placeholder": "namespace:rezept"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}

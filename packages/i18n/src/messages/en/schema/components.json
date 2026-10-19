@@ -1,0 +1,789 @@
+{
+  "groups": {
+    "components": {
+      "label": "Components",
+      "description": "Minecraft data components (Food, Tool, Equippable …)"
+    }
+  },
+  "properties": {
+    "componentsMaxStackSize": {
+      "label": "Max Stack Size",
+      "description": "How many items fit into one slot (1–99).",
+      "field": {
+        "label": "Stack size"
+      }
+    },
+    "componentsMaxDamage": {
+      "label": "Max Damage",
+      "description": "Maximum durability of the item. Items with durability should have a stack size of 1.",
+      "field": {
+        "label": "Durability"
+      }
+    },
+    "componentsEnchantmentGlintOverride": {
+      "label": "Enchantment Glint Override",
+      "description": "Forces (true) or prevents (false) the enchantment glint.",
+      "field": {
+        "label": "Glint"
+      }
+    },
+    "componentsFireResistant": {
+      "label": "Fire Resistant",
+      "description": "The item does not burn in fire and lava.",
+      "field": {
+        "label": "Fireproof"
+      }
+    },
+    "componentsHideTooltip": {
+      "label": "Hide Tooltip",
+      "description": "No tooltip is shown on hover.",
+      "field": {
+        "label": "Hide tooltip"
+      }
+    },
+    "componentsTooltipDisplay": {
+      "label": "Tooltip Display",
+      "description": "Hides individual components in the tooltip. Replaces the item flags from 1.21.5 on.",
+      "field": {
+        "label": "Components",
+        "placeholder": "minecraft:attribute_modifiers"
+      }
+    },
+    "componentsFood": {
+      "label": "Food",
+      "description": "Makes the item edible. For eating time, animation and effects, also add “Consumable”.",
+      "field": {
+        "label": "Food",
+        "fields": {
+          "nutrition": {
+            "label": "Nutrition (hunger points)"
+          },
+          "saturation": {
+            "label": "Saturation"
+          },
+          "canAlwaysEat": {
+            "label": "Edible even when not hungry"
+          }
+        }
+      }
+    },
+    "componentsConsumable": {
+      "label": "Consumable",
+      "description": "The item can be used/consumed (duration, animation, sound, effects).",
+      "field": {
+        "label": "Consumable",
+        "fields": {
+          "consumeDuration": {
+            "label": "Duration",
+            "placeholder": "1.6s"
+          },
+          "animation": {
+            "label": "Animation",
+            "placeholder": "EAT"
+          },
+          "sound": {
+            "label": "Sound",
+            "help": "Default: entity.generic.eat"
+          },
+          "consumeParticles": {
+            "label": "Particles"
+          },
+          "effects": {
+            "label": "Effects on consumption"
+          }
+        }
+      }
+    },
+    "componentsUseRemainder": {
+      "label": "Use Remainder",
+      "description": "Item left behind after consumption (e.g. an empty bottle).",
+      "field": {
+        "label": "Remainder",
+        "fields": {
+          "nexoItem": {
+            "label": "Nexo item",
+            "placeholder": "Item ID"
+          },
+          "minecraftType": {
+            "label": "or Minecraft item"
+          },
+          "minecraftItem": {
+            "label": "Minecraft item stack",
+            "help": "An item stack as Nexo's in-game builders save it (YAML). Read by Nexo 1.30, not listed in the docs."
+          },
+          "crucibleItem": {
+            "label": "MythicCrucible item",
+            "placeholder": "Item ID"
+          },
+          "mmoitemsType": {
+            "label": "MMOItems type",
+            "placeholder": "e.g. SWORD"
+          },
+          "mmoitemsId": {
+            "label": "MMOItems ID",
+            "placeholder": "e.g. FALCON_BLADE"
+          },
+          "amount": {
+            "label": "Amount"
+          }
+        }
+      }
+    },
+    "componentsUseCooldown": {
+      "label": "Use Cooldown",
+      "description": "Cooldown after use (like ender pearls).",
+      "field": {
+        "label": "Cooldown",
+        "fields": {
+          "duration": {
+            "label": "Duration",
+            "placeholder": "1s"
+          },
+          "group": {
+            "label": "Group (optional)",
+            "placeholder": "nexo:my_group"
+          }
+        }
+      }
+    },
+    "componentsTool": {
+      "label": "Tool",
+      "description": "Mining speed and rules for specific blocks.",
+      "field": {
+        "label": "Tool",
+        "fields": {
+          "defaultMiningSpeed": {
+            "label": "Default mining speed",
+            "placeholder": "1.0"
+          },
+          "damagePerBlock": {
+            "label": "Durability loss per block",
+            "placeholder": "1"
+          },
+          "rules": {
+            "label": "Rules",
+            "itemLabel": "Rule",
+            "fields": {
+              "speed": {
+                "label": "Speed"
+              },
+              "correctForDrops": {
+                "label": "Correct tool (block drops)"
+              },
+              "materials": {
+                "label": "Blocks",
+                "placeholder": "e.g. DIAMOND_BLOCK"
+              },
+              "tags": {
+                "label": "Block tags",
+                "placeholder": "minecraft:mineable/axe"
+              }
+            }
+          }
+        }
+      }
+    },
+    "componentsWeapon": {
+      "label": "Weapon",
+      "description": "Durability loss per attack and shield disabling.",
+      "field": {
+        "label": "Weapon",
+        "fields": {
+          "damagePerAttack": {
+            "label": "Durability loss per attack"
+          },
+          "disableBlocking": {
+            "label": "Disable shield (seconds)"
+          }
+        }
+      }
+    },
+    "componentsEquippable": {
+      "label": "Equippable",
+      "description": "The item can be worn like armor (e.g. a 3D hat on the head).",
+      "hint": "For a 3D helmet: use slot HEAD and leave asset_id empty.",
+      "field": {
+        "label": "Equippable",
+        "fields": {
+          "slot": {
+            "label": "Slot"
+          },
+          "assetId": {
+            "label": "Equipment asset",
+            "placeholder": "leave empty for 3D models"
+          },
+          "cameraOverlay": {
+            "label": "Camera overlay",
+            "placeholder": "e.g. minecraft:misc/pumpkinblur"
+          },
+          "equipSound": {
+            "label": "Sound on equip",
+            "help": "Default: item.armor.equip_generic"
+          },
+          "allowedEntityTypes": {
+            "label": "Allowed entities",
+            "placeholder": "PLAYER"
+          },
+          "dispensable": {
+            "label": "Equippable by dispenser"
+          },
+          "swappable": {
+            "label": "Swappable by right-click"
+          },
+          "damageOnHurt": {
+            "label": "Takes damage when the wearer is hit"
+          },
+          "equipOnInteract": {
+            "label": "Equip by right-clicking an entity",
+            "help": "Read by Nexo 1.30, not listed in the docs."
+          },
+          "canBeSheared": {
+            "label": "Can be sheared off",
+            "help": "Shears remove the item from a mob. Read by Nexo 1.30, not listed in the docs."
+          },
+          "shearSound": {
+            "label": "Sound on shearing",
+            "help": "Default: item.shears.snip. Read by Nexo 1.30, not listed in the docs."
+          }
+        }
+      }
+    },
+    "componentsGlider": {
+      "label": "Glider",
+      "description": "Allows gliding like elytra while the item is worn (together with “Equippable”).",
+      "field": {
+        "label": "Glider"
+      }
+    },
+    "componentsDamageResistant": {
+      "label": "Damage Resistant",
+      "description": "The item (as an entity) is immune to this damage type tag.",
+      "field": {
+        "label": "Damage type tag"
+      }
+    },
+    "componentsEnchantable": {
+      "label": "Enchantable",
+      "description": "Maximum enchanting cost. 0 = not enchantable.",
+      "field": {
+        "label": "Value"
+      }
+    },
+    "componentsRepairable": {
+      "label": "Repairable",
+      "description": "Vanilla items or tags that repair the item in an anvil.",
+      "field": {
+        "label": "Items / tags",
+        "placeholder": "minecraft:diamond or minecraft:planks"
+      }
+    },
+    "componentsDeathProtection": {
+      "label": "Death Protection",
+      "description": "Protects the player from death while the item is held.",
+      "field": {
+        "label": "Death protection",
+        "fields": {
+          "deathEffects": {
+            "label": "Effects on activation"
+          }
+        }
+      }
+    },
+    "componentsJukeboxPlayable": {
+      "label": "Jukebox Playable",
+      "description": "The item can be put into a jukebox and plays a song.",
+      "field": {
+        "label": "Music disc",
+        "fields": {
+          "songKey": {
+            "label": "Song key",
+            "placeholder": "namespace:song"
+          }
+        }
+      }
+    },
+    "componentsTooltipStyle": {
+      "label": "Tooltip Style",
+      "description": "Custom tooltip background from the resource pack (textures/gui/sprites/tooltip/'<'key>_frame/_background).",
+      "field": {
+        "label": "Style",
+        "placeholder": "namespace:key"
+      }
+    },
+    "componentsBreakSound": {
+      "label": "Break Sound",
+      "description": "Sound when the durability runs out.",
+      "field": {
+        "label": "Sound"
+      }
+    },
+    "componentsCanPlaceOn": {
+      "label": "Can Place On",
+      "description": "Blocks the item may be placed on in adventure mode.",
+      "field": {
+        "label": "Placeable on",
+        "fields": {
+          "block": {
+            "label": "Blocks / tags",
+            "placeholder": "e.g. stone or #minecraft:logs"
+          },
+          "nexoBlock": {
+            "label": "Nexo blocks",
+            "placeholder": "Item ID",
+            "help": "Custom blocks of Nexo by item ID. Read by Nexo 1.30, not listed in the docs."
+          },
+          "state": {
+            "label": "Block state",
+            "help": "Only blocks with these state properties count (e.g. axis = y). Read by Nexo 1.30, not listed in the docs.",
+            "keyLabel": "Property",
+            "keyPlaceholder": "e.g. axis",
+            "value": {
+              "label": "Value"
+            }
+          }
+        }
+      }
+    },
+    "componentsCanBreak": {
+      "label": "Can Break",
+      "description": "Blocks the item may break in adventure mode.",
+      "field": {
+        "label": "Can break",
+        "fields": {
+          "block": {
+            "label": "Blocks / tags",
+            "placeholder": "e.g. stone or #minecraft:logs"
+          },
+          "nexoBlock": {
+            "label": "Nexo blocks",
+            "placeholder": "Item ID",
+            "help": "Custom blocks of Nexo by item ID. Read by Nexo 1.30, not listed in the docs."
+          },
+          "state": {
+            "label": "Block state",
+            "help": "Only blocks with these state properties count (e.g. axis = y). Read by Nexo 1.30, not listed in the docs.",
+            "keyLabel": "Property",
+            "keyPlaceholder": "e.g. axis",
+            "value": {
+              "label": "Value"
+            }
+          }
+        }
+      }
+    },
+    "componentsProfile": {
+      "label": "Profile",
+      "description": "Skin for items with material PLAYER_HEAD. Specify a name, UUID or properties.",
+      "field": {
+        "label": "Profile",
+        "fields": {
+          "name": {
+            "label": "Player name"
+          },
+          "uuid": {
+            "label": "UUID"
+          },
+          "properties": {
+            "label": "Properties",
+            "fields": {
+              "name": {
+                "label": "Name",
+                "placeholder": "textures"
+              },
+              "value": {
+                "label": "Value (Base64)"
+              },
+              "signature": {
+                "label": "Signature (optional)"
+              }
+            }
+          }
+        }
+      }
+    },
+    "componentsPaintingVariant": {
+      "label": "Painting Variant",
+      "description": "Which (custom) painting gets placed.",
+      "field": {
+        "label": "Variant",
+        "placeholder": "namespace:key"
+      }
+    },
+    "componentsCustomModelData": {
+      "label": "Custom Model Data",
+      "description": "Values for the item model's custom_model_data cases (floats, flags, strings, colors).",
+      "field": {
+        "label": "Values",
+        "fields": {
+          "float": {
+            "label": "Floats",
+            "placeholder": "e.g. 1.0"
+          },
+          "flag": {
+            "label": "Flags",
+            "placeholder": "true / false"
+          },
+          "string": {
+            "label": "Strings",
+            "placeholder": "e.g. red"
+          },
+          "color": {
+            "label": "Colors",
+            "placeholder": "e.g. #ff0000 or 255,0,0"
+          }
+        }
+      },
+      "hint": "Nexo 1.30 reads the keys float, flag, string and color; the docs spell them in plural, which 1.30 ignores."
+    },
+    "componentsCustomData": {
+      "label": "Custom Data",
+      "description": "Data directly in the item''s custom_data section.",
+      "field": {
+        "label": "Content",
+        "placeholder": "nexo:value: \"text\"\nnexo:number: 2"
+      }
+    },
+    "componentsUnsetComponents": {
+      "label": "Unset Components",
+      "description": "Removes components the base material normally has (e.g. minecraft:tool).",
+      "field": {
+        "label": "Components",
+        "placeholder": "minecraft:tool"
+      }
+    },
+    "componentsBlocksAttacks": {
+      "label": "Blocks Attacks",
+      "description": "The item can block attacks like a shield.",
+      "field": {
+        "label": "Blocking",
+        "fields": {
+          "blockDelay": {
+            "label": "Block delay",
+            "placeholder": "0.25s"
+          },
+          "disableCooldownScale": {
+            "label": "Disable cooldown scale",
+            "placeholder": "1.0"
+          },
+          "blockSound": {
+            "label": "Sound on block"
+          },
+          "disableSound": {
+            "label": "Sound when disabled"
+          },
+          "bypassedBy": {
+            "label": "Bypassed by",
+            "placeholder": "e.g. minecraft:bypasses_shield"
+          },
+          "itemDamage": {
+            "label": "Item damage",
+            "fields": {
+              "threshold": {
+                "label": "Threshold"
+              },
+              "base": {
+                "label": "Base"
+              },
+              "factor": {
+                "label": "Factor"
+              }
+            }
+          },
+          "damageReductions": {
+            "label": "Damage reductions",
+            "itemLabel": "Reduction",
+            "fields": {
+              "types": {
+                "label": "Damage types / tags",
+                "placeholder": "e.g. minecraft:is_projectile"
+              },
+              "base": {
+                "label": "Base"
+              },
+              "factor": {
+                "label": "Factor"
+              },
+              "horizontalBlocking": {
+                "label": "Blocking angle",
+                "placeholder": "90"
+              }
+            }
+          }
+        }
+      }
+    },
+    "componentsAttackRange": {
+      "label": "Attack Range",
+      "description": "Reach and hitbox margin of the weapon.",
+      "field": {
+        "label": "Reach",
+        "fields": {
+          "reach": {
+            "label": "Reach",
+            "placeholder": "0..3"
+          },
+          "hitboxMargin": {
+            "label": "Hitbox margin"
+          },
+          "mobFactor": {
+            "label": "Mob factor"
+          },
+          "minReach": {
+            "label": "Min reach"
+          },
+          "maxReach": {
+            "label": "Max reach"
+          },
+          "creativeReach": {
+            "label": "Reach in creative mode",
+            "placeholder": "0..5",
+            "help": "Read by Nexo 1.30, not listed in the docs."
+          },
+          "minCreativeReach": {
+            "label": "Min reach in creative mode"
+          },
+          "maxCreativeReach": {
+            "label": "Max reach in creative mode"
+          }
+        }
+      }
+    },
+    "componentsPiercingWeapon": {
+      "label": "Piercing Weapon",
+      "description": "Behavior when the weapon pierces targets (spear).",
+      "field": {
+        "label": "Piercing",
+        "fields": {
+          "sound": {
+            "label": "Sound"
+          },
+          "hitSound": {
+            "label": "Hit sound"
+          },
+          "dismounts": {
+            "label": "Dismounts riders"
+          },
+          "dealsKnockback": {
+            "label": "Deals knockback"
+          }
+        }
+      }
+    },
+    "componentsKineticWeapon": {
+      "label": "Kinetic Weapon",
+      "description": "Enables charge attacks while using (lance).",
+      "field": {
+        "label": "Charge attack",
+        "fields": {
+          "contactCooldown": {
+            "label": "Contact cooldown",
+            "placeholder": "10t"
+          },
+          "delay": {
+            "label": "Delay",
+            "placeholder": "0t"
+          },
+          "damageMultiplier": {
+            "label": "Damage multiplier",
+            "placeholder": "1.0"
+          },
+          "forwardMovement": {
+            "label": "Forward movement",
+            "help": "Read by Nexo 1.30, not listed in the docs."
+          },
+          "sound": {
+            "label": "Sound"
+          },
+          "hitSound": {
+            "label": "Hit sound"
+          },
+          "dismountConditions": {
+            "label": "Dismount conditions",
+            "fields": {
+              "maxDuration": {
+                "label": "Max duration",
+                "placeholder": "e.g. 10s"
+              },
+              "minSpeed": {
+                "label": "Min speed"
+              },
+              "minRelativeSpeed": {
+                "label": "Min relative speed"
+              }
+            }
+          },
+          "knockbackConditions": {
+            "label": "Knockback conditions",
+            "fields": {
+              "maxDuration": {
+                "label": "Max duration",
+                "placeholder": "e.g. 10s"
+              },
+              "minSpeed": {
+                "label": "Min speed"
+              },
+              "minRelativeSpeed": {
+                "label": "Min relative speed"
+              }
+            }
+          },
+          "damageConditions": {
+            "label": "Damage conditions",
+            "fields": {
+              "maxDuration": {
+                "label": "Max duration",
+                "placeholder": "e.g. 10s"
+              },
+              "minSpeed": {
+                "label": "Min speed"
+              },
+              "minRelativeSpeed": {
+                "label": "Min relative speed"
+              }
+            }
+          }
+        }
+      }
+    },
+    "componentsSwingAnimation": {
+      "label": "Swing Animation",
+      "description": "Animation when swinging. Replaced by attack and interact animations from 26.3 on.",
+      "field": {
+        "label": "Animation",
+        "fields": {
+          "type": {
+            "label": "Type"
+          },
+          "duration": {
+            "label": "Duration",
+            "placeholder": "6t"
+          }
+        }
+      }
+    },
+    "componentsAttackAnimation": {
+      "label": "Attack Animation",
+      "description": "Animation when attacking.",
+      "field": {
+        "label": "Animation",
+        "fields": {
+          "type": {
+            "label": "Type"
+          },
+          "duration": {
+            "label": "Duration",
+            "placeholder": "6t"
+          }
+        }
+      }
+    },
+    "componentsInteractAnimation": {
+      "label": "Interact Animation",
+      "description": "Animation when using.",
+      "field": {
+        "label": "Animation",
+        "fields": {
+          "type": {
+            "label": "Type"
+          },
+          "duration": {
+            "label": "Duration",
+            "placeholder": "6t"
+          }
+        }
+      }
+    },
+    "componentsUseEffects": {
+      "label": "Use Effects",
+      "description": "Sprinting, vibrations and movement speed while using.",
+      "field": {
+        "label": "Usage",
+        "fields": {
+          "canSprint": {
+            "label": "Can sprint"
+          },
+          "interactVibrations": {
+            "label": "Triggers vibrations"
+          },
+          "speedMultiplier": {
+            "label": "Speed multiplier"
+          }
+        }
+      }
+    },
+    "componentsDamageType": {
+      "label": "Damage Type",
+      "description": "The type of damage the item deals.",
+      "field": {
+        "label": "Damage type",
+        "placeholder": "e.g. piercing"
+      }
+    },
+    "componentsMinimumAttackCharge": {
+      "label": "Minimum Attack Charge",
+      "description": "How full the attack indicator must be (0–1).",
+      "field": {
+        "label": "Value"
+      }
+    },
+    "componentsCompostable": {
+      "label": "Compostable",
+      "description": "How many layers the item fills in a composter.",
+      "field": {
+        "label": "Compostable",
+        "fields": {
+          "layers": {
+            "label": "Layers"
+          }
+        }
+      }
+    },
+    "componentsCookingFuel": {
+      "label": "Cooking Fuel",
+      "description": "The item can be burned in a furnace.",
+      "field": {
+        "label": "Fuel",
+        "fields": {
+          "burnTime": {
+            "label": "Burn time",
+            "placeholder": "10s"
+          },
+          "speedMultiplier": {
+            "label": "Speed multiplier"
+          }
+        }
+      }
+    },
+    "componentsBrewingFuel": {
+      "label": "Brewing Fuel",
+      "description": "The item can be used as fuel in a brewing stand.",
+      "field": {
+        "label": "Fuel",
+        "fields": {
+          "uses": {
+            "label": "Number of brews"
+          },
+          "speedMultiplier": {
+            "label": "Speed multiplier"
+          }
+        }
+      }
+    },
+    "componentsRarity": {
+      "label": "Rarity",
+      "description": "Rarity of the item, which colors its name. Read by Nexo 1.30, not listed in the docs.",
+      "field": {
+        "label": "Rarity",
+        "help": "Read by Nexo 1.30, not listed in the docs."
+      }
+    },
+    "componentsInstrument": {
+      "label": "Instrument",
+      "description": "The sound a goat horn plays. Read by Nexo 1.30, not listed in the docs.",
+      "field": {
+        "label": "Instrument",
+        "help": "Use with material GOAT_HORN. Read by Nexo 1.30, not listed in the docs."
+      }
+    }
+  }
+}

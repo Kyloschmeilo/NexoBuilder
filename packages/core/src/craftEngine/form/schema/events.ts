@@ -11,7 +11,7 @@ const newEvent = () => ({ on: 'right_click' });
 /**
  * The events of an object kind in the list form (events.ts): the trigger, offered from those the kind fires (others
  * stay as written, the export reports them), the conditions and the functions. The three properties share their
- * field messages (`events.*`).
+ * field messages (`events.*`). The editor shows each event as a card of its trigger (`typedBy`).
  */
 const events = (kind: LogicObjectKind) =>
   field.objectList(
@@ -23,7 +23,7 @@ const events = (kind: LogicObjectKind) =>
       conditions: { ...conditionList(), name: 'conditions', help: true },
       functions: { ...functionList(), name: 'functions', help: true },
     },
-    { scope: 'events', titleKey: 'on', newItem: newEvent },
+    { scope: 'events', titleKey: 'on', newItem: newEvent, typedBy: { key: 'on', catalog: 'triggers', types: () => triggersFor(kind) } },
   );
 
 /**

@@ -1,12 +1,13 @@
 /** Folders, items and resource lists of a project to check and uncheck (export selection, paste targets). */
 import { useState, type ReactNode } from 'react';
 import { useTranslations } from 'next-intl';
-import { Folder as FolderIcon, Frame, Music, Smile, type LucideIcon } from 'lucide-react';
-import { cn } from 'cn';
+import { Folder as FolderIcon, Frame, MessageSquare, Music, Smile, type LucideIcon } from 'lucide-react';
+import { cn } from '@resourcepackbuilder/ui/cn';
 import { glyphTagFor } from '@resourcepackbuilder/core/targets';
 import {
   itemIdsInFolder,
   itemLabel,
+  isMediaKindOffered,
   MEDIA_KIND_LIST,
   MEDIA_KINDS,
   mediaId,
@@ -33,7 +34,7 @@ const FOLDER_PADDING_PX = 4;
 /** Extra left padding of an item row relative to its folder (past the folder's checkbox and chevron). */
 const ITEM_PADDING_PX = 24;
 
-const MEDIA_ICONS: Record<MediaKind, LucideIcon> = { glyph: Smile, sound: Music, painting: Frame };
+const MEDIA_ICONS: Record<MediaKind, LucideIcon> = { glyph: Smile, sound: Music, painting: Frame, dialog: MessageSquare };
 
 interface ResourceList {
   key: ListSelectionKey;
@@ -46,7 +47,7 @@ interface SelectionTreeProps {
   project: Project;
   selection: ExportSelection;
   onChange: (selection: ExportSelection) => void;
-  /** Hide glyphs, sounds and paintings (e.g. when choosing target items) */
+  /** Hide glyphs, sounds, paintings and dialogs (e.g. when choosing target items) */
   itemsOnly?: boolean;
 }
 
@@ -118,7 +119,7 @@ export function SelectionTree({ project, selection, onChange, itemsOnly }: Selec
 
   const lists: ResourceList[] = itemsOnly
     ? []
-    : MEDIA_KIND_LIST.map((kind) => {
+    : MEDIA_KIND_LIST.filter((kind) => isMediaKindOffered(project.target, kind)).map((kind) => {
         const Icon = MEDIA_ICONS[kind];
         return {
           key: MEDIA_KINDS[kind].excludedKey,

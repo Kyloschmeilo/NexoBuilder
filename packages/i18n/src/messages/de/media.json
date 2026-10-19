@@ -18,7 +18,7 @@
     "volumeHelp": "Lautstärke, Standard 1",
     "pitchHelp": "Tonhöhe, Standard 1",
     "distanceHelp": "Reichweite in Blöcken, Standard 16",
-    "files": "Sounds",
+    "files": "Dateien",
     "filesRandom": "(eine Datei wird zufällig abgespielt)",
     "removeFile": "Datei entfernen",
     "addFile": "Datei hinzufügen",
@@ -32,7 +32,17 @@
     "createDisc": "Musik-CD-Item anlegen",
     "createDiscHint": "Ein neues Item mit der Component „Jukebox Playable“ für diesen Song.",
     "discCreated": "Musik-CD-Item angelegt – Modell oder Textur kannst du noch hinzufügen.",
-    "deleteTitle": "Sound löschen?"
+    "deleteTitle": "Sound löschen?",
+    "weightHelp": "Wie oft dieser Sound im Vergleich zu den anderen Einträgen des Events gewählt wird, Standard 1",
+    "subtitleHelp": "Übersetzungsschlüssel des Untertitels (optional)",
+    "subtitlePlaceholder": "z. B. subtitles.block.ruby.place",
+    "referenceHelp": "Ein anderes Sound-Event, das dieser Sound abspielt (optional). Nexo spielt dann nur dieses Event, ohne die Dateien.",
+    "referencePlaceholder": "z. B. minecraft:block.bell.use",
+    "preloadHint": "(mit dem Pack laden, nicht erst beim ersten Abspielen)",
+    "replaceHint": "(ersetzt den Vanilla-Sound mit diesem Namen; ohne Dateien wird er stumm)",
+    "jukeboxDocs": "{target, select, craftengine {Jukebox-Songs im CraftEngine-Wiki} other {Musikplatten in der Nexo-Doku}}",
+    "noFiles": "Noch keine Dateien. Ein Sound ohne Dateien ersetzt oder verweist auf einen anderen Sound.",
+    "durationMissing": "Gib an, wie lange das Lied läuft, z.B. 2m 30s."
   },
   "paintings": {
     "title": "Paintings",
@@ -58,6 +68,21 @@
     "createItemHint": "Ein Item mit Material PAINTING, das genau dieses Gemälde aufhängt.",
     "itemCreated": "Gemälde-Item angelegt.",
     "deleteTitle": "Gemälde löschen?"
+  },
+  "dialogs": {
+    "title": "Dialoge",
+    "count": "{count, plural, one {# Dialog} other {# Dialoge}}",
+    "hint": "Dialogfenster ab Minecraft 1.21.6: ein Titel, Text und Items, Eingaben und Schaltflächen, die Befehle ausführen oder andere Dialoge öffnen. Jeder Dialog wird eine eigene Datei in dialogs/; Nexo registriert ihn als nexo:'<'id>. Neue Dialoge brauchen einen Serverneustart.",
+    "add": "Dialog hinzufügen",
+    "defaultId": "dialog",
+    "delete": "Dialog löschen",
+    "deleteTitle": "Dialog löschen?",
+    "idHelp": "Dateiname des Dialogs, genutzt in seinem Schlüssel nexo:'<'id>"
+  },
+  "multipack": {
+    "title": "Multipack",
+    "count": "{count, plural, one {# Vorlage} other {# Vorlagen}}",
+    "hint": "Vorlagenpakete sind Ressourcenpakete, die Nexo zusätzlich zum Hauptpaket sendet. Lege jedes nach plugins/Nexo/pack/template_packs/'<'id> auf den Server; der Export schreibt nur multipack.yml. Spieler schalten optionale Vorlagen mit /nexo multipack um."
   },
   "glyphs": {
     "title": "Glyphs",
@@ -96,7 +121,20 @@
     "largeNoPreview": "Großer Glyph (z.B. GUI) – keine Chat-Vorschau.",
     "previewBefore": "Hallo",
     "previewAfter": "Welt",
-    "deleteTitle": "Glyph löschen?"
+    "deleteTitle": "Glyph löschen?",
+    "charHelp": "Ein festes Zeichen für die Glyphe (optional, sonst wird eins automatisch gewählt)",
+    "charPlaceholder": "automatisch",
+    "shadowHelp": "Farbe des Textschattens der Glyphe (optional, sonst Glyphs.default_shadow in settings.yml)",
+    "shadowPlaceholder": "z. B. #80000000",
+    "templateHelp": "Eine andere Glyphe, deren Einstellungen diese Glyphe übernimmt (optional)",
+    "gifTypeHelp": "Wie die Animation entsteht: Core-Shader oder Sprite-Sheet",
+    "gifTypeDefault": "Standard aus settings.yml",
+    "interpolateHint": "(weich zwischen den Bildern überblenden)",
+    "emojiHint": "Was aus einem Chat-Kürzel dieser Glyphe wird. Leere Felder nutzen den Standard von CraftEngine.",
+    "emojiDocs": "Emoji im CraftEngine-Wiki",
+    "emojiContentHelp": "MiniMessage; '<'arg:emoji> ist das Bild, '<'arg:keyword> das eingegebene Kürzel",
+    "emojiContentPlaceholder": "'<'white>'<'arg:emoji>'<'/white>",
+    "emojiOverrideHelp": "Inhalt nur im Kontext {context} (optional)"
   },
   "testServer": {
     "title": "Testserver",
@@ -204,29 +242,26 @@
   },
   "lootSources": {
     "title": "Loot-Quellen",
-    "count": "{count, plural, one {# Loot-Quelle} other {# Loot-Quellen}}",
-    "hint": "Eine Loot-Quelle hängt eine Loot-Tabelle an ein Vanilla-Loot-Ereignis: einen Block abbauen, einen Mob töten, eine Truhe öffnen, angeln und mehr. Mit overwrite ersetzt sie die Vanilla-Items oder die Erfahrung.",
-    "docs": "Loot-Quellen im CraftEngine-Wiki"
+    "hint": "Eine Loot-Quelle hängt eine Loot-Tabelle an ein Vanilla-Loot-Ereignis: einen Block abbauen, einen Mob töten, eine Truhe öffnen, angeln und mehr. Mit overwrite ersetzt sie die Vanilla-Items oder die Erfahrung."
   },
   "templates": {
     "title": "Vorlagen",
-    "count": "{count, plural, one {# Vorlage} other {# Vorlagen}}",
     "hint": "Eine Vorlage ist ein Stück Konfiguration mit Platzhaltern für Argumente. Blöcke nutzen sie in ihren Einstellungen, Items für das ganze Item, dazu Loot-Tabellen und Events. Die Standardvorlagen von CraftEngine (default:…) gibt es immer.",
-    "docs": "Vorlagen im CraftEngine-Wiki",
     "defaults": "Standardvorlagen von CraftEngine",
-    "defaultsHint": "Jeder Block, jedes Item und jedes Möbelstück kann sie nutzen. Pflichtargumente sind mit * markiert."
+    "defaultsHint": "Jeder Block, jedes Item und jedes Möbelstück kann sie nutzen. Pflichtargumente sind mit * markiert.",
+    "argumentRequired": "Pflicht-Argument",
+    "argumentOptional": "Optionales Argument",
+    "copyId": "ID kopieren",
+    "searchDefaults": "Standardvorlagen durchsuchen…",
+    "noDefaults": "Keine Standardvorlage passt."
   },
   "globalVariables": {
     "title": "Globale Variablen",
-    "count": "{count, plural, one {# Variable} other {# Variablen}}",
-    "hint": "Eine globale Variable ist ein MiniMessage-Text, den CraftEngine überall einsetzt, wo ein Text '<'global:name> sagt: in Item-Namen, Lore und mehr. Die Vorschauen im Item-Editor zeigen ihn auch.",
-    "docs": "Globale Variablen im CraftEngine-Wiki"
+    "hint": "Eine globale Variable ist ein MiniMessage-Text, den CraftEngine überall einsetzt, wo ein Text '<'global:name> sagt: in Item-Namen, Lore und mehr. Die Vorschauen im Item-Editor zeigen ihn auch."
   },
   "attributes": {
     "title": "Attribute",
-    "count": "{count, plural, one {# Eintrag} other {# Einträge}}",
     "hint": "Das Attributsystem von CraftEngine ist experimentell und läuft nur mit attribute.enable: true in seiner config.yml, die es beim Start liest. Der Testserver schaltet es für ein Projekt mit Attributen ein; starte ihn nach dem ersten Attribut neu.",
-    "docs": "Attribute im CraftEngine-Wiki",
     "definitions": {
       "title": "Attribute",
       "hint": "Eigene Werte wie Stärke oder kritische Trefferchance, jeweils mit Basiswert und Grenzen. Items ändern sie in ihren Einstellungen (Custom Attribute Modifiers)."
@@ -243,5 +278,248 @@
       "title": "Schadensregeln",
       "hint": "Formeln, die den Schaden eines Schadenstyps aus den Attributen von Angreifer und Opfer berechnen."
     }
+  },
+  "translations": {
+    "title": "Übersetzungen",
+    "hint": "Itemnamen mit Übersetzungen und die Namen eigener Blöcke landen von selbst in den Sprachdateien. Hier fügst du eigene Schlüssel hinzu: Lang-Schlüssel, die der Client übersetzt (als '<'lang:key>), und Server-Übersetzungen, die CraftEngine selbst einsetzt ('<'l10n:key> in der Sprache jedes Spielers, '<'i18n:key> in der des Servers).",
+    "lang": {
+      "title": "Lang-Schlüssel (Resource Pack)",
+      "hint": "Werden in die Sprachdateien des Resource Packs geschrieben. Die Sprache all schreibt einen Schlüssel in jede Sprache; block_name:namespace:id benennt einen eigenen Block. Änderungen brauchen ein Neuladen des Resource Packs."
+    },
+    "server": {
+      "title": "Server-Übersetzungen",
+      "hint": "Werden auf dem Server gelesen, Änderungen brauchen also kein Neuladen des Resource Packs. Eine Sprache ohne Land (de) gilt auch für ihre Regionen."
+    }
+  },
+  "categories": {
+    "title": "Kategorien",
+    "hint": "Eine Kategorie gruppiert Items im /ce-Item-Browser von CraftEngine. Sie listet Items und andere Kategorien, findet Item-IDs über einen regulären Ausdruck oder nimmt alle Items. Ein Item kann sich auch selbst über seine Eigenschaft Category hinzufügen.",
+    "fromFoldersOn": "Der Export schreibt außerdem eine Kategorie pro Ordner (Projekteinstellung); eine eigene mit derselben ID ersetzt sie.",
+    "fromFoldersOff": "Die Projekteinstellung für eine Kategorie pro Ordner ist aus, deshalb werden nur diese Kategorien geschrieben."
+  },
+  "worldgen": {
+    "title": "Weltgenerierung",
+    "hint": "Ein konfiguriertes Feature ist das, was entsteht, z. B. die Form eines Baums; ein platziertes Feature bestimmt, wo und wie oft. Schreib das YAML mit misodes Datapack-Generator (auf die Version deines Servers und YAML-Ausgabe gestellt) und nutze darin die IDs deiner eigenen Blöcke.",
+    "configured": {
+      "title": "Konfigurierte Features",
+      "hint": "Setzlinge wachsen zu diesen. Ein platziertes Feature nennt eines oder enthält ein eigenes."
+    },
+    "placed": {
+      "title": "Platzierte Features",
+      "hint": "Diese entstehen in der Welt. Grasblöcke lassen sie mit Knochenmehl wachsen."
+    }
+  },
+  "atlases": {
+    "title": "Atlanten",
+    "hint": "Die meisten Packs brauchen keinen Atlas: CraftEngine repariert die üblichen Fälle der Block- und Item-Atlanten selbst. Füge einen hinzu, um Texturen in einen Vanilla-Atlas zu bringen oder einen eigenen Sprite-Atlas zu bauen."
+  },
+  "pack": {
+    "title": "Pack",
+    "hint": "Namespace und Beschreibung kommen aus den Projekteinstellungen; den Rest von pack.yml legst du hier fest.",
+    "packYml": {
+      "title": "pack.yml",
+      "hint": "Autor und Version zeigt CraftEngine an. Subpacks sind Ordner des Packs, die als eigene Packs geladen werden."
+    },
+    "factories": {
+      "title": "Config-Factories",
+      "hint": "Eine Config-Factory schreibt ihren Blueprint einmal pro Instanz, jedes Mal mit deren Argumenten: z. B. ein Sofa-Item mit Rezept für jede Wollfarbe."
+    }
+  },
+  "scripts": {
+    "title": "Skripte",
+    "hint": "Skripte kommen in den script-Ordner des Packs. js-Funktionen und -Bedingungen rufen ihre Funktionen über die Skript-ID namespace:path auf; Annotationen wie //@Subscribe und //@Task registrieren Event-Handler und Tasks. CraftEngine führt sie nur mit scripting.js.enable: true in seiner config.yml aus; der Testserver schaltet das ein."
+  },
+  "registry": {
+    "search": "Einträge durchsuchen…",
+    "noMatches": "Keine passenden Einträge",
+    "entries": "Einträge",
+    "entryCount": "{count, plural, one {# Eintrag} other {# Einträge}}",
+    "keyTaken": "Dieser Name ist schon vergeben.",
+    "keyEmpty": "Gib einen Namen ein.",
+    "type": "Typ",
+    "value": "Wert",
+    "moveUp": "Nach oben",
+    "moveDown": "Nach unten",
+    "generic": {
+      "title": "Einträge",
+      "add": "Neuer Eintrag",
+      "empty": "Noch keine Einträge.",
+      "untitled": "Unbenannter Eintrag"
+    },
+    "groups": {
+      "glyphs": {
+        "title": "Glyphen",
+        "add": "Glyphen hochladen",
+        "empty": "Noch keine Glyphen.",
+        "untitled": "Unbenannte Glyphe"
+      },
+      "sounds": {
+        "title": "Sounds",
+        "add": "Sounds hochladen",
+        "empty": "Noch keine Sounds.",
+        "untitled": "Unbenannter Sound"
+      },
+      "paintings": {
+        "title": "Gemälde",
+        "add": "Gemälde hochladen",
+        "empty": "Noch keine Gemälde.",
+        "untitled": "Unbenanntes Gemälde"
+      },
+      "dialogs": {
+        "title": "Dialoge",
+        "add": "Neuer Dialog",
+        "empty": "Noch keine Dialoge.",
+        "untitled": "Unbenannter Dialog"
+      },
+      "lootSources": {
+        "title": "Loot-Quellen",
+        "add": "Neue Loot-Quelle",
+        "empty": "Noch keine Loot-Quellen.",
+        "untitled": "Unbenannte Loot-Quelle"
+      },
+      "templates": {
+        "title": "Vorlagen",
+        "add": "Neue Vorlage",
+        "empty": "Noch keine Vorlagen.",
+        "untitled": "Unbenannte Vorlage"
+      },
+      "globalVariables": {
+        "title": "Globale Variablen",
+        "add": "Neue globale Variable",
+        "empty": "Noch keine globalen Variablen.",
+        "untitled": "Unbenannte Variable",
+        "keyLabel": "Name"
+      },
+      "definitions": {
+        "title": "Attribute",
+        "add": "Neues Attribut",
+        "empty": "Noch keine Attribute.",
+        "untitled": "Unbenanntes Attribut"
+      },
+      "operations": {
+        "title": "Operationen",
+        "add": "Neue Operation",
+        "empty": "Noch keine Operationen.",
+        "untitled": "Unbenannte Operation"
+      },
+      "equipmentSets": {
+        "title": "Ausrüstungssets",
+        "add": "Neues Ausrüstungsset",
+        "empty": "Noch keine Ausrüstungssets.",
+        "untitled": "Unbenanntes Ausrüstungsset"
+      },
+      "damageRules": {
+        "title": "Schadensregeln",
+        "add": "Neue Schadensregel",
+        "empty": "Noch keine Schadensregeln.",
+        "untitled": "Unbenannte Schadensregel"
+      },
+      "lang": {
+        "title": "Lang-Schlüssel",
+        "add": "Neue Lang-Sprache",
+        "empty": "Noch keine Lang-Schlüssel.",
+        "untitled": "Unbenannte Sprache",
+        "keyLabel": "Sprache"
+      },
+      "server": {
+        "title": "Server-Übersetzungen",
+        "add": "Neue Übersetzungssprache",
+        "empty": "Noch keine Server-Übersetzungen.",
+        "untitled": "Unbenannte Sprache",
+        "keyLabel": "Sprache"
+      },
+      "categories": {
+        "title": "Kategorien",
+        "add": "Neue Kategorie",
+        "empty": "Noch keine Kategorien.",
+        "untitled": "Unbenannte Kategorie"
+      },
+      "configuredFeatures": {
+        "title": "Konfigurierte Features",
+        "add": "Neues konfiguriertes Feature",
+        "empty": "Noch keine konfigurierten Features.",
+        "untitled": "Unbenanntes Feature"
+      },
+      "placedFeatures": {
+        "title": "Platzierte Features",
+        "add": "Neues platziertes Feature",
+        "empty": "Noch keine platzierten Features.",
+        "untitled": "Unbenanntes Feature"
+      },
+      "atlases": {
+        "title": "Atlanten",
+        "add": "Neuer Atlas",
+        "empty": "Noch keine Atlanten.",
+        "untitled": "Unbenannter Atlas"
+      },
+      "configFactories": {
+        "title": "Config-Fabriken",
+        "add": "Neue Config-Fabrik",
+        "empty": "Noch keine Config-Fabriken.",
+        "untitled": "Unbenannte Config-Fabrik"
+      },
+      "scripts": {
+        "title": "Skripte",
+        "add": "Neues Skript",
+        "empty": "Noch keine Skripte.",
+        "untitled": "Unbenanntes Skript"
+      }
+    }
+  },
+  "sections": {
+    "preview": "Vorschau",
+    "basics": "Grundlagen",
+    "chat": "Chat",
+    "advanced": "Erweitert",
+    "emoji": "Emoji-Inhalt",
+    "playback": "Wiedergabe",
+    "jukebox": "Jukebox",
+    "placement": "Platzierung",
+    "item": "Item",
+    "checks": "Prüfungen",
+    "content": "Inhalt"
+  },
+  "fields": {
+    "id": "ID",
+    "reference": "Referenz",
+    "index": "Zelle",
+    "height": "Höhe",
+    "ascent": "Ascent",
+    "rows": "Zeilen",
+    "columns": "Spalten",
+    "font": "Schriftart",
+    "frameCount": "Anzahl Frames",
+    "offset": "Versatz",
+    "permission": "Berechtigung",
+    "placeholders": "Chat-Kürzel",
+    "isEmoji": "Emoji-Liste",
+    "tabComplete": "Tab-Vervollständigung",
+    "char": "Zeichen",
+    "shadow": "Standardschatten",
+    "template": "Vorlage",
+    "gifType": "Animationstyp",
+    "interpolate": "Interpolieren",
+    "emojiContent": "Inhalt",
+    "emojiOverride": "Inhalt in {context}",
+    "volume": "Lautstärke",
+    "pitch": "Tonhöhe",
+    "distance": "Reichweite",
+    "weight": "Gewichtung",
+    "subtitle": "Untertitel",
+    "stream": "Streamen",
+    "preload": "Vorladen",
+    "replace": "Vanilla-Sound ersetzen",
+    "jukebox": "Jukebox-Song",
+    "duration": "Dauer",
+    "description": "Beschreibung",
+    "comparatorOutput": "Komparator-Signal",
+    "range": "Reichweite",
+    "title": "Titel",
+    "author": "Autor",
+    "width": "Breite (Blöcke)",
+    "paintingHeight": "Höhe (Blöcke)",
+    "randomPlace": "Zufällig platzieren",
+    "animated": "Animiert",
+    "frametime": "Frame-Dauer"
   }
 }

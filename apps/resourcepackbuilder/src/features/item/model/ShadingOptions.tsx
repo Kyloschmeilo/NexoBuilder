@@ -1,14 +1,15 @@
+/** The shading of a model as field rows: ambient occlusion (whole model) and shade (per cube), like in Blockbench. */
 import { useId } from 'react';
 import { useTranslations } from 'next-intl';
 import type { ImportedModel } from '@resourcepackbuilder/minecraft';
-import { Checkbox } from '@resourcepackbuilder/ui/components/checkbox';
-import { Field, FieldContent, FieldDescription, FieldLabel } from '@resourcepackbuilder/ui/components/field';
-import { CheckboxField } from '../../../components/CheckboxField';
+import { FieldRow } from '@resourcepackbuilder/ui';
+import { Switch } from '@resourcepackbuilder/ui/components/switch';
 import { updateItemModel } from '../../../commands/items';
 
-/** ambientocclusion (whole model) and shade (per cube) – like in Blockbench. */
+/** `ambientocclusion` and `shade`; shade is a switch for all cubes that names how many are off when only some are. */
 export function ShadingOptions({ itemId, model }: { itemId: string; model: ImportedModel }) {
   const t = useTranslations('item');
+  const occlusionId = useId();
   const shadeId = useId();
   const elements = model.json.elements ?? [];
   const unshaded = elements.filter((el) => el.shade === false).length;
@@ -29,34 +30,28 @@ export function ShadingOptions({ itemId, model }: { itemId: string; model: Impor
     });
 
   return (
-    <div className="flex flex-col gap-3 py-1">
-      <CheckboxField
-        checked={model.json.ambientocclusion !== false}
-        onChange={setAmbientOcclusion}
-        label={t('model.ambientOcclusion')}
-        description={t('model.ambientOcclusionHelp')}
-      />
+    <>
+      <FieldRow label={t('model.ambientOcclusion')} htmlFor={occlusionId} yamlKey="ambientocclusion" help={t('model.ambientOcclusionHelp')}>
+        <div className="flex min-h-7.5 items-center">
+          <Switch id={occlusionId} checked={model.json.ambientocclusion !== false} onCheckedChange={setAmbientOcclusion} />
+        </div>
+      </FieldRow>
       {elements.length > 0 && (
-        <Field orientation="horizontal" className="gap-2.5" data-disabled={usesOverride || undefined}>
-          <Checkbox
-            id={shadeId}
-            checked={shadeState === 'all'}
-            indeterminate={shadeState === 'some'}
-            disabled={usesOverride}
-            onCheckedChange={() => setShade(shadeState !== 'all')}
-          />
-          <FieldContent>
-            <FieldLabel htmlFor={shadeId}>{t('model.shade')}</FieldLabel>
-            <FieldDescription className="text-xs">
-              {usesOverride
-                ? t('model.shadeOverride')
-                : shadeState === 'some'
-                  ? t('model.shadeSome', { off: unshaded, total: elements.length })
-                  : t('model.shadeHelp')}
-            </FieldDescription>
-          </FieldContent>
-        </Field>
+        <FieldRow
+          label={t('model.shade')}
+          htmlFor={shadeId}
+          yamlKey="shade"
+          help={t('model.shadeHelp')}
+          warning={usesOverride ? t('model.shadeOverride') : undefined}
+        >
+          <div className="flex min-h-7.5 items-center gap-2.5">
+            <Switch id={shadeId} checked={shadeState === 'all'} disabled={usesOverride} onCheckedChange={setShade} />
+            {shadeState === 'some' && (
+              <span className="text-meta text-text-muted">{t('model.shadeOff', { off: unshaded, total: elements.length })}</span>
+            )}
+          </div>
+        </FieldRow>
       )}
-    </div>
+    </>
   );
 }

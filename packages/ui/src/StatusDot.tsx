@@ -1,4 +1,4 @@
-import { cn } from 'cn';
+import { cn } from './lib/cn';
 import { Tip } from './Tip';
 import type { Tone } from './tone';
 

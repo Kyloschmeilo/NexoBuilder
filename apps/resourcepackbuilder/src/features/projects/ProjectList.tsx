@@ -1,3 +1,4 @@
+/** The projects saved in this browser, as rows that open a project, with a delete button each. */
 import { useCallback, useEffect, useState, type ReactNode } from 'react';
 import { Package, Trash2 } from 'lucide-react';
 import { useFormatter, useTranslations } from 'next-intl';
@@ -6,6 +7,7 @@ import { Badge } from '@resourcepackbuilder/ui/components/badge';
 import { Empty, EmptyDescription } from '@resourcepackbuilder/ui/components/empty';
 import { Item, ItemActions, ItemContent, ItemDescription, ItemMedia, ItemTitle } from '@resourcepackbuilder/ui/components/item';
 import { Spinner } from '@resourcepackbuilder/ui/components/spinner';
+import { TargetDot } from '../../components/TargetDot';
 import { richTags } from '../../i18n/richTags';
 import { useServices } from '../../services/bootstrap';
 import type { ProjectSummary } from '@resourcepackbuilder/core/project';
@@ -28,7 +30,7 @@ function ProjectRow({ project, isOpen, isShared, onOpen, onDelete }: ProjectRowP
   return (
     <Item
       variant="outline"
-      className="relative flex-nowrap bg-card py-2 pr-2 hover:border-input hover:bg-muted has-[button:focus-visible]:ring-3 has-[button:focus-visible]:ring-ring/50"
+      className="relative flex-nowrap bg-card py-2 pr-2 hover:border-input hover:bg-muted has-[button:focus-visible]:ring-2 has-[button:focus-visible]:ring-ring"
     >
       <ItemMedia variant="icon" className="text-muted-foreground">
         <Package className="size-4.5" />
@@ -39,13 +41,14 @@ function ProjectRow({ project, isOpen, isShared, onOpen, onDelete }: ProjectRowP
           <button type="button" className="cursor-pointer text-left outline-none after:absolute after:inset-0" onClick={onOpen}>
             {project.name}
           </button>
-          <Badge variant="outline" data-testid="project-target">
+          <Badge variant="outline" data-testid="project-target" className="gap-1.5 font-normal">
+            <TargetDot target={project.target} />
             {tTargets(`${project.target}.name`)}
           </Badge>
           {isOpen && <Badge>{t('current')}</Badge>}
           {isShared && <Badge variant="success">{t('shared')}</Badge>}
         </ItemTitle>
-        <ItemDescription className="text-xs">
+        <ItemDescription className="text-meta">
           {t.rich('meta', {
             ...richTags,
             count: project.itemCount,

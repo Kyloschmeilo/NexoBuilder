@@ -1,0 +1,186 @@
+{
+  "logic": {
+    "attributeBases": {
+      "constant": {
+        "label": "constant",
+        "help": "Eine feste Zahl.",
+        "fields": {
+          "value": {
+            "label": "value"
+          }
+        }
+      },
+      "vanilla": {
+        "label": "vanilla",
+        "help": "Der aktuelle Wert eines Vanilla-Attributs des Wesens.",
+        "fields": {
+          "updateInterval": {
+            "label": "update_interval"
+          }
+        }
+      },
+      "byEntityType": {
+        "label": "by_entity_type",
+        "help": "Der Standardwert eines Vanilla-Attributs für den Typ des Wesens."
+      }
+    },
+    "attributeSyncValues": {
+      "expression": {
+        "label": "expression",
+        "help": "Das Ergebnis eines Ausdrucks über value und base.",
+        "fields": {
+          "expression": {
+            "label": "expression",
+            "placeholder": "z.B. (value - base) * 0.5"
+          }
+        }
+      },
+      "delta": {
+        "label": "delta",
+        "help": "Nur die Änderung gegenüber der Basis: value - base."
+      },
+      "ratio": {
+        "label": "ratio",
+        "help": "Der Wert im Verhältnis zur Basis: value / base."
+      }
+    },
+    "damageFormulas": {
+      "expression": {
+        "label": "expression",
+        "help": "Das Ergebnis eines Ausdrucks.",
+        "fields": {
+          "expression": {
+            "label": "expression",
+            "placeholder": "z.B. damage * 1.25"
+          }
+        }
+      },
+      "composition": {
+        "label": "composition",
+        "help": "Die Summe mehrerer Teile, jeder mit eigener Formel.",
+        "fields": {
+          "parts": {
+            "label": "parts",
+            "keyLabel": "Teil",
+            "keyPlaceholder": "z.B. physical",
+            "value": {
+              "label": "Formel",
+              "placeholder": "z.B. damage + '<'attacker_attr:namespace:might>"
+            }
+          }
+        }
+      },
+      "js": {
+        "label": "js",
+        "help": "Das Ergebnis einer JavaScript-Funktion im Pack.",
+        "fields": {
+          "script": {
+            "label": "script",
+            "placeholder": "z.B. namespace:combat/damage"
+          },
+          "function": {
+            "label": "function",
+            "placeholder": "main"
+          },
+          "args": {
+            "label": "args"
+          }
+        }
+      }
+    },
+    "damageEffects": {
+      "lifeSteal": {
+        "label": "life_steal",
+        "help": "Heilt den Angreifer um einen Anteil des Schadens plus einen festen Wert.",
+        "fields": {
+          "ratio": {
+            "label": "ratio"
+          },
+          "amount": {
+            "label": "amount"
+          },
+          "functions": {
+            "label": "functions"
+          }
+        }
+      },
+      "potionEffect": {
+        "label": "potion_effect",
+        "help": "Gibt dem Opfer oder dem Angreifer einen Trankeffekt.",
+        "fields": {
+          "target": {
+            "label": "target"
+          },
+          "potionEffect": {
+            "label": "potion_effect"
+          },
+          "duration": {
+            "label": "duration"
+          },
+          "amplifier": {
+            "label": "amplifier"
+          },
+          "ambient": {
+            "label": "ambient"
+          },
+          "particles": {
+            "label": "particles"
+          },
+          "showIcon": {
+            "label": "show_icon"
+          },
+          "functions": {
+            "label": "functions"
+          }
+        }
+      },
+      "function": {
+        "label": "function",
+        "help": "Führt nur seine Funktionen aus (wenn seine Bedingungen erfüllt sind).",
+        "fields": {
+          "functions": {
+            "label": "functions"
+          }
+        }
+      }
+    }
+  },
+  "attributes": {
+    "modifier": {
+      "type": {
+        "label": "type",
+        "help": "Das eigene Attribut, das der Modifikator ändert.",
+        "placeholder": "z.B. namespace:might"
+      },
+      "id": {
+        "label": "id",
+        "help": "Eine eindeutige ID für diesen Modifikator. CraftEngine findet, ersetzt und entfernt ihn über diese ID.",
+        "placeholder": "z.B. namespace:item/war_blade/might"
+      },
+      "amount": {
+        "label": "amount",
+        "help": "Der Wert für die Operation: eine Zahl, ein Bereich wie 5~10, ein Ausdruck oder ein Zahlengeber."
+      },
+      "operation": {
+        "label": "operation",
+        "help": "Wie der Wert angewendet wird: eine eingebaute Operation oder eine des Projekts."
+      },
+      "scope": {
+        "label": "scope",
+        "help": "entity: zählt zum Attribut des Trägers. weapon: zählt nur in Schadensformeln für Angriffe mit diesem Item. Standard: entity."
+      },
+      "slot": {
+        "label": "slot",
+        "help": "Der Slot oder die Slotgruppe, in der der Modifikator gilt (mainhand, armor, any …)."
+      },
+      "conditions": {
+        "label": "conditions",
+        "help": "Der Modifikator gilt nur, solange alle Bedingungen erfüllt sind."
+      },
+      "updateInterval": {
+        "label": "update_interval",
+        "help": "Wie oft ein veränderlicher Wert oder die Bedingungen geprüft werden, in Ticks. Standard: 20."
+      }
+    }
+  }
+}

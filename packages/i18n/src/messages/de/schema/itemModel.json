@@ -1,0 +1,191 @@
+{
+  "itemModel": {
+    "types": {
+      "model": {
+        "label": "Model",
+        "description": "Zeigt eine Modelldatei."
+      },
+      "composite": {
+        "label": "Composite",
+        "description": "Zeichnet mehrere Modelle übereinander."
+      },
+      "condition": {
+        "label": "Condition",
+        "description": "Wählt eins von zwei Modellen nach einer Wahr/Falsch-Eigenschaft."
+      },
+      "select": {
+        "label": "Select",
+        "description": "Wählt ein Modell nach dem Wert einer Eigenschaft (Fälle mit Fallback)."
+      },
+      "rangeDispatch": {
+        "label": "Range dispatch",
+        "description": "Wählt ein Modell, wenn eine Zahl Schwellenwerte überschreitet."
+      },
+      "special": {
+        "label": "Special",
+        "description": "Zeichnet ein Modell, das das Spiel selbst rendert (Kopf, Truhe, Banner …)."
+      },
+      "empty": {
+        "label": "Empty",
+        "description": "Zeichnet nichts."
+      },
+      "bundleSelectedItem": {
+        "label": "Bundle selected item",
+        "description": "Zeichnet das ausgewählte Item eines offenen Bündels."
+      }
+    },
+    "properties": {
+      "condition": {
+        "broken": "Das Item geht gleich kaputt.",
+        "bundleHasSelectedItem": "Das Bündel ist offen und zeigt ein ausgewähltes Item.",
+        "carried": "Das Item wird zwischen Inventarplätzen getragen.",
+        "component": "Ein Prädikat für eine Datenkomponente trifft zu (ab 1.21.5).",
+        "customModelData": "Ein Eintrag der flags-Liste in der Komponente custom_model_data.",
+        "damaged": "Das Item hat Haltbarkeit verloren.",
+        "extendedView": "Der Spieler hält Shift, während das Item in einem GUI gezeigt wird.",
+        "fishingRodCast": "An dieser Angel hängt ein Schwimmer.",
+        "hasComponent": "Das Item hat die angegebene Datenkomponente.",
+        "keybindDown": "Der Spieler hält die angegebene Taste gedrückt.",
+        "selected": "Das Item liegt im ausgewählten Hotbar-Platz.",
+        "usingItem": "Der Spieler benutzt das Item (Bogen spannen, essen …).",
+        "viewEntity": "Das Wesen, das das Item hält, ist der Spieler, aus dessen Sicht gezeigt wird."
+      },
+      "select": {
+        "blockState": "Eine Eigenschaft der Komponente block_state (z. B. facing).",
+        "chargeType": "Womit eine Armbrust geladen ist: none, arrow oder rocket.",
+        "component": "Der Wert einer Datenkomponente (ab 1.21.5).",
+        "contextDimension": "Die Dimension des Wesens, das das Item hält.",
+        "contextEntityType": "Der Typ des Wesens, das das Item hält.",
+        "customModelData": "Ein Eintrag der strings-Liste in der Komponente custom_model_data.",
+        "displayContext": "Wo das Item gezeigt wird: GUI, Hand, Kopf, Boden …",
+        "localTime": "Datum oder Uhrzeit des Clients, mit einem Muster formatiert.",
+        "mainHand": "Die Haupthand des Spielers: left oder right.",
+        "trimMaterial": "Das Material des Rüstungsbesatzes am Item."
+      },
+      "rangeDispatch": {
+        "bundleFullness": "Wie voll das Bündel ist (0 bis 1).",
+        "compass": "Der Winkel zu einem Ziel, wie ein Kompass ihn zeigt.",
+        "cooldown": "Die verbleibende Abklingzeit des Items (0 bis 1).",
+        "count": "Die Stapelgröße.",
+        "crossbowPull": "Wie weit eine Armbrust gespannt ist.",
+        "customModelData": "Ein Eintrag der floats-Liste in der Komponente custom_model_data.",
+        "damage": "Die verbrauchte Haltbarkeit.",
+        "time": "Die Tageszeit, die Mondphase oder ein Zufallswert.",
+        "useCycle": "Die Ticks der Benutzung, die sich je Periode wiederholen.",
+        "useDuration": "Wie lange das Item schon benutzt wird (oder wie lange noch)."
+      }
+    },
+    "special": {
+      "banner": "Ein Banner mit den Mustern des Items.",
+      "bed": "Ein Bett (bis Minecraft 26.1).",
+      "bell": "Die Glocke eines Glockenblocks (ab 26.1).",
+      "book": "Das Buch eines Zaubertischs (ab 26.1).",
+      "chest": "Eine Truhe mit einer Textur aus dem Truhen-Atlas.",
+      "conduit": "Ein Aquisitor (Conduit).",
+      "copperGolemStatue": "Eine Kupfergolem-Statue in einer Pose.",
+      "decoratedPot": "Ein verzierter Krug mit den Scherben des Items.",
+      "endCube": "Der Sternenhimmel eines Endportals oder Endtransitportals (ab 26.1).",
+      "hangingSign": "Ein Hängeschild (bis Minecraft 26.1).",
+      "head": "Ein Mob-Kopf oder Schädel.",
+      "playerHead": "Ein Spielerkopf mit dem Skin aus dem Profil des Items (ab 1.21.6).",
+      "shield": "Ein Schild mit den Bannermustern des Items.",
+      "shulkerBox": "Eine Shulkerkiste mit einer Textur aus dem Shulker-Atlas.",
+      "standingSign": "Ein stehendes Schild (bis Minecraft 26.1).",
+      "trident": "Ein Dreizack."
+    },
+    "tints": {
+      "constant": "Immer dieselbe Farbe.",
+      "customModelData": "Ein Eintrag der colors-Liste in der Komponente custom_model_data.",
+      "dye": "Die Komponente dyed_color oder der Standardwert.",
+      "firework": "Die mittlere Farbe der Feuerwerksexplosion oder der Standardwert.",
+      "grass": "Die Grasfarbe eines Klimas.",
+      "mapColor": "Die Komponente map_color oder der Standardwert.",
+      "potion": "Die Trankfarbe oder der Standardwert.",
+      "team": "Die Teamfarbe des Halters oder der Standardwert."
+    },
+    "params": {
+      "model": "Modellpfad; @model ist das eigene Modell des Items.",
+      "scale": "Multipliziert den Wert der Eigenschaft vor dem Vergleich.",
+      "base": "Modell für Transformationen, Partikeltextur und GUI-Licht; @model ist das eigene Modell des Items.",
+      "predicate": "Typ des Komponenten-Prädikats, z. B. minecraft:damage.",
+      "value": "Der geprüfte Wert (Condition) oder die Farbe (Constant-Tint).",
+      "index": "Position in der Liste von custom_model_data.",
+      "component": "Komponenten-ID, z. B. minecraft:custom_name.",
+      "ignoreDefault": "Komponenten mit ihrem Standardwert gelten als nicht vorhanden.",
+      "keybind": "Tasten-ID der Steuerung, z. B. key.use.",
+      "blockStateProperty": "Name der Block-State-Eigenschaft.",
+      "pattern": "Muster für Datum und Uhrzeit, z. B. MM für den Monat.",
+      "locale": "Gebietsschema des Formats, z. B. de_DE.",
+      "timeZone": "Zeitzone, z. B. Europe/Berlin (Standard: die des Clients).",
+      "target": "Worauf die Nadel zeigt.",
+      "wobble": "Der Wert schwingt, bevor er sich einpendelt.",
+      "normalize": "0 bis 1 statt der rohen Zahl verwenden.",
+      "source": "Woher die Zeit kommt.",
+      "period": "Länge eines Zyklus in Ticks.",
+      "remaining": "Die verbleibenden statt der vergangenen Ticks zählen.",
+      "color": "Farbe des Banners.",
+      "attachment": "Auf dem Boden stehend oder an einer Wand hängend (ab 26.1).",
+      "texture": "Textur des Spezialmodells.",
+      "openAngle": "Öffnungswinkel in Grad.",
+      "page1": "Umblätter-Fortschritt der ersten Seite (0 bis 1).",
+      "page2": "Umblätter-Fortschritt der zweiten Seite (0 bis 1).",
+      "openness": "Wie weit der Deckel offen ist (0 bis 1).",
+      "chestType": "Einzeltruhe oder linke bzw. rechte Hälfte (ab 26.1).",
+      "pose": "Pose der Statue.",
+      "effect": "Aussehen von Endportal oder Endtransitportal.",
+      "woodType": "Holzart des Schilds.",
+      "kind": "Welcher Kopf.",
+      "animation": "Fortschritt der Animation (Drachenkiefer, Piglin-Ohren).",
+      "orientation": "Richtung, in die die Shulkerkiste zeigt.",
+      "default": "Farbe, wenn das Item keine hat.",
+      "temperature": "Temperatur des Klimas (0 bis 1).",
+      "downfall": "Niederschlag des Klimas (0 bis 1).",
+      "handAnimationOnSwap": "Spielt die Wechselanimation in der Ego-Ansicht ab, wenn sich das gehaltene Item ändert. Standard: true.",
+      "oversizedInGui": "Das Modell darf über seinen Inventarplatz hinaus zeichnen (ab 1.21.6).",
+      "swapAnimationScale": "Tempo der Wechselanimation; größer ist schneller (ab 1.21.11)."
+    },
+    "transformation": {
+      "translation": "Verschiebung (x, y, z)",
+      "leftRotation": "Linke Drehung (Quaternion x, y, z, w)",
+      "scale": "Skalierung (x, y, z)",
+      "rightRotation": "Rechte Drehung (Quaternion x, y, z, w)"
+    },
+    "ui": {
+      "title": "Item-Modell-Baum",
+      "description": "Lege fest, welches Modell das Spiel wann zeigt: nach Anzeigeort, Zustand, Zeit, Schaden und mehr.",
+      "create": "Item-Modell-Baum anlegen",
+      "createHelp": "Der Baum ersetzt das Item-Modell, das ResourcepackBuilder für dieses Item erzeugt. Er beginnt mit dem eigenen Modell des Items.",
+      "remove": "Baum entfernen",
+      "root": "Wurzel",
+      "type": "Typ",
+      "addCase": "Fall hinzufügen",
+      "addEntry": "Eintrag hinzufügen",
+      "addModel": "Modell hinzufügen",
+      "addTint": "Tint hinzufügen",
+      "removeEntry": "Entfernen",
+      "moveUp": "Nach oben",
+      "moveDown": "Nach unten",
+      "when": "Wenn",
+      "whenPlaceholder": "Wert",
+      "threshold": "Schwellenwert",
+      "cases": "Fälle",
+      "entries": "Einträge",
+      "models": "Modelle",
+      "fallback": "Fallback",
+      "noFallback": "Kein Fallback: Passt kein Fall, wird nichts gezeichnet.",
+      "addFallback": "Fallback hinzufügen",
+      "onTrue": "Wenn wahr",
+      "onFalse": "Wenn falsch",
+      "tints": "Tints",
+      "specialModel": "Spezialmodell",
+      "transformation": "Transformation",
+      "transformationHelp": "Verschiebt, dreht und skaliert den Knoten (ab Minecraft 26.1).",
+      "addTransformation": "Transformation hinzufügen",
+      "useMainModel": "Modell des Items verwenden",
+      "fromVersion": "Ab {version}",
+      "removedIn": "Bis {version}",
+      "unknownType": "Diesen Typ kennt der Editor nicht. Bearbeite ihn im zusätzlichen YAML.",
+      "unset": "Nicht gesetzt"
+    }
+  }
+}

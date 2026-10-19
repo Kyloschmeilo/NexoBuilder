@@ -1,58 +1,101 @@
+/**
+ * The jukebox song of a sound: whether the sound is one (a music disc can play it), its duration, description,
+ * comparator output and range. Nexo writes it as `jukebox_playable` of the sound, CraftEngine as a `jukebox_songs`
+ * entry.
+ */
 import { Disc3 } from 'lucide-react';
 import { useTranslations } from 'next-intl';
-import type { JukeboxSong, Sound } from '@resourcepackbuilder/core/project';
+import type { Sound } from '@resourcepackbuilder/core/project';
+import { jukeboxDocsFor } from '@resourcepackbuilder/core/targets';
+import { DocsLink, FieldGroup, Help, Section } from '@resourcepackbuilder/ui';
 import { Button } from '@resourcepackbuilder/ui/components/button';
 import { Input } from '@resourcepackbuilder/ui/components/input';
-import { AutoGrid } from '@resourcepackbuilder/ui';
-import { updateJukeboxSong } from '../../commands/media';
+import { setSoundJukebox, updateJukeboxSong } from '../../commands/media';
 import { NumberInput } from '../../components/editor';
-import { FormField } from '../../components/FormField';
-import { NexoKey } from '../media/NexoKey';
+import { useOpenProject } from '../../store/project';
+import { MediaField, SwitchField } from '../media/MediaFields';
 import { useMediaActions } from '../media/useMediaActions';
 
 /** Strongest redstone signal a comparator can output. */
 const MAX_COMPARATOR_OUTPUT = 15;
 
-/** Options of a sound registered as a jukebox song, and the button that creates a music disc for it. */
-export function JukeboxFields({ sound, song }: { sound: Sound; song: JukeboxSong }) {
+/** The Jukebox section of a sound page. */
+export function JukeboxSection({ sound }: { sound: Sound }) {
   const t = useTranslations('media.sounds');
+  const tField = useTranslations('media.fields');
+  const tSection = useTranslations('media.sections');
   const media = useMediaActions();
-  const update = (recipe: (draft: JukeboxSong) => void, historyKey: string) => updateJukeboxSong(sound.id, recipe, historyKey);
+  const { target } = useOpenProject();
+  const nexo = target === 'nexo';
+  const song = sound.jukebox;
+  const update = (recipe: (draft: NonNullable<Sound['jukebox']>) => void, historyKey: string) =>
+    updateJukeboxSong(sound.id, recipe, historyKey);
 
   return (
-    <div className="flex flex-col gap-2.5 rounded-lg border border-border p-3">
-      <AutoGrid>
-        <FormField label={<NexoKey>Duration</NexoKey>} help={t('durationHelp')}>
-          <Input
-            className="font-mono"
-            aria-invalid={!song.duration.trim()}
-            value={song.duration}
-            placeholder={t('durationPlaceholder')}
-            onChange={(e) => update((s) => (s.duration = e.target.value), 'duration')}
-          />
-        </FormField>
-        <FormField label={<NexoKey>Description</NexoKey>} help={t('descriptionHelp')} wide>
-          <Input value={song.description} onChange={(e) => update((s) => (s.description = e.target.value), 'description')} />
-        </FormField>
-        <FormField label={<NexoKey>Comparator Output</NexoKey>} help={t('comparatorHelp')}>
-          <NumberInput
-            value={song.comparatorOutput}
-            integer
-            min={0}
-            max={MAX_COMPARATOR_OUTPUT}
-            onChange={(v) => update((s) => (s.comparatorOutput = v ?? null), 'comparator')}
-          />
-        </FormField>
-        <FormField label={<NexoKey>Range</NexoKey>} help={t('rangeHelp')}>
-          <NumberInput value={song.range} integer min={1} onChange={(v) => update((s) => (s.range = v ?? null), 'range')} />
-        </FormField>
-      </AutoGrid>
-      <div className="flex flex-wrap items-center gap-2">
-        <Button variant="outline" size="sm" onClick={() => media.createMusicDisc(sound)}>
-          <Disc3 /> {t('createDisc')}
-        </Button>
-        <span className="text-xs text-muted-foreground">{t('createDiscHint')}</span>
-      </div>
-    </div>
+    <Section
+      id="jukebox"
+      title={tSection('jukebox')}
+      actions={<DocsLink url={jukeboxDocsFor(target)} target={target} label={t('jukeboxDocs', { target })} />}
+    >
+      <FieldGroup>
+        <SwitchField
+          label={tField('jukebox')}
+          yamlKey={nexo ? 'jukebox_playable' : 'jukebox_songs'}
+          help={t('jukeboxHint')}
+          checked={song !== null}
+          onChange={(checked) => setSoundJukebox(sound.id, checked)}
+        />
+        {song && (
+          <>
+            <MediaField
+              label={tField('duration')}
+              yamlKey={nexo ? 'duration' : 'length'}
+              help={t('durationHelp')}
+              error={song.duration.trim() ? undefined : t('durationMissing')}
+            >
+              {(id) => (
+                <Input
+                  id={id}
+                  className="font-mono"
+                  value={song.duration}
+                  placeholder={t('durationPlaceholder')}
+                  onChange={(e) => update((s) => (s.duration = e.target.value), 'duration')}
+                />
+              )}
+            </MediaField>
+            <MediaField label={tField('description')} yamlKey="description" help={t('descriptionHelp')}>
+              {(id) => (
+                <Input id={id} value={song.description} onChange={(e) => update((s) => (s.description = e.target.value), 'description')} />
+              )}
+            </MediaField>
+            <MediaField label={tField('comparatorOutput')} yamlKey="comparator_output" help={t('comparatorHelp')}>
+              {(id) => (
+                <NumberInput
+                  id={id}
+                  value={song.comparatorOutput}
+                  integer
+                  min={0}
+                  max={MAX_COMPARATOR_OUTPUT}
+                  onChange={(v) => update((s) => (s.comparatorOutput = v ?? null), 'comparator')}
+                />
+              )}
+            </MediaField>
+            <MediaField label={tField('range')} yamlKey="range" help={t('rangeHelp')}>
+              {(id) => (
+                <NumberInput id={id} value={song.range} integer min={1} onChange={(v) => update((s) => (s.range = v ?? null), 'range')} />
+              )}
+            </MediaField>
+          </>
+        )}
+      </FieldGroup>
+      {song && (
+        <div className="mt-3 flex flex-wrap items-center gap-2">
+          <Button variant="outline" size="sm" onClick={() => media.createMusicDisc(sound)}>
+            <Disc3 /> {t('createDisc')}
+          </Button>
+          <Help>{t('createDiscHint')}</Help>
+        </div>
+      )}
+    </Section>
   );
 }

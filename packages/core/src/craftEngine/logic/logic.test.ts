@@ -2,8 +2,8 @@
  * The logic catalogs: unique types, every message key in both catalogues, and typed lists whose entries pass the
  * checks and pruning unchanged (sample entries, unknown types, nested lists).
  */
-import { readFileSync } from 'node:fs';
 import { describe, expect, it } from 'vitest';
+import { loadCatalogue, type MessageTree } from '@resourcepackbuilder/test-utils/catalogue';
 import type { Field, TypedListField } from '../../form/fields';
 import { checkFieldValue, fieldToSchema } from '../../form/fieldSchema';
 import { cleanConfig } from '../../form/prune';
@@ -12,19 +12,8 @@ import { CE_FURNITURE_LOOT_TEMPLATE } from '../furniture';
 import { CE_LOGIC, type LogicType, logicMessageKeys, triggersFor } from './index';
 import { lootTemplates } from './shared';
 
-type MessageTree = { [key: string]: string | MessageTree };
-
-// Each catalogue is read and parsed once – parsing it per key made the key check slow enough to time out on CI
-const catalogues = new Map<'en' | 'de', MessageTree>();
-
 function lookup(locale: 'en' | 'de', key: string): unknown {
-  let catalogue = catalogues.get(locale);
-  if (!catalogue) {
-    const url = new URL(`../../../../i18n/src/messages/${locale}/ceSchema.json`, import.meta.url);
-    catalogue = JSON.parse(readFileSync(url, 'utf8')) as MessageTree;
-    catalogues.set(locale, catalogue);
-  }
-  let node: unknown = catalogue;
+  let node: unknown = loadCatalogue(locale, 'ceSchema');
   for (const part of key.split('.')) node = typeof node === 'object' && node !== null ? (node as MessageTree)[part] : undefined;
   return node;
 }
@@ -42,6 +31,7 @@ const listOf = (catalog: keyof typeof CE_LOGIC): TypedListField => ({
 function sample(field: Field): unknown {
   switch (field.type) {
     case 'text':
+      if (field.format === 'vector') return '0.5,0.5,0.5';
       return field.format === 'resource' ? 'minecraft:stone' : field.format === 'duration' ? '5s' : 'text';
     case 'number':
       return field.min ?? 1;
@@ -100,6 +90,12 @@ describe('the logic catalogs', () => {
       attributeSyncValues: 3,
       damageFormulas: 3,
       damageEffects: 3,
+      categorySources: 3,
+      atlasSources: 5,
+      blockBehaviors: 54,
+      itemBehaviors: 3,
+      furnitureBehaviors: 3,
+      itemUpdaters: 3,
     });
   });
 
@@ -107,6 +103,37 @@ describe('the logic catalogs', () => {
     it(`has unique ${name} types`, () => {
       const names = types.map((t) => t.type);
       expect(names.filter((type, i) => names.indexOf(type) !== i)).toEqual([]);
+    });
+  }
+
+  it('sorts every block behavior into a catalog category with a name', () => {
+    expect(CE_LOGIC.blockBehaviors.filter((t) => !t.category).map((t) => t.type)).toEqual([]);
+    expect(new Set(CE_LOGIC.blockBehaviors.map((t) => t.category))).toEqual(
+      new Set(['plants', 'building', 'interaction', 'redstone', 'light', 'storage', 'physics', 'placement']),
+    );
+    const slab = CE_LOGIC.blockBehaviors.find((t) => t.type === 'slab_block');
+    expect(slab?.categoryLabel).toBe('logic.categories.blockBehaviors.building');
+    // The second name of drop_exp_block keeps its category
+    expect(CE_LOGIC.blockBehaviors.find((t) => t.type === 'drop_experience_block')?.category).toBe('physics');
+  });
+
+  const CATEGORIES: Partial<Record<keyof typeof CE_LOGIC, string[]>> = {
+    conditions: ['logic', 'player', 'item', 'block', 'world'],
+    functions: ['messages', 'player', 'effects', 'item', 'world', 'furniture', 'flow', 'plugins'],
+    triggers: ['clicks', 'use', 'breaking', 'world'],
+    numbers: ['fixed', 'ranges', 'distributions'],
+    lootEntries: ['drops', 'flow'],
+    lootFunctions: ['count', 'data'],
+    itemBehaviors: ['tools', 'farming'],
+    itemUpdaters: ['change', 'reset'],
+    furnitureBehaviors: ['storage', 'light'],
+  };
+  for (const [name, categories] of Object.entries(CATEGORIES)) {
+    it(`sorts every ${name} type into one of its catalog categories`, () => {
+      const types = CE_LOGIC[name as keyof typeof CE_LOGIC];
+      expect(types.filter((t) => !t.category).map((t) => t.type)).toEqual([]);
+      expect([...new Set(types.map((t) => t.category))].sort()).toEqual([...categories].sort());
+      for (const type of types) expect(type.categoryLabel).toBe(`logic.categories.${name}.${type.category}`);
     });
   }
 
@@ -124,7 +151,16 @@ describe('the logic catalogs', () => {
 });
 
 describe('typedList', () => {
-  const typedCatalogs = ['conditions', 'functions', 'numbers', 'lootSources', 'lootEntries', 'lootFunctions'] as const;
+  const typedCatalogs = [
+    'conditions',
+    'functions',
+    'numbers',
+    'lootSources',
+    'lootEntries',
+    'lootFunctions',
+    'itemUpdaters',
+    'blockBehaviors',
+  ] as const;
   for (const catalog of typedCatalogs) {
     it.each(CE_LOGIC[catalog].map((t: LogicType) => [t.type, t]))(`round-trips a sample ${catalog} entry: %s`, (type, t) => {
       const entry = { type, ...sampleObject((t as LogicType).fields) };

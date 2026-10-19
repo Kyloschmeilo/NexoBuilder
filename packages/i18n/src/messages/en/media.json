@@ -18,7 +18,7 @@
     "volumeHelp": "Loudness, default 1",
     "pitchHelp": "Pitch, default 1",
     "distanceHelp": "Range in blocks, default 16",
-    "files": "Sounds",
+    "files": "Files",
     "filesRandom": "(one file is played at random)",
     "removeFile": "Remove file",
     "addFile": "Add file",
@@ -32,7 +32,17 @@
     "createDisc": "Create music disc item",
     "createDiscHint": "A new item with the “Jukebox Playable” component for this song.",
     "discCreated": "Music disc item created – you can still add a model or texture.",
-    "deleteTitle": "Delete sound?"
+    "deleteTitle": "Delete sound?",
+    "weightHelp": "How often this sound is picked compared to the other entries of the event, default 1",
+    "subtitleHelp": "Translation key of the subtitle (optional)",
+    "subtitlePlaceholder": "e.g. subtitles.block.ruby.place",
+    "referenceHelp": "Another sound event this sound plays (optional). Nexo then plays only that event, without the files.",
+    "referencePlaceholder": "e.g. minecraft:block.bell.use",
+    "preloadHint": "(load with the pack, not when first played)",
+    "replaceHint": "(replace the vanilla sound with this name; without files it goes silent)",
+    "jukeboxDocs": "{target, select, craftengine {Jukebox songs in the CraftEngine wiki} other {Music discs in the Nexo docs}}",
+    "noFiles": "No files yet. A sound without files replaces or references another sound.",
+    "durationMissing": "Enter how long the song plays, e.g. 2m 30s."
   },
   "paintings": {
     "title": "Paintings",
@@ -58,6 +68,21 @@
     "createItemHint": "An item with material PAINTING that hangs exactly this painting.",
     "itemCreated": "Painting item created.",
     "deleteTitle": "Delete painting?"
+  },
+  "dialogs": {
+    "title": "Dialogs",
+    "count": "{count, plural, one {# dialog} other {# dialogs}}",
+    "hint": "Dialog screens of Minecraft 1.21.6+: a title, text and items, inputs and buttons that run commands or open other dialogs. Each dialog becomes its own file in dialogs/; Nexo registers it as nexo:'<'id>. New dialogs need a server restart.",
+    "add": "Add dialog",
+    "defaultId": "dialog",
+    "delete": "Delete dialog",
+    "deleteTitle": "Delete dialog?",
+    "idHelp": "File name of the dialog, used in its key nexo:'<'id>"
+  },
+  "multipack": {
+    "title": "Multipack",
+    "count": "{count, plural, one {# template} other {# templates}}",
+    "hint": "Template packs are resource packs Nexo sends along with the main pack. Put each one into plugins/Nexo/pack/template_packs/'<'id> on the server; the export only writes multipack.yml. Players toggle optional templates with /nexo multipack."
   },
   "glyphs": {
     "title": "Glyphs",
@@ -96,7 +121,20 @@
     "largeNoPreview": "Large glyph (e.g. GUI) – no chat preview.",
     "previewBefore": "Hello",
     "previewAfter": "world",
-    "deleteTitle": "Delete glyph?"
+    "deleteTitle": "Delete glyph?",
+    "charHelp": "A fixed character for the glyph (optional, otherwise one is picked automatically)",
+    "charPlaceholder": "automatic",
+    "shadowHelp": "Text shadow color of the glyph (optional, otherwise Glyphs.default_shadow in settings.yml)",
+    "shadowPlaceholder": "e.g. #80000000",
+    "templateHelp": "Another glyph whose settings this glyph takes over (optional)",
+    "gifTypeHelp": "How the animation is made: core shader or sprite sheet",
+    "gifTypeDefault": "Default from settings.yml",
+    "interpolateHint": "(blend smoothly between frames)",
+    "emojiHint": "What a chat shortcut of this glyph turns into. Empty fields use CraftEngine’s default.",
+    "emojiDocs": "Emoji in the CraftEngine wiki",
+    "emojiContentHelp": "MiniMessage; '<'arg:emoji> is the image, '<'arg:keyword> the shortcut that was typed",
+    "emojiContentPlaceholder": "'<'white>'<'arg:emoji>'<'/white>",
+    "emojiOverrideHelp": "Content in the {context} only (optional)"
   },
   "testServer": {
     "title": "Test server",
@@ -204,29 +242,26 @@
   },
   "lootSources": {
     "title": "Loot sources",
-    "count": "{count, plural, one {# loot source} other {# loot sources}}",
-    "hint": "A loot source adds a loot table to a vanilla loot event: breaking a block, killing a mob, opening a chest, fishing and more. With overwrite it replaces the vanilla items or experience.",
-    "docs": "Loot sources in the CraftEngine wiki"
+    "hint": "A loot source adds a loot table to a vanilla loot event: breaking a block, killing a mob, opening a chest, fishing and more. With overwrite it replaces the vanilla items or experience."
   },
   "templates": {
     "title": "Templates",
-    "count": "{count, plural, one {# template} other {# templates}}",
     "hint": "A template is a piece of config with placeholders for arguments. Blocks use one in their settings, items for the whole item, loot tables and events too. CraftEngine's default templates (default:…) are always there.",
-    "docs": "Templates in the CraftEngine wiki",
     "defaults": "CraftEngine's default templates",
-    "defaultsHint": "Every block, item and furniture can use these. Required arguments are marked with *."
+    "defaultsHint": "Every block, item and furniture can use these. Required arguments are marked with *.",
+    "argumentRequired": "Required argument",
+    "argumentOptional": "Optional argument",
+    "copyId": "Copy ID",
+    "searchDefaults": "Search default templates…",
+    "noDefaults": "No default template matches."
   },
   "globalVariables": {
     "title": "Global variables",
-    "count": "{count, plural, one {# variable} other {# variables}}",
-    "hint": "A global variable is a MiniMessage text that CraftEngine puts in wherever a text says '<'global:name>: in item names, lore and more. The previews in the item editor show it too.",
-    "docs": "Global variables in the CraftEngine wiki"
+    "hint": "A global variable is a MiniMessage text that CraftEngine puts in wherever a text says '<'global:name>: in item names, lore and more. The previews in the item editor show it too."
   },
   "attributes": {
     "title": "Attributes",
-    "count": "{count, plural, one {# entry} other {# entries}}",
     "hint": "CraftEngine's attribute system is experimental and only runs with attribute.enable: true in its config.yml, which it reads on startup. The test server switches it on for a project that uses attributes; restart it after adding the first one.",
-    "docs": "Attributes in the CraftEngine wiki",
     "definitions": {
       "title": "Attributes",
       "hint": "Custom values such as strength or critical chance, each with a base value and limits. Items change them in their settings (Custom Attribute Modifiers)."
@@ -243,5 +278,248 @@
       "title": "Damage rules",
       "hint": "Formulas that compute the damage of a damage type from the attributes of attacker and victim."
     }
+  },
+  "translations": {
+    "title": "Translations",
+    "hint": "Item names with translations and the names of custom blocks go into the language files by themselves. Here you add your own keys: lang keys the client translates (use them as '<'lang:key>), and server translations CraftEngine fills in itself ('<'l10n:key> in each player's language, '<'i18n:key> in the server's).",
+    "lang": {
+      "title": "Lang keys (resource pack)",
+      "hint": "Written into the resource pack's language files. The language all writes a key into every language; block_name:namespace:id names a custom block. Changes need a resource pack reload."
+    },
+    "server": {
+      "title": "Server translations",
+      "hint": "Read on the server, so changes need no resource pack reload. A language without a country (en) also covers its regions."
+    }
+  },
+  "categories": {
+    "title": "Categories",
+    "hint": "A category groups items in CraftEngine's /ce item browser. It lists items and other categories, matches item ids by a regular expression or takes all items. An item can also add itself with its Category property.",
+    "fromFoldersOn": "The export also writes a category for each folder (project setting); one of yours with the same id replaces it.",
+    "fromFoldersOff": "The project setting for one category per folder is off, so only these categories are written."
+  },
+  "worldgen": {
+    "title": "Worldgen features",
+    "hint": "A configured feature is what generates, e.g. the shape of a tree; a placed feature is where and how often. Write the YAML with misode's datapack generator (set to your server's version and YAML output) and use your custom block ids in it.",
+    "configured": {
+      "title": "Configured features",
+      "hint": "Saplings grow these. A placed feature names one or holds its own."
+    },
+    "placed": {
+      "title": "Placed features",
+      "hint": "These generate in the world. Grass blocks grow these with bone meal."
+    }
+  },
+  "atlases": {
+    "title": "Atlases",
+    "hint": "Most packs need no atlas: CraftEngine repairs the common block and item atlas cases itself. Add one to put textures into a vanilla atlas or build a custom sprite atlas."
+  },
+  "pack": {
+    "title": "Pack",
+    "hint": "The namespace and description come from the project settings; set the rest of pack.yml here.",
+    "packYml": {
+      "title": "pack.yml",
+      "hint": "Author and version show in CraftEngine. Subpacks are folders of the pack that load as packs of their own."
+    },
+    "factories": {
+      "title": "Config factories",
+      "hint": "A config factory writes its blueprint once per instance, each time with that instance's arguments: e.g. a sofa item and recipe for every wool color."
+    }
+  },
+  "scripts": {
+    "title": "Scripts",
+    "hint": "Scripts go into the pack's script folder. js functions and conditions call their functions by the script id namespace:path; annotations like //@Subscribe and //@Task register event handlers and tasks. CraftEngine runs them only with scripting.js.enable: true in its config.yml; the test server switches it on."
+  },
+  "registry": {
+    "search": "Search entries…",
+    "noMatches": "No matching entries",
+    "entries": "Entries",
+    "entryCount": "{count, plural, one {# entry} other {# entries}}",
+    "keyTaken": "This name is already taken.",
+    "keyEmpty": "Enter a name.",
+    "type": "Type",
+    "value": "Value",
+    "moveUp": "Move up",
+    "moveDown": "Move down",
+    "generic": {
+      "title": "Entries",
+      "add": "New entry",
+      "empty": "No entries yet.",
+      "untitled": "Unnamed entry"
+    },
+    "groups": {
+      "glyphs": {
+        "title": "Glyphs",
+        "add": "Upload glyphs",
+        "empty": "No glyphs yet.",
+        "untitled": "Unnamed glyph"
+      },
+      "sounds": {
+        "title": "Sounds",
+        "add": "Upload sounds",
+        "empty": "No sounds yet.",
+        "untitled": "Unnamed sound"
+      },
+      "paintings": {
+        "title": "Paintings",
+        "add": "Upload paintings",
+        "empty": "No paintings yet.",
+        "untitled": "Unnamed painting"
+      },
+      "dialogs": {
+        "title": "Dialogs",
+        "add": "New dialog",
+        "empty": "No dialogs yet.",
+        "untitled": "Unnamed dialog"
+      },
+      "lootSources": {
+        "title": "Loot sources",
+        "add": "New loot source",
+        "empty": "No loot sources yet.",
+        "untitled": "Unnamed loot source"
+      },
+      "templates": {
+        "title": "Templates",
+        "add": "New template",
+        "empty": "No templates yet.",
+        "untitled": "Unnamed template"
+      },
+      "globalVariables": {
+        "title": "Global variables",
+        "add": "New global variable",
+        "empty": "No global variables yet.",
+        "untitled": "Unnamed variable",
+        "keyLabel": "Name"
+      },
+      "definitions": {
+        "title": "Attributes",
+        "add": "New attribute",
+        "empty": "No attributes yet.",
+        "untitled": "Unnamed attribute"
+      },
+      "operations": {
+        "title": "Operations",
+        "add": "New operation",
+        "empty": "No operations yet.",
+        "untitled": "Unnamed operation"
+      },
+      "equipmentSets": {
+        "title": "Equipment sets",
+        "add": "New equipment set",
+        "empty": "No equipment sets yet.",
+        "untitled": "Unnamed equipment set"
+      },
+      "damageRules": {
+        "title": "Damage rules",
+        "add": "New damage rule",
+        "empty": "No damage rules yet.",
+        "untitled": "Unnamed damage rule"
+      },
+      "lang": {
+        "title": "Lang keys",
+        "add": "New lang locale",
+        "empty": "No lang keys yet.",
+        "untitled": "Unnamed locale",
+        "keyLabel": "Locale"
+      },
+      "server": {
+        "title": "Server translations",
+        "add": "New translation locale",
+        "empty": "No server translations yet.",
+        "untitled": "Unnamed locale",
+        "keyLabel": "Locale"
+      },
+      "categories": {
+        "title": "Categories",
+        "add": "New category",
+        "empty": "No categories yet.",
+        "untitled": "Unnamed category"
+      },
+      "configuredFeatures": {
+        "title": "Configured features",
+        "add": "New configured feature",
+        "empty": "No configured features yet.",
+        "untitled": "Unnamed feature"
+      },
+      "placedFeatures": {
+        "title": "Placed features",
+        "add": "New placed feature",
+        "empty": "No placed features yet.",
+        "untitled": "Unnamed feature"
+      },
+      "atlases": {
+        "title": "Atlases",
+        "add": "New atlas",
+        "empty": "No atlases yet.",
+        "untitled": "Unnamed atlas"
+      },
+      "configFactories": {
+        "title": "Config factories",
+        "add": "New config factory",
+        "empty": "No config factories yet.",
+        "untitled": "Unnamed config factory"
+      },
+      "scripts": {
+        "title": "Scripts",
+        "add": "New script",
+        "empty": "No scripts yet.",
+        "untitled": "Unnamed script"
+      }
+    }
+  },
+  "sections": {
+    "preview": "Preview",
+    "basics": "Basics",
+    "chat": "Chat",
+    "advanced": "Advanced",
+    "emoji": "Emoji content",
+    "playback": "Playback",
+    "jukebox": "Jukebox",
+    "placement": "Placement",
+    "item": "Item",
+    "checks": "Checks",
+    "content": "Content"
+  },
+  "fields": {
+    "id": "ID",
+    "reference": "Reference",
+    "index": "Cell",
+    "height": "Height",
+    "ascent": "Ascent",
+    "rows": "Rows",
+    "columns": "Columns",
+    "font": "Font",
+    "frameCount": "Frame count",
+    "offset": "Offset",
+    "permission": "Permission",
+    "placeholders": "Chat shortcuts",
+    "isEmoji": "Emoji list",
+    "tabComplete": "Tab completion",
+    "char": "Character",
+    "shadow": "Default shadow",
+    "template": "Template",
+    "gifType": "Animation type",
+    "interpolate": "Interpolate",
+    "emojiContent": "Content",
+    "emojiOverride": "Content in {context}",
+    "volume": "Volume",
+    "pitch": "Pitch",
+    "distance": "Attenuation distance",
+    "weight": "Weight",
+    "subtitle": "Subtitle",
+    "stream": "Stream",
+    "preload": "Preload",
+    "replace": "Replace vanilla sound",
+    "jukebox": "Jukebox song",
+    "duration": "Duration",
+    "description": "Description",
+    "comparatorOutput": "Comparator output",
+    "range": "Range",
+    "title": "Title",
+    "author": "Author",
+    "width": "Width (blocks)",
+    "paintingHeight": "Height (blocks)",
+    "randomPlace": "Random placement",
+    "animated": "Animated",
+    "frametime": "Frame time"
   }
 }

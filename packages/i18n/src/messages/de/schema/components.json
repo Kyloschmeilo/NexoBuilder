@@ -1,0 +1,789 @@
+{
+  "groups": {
+    "components": {
+      "label": "Components",
+      "description": "Minecraft-Datenkomponenten (Food, Tool, Equippable …)"
+    }
+  },
+  "properties": {
+    "componentsMaxStackSize": {
+      "label": "Max Stack Size",
+      "description": "Wie viele Items auf einen Slot passen (1–99).",
+      "field": {
+        "label": "Stapelgröße"
+      }
+    },
+    "componentsMaxDamage": {
+      "label": "Max Damage",
+      "description": "Maximale Haltbarkeit des Items. Items mit Haltbarkeit sollten eine Stapelgröße von 1 haben.",
+      "field": {
+        "label": "Haltbarkeit"
+      }
+    },
+    "componentsEnchantmentGlintOverride": {
+      "label": "Enchantment Glint Override",
+      "description": "Erzwingt (true) oder verhindert (false) den Verzauberungs-Glanz.",
+      "field": {
+        "label": "Schimmer"
+      }
+    },
+    "componentsFireResistant": {
+      "label": "Fire Resistant",
+      "description": "Das Item verbrennt nicht in Feuer und Lava.",
+      "field": {
+        "label": "Feuerfest"
+      }
+    },
+    "componentsHideTooltip": {
+      "label": "Hide Tooltip",
+      "description": "Beim Drüberfahren wird kein Tooltip angezeigt.",
+      "field": {
+        "label": "Tooltip ausblenden"
+      }
+    },
+    "componentsTooltipDisplay": {
+      "label": "Tooltip Display",
+      "description": "Blendet einzelne Komponenten im Tooltip aus. Ersetzt die Item-Flags ab 1.21.5.",
+      "field": {
+        "label": "Komponenten",
+        "placeholder": "minecraft:attribute_modifiers"
+      }
+    },
+    "componentsFood": {
+      "label": "Food",
+      "description": "Macht das Item essbar. Für Ess-Dauer, Animation und Effekte zusätzlich „Consumable“ hinzufügen.",
+      "field": {
+        "label": "Essen",
+        "fields": {
+          "nutrition": {
+            "label": "Nahrung (Hungerpunkte)"
+          },
+          "saturation": {
+            "label": "Sättigung"
+          },
+          "canAlwaysEat": {
+            "label": "Auch ohne Hunger essbar"
+          }
+        }
+      }
+    },
+    "componentsConsumable": {
+      "label": "Consumable",
+      "description": "Item kann benutzt/verbraucht werden (Dauer, Animation, Sound, Effekte).",
+      "field": {
+        "label": "Verbrauchbar",
+        "fields": {
+          "consumeDuration": {
+            "label": "Dauer",
+            "placeholder": "1.6s"
+          },
+          "animation": {
+            "label": "Animation",
+            "placeholder": "EAT"
+          },
+          "sound": {
+            "label": "Sound",
+            "help": "Standard: entity.generic.eat"
+          },
+          "consumeParticles": {
+            "label": "Partikel"
+          },
+          "effects": {
+            "label": "Effekte beim Verbrauchen"
+          }
+        }
+      }
+    },
+    "componentsUseRemainder": {
+      "label": "Use Remainder",
+      "description": "Item, das nach dem Verbrauchen zurückbleibt (z.B. leere Flasche).",
+      "field": {
+        "label": "Rest",
+        "fields": {
+          "nexoItem": {
+            "label": "Nexo-Item",
+            "placeholder": "Item-ID"
+          },
+          "minecraftType": {
+            "label": "oder Minecraft-Item"
+          },
+          "minecraftItem": {
+            "label": "Minecraft-Itemstack",
+            "help": "Ein Itemstack, wie ihn die Ingame-Builder von Nexo speichern (YAML). Von Nexo 1.30 gelesen, nicht in der Doku aufgeführt."
+          },
+          "crucibleItem": {
+            "label": "MythicCrucible-Item",
+            "placeholder": "Item-ID"
+          },
+          "mmoitemsType": {
+            "label": "MMOItems-Typ",
+            "placeholder": "z.B. SWORD"
+          },
+          "mmoitemsId": {
+            "label": "MMOItems-ID",
+            "placeholder": "z.B. FALCON_BLADE"
+          },
+          "amount": {
+            "label": "Anzahl"
+          }
+        }
+      }
+    },
+    "componentsUseCooldown": {
+      "label": "Use Cooldown",
+      "description": "Cooldown nach der Benutzung (wie bei Enderperlen).",
+      "field": {
+        "label": "Abklingzeit",
+        "fields": {
+          "duration": {
+            "label": "Dauer",
+            "placeholder": "1s"
+          },
+          "group": {
+            "label": "Gruppe (optional)",
+            "placeholder": "nexo:meine_gruppe"
+          }
+        }
+      }
+    },
+    "componentsTool": {
+      "label": "Tool",
+      "description": "Abbaugeschwindigkeit und Regeln für bestimmte Blöcke.",
+      "field": {
+        "label": "Werkzeug",
+        "fields": {
+          "defaultMiningSpeed": {
+            "label": "Standard-Abbaugeschwindigkeit",
+            "placeholder": "1.0"
+          },
+          "damagePerBlock": {
+            "label": "Haltbarkeitsverlust pro Block",
+            "placeholder": "1"
+          },
+          "rules": {
+            "label": "Regeln",
+            "itemLabel": "Regel",
+            "fields": {
+              "speed": {
+                "label": "Geschwindigkeit"
+              },
+              "correctForDrops": {
+                "label": "Richtiges Werkzeug (Block droppt)"
+              },
+              "materials": {
+                "label": "Blöcke",
+                "placeholder": "z.B. DIAMOND_BLOCK"
+              },
+              "tags": {
+                "label": "Block-Tags",
+                "placeholder": "minecraft:mineable/axe"
+              }
+            }
+          }
+        }
+      }
+    },
+    "componentsWeapon": {
+      "label": "Weapon",
+      "description": "Haltbarkeitsverlust pro Angriff und Schild-Deaktivierung.",
+      "field": {
+        "label": "Waffe",
+        "fields": {
+          "damagePerAttack": {
+            "label": "Haltbarkeitsverlust pro Angriff"
+          },
+          "disableBlocking": {
+            "label": "Schild deaktivieren (Sekunden)"
+          }
+        }
+      }
+    },
+    "componentsEquippable": {
+      "label": "Equippable",
+      "description": "Item kann wie Rüstung angezogen werden (z.B. 3D-Hut auf dem Kopf).",
+      "hint": "Für einen 3D-Helm: Slot HEAD und kein asset_id angeben.",
+      "field": {
+        "label": "Ausrüstbar",
+        "fields": {
+          "slot": {
+            "label": "Slot"
+          },
+          "assetId": {
+            "label": "Equipment-Asset",
+            "placeholder": "leer lassen für 3D-Modelle"
+          },
+          "cameraOverlay": {
+            "label": "Kamera-Overlay",
+            "placeholder": "z.B. minecraft:misc/pumpkinblur"
+          },
+          "equipSound": {
+            "label": "Sound beim Anziehen",
+            "help": "Standard: item.armor.equip_generic"
+          },
+          "allowedEntityTypes": {
+            "label": "Erlaubte Entities",
+            "placeholder": "PLAYER"
+          },
+          "dispensable": {
+            "label": "Per Werfer anziehbar"
+          },
+          "swappable": {
+            "label": "Per Rechtsklick tauschbar"
+          },
+          "damageOnHurt": {
+            "label": "Nimmt Schaden, wenn der Träger getroffen wird"
+          },
+          "equipOnInteract": {
+            "label": "Per Rechtsklick auf ein Entity anziehen",
+            "help": "Von Nexo 1.30 gelesen, nicht in der Doku aufgeführt."
+          },
+          "canBeSheared": {
+            "label": "Kann abgeschoren werden",
+            "help": "Eine Schere entfernt das Item von einem Mob. Von Nexo 1.30 gelesen, nicht in der Doku aufgeführt."
+          },
+          "shearSound": {
+            "label": "Sound beim Abscheren",
+            "help": "Standard: item.shears.snip. Von Nexo 1.30 gelesen, nicht in der Doku aufgeführt."
+          }
+        }
+      }
+    },
+    "componentsGlider": {
+      "label": "Glider",
+      "description": "Erlaubt Gleiten wie mit Elytren, wenn das Item angezogen ist (zusammen mit „Equippable“).",
+      "field": {
+        "label": "Gleiter"
+      }
+    },
+    "componentsDamageResistant": {
+      "label": "Damage Resistant",
+      "description": "Das Item (als Entity) ist immun gegen diesen Schadenstyp-Tag.",
+      "field": {
+        "label": "Schadenstyp-Tag"
+      }
+    },
+    "componentsEnchantable": {
+      "label": "Enchantable",
+      "description": "Maximale Verzauberungskosten. 0 = nicht verzauberbar.",
+      "field": {
+        "label": "Wert"
+      }
+    },
+    "componentsRepairable": {
+      "label": "Repairable",
+      "description": "Vanilla-Items oder -Tags, mit denen das Item im Amboss repariert werden kann.",
+      "field": {
+        "label": "Items / Tags",
+        "placeholder": "minecraft:diamond oder minecraft:planks"
+      }
+    },
+    "componentsDeathProtection": {
+      "label": "Death Protection",
+      "description": "Schützt den Spieler vor dem Tod, wenn das Item in der Hand gehalten wird.",
+      "field": {
+        "label": "Todesschutz",
+        "fields": {
+          "deathEffects": {
+            "label": "Effekte beim Auslösen"
+          }
+        }
+      }
+    },
+    "componentsJukeboxPlayable": {
+      "label": "Jukebox Playable",
+      "description": "Item kann in eine Jukebox gelegt werden und spielt einen Song ab.",
+      "field": {
+        "label": "Schallplatte",
+        "fields": {
+          "songKey": {
+            "label": "Song-Schlüssel",
+            "placeholder": "namespace:song"
+          }
+        }
+      }
+    },
+    "componentsTooltipStyle": {
+      "label": "Tooltip Style",
+      "description": "Eigener Tooltip-Hintergrund aus dem ResourcePack (textures/gui/sprites/tooltip/'<'key>_frame/_background).",
+      "field": {
+        "label": "Stil",
+        "placeholder": "namespace:key"
+      }
+    },
+    "componentsBreakSound": {
+      "label": "Break Sound",
+      "description": "Sound, wenn die Haltbarkeit aufgebraucht ist.",
+      "field": {
+        "label": "Sound"
+      }
+    },
+    "componentsCanPlaceOn": {
+      "label": "Can Place On",
+      "description": "Blöcke, auf denen das Item im Abenteuermodus platziert werden darf.",
+      "field": {
+        "label": "Platzierbar auf",
+        "fields": {
+          "block": {
+            "label": "Blöcke / Tags",
+            "placeholder": "z.B. stone oder #minecraft:logs"
+          },
+          "nexoBlock": {
+            "label": "Nexo-Blöcke",
+            "placeholder": "Item-ID",
+            "help": "Eigene Blöcke von Nexo per Item-ID. Von Nexo 1.30 gelesen, nicht in der Doku aufgeführt."
+          },
+          "state": {
+            "label": "Blockzustand",
+            "help": "Nur Blöcke mit diesen Zustandswerten zählen (z.B. axis = y). Von Nexo 1.30 gelesen, nicht in der Doku aufgeführt.",
+            "keyLabel": "Eigenschaft",
+            "keyPlaceholder": "z.B. axis",
+            "value": {
+              "label": "Wert"
+            }
+          }
+        }
+      }
+    },
+    "componentsCanBreak": {
+      "label": "Can Break",
+      "description": "Blöcke, die das Item im Abenteuermodus abbauen darf.",
+      "field": {
+        "label": "Kann abbauen",
+        "fields": {
+          "block": {
+            "label": "Blöcke / Tags",
+            "placeholder": "z.B. stone oder #minecraft:logs"
+          },
+          "nexoBlock": {
+            "label": "Nexo-Blöcke",
+            "placeholder": "Item-ID",
+            "help": "Eigene Blöcke von Nexo per Item-ID. Von Nexo 1.30 gelesen, nicht in der Doku aufgeführt."
+          },
+          "state": {
+            "label": "Blockzustand",
+            "help": "Nur Blöcke mit diesen Zustandswerten zählen (z.B. axis = y). Von Nexo 1.30 gelesen, nicht in der Doku aufgeführt.",
+            "keyLabel": "Eigenschaft",
+            "keyPlaceholder": "z.B. axis",
+            "value": {
+              "label": "Wert"
+            }
+          }
+        }
+      }
+    },
+    "componentsProfile": {
+      "label": "Profile",
+      "description": "Skin für Items mit Material PLAYER_HEAD. Name, UUID oder Properties angeben.",
+      "field": {
+        "label": "Profil",
+        "fields": {
+          "name": {
+            "label": "Spielername"
+          },
+          "uuid": {
+            "label": "UUID"
+          },
+          "properties": {
+            "label": "Properties",
+            "fields": {
+              "name": {
+                "label": "Name",
+                "placeholder": "textures"
+              },
+              "value": {
+                "label": "Wert (Base64)"
+              },
+              "signature": {
+                "label": "Signatur (optional)"
+              }
+            }
+          }
+        }
+      }
+    },
+    "componentsPaintingVariant": {
+      "label": "Painting Variant",
+      "description": "Welches (eigene) Gemälde platziert wird.",
+      "field": {
+        "label": "Variante",
+        "placeholder": "namespace:key"
+      }
+    },
+    "componentsCustomModelData": {
+      "label": "Custom Model Data",
+      "description": "Werte für die custom_model_data-Fälle des Item-Modells (floats, flags, strings, colors).",
+      "field": {
+        "label": "Werte",
+        "fields": {
+          "float": {
+            "label": "Floats",
+            "placeholder": "z.B. 1.0"
+          },
+          "flag": {
+            "label": "Flags",
+            "placeholder": "true / false"
+          },
+          "string": {
+            "label": "Strings",
+            "placeholder": "z.B. red"
+          },
+          "color": {
+            "label": "Farben",
+            "placeholder": "z.B. #ff0000 oder 255,0,0"
+          }
+        }
+      },
+      "hint": "Nexo 1.30 liest die Schlüssel float, flag, string und color; die Doku schreibt sie im Plural, den 1.30 ignoriert."
+    },
+    "componentsCustomData": {
+      "label": "Custom Data",
+      "description": "Daten direkt im custom_data-Bereich des Items.",
+      "field": {
+        "label": "Inhalt",
+        "placeholder": "nexo:wert: \"text\"\nnexo:zahl: 2"
+      }
+    },
+    "componentsUnsetComponents": {
+      "label": "Unset Components",
+      "description": "Entfernt Komponenten, die das Basis-Material normalerweise hat (z.B. minecraft:tool).",
+      "field": {
+        "label": "Komponenten",
+        "placeholder": "minecraft:tool"
+      }
+    },
+    "componentsBlocksAttacks": {
+      "label": "Blocks Attacks",
+      "description": "Das Item kann wie ein Schild Angriffe blocken.",
+      "field": {
+        "label": "Blocken",
+        "fields": {
+          "blockDelay": {
+            "label": "Verzögerung bis zum Blocken",
+            "placeholder": "0.25s"
+          },
+          "disableCooldownScale": {
+            "label": "Faktor der Sperrzeit",
+            "placeholder": "1.0"
+          },
+          "blockSound": {
+            "label": "Sound beim Blocken"
+          },
+          "disableSound": {
+            "label": "Sound beim Ausschalten"
+          },
+          "bypassedBy": {
+            "label": "Umgangen von",
+            "placeholder": "z.B. minecraft:bypasses_shield"
+          },
+          "itemDamage": {
+            "label": "Schaden am Item",
+            "fields": {
+              "threshold": {
+                "label": "Schwelle"
+              },
+              "base": {
+                "label": "Grundwert"
+              },
+              "factor": {
+                "label": "Faktor"
+              }
+            }
+          },
+          "damageReductions": {
+            "label": "Schadensminderungen",
+            "itemLabel": "Minderung",
+            "fields": {
+              "types": {
+                "label": "Schadensarten / Tags",
+                "placeholder": "z.B. minecraft:is_projectile"
+              },
+              "base": {
+                "label": "Grundwert"
+              },
+              "factor": {
+                "label": "Faktor"
+              },
+              "horizontalBlocking": {
+                "label": "Blockwinkel",
+                "placeholder": "90"
+              }
+            }
+          }
+        }
+      }
+    },
+    "componentsAttackRange": {
+      "label": "Attack Range",
+      "description": "Reichweite und Hitbox-Rand der Waffe.",
+      "field": {
+        "label": "Reichweite",
+        "fields": {
+          "reach": {
+            "label": "Reichweite",
+            "placeholder": "0..3"
+          },
+          "hitboxMargin": {
+            "label": "Hitbox-Rand"
+          },
+          "mobFactor": {
+            "label": "Faktor für Mobs"
+          },
+          "minReach": {
+            "label": "Mindestreichweite"
+          },
+          "maxReach": {
+            "label": "Maximale Reichweite"
+          },
+          "creativeReach": {
+            "label": "Reichweite im Kreativmodus",
+            "placeholder": "0..5",
+            "help": "Von Nexo 1.30 gelesen, nicht in der Doku aufgeführt."
+          },
+          "minCreativeReach": {
+            "label": "Mindestreichweite im Kreativmodus"
+          },
+          "maxCreativeReach": {
+            "label": "Maximale Reichweite im Kreativmodus"
+          }
+        }
+      }
+    },
+    "componentsPiercingWeapon": {
+      "label": "Piercing Weapon",
+      "description": "Verhalten, wenn die Waffe Ziele durchbohrt (Speer).",
+      "field": {
+        "label": "Durchbohren",
+        "fields": {
+          "sound": {
+            "label": "Sound"
+          },
+          "hitSound": {
+            "label": "Treffer-Sound"
+          },
+          "dismounts": {
+            "label": "Wirft Reiter ab"
+          },
+          "dealsKnockback": {
+            "label": "Verursacht Rückstoß"
+          }
+        }
+      }
+    },
+    "componentsKineticWeapon": {
+      "label": "Kinetic Weapon",
+      "description": "Ermöglicht Sturmangriffe beim Benutzen (Lanze).",
+      "field": {
+        "label": "Sturmangriff",
+        "fields": {
+          "contactCooldown": {
+            "label": "Abklingzeit nach Kontakt",
+            "placeholder": "10t"
+          },
+          "delay": {
+            "label": "Verzögerung",
+            "placeholder": "0t"
+          },
+          "damageMultiplier": {
+            "label": "Schadensfaktor",
+            "placeholder": "1.0"
+          },
+          "forwardMovement": {
+            "label": "Vorwärtsbewegung",
+            "help": "Von Nexo 1.30 gelesen, nicht in der Doku aufgeführt."
+          },
+          "sound": {
+            "label": "Sound"
+          },
+          "hitSound": {
+            "label": "Treffer-Sound"
+          },
+          "dismountConditions": {
+            "label": "Bedingungen zum Abwerfen",
+            "fields": {
+              "maxDuration": {
+                "label": "Maximale Dauer",
+                "placeholder": "z.B. 10s"
+              },
+              "minSpeed": {
+                "label": "Mindestgeschwindigkeit"
+              },
+              "minRelativeSpeed": {
+                "label": "Mindest-Relativgeschwindigkeit"
+              }
+            }
+          },
+          "knockbackConditions": {
+            "label": "Bedingungen für Rückstoß",
+            "fields": {
+              "maxDuration": {
+                "label": "Maximale Dauer",
+                "placeholder": "z.B. 10s"
+              },
+              "minSpeed": {
+                "label": "Mindestgeschwindigkeit"
+              },
+              "minRelativeSpeed": {
+                "label": "Mindest-Relativgeschwindigkeit"
+              }
+            }
+          },
+          "damageConditions": {
+            "label": "Bedingungen für Schaden",
+            "fields": {
+              "maxDuration": {
+                "label": "Maximale Dauer",
+                "placeholder": "z.B. 10s"
+              },
+              "minSpeed": {
+                "label": "Mindestgeschwindigkeit"
+              },
+              "minRelativeSpeed": {
+                "label": "Mindest-Relativgeschwindigkeit"
+              }
+            }
+          }
+        }
+      }
+    },
+    "componentsSwingAnimation": {
+      "label": "Swing Animation",
+      "description": "Animation beim Schwingen. Ab 26.3 durch Angriffs- und Benutzungs-Animation ersetzt.",
+      "field": {
+        "label": "Animation",
+        "fields": {
+          "type": {
+            "label": "Typ"
+          },
+          "duration": {
+            "label": "Dauer",
+            "placeholder": "6t"
+          }
+        }
+      }
+    },
+    "componentsAttackAnimation": {
+      "label": "Attack Animation",
+      "description": "Animation beim Angreifen.",
+      "field": {
+        "label": "Animation",
+        "fields": {
+          "type": {
+            "label": "Typ"
+          },
+          "duration": {
+            "label": "Dauer",
+            "placeholder": "6t"
+          }
+        }
+      }
+    },
+    "componentsInteractAnimation": {
+      "label": "Interact Animation",
+      "description": "Animation beim Benutzen.",
+      "field": {
+        "label": "Animation",
+        "fields": {
+          "type": {
+            "label": "Typ"
+          },
+          "duration": {
+            "label": "Dauer",
+            "placeholder": "6t"
+          }
+        }
+      }
+    },
+    "componentsUseEffects": {
+      "label": "Use Effects",
+      "description": "Sprinten, Vibrationen und Bewegungsgeschwindigkeit während der Benutzung.",
+      "field": {
+        "label": "Benutzung",
+        "fields": {
+          "canSprint": {
+            "label": "Sprinten möglich"
+          },
+          "interactVibrations": {
+            "label": "Löst Vibrationen aus"
+          },
+          "speedMultiplier": {
+            "label": "Geschwindigkeits-Faktor"
+          }
+        }
+      }
+    },
+    "componentsDamageType": {
+      "label": "Damage Type",
+      "description": "Die Schadensart, die das Item verursacht.",
+      "field": {
+        "label": "Schadensart",
+        "placeholder": "z.B. piercing"
+      }
+    },
+    "componentsMinimumAttackCharge": {
+      "label": "Minimum Attack Charge",
+      "description": "Wie weit die Angriffsanzeige gefüllt sein muss (0–1).",
+      "field": {
+        "label": "Wert"
+      }
+    },
+    "componentsCompostable": {
+      "label": "Compostable",
+      "description": "Wie viele Schichten das Item im Komposter füllt.",
+      "field": {
+        "label": "Kompostierbar",
+        "fields": {
+          "layers": {
+            "label": "Schichten"
+          }
+        }
+      }
+    },
+    "componentsCookingFuel": {
+      "label": "Cooking Fuel",
+      "description": "Item kann im Ofen verbrannt werden.",
+      "field": {
+        "label": "Brennstoff",
+        "fields": {
+          "burnTime": {
+            "label": "Brenndauer",
+            "placeholder": "10s"
+          },
+          "speedMultiplier": {
+            "label": "Geschwindigkeits-Faktor"
+          }
+        }
+      }
+    },
+    "componentsBrewingFuel": {
+      "label": "Brewing Fuel",
+      "description": "Item kann im Braustand als Brennstoff dienen.",
+      "field": {
+        "label": "Brennstoff",
+        "fields": {
+          "uses": {
+            "label": "Anzahl Brauvorgänge"
+          },
+          "speedMultiplier": {
+            "label": "Geschwindigkeits-Faktor"
+          }
+        }
+      }
+    },
+    "componentsRarity": {
+      "label": "Rarity",
+      "description": "Seltenheit des Items, die seinen Namen färbt. Von Nexo 1.30 gelesen, nicht in der Doku aufgeführt.",
+      "field": {
+        "label": "Seltenheit",
+        "help": "Von Nexo 1.30 gelesen, nicht in der Doku aufgeführt."
+      }
+    },
+    "componentsInstrument": {
+      "label": "Instrument",
+      "description": "Der Klang, den ein Ziegenhorn spielt. Von Nexo 1.30 gelesen, nicht in der Doku aufgeführt.",
+      "field": {
+        "label": "Instrument",
+        "help": "Mit dem Material GOAT_HORN verwenden. Von Nexo 1.30 gelesen, nicht in der Doku aufgeführt."
+      }
+    }
+  }
+}

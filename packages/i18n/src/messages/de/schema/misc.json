@@ -1,0 +1,83 @@
+{
+  "armor": {
+    "layers": {
+      "layer1": "Layer 1",
+      "layer2": "Layer 2",
+      "humanoidBaby": "Baby Layer",
+      "elytra": "Elytra",
+      "wolfArmor": "Wolf Armor",
+      "horseArmor": "Horse Armor",
+      "llamaArmor": "Llama Armor",
+      "nautilusArmor": "Nautilus Armor",
+      "harness": "Harness",
+      "pigSaddle": "Pig Saddle",
+      "striderSaddle": "Strider Saddle",
+      "horseSaddle": "Horse Saddle",
+      "donkeySaddle": "Donkey Saddle",
+      "muleSaddle": "Mule Saddle",
+      "camelSaddle": "Camel Saddle",
+      "skeletonHorseSaddle": "Skeleton Horse Saddle",
+      "zombieHorseSaddle": "Zombie Horse Saddle",
+      "nautilusSaddle": "Nautilus Saddle",
+      "camelHuskSaddle": "Camel Husk Saddle"
+    }
+  },
+  "recipes": {
+    "types": {
+      "shaped": {
+        "label": "Shaped",
+        "description": "Werkbank: Zutaten müssen in einem bestimmten Muster liegen."
+      },
+      "shapeless": {
+        "label": "Shapeless",
+        "description": "Werkbank: Zutaten können beliebig im Raster liegen."
+      },
+      "furnace": {
+        "label": "Furnace",
+        "description": "Schmelzen im normalen Ofen."
+      },
+      "blasting": {
+        "label": "Blasting",
+        "description": "Schmelzen im Schmelzofen."
+      },
+      "smoking": {
+        "label": "Smoking",
+        "description": "Garen im Räucherofen."
+      },
+      "campfire": {
+        "label": "Campfire",
+        "description": "Garen auf dem Lagerfeuer."
+      },
+      "stonecutting": {
+        "label": "Stonecutting",
+        "description": "Eine Zutat wird in der Steinsäge verarbeitet."
+      }
+    },
+    "sources": {
+      "minecraft": "Minecraft-Item",
+      "nexo": "Nexo-Item",
+      "tag": "Item-Tag"
+    }
+  },
+  "copy": {
+    "categories": {
+      "material": {
+        "label": "Material",
+        "description": "Basis-Material (z.B. DIAMOND_SWORD)"
+      },
+      "other": {
+        "label": "Sonstige Werte",
+        "description": "Werte ohne eigenes Formular (z.B. aus importierten Configs)"
+      },
+      "rawYaml": {
+        "label": "Zusätzliches YAML (YAML-Tab)",
+        "description": "Der Inhalt des YAML-Tabs"
+      },
+      "recipes": {
+        "label": "Recipes",
+        "description": "Crafting-Rezepte – Achtung: gleiche Rezepte für mehrere Items stören sich im Spiel"
+      }
+    },
+    "rawYamlLines": "{count, plural, one {# Zeile} other {# Zeilen}}"
+  }
+}

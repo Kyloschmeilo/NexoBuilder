@@ -1,0 +1,54 @@
+{
+  "logic": {
+    "triggers": {
+      "rightClick": {
+        "label": "right_click",
+        "help": "Right click (also use_on, use, use_item_on)."
+      },
+      "leftClick": {
+        "label": "left_click",
+        "help": "Left click."
+      },
+      "attack": {
+        "label": "attack",
+        "help": "The item hits an entity (also hit)."
+      },
+      "consume": {
+        "label": "consume",
+        "help": "The item is eaten or drunk (also eat, drink)."
+      },
+      "pickUp": {
+        "label": "pick_up",
+        "help": "The item is picked up (also pick)."
+      },
+      "shoot": {
+        "label": "shoot",
+        "help": "The item shoots a projectile."
+      },
+      "itemBreak": {
+        "label": "item_break",
+        "help": "The item breaks when its durability runs out."
+      },
+      "blockBreak": {
+        "label": "block_break",
+        "help": "The block is broken, or the item breaks a block (also dig)."
+      },
+      "place": {
+        "label": "place",
+        "help": "The block or furniture is placed (also build)."
+      },
+      "step": {
+        "label": "step",
+        "help": "A player steps on the block."
+      },
+      "furnitureBreak": {
+        "label": "furniture_break",
+        "help": "The furniture is broken."
+      },
+      "fall": {
+        "label": "fall",
+        "help": "Registered, but nothing fires it yet."
+      }
+    }
+  }
+}

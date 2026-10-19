@@ -6,9 +6,10 @@ import {
   craftEngineTranslations,
   sectionsToYaml,
 } from '@resourcepackbuilder/core/craftEngine';
-import { recipeFrame } from '@resourcepackbuilder/core/project';
+import { VARIANTS } from '@resourcepackbuilder/core/project';
 import type { JavaModelJson } from '@resourcepackbuilder/minecraft';
 import type { ItemExport, ItemSections } from '../../types';
+import { validateItemModelTree } from '../../validate/itemModelTree';
 import type { BuiltItem, ItemShared, PackTarget, WrittenItemModels } from '../types';
 import { validateCraftEngineAttributes } from './attributes';
 import { craftEngineInstallGuide } from './installGuide';
@@ -65,7 +66,8 @@ export const CRAFT_ENGINE_TARGET: PackTarget<CraftEngineWrittenModels> = {
     packLocation: (project) => craftEnginePackLocation(project),
     installGuide: craftEngineInstallGuide,
     reloadCommand: CRAFT_ENGINE_RELOAD_COMMAND,
-    mediaFile: (project, kind) => craftEngineMediaFile(project, CRAFT_ENGINE_MEDIA_FILES[kind]),
+    // CraftEngine has no dialogs
+    mediaFile: (project, kind) => (kind === 'dialog' ? null : craftEngineMediaFile(project, CRAFT_ENGINE_MEDIA_FILES[kind])),
   },
 };
 
@@ -86,6 +88,14 @@ function buildItem(itemExport: ItemExport, written: CraftEngineWrittenModels, sh
   if (built.rawBlockInvalid) itemExport.report('warning', 'ce.rawBlockNotMapping');
   if (built.rawFurnitureIgnored) itemExport.report('warning', 'ce.rawFurnitureWithoutFurniture');
   if (built.furnitureIgnored) itemExport.report('error', 'ce.furnitureWithBlock');
+  if (built.itemModelTreeIgnored) itemExport.report('warning', 'plan.itemModelTreeOverriddenByRawYaml');
+  else validateItemModelTree(itemExport, written.mainKey !== null);
+  if (built.itemModelTreeReplacesModels) {
+    const slots = VARIANTS.filter((def) => def.kind === 'pack' && (item.variants?.[def.slot]?.length ?? 0) > 0).map((def) => def.slot);
+    itemExport.report('warning', 'plan.itemModelTreeReplacesGenerated', { slots: slots.join(', ') });
+  }
+  if (built.rawBehaviorsOverride) itemExport.report('warning', 'ce.rawBehaviorsOverride');
+  if (built.placementTypeIgnored) itemExport.report('warning', 'ce.placementTypeIgnored', { type: built.placementTypeIgnored });
   for (const locale of craftEngineTranslations(item).invalidLocales)
     itemExport.report('warning', 'ce.translationLocaleInvalid', { locale });
   validateCraftEngineItem(itemExport, built.config);
@@ -104,10 +114,8 @@ function buildItem(itemExport: ItemExport, written: CraftEngineWrittenModels, sh
     sections.blocks = { [key]: built.block };
   }
   validateCraftEngineTemplateUses(itemExport, built.config, built.furniture ?? undefined, built.block ?? undefined);
-  const { recipes, unsupported } = craftEngineRecipes(project, item);
-  for (const recipe of unsupported) {
-    itemExport.report('warning', 'ce.recipeKindUnsupported', { type: recipe.type }, [recipeFrame(recipe.key)]);
-  }
+  // Recipe types CraftEngine does not read are left out; validateRecipes (pluginFiles.ts) reports them
+  const recipes = craftEngineRecipes(project, item);
   if (Object.keys(recipes).length > 0) sections.recipes = recipes;
   return Object.keys(sections).length > 0 ? { config: built.config, sections } : { config: built.config };
 }

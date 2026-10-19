@@ -1,0 +1,205 @@
+{
+  "logic": {
+    "numbers": {
+      "constant": {
+        "label": "constant",
+        "help": "Eine feste Zahl.",
+        "fields": {
+          "value": {
+            "label": "value"
+          }
+        }
+      },
+      "fixed": {
+        "label": "fixed",
+        "help": "Eine feste Zahl.",
+        "fields": {
+          "value": {
+            "label": "value"
+          }
+        }
+      },
+      "uniform": {
+        "label": "uniform",
+        "help": "Eine Zufallszahl zwischen min und max.",
+        "fields": {
+          "min": {
+            "label": "min"
+          },
+          "max": {
+            "label": "max"
+          }
+        }
+      },
+      "expression": {
+        "label": "expression",
+        "help": "Das Ergebnis eines Ausdrucks.",
+        "fields": {
+          "expression": {
+            "label": "expression",
+            "placeholder": "'<'arg:player.level> * 2"
+          }
+        }
+      },
+      "normal": {
+        "label": "normal",
+        "help": "Eine normalverteilte Zahl.",
+        "fields": {
+          "min": {
+            "label": "min"
+          },
+          "max": {
+            "label": "max"
+          },
+          "mean": {
+            "label": "mean"
+          },
+          "stdDev": {
+            "label": "std_dev"
+          }
+        }
+      },
+      "gaussian": {
+        "label": "gaussian",
+        "help": "Eine normalverteilte Zahl (wie normal).",
+        "fields": {
+          "min": {
+            "label": "min"
+          },
+          "max": {
+            "label": "max"
+          },
+          "mean": {
+            "label": "mean"
+          },
+          "stdDev": {
+            "label": "std_dev"
+          }
+        }
+      },
+      "logNormal": {
+        "label": "log_normal",
+        "help": "Eine log-normalverteilte Zahl.",
+        "fields": {
+          "min": {
+            "label": "min"
+          },
+          "max": {
+            "label": "max"
+          },
+          "mean": {
+            "label": "mean"
+          },
+          "stdDev": {
+            "label": "std_dev"
+          },
+          "location": {
+            "label": "location"
+          },
+          "scale": {
+            "label": "scale"
+          }
+        }
+      },
+      "skewNormal": {
+        "label": "skew_normal",
+        "help": "Eine schief normalverteilte Zahl.",
+        "fields": {
+          "min": {
+            "label": "min"
+          },
+          "max": {
+            "label": "max"
+          },
+          "mean": {
+            "label": "mean"
+          },
+          "stdDev": {
+            "label": "std_dev"
+          },
+          "skewness": {
+            "label": "skewness"
+          }
+        }
+      },
+      "binomial": {
+        "label": "binomial",
+        "help": "Die Zahl der Erfolge in extra Versuchen.",
+        "fields": {
+          "extra": {
+            "label": "extra"
+          },
+          "probability": {
+            "label": "probability"
+          }
+        }
+      },
+      "weighted": {
+        "label": "weighted",
+        "help": "Eine der Zahlen, nach Gewicht gewählt.",
+        "fields": {
+          "weights": {
+            "label": "weights",
+            "help": "Zahl zu Gewicht.",
+            "keyLabel": "Zahl",
+            "keyPlaceholder": "1.0",
+            "value": {
+              "label": "Gewicht"
+            }
+          }
+        }
+      },
+      "triangle": {
+        "label": "triangle",
+        "help": "Eine dreiecksverteilte Zahl.",
+        "fields": {
+          "min": {
+            "label": "min"
+          },
+          "max": {
+            "label": "max"
+          },
+          "mode": {
+            "label": "mode"
+          }
+        }
+      },
+      "exponential": {
+        "label": "exponential",
+        "help": "Eine exponentialverteilte Zahl.",
+        "fields": {
+          "min": {
+            "label": "min"
+          },
+          "max": {
+            "label": "max"
+          },
+          "mean": {
+            "label": "mean"
+          },
+          "lambda": {
+            "label": "lambda"
+          }
+        }
+      },
+      "beta": {
+        "label": "beta",
+        "help": "Eine betaverteilte Zahl zwischen min und max.",
+        "fields": {
+          "min": {
+            "label": "min"
+          },
+          "max": {
+            "label": "max"
+          },
+          "alpha": {
+            "label": "alpha"
+          },
+          "beta": {
+            "label": "beta"
+          }
+        }
+      }
+    }
+  }
+}

@@ -1,0 +1,191 @@
+{
+  "itemModel": {
+    "types": {
+      "model": {
+        "label": "Model",
+        "description": "Shows one model file."
+      },
+      "composite": {
+        "label": "Composite",
+        "description": "Draws several models on top of each other."
+      },
+      "condition": {
+        "label": "Condition",
+        "description": "Picks one of two models by a true/false property."
+      },
+      "select": {
+        "label": "Select",
+        "description": "Picks a model by the value of a property (cases with a fallback)."
+      },
+      "rangeDispatch": {
+        "label": "Range dispatch",
+        "description": "Picks a model by a number property crossing thresholds."
+      },
+      "special": {
+        "label": "Special",
+        "description": "Draws a model the game renders itself (head, chest, banner …)."
+      },
+      "empty": {
+        "label": "Empty",
+        "description": "Draws nothing."
+      },
+      "bundleSelectedItem": {
+        "label": "Bundle selected item",
+        "description": "Draws the item selected in an open bundle."
+      }
+    },
+    "properties": {
+      "condition": {
+        "broken": "The item is about to break.",
+        "bundleHasSelectedItem": "The bundle is open and shows a selected item.",
+        "carried": "The item is being carried between inventory slots.",
+        "component": "A data component predicate matches the item (from 1.21.5).",
+        "customModelData": "An entry of the flags list in the custom_model_data component.",
+        "damaged": "The item has lost durability.",
+        "extendedView": "The player holds Shift while the item is shown in a GUI.",
+        "fishingRodCast": "A fishing bobber is attached to this rod.",
+        "hasComponent": "The item has the given data component.",
+        "keybindDown": "The player holds down the given key.",
+        "selected": "The item is in the selected hotbar slot.",
+        "usingItem": "The player is using the item (drawing a bow, eating …).",
+        "viewEntity": "The entity holding the item is the player whose view is shown."
+      },
+      "select": {
+        "blockState": "A property of the block_state component (e.g. facing).",
+        "chargeType": "What a crossbow is loaded with: none, arrow or rocket.",
+        "component": "The value of a data component (from 1.21.5).",
+        "contextDimension": "The dimension of the entity holding the item.",
+        "contextEntityType": "The type of the entity holding the item.",
+        "customModelData": "An entry of the strings list in the custom_model_data component.",
+        "displayContext": "Where the item is shown: GUI, hand, head, ground …",
+        "localTime": "The client’s current date or time, formatted with a pattern.",
+        "mainHand": "The main hand of the player: left or right.",
+        "trimMaterial": "The material of the item’s armor trim."
+      },
+      "rangeDispatch": {
+        "bundleFullness": "How full the bundle is (0 to 1).",
+        "compass": "The angle towards a target, as a compass shows it.",
+        "cooldown": "The remaining cooldown of the item (0 to 1).",
+        "count": "The stack size.",
+        "crossbowPull": "How far a crossbow is drawn.",
+        "customModelData": "An entry of the floats list in the custom_model_data component.",
+        "damage": "The durability used up.",
+        "time": "The time of day, the moon phase or a random value.",
+        "useCycle": "The ticks of use, repeating every period.",
+        "useDuration": "How long the item has been used (or how long is left)."
+      }
+    },
+    "special": {
+      "banner": "A banner with the item’s patterns.",
+      "bed": "A bed (until Minecraft 26.1).",
+      "bell": "The bell of a bell block (from 26.1).",
+      "book": "An enchanting table book (from 26.1).",
+      "chest": "A chest with a texture of the chest atlas.",
+      "conduit": "A conduit.",
+      "copperGolemStatue": "A copper golem statue in a pose.",
+      "decoratedPot": "A decorated pot with the item’s sherds.",
+      "endCube": "The starfield of an end portal or gateway (from 26.1).",
+      "hangingSign": "A hanging sign (until Minecraft 26.1).",
+      "head": "A mob head or skull.",
+      "playerHead": "A player head with the skin of the item’s profile (from 1.21.6).",
+      "shield": "A shield with the item’s banner patterns.",
+      "shulkerBox": "A shulker box with a texture of the shulker atlas.",
+      "standingSign": "A standing sign (until Minecraft 26.1).",
+      "trident": "A trident."
+    },
+    "tints": {
+      "constant": "Always the same color.",
+      "customModelData": "An entry of the colors list in the custom_model_data component.",
+      "dye": "The dyed_color component, or the default.",
+      "firework": "The average color of the firework explosion, or the default.",
+      "grass": "The grass color of a climate.",
+      "mapColor": "The map_color component, or the default.",
+      "potion": "The potion color, or the default.",
+      "team": "The team color of the holder, or the default."
+    },
+    "params": {
+      "model": "Model path; @model is the item’s own model.",
+      "scale": "Multiplies the property value before it is compared.",
+      "base": "Model for the transforms, particle texture and GUI light; @model is the item’s own model.",
+      "predicate": "Component predicate type, e.g. minecraft:damage.",
+      "value": "The value to check (condition) or the color (constant tint).",
+      "index": "Position in the custom_model_data list.",
+      "component": "Component id, e.g. minecraft:custom_name.",
+      "ignoreDefault": "Components with their default value count as missing.",
+      "keybind": "Key id of the controls, e.g. key.use.",
+      "blockStateProperty": "Name of the block state property.",
+      "pattern": "Date and time pattern, e.g. MM for the month.",
+      "locale": "Locale of the format, e.g. en_US.",
+      "timeZone": "Time zone, e.g. Europe/Berlin (default: the client’s).",
+      "target": "What the needle points to.",
+      "wobble": "The value wobbles before it settles.",
+      "normalize": "Use 0 to 1 instead of the raw number.",
+      "source": "Where the time comes from.",
+      "period": "Length of one cycle in ticks.",
+      "remaining": "Count the ticks left instead of the ticks elapsed.",
+      "color": "Banner color.",
+      "attachment": "Standing on the ground or hanging on a wall (from 26.1).",
+      "texture": "Texture of the special model.",
+      "openAngle": "Opening angle in degrees.",
+      "page1": "Turn progress of the first page (0 to 1).",
+      "page2": "Turn progress of the second page (0 to 1).",
+      "openness": "How far the lid is open (0 to 1).",
+      "chestType": "Single chest or the left or right half (from 26.1).",
+      "pose": "Pose of the statue.",
+      "effect": "End portal or end gateway look.",
+      "woodType": "Wood type of the sign.",
+      "kind": "Which head.",
+      "animation": "Animation progress (dragon jaw, piglin ears).",
+      "orientation": "Direction the shulker box faces.",
+      "default": "Color used when the item has none.",
+      "temperature": "Climate temperature (0 to 1).",
+      "downfall": "Climate downfall (0 to 1).",
+      "handAnimationOnSwap": "Plays the first-person swap animation when the held item changes. Default: true.",
+      "oversizedInGui": "The model may render beyond its inventory slot (from 1.21.6).",
+      "swapAnimationScale": "Speed of the swap animation; larger is faster (from 1.21.11)."
+    },
+    "transformation": {
+      "translation": "Translation (x, y, z)",
+      "leftRotation": "Left rotation (quaternion x, y, z, w)",
+      "scale": "Scale (x, y, z)",
+      "rightRotation": "Right rotation (quaternion x, y, z, w)"
+    },
+    "ui": {
+      "title": "Item model tree",
+      "description": "Decide which model the game shows and when: by display context, state, time, damage and more.",
+      "create": "Create item model tree",
+      "createHelp": "The tree replaces the item model ResourcepackBuilder generates for this item. It starts with the item’s own model.",
+      "remove": "Remove tree",
+      "root": "Root",
+      "type": "Type",
+      "addCase": "Add case",
+      "addEntry": "Add entry",
+      "addModel": "Add model",
+      "addTint": "Add tint",
+      "removeEntry": "Remove",
+      "moveUp": "Move up",
+      "moveDown": "Move down",
+      "when": "When",
+      "whenPlaceholder": "Value",
+      "threshold": "Threshold",
+      "cases": "Cases",
+      "entries": "Entries",
+      "models": "Models",
+      "fallback": "Fallback",
+      "noFallback": "No fallback: nothing is drawn when no case matches.",
+      "addFallback": "Add fallback",
+      "onTrue": "When true",
+      "onFalse": "When false",
+      "tints": "Tints",
+      "specialModel": "Special model",
+      "transformation": "Transformation",
+      "transformationHelp": "Moves, rotates and scales the node (from Minecraft 26.1).",
+      "addTransformation": "Add transformation",
+      "useMainModel": "Use the item’s model",
+      "fromVersion": "From {version}",
+      "removedIn": "Until {version}",
+      "unknownType": "The editor does not know this type. Edit it in the additional YAML.",
+      "unset": "Not set"
+    }
+  }
+}

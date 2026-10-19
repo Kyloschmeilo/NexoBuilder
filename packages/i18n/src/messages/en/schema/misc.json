@@ -1,0 +1,83 @@
+{
+  "armor": {
+    "layers": {
+      "layer1": "Layer 1",
+      "layer2": "Layer 2",
+      "humanoidBaby": "Baby Layer",
+      "elytra": "Elytra",
+      "wolfArmor": "Wolf Armor",
+      "horseArmor": "Horse Armor",
+      "llamaArmor": "Llama Armor",
+      "nautilusArmor": "Nautilus Armor",
+      "harness": "Harness",
+      "pigSaddle": "Pig Saddle",
+      "striderSaddle": "Strider Saddle",
+      "horseSaddle": "Horse Saddle",
+      "donkeySaddle": "Donkey Saddle",
+      "muleSaddle": "Mule Saddle",
+      "camelSaddle": "Camel Saddle",
+      "skeletonHorseSaddle": "Skeleton Horse Saddle",
+      "zombieHorseSaddle": "Zombie Horse Saddle",
+      "nautilusSaddle": "Nautilus Saddle",
+      "camelHuskSaddle": "Camel Husk Saddle"
+    }
+  },
+  "recipes": {
+    "types": {
+      "shaped": {
+        "label": "Shaped",
+        "description": "Crafting table: ingredients must be arranged in a specific pattern."
+      },
+      "shapeless": {
+        "label": "Shapeless",
+        "description": "Crafting table: ingredients can be anywhere in the grid."
+      },
+      "furnace": {
+        "label": "Furnace",
+        "description": "Smelting in a regular furnace."
+      },
+      "blasting": {
+        "label": "Blasting",
+        "description": "Smelting in a blast furnace."
+      },
+      "smoking": {
+        "label": "Smoking",
+        "description": "Cooking in a smoker."
+      },
+      "campfire": {
+        "label": "Campfire",
+        "description": "Cooking on a campfire."
+      },
+      "stonecutting": {
+        "label": "Stonecutting",
+        "description": "One ingredient is processed in a stonecutter."
+      }
+    },
+    "sources": {
+      "minecraft": "Minecraft item",
+      "nexo": "Nexo item",
+      "tag": "Item tag"
+    }
+  },
+  "copy": {
+    "categories": {
+      "material": {
+        "label": "Material",
+        "description": "Base material (e.g. DIAMOND_SWORD)"
+      },
+      "other": {
+        "label": "Other values",
+        "description": "Values without their own form (e.g. from imported configs)"
+      },
+      "rawYaml": {
+        "label": "Additional YAML (YAML tab)",
+        "description": "The content of the YAML tab"
+      },
+      "recipes": {
+        "label": "Recipes",
+        "description": "Crafting recipes – caution: identical recipes for several items conflict in game"
+      }
+    },
+    "rawYamlLines": "{count, plural, one {# line} other {# lines}}"
+  }
+}

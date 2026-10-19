@@ -1,0 +1,285 @@
+{
+  "nexoDialogs": {
+    "button": {
+      "itemLabel": "Aktion",
+      "fields": {
+        "label": {
+          "label": "Text der Schaltfläche",
+          "placeholder": "'<'green>Weiter"
+        },
+        "tooltip": {
+          "label": "Text beim Überfahren der Schaltfläche"
+        },
+        "width": {
+          "label": "Breite der Schaltfläche (1–1024, Standard 150)"
+        },
+        "action": {
+          "label": "Was ein Klick bewirkt",
+          "help": "Ohne Aktion schließt die Schaltfläche nur den Dialog (siehe „Nach einem Klick“).",
+          "fields": {
+            "type": {
+              "label": "Art der Aktion"
+            },
+            "url": {
+              "label": "Zu öffnende Webadresse",
+              "placeholder": "https://example.com"
+            },
+            "command": {
+              "label": "Befehl",
+              "help": "Ohne führenden Schrägstrich. RUN_COMMAND führt ihn als Spieler aus, SUGGEST_COMMAND schreibt ihn in die Chatzeile.",
+              "placeholder": "nexo inventory"
+            },
+            "page": {
+              "label": "Zu öffnende Buchseite"
+            },
+            "clipboard": {
+              "label": "In die Zwischenablage kopierter Text"
+            },
+            "dialog": {
+              "label": "Anzuzeigender Dialog",
+              "placeholder": "nexo:anderer_dialog"
+            },
+            "template": {
+              "label": "Befehlsvorlage",
+              "help": "$(key) wird durch den Wert der Eingabe mit diesem Schlüssel ersetzt.",
+              "placeholder": "say $(text_key)"
+            },
+            "id": {
+              "label": "ID der eigenen Aktion",
+              "placeholder": "namespace:aktion"
+            },
+            "payload": {
+              "label": "Mit der Aktion gesendete Daten (SNBT)",
+              "help": "Nexo 1.30 liest diesen Schlüssel; die Nexo-Doku führt ihn noch nicht auf."
+            },
+            "additions": {
+              "label": "Mit den Eingaben gesendete Zusatzdaten (SNBT)",
+              "help": "Nexo 1.30 liest diesen Schlüssel; die Nexo-Doku führt ihn noch nicht auf."
+            }
+          }
+        }
+      }
+    },
+    "fields": {
+      "dialog": {
+        "label": "Dialog",
+        "fields": {
+          "type": {
+            "label": "Dialogtyp",
+            "help": "NOTICE hat eine Schaltfläche, CONFIRM eine Ja- und eine Nein-Schaltfläche, LIST verlinkt andere Dialoge, MULTI zeigt mehrere Aktionen, LINK zeigt die Server-Links."
+          },
+          "action": {
+            "label": "Die Schaltfläche des Hinweises"
+          },
+          "yesButton": {
+            "label": "Die Ja-Schaltfläche"
+          },
+          "noButton": {
+            "label": "Die Nein-Schaltfläche"
+          },
+          "actions": {
+            "label": "Die Aktionen zur Auswahl"
+          },
+          "dialogs": {
+            "label": "Als Schaltflächen aufgeführte Dialoge",
+            "placeholder": "nexo:mein_dialog"
+          },
+          "exitAction": {
+            "label": "Schaltfläche, die den Dialog verlässt"
+          },
+          "columns": {
+            "label": "Spalten der Schaltflächen (Standard 2)"
+          },
+          "buttonWidth": {
+            "label": "Breite der Schaltflächen (1–1024, Standard 150)"
+          },
+          "base": {
+            "label": "Inhalt und Verhalten",
+            "fields": {
+              "title": {
+                "label": "Titel, immer sichtbar",
+                "placeholder": "'<'gold>Willkommen"
+              },
+              "externalTitle": {
+                "label": "Name auf Schaltflächen, die diesen Dialog öffnen",
+                "help": "Standard ist der Titel."
+              },
+              "canCloseWithEscape": {
+                "label": "Schließt mit der Escape-Taste"
+              },
+              "pause": {
+                "label": "Pausiert ein Einzelspielerspiel",
+                "help": "Nexo 1.30 liest diesen Schlüssel; die Nexo-Doku führt ihn noch nicht auf."
+              },
+              "afterAction": {
+                "label": "Nach einem Klick",
+                "help": "NONE lässt den Dialog offen, CLOSE (Standard) schließt ihn, WAIT_FOR_RESPONSE zeigt einen Wartebildschirm."
+              },
+              "bodies": {
+                "label": "Inhalt zwischen Titel und Eingaben",
+                "keyLabel": "Schlüssel des Elements",
+                "keyPlaceholder": "message_body",
+                "value": {
+                  "fields": {
+                    "type": {
+                      "label": "Art des Elements"
+                    },
+                    "message": {
+                      "label": "Text (MiniMessage, Glyph- und Shift-Tags)",
+                      "placeholder": "'<'gray>Lies zuerst die Regeln."
+                    },
+                    "description": {
+                      "label": "Text neben dem Item",
+                      "choices": {
+                        "text": {
+                          "label": "Text",
+                          "field": {
+                            "label": "Text"
+                          }
+                        },
+                        "sized": {
+                          "label": "Text mit Breite",
+                          "field": {
+                            "fields": {
+                              "contents": {
+                                "label": "Text"
+                              },
+                              "width": {
+                                "label": "Breite (Standard 200)"
+                              }
+                            }
+                          }
+                        }
+                      }
+                    },
+                    "nexoItem": {
+                      "label": "Angezeigtes Nexo-Item",
+                      "help": "Nexo 1.30 liest diesen Schlüssel; die Nexo-Doku führt ihn noch nicht auf."
+                    },
+                    "itemModel": {
+                      "label": "Angezeigtes Item-Model",
+                      "help": "Nexo 1.30 liest diesen Schlüssel; die Nexo-Doku führt ihn noch nicht auf."
+                    },
+                    "lore": {
+                      "label": "Lore des angezeigten Items",
+                      "help": "Nexo 1.30 liest diesen Schlüssel; die Nexo-Doku führt ihn noch nicht auf."
+                    },
+                    "showDecorations": {
+                      "label": "Anzahl und Haltbarkeitsbalken zeigen"
+                    },
+                    "showTooltip": {
+                      "label": "Tooltip beim Überfahren zeigen"
+                    },
+                    "width": {
+                      "label": "Breite (Text 1–1024, Standard 200; Item 1–256, Standard 16)"
+                    },
+                    "height": {
+                      "label": "Höhe (1–256, Standard 16)"
+                    }
+                  }
+                }
+              },
+              "inputs": {
+                "label": "Eingaben unter dem Inhalt",
+                "keyLabel": "Schlüssel der Eingabe (genutzt als $(key))",
+                "keyPlaceholder": "text_key",
+                "value": {
+                  "fields": {
+                    "type": {
+                      "label": "Art der Eingabe"
+                    },
+                    "label": {
+                      "label": "Beschriftung",
+                      "placeholder": "'<'yellow>Dein Name"
+                    },
+                    "labelVisible": {
+                      "label": "Beschriftung zeigen"
+                    },
+                    "width": {
+                      "label": "Breite (1–1024, Standard 200)"
+                    },
+                    "maxLength": {
+                      "label": "Längster erlaubter Text"
+                    },
+                    "initial": {
+                      "label": "Wert beim Öffnen des Dialogs",
+                      "choices": {
+                        "text": {
+                          "label": "Text",
+                          "field": {
+                            "label": "Text"
+                          }
+                        },
+                        "state": {
+                          "label": "Angehakt",
+                          "field": {
+                            "label": "Angehakt"
+                          }
+                        },
+                        "number": {
+                          "label": "Zahl",
+                          "field": {
+                            "label": "Zahl"
+                          }
+                        }
+                      }
+                    },
+                    "multilineOptions": {
+                      "label": "Mehrere Zeilen",
+                      "fields": {
+                        "maxLines": {
+                          "label": "Höchstens Zeilen"
+                        },
+                        "height": {
+                          "label": "Höhe in Pixeln"
+                        }
+                      }
+                    },
+                    "onTrue": {
+                      "label": "Wert, wenn angehakt",
+                      "placeholder": "true"
+                    },
+                    "onFalse": {
+                      "label": "Wert, wenn nicht angehakt",
+                      "placeholder": "false"
+                    },
+                    "labelFormat": {
+                      "label": "Übersetzungsschlüssel der Beschriftung",
+                      "help": "Erhält Beschriftung und Wert, z. B. options.generic_value.",
+                      "placeholder": "options.generic_value"
+                    },
+                    "start": {
+                      "label": "Kleinster Wert"
+                    },
+                    "end": {
+                      "label": "Größter Wert"
+                    },
+                    "step": {
+                      "label": "Schritt zwischen Werten (leer: stufenlos)"
+                    },
+                    "options": {
+                      "label": "Optionen zur Auswahl",
+                      "keyLabel": "Wert der Option",
+                      "keyPlaceholder": "option_1",
+                      "value": {
+                        "fields": {
+                          "display": {
+                            "label": "Angezeigter Text",
+                            "placeholder": "Erste Option"
+                          },
+                          "initial": {
+                            "label": "Beim Öffnen gewählt"
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}

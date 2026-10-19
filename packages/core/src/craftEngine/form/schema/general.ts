@@ -1,6 +1,8 @@
 import { CE_COMPONENTS, CE_LOCALES } from '../options';
 import { field, properties } from '../../../form/build';
-import { CE_DOCS, withDocs } from './docs';
+import { withDocs } from '../../../form/docs';
+import { ceDataDocs, loreLines } from './data';
+import { CE_DOCS } from './docs';
 
 /**
  * Shown on the General tab. `data.item_name` is managed: the item's display name is written there, or a `<lang:…>`
@@ -10,8 +12,10 @@ export const CE_GENERAL_PROPERTIES = properties(
   'general',
   withDocs(CE_DOCS.data, {
     'data.lore': {
-      field: field.stringList({ format: 'minimessage', placeholder: true }),
+      field: loreLines(),
       defaultValue: () => [''],
+      docs: ceDataDocs('lore'),
+      common: true,
     },
     'data.custom_name': {
       field: field.text({ format: 'minimessage', placeholder: true }),
@@ -40,10 +44,25 @@ export const CE_GENERAL_PROPERTIES = properties(
       hint: true,
       docs: CE_DOCS.templates,
     },
+    overrides: {
+      field: field.yaml({ advanced: true }),
+      defaultValue: () => ({ key: 'value' }),
+      docs: `${CE_DOCS.templates}#overrides`,
+    },
+    merges: {
+      field: field.yaml({ advanced: true }),
+      defaultValue: () => ({ key: 'value' }),
+      docs: `${CE_DOCS.templates}#merges`,
+    },
     arguments: {
       field: field.map(field.text({ placeholder: true }), { keyPlaceholder: true, newValue: () => '' }),
       defaultValue: () => ({ material: '' }),
       docs: CE_DOCS.templates,
+    },
+    category: {
+      field: field.stringList({ format: 'resource', dynamicSuggestions: 'categories', placeholder: true }),
+      defaultValue: () => [''],
+      docs: `${CE_DOCS.categories}#assigning-categories-from-items`,
     },
     client_bound_material: {
       field: field.text({ placeholder: true }),
