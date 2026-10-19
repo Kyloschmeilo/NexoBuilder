@@ -2,7 +2,8 @@
  * ResourcepackBuilder as a desktop program (Electron).
  * Loads the static Next.js export (out/) via the custom app:// protocol in its own window.
  * Projects are stored by the UI, just like in the browser (IndexedDB in the app data folder); the main process adds
- * what a browser cannot do: shared folders (share.ts) and the local test server (testServer/).
+ * what a browser cannot do: shared folders (share.ts), the local test server (testServer/) and automatic updates
+ * (updater.ts).
  *
  * Bundled with esbuild into electron/dist/main.cjs (see electron/build.mjs).
  */
@@ -16,6 +17,7 @@ import { handle } from './ipc';
 import { registerShareHandlers } from './share';
 import { testHooks } from './testHooks';
 import { isTestServerActive, registerTestServerHandlers, stopTestServer } from './testServer';
+import { canUpdate, checkForUpdatesManually, initUpdater } from './updater';
 
 const APP_NAME = 'ResourcepackBuilder';
 /** The bundle lives in electron/dist/, next to the app's out/ and build/ folders. */
@@ -122,6 +124,7 @@ function buildMenu() {
         { label: t('menu.craftEngineDocs'), click: () => openExternal('https://xiao-momi.github.io/craft-engine-wiki/') },
         { label: 'Blockbench', click: () => openExternal('https://www.blockbench.net/') },
         { type: 'separator' },
+        ...(canUpdate() ? [{ label: t('menu.checkForUpdates'), click: checkForUpdatesManually }] : []),
         {
           label: t('menu.about', { app: APP_NAME }),
           click: () =>
@@ -185,6 +188,7 @@ function run() {
     nativeTheme.on('updated', () => mainWindow?.setBackgroundColor(backgroundColor()));
 
     createWindow();
+    initUpdater();
     app.on('activate', () => {
       if (BrowserWindow.getAllWindows().length === 0) createWindow();
     });

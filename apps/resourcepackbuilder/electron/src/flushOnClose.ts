@@ -3,7 +3,7 @@
  * for async work in `beforeunload`. A closing window is held back until the UI answers its flush request, at most
  * {@link FLUSH_TIMEOUT_MS}; a quit that closed it is then resumed.
  */
-import { app, type BrowserWindow, type WebContents } from 'electron';
+import { app, BrowserWindow, type WebContents } from 'electron';
 import { handle, send } from './ipc';
 
 /** How long a closing window waits for the UI (a UI that hangs must not keep the window open). */
@@ -32,6 +32,11 @@ function requestFlush(contents: WebContents): Promise<void> {
     contents.once('destroyed', finish);
     send(contents, 'app:flush-request', id);
   });
+}
+
+/** Asks the UI of every open window to write what is pending (e.g. before an update replaces the program). */
+export function flushWindows(): Promise<void> {
+  return Promise.all(BrowserWindow.getAllWindows().map((window) => requestFlush(window.webContents))).then(() => undefined);
 }
 
 /** Registers the UI's answer channel. */
