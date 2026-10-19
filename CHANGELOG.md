@@ -2,6 +2,8 @@
 
 ## Unreleased
 
+## 3.0.0
+
 ResourcepackBuilder gets a new Workbench look with five themes, a calmer item editor, and editors for every feature
 the CraftEngine wiki and Nexo 1.30 describe. Every feature links to its section of the plugin docs.
 

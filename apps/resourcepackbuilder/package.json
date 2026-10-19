@@ -1,7 +1,7 @@
 {
   "name": "resourcepackbuilder",
   "private": true,
-  "version": "2.0.0",
+  "version": "3.0.0",
   "description": "Turns Blockbench models (.bbmodel), Java models (JSON + PNG) or textures into ready-to-use Nexo or CraftEngine items including a resource pack. Next.js UI in an Electron shell.",
   "author": {
     "name": "Kyloschmeilo"
