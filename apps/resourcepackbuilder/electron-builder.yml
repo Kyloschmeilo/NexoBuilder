@@ -13,8 +13,13 @@ files:
   - build/icon.png
   - package.json
 asar: true
-# No automatic updates
-publish: null
+# Automatic updates (electron/src/updater.ts) from the GitHub releases. Only writes the update metadata (app-update.yml
+# in the program, latest.yml and the blockmap next to the installer): `dist:win` never publishes, CI uploads the files
+# to the release.
+publish:
+  provider: github
+  owner: Kyloschmeilo
+  repo: NexoBuilder
 win:
   icon: build/icon.png
   target:

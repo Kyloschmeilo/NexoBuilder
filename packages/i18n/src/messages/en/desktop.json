@@ -12,10 +12,22 @@
     "help": "Help",
     "nexoDocs": "Nexo documentation",
     "craftEngineDocs": "CraftEngine documentation",
+    "checkForUpdates": "Check for updates…",
     "about": "About {app}"
   },
   "about": {
     "detail": "Creates ready-to-use items for Nexo and CraftEngine with a resource pack from Blockbench models, Java models and textures.\n\nProjects are saved automatically in:\n{path}"
+  },
+  "updater": {
+    "title": "Updates",
+    "upToDate": "ResourcepackBuilder {version} is the latest version.",
+    "downloading": "Version {version} is available and is being downloaded. You will be asked to restart once it is ready.",
+    "failed": "Could not check for updates.",
+    "readyTitle": "Update ready",
+    "ready": "Version {version} is ready to install.",
+    "readyDetail": "Restart now to update, or later: the update is then installed when you quit the program. A running test server is stopped first.",
+    "restart": "Restart now",
+    "later": "Later"
   },
   "dialog": {
     "saveAs": "Save as"

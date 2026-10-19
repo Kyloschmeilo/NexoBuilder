@@ -56,6 +56,9 @@ the CraftEngine wiki and Nexo 1.30 describe. Every feature links to its section 
   features whose block states use another Minecraft version's format, plus a hint for Nexo's old-style armor ids
   (`*_chestplate`, `*_leggings`, `*_boots`, `*_elytra` without `CustomArmor`). `npm run verify:plugins` checks sample
   exports on real Nexo and CraftEngine servers.
+- **Automatic updates**: the installed program downloads new versions from the GitHub releases in the background and
+  offers to restart. If you choose _Later_, the update is installed when you quit. _Help → Check for updates_ checks on
+  demand. The portable version does not update itself.
 
 ### Changed
 
